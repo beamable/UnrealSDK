@@ -21,5 +21,10 @@ public:
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override;
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override;
+
+	virtual void Serialize(FArchive& Ar) override
+	{
+		Cohorts.BulkSerialize(Ar, true); 
+	}
 	
 };

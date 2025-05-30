@@ -29,7 +29,7 @@ public:
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("localRoutingKey"), LocalRoutingKey);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("localRoutingKey"), LocalRoutingKey, Serializer);
 		UBeamJsonUtils::SerializeArray<UManifestServiceEntryStreamData*>(TEXT("services"), Services, Serializer);
 		UBeamJsonUtils::SerializeArray<UManifestStorageEntryStreamData*>(TEXT("storages"), Storages, Serializer);
 		UBeamJsonUtils::SerializeArray<FString>(TEXT("existingFederationIds"), ExistingFederationIds, Serializer);
@@ -38,7 +38,7 @@ public:
 
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("localRoutingKey"), LocalRoutingKey);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("localRoutingKey"), LocalRoutingKey, Serializer);
 		UBeamJsonUtils::SerializeArray<UManifestServiceEntryStreamData*>(TEXT("services"), Services, Serializer);
 		UBeamJsonUtils::SerializeArray<UManifestStorageEntryStreamData*>(TEXT("storages"), Storages, Serializer);
 		UBeamJsonUtils::SerializeArray<FString>(TEXT("existingFederationIds"), ExistingFederationIds, Serializer);
@@ -47,7 +47,7 @@ public:
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		LocalRoutingKey = Bag->GetStringField(TEXT("localRoutingKey"));
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("localRoutingKey")), LocalRoutingKey);
 		UBeamJsonUtils::DeserializeArray<UManifestServiceEntryStreamData*>(Bag->GetArrayField(TEXT("services")), Services, OuterOwner);
 		UBeamJsonUtils::DeserializeArray<UManifestStorageEntryStreamData*>(Bag->GetArrayField(TEXT("storages")), Storages, OuterOwner);
 		UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("existingFederationIds")), ExistingFederationIds, OuterOwner);
@@ -98,7 +98,7 @@ public:
 	inline static FString StreamType = FString(TEXT("stream"));
 	UPROPERTY() TArray<UBeamCliUnityManifestStreamData*> Stream;
 	UPROPERTY() TArray<int64> Timestamps;
-	TFunction<void (const TArray<UBeamCliUnityManifestStreamData*>& StreamData, const TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnStreamOutput;	
+	TFunction<void (TArray<UBeamCliUnityManifestStreamData*>& StreamData, TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnStreamOutput;	
 
 	TFunction<void (const int& ResCode, const FBeamOperationHandle& Op)> OnCompleted;
 	virtual bool HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer) override;

@@ -16,6 +16,12 @@
 
 #include "Subsystems/BeamEditorSubsystem.h"
 #include "Misc/MessageDialog.h"
+#include "Subsystems/CLI/BeamCli.h"
+#include "Subsystems/CLI/Autogen/BeamCliConfigCommand.h"
+#include "Subsystems/CLI/Autogen/BeamCliInitCommand.h"
+#include "Subsystems/CLI/Autogen/BeamCliLogoutCommand.h"
+#include "Subsystems/CLI/Autogen/BeamCliMeCommand.h"
+#include "Subsystems/CLI/Autogen/BeamCliOrgRealmsCommand.h"
 
 const FBeamRealmHandle UBeamEditor::Signed_Out_Realm_Handle = FBeamRealmHandle{FString(""), FString("")};
 
@@ -128,7 +134,7 @@ void UBeamEditorBootstrapper::Run_DelayedInitialize()
 		EngineNetworkSettings->bVerifyPeer = true;
 		EngineNetworkSettings->SaveConfig(CPF_Config, *EngineNetworkSettings->GetDefaultConfigFilename());
 	}
-	
+
 	/* INFO - Make sure our core settings and environment settings are correctly set up for our users.
 	 * When this plugin gets added to the project, there are some default settings that we can pre-set for our users so that they don't have to do it.
 	 * This is where we do that.
@@ -162,10 +168,10 @@ void UBeamEditorBootstrapper::Run_DelayedInitialize()
 		const auto DeletedIconPath = TSoftObjectPtr<UTexture2D>(FSoftObjectPath(TEXT("/Script/Engine.Texture2D'/BeamableCore/Editor/Icons/IconStatus_Deleted.IconStatus_Deleted'")));
 		const auto ModifiedIconPath = TSoftObjectPtr<UTexture2D>(FSoftObjectPath(TEXT("/Script/Engine.Texture2D'/BeamableCore/Editor/Icons/IconStatus_Modified.IconStatus_Modified'")));
 		const auto UpToDateIconPath = TSoftObjectPtr<UTexture2D>(FSoftObjectPath(TEXT("/Script/Engine.Texture2D'/BeamableCore/Editor/Icons/IconStatus_NC.IconStatus_NC'")));
-		EditorSettings->LocalContentStatusIcons.Add(Beam_LocalContentCreated, CreatedIconPath);
-		EditorSettings->LocalContentStatusIcons.Add(Beam_LocalContentDeleted, DeletedIconPath);
-		EditorSettings->LocalContentStatusIcons.Add(Beam_LocalContentModified, ModifiedIconPath);
-		EditorSettings->LocalContentStatusIcons.Add(Beam_LocalContentUpToDate, UpToDateIconPath);
+		EditorSettings->LocalContentStatusIcons.Add(EBeamLocalContentStatus::Beam_LocalContentCreated, CreatedIconPath);
+		EditorSettings->LocalContentStatusIcons.Add(EBeamLocalContentStatus::Beam_LocalContentDeleted, DeletedIconPath);
+		EditorSettings->LocalContentStatusIcons.Add(EBeamLocalContentStatus::Beam_LocalContentModified, ModifiedIconPath);
+		EditorSettings->LocalContentStatusIcons.Add(EBeamLocalContentStatus::Beam_LocalContentUpToDate, UpToDateIconPath);
 		bEditorSettingsChanged = true;
 	}
 
@@ -223,34 +229,36 @@ void UBeamEditorBootstrapper::Run_TrySignIntoMainEditorSlot(FBeamWaitCompleteEve
 		return;
 	}
 
-	const auto BeamEditor = GEditor->GetEditorSubsystem<UBeamEditor>();
-	const auto MainEditorSlot = BeamEditor->GetMainEditorSlot();
-	// Tries to load the saved user at a specific slot.
-	if (BeamEditor->UserSlots->TryLoadSavedUserAtSlot(MainEditorSlot, this))
+	// When the CLI is not installed, we DO NOT sign in the editor.
+	// Instead, we just use the TargetRealm that is configured in the .ini file in this branch. 
+	const auto Cli = GEditor->GetEditorSubsystem<UBeamCli>();
+	if (!Cli->IsInstalled())
 	{
-		FBeamRealmUser User;
-
-		const auto _ = BeamEditor->GetMainEditorSlot(User);
-		FBeamOperationEventHandler OperationEventHandler;
-		OperationEventHandler.BindUFunction(this, GET_FUNCTION_NAME_CHECKED(UBeamEditorBootstrapper, Run_EditorReady));
-		const auto Op = BeamEditor->RequestTracker->BeginOperation({MainEditorSlot}, GetName(), OperationEventHandler);
-		BeamEditor->UpdateSignedInUserData_OnUserSlotAuthenticated(MainEditorSlot, User, Op, this);
+		// TODO: Check that the Target Realm is set, if not log a big error that says the target realm is not set and therefore no beamable feature will work at runtime.
+		// Push out a notification that the CLI is not installed and therefore no beamable editor functionality will work (neither will local microservices).
+		return;
 	}
-	else
-	{
-		// If we are not signed in, clear the target realm.
-		UE_LOG(LogBeamEditor, Display, TEXT("Not signed in so clearing target realm!"))
 
-		BeamEditor->SetActiveTargetRealmUnsafe({});
-		TArray<FUserSlot> SlotsStub;
-		Run_EditorReady({});
-	}
-}
-
-void UBeamEditorBootstrapper::Run_EditorReady(FBeamOperationEvent OperationEvent)
-{
 	const auto BeamEditor = GEditor->GetEditorSubsystem<UBeamEditor>();
-	BeamEditor->bEditorReady = true;
+	auto Op = RequestTracker->CPP_BeginOperation({}, BeamEditor->GetName(), FBeamOperationEventHandlerCode::CreateLambda([this, BeamEditor](FBeamOperationEvent Evt)
+	{
+		if (Evt.EventType == OET_ERROR)
+		{
+			BeamEditor->UpdateBeamableWindowMessage(TEXT("Auto sign in failed!"), EMessageType::VE_Error);
+
+			// Clear the realm if any problems occur when automatically signing in using CLI data. 
+			BeamEditor->SetActiveTargetRealmUnsafe(BeamEditor->Signed_Out_Realm_Handle);
+			BeamEditor->UserSlots->ClearUserAtSlot(BeamEditor->GetMainEditorSlot(), USCR_FailedAuthentication, true);
+
+			// Set the editor as ready
+			BeamEditor->bEditorReady = true;
+			return;
+		}
+
+		BeamEditor->UpdateBeamableWindowMessage(TEXT("Sign in successful!"), EMessageType::VE_Info);
+		BeamEditor->bEditorReady = true;
+	}));
+	BeamEditor->SignInWithCliInfo(Op);
 }
 
 
@@ -270,31 +278,29 @@ bool UBeamEditor::TryGetMainEditorSlot(FUserSlot& Slot, FBeamRealmUser& UserData
 
 FUserSlot UBeamEditor::GetMainEditorSlot() const
 {
-	FBeamRealmUser UserData;
 	const auto MainSlot = GetDefault<UBeamCoreSettings>()->DeveloperUserSlots[MainEditorSlotIdx];
-	UserSlots->GetUserDataAtSlot(MainSlot, UserData, nullptr);
 	return MainSlot;
 }
 
 bool UBeamEditor::GetActiveProjectAndRealmData(FBeamCustomerProjectData& ProjectData, FBeamProjectRealmData& RealmData)
 {
-	const auto EditorSettings = GetDefault<UBeamEditorSettings>();
-
+	ProjectData = CurrentProjectData;
 	FUserSlot MainEditorSlot;
 	FBeamRealmUser MainEditorDeveloper;
 	if (TryGetMainEditorSlot(MainEditorSlot, MainEditorDeveloper))
 	{
-		if (const auto ProjectDataPtr = EditorSettings->PerSlotDeveloperProjectData.Find(MainEditorSlot.Name))
+		for (const auto& R : CurrentProjectData.AllRealms)
 		{
-			ProjectData = *ProjectDataPtr;
-
-			const auto FoundData = ProjectData.AllRealms.FindByPredicate([MainEditorDeveloper](FBeamProjectRealmData d) { return d.PID == MainEditorDeveloper.RealmHandle.Pid; });
-			ensureAlwaysMsgf(FoundData, TEXT("No developer signed into the MainEditorDeveloper UserSlot! Please sign-in."));
-
-			if (FoundData)
-				RealmData = *FoundData;
-			return true;
+			if (R.PID.AsString == MainEditorDeveloper.RealmHandle.Pid.AsString)
+			{
+				RealmData = R;
+				return true;
+			}
 		}
+	}
+	else
+	{
+		ensureAlwaysMsgf(false, TEXT("No developer signed into the MainEditorDeveloper UserSlot! Please sign-in."));
 	}
 
 	RealmData = FBeamProjectRealmData{};
@@ -303,8 +309,26 @@ bool UBeamEditor::GetActiveProjectAndRealmData(FBeamCustomerProjectData& Project
 
 void UBeamEditor::SignOut()
 {
-	UserSlotClearedHandler = UserSlots->GlobalUserSlotClearedCodeHandler.AddUFunction(this, GET_FUNCTION_NAME_CHECKED(UBeamEditor, OnUserSlotCleared));
-	UserSlots->ClearUserAtSlot(GetMainEditorSlot(), USCR_Manual, true);
+	// When the CLI is not installed, we should not do anything. 
+	const auto Cli = GEditor->GetEditorSubsystem<UBeamCli>();
+	if (!Cli->IsInstalled()) return;
+
+	auto LogoutCmd = NewObject<UBeamCliLogoutCommand>();
+	LogoutCmd->OnCompleted = [this](const int& ResCode, const FBeamOperationHandle&)
+	{
+		if (ResCode == 0)
+		{
+			UserSlotClearedHandler = UserSlots->GlobalUserSlotClearedCodeHandler.AddUFunction(this, GET_FUNCTION_NAME_CHECKED(UBeamEditor, OnUserSlotCleared));
+			UserSlots->ClearUserAtSlot(GetMainEditorSlot(), USCR_Manual, true);
+		}
+		else
+		{
+			// If we are not signed in, clear the target realm.
+			UE_LOG(LogBeamEditor, Error, TEXT("Failed to sign out."))
+			UpdateBeamableWindowMessage(TEXT("Failed to sign out."), EMessageType::VE_Error);
+		}
+	};
+	Cli->RunCommandServer(LogoutCmd, {}, {});
 }
 
 void UBeamEditor::OnUserSlotCleared(const EUserSlotClearedReason& Reason, const FUserSlot& UserSlot, const FBeamRealmUser& BeamRealmUser, const UObject* Context)
@@ -316,10 +340,6 @@ void UBeamEditor::OnUserSlotCleared(const EUserSlotClearedReason& Reason, const 
 		{
 			// Remove the target realm configuration.
 			SetActiveTargetRealmUnsafe(Signed_Out_Realm_Handle);
-
-			// Clear project data associated with that slot.
-			const auto EditorConfig = GetMutableDefault<UBeamEditorSettings>();
-			EditorConfig->PerSlotDeveloperProjectData.Remove(SlotId.Name);
 
 			// Invoke the sign out callback on all Editor Subsystems
 			const auto Subsystems = GEditor->GetEditorSubsystemArrayCopy<UBeamEditorSubsystem>();
@@ -376,131 +396,191 @@ FBeamOperationHandle UBeamEditor::CPP_SelectRealmOperation(const FBeamRealmHandl
 	return Op;
 }
 
-FBeamOperationHandle UBeamEditor::SignUpOperation(FString ProjectName, FString OrgName, FString Email, FString Password, FString Alias, const FBeamOperationEventHandler& OnOperationEvent)
-{
-	ensureAlwaysMsgf(!bIsRunningPIE, TEXT("Cannot change realm while in PIE!"));
-	const auto Op = RequestTracker->BeginOperation({GetMainEditorSlot()}, GetName(), OnOperationEvent);
-	SignUp(ProjectName, OrgName, Email, Password, Alias, Op);
-	return Op;
-}
-
-FBeamOperationHandle UBeamEditor::CPP_SignUpOperation(FString ProjectName, FString OrgName, FString Email, FString Password, FString Alias, const FBeamOperationEventHandlerCode& OnOperationEvent)
-{
-	ensureAlwaysMsgf(!bIsRunningPIE, TEXT("Cannot change realm while in PIE!"));
-	const auto Op = RequestTracker->CPP_BeginOperation({GetMainEditorSlot()}, GetName(), OnOperationEvent);
-	SignUp(ProjectName, OrgName, Email, Password, Alias, Op);
-	return Op;
-}
-
-void UBeamEditor::SignUp(FString ProjectName, FString OrgName, FString Email, FString Password, FString Alias, const FBeamOperationHandle Op)
-{
-	const auto RealmsApi = GEngine->GetEngineSubsystem<UBeamRealmsApi>();
-
-	const auto PostCustomerRequest = UPostCustomerRequest::Make(ProjectName, Email, Password, {}, FOptionalString{OrgName}, FOptionalString{Alias}, GetTransientPackage(), {});
-	FBeamRequestContext Ctx;
-	const auto Handler = FOnPostCustomerFullResponse::CreateUObject(this, &UBeamEditor::SignUp_OnPostCustomer, Op, OrgName, Email, Password);
-	RealmsApi->CPP_PostCustomer(PostCustomerRequest, Handler, Ctx, Op, this);
-}
-
-void UBeamEditor::SignUp_OnPostCustomer(const FPostCustomerFullResponse Resp, const FBeamOperationHandle Op, const FString OrgName, const FString Email, const FString Password)
-{
-	if (Resp.State == RS_Retrying) return;
-
-	if (Resp.State == RS_Error)
-	{
-		FString Error;
-		FJsonObjectConverter::UStructToJsonObjectString(Resp.ErrorData, Error);
-		RequestTracker->TriggerOperationError(Op, Error, Resp.Context.RequestId);
-		return;
-	}
-
-	if (Resp.State == RS_Success)
-	{
-		SignIn(OrgName, Email, Password, Op);
-		return;
-	}
-
-	RequestTracker->TriggerOperationCancelled(Op, TEXT(""), Resp.Context.RequestId);
-}
-
 void UBeamEditor::SignIn(FString OrgName, FString Email, FString Password, const FBeamOperationHandle Op)
 {
-	const auto RealmsApi = GEngine->GetEngineSubsystem<UBeamRealmsApi>();
-
-	const auto CustomerAliasReq = UGetCustomerAliasAvailableRequest::Make(OrgName, GetTransientPackage(), {});
-	CustomerAliasReq->Alias = OrgName;
-
-	FBeamRequestContext Ctx;
-	const auto Handler = FOnGetCustomerAliasAvailableFullResponse::CreateUObject(this, &UBeamEditor::SignIn_OnGetCustomerAliasAvailable, Op, Email, Password);
-	RealmsApi->CPP_GetCustomerAliasAvailable(CustomerAliasReq, Handler, Ctx, Op, this);
-}
-
-void UBeamEditor::SignIn_OnGetCustomerAliasAvailable(const FGetCustomerAliasAvailableFullResponse Resp, const FBeamOperationHandle Op, const FString Email, const FString Password)
-{
-	if (Resp.State == RS_Retrying) return;
-
-	if (Resp.State == RS_Error)
+	// When the CLI is not installed, we should not do anything. 
+	const auto Cli = GEditor->GetEditorSubsystem<UBeamCli>();
+	if (!Cli->IsInstalled())
 	{
-		FString Error;
-		FJsonObjectConverter::UStructToJsonObjectString(Resp.ErrorData, Error);
-		RequestTracker->TriggerOperationError(Op, Error, Resp.Context.RequestId);
+		RequestTracker->TriggerOperationError(Op, TEXT("Cli is not installed. Cannot sign into the Beamable Editor."));
 		return;
 	}
 
-	if (Resp.State == RS_Success)
+	// Stop all running CLI Commands so we can re-start it
+	Cli->StopCli();
+
+	// Call init with the proper parameters
+	auto InitCommand = NewObject<UBeamCliInitCommand>();
+	InitCommand->OnStreamOutput = [this](const TArray<UBeamCliInitStreamData*>& Stream, const TArray<long long>&, const FBeamOperationHandle&)
 	{
-		// If no CID was found for this alias... let the user know.
-		if (!Resp.SuccessData->bAvailable)
+		if (Stream.Num() > 0)
 		{
-			RequestTracker->TriggerOperationError(Op, TEXT("Organization not found. If you haven't created an account yet, please Sign Up instead."), Resp.Context.RequestId);
+			SetActiveTargetRealmUnsafe(FBeamRealmHandle{Stream[0]->Cid, Stream[0]->Pid});
+		}
+	};
+	InitCommand->OnCompleted = [this, Op](const int& ResCode, const FBeamOperationHandle& CmdOp)
+	{
+		if (ResCode != 0)
+		{
+			UserSlots->ClearUserAtSlot(GetMainEditorSlot(), USCR_FailedAuthentication, true);
+			SetActiveTargetRealmUnsafe(Signed_Out_Realm_Handle);
+			RequestTracker->TriggerOperationError(CmdOp, TEXT("Failed to sign in."));
+		}
+		else
+		{
+			SignInWithCliInfo(Op);
+		}
+	};
+
+	const auto Host = GEngine->GetEngineSubsystem<UBeamEnvironment>()->GetAPIUrl();
+	Cli->RunCommand(InitCommand, {TEXT("--host"), Host, TEXT("-q"), TEXT("--cid"), OrgName, TEXT("--username"), Email, TEXT("--password"), Password}, Op);
+}
+
+void UBeamEditor::SignInWithCliInfo(const FBeamOperationHandle Op)
+{
+	// When the CLI is not installed, we should not do anything. 
+	const auto Cli = GEditor->GetEditorSubsystem<UBeamCli>();
+	if (!Cli->IsInstalled())
+	{
+		FString ConfigJson;
+		FString PathToConfigJson = FPaths::ProjectDir() / TEXT(".beamable") / TEXT("connection-configuration.json");
+		if (FFileHelper::LoadFileToString(ConfigJson, *PathToConfigJson))
+		{
+			FJsonDataBag ConfigJsonBag;
+			if (ConfigJsonBag.FromJson(ConfigJson))
+			{
+				const auto Cid = ConfigJsonBag.GetString(TEXT("cid"));
+				const auto Pid = ConfigJsonBag.GetString(TEXT("pid"));
+
+				GetMutableDefault<UBeamCoreSettings>()->TargetRealm.Cid.AsString = Cid;
+				GetMutableDefault<UBeamCoreSettings>()->TargetRealm.Pid.AsString = Pid;
+			}
+			else
+			{
+				const auto Err = FString::Printf(
+					TEXT("%s"),
+					TEXT(
+						"We found `.beamable/connection-configuration.json` file in your `.beamable` folder, but we couldn't parse it as JSON. When you don't have a CLI installed, you must have this file in your version control system so we know which realm you are targeting during PIE."));
+				RequestTracker->TriggerOperationError(Op, Err);
+			}
+		}
+		else
+		{
+			const auto Err = FString::Printf(
+				TEXT("%s"),
+				TEXT(
+					"We did not find a `.beamable/connection-configuration.json` file in your `.beamable` folder. When you don't have a CLI installed, you must have this file in your version control system so we know which realm you are targeting during PIE."));
+			RequestTracker->TriggerOperationError(Op, TEXT("Cli is not installed. Cannot sign into the Beamable Editor."));
+		}
+
+		return;
+	}
+
+	// If the CLI is installed, we use it to get the data around the current organization
+	const auto RealmsCommandOp = RequestTracker->CPP_BeginOperation({}, GetName(), {});
+	auto RealmsCommand = NewObject<UBeamCliOrgRealmsCommand>();
+	RealmsCommand->OnStreamOutput = [this](const TArray<UBeamCliOrgRealmsStreamData*>& Stream, const TArray<long long>&, const FBeamOperationHandle&)
+	{
+		if (Stream.Num() > 0)
+		{
+			const auto Data = Stream[0];
+
+			CurrentProjectData = {};
+			CurrentProjectData.CustomerName = Data->CustomerAlias;
+			CurrentProjectData.CustomerAlias = Data->CustomerAlias;
+
+			TArray<FBeamProjectRealmData> RealmData = {};
+			RealmData.Reserve(Data->VisibleRealms.Num());
+
+			for (const auto R : Data->VisibleRealms)
+			{
+				FBeamProjectRealmData Realm;
+				Realm.CID = R->Cid;
+				Realm.PID = R->Pid;
+				Realm.ParentPID = FOptionalBeamPid{R->ParentPid};
+				Realm.ProjectName = R->ProjectName;
+				Realm.RealmName = R->RealmName;
+				Realm.RealmSecret = R->RealmSecret;
+				Realm.bIsDev = R->IsDev;
+				Realm.bIsStaging = R->IsStaging;
+				Realm.bIsProduction = R->IsProduction;
+				RealmData.Add(Realm);
+			}
+			CurrentProjectData.AllRealms = RealmData;
+		}
+	};
+	RealmsCommand->OnCompleted = [this, RealmsCommandOp](const int& ResCode, const FBeamOperationHandle&)
+	{
+		if (ResCode != 0)
+		{
+			RequestTracker->TriggerOperationError(RealmsCommandOp, TEXT("Failed to get realms data. Signing out. Please, ensure you are an developer or admin user and sign in again."));
+		}
+		else
+		{
+			RequestTracker->TriggerOperationSuccess(RealmsCommandOp, TEXT(""));
+		}
+	};
+	Cli->RunCommandServer(RealmsCommand, {}, RealmsCommandOp);
+
+	// If the CLI is installed, we use it to fetch the currently signed-in user and their realm.
+	const auto MeCommandOp = RequestTracker->CPP_BeginOperation({}, GetName(), {});
+	auto MeCommand = NewObject<UBeamCliMeCommand>();
+	MeCommand->OnStreamOutput = [this](const TArray<UBeamCliMeStreamData*>& Stream, const TArray<long long>&, const FBeamOperationHandle&)
+	{
+		if (Stream.Num() > 0)
+		{
+			const auto Data = Stream[0];
+
+			// Get the editor slot
+			const auto EditorSlot = GetMainEditorSlot();
+
+			// Set the authentication data
+			UserSlots->SetAuthenticationDataAtSlot(EditorSlot, Data->AccessToken, Data->RefreshToken, Data->TokenIssuedAt.ToUnixTimestamp(), Data->TokenExpiresIn,
+			                                       FBeamCid{Data->TokenCid}, FBeamPid{Data->TokenPid}, this);
+			// Set account id, email and gamertag
+			UserSlots->SetAccountIdAtSlot(EditorSlot, FBeamAccountId{Data->Id}, this);
+			UserSlots->SetEmailAtSlot(EditorSlot, Data->Email, this);
+			UserSlots->SetGamerTagAtSlot(EditorSlot, {}, this);
+			// Set external identities
+			TArray<FBeamExternalIdentity> Identities;
+			for (const auto External : Data->External)
+			{
+				FBeamExternalIdentity ExternalId;
+				ExternalId.ProviderService = External->ProviderService;
+				ExternalId.UserId = External->UserId;
+				ExternalId.ProviderNamespace = External->ProviderNamespace;
+				Identities.Add(ExternalId);
+			}
+			UserSlots->SetExternalIdsAtSlot(EditorSlot, Identities, this);
+		}
+	};
+	MeCommand->OnCompleted = [this, MeCommandOp](const int& ResCode, const FBeamOperationHandle&)
+	{
+		if (ResCode != 0)
+		{
+			RequestTracker->TriggerOperationError(MeCommandOp, TEXT("Failed to get data from signed in user. Signing out. Please sign in again."));
+		}
+		else
+		{
+			RequestTracker->TriggerOperationSuccess(MeCommandOp, TEXT(""));
+		}
+	};
+	Cli->RunCommandServer(MeCommand, {}, MeCommandOp);
+
+	// Wait for both commands to run and then set up the realm selection.
+	RequestTracker->CPP_WaitAll({}, {RealmsCommandOp, MeCommandOp}, {}, FOnWaitCompleteCode::CreateLambda([this, Op](FBeamWaitCompleteEvent Evt)
+	{
+		TArray<FString> Errs;
+		if (RequestTracker->IsWaitFailed(Evt, Errs))
+		{
+			RequestTracker->TriggerOperationError(Op, FString::Join(Errs, TEXT("\n")));
 			return;
 		}
 
-		// Update the target realm with just the CID and let the caller respond to this event.
-		const auto Cid = Resp.SuccessData->Cid;
-		SetActiveTargetRealmUnsafe(FBeamRealmHandle{Cid});
-
-		// Call authenticate with the rest of the information
-		const auto AuthApi = GEngine->GetEngineSubsystem<UBeamAuthApi>();
-		const auto AuthReq = NewObject<UAuthenticateRequest>();
-		AuthReq->Body = NewObject<UTokenRequestWrapper>(AuthReq);
-		AuthReq->Body->GrantType = TEXT("password");
-		AuthReq->Body->bCustomerScoped = FOptionalBool(true);
-		AuthReq->Body->Username = FOptionalString(Email);
-		AuthReq->Body->Password = FOptionalString(Password);
-
-		FBeamRequestContext AuthCtx;
-		const auto Handler = FOnAuthenticateFullResponse::CreateUObject(this, &UBeamEditor::SignIn_OnAuthenticate, Op, Cid);
-		AuthApi->CPP_Authenticate(AuthReq, Handler, AuthCtx, Op, this);
-		return;
-	}
-
-	RequestTracker->TriggerOperationCancelled(Op, TEXT(""), Resp.Context.RequestId);
-}
-
-void UBeamEditor::SignIn_OnAuthenticate(const FAuthenticateFullResponse Resp, const FBeamOperationHandle Op, const FBeamCid Cid)
-{
-	if (Resp.State == RS_Retrying) return;
-
-	if (Resp.State == RS_Error)
-	{
-		FString Error;
-		FJsonObjectConverter::UStructToJsonObjectString(Resp.ErrorData, Error);
-		RequestTracker->TriggerOperationError(Op, Error, Resp.Context.RequestId);
-		return;
-	}
-
-	if (Resp.State == RS_Success)
-	{
-		const auto AccessToken = Resp.SuccessData->AccessToken.Val;
-		const auto RefreshToken = Resp.SuccessData->RefreshToken.Val;
-		const auto ExpiresIn = Resp.SuccessData->ExpiresIn;
-
-		UpdateSignedInUserData(Op, Cid, AccessToken, RefreshToken, ExpiresIn);
-		return;
-	}
-
-	RequestTracker->TriggerOperationCancelled(Op, TEXT(""), Resp.Context.RequestId);
+		FBeamRealmUser EditorUser;
+		UserSlots->GetUserDataAtSlot(GetMainEditorSlot(), EditorUser, this);
+		SelectRealm(EditorUser.RealmHandle, Op);
+	}));
 }
 
 
@@ -509,11 +589,15 @@ void UBeamEditor::SelectRealm(const FBeamRealmHandle& NewRealmHandle, const FBea
 	auto Message = NewObject<UBeamableWindowMessage>();
 	Message->MessageType = EMessageType::VE_Info;
 	Message->MessageValue = TEXT("Preparing to change Realms...");
-	SetBeamableWindowMessage(Message);	
+	SetBeamableWindowMessage(Message);
 
 	// Clear all PIE user slots
 	UserSlots->DeleteUserSlotCacheForPIE();
-	
+
+	// Stops all running commands
+	const auto Cli = GEditor->GetEditorSubsystem<UBeamCli>();
+	Cli->StopCli();
+
 	auto Settings = GetMutableDefault<UBeamCoreSettings>();
 	const auto LeavingRealm = Settings->TargetRealm;
 
@@ -525,7 +609,7 @@ void UBeamEditor::SelectRealm(const FBeamRealmHandle& NewRealmHandle, const FBea
 		PrepareForRealmChangeOps.Add(Handle);
 	}
 	const auto OnCompleteCode = FOnWaitCompleteCode::CreateUObject(this, &UBeamEditor::SelectRealm_OnReadyForChange, NewRealmHandle, Op);
-	OnReadyForRealmChangeWait = RequestTracker->CPP_WaitAll({}, PrepareForRealmChangeOps, {}, OnCompleteCode);	
+	OnReadyForRealmChangeWait = RequestTracker->CPP_WaitAll({}, PrepareForRealmChangeOps, {}, OnCompleteCode);
 }
 
 void UBeamEditor::SelectRealm_OnReadyForChange(FBeamWaitCompleteEvent, FBeamRealmHandle NewRealmHandle, FBeamOperationHandle Op)
@@ -534,27 +618,26 @@ void UBeamEditor::SelectRealm_OnReadyForChange(FBeamWaitCompleteEvent, FBeamReal
 	Message->MessageType = EMessageType::VE_Info;
 	Message->MessageValue = TEXT("Changing Realms...");
 	SetBeamableWindowMessage(Message);
-	
-	// TODO: Expose error handling for BeamErrorResponses that happen in the PrepareRealmChange operations
-	SetActiveTargetRealmUnsafe(NewRealmHandle);	
-	
-	// Get the Main Editor Slot and make it point at the new realm
-	FBeamRealmUser UserData;
-	const auto MainEditorSlot = GetMainEditorSlot(UserData);
-	UserSlots->SetPIDAtSlot(MainEditorSlot, NewRealmHandle.Pid, this);
 
-	const auto GetConfigReq = UGetConfigRequest::Make(GetTransientPackage(), {});
-	const auto GetConfigReqHandle = FOnGetConfigFullResponse::CreateLambda([this, Op, MainEditorSlot, NewRealmHandle](FGetConfigFullResponse GetResp)
+	const auto ConfigSetCmd = NewObject<UBeamCliConfigCommand>();
+	ConfigSetCmd->OnCompleted = [this, NewRealmHandle](const int& ResCode, const FBeamOperationHandle& CmdOp)
 	{
-		if (GetResp.State == RS_Success)
+		if (ResCode == 0)
 		{
-			// We ensure that the realm is correctly configured to use Beamable's notification system (as opposed to our legacy PubNub-based system that UE doesn't support)
-			TMap<FString, FString> CurrConfig = TMap<FString, FString>(GetResp.SuccessData->Config);
-			if (CurrConfig.Contains(TEXT("notification|publisher"))) CurrConfig[TEXT("notification|publisher")] = TEXT("beamable");
-			else CurrConfig.Add(TEXT("notification|publisher"), TEXT("beamable"));
-			const auto Req = UPutConfigRequest::Make(CurrConfig, GetTransientPackage(), {});
-			const auto Handler = FOnPutConfigFullResponse::CreateLambda([this, Op, NewRealmHandle](FPutConfigFullResponse PutResp)
-			{				
+			// After the realm change we stop the CLI Server again so it gets re-started with the correctly set new CID/PID.
+			const auto Cli = GEditor->GetEditorSubsystem<UBeamCli>();
+			Cli->StopCli();
+
+			// Make the Main Editor Slot and the editor itself point at the new realm	
+			FBeamRealmUser UserData;
+			const auto MainEditorSlot = GetMainEditorSlot(UserData);
+			UserSlots->SetPIDAtSlot(MainEditorSlot, NewRealmHandle.Pid, this);
+			SetActiveTargetRealmUnsafe(NewRealmHandle);
+
+			// Using the new Post endpoint that allows for Upsert to ensure that all Unreal games are using our custom notification pipeline instead of our legacy PubNub stuff.
+			const auto UpdateConfigReq = UPostConfigRequest::Make(FOptionalArrayOfString{}, FOptionalMapOfString{{{TEXT("notification|publisher"), TEXT("beamable")}}}, GetTransientPackage(), {});
+			const auto Handler = FOnPostConfigFullResponse::CreateLambda([this, CmdOp, NewRealmHandle](FPostConfigFullResponse PutResp)
+			{
 				if (PutResp.State == RS_Success)
 				{
 					const auto Subsystems = GEditor->GetEditorSubsystemArrayCopy<UBeamEditorSubsystem>();
@@ -564,7 +647,7 @@ void UBeamEditor::SelectRealm_OnReadyForChange(FBeamWaitCompleteEvent, FBeamReal
 						const auto Handle = Subsystem->InitializeRealm(NewRealmHandle);
 						InitalizeFromRealmOps.Add(Handle);
 					}
-					const auto OnCompleteCode = FOnWaitCompleteCode::CreateUObject(this, &UBeamEditor::SelectRealm_OnRealmInitialized, NewRealmHandle, Op);
+					const auto OnCompleteCode = FOnWaitCompleteCode::CreateUObject(this, &UBeamEditor::SelectRealm_OnRealmInitialized, NewRealmHandle, CmdOp);
 					InitializeFromRealmsWait = RequestTracker->CPP_WaitAll({}, InitalizeFromRealmOps, {}, OnCompleteCode);
 					return;
 				}
@@ -572,37 +655,29 @@ void UBeamEditor::SelectRealm_OnReadyForChange(FBeamWaitCompleteEvent, FBeamReal
 				if (PutResp.State == RS_Retrying)
 					return;
 
-				RequestTracker->TriggerOperationError(Op, PutResp.ErrorData.message);
+				RequestTracker->TriggerOperationError(CmdOp, PutResp.ErrorData.message);
 			});
-
 			FBeamRequestContext Ctx;
-			GEngine->GetEngineSubsystem<UBeamRealmsApi>()->CPP_PutConfig(MainEditorSlot, Req, Handler, Ctx, Op, this);
-			return;
+			GEngine->GetEngineSubsystem<UBeamRealmsApi>()->CPP_PostConfig(MainEditorSlot, UpdateConfigReq, Handler, Ctx, CmdOp, this);
 		}
+		else
+		{
+			RequestTracker->TriggerOperationError(CmdOp, FString::Printf(TEXT("CLI_ERROR. CODE=%d"), ResCode));
+		}
+	};
 
-		if (GetResp.State == RS_Retrying)
-			return;
-
-		RequestTracker->TriggerOperationError(Op, GetResp.ErrorData.message);
-	});
-
-	FBeamRequestContext Ctx;
-	GEngine->GetEngineSubsystem<UBeamRealmsApi>()->CPP_GetConfig(MainEditorSlot, GetConfigReq, GetConfigReqHandle, Ctx, Op, this);
+	// Invoke the "Set Local Config Override" command in the CLI with the new realm --- once its set, set the TargetRealm and the PID for the MainEditorUserSlot and only then continue making the get config request.
+	const auto Cli = GEditor->GetEditorSubsystem<UBeamCli>();
+	const auto Params = TArray<FString>{TEXT("--cid"), NewRealmHandle.Cid.AsString, TEXT("--pid"), NewRealmHandle.Pid.AsString, TEXT("--set")};
+	Cli->RunCommandServer(ConfigSetCmd, Params, Op);
 }
 
 void UBeamEditor::SelectRealm_OnRealmInitialized(FBeamWaitCompleteEvent, FBeamRealmHandle NewRealmHandle, FBeamOperationHandle Op)
-{	
+{
 	auto Message = NewObject<UBeamableWindowMessage>();
 	Message->MessageType = EMessageType::VE_Info;
 	Message->MessageValue = TEXT("Updating new Realm Local Data...");
 	SetBeamableWindowMessage(Message);
-	
-	// We update the UserSlot info with the new PID.
-	FBeamRealmUser UserData;
-	const auto MainEditorSlot = GetMainEditorSlot(UserData);
-
-	// Update the PID and change the slot
-	UserSlots->SaveSlot(MainEditorSlot, this);
 
 	// Notify all systems that we have successfully initialized the realm
 	const auto Subsystems = GEditor->GetEditorSubsystemArrayCopy<UBeamEditorSubsystem>();
@@ -622,12 +697,12 @@ void UBeamEditor::SelectRealm_OnSystemsReady(FBeamWaitCompleteEvent, FBeamRealmH
 	Message->MessageType = EMessageType::VE_Info;
 	Message->MessageValue = TEXT("Realm Changed!");
 	SetBeamableWindowMessage(Message);
-	
+
 	const auto Subsystems = GEditor->GetEditorSubsystemArrayCopy<UBeamEditorSubsystem>();
 	for (auto& Subsystem : Subsystems)
 	{
 		Subsystem->OnReady();
-	}	
+	}
 
 	RequestTracker->TriggerOperationSuccess(Op, TEXT(""));
 }
@@ -649,7 +724,7 @@ void UBeamEditor::OpenPortal(EPortalPage PortalPage)
 
 		const auto PortalUrl = GetDefault<UBeamCoreSettings>()->BeamableEnvironment->PortalUrl;
 		const auto Cid = Data.RealmHandle.Cid.AsString;
-		const auto ProductionPid = Proj.AllRealms.FindByPredicate([](FBeamProjectRealmData d) { return !d.ParentPID.IsSet; })->PID.AsString;
+		const auto ProductionPid = Proj.AllRealms.FindByPredicate([](FBeamProjectRealmData d) { return d.bIsProduction; })->PID.AsString;
 		const auto CurrentPid = Data.RealmHandle.Pid.AsString;
 		const auto RefreshToken = Data.AuthToken.RefreshToken;
 		FString Page;
@@ -660,7 +735,7 @@ void UBeamEditor::OpenPortal(EPortalPage PortalPage)
 			Page = FString("dashboard");
 			break;
 		case EPortalPage::VE_Microservices:
-			Page = FString("microservices");			
+			Page = FString("microservices");
 			break;
 		case EPortalPage::VE_PlayerSearch:
 			Page = FString("players");
@@ -678,66 +753,16 @@ void UBeamEditor::OpenPortal(EPortalPage PortalPage)
 
 		const auto URL = FString::Format(TEXT("{0}/{1}/games/{2}/realms/{3}/{4}?refresh_token={5}{6}"),
 		                                 {
-		                                 	PortalUrl,
-		                                 	Cid,
-		                                 	ProductionPid,
-		                                 	CurrentPid,
-		                                 	Page,
-		                                 	RefreshToken,
-		                                 	FString::Join(AdditionalQueryArgs, TEXT(""))
+			                                 PortalUrl,
+			                                 Cid,
+			                                 ProductionPid,
+			                                 CurrentPid,
+			                                 Page,
+			                                 RefreshToken,
+			                                 FString::Join(AdditionalQueryArgs, TEXT(""))
 		                                 });
 
 		FPlatformProcess::LaunchURL(*URL, nullptr, nullptr);
-	}
-}
-
-
-void UBeamEditor::CacheProjectDataForUserSlot(FUserSlot UserSlot, UCustomerViewResponse* CustomerViewResponse) const
-{
-	// Gets all project data for the requesting user slot.				
-	FBeamCustomerProjectData ProjectData;
-
-	const auto CID = CustomerViewResponse->Customer->Cid;
-	const auto CustomerName = ProjectData.CustomerName = CustomerViewResponse->Customer->Name;
-
-	bool _;
-	const auto CustomerAlias = ProjectData.CustomerAlias = UOptionalStringLibrary::GetOptionalValue(CustomerViewResponse->Customer->Alias, CustomerName, _);
-
-	// Find the project with 0 children and get the project name from it...
-	FString ProjectName;
-
-	const auto RealmList = CustomerViewResponse->Customer->Projects;
-	for (const auto& ProjectView : RealmList)
-	{
-		const auto PID = ProjectView->Pid;
-		const auto ParentPid = ProjectView->Parent;
-		const auto RealmName = ProjectView->ProjectName;
-		const auto RealmSecret = ProjectView->Secret.Val;
-
-		const auto IsRoot = !ProjectView->Parent.IsSet;
-
-		FString ProjName, Discarded;
-		if (IsRoot && RealmName.Split("-", &ProjName, &Discarded))
-			ProjectName = ProjName;
-
-		ProjectData.AllRealms.Add(FBeamProjectRealmData{CID, PID, ParentPid, ProjectName, RealmName, RealmSecret});
-	}
-
-	// Now that we've found the root project and it's name, let's update that data in each struct there.
-	for (auto& Realm : ProjectData.AllRealms)
-		Realm.ProjectName = ProjectName;
-
-
-	// Finally, let's update the Editor/BP readonly data in the Editor Config for this slot.
-	const auto SlotName = UserSlot.Name;
-	auto EditorConfig = GetMutableDefault<UBeamEditorSettings>();
-	if (EditorConfig->PerSlotDeveloperProjectData.Contains(SlotName))
-	{
-		EditorConfig->PerSlotDeveloperProjectData[SlotName] = ProjectData;
-	}
-	else
-	{
-		EditorConfig->PerSlotDeveloperProjectData.Add(SlotName, ProjectData);
 	}
 }
 
@@ -758,145 +783,4 @@ void UBeamEditor::ApplyCurrentSettingsToBuild()
 
 	// Notify other systems that
 	if (OnAppliedSettingsToBuild.IsBound()) OnAppliedSettingsToBuild.Broadcast();
-}
-
-
-void UBeamEditor::UpdateSignedInUserData(const FBeamOperationHandle Op, const FBeamCid Cid, const FString AccessToken, const FString RefreshToken, const int64 ExpiresIn)
-{
-	const FBeamPid Pid{};
-	UserSlots->SetAuthenticationDataAtSlot(GetMainEditorSlot(), AccessToken, RefreshToken, FDateTime::UtcNow().ToUnixTimestamp(), ExpiresIn, Cid, Pid, this);
-
-	const auto RealmsApi = GEngine->GetEngineSubsystem<UBeamRealmsApi>();
-	const auto Req = UGetGamesRequest::Make(GetTransientPackage(), {});
-	const auto Handler = FOnGetGamesFullResponse::CreateUObject(this, &UBeamEditor::UpdateSignedInUserData_OnGetRealms, Op, Cid);
-
-	FBeamRequestContext Ctx;
-	RealmsApi->CPP_GetGames(GetMainEditorSlot(), Req, Handler, Ctx, Op, this);
-}
-
-void UBeamEditor::UpdateSignedInUserData_OnGetRealms(const FGetGamesFullResponse Resp, const FBeamOperationHandle Op, const FBeamCid Cid)
-{
-	if (Resp.State == RS_Retrying) return;
-
-	if (Resp.State == RS_Error)
-	{
-		FString Error;
-		FJsonObjectConverter::UStructToJsonObjectString(Resp.ErrorData, Error);
-		RequestTracker->TriggerOperationError(Op, Error, Resp.Context.RequestId);
-		return;
-	}
-
-	if (Resp.State == RS_Success)
-	{
-		const auto Games = Resp.SuccessData->Projects;
-		// If we only have 1 project (Root PID) associated with this customer, we sign in automatically.				
-		if (Games.Num() > 0)
-		{
-			// We change the editor developer realm automatically to the 2nd child PID (by default, this will be the default realm). 
-			const auto Pid = Games[0]->Pid;
-			SetActiveTargetRealmUnsafe(FBeamRealmHandle{Cid, Pid});
-
-			UserSlots->SetPIDAtSlot(GetMainEditorSlot(), Pid, nullptr);
-
-			// Now, we need to get the admin me data so we can know all the projects/realms associated with this CID
-			const auto AccountApi = GEngine->GetEngineSubsystem<UBeamAccountsApi>();
-			const auto Req = UGetAdminMeRequest::Make(GetTransientPackage(), {});
-			const auto Handler = FOnGetAdminMeFullResponse::CreateUObject(this, &UBeamEditor::UpdateSignedInUserData_OnGetAdminMe, Op);
-
-			FBeamRequestContext Ctx;
-			AccountApi->CPP_GetAdminMe(GetMainEditorSlot(), Req, Handler, Ctx, Op, this);
-		}
-		return;
-	}
-
-	RequestTracker->TriggerOperationCancelled(Op, TEXT(""), Resp.Context.RequestId);
-}
-
-void UBeamEditor::UpdateSignedInUserData_OnGetAdminMe(const FBeamFullResponse<UGetAdminMeRequest*, UAccountPortalView*> Resp, const FBeamOperationHandle Op)
-{
-	if (Resp.State == RS_Retrying) return;
-
-	if (Resp.State == RS_Error)
-	{
-		FString Error;
-		FJsonObjectConverter::UStructToJsonObjectString(Resp.ErrorData, Error);
-		RequestTracker->TriggerOperationError(Op, Error, Resp.Context.RequestId);
-		return;
-	}
-
-	if (Resp.State == RS_Success)
-	{
-		const auto AccountId = Resp.SuccessData->Id;
-		bool HadEmail = false;
-		const auto Email = UOptionalStringLibrary::GetOptionalValue(Resp.SuccessData->Email, TEXT(""), HadEmail);
-		bool HadExternalIds = false;
-		const auto ExternalIds = UOptionalArrayOfBeamExternalIdentityLibrary::GetOptionalValue(Resp.SuccessData->External, {}, HadExternalIds);
-
-		const auto Slot = GetMainEditorSlot();
-		UserSlots->SetEmailAtSlot(Slot, Email, this);
-		UserSlots->SetAccountIdAtSlot(Slot, AccountId, this);
-		UserSlots->SetExternalIdsAtSlot(Slot, ExternalIds, this);
-
-		UserSlots->SaveSlot(Slot, this);
-
-		// Set up a handler for the UserSlot Authentication callback --- pass in the operation handle here so that we can treat this callback as part of the operation. 
-		UserSlotAuthenticatedHandler = UserSlots->GlobalUserSlotAuthenticatedCodeHandler.AddUFunction(this, GET_FUNCTION_NAME_CHECKED(UBeamEditor, UpdateSignedInUserData_OnUserSlotAuthenticated));
-
-		// Triggers the authentication callbacks.
-		UserSlots->TriggerUserAuthenticatedIntoSlot(Slot, Op, this);
-		return;
-	}
-
-	RequestTracker->TriggerOperationCancelled(Op, TEXT(""), Resp.Context.RequestId);
-}
-
-void UBeamEditor::UpdateSignedInUserData_OnUserSlotAuthenticated(const FUserSlot& UserSlot, const FBeamRealmUser& BeamRealmUser, const FBeamOperationHandle& AuthOperationHandle,
-                                                                 const UObject* Context)
-{
-	// If we authenticated into a developer slot, let's gather the customer and project data for that user slot and store it.
-	const auto MainEditorSlot = GetMainEditorSlot();
-	if (UserSlot.Name.Equals(MainEditorSlot.Name))
-	{
-		const auto GetCustomerRequest = UGetCustomerRequest::Make(GetTransientPackage(), {});
-		const auto GetCustomerHandler = FOnGetCustomerFullResponse::CreateUObject(this, &UBeamEditor::UpdateSignedInUserData_OnFetchProjectDataForSlot, AuthOperationHandle);
-		FBeamRequestContext RequestContext;
-		GEngine->GetEngineSubsystem<UBeamRealmsApi>()->CPP_GetCustomer(MainEditorSlot, GetCustomerRequest, GetCustomerHandler, RequestContext, AuthOperationHandle);
-	}
-}
-
-void UBeamEditor::UpdateSignedInUserData_OnFetchProjectDataForSlot(FGetCustomerFullResponse Response, FBeamOperationHandle Op)
-{
-	FBeamRealmUser MainEditorUserData;
-	const auto UserSlot = GetMainEditorSlot(MainEditorUserData);
-	switch (Response.State)
-	{
-	case RS_Success:
-		{
-			// Update the ProjectData for this user slot
-			CacheProjectDataForUserSlot(UserSlot, Response.SuccessData);
-			// Change the target realm to this new one.
-			const auto Handler = FBeamOperationEventHandlerCode::CreateUFunction(this, GET_FUNCTION_NAME_CHECKED(UBeamEditor, UpdateSignedInUserData_OnRealmSelected), Op);
-			CPP_SelectRealmOperation(MainEditorUserData.RealmHandle, Handler);
-
-			break;
-		}
-	case RS_Error:
-		{
-			RequestTracker->TriggerOperationError(Op, TEXT(""));
-			SignOut();
-			break;
-		}
-	case RS_Cancelled: break;
-	case RS_Retrying: break;
-	default: ;
-	}
-}
-
-void UBeamEditor::UpdateSignedInUserData_OnRealmSelected(FBeamOperationEvent, FBeamOperationHandle SignInOperation) const
-{
-	// If we are the main editor developer, we now have everything we need to create the editor flows.
-	RequestTracker->TriggerOperationSuccess(SignInOperation, TEXT(""));
-
-	// Remove the handler we set up as to avoid complications.
-	UserSlots->GlobalUserSlotAuthenticatedCodeHandler.Remove(UserSlotAuthenticatedHandler);
 }

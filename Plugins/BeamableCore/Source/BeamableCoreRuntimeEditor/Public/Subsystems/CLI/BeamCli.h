@@ -3,13 +3,52 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "AutoGen/Optionals/OptionalBool.h"
 #include "Misc/MonitoredProcess.h"
-#include "Subsystems/BeamEditor.h"
+#include "RequestTracker/BeamOperation.h"
 #include "Subsystems/BeamEditorSubsystem.h"
 #include "BeamCli.generated.h"
 
 class UBeamCliServerServeCommand;
 class UBeamCliCommand;
+
+USTRUCT(BlueprintType)
+struct FBeamCliError : public FBeamJsonSerializableUStruct
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	FString Message = {};
+	UPROPERTY()
+	FString Invocation = {};
+	UPROPERTY()
+	int32 ExitCode = {};
+	UPROPERTY()
+	FString TypeName = {};
+	UPROPERTY()
+	FString FullTypeName = {};
+	UPROPERTY()
+	FString StackTrace = {};
+
+	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;
+	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override;
+	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override;
+};
+
+/**
+ * Class that we use whenever we want to expose a set of CLI errors that happen as part of a command invocation to Blueprint-land.
+ * See our "content publish" logic for a usage example.
+ */
+UCLASS(BlueprintType)
+class UBeamCliErrorData : public UObject, public IBeamOperationEventData
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(BlueprintReadWrite)
+	TArray<FBeamCliError> Errors;
+};
+
 /**
  * 
  */
@@ -27,6 +66,10 @@ protected:
 
 	UPROPERTY()
 	TArray<UBeamCliCommand*> RunningProcesses;
+
+	UPROPERTY()
+	TArray<UBeamCliCommand*> EnqueuedProcesses;
+
 	TUniquePtr<FMonitoredProcess> IsInstalledProcess;
 
 	/**
@@ -62,13 +105,19 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category="Beam", meta=(AutoCreateRefTerm="Params"))
 	void RunCommandSync(UBeamCliCommand* Command, const TArray<FString>& Params);
-	
+
 
 	/**
 	 * @brief Stops a long-running command. 
 	 */
 	UFUNCTION(BlueprintCallable, Category="Beam")
 	void StopCommand(UBeamCliCommand* Command);
+
+	/**
+	 * @brief Stops all commands that are running and then stops the CLI server itself.
+	 */
+	UFUNCTION(BlueprintCallable, Category="Beam")
+	void StopCli();
 
 	/**
 	 * @brief Whether or not the CLI is installed on this machine. We check for all editor integrations that require the CLI to work. 

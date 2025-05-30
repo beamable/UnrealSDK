@@ -20,20 +20,20 @@ public:
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("service"), Service);
-		Serializer->WriteValue(TEXT("enabled"), Enabled);	
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("service"), Service, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("enabled"), Enabled, Serializer);	
 	}
 
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("service"), Service);
-		Serializer->WriteValue(TEXT("enabled"), Enabled);	
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("service"), Service, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("enabled"), Enabled, Serializer);	
 	}
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		Service = Bag->GetStringField(TEXT("service"));
-		Enabled = Bag->GetStringField(TEXT("enabled"));	
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("service")), Service);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("enabled")), Enabled);	
 	}
 };
 

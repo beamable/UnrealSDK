@@ -49,3 +49,8 @@ bool UBeamableEditorBlueprintLibrary::GetRunningPIEWorld(UWorld*& PIEWorld)
 	PIEWorld = nullptr;
 	return false;
 }
+
+void UBeamableEditorBlueprintLibrary::CopyToClipboard(FString Text)
+{
+	FPropertyEditorClipboard::ClipboardCopy(*Text);
+}

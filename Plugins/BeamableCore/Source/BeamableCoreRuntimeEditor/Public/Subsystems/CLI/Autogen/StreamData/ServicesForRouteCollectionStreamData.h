@@ -28,24 +28,24 @@ public:
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("knownToBeRunning"), KnownToBeRunning);
-		Serializer->WriteValue(TEXT("routingKey"), RoutingKey);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("knownToBeRunning"), KnownToBeRunning, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("routingKey"), RoutingKey, Serializer);
 		UBeamJsonUtils::SerializeArray<UServiceInstanceStreamData*>(TEXT("instances"), Instances, Serializer);
 		UBeamJsonUtils::SerializeArray<UFederationInstanceStreamData*>(TEXT("federations"), Federations, Serializer);	
 	}
 
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("knownToBeRunning"), KnownToBeRunning);
-		Serializer->WriteValue(TEXT("routingKey"), RoutingKey);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("knownToBeRunning"), KnownToBeRunning, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("routingKey"), RoutingKey, Serializer);
 		UBeamJsonUtils::SerializeArray<UServiceInstanceStreamData*>(TEXT("instances"), Instances, Serializer);
 		UBeamJsonUtils::SerializeArray<UFederationInstanceStreamData*>(TEXT("federations"), Federations, Serializer);	
 	}
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		KnownToBeRunning = Bag->GetBoolField(TEXT("knownToBeRunning"));
-		RoutingKey = Bag->GetStringField(TEXT("routingKey"));
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("knownToBeRunning")), KnownToBeRunning);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("routingKey")), RoutingKey);
 		UBeamJsonUtils::DeserializeArray<UServiceInstanceStreamData*>(Bag->GetArrayField(TEXT("instances")), Instances, OuterOwner);
 		UBeamJsonUtils::DeserializeArray<UFederationInstanceStreamData*>(Bag->GetArrayField(TEXT("federations")), Federations, OuterOwner);	
 	}

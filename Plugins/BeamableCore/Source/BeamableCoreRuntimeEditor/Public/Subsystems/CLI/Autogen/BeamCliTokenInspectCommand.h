@@ -42,53 +42,53 @@ public:
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("wasRefreshToken"), WasRefreshToken);
-		Serializer->WriteValue(TEXT("accountId"), AccountId);
-		Serializer->WriteValue(TEXT("cid"), Cid);
-		Serializer->WriteValue(TEXT("created"), Created);
-		Serializer->WriteValue(TEXT("device"), Device);
-		Serializer->WriteValue(TEXT("expiresMs"), ExpiresMs);
-		Serializer->WriteValue(TEXT("gamerTag"), GamerTag);
-		Serializer->WriteValue(TEXT("pid"), Pid);
-		Serializer->WriteValue(TEXT("platform"), Platform);
-		Serializer->WriteValue(TEXT("revoked"), Revoked);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("wasRefreshToken"), WasRefreshToken, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("accountId"), AccountId, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("cid"), Cid, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("created"), Created, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("device"), Device, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("expiresMs"), ExpiresMs, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("gamerTag"), GamerTag, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("pid"), Pid, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("platform"), Platform, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("revoked"), Revoked, Serializer);
 		UBeamJsonUtils::SerializeArray<FString>(TEXT("scopes"), Scopes, Serializer);
-		Serializer->WriteValue(TEXT("token"), Token);
-		Serializer->WriteValue(TEXT("type"), Type);	
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("token"), Token, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("type"), Type, Serializer);	
 	}
 
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("wasRefreshToken"), WasRefreshToken);
-		Serializer->WriteValue(TEXT("accountId"), AccountId);
-		Serializer->WriteValue(TEXT("cid"), Cid);
-		Serializer->WriteValue(TEXT("created"), Created);
-		Serializer->WriteValue(TEXT("device"), Device);
-		Serializer->WriteValue(TEXT("expiresMs"), ExpiresMs);
-		Serializer->WriteValue(TEXT("gamerTag"), GamerTag);
-		Serializer->WriteValue(TEXT("pid"), Pid);
-		Serializer->WriteValue(TEXT("platform"), Platform);
-		Serializer->WriteValue(TEXT("revoked"), Revoked);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("wasRefreshToken"), WasRefreshToken, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("accountId"), AccountId, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("cid"), Cid, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("created"), Created, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("device"), Device, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("expiresMs"), ExpiresMs, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("gamerTag"), GamerTag, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("pid"), Pid, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("platform"), Platform, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("revoked"), Revoked, Serializer);
 		UBeamJsonUtils::SerializeArray<FString>(TEXT("scopes"), Scopes, Serializer);
-		Serializer->WriteValue(TEXT("token"), Token);
-		Serializer->WriteValue(TEXT("type"), Type);	
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("token"), Token, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("type"), Type, Serializer);	
 	}
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		WasRefreshToken = Bag->GetBoolField(TEXT("wasRefreshToken"));
-		FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("accountId")), AccountId);
-		FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("cid")), Cid);
-		FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("created")), Created);
-		Device = Bag->GetStringField(TEXT("device"));
-		FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("expiresMs")), ExpiresMs);
-		FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("gamerTag")), GamerTag);
-		Pid = Bag->GetStringField(TEXT("pid"));
-		Platform = Bag->GetStringField(TEXT("platform"));
-		Revoked = Bag->GetBoolField(TEXT("revoked"));
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("wasRefreshToken")), WasRefreshToken);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("accountId")), AccountId);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("cid")), Cid);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("created")), Created);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("device")), Device);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("expiresMs")), ExpiresMs);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("gamerTag")), GamerTag);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("pid")), Pid);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("platform")), Platform);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("revoked")), Revoked);
 		UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("scopes")), Scopes, OuterOwner);
-		Token = Bag->GetStringField(TEXT("token"));
-		Type = Bag->GetStringField(TEXT("type"));	
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("token")), Token);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("type")), Type);	
 	}
 };
 
@@ -117,35 +117,35 @@ public:
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("refreshToken"), RefreshToken);
-		Serializer->WriteValue(TEXT("message"), Message);
-		Serializer->WriteValue(TEXT("invocation"), Invocation);
-		Serializer->WriteValue(TEXT("exitCode"), ExitCode);
-		Serializer->WriteValue(TEXT("typeName"), TypeName);
-		Serializer->WriteValue(TEXT("fullTypeName"), FullTypeName);
-		Serializer->WriteValue(TEXT("stackTrace"), StackTrace);	
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("refreshToken"), RefreshToken, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("message"), Message, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("invocation"), Invocation, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("exitCode"), ExitCode, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("typeName"), TypeName, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("fullTypeName"), FullTypeName, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("stackTrace"), StackTrace, Serializer);	
 	}
 
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("refreshToken"), RefreshToken);
-		Serializer->WriteValue(TEXT("message"), Message);
-		Serializer->WriteValue(TEXT("invocation"), Invocation);
-		Serializer->WriteValue(TEXT("exitCode"), ExitCode);
-		Serializer->WriteValue(TEXT("typeName"), TypeName);
-		Serializer->WriteValue(TEXT("fullTypeName"), FullTypeName);
-		Serializer->WriteValue(TEXT("stackTrace"), StackTrace);	
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("refreshToken"), RefreshToken, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("message"), Message, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("invocation"), Invocation, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("exitCode"), ExitCode, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("typeName"), TypeName, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("fullTypeName"), FullTypeName, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("stackTrace"), StackTrace, Serializer);	
 	}
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		RefreshToken = Bag->GetStringField(TEXT("refreshToken"));
-		Message = Bag->GetStringField(TEXT("message"));
-		Invocation = Bag->GetStringField(TEXT("invocation"));
-		ExitCode = Bag->GetIntegerField(TEXT("exitCode"));
-		TypeName = Bag->GetStringField(TEXT("typeName"));
-		FullTypeName = Bag->GetStringField(TEXT("fullTypeName"));
-		StackTrace = Bag->GetStringField(TEXT("stackTrace"));	
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("refreshToken")), RefreshToken);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("message")), Message);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("invocation")), Invocation);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("exitCode")), ExitCode);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("typeName")), TypeName);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("fullTypeName")), FullTypeName);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("stackTrace")), StackTrace);	
 	}
 };
 
@@ -194,12 +194,12 @@ public:
 	inline static FString StreamType = FString(TEXT("stream"));
 	UPROPERTY() TArray<UBeamCliTokenInspectStreamData*> Stream;
 	UPROPERTY() TArray<int64> Timestamps;
-	TFunction<void (const TArray<UBeamCliTokenInspectStreamData*>& StreamData, const TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnStreamOutput;
+	TFunction<void (TArray<UBeamCliTokenInspectStreamData*>& StreamData, TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnStreamOutput;
 
 	inline static FString StreamTypeErrorInvalidTokenErrorOutput = FString(TEXT("errorInvalidTokenErrorOutput"));
 	UPROPERTY() TArray<UBeamCliTokenInspectErrorInvalidTokenErrorOutputStreamData*> ErrorInvalidTokenErrorOutputStream;
 	UPROPERTY() TArray<int64> ErrorInvalidTokenErrorOutputTimestamps;
-	TFunction<void (const TArray<UBeamCliTokenInspectErrorInvalidTokenErrorOutputStreamData*>& StreamData, const TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnErrorInvalidTokenErrorOutputStreamOutput;	
+	TFunction<void (TArray<UBeamCliTokenInspectErrorInvalidTokenErrorOutputStreamData*>& StreamData, TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnErrorInvalidTokenErrorOutputStreamOutput;	
 
 	TFunction<void (const int& ResCode, const FBeamOperationHandle& Op)> OnCompleted;
 	virtual bool HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer) override;

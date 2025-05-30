@@ -22,23 +22,23 @@ public:
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("host"), Host);
-		Serializer->WriteValue(TEXT("cid"), Cid);
-		Serializer->WriteValue(TEXT("pid"), Pid);	
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("host"), Host, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("cid"), Cid, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("pid"), Pid, Serializer);	
 	}
 
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("host"), Host);
-		Serializer->WriteValue(TEXT("cid"), Cid);
-		Serializer->WriteValue(TEXT("pid"), Pid);	
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("host"), Host, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("cid"), Cid, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("pid"), Pid, Serializer);	
 	}
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		Host = Bag->GetStringField(TEXT("host"));
-		Cid = Bag->GetStringField(TEXT("cid"));
-		Pid = Bag->GetStringField(TEXT("pid"));	
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("host")), Host);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("cid")), Cid);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("pid")), Pid);	
 	}
 };
 
@@ -62,7 +62,7 @@ Options:
   --paths-to-ignore <paths-to-ignore>    Paths to ignore when searching for services []
   --save-to-environment                  Save login refresh token to environment variable
   --no-token-save                        Prevent auth tokens from being saved to disk. This replaces the legacy --save-to-file option [default: False]
-  --customer-scoped                      Make request customer scoped instead of product only
+  --realm-scoped                         Makes the resulting access/refresh token pair be realm scoped instead of the default customer scoped one
   --print-to-console                     Prints out login request response to console
   --dryrun                               [DEPRECATED] Run as much of the command as possible without making any network calls
   --cid <cid>                            CID (CustomerId) to use (found in Portal->Account); defaults to whatever is in '.beamable/connection-configuration.json'
@@ -99,7 +99,7 @@ public:
 	inline static FString StreamType = FString(TEXT("stream"));
 	UPROPERTY() TArray<UBeamCliInitStreamData*> Stream;
 	UPROPERTY() TArray<int64> Timestamps;
-	TFunction<void (const TArray<UBeamCliInitStreamData*>& StreamData, const TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnStreamOutput;	
+	TFunction<void (TArray<UBeamCliInitStreamData*>& StreamData, TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnStreamOutput;	
 
 	TFunction<void (const int& ResCode, const FBeamOperationHandle& Op)> OnCompleted;
 	virtual bool HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer) override;

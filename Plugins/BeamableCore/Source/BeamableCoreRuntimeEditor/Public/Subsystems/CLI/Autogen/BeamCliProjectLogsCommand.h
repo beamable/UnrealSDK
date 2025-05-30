@@ -24,26 +24,26 @@ public:
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("raw"), Raw);
-		Serializer->WriteValue(TEXT("logLevel"), LogLevel);
-		Serializer->WriteValue(TEXT("message"), Message);
-		Serializer->WriteValue(TEXT("timeStamp"), TimeStamp);	
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("raw"), Raw, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("logLevel"), LogLevel, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("message"), Message, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("timeStamp"), TimeStamp, Serializer);	
 	}
 
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("raw"), Raw);
-		Serializer->WriteValue(TEXT("logLevel"), LogLevel);
-		Serializer->WriteValue(TEXT("message"), Message);
-		Serializer->WriteValue(TEXT("timeStamp"), TimeStamp);	
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("raw"), Raw, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("logLevel"), LogLevel, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("message"), Message, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("timeStamp"), TimeStamp, Serializer);	
 	}
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		Raw = Bag->GetStringField(TEXT("raw"));
-		LogLevel = Bag->GetStringField(TEXT("logLevel"));
-		Message = Bag->GetStringField(TEXT("message"));
-		TimeStamp = Bag->GetStringField(TEXT("timeStamp"));	
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("raw")), Raw);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("logLevel")), LogLevel);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("message")), Message);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("timeStamp")), TimeStamp);	
 	}
 };
 
@@ -95,7 +95,7 @@ public:
 	inline static FString StreamType = FString(TEXT("stream"));
 	UPROPERTY() TArray<UBeamCliProjectLogsStreamData*> Stream;
 	UPROPERTY() TArray<int64> Timestamps;
-	TFunction<void (const TArray<UBeamCliProjectLogsStreamData*>& StreamData, const TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnStreamOutput;	
+	TFunction<void (TArray<UBeamCliProjectLogsStreamData*>& StreamData, TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnStreamOutput;	
 
 	TFunction<void (const int& ResCode, const FBeamOperationHandle& Op)> OnCompleted;
 	virtual bool HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer) override;

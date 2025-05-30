@@ -28,32 +28,32 @@ public:
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("port"), Port);
-		Serializer->WriteValue(TEXT("pid"), Pid);
-		Serializer->WriteValue(TEXT("inflightRequests"), InflightRequests);
-		Serializer->WriteValue(TEXT("url"), Url);
-		Serializer->WriteValue(TEXT("owner"), Owner);
-		Serializer->WriteValue(TEXT("version"), Version);	
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("port"), Port, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("pid"), Pid, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("inflightRequests"), InflightRequests, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("url"), Url, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("owner"), Owner, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("version"), Version, Serializer);	
 	}
 
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("port"), Port);
-		Serializer->WriteValue(TEXT("pid"), Pid);
-		Serializer->WriteValue(TEXT("inflightRequests"), InflightRequests);
-		Serializer->WriteValue(TEXT("url"), Url);
-		Serializer->WriteValue(TEXT("owner"), Owner);
-		Serializer->WriteValue(TEXT("version"), Version);	
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("port"), Port, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("pid"), Pid, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("inflightRequests"), InflightRequests, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("url"), Url, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("owner"), Owner, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("version"), Version, Serializer);	
 	}
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		Port = Bag->GetIntegerField(TEXT("port"));
-		Pid = Bag->GetIntegerField(TEXT("pid"));
-		FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("inflightRequests")), InflightRequests);
-		Url = Bag->GetStringField(TEXT("url"));
-		Owner = Bag->GetStringField(TEXT("owner"));
-		Version = Bag->GetStringField(TEXT("version"));	
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("port")), Port);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("pid")), Pid);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("inflightRequests")), InflightRequests);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("url")), Url);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("owner")), Owner);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("version")), Version);	
 	}
 };
 
