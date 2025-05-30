@@ -92,19 +92,19 @@ namespace Beamable.SuiFederation
 #endif
 		}
 
-		async Promise<FederatedAuthenticationResponse> IFederatedLogin<SuiWeb3Identity>.Authenticate(string token, string challenge, string solution)
+		public async Promise<FederatedAuthenticationResponse> Authenticate(string token, string challenge, string solution)
 		{
 			return await Provider.GetService<AuthenticateEndpoint>()
 				.Authenticate(token, challenge, solution);
 		}
 
-		async Promise<FederatedInventoryProxyState> IFederatedInventory<SuiWeb3Identity>.GetInventoryState(string id)
+		public async Promise<FederatedInventoryProxyState> GetInventoryState(string id)
 		{
 			return await Provider.GetService<GetInventoryStateEndpoint>()
 				.GetInventoryState(id);
 		}
 
-		async Promise<FederatedInventoryProxyState> IFederatedInventory<SuiWeb3Identity>.StartInventoryTransaction(string id, string transaction, Dictionary<string, long> currencies, List<FederatedItemCreateRequest> newItems, List<FederatedItemDeleteRequest> deleteItems,
+		public async Promise<FederatedInventoryProxyState> StartInventoryTransaction(string id, string transaction, Dictionary<string, long> currencies, List<FederatedItemCreateRequest> newItems, List<FederatedItemDeleteRequest> deleteItems,
 			List<FederatedItemUpdateRequest> updateItems)
 		{
 			return await Provider.GetService<StartInventoryTransactionEndpoint>()

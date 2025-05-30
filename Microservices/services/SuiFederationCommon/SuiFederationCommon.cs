@@ -9,12 +9,6 @@ namespace SuiFederationCommon
     public class SuiWeb3Identity : IFederationId {}
 
     /// <summary>
-    /// SuiWeb3Identity definition
-    /// </summary>
-    [FederationId(SuiFederationSettings.SuiExternalIdentityName)]
-    public class SuiWeb3ExternalIdentity : IFederationId {}
-
-    /// <summary>
     /// WarpedFederationSettings class
     /// </summary>
     public static class SuiFederationSettings
@@ -27,10 +21,6 @@ namespace SuiFederationCommon
         /// SuiFederationIdentity name
         ///</Summary>
         public const string SuiIdentityName = "SuiIdentity";
-
-        /// SuiFederationIdentity name
-        ///</Summary>
-        public const string SuiExternalIdentityName = "SuiExternalIdentity";
     }
 
     /// <summary>

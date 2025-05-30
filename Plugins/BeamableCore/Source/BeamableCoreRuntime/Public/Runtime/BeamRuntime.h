@@ -827,6 +827,15 @@ public:
 	 */
 	FBeamOperationHandle CPP_LoginFrictionlessOperation(FUserSlot UserSlot, FBeamOperationEventHandlerCode OnOperationEvent);
 
+	/**
+	* @brief An operation that will try to login from a cached user, if there's a cached user with a expired token it will refresh the token.
+	 */
+	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Auth", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
+	FBeamOperationHandle LoginFromCacheOperation(FUserSlot UserSlot, FBeamOperationEventHandler OnOperationEvent);
+	/**
+	 * @brief An operation that will try to login from a cached user, if there's a cached user with a expired token it will refresh the token.
+	 */
+	FBeamOperationHandle CPP_LoginFromCacheOperation(FUserSlot UserSlot, FBeamOperationEventHandlerCode OnOperationEvent);
 
 	/**
 	 * @brief An operation that will authenticate a user with the beamable using a Federated Identity and persist that authentication locally.
@@ -841,18 +850,32 @@ public:
 	FBeamOperationHandle CPP_LoginExternalIdentityOperation(FUserSlot UserSlot, FString ExternalService, FString ExternalNamespace, FString ExternalToken,
 	                                                        FBeamOperationEventHandlerCode OnOperationEvent);
 
-
+	/**
+	 * @brief That operation will get the challenge from the login federation and return it as a UChallengeSolutionObject in the return data.
+	 */
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Auth", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
 	FBeamOperationHandle BeginLoginExternalIdentityTwoFactorOperation(FUserSlot UserSlot, FString ExternalService, FString ExternalNamespace, FString ExternalToken, FBeamOperationEventHandler OnOperationEvent);
 
+	/**
+	 * @brief That operation will get the challenge from the login federation and return it as a UChallengeSolutionObject in the return data.
+	 */
 	FBeamOperationHandle CPP_BeginLoginExternalIdentityTwoFactorOperation(FUserSlot UserSlot, FString ExternalService, FString ExternalNamespace, FString ExternalToken,
 	                                                                      FBeamOperationEventHandlerCode OnOperationEvent);
 
+	/**
+	 * @brief An operation that will authenticate a user with the beamable using a Federated Identity and persist that authentication locally.
+	 * If a user is already in the given slot, this operation will sign out entirely before signing in.
+	 * It is for two factor authentication so it's expected to pass the Challenge and The solution on call it
+	 */
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Auth", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
 	FBeamOperationHandle CommitLoginExternalIdentityTwoFactorOperation(FUserSlot UserSlot, FString ExternalService, FString ExternalNamespace, FString ExternalToken, UChallengeSolutionObject* ChallengeSolution,
 	                                                                   FBeamOperationEventHandler OnOperationEvent);
 
-
+	/**
+	 * @brief An operation that will authenticate a user with the beamable using a Federated Identity and persist that authentication locally.
+	 * If a user is already in the given slot, this operation will sign out entirely before signing in.
+	 * It is for two factor authentication so it's expected to pass the Challenge and The solution on call it
+	 */
 	FBeamOperationHandle CPP_CommitLoginExternalIdentityTwoFactorOperation(FUserSlot UserSlot, FString ExternalService, FString ExternalNamespace, UChallengeSolutionObject* ChallengeSolution, FString ExternalToken,
 	                                                                       FBeamOperationEventHandlerCode OnOperationEvent);
 
@@ -978,6 +1001,7 @@ private:
 
 	// BP/CPP Independent Operation Implementations	
 	void LoginFrictionless(FUserSlot UserSlot, FBeamOperationHandle Op);
+	void LoginFromCache(FUserSlot UserSlot, FBeamOperationHandle Op);
 	void LoginExternalIdentity(FUserSlot UserSlot, FString ExternalService, FString ExternalNamespace, FString ExternalToken, FBeamOperationHandle Op);
 	void BeginLoginExternalIdentityTwoFactor(FUserSlot UserSlot, FString ExternalService, FString ExternalNamespace, FString ExternalToken, FBeamOperationHandle Op);
 	void CommitLoginExternalIdentityTwoFactor(FUserSlot UserSlot, FString ExternalService, FString ExternalNamespace, FString ExternalToken, UChallengeSolutionObject* ChallengeSolution, FBeamOperationHandle Op);

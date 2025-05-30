@@ -9,6 +9,5 @@ public static class ServiceRegistration
         builder.AddScoped<AuthenticateEndpoint>();
         builder.AddScoped<StartInventoryTransactionEndpoint>();
         builder.AddScoped<GetInventoryStateEndpoint>();
-        builder.AddScoped<AuthenticateExternalEndpoint>();
     }
 }

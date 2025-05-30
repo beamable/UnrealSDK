@@ -1303,6 +1303,20 @@ FBeamOperationHandle UBeamRuntime::CPP_LoginFrictionlessOperation(FUserSlot User
 	return Handle;
 }
 
+FBeamOperationHandle UBeamRuntime::LoginFromCacheOperation(FUserSlot UserSlot, FBeamOperationEventHandler OnOperationEvent)
+{
+	const FBeamOperationHandle Handle = RequestTrackerSystem->BeginOperation({UserSlot}, GetClass()->GetFName().ToString(), OnOperationEvent);
+	LoginFromCache(UserSlot, Handle);
+	return Handle;
+}
+
+FBeamOperationHandle UBeamRuntime::CPP_LoginFromCacheOperation(FUserSlot UserSlot, FBeamOperationEventHandlerCode OnOperationEvent)
+{
+	const FBeamOperationHandle Handle = RequestTrackerSystem->CPP_BeginOperation({UserSlot}, GetClass()->GetFName().ToString(), OnOperationEvent);
+	LoginFromCache(UserSlot, Handle);
+	return Handle;
+}
+
 FBeamOperationHandle UBeamRuntime::LoginExternalIdentityOperation(FUserSlot UserSlot, FString ExternalService, FString ExternalNamespace, FString ExternalToken,
                                                                   FBeamOperationEventHandler OnOperationEvent)
 {
@@ -1327,7 +1341,7 @@ FBeamOperationHandle UBeamRuntime::BeginLoginExternalIdentityTwoFactorOperation(
 }
 
 FBeamOperationHandle UBeamRuntime::CPP_BeginLoginExternalIdentityTwoFactorOperation(FUserSlot UserSlot, FString ExternalService, FString ExternalNamespace, FString ExternalToken,
-                                                                                     FBeamOperationEventHandlerCode OnOperationEvent)
+                                                                                    FBeamOperationEventHandlerCode OnOperationEvent)
 {
 	const FBeamOperationHandle Handle = RequestTrackerSystem->CPP_BeginOperation({UserSlot}, GetClass()->GetFName().ToString(), OnOperationEvent);
 	BeginLoginExternalIdentityTwoFactor(UserSlot, ExternalService, ExternalNamespace, ExternalToken, Handle);
@@ -1508,6 +1522,25 @@ void UBeamRuntime::LoginFrictionless(FUserSlot UserSlot, FBeamOperationHandle Op
 	}));
 }
 
+void UBeamRuntime::LoginFromCache(FUserSlot UserSlot, FBeamOperationHandle Op)
+{
+	// Try to load the user at a specific slot and if it fails throws an exception.
+	LoadCachedUserAtSlot(UserSlot, Op, FSimpleDelegate::CreateLambda([this, UserSlot, Op]()
+	{
+		FBeamRealmUser RealmUser;
+
+		// If we are already authenticated (we had a saved user in this slot), we simply broadcast this message out
+		if (UserSlotSystem->GetUserDataAtSlot(UserSlot, RealmUser, this))
+		{
+			RequestTrackerSystem->TriggerOperationSuccess(Op, TEXT(""));
+		}
+		else
+		{
+			RequestTrackerSystem->TriggerOperationError(Op, TEXT("There's no cached user to do the login."));
+		}
+	}));
+}
+
 void UBeamRuntime::LoginExternalIdentity(FUserSlot UserSlot, FString ExternalService, FString ExternalNamespace, FString ExternalToken, FBeamOperationHandle Op)
 {
 	UAuthenticateRequest* Req = NewObject<UAuthenticateRequest>(GetTransientPackage());
@@ -1555,29 +1588,19 @@ void UBeamRuntime::BeginLoginExternalIdentityTwoFactor(FUserSlot UserSlot, FStri
 
 	const UBeamAuthApi* AuthSubsystem = GEngine->GetEngineSubsystem<UBeamAuthApi>();
 
-	// If we are already authenticated (we had a saved user in this slot), we sign out of the user at that slot, wait for all runtime systems to clean up the user and then sign back into the given user.
-	FBeamRealmUser RealmUser;
-	if (UserSlotSystem->GetUserDataAtSlot(UserSlot, RealmUser, this))
+	// Create a temporary handle to the authentication request, but the information comes back in the UBeamRuntime::OnGetBeginTwoFactorResponse
+	const auto EventCode = FBeamOperationEventHandlerCode::CreateLambda([this](FBeamOperationEvent Evt)
 	{
-		// Configure us to wait until the slot is fully unauthenticated and then sign in.
-		UserSlotClearedEnqueuedHandle = OnUserClearedCode.AddLambda([this, AuthSubsystem](FUserSlot UserSlot, FBeamOperationHandle OpHandle, UAuthenticateRequest* AuthReq)
-		{
-			const auto AuthenticateHandler = FOnAuthenticateFullResponse::CreateUObject(this, &UBeamRuntime::OnGetBeginTwoFactorResponse, UserSlot, OpHandle);
-			FBeamRequestContext RequestContext;
-			AuthSubsystem->CPP_Authenticate(AuthReq, AuthenticateHandler, RequestContext, OpHandle);
+	});
 
-			// Clean Up handle
-			OnUserClearedCode.Remove(UserSlotClearedEnqueuedHandle);
-			UserSlotClearedEnqueuedHandle = {};
-		}, Op, Req);
-		UserSlotSystem->ClearUserAtSlot(UserSlot, USCR_Manual, true, this);
-	}
-	else
-	{
-		const auto AuthenticateHandler = FOnAuthenticateFullResponse::CreateUObject(this, &UBeamRuntime::OnGetBeginTwoFactorResponse, UserSlot, Op);
-		FBeamRequestContext RequestContext;
-		AuthSubsystem->CPP_Authenticate(Req, AuthenticateHandler, RequestContext, Op);
-	}
+	const FBeamOperationHandle Handle = RequestTrackerSystem->CPP_BeginOperation({UserSlot}, GetClass()->GetFName().ToString(), EventCode);
+
+
+	// If we are already authenticated (we had a saved user in this slot), we sign out of the user at that slot, wait for all runtime systems to clean up the user and then sign back into the given user.
+
+	const auto AuthenticateHandler = FOnAuthenticateFullResponse::CreateUObject(this, &UBeamRuntime::OnGetBeginTwoFactorResponse, UserSlot, Op);
+	FBeamRequestContext RequestContext;
+	AuthSubsystem->CPP_Authenticate(Req, AuthenticateHandler, RequestContext, Handle);
 }
 
 void UBeamRuntime::CommitLoginExternalIdentityTwoFactor(FUserSlot UserSlot, FString ExternalService, FString ExternalNamespace, FString ExternalToken, UChallengeSolutionObject* ChallengeSolution, FBeamOperationHandle Op)
@@ -1592,11 +1615,20 @@ void UBeamRuntime::CommitLoginExternalIdentityTwoFactor(FUserSlot UserSlot, FStr
 
 	const UBeamAuthApi* AuthSubsystem = GEngine->GetEngineSubsystem<UBeamAuthApi>();
 
+	// Just using a temporary event code to handle changes in the UBeamRuntime::OnAuthenticated
+	const auto EventCode = FBeamOperationEventHandlerCode::CreateLambda([this](FBeamOperationEvent Evt)
+	{
+	});
+
+	const FBeamOperationHandle Handle = RequestTrackerSystem->CPP_BeginOperation({UserSlot}, GetClass()->GetFName().ToString(), EventCode);
+
+
 	// If we are already authenticated (we had a saved user in this slot), we sign out of the user at that slot, wait for all runtime systems to clean up the user and then sign back into the given user.
 	FBeamRealmUser RealmUser;
 	if (UserSlotSystem->GetUserDataAtSlot(UserSlot, RealmUser, this))
 	{
 		// Configure us to wait until the slot is fully unauthenticated and then sign in.
+		// Clean up the current user slot before try the final two factor authentication
 		UserSlotClearedEnqueuedHandle = OnUserClearedCode.AddLambda([this, AuthSubsystem](FUserSlot UserSlot, FBeamOperationHandle OpHandle, UAuthenticateRequest* AuthReq)
 		{
 			const auto AuthenticateHandler = FOnAuthenticateFullResponse::CreateUObject(this, &UBeamRuntime::OnAuthenticated, UserSlot, OpHandle, FDelayedOperation{});
@@ -1613,7 +1645,7 @@ void UBeamRuntime::CommitLoginExternalIdentityTwoFactor(FUserSlot UserSlot, FStr
 	{
 		const auto AuthenticateHandler = FOnAuthenticateFullResponse::CreateUObject(this, &UBeamRuntime::OnAuthenticated, UserSlot, Op, FDelayedOperation{});
 		FBeamRequestContext RequestContext;
-		AuthSubsystem->CPP_Authenticate(Req, AuthenticateHandler, RequestContext, Op);
+		AuthSubsystem->CPP_Authenticate(Req, AuthenticateHandler, RequestContext, Handle);
 	}
 }
 
@@ -2087,7 +2119,7 @@ void UBeamRuntime::OnAuthenticated(FAuthenticateFullResponse Resp, FUserSlot Use
 	}
 	else
 	{
-		UserSlotSystem->ClearUserAtSlot(UserSlot, USCR_FailedAuthentication, true, this);
+		// UserSlotSystem->ClearUserAtSlot(UserSlot, USCR_FailedAuthentication, true, this);
 		RequestTrackerSystem->TriggerOperationError(Op, Resp.ErrorData.message);
 	}
 }
