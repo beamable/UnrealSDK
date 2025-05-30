@@ -78,11 +78,14 @@ void UBeamMicroservicesEditor::OnReady()
 
 			// After we have the routing key for this user and machine, set up a long-running command to get updates from the CLI about the state of microservices running locally. 
 			const auto ListenForStandaloneRunningServicesCommand = NewObject<UBeamCliProjectPsCommand>(this);
-			ListenForStandaloneRunningServicesCommand->OnStreamOutput = [this](const TArray<UBeamCliProjectPsStreamData*>& Stream, const TArray<int64>& Array, const FBeamOperationHandle& Op)
+			ListenForStandaloneRunningServicesCommand->OnStreamOutput = [this](TArray<UBeamCliProjectPsStreamData*>& Stream, TArray<int64>& Ts, const FBeamOperationHandle& Op)
 			{
-				OnUpdateLocalStateReceived(Stream, Array, Op);
+				OnUpdateLocalStateReceived(Stream, Ts, Op);
+				Stream.Empty();
+				Ts.Empty();
 			};
-			Cli->RunCommand(ListenForStandaloneRunningServicesCommand, {TEXT("-w")}, {});
+			const auto ReqProcess = FString::Printf(TEXT("--require-process-id %d"), FPlatformProcess::GetCurrentProcessId());
+			Cli->RunCommand(ListenForStandaloneRunningServicesCommand, {TEXT("-w"), ReqProcess}, {});
 		};
 		Cli->RunCommandServer(GetRoutingKeyCommand, {}, {});
 	}

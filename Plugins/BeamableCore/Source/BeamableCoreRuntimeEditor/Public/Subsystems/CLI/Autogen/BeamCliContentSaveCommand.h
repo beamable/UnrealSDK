@@ -3,21 +3,22 @@
 #include "Subsystems/CLI/BeamCliCommand.h"
 #include "Serialization/BeamJsonUtils.h"
 
-#include "BeamCliContentBulkEditCommand.generated.h"
+#include "BeamCliContentSaveCommand.generated.h"
 
 
 
 /**
  Description:
-  Saves a serialized content properties JSON-blob into a manifest (expects the blob to be in Beamable's Serialization Format). This command is not meant for manual usage. It is meant for CI/CD content enforcing use-cases.Editing of content is to be made either via engine integrations OR via a JSON text-editor
+  Saves a serialized content properties JSON-blob into a manifest (expects the blob to be in Beamable's Serialization Format). This command is not meant for manual usage. It is meant for engine integrations and CI/CD content enforcing use-cases.Editing of content is to be made either via engine integrations OR via a JSON text-editor
 
 Usage:
-  Beamable.Tools content bulk-edit [options]
+  Beamable.Tools content save [options]
 
 Options:
   --manifest-ids <manifest-ids>              Inform a subset of ','-separated manifest ids for which to return data. By default, will return just the global manifest [default: global]
   --content-ids <content-ids>                An array of existing content ids []
-  --content-properties <content-properties>  An array, parallel to the --content-ids, that contain the escaped properties json for each content []
+  --content-properties <content-properties>  An array, parallel to the --content-ids, that contain the escaped properties json for each content
+  --force                                    When this is set, this will ignore your local state and save the properties directly to disk
   --dryrun                                   [DEPRECATED] Run as much of the command as possible without making any network calls
   --cid <cid>                                CID (CustomerId) to use (found in Portal->Account); defaults to whatever is in '.beamable/connection-configuration.json'
   --pid <pid>                                PID (Realm ID) to use (found in Portal -> Games -> Any Realm's details); defaults to whatever is in '.beamable/connection-configuration.json'
@@ -44,7 +45,7 @@ Options:
 
  */
 UCLASS()
-class UBeamCliContentBulkEditCommand : public UBeamCliCommand
+class UBeamCliContentSaveCommand : public UBeamCliCommand
 {
 	GENERATED_BODY()
 

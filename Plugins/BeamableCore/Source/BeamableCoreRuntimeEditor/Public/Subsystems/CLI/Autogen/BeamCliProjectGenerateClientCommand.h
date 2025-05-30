@@ -40,7 +40,7 @@ public:
 
 /**
  Description:
-  Generate a C# client file based on a built C# microservice dll directory
+  [INTERNAL] Obsolete command, please use generate-client-oapi that used the OpenAPI specifications to generate the C# client code. The generate-client command will Generate a C# client file based on a built C# microservice dll directory using refactor
 
 Usage:
   Beamable.Tools project generate-client <source> [options]
@@ -93,7 +93,7 @@ public:
 	inline static FString StreamType = FString(TEXT("stream"));
 	UPROPERTY() TArray<UBeamCliProjectGenerateClientStreamData*> Stream;
 	UPROPERTY() TArray<int64> Timestamps;
-	TFunction<void (const TArray<UBeamCliProjectGenerateClientStreamData*>& StreamData, const TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnStreamOutput;	
+	TFunction<void (TArray<UBeamCliProjectGenerateClientStreamData*>& StreamData, TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnStreamOutput;	
 
 	TFunction<void (const int& ResCode, const FBeamOperationHandle& Op)> OnCompleted;
 	virtual bool HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer) override;

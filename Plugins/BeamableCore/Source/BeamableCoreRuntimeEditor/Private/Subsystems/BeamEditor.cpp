@@ -168,10 +168,10 @@ void UBeamEditorBootstrapper::Run_DelayedInitialize()
 		const auto DeletedIconPath = TSoftObjectPtr<UTexture2D>(FSoftObjectPath(TEXT("/Script/Engine.Texture2D'/BeamableCore/Editor/Icons/IconStatus_Deleted.IconStatus_Deleted'")));
 		const auto ModifiedIconPath = TSoftObjectPtr<UTexture2D>(FSoftObjectPath(TEXT("/Script/Engine.Texture2D'/BeamableCore/Editor/Icons/IconStatus_Modified.IconStatus_Modified'")));
 		const auto UpToDateIconPath = TSoftObjectPtr<UTexture2D>(FSoftObjectPath(TEXT("/Script/Engine.Texture2D'/BeamableCore/Editor/Icons/IconStatus_NC.IconStatus_NC'")));
-		EditorSettings->LocalContentStatusIcons.Add(Beam_LocalContentCreated, CreatedIconPath);
-		EditorSettings->LocalContentStatusIcons.Add(Beam_LocalContentDeleted, DeletedIconPath);
-		EditorSettings->LocalContentStatusIcons.Add(Beam_LocalContentModified, ModifiedIconPath);
-		EditorSettings->LocalContentStatusIcons.Add(Beam_LocalContentUpToDate, UpToDateIconPath);
+		EditorSettings->LocalContentStatusIcons.Add(EBeamLocalContentStatus::Beam_LocalContentCreated, CreatedIconPath);
+		EditorSettings->LocalContentStatusIcons.Add(EBeamLocalContentStatus::Beam_LocalContentDeleted, DeletedIconPath);
+		EditorSettings->LocalContentStatusIcons.Add(EBeamLocalContentStatus::Beam_LocalContentModified, ModifiedIconPath);
+		EditorSettings->LocalContentStatusIcons.Add(EBeamLocalContentStatus::Beam_LocalContentUpToDate, UpToDateIconPath);
 		bEditorSettingsChanged = true;
 	}
 
@@ -278,9 +278,7 @@ bool UBeamEditor::TryGetMainEditorSlot(FUserSlot& Slot, FBeamRealmUser& UserData
 
 FUserSlot UBeamEditor::GetMainEditorSlot() const
 {
-	FBeamRealmUser UserData;
 	const auto MainSlot = GetDefault<UBeamCoreSettings>()->DeveloperUserSlots[MainEditorSlotIdx];
-	UserSlots->GetUserDataAtSlot(MainSlot, UserData, nullptr);
 	return MainSlot;
 }
 
@@ -291,9 +289,9 @@ bool UBeamEditor::GetActiveProjectAndRealmData(FBeamCustomerProjectData& Project
 	FBeamRealmUser MainEditorDeveloper;
 	if (TryGetMainEditorSlot(MainEditorSlot, MainEditorDeveloper))
 	{
-		for (const auto& R : ProjectData.AllRealms)
+		for (const auto& R : CurrentProjectData.AllRealms)
 		{
-			if (R.PID == MainEditorDeveloper.RealmHandle.Pid)
+			if (R.PID.AsString == MainEditorDeveloper.RealmHandle.Pid.AsString)
 			{
 				RealmData = R;
 				return true;
@@ -408,6 +406,10 @@ void UBeamEditor::SignIn(FString OrgName, FString Email, FString Password, const
 		return;
 	}
 
+	// Stop all running CLI Commands so we can re-start it
+	Cli->StopCli();
+
+	// Call init with the proper parameters
 	auto InitCommand = NewObject<UBeamCliInitCommand>();
 	InitCommand->OnStreamOutput = [this](const TArray<UBeamCliInitStreamData*>& Stream, const TArray<long long>&, const FBeamOperationHandle&)
 	{
@@ -430,7 +432,8 @@ void UBeamEditor::SignIn(FString OrgName, FString Email, FString Password, const
 		}
 	};
 
-	Cli->RunCommandServer(InitCommand, {TEXT("-q"), TEXT("--cid"), OrgName, TEXT("--username"), Email, TEXT("--password"), Password}, Op);
+	const auto Host = GEngine->GetEngineSubsystem<UBeamEnvironment>()->GetAPIUrl();
+	Cli->RunCommand(InitCommand, {TEXT("--host"), Host, TEXT("-q"), TEXT("--cid"), OrgName, TEXT("--username"), Email, TEXT("--password"), Password}, Op);
 }
 
 void UBeamEditor::SignInWithCliInfo(const FBeamOperationHandle Op)
@@ -439,7 +442,37 @@ void UBeamEditor::SignInWithCliInfo(const FBeamOperationHandle Op)
 	const auto Cli = GEditor->GetEditorSubsystem<UBeamCli>();
 	if (!Cli->IsInstalled())
 	{
-		RequestTracker->TriggerOperationError(Op, TEXT("Cli is not installed. Cannot sign into the Beamable Editor."));
+		FString ConfigJson;
+		FString PathToConfigJson = FPaths::ProjectDir() / TEXT(".beamable") / TEXT("connection-configuration.json");
+		if (FFileHelper::LoadFileToString(ConfigJson, *PathToConfigJson))
+		{
+			FJsonDataBag ConfigJsonBag;
+			if (ConfigJsonBag.FromJson(ConfigJson))
+			{
+				const auto Cid = ConfigJsonBag.GetString(TEXT("cid"));
+				const auto Pid = ConfigJsonBag.GetString(TEXT("pid"));
+
+				GetMutableDefault<UBeamCoreSettings>()->TargetRealm.Cid.AsString = Cid;
+				GetMutableDefault<UBeamCoreSettings>()->TargetRealm.Pid.AsString = Pid;
+			}
+			else
+			{
+				const auto Err = FString::Printf(
+					TEXT("%s"),
+					TEXT(
+						"We found `.beamable/connection-configuration.json` file in your `.beamable` folder, but we couldn't parse it as JSON. When you don't have a CLI installed, you must have this file in your version control system so we know which realm you are targeting during PIE."));
+				RequestTracker->TriggerOperationError(Op, Err);
+			}
+		}
+		else
+		{
+			const auto Err = FString::Printf(
+				TEXT("%s"),
+				TEXT(
+					"We did not find a `.beamable/connection-configuration.json` file in your `.beamable` folder. When you don't have a CLI installed, you must have this file in your version control system so we know which realm you are targeting during PIE."));
+			RequestTracker->TriggerOperationError(Op, TEXT("Cli is not installed. Cannot sign into the Beamable Editor."));
+		}
+
 		return;
 	}
 
@@ -465,7 +498,7 @@ void UBeamEditor::SignInWithCliInfo(const FBeamOperationHandle Op)
 				Realm.CID = R->Cid;
 				Realm.PID = R->Pid;
 				Realm.ParentPID = FOptionalBeamPid{R->ParentPid};
-				Realm.ProjectName = R->RealmName;
+				Realm.ProjectName = R->ProjectName;
 				Realm.RealmName = R->RealmName;
 				Realm.RealmSecret = R->RealmSecret;
 				Realm.bIsDev = R->IsDev;
@@ -476,10 +509,16 @@ void UBeamEditor::SignInWithCliInfo(const FBeamOperationHandle Op)
 			CurrentProjectData.AllRealms = RealmData;
 		}
 	};
-	RealmsCommand->OnCompleted = [this](const int& ResCode, const FBeamOperationHandle& CmdOp)
+	RealmsCommand->OnCompleted = [this, RealmsCommandOp](const int& ResCode, const FBeamOperationHandle&)
 	{
-		if (ResCode != 0) RequestTracker->TriggerOperationError(CmdOp, TEXT("Failed to get realms data. Signing out. Please, ensure you are an developer or admin user and sign in again."));
-		else RequestTracker->TriggerOperationSuccess(CmdOp, TEXT(""));
+		if (ResCode != 0)
+		{
+			RequestTracker->TriggerOperationError(RealmsCommandOp, TEXT("Failed to get realms data. Signing out. Please, ensure you are an developer or admin user and sign in again."));
+		}
+		else
+		{
+			RequestTracker->TriggerOperationSuccess(RealmsCommandOp, TEXT(""));
+		}
 	};
 	Cli->RunCommandServer(RealmsCommand, {}, RealmsCommandOp);
 
@@ -515,15 +554,15 @@ void UBeamEditor::SignInWithCliInfo(const FBeamOperationHandle Op)
 			UserSlots->SetExternalIdsAtSlot(EditorSlot, Identities, this);
 		}
 	};
-	MeCommand->OnCompleted = [this, Op](const int& ResCode, const FBeamOperationHandle& CmdOp)
+	MeCommand->OnCompleted = [this, MeCommandOp](const int& ResCode, const FBeamOperationHandle&)
 	{
 		if (ResCode != 0)
 		{
-			RequestTracker->TriggerOperationError(CmdOp, TEXT("Failed to get data from signed in user. Signing out. Please sign in again."));
+			RequestTracker->TriggerOperationError(MeCommandOp, TEXT("Failed to get data from signed in user. Signing out. Please sign in again."));
 		}
 		else
 		{
-			RequestTracker->TriggerOperationSuccess(CmdOp, TEXT(""));
+			RequestTracker->TriggerOperationSuccess(MeCommandOp, TEXT(""));
 		}
 	};
 	Cli->RunCommandServer(MeCommand, {}, MeCommandOp);
@@ -585,6 +624,10 @@ void UBeamEditor::SelectRealm_OnReadyForChange(FBeamWaitCompleteEvent, FBeamReal
 	{
 		if (ResCode == 0)
 		{
+			// After the realm change we stop the CLI Server again so it gets re-started with the correctly set new CID/PID.
+			const auto Cli = GEditor->GetEditorSubsystem<UBeamCli>();
+			Cli->StopCli();
+
 			// Make the Main Editor Slot and the editor itself point at the new realm	
 			FBeamRealmUser UserData;
 			const auto MainEditorSlot = GetMainEditorSlot(UserData);
@@ -654,7 +697,7 @@ void UBeamEditor::SelectRealm_OnSystemsReady(FBeamWaitCompleteEvent, FBeamRealmH
 	Message->MessageType = EMessageType::VE_Info;
 	Message->MessageValue = TEXT("Realm Changed!");
 	SetBeamableWindowMessage(Message);
-	
+
 	const auto Subsystems = GEditor->GetEditorSubsystemArrayCopy<UBeamEditorSubsystem>();
 	for (auto& Subsystem : Subsystems)
 	{

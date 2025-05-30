@@ -143,7 +143,7 @@ void UBeamContentObject::BuildPropertiesJsonObject(FJsonDomBuilder::FObject& Pro
 	// First, we sort the fields by name
 	TArray<FProperty*> SortedProps;
 	for (TFieldIterator<FProperty> It(SelfClass); It; ++It)
-	{
+	{		
 		SortedProps.Add(*It);
 	}
 	SortedProps.StableSort([](FProperty& A, FProperty& B) { return A.GetName() < B.GetName(); });

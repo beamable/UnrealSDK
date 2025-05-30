@@ -290,7 +290,7 @@ public:
 	bool TryGetMainEditorSlot(FUserSlot& Slot, FBeamRealmUser& UserData);
 
 	/**
-	 * @brief Gets the current authenticated MainEditorUser slot.
+	 * @brief Gets the MainEditorUser slot.
 	 */
 	FUserSlot GetMainEditorSlot() const;
 
@@ -357,6 +357,10 @@ private:
 	 * @brief Signs in as a part of the given operation. 
 	 */
 	void SignIn(FString OrgName, FString Email, FString Password, FBeamOperationHandle Op);
+
+	/**
+	 * @brief Signs automatically using the current CLI info. 
+	 */
 	void SignInWithCliInfo(FBeamOperationHandle Op);
 
 	/**

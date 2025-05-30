@@ -89,24 +89,7 @@ FBeamOperationHandle UBeamCli::InitializeWhenEditorReady()
 			if (ResCode == 0)
 			{
 				bInstalled = FOptionalBool{true};
-
-				// Run the command server to get the current target cid/pid and set it in TargetRealm.
-				const auto ConfigCmd = NewObject<UBeamCliConfigCommand>();
-				ConfigCmd->OnStreamOutput = [this](const TArray<UBeamCliConfigStreamData*>& Stream, const TArray<int64>&, const FBeamOperationHandle& CfgOp)
-				{
-					if (Stream.Num() > 0)
-					{
-						const auto Cfg = Stream[0];
-						GetMutableDefault<UBeamCoreSettings>()->TargetRealm.Cid.AsString = Cfg->Cid;
-						GetMutableDefault<UBeamCoreSettings>()->TargetRealm.Pid.AsString = Cfg->Pid;
-						RequestTracker->TriggerOperationSuccess(CfgOp, "");
-					}
-					else
-					{
-						RequestTracker->TriggerOperationError(CfgOp, TEXT("An error occurred when running the `beam config` command for us to know which realm we are targeting."));
-					}
-				};
-				RunCommandServer(ConfigCmd, {}, Op);
+				RequestTracker->TriggerOperationSuccess(Op, "");
 			}
 			else
 			{
@@ -129,26 +112,6 @@ FBeamOperationHandle UBeamCli::InitializeWhenEditorReady()
 	{
 		const auto NoCliErr = FString::Printf(TEXT("Beam CLI not found. Please make sure you have an installed Beamable CLI (Version: %s) if you want to use any editor features."), *DotnetTools);
 		RequestTracker->TriggerOperationSuccess(Op, NoCliErr);
-
-		FString ConfigJson;
-		FString PathToConfigJson = FPaths::ProjectDir() / TEXT(".beamable") / TEXT("connection-configuration.json");
-		if (FFileHelper::LoadFileToString(ConfigJson, *PathToConfigJson))
-		{
-			FJsonDataBag ConfigJsonBag;
-			if (ConfigJsonBag.FromJson(ConfigJson))
-			{
-				const auto Cid = ConfigJsonBag.GetString(TEXT("cid"));
-				const auto Pid = ConfigJsonBag.GetString(TEXT("pid"));
-
-				GetMutableDefault<UBeamCoreSettings>()->TargetRealm.Cid.AsString = Cid;
-				GetMutableDefault<UBeamCoreSettings>()->TargetRealm.Pid.AsString = Pid;
-			}
-			else
-			{
-				const auto Err = FString::Printf(TEXT("%s%s"), *NoCliErr, TEXT("We also did not find a `.beamable/connection-configuration.json` file in your `.beamable` folder."));
-				RequestTracker->TriggerOperationError(Op, Err);
-			}
-		}
 	}
 
 	return Op;
@@ -184,7 +147,7 @@ void UBeamCli::StartCliServer(FBeamOperationHandle Op)
 
 		// Complete the given operation
 		if (RequestTracker->ActiveOperations.Contains(Op) && RequestTracker->ActiveOperationState[Op]->Status == 0)
-			RequestTracker->TriggerOperationSuccess(Op, CurrentCliServerUri);
+			RequestTracker->TriggerOperationSuccess(Op, Stream[0]->Uri);
 
 		UE_LOG(LogBeamCli, Display, TEXT("SERVER CLI STARTED. PORT=%d, URI=%s"), Stream[0]->Port, *Stream[0]->Uri)
 	};
@@ -195,7 +158,12 @@ void UBeamCli::StartCliServer(FBeamOperationHandle Op)
 		UE_LOG(LogBeamCli, Display, TEXT("On SERVER CLI TERMINATED %d"), ResCode)
 	};
 
-	RunCommand(ServerCmd, {TEXT("-d 300")}, {});
+	TArray<FString> Params;
+	Params.Append({TEXT("--require-process-id"), FString::Printf(TEXT("%u"), FPlatformProcess::GetCurrentProcessId())});
+	Params.Append({TEXT("-d"), TEXT("0")});
+	Params.Append({TEXT("-cs")});
+
+	RunCommand(ServerCmd, Params, {});
 }
 
 void UBeamCli::StopCli()
@@ -235,19 +203,30 @@ void UBeamCli::RunCommandServer(UBeamCliCommand* Command, const TArray<FString>&
 		return;
 	}
 
-	// First, we add the command to the list of running commands, so that we don't get it garbage collected in the case where we have to wait for the server to boot up.
-	RunningProcesses.Add(Command);
-
 	// If we don't have a server up and running, first start one.
 	if (CurrentCliServerUri.IsEmpty())
 	{
+		// Enqueue the Command 
+		EnqueuedProcesses.Add(Command);
+
+		// Set the URL to be "BEAM_WAITING_FOR_CLI_TO_START" so that future invocations of this don't start new instances of the CLIServer.
+		CurrentCliServerUri = TEXT("BEAM_WAITING_FOR_CLI_TO_START");
+
 		// Run the server command so we boot the server up --- when its up, run the intended command.
 		auto ServerStartHandler = FBeamOperationEventHandlerCode::CreateLambda([this, Command, Params, Op](FBeamOperationEvent Evt)
 		{
 			if (Evt.EventType == OET_SUCCESS)
 			{
-				UE_LOG(LogBeamCli, Display, TEXT("Now executing command. CMD=%s"), *Command->GetClass()->GetName());
-				Command->RunServer(CurrentCliServerUri, Params, Op);
+				CurrentCliServerUri = Evt.EventCode;
+
+				// Run and clear all enqueued processes
+				for (UBeamCliCommand* EnqueuedProcess : EnqueuedProcesses)
+				{
+					UE_LOG(LogBeamCli, Display, TEXT("Now executing command. CMD=%s"), *Command->GetClass()->GetName());
+					EnqueuedProcess->RunServer(Evt.EventCode, Params, Op);
+					RunningProcesses.Add(EnqueuedProcess);
+				}
+				EnqueuedProcesses.Empty();
 			}
 			else
 			{
@@ -257,9 +236,14 @@ void UBeamCli::RunCommandServer(UBeamCliCommand* Command, const TArray<FString>&
 		const auto ServerStartOp = RequestTracker->CPP_BeginOperation({}, GetName(), ServerStartHandler);
 		StartCliServer(ServerStartOp);
 	}
+	else if (CurrentCliServerUri == TEXT("BEAM_WAITING_FOR_CLI_TO_START"))
+	{
+		EnqueuedProcesses.Add(Command);
+	}
 	// If we do... just run it.
 	else
 	{
+		RunningProcesses.Add(Command);
 		Command->RunServer(CurrentCliServerUri, Params, Op);
 	}
 }
@@ -279,6 +263,7 @@ void UBeamCli::StopCommand(UBeamCliCommand* Command)
 {
 	if (RunningProcesses.Remove(Command))
 	{
+		UE_LOG(LogBeamCli, Display, TEXT("Stopping running command. CMD=%s"), *Command->GetCommand())
 		Command->Stop();
 	}
 }

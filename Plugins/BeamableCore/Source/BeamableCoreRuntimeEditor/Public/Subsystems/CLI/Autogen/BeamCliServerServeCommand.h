@@ -52,6 +52,10 @@ Options:
   -p, --port <port>                                    The port the local server will bind to [default: 8342]
   -i, --auto-inc-port                                  When true, if the given --port is not available, it will be incremented until an available port is discovered [default: True]
   -d, --self-destruct-seconds <self-destruct-seconds>  The number of seconds the server will stay alive without receiving any traffic. A value of zero means there is no self destruct timer [default: 0]
+  --require-process-id <require-process-id>            Listens to the given process id. Terminates this long-running command when the it no longer is running
+  -cs, --custom-splitter                               When true, will use custom logic to split the command line given to the server via HTTP request.
+                                                       The default splitter (from Microsoft) does NOT allow you to pass in JSON blobs as arguments.
+                                                       The custom splitter does its best to support all our commands correctly and accept json blobs as arguments [default: False]
   --dryrun                                             [DEPRECATED] Run as much of the command as possible without making any network calls
   --cid <cid>                                          CID (CustomerId) to use (found in Portal->Account); defaults to whatever is in '.beamable/connection-configuration.json'
   --pid <pid>                                          PID (Realm ID) to use (found in Portal -> Games -> Any Realm's details); defaults to whatever is in '.beamable/connection-configuration.json'
@@ -87,7 +91,7 @@ public:
 	inline static FString StreamType = FString(TEXT("stream"));
 	UPROPERTY() TArray<UBeamCliServerServeStreamData*> Stream;
 	UPROPERTY() TArray<int64> Timestamps;
-	TFunction<void (const TArray<UBeamCliServerServeStreamData*>& StreamData, const TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnStreamOutput;	
+	TFunction<void (TArray<UBeamCliServerServeStreamData*>& StreamData, TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnStreamOutput;	
 
 	TFunction<void (const int& ResCode, const FBeamOperationHandle& Op)> OnCompleted;
 	virtual bool HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer) override;

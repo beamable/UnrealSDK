@@ -186,17 +186,17 @@ public:
 	inline static FString StreamType = FString(TEXT("stream"));
 	UPROPERTY() TArray<UBeamCliProjectRunStreamData*> Stream;
 	UPROPERTY() TArray<int64> Timestamps;
-	TFunction<void (const TArray<UBeamCliProjectRunStreamData*>& StreamData, const TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnStreamOutput;
+	TFunction<void (TArray<UBeamCliProjectRunStreamData*>& StreamData, TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnStreamOutput;
 
 	inline static FString StreamTypeBuildErrors = FString(TEXT("buildErrors"));
 	UPROPERTY() TArray<UBeamCliProjectRunBuildErrorsStreamData*> BuildErrorsStream;
 	UPROPERTY() TArray<int64> BuildErrorsTimestamps;
-	TFunction<void (const TArray<UBeamCliProjectRunBuildErrorsStreamData*>& StreamData, const TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnBuildErrorsStreamOutput;
+	TFunction<void (TArray<UBeamCliProjectRunBuildErrorsStreamData*>& StreamData, TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnBuildErrorsStreamOutput;
 
 	inline static FString StreamTypeErrorRunFailErrorOutput = FString(TEXT("errorRunFailErrorOutput"));
 	UPROPERTY() TArray<UBeamCliProjectRunErrorRunFailErrorOutputStreamData*> ErrorRunFailErrorOutputStream;
 	UPROPERTY() TArray<int64> ErrorRunFailErrorOutputTimestamps;
-	TFunction<void (const TArray<UBeamCliProjectRunErrorRunFailErrorOutputStreamData*>& StreamData, const TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnErrorRunFailErrorOutputStreamOutput;	
+	TFunction<void (TArray<UBeamCliProjectRunErrorRunFailErrorOutputStreamData*>& StreamData, TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnErrorRunFailErrorOutputStreamOutput;	
 
 	TFunction<void (const int& ResCode, const FBeamOperationHandle& Op)> OnCompleted;
 	virtual bool HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer) override;

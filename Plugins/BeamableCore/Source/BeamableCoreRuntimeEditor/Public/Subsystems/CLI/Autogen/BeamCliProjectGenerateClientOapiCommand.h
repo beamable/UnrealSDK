@@ -3,84 +3,45 @@
 #include "Subsystems/CLI/BeamCliCommand.h"
 #include "Serialization/BeamJsonUtils.h"
 
-#include "BeamCliServicesRunCommand.generated.h"
+#include "BeamCliProjectGenerateClientOapiCommand.generated.h"
 
 
 UCLASS(BlueprintType)
-class UBeamCliServicesRunStreamData : public UObject, public IBeamJsonSerializableUObject
+class UBeamCliProjectGenerateClientOapiStreamData : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:	
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool Success = {};
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FString FailureReason = {};
+	TArray<FString> OutputsPaths = {};
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
 	{
-		UBeamJsonUtils::SerializeRawPrimitive(TEXT("Success"), Success, Serializer);
-		UBeamJsonUtils::SerializeRawPrimitive(TEXT("FailureReason"), FailureReason, Serializer);	
+		UBeamJsonUtils::SerializeArray<FString>(TEXT("outputsPaths"), OutputsPaths, Serializer);	
 	}
 
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
 	{
-		UBeamJsonUtils::SerializeRawPrimitive(TEXT("Success"), Success, Serializer);
-		UBeamJsonUtils::SerializeRawPrimitive(TEXT("FailureReason"), FailureReason, Serializer);	
+		UBeamJsonUtils::SerializeArray<FString>(TEXT("outputsPaths"), OutputsPaths, Serializer);	
 	}
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("Success")), Success);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("FailureReason")), FailureReason);	
-	}
-};
-
-
-UCLASS(BlueprintType)
-class UBeamCliServicesRunLocalProgressStreamData : public UObject, public IBeamJsonSerializableUObject
-{
-	GENERATED_BODY()
-
-public:	
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FString BeamoId = {};
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	double LocalDeployProgress = {};
-
-	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
-	{
-		UBeamJsonUtils::SerializeRawPrimitive(TEXT("BeamoId"), BeamoId, Serializer);
-		UBeamJsonUtils::SerializeRawPrimitive(TEXT("LocalDeployProgress"), LocalDeployProgress, Serializer);	
-	}
-
-	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
-	{
-		UBeamJsonUtils::SerializeRawPrimitive(TEXT("BeamoId"), BeamoId, Serializer);
-		UBeamJsonUtils::SerializeRawPrimitive(TEXT("LocalDeployProgress"), LocalDeployProgress, Serializer);	
-	}
-
-	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
-	{
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("BeamoId")), BeamoId);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("LocalDeployProgress")), LocalDeployProgress);	
+		UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("outputsPaths")), OutputsPaths, OuterOwner);	
 	}
 };
 
 
 /**
  Description:
-  Run services locally in Docker. Will fail if no docker instance is running in the local machine
+  Generate Client Code from OAPI specifications
 
 Usage:
-  Beamable.Tools services run [options]
+  Beamable.Tools project generate-client-oapi [options]
 
 Options:
-  --ids <ids>                            The ids for the services you wish to deploy. Ignoring this option deploys all services
-  -fcpu, --force-amd-cpu-arch            Force the services to run with amd64 CPU architecture, useful when deploying from computers with ARM architecture [default: False]
-  -k, --keep-containers                  Automatically remove service containers after they exit [default: False]
+  --output-dir <output-dir>              Directory to write the output client at
   --dryrun                               [DEPRECATED] Run as much of the command as possible without making any network calls
   --cid <cid>                            CID (CustomerId) to use (found in Portal->Account); defaults to whatever is in '.beamable/connection-configuration.json'
   --pid <pid>                            PID (Realm ID) to use (found in Portal -> Games -> Any Realm's details); defaults to whatever is in '.beamable/connection-configuration.json'
@@ -107,20 +68,15 @@ Options:
 
  */
 UCLASS()
-class UBeamCliServicesRunCommand : public UBeamCliCommand
+class UBeamCliProjectGenerateClientOapiCommand : public UBeamCliCommand
 {
 	GENERATED_BODY()
 
 public:
 	inline static FString StreamType = FString(TEXT("stream"));
-	UPROPERTY() TArray<UBeamCliServicesRunStreamData*> Stream;
+	UPROPERTY() TArray<UBeamCliProjectGenerateClientOapiStreamData*> Stream;
 	UPROPERTY() TArray<int64> Timestamps;
-	TFunction<void (TArray<UBeamCliServicesRunStreamData*>& StreamData, TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnStreamOutput;
-
-	inline static FString StreamTypeLocalProgress = FString(TEXT("local_progress"));
-	UPROPERTY() TArray<UBeamCliServicesRunLocalProgressStreamData*> LocalProgressStream;
-	UPROPERTY() TArray<int64> LocalProgressTimestamps;
-	TFunction<void (TArray<UBeamCliServicesRunLocalProgressStreamData*>& StreamData, TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnLocalProgressStreamOutput;	
+	TFunction<void (TArray<UBeamCliProjectGenerateClientOapiStreamData*>& StreamData, TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnStreamOutput;	
 
 	TFunction<void (const int& ResCode, const FBeamOperationHandle& Op)> OnCompleted;
 	virtual bool HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer) override;

@@ -116,12 +116,12 @@ public:
 	inline static FString StreamType = FString(TEXT("stream"));
 	UPROPERTY() TArray<UBeamCliProjectStorageSnapshotStreamData*> Stream;
 	UPROPERTY() TArray<int64> Timestamps;
-	TFunction<void (const TArray<UBeamCliProjectStorageSnapshotStreamData*>& StreamData, const TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnStreamOutput;
+	TFunction<void (TArray<UBeamCliProjectStorageSnapshotStreamData*>& StreamData, TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnStreamOutput;
 
 	inline static FString StreamTypeMongoLogs = FString(TEXT("mongoLogs"));
 	UPROPERTY() TArray<UBeamCliProjectStorageSnapshotMongoLogsStreamData*> MongoLogsStream;
 	UPROPERTY() TArray<int64> MongoLogsTimestamps;
-	TFunction<void (const TArray<UBeamCliProjectStorageSnapshotMongoLogsStreamData*>& StreamData, const TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnMongoLogsStreamOutput;	
+	TFunction<void (TArray<UBeamCliProjectStorageSnapshotMongoLogsStreamData*>& StreamData, TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnMongoLogsStreamOutput;	
 
 	TFunction<void (const int& ResCode, const FBeamOperationHandle& Op)> OnCompleted;
 	virtual bool HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer) override;

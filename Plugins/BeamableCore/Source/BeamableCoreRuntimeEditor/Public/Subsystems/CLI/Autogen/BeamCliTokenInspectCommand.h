@@ -194,12 +194,12 @@ public:
 	inline static FString StreamType = FString(TEXT("stream"));
 	UPROPERTY() TArray<UBeamCliTokenInspectStreamData*> Stream;
 	UPROPERTY() TArray<int64> Timestamps;
-	TFunction<void (const TArray<UBeamCliTokenInspectStreamData*>& StreamData, const TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnStreamOutput;
+	TFunction<void (TArray<UBeamCliTokenInspectStreamData*>& StreamData, TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnStreamOutput;
 
 	inline static FString StreamTypeErrorInvalidTokenErrorOutput = FString(TEXT("errorInvalidTokenErrorOutput"));
 	UPROPERTY() TArray<UBeamCliTokenInspectErrorInvalidTokenErrorOutputStreamData*> ErrorInvalidTokenErrorOutputStream;
 	UPROPERTY() TArray<int64> ErrorInvalidTokenErrorOutputTimestamps;
-	TFunction<void (const TArray<UBeamCliTokenInspectErrorInvalidTokenErrorOutputStreamData*>& StreamData, const TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnErrorInvalidTokenErrorOutputStreamOutput;	
+	TFunction<void (TArray<UBeamCliTokenInspectErrorInvalidTokenErrorOutputStreamData*>& StreamData, TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnErrorInvalidTokenErrorOutputStreamOutput;	
 
 	TFunction<void (const int& ResCode, const FBeamOperationHandle& Op)> OnCompleted;
 	virtual bool HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer) override;

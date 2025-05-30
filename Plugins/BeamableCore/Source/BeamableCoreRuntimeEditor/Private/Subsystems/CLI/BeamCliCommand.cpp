@@ -71,7 +71,7 @@ void UBeamCliCommand::Run(const TArray<FString>& CommandParams, const FBeamOpera
 	}
 	else
 	{
-		UE_LOG(LogBeamCli, Error, TEXT("The Beamable CLI must be installed for any CLI commands to be run. CMD=%s"), *GetCommand());		
+		UE_LOG(LogBeamCli, Error, TEXT("The Beamable CLI must be installed for any CLI commands to be run. CMD=%s"), *GetCommand());
 	}
 }
 
@@ -98,10 +98,9 @@ void UBeamCliCommand::RunServer(const FString Uri, const TArray<FString>& Comman
 	}
 
 	FString CommandLineToExecute = GetCommand();
+	CommandLineToExecute = PrepareParams(CommandLineToExecute);
 	for (const auto& CommandParam : CommandParams)
 		CommandLineToExecute.Appendf(TEXT(" %s"), *CommandParam);
-
-	CommandLineToExecute = PrepareParams(CommandLineToExecute);
 
 	FJsonDomBuilder::FObject Obj;
 	Obj.Set(TEXT("commandLine"), CommandLineToExecute);
@@ -110,7 +109,7 @@ void UBeamCliCommand::RunServer(const FString Uri, const TArray<FString>& Comman
 	CmdRequest = FHttpModule::Get().CreateRequest().ToSharedPtr();
 	CmdRequest->SetVerb("POST");
 	CmdRequest->SetURL(Uri / TEXT("execute"));
-	CmdRequest->SetContentAsString(ReqContent);
+	CmdRequest->SetContentAsString(ReqContent);	
 	CmdRequest->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
 
 	CmdRequest->OnRequestProgress64().BindLambda([this, Op, CommandLineToExecute](TSharedPtr<IHttpRequest> HttpRequest, int64, int64 BytesReceived)
@@ -150,7 +149,7 @@ void UBeamCliCommand::RunServer(const FString Uri, const TArray<FString>& Comman
 								UBeamCliLogEntry* Data = NewObject<UBeamCliLogEntry>();
 								Data->OuterOwner = this;
 								Data->BeamDeserializeProperties(DataJson);
-								
+
 								LogEntries.Add(Data);
 								LogEntriesTimestamps.Add(Timestamp);
 
@@ -193,18 +192,15 @@ void UBeamCliCommand::RunServer(const FString Uri, const TArray<FString>& Comman
 	{
 		if (!Resp.IsValid())
 		{
-			if (Req.IsValid())
-			{
-				if (Req->GetFailureReason() == EHttpFailureReason::Cancelled)
-				{
-					HandleStreamCompleted(Op, 0, true);
-					UE_LOG(LogBeamCli, Verbose, TEXT("BeamCli Server - Command Cancelled. CMD=%s"), *CommandLineToExecute);
-					return;
-				}
-			}
-
 			UE_LOG(LogBeamCli, Error, TEXT("BeamCli Server - Unexpected error in executing command. CMD=%s"), *CommandLineToExecute);
 			HandleStreamCompleted(Op, 999, true);
+			return;
+		}
+
+		if (Errors.Num() > 0)
+		{
+			UE_LOG(LogBeamCli, Error, TEXT("BeamCli Server - Error in executing command. CMD=%s, ERR_CODE=%d"), *CommandLineToExecute, Errors[0].ExitCode);
+			HandleStreamCompleted(Op, Errors[0].ExitCode, true);
 			return;
 		}
 
@@ -216,20 +212,12 @@ void UBeamCliCommand::RunServer(const FString Uri, const TArray<FString>& Comman
 
 			HandleStreamCompleted(Op, 0, true);
 			UE_LOG(LogBeamCli, Verbose, TEXT("BeamCli Server - Executed command. CMD=%s, ALL_MESSAGES=%s"), *CommandLineToExecute, *AllMessages);
+			return;
 		}
-		else
-		{
-			if (Req->GetFailureReason() == EHttpFailureReason::Cancelled)
-			{
-				HandleStreamCompleted(Op, 0, true);
-				UE_LOG(LogBeamCli, Verbose, TEXT("BeamCli Server - Command Cancelled. CMD=%s"), *CommandLineToExecute);
-			}
-			else
-			{
-				UE_LOG(LogBeamCli, Error, TEXT("BeamCli Server - Error in executing command. CMD=%s, ALL_MESSAGES=%s"), *CommandLineToExecute, *Resp->GetContentAsString());
-				HandleStreamCompleted(Op, 1, true);
-			}
-		}
+
+		UE_LOG(LogBeamCli, Error, TEXT("BeamCli Server - Error in executing command. CMD=%s, ALL_MESSAGES=%s"), *CommandLineToExecute, *Resp->GetContentAsString());
+		HandleStreamCompleted(Op, 500, true);
+		return;
 	});
 
 	CmdRequest->ProcessRequest();
@@ -284,7 +272,51 @@ void UBeamCliCommand::PrepareCommandProcess(const TArray<FString>& CommandParams
 				const auto Timestamp = static_cast<int64>(Bag.GetField(TEXT("ts"))->AsNumber());
 				const auto DataJson = Bag.JsonObject->GetObjectField(TEXT("data")).ToSharedRef();
 
-				HandleStreamReceived(Op, ReceivedStreamType, Timestamp, DataJson, false);
+				if (!HandleStreamReceived(Op, ReceivedStreamType, Timestamp, DataJson, false))
+				{
+					if (ReceivedStreamType.Equals(TEXT("logs")))
+					{
+						UBeamCliLogEntry* Data = NewObject<UBeamCliLogEntry>();
+						Data->OuterOwner = this;
+						Data->BeamDeserializeProperties(DataJson);
+
+						LogEntries.Add(Data);
+						LogEntriesTimestamps.Add(Timestamp);
+
+						if (OnLogEntriesStreamOutput)
+						{
+							AsyncTask(ENamedThreads::GameThread, [this, Data, Timestamp, Op]
+							{
+								OnLogEntriesStreamOutput(Data, Timestamp, Op);
+							});
+						}
+					}
+					else if (ReceivedStreamType.StartsWith(TEXT("error")))
+					{
+						FBeamCliError Data = FBeamCliError{};
+						Data.OuterOwner = this;
+						Data.BeamDeserializeProperties(DataJson);
+
+						Errors.Add(Data);
+						ErrorsTimestamps.Add(Timestamp);
+
+						if (OnErrorsStreamOutput)
+						{
+							AsyncTask(ENamedThreads::GameThread, [this, Op]
+							{
+								OnErrorsStreamOutput(Errors, ErrorsTimestamps, Op);
+							});
+						}
+						else
+						{
+							UE_LOG(LogBeamCli, Error, TEXT("BeamCli Command - Error. CMD=%s, MESSAGE=%s"), *Params, *MessageJson);
+						}
+					}
+					else
+					{
+						UE_LOG(LogBeamCli, Warning, TEXT("BeamCli Command - Skipping unknown message format. CMD=%s, MESSAGE=%s"), *Params, *MessageJson);
+					}
+				}
 			}
 			else
 			{

@@ -51,7 +51,7 @@ private:
 
 	void OnEnterPie(bool) const;
 	void OnObjectRedoUndo() const;
-	void OnContentSaved(FBeamContentManifestId ManifestId, FBeamContentId Id);
+	void OnContentSaved(FBeamContentManifestId ManifestId, TArray<FBeamContentId> Id);
 
 	UFUNCTION()
 	void OnAppliedSettingsToBuild();

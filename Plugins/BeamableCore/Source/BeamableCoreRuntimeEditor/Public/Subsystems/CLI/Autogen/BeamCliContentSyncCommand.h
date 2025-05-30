@@ -2,7 +2,7 @@
 
 #include "Subsystems/CLI/BeamCliCommand.h"
 #include "Serialization/BeamJsonUtils.h"
-
+#include "Subsystems/CLI/Autogen/StreamData/ContentSyncReportStreamData.h"
 #include "BeamCliContentSyncCommand.generated.h"
 
 
@@ -13,21 +13,22 @@ class UBeamCliContentSyncStreamData : public UObject, public IBeamJsonSerializab
 
 public:	
 	
-	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<UContentSyncReportStreamData*> Reports = {};
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
 	{
-			
+		UBeamJsonUtils::SerializeArray<UContentSyncReportStreamData*>(TEXT("Reports"), Reports, Serializer);	
 	}
 
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
 	{
-			
+		UBeamJsonUtils::SerializeArray<UContentSyncReportStreamData*>(TEXT("Reports"), Reports, Serializer);	
 	}
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-			
+		UBeamJsonUtils::DeserializeArray<UContentSyncReportStreamData*>(Bag->GetArrayField(TEXT("Reports")), Reports, OuterOwner);	
 	}
 };
 
@@ -46,7 +47,7 @@ Options:
                                                                            Regexes => Will add the given tags to any content whose Id is matched by any of the ','-separated list of filters (C# regex string)
                                                                            TypeHierarchy => Will add the given tags to any content of the ','-separated list of filters (content type strings with full hierarchy --- StartsWith comparison)
                                                                            Tags => Will add the given tags to any content that currently has any of the ','-separated list of filters (tags) [default: ExactIds]
-  --filter <filter>                                                        Accepts different strings to filter which content files will be affected. See the `filter-type` option. []
+  --filter <filter>                                                        Accepts different strings to filter which content files will be affected. See the `filter-type` option []
   --sync-created                                                           Deletes any created content that is not present in the latest manifest. If filters are provided, will only delete the created content that matches the filter
   --sync-modified                                                          This will discard your local changes ONLY on files that are NOT conflicted. If filters are provided, will only do this for content that matches the filter
   --sync-conflicts                                                         This will discard your local changes ONLY on files that ARE conflicted. If filters are provided, will only do this for content that matches the filter
@@ -85,7 +86,7 @@ public:
 	inline static FString StreamType = FString(TEXT("stream"));
 	UPROPERTY() TArray<UBeamCliContentSyncStreamData*> Stream;
 	UPROPERTY() TArray<int64> Timestamps;
-	TFunction<void (const TArray<UBeamCliContentSyncStreamData*>& StreamData, const TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnStreamOutput;	
+	TFunction<void (TArray<UBeamCliContentSyncStreamData*>& StreamData, TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnStreamOutput;	
 
 	TFunction<void (const int& ResCode, const FBeamOperationHandle& Op)> OnCompleted;
 	virtual bool HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer) override;

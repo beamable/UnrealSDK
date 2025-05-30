@@ -20,6 +20,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString ParentPid = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString ProjectName = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString RealmName = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString RealmSecret = {};
@@ -35,6 +37,7 @@ public:
 		UBeamJsonUtils::SerializeRawPrimitive(TEXT("Cid"), Cid, Serializer);
 		UBeamJsonUtils::SerializeRawPrimitive(TEXT("Pid"), Pid, Serializer);
 		UBeamJsonUtils::SerializeRawPrimitive(TEXT("ParentPid"), ParentPid, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("ProjectName"), ProjectName, Serializer);
 		UBeamJsonUtils::SerializeRawPrimitive(TEXT("RealmName"), RealmName, Serializer);
 		UBeamJsonUtils::SerializeRawPrimitive(TEXT("RealmSecret"), RealmSecret, Serializer);
 		UBeamJsonUtils::SerializeRawPrimitive(TEXT("IsDev"), IsDev, Serializer);
@@ -47,6 +50,7 @@ public:
 		UBeamJsonUtils::SerializeRawPrimitive(TEXT("Cid"), Cid, Serializer);
 		UBeamJsonUtils::SerializeRawPrimitive(TEXT("Pid"), Pid, Serializer);
 		UBeamJsonUtils::SerializeRawPrimitive(TEXT("ParentPid"), ParentPid, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("ProjectName"), ProjectName, Serializer);
 		UBeamJsonUtils::SerializeRawPrimitive(TEXT("RealmName"), RealmName, Serializer);
 		UBeamJsonUtils::SerializeRawPrimitive(TEXT("RealmSecret"), RealmSecret, Serializer);
 		UBeamJsonUtils::SerializeRawPrimitive(TEXT("IsDev"), IsDev, Serializer);
@@ -59,6 +63,7 @@ public:
 		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("Cid")), Cid);
 		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("Pid")), Pid);
 		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("ParentPid")), ParentPid);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("ProjectName")), ProjectName);
 		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("RealmName")), RealmName);
 		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("RealmSecret")), RealmSecret);
 		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("IsDev")), IsDev);

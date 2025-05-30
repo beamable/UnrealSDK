@@ -8,50 +8,51 @@
 
 static bool CopyDirectoryRecursive(const FString& SourceDir, const FString& DestDir)
 {
-	IFileManager& FileManager = IFileManager::Get();
-
-	// Normalize directory paths (ensure trailing slash)
-	FString NormalizedSource = FPaths::ConvertRelativePathToFull(SourceDir) + TEXT("/");
-	FString NormalizedDest = FPaths::ConvertRelativePathToFull(DestDir) + TEXT("/");
-
-	// Get all files and directories recursively from the source
-	TArray<FString> FoundFilesAndDirs;
-	FileManager.FindFilesRecursive(FoundFilesAndDirs, *NormalizedSource, TEXT("*"), true, true);
-
-	for (const FString& Path : FoundFilesAndDirs)
-	{
-		// Get relative path to recreate structure in destination
-		FString RelativePath = Path;
-		FPaths::MakePathRelativeTo(RelativePath, *NormalizedSource);
-
-		// Check if any part of the relative path contains "/temp/" or ends with "/temp"
-		TArray<FString> PathParts;
-		RelativePath.ParseIntoArray(PathParts, TEXT("/"), true);
-		if (!PathParts.Contains(TEXT("temp")))
-		{
-			FString TargetPath = FPaths::Combine(NormalizedDest, RelativePath);
-
-			if (FileManager.DirectoryExists(*Path))
-			{
-				FileManager.MakeDirectory(*TargetPath, true);
-			}
-			else if (FileManager.FileExists(*Path))
-			{
-				FString TargetDir = FPaths::GetPath(TargetPath);
-				FileManager.MakeDirectory(*TargetDir, true); // Ensure folder exists
-
-				IPlatformFile& platformFile = FPlatformFileManager::Get().GetPlatformFile();	
-
-				if (!platformFile.CopyFile(*TargetPath, *Path ))
-				{
-					UE_LOG(LogTemp, Warning, TEXT("Failed to copy file: %s , %s"), *Path, *TargetPath);
-					return false;
-				}
-			}
-		}
-	}
-
 	return true;
+	// IFileManager& FileManager = IFileManager::Get();
+	//
+	// // Normalize directory paths (ensure trailing slash)
+	// FString NormalizedSource = FPaths::ConvertRelativePathToFull(SourceDir) + TEXT("/");
+	// FString NormalizedDest = FPaths::ConvertRelativePathToFull(DestDir) + TEXT("/");
+	//
+	// // Get all files and directories recursively from the source
+	// TArray<FString> FoundFilesAndDirs;
+	// FileManager.FindFilesRecursive(FoundFilesAndDirs, *NormalizedSource, TEXT("*"), true, true);
+	//
+	// for (const FString& Path : FoundFilesAndDirs)
+	// {
+	// 	// Get relative path to recreate structure in destination
+	// 	FString RelativePath = Path;
+	// 	FPaths::MakePathRelativeTo(RelativePath, *NormalizedSource);
+	//
+	// 	// Check if any part of the relative path contains "/temp/" or ends with "/temp"
+	// 	TArray<FString> PathParts;
+	// 	RelativePath.ParseIntoArray(PathParts, TEXT("/"), true);
+	// 	if (!PathParts.Contains(TEXT("temp")))
+	// 	{
+	// 		FString TargetPath = FPaths::Combine(NormalizedDest, RelativePath);
+	//
+	// 		if (FileManager.DirectoryExists(*Path))
+	// 		{
+	// 			FileManager.MakeDirectory(*TargetPath, true);
+	// 		}
+	// 		else if (FileManager.FileExists(*Path))
+	// 		{
+	// 			FString TargetDir = FPaths::GetPath(TargetPath);
+	// 			FileManager.MakeDirectory(*TargetDir, true); // Ensure folder exists
+	//
+	// 			IPlatformFile& platformFile = FPlatformFileManager::Get().GetPlatformFile();
+	//
+	// 			if (!platformFile.CopyFile(*TargetPath, *Path, EPlatformFileRead::AllowWrite, EPlatformFileWrite::AllowRead))
+	// 			{
+	// 				UE_LOG(LogTemp, Warning, TEXT("Failed to copy file: %s , %s"), *Path, *TargetPath);
+	// 				return false;
+	// 			}
+	// 		}
+	// 	}
+	// }
+	//
+	// return true;
 }
 
 FBeamOperationHandle UBeamProjSyncSubsystem::InitializeWhenEditorReady()
@@ -171,7 +172,7 @@ FBeamOperationHandle UBeamProjSyncSubsystem::InitializeWhenEditorReady()
 
 	// Listen for realm changes and keep them in-sync	
 	Editor->OnAppliedSettingsToBuild.AddUniqueDynamic(this, &ThisClass::UBeamProjSyncSubsystem::OnAppliedSettingsToBuild);
-	
+
 	// Listen for file-system-level changes in all relevant directories 
 	FDirectoryWatcherModule& DirectoryWatcherModule = FModuleManager::Get().LoadModuleChecked<FDirectoryWatcherModule>(TEXT("DirectoryWatcher"));
 	IDirectoryWatcher* DirectoryWatcher = DirectoryWatcherModule.Get();
@@ -182,31 +183,29 @@ FBeamOperationHandle UBeamProjSyncSubsystem::InitializeWhenEditorReady()
 
 		FString WatchDir, AbsWatchDir, TargetDir, AbsTargetDir;
 		GetPaths(OverridenDirectory, WatchDir, TargetDir, AbsWatchDir, AbsTargetDir);
-	
+
 		const auto OnChanged = IDirectoryWatcher::FDirectoryChanged::CreateLambda([this, AbsWatchDir, AbsTargetDir](const TArray<FFileChangeData>& FileChanges)
 		{
 			IPlatformFile& PlatformFile = FPlatformFileManager::Get().GetPlatformFile();
-			
-			if (PlatformFile.DirectoryExists(*AbsTargetDir))
-				PlatformFile.DeleteDirectoryRecursively(*AbsTargetDir);
 
-			bool bSuccess = CopyDirectoryRecursive(AbsWatchDir, AbsTargetDir);
-			if (bSuccess)
-			{
-				UE_LOG(LogTemp, Display, TEXT("Keeping BEAMPROJ in Sync. BEAMPROJ=%s WATCH_DIR=%s, TARGET_DIR=%s"), *ActiveBeamProj, *AbsWatchDir, *AbsTargetDir);
-			}
-			else
-			{
-				UE_LOG(LogTemp, Error, TEXT("Failed to Sync BEAMPROJ. BEAMPROJ=%s WATCH_DIR=%s, TARGET_DIR=%s"), *ActiveBeamProj, *AbsWatchDir, *AbsTargetDir);
-			}
-			
+			// if (PlatformFile.DirectoryExists(*AbsTargetDir))
+			// 	PlatformFile.DeleteDirectoryRecursively(*AbsTargetDir);
+			//
+			// bool bSuccess = CopyDirectoryRecursive(AbsWatchDir, AbsTargetDir);
+			// if (bSuccess)
+			// {
+			// 	UE_LOG(LogTemp, Display, TEXT("Keeping BEAMPROJ in Sync. BEAMPROJ=%s WATCH_DIR=%s, TARGET_DIR=%s"), *ActiveBeamProj, *AbsWatchDir, *AbsTargetDir);
+			// }
+			// else
+			// {
+			// 	UE_LOG(LogTemp, Error, TEXT("Failed to Sync BEAMPROJ. BEAMPROJ=%s WATCH_DIR=%s, TARGET_DIR=%s"), *ActiveBeamProj, *AbsWatchDir, *AbsTargetDir);
+			// }
 		});
 
 		if (IFileManager::Get().DirectoryExists(*AbsWatchDir))
 		{
 			DirectoryWatcher->RegisterDirectoryChangedCallback_Handle(AbsWatchDir, OnChanged, OverridenDirectoriesHandlers[i], IDirectoryWatcher::WatchOptions::IncludeDirectoryChanges);
 		}
-		
 	}
 
 	// Listen for undo/redo
@@ -258,25 +257,25 @@ void UBeamProjSyncSubsystem::OnObjectRedoUndo() const
 	SyncAllOverridenDirectories();
 }
 
-void UBeamProjSyncSubsystem::OnContentSaved(FBeamContentManifestId ManifestId, FBeamContentId Id)
+void UBeamProjSyncSubsystem::OnContentSaved(FBeamContentManifestId ManifestId, TArray<FBeamContentId> Id)
 {
 	FString WatchDir, AbsWatchDir, TargetDir, AbsTargetDir;
 	GetPaths(BeamableContentDir(), WatchDir, TargetDir, AbsWatchDir, AbsTargetDir);
 
 	IPlatformFile& PlatformFile = FPlatformFileManager::Get().GetPlatformFile();
 
-	if (PlatformFile.DirectoryExists(*AbsTargetDir))
-		PlatformFile.DeleteDirectoryRecursively(*AbsTargetDir);
-
-	bool bSuccess = CopyDirectoryRecursive(AbsWatchDir, AbsTargetDir);
-	if (bSuccess)
-	{
-		UE_LOG(LogTemp, Display, TEXT("Keeping BEAMPROJ in Sync. BEAMPROJ=%s WATCH_DIR=%s, TARGET_DIR=%s"), *ActiveBeamProj, *AbsWatchDir, *AbsTargetDir);
-	}
-	else
-	{
-		UE_LOG(LogTemp, Error, TEXT("Failed to Sync BEAMPROJ. BEAMPROJ=%s WATCH_DIR=%s, TARGET_DIR=%s"), *ActiveBeamProj, *AbsWatchDir, *AbsTargetDir);
-	}
+	// if (PlatformFile.DirectoryExists(*AbsTargetDir))
+	// 	PlatformFile.DeleteDirectoryRecursively(*AbsTargetDir);
+	//
+	// bool bSuccess = CopyDirectoryRecursive(AbsWatchDir, AbsTargetDir);
+	// if (bSuccess)
+	// {
+	// 	UE_LOG(LogTemp, Display, TEXT("Keeping BEAMPROJ in Sync. BEAMPROJ=%s WATCH_DIR=%s, TARGET_DIR=%s"), *ActiveBeamProj, *AbsWatchDir, *AbsTargetDir);
+	// }
+	// else
+	// {
+	// 	UE_LOG(LogTemp, Error, TEXT("Failed to Sync BEAMPROJ. BEAMPROJ=%s WATCH_DIR=%s, TARGET_DIR=%s"), *ActiveBeamProj, *AbsWatchDir, *AbsTargetDir);
+	// }
 }
 
 void UBeamProjSyncSubsystem::OnAppliedSettingsToBuild()
@@ -285,14 +284,14 @@ void UBeamProjSyncSubsystem::OnAppliedSettingsToBuild()
 	GetPaths(UnrealConfigDir(), WatchDir, TargetDir, AbsWatchDir, AbsTargetDir);
 
 	IPlatformFile& PlatformFile = FPlatformFileManager::Get().GetPlatformFile();
-	if (PlatformFile.CopyDirectoryTree(*AbsTargetDir, *AbsWatchDir, true))
-	{
-		UE_LOG(LogTemp, Display, TEXT("Keeping BEAMPROJ in Sync. BEAMPROJ=%s WATCH_DIR=%s, TARGET_DIR=%s"), *ActiveBeamProj, *AbsWatchDir, *AbsTargetDir);
-	}
-	else
-	{
-		UE_LOG(LogTemp, Error, TEXT("Failed to Sync BEAMPROJ. BEAMPROJ=%s WATCH_DIR=%s, TARGET_DIR=%s"), *ActiveBeamProj, *AbsWatchDir, *AbsTargetDir);
-	}
+	// if (PlatformFile.CopyDirectoryTree(*AbsTargetDir, *AbsWatchDir, true))
+	// {
+	// 	UE_LOG(LogTemp, Display, TEXT("Keeping BEAMPROJ in Sync. BEAMPROJ=%s WATCH_DIR=%s, TARGET_DIR=%s"), *ActiveBeamProj, *AbsWatchDir, *AbsTargetDir);
+	// }
+	// else
+	// {
+	// 	UE_LOG(LogTemp, Error, TEXT("Failed to Sync BEAMPROJ. BEAMPROJ=%s WATCH_DIR=%s, TARGET_DIR=%s"), *ActiveBeamProj, *AbsWatchDir, *AbsTargetDir);
+	// }
 }
 
 void UBeamProjSyncSubsystem::SyncAllOverridenDirectories() const
@@ -302,16 +301,16 @@ void UBeamProjSyncSubsystem::SyncAllOverridenDirectories() const
 		const auto OverridenDirectory = OverridenDirectories[i];
 		FString WatchDir, AbsWatchDir, TargetDir, AbsTargetDir;
 		GetPaths(OverridenDirectory, WatchDir, TargetDir, AbsWatchDir, AbsTargetDir);
-		
-		bool bSuccess = CopyDirectoryRecursive(WatchDir, TargetDir);
-		if (bSuccess)
-		{
-			UE_LOG(LogTemp, Display, TEXT("Keeping BEAMPROJ in Sync. BEAMPROJ=%s WATCH_DIR=%s, TARGET_DIR=%s"), *ActiveBeamProj, *AbsWatchDir, *AbsTargetDir);
-		}
-		else
-		{
-			UE_LOG(LogTemp, Error, TEXT("Failed to Sync BEAMPROJ. BEAMPROJ=%s WATCH_DIR=%s, TARGET_DIR=%s"), *ActiveBeamProj, *AbsWatchDir, *AbsTargetDir);
-		}
+
+		// bool bSuccess = CopyDirectoryRecursive(WatchDir, TargetDir);
+		// if (bSuccess)
+		// {
+		// 	UE_LOG(LogTemp, Display, TEXT("Keeping BEAMPROJ in Sync. BEAMPROJ=%s WATCH_DIR=%s, TARGET_DIR=%s"), *ActiveBeamProj, *AbsWatchDir, *AbsTargetDir);
+		// }
+		// else
+		// {
+		// 	UE_LOG(LogTemp, Error, TEXT("Failed to Sync BEAMPROJ. BEAMPROJ=%s WATCH_DIR=%s, TARGET_DIR=%s"), *ActiveBeamProj, *AbsWatchDir, *AbsTargetDir);
+		// }
 	}
 }
 
@@ -323,4 +322,3 @@ void UBeamProjSyncSubsystem::GetPaths(const FString& OverridenDirectory, FString
 	AbsWatchDir = FPaths::IsRelative(WatchDir) ? FPaths::ConvertRelativePathToFull(WatchDir) : WatchDir;
 	AbsTargetDir = FPaths::IsRelative(TargetDir) ? FPaths::ConvertRelativePathToFull(TargetDir) : TargetDir;
 }
-

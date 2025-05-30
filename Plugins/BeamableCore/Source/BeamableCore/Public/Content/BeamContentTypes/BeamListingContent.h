@@ -346,6 +346,7 @@ struct BEAMABLECORE_API FBeamListingPrice : public FBeamJsonSerializableUStruct
 		Serializer->WriteValue("type", SerializationName);
 		Serializer->WriteValue(TEXT("symbol"), Symbol.AsString);
 		Serializer->WriteValue(TEXT("amount"), Amount);
+		UBeamJsonUtils::SerializeOptional<TArray<int32>, int32>(TEXT("schedule"), &Schedule, Serializer);
 	}
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
@@ -357,6 +358,7 @@ struct BEAMABLECORE_API FBeamListingPrice : public FBeamJsonSerializableUStruct
 
 		Symbol = Bag->GetStringField(TEXT("symbol"));
 		Amount = Bag->GetIntegerField(TEXT("amount"));
+		UBeamJsonUtils::DeserializeOptional<TArray<int32>, int32>(TEXT("schedule"), Bag, Schedule);
 	}
 };
 

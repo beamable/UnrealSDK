@@ -35,12 +35,11 @@ struct FBeamProjectRealmData
 	FString RealmSecret;
 
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
-	bool bIsDev;
+	bool bIsDev = false;
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
-	bool bIsStaging;
-
+	bool bIsStaging = false;
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
-	bool bIsProduction;
+	bool bIsProduction = false;
 };
 
 USTRUCT(BlueprintType)
@@ -90,7 +89,7 @@ public:
 	 * @brief Users can customize the status icons displayed in the content window.
 	 */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Content")
-	TMap<TEnumAsByte<EBeamLocalContentStatus>, TSoftObjectPtr<UTexture2D>> LocalContentStatusIcons;
+	TMap<EBeamLocalContentStatus, TSoftObjectPtr<UTexture2D>> LocalContentStatusIcons;
 
 	UPROPERTY(Config, VisibleAnywhere, BlueprintReadOnly, Category="UI/UX")
 	TMap<FString, FLinearColor> OptionalTypePinColors;
