@@ -909,14 +909,14 @@ public:
 	 * It will use the Login Federation to get the two factor auth
 	 */
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Auth", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
-	FBeamOperationHandle BeginAttachExternalIdentityTwoFactorOperation(FUserSlot UserSlot, FString MicroserviceName, FString IdentityNamespace, FString IdentityUserId, FString IdentityAuthToken,
+	FBeamOperationHandle BeginAttachExternalIdentityTwoFactorOperation(FUserSlot UserSlot, FString MicroserviceName, FString IdentityNamespace, FString IdentityUserId,
 	                                                                   FBeamOperationEventHandler OnOperationEvent);
 
 	/**
 	 * If the given IdentityUserId is NOT attached to an account in the current realm, we attach it to the account in the given slot.
 	 * It will use the Login Federation to get the two factor auth
 	 */
-	FBeamOperationHandle CPP_BeginAttachExternalIdentityTwoFactorOperation(FUserSlot UserSlot, FString MicroserviceName, FString IdentityNamespace, FString IdentityUserId, FString IdentityAuthToken,
+	FBeamOperationHandle CPP_BeginAttachExternalIdentityTwoFactorOperation(FUserSlot UserSlot, FString MicroserviceName, FString IdentityNamespace, FString IdentityUserId,
 	                                                                       FBeamOperationEventHandlerCode OnOperationEvent);
 
 	/**
@@ -1006,7 +1006,7 @@ private:
 	void BeginLoginExternalIdentityTwoFactor(FUserSlot UserSlot, FString ExternalService, FString ExternalNamespace, FString ExternalToken, FBeamOperationHandle Op);
 	void CommitLoginExternalIdentityTwoFactor(FUserSlot UserSlot, FString ExternalService, FString ExternalNamespace, FString ExternalToken, UChallengeSolutionObject* ChallengeSolution, FBeamOperationHandle Op);
 	void LoginEmailAndPassword(FUserSlot UserSlot, FString Email, FString Password, FBeamOperationHandle Op);
-	void BeginAttachExternalIdentityTwoFactor(FUserSlot UserSlot, FString MicroserviceName, FString IdentityNamespace, FString IdentityUserId, FString IdentityAuthToken, FBeamOperationHandle Op);
+	void BeginAttachExternalIdentityTwoFactor(FUserSlot UserSlot, FString MicroserviceName, FString IdentityNamespace, FString IdentityUserId, FBeamOperationHandle Op);
 	void CommitAttachExternalIdentityTwoFactor(FUserSlot UserSlot, FString MicroserviceName, FString IdentityNamespace, FString IdentityUserId, FString IdentityAuthToken, UChallengeSolutionObject* ChallengeSolution,
 	                                           FBeamOperationHandle Op);
 	void AttachExternalIdentity(FUserSlot UserSlot, FString MicroserviceName, FString IdentityNamespace, FString IdentityUserId, FString IdentityAuthToken, FBeamOperationHandle Op);

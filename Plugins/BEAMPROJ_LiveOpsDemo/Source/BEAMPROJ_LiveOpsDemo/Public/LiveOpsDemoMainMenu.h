@@ -25,6 +25,7 @@ class BEAMPROJ_LIVEOPSDEMO_API ULiveOpsDemoMainMenu : public UBeamLevelSubsystem
 
 	FString GetSuiMicroserviceName() const { return TEXT("SuiFederation"); }
 	FString GetSuiIdentityName() const { return TEXT("SuiIdentity"); }
+	FString GetSuiExternalIdentityName() const { return TEXT("SuiExternalIdentity"); }
 
 	virtual FString GetSpecificLevelName() const override { return FString(TEXT("LiveOpsDemo")); }
 
@@ -49,6 +50,9 @@ public:
 	FDelegate_Simple OnLoginError;
 
 	UPROPERTY(BlueprintAssignable)
+	FDelegate_Simple OnAttachError;
+
+	UPROPERTY(BlueprintAssignable)
 	FDelegate_Simple ShowLoginScreen;
 
 	UPROPERTY(BlueprintAssignable)
@@ -68,6 +72,9 @@ public:
 
 	UPROPERTY(BlueprintReadOnly)
 	FString SuiWalletId;
+
+	UPROPERTY(BlueprintReadOnly)
+	FString SuiWalletIdExternal;
 
 	UPROPERTY(BlueprintReadOnly)
 	FBeamContentId BeamSuiCoinsId;
@@ -159,9 +166,53 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void DoIdentityLogin(FString WalletKey)
 	{
-		// Cache the SUIWallet to use in the two factor step
 		SuiWalletId = WalletKey;
-		const auto OnSuiIdentityBeginTwoFactorHandler = FBeamOperationEventHandlerCode::CreateLambda([this](FBeamOperationEvent Evt)
+		// Cache the SUIWallet to use in the two factor step
+		const auto OnSuiIdentityHandler = FBeamOperationEventHandlerCode::CreateLambda([this](FBeamOperationEvent Evt)
+		{
+			if (Evt.EventType == OET_SUCCESS)
+			{
+				// Then, we can proceed with the sample flow
+				OnLiveOpsDemoReady.Broadcast();
+			}
+			else
+			{
+				// Login error sent back to login menu
+				OnLoginError.Broadcast();
+			}
+			// If successful, we will get the two factor challenge
+			if (Evt.EventType == OET_SUCCESS)
+			{
+				UChallengeSolutionObject* ChallengeSolution = Cast<UChallengeSolutionObject>(Evt.EventData.GetInterface());
+
+				FString ChallengeToken;
+				FString _;
+				// The challenge comes as a base 64 encoded with more information separated by "."
+				ChallengeSolution->ChallengeToken.Split(TEXT("."), &ChallengeToken, &_);
+				FString DecodedChallenge = GetBase64Decode(ChallengeToken);
+
+				OnReceiveTwoFactorChallenge.Broadcast(OwnerUserSlot, DecodedChallenge, ChallengeSolution);
+			}
+			else
+			{
+				UE_LOG(LogTemp, Error, TEXT("Could not login for identity! ERROR=%s"), *Evt.EventCode);
+				OnLoginError.Broadcast();
+			}
+		});
+
+		Runtime->CPP_LoginExternalIdentityOperation(OwnerUserSlot, GetSuiMicroserviceName(),
+		                                            GetSuiIdentityName(),
+		                                            SuiWalletId,
+		                                            OnSuiIdentityHandler);
+	}
+
+
+	UFUNCTION(BlueprintCallable)
+	void DoTwoFactorIdentityAttach(FString WalletKey)
+	{
+		SuiWalletIdExternal = WalletKey;
+		// Cache the SUIWallet to use in the two factor step
+		const auto OnSuiIdentityHandler = FBeamOperationEventHandlerCode::CreateLambda([this](FBeamOperationEvent Evt)
 		{
 			// If successful, we will get the two factor challenge
 			if (Evt.EventType == OET_SUCCESS)
@@ -178,15 +229,15 @@ protected:
 			}
 			else
 			{
-				UE_LOG(LogTemp, Error, TEXT("Could not start the 2FA for identity! ERROR=%s"), *Evt.EventCode);
-				OnLoginError.Broadcast();
+				UE_LOG(LogTemp, Error, TEXT("Could not attach for identity! ERROR=%s"), *Evt.EventCode);
+				OnAttachError.Broadcast();
 			}
 		});
 
-		Runtime->CPP_BeginLoginExternalIdentityTwoFactorOperation(OwnerUserSlot, GetSuiMicroserviceName(),
-		                                                          GetSuiIdentityName(),
-		                                                          SuiWalletId,
-		                                                          OnSuiIdentityBeginTwoFactorHandler);
+		Runtime->CPP_BeginAttachExternalIdentityTwoFactorOperation(OwnerUserSlot, GetSuiMicroserviceName(),
+		                                                           GetSuiExternalIdentityName(),
+		                                                           SuiWalletIdExternal,
+		                                                           OnSuiIdentityHandler);
 	}
 
 	UFUNCTION(BlueprintCallable)
@@ -321,19 +372,20 @@ protected:
 			}
 			else
 			{
-				// Login error sent back to login menu
-				OnLoginError.Broadcast();
+				// back to main content screen
+				OnAttachError.Broadcast();
 			}
 		});
 
 		// Now that we have the handler defined, we ask the Beamable SDK to attach the Sui identity to our new account.
 		// This should run once per new user.
-		Runtime->CPP_CommitLoginExternalIdentityTwoFactorOperation(UserSlot,
-		                                                           GetSuiMicroserviceName(),
-		                                                           GetSuiIdentityName(),
-		                                                           ChallengeSolution,
-		                                                           SuiWalletId,
-		                                                           OnSuitIdentityFinishTwoFactorHandler);
+		Runtime->CPP_CommitAttachExternalIdentityTwoFactorOperation(UserSlot,
+		                                                            GetSuiMicroserviceName(),
+		                                                            GetSuiExternalIdentityName(),
+		                                                            SuiWalletIdExternal,
+		                                                            TEXT(""),
+		                                                            ChallengeSolution,
+		                                                            OnSuitIdentityFinishTwoFactorHandler);
 	}
 
 	FString GetBase64Decode(FString Base64String)
