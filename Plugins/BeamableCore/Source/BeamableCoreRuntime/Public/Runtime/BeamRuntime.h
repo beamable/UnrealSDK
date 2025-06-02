@@ -42,7 +42,7 @@ enum EBeamRuntimeConnectivityState
 
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UChallengeSolutionObject : public UObject, public IBeamOperationEventData
+class BEAMABLECORERUNTIME_API UChallengeSolutionObject : public UObject, public IBeamOperationEventData
 {
 	GENERATED_BODY()
 
@@ -51,10 +51,27 @@ public:
 	FString ChallengeToken = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Solution", Category="Beam")
 	FString Solution = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Solution", Category="Beam")
+	FBeamOperationHandle OperationHandler;
+
 
 	UChallengeSolution* GetChallengeSolutionGenerated();
 
 	void SetChallengeSolution(UChallengeSolution* ChallengeSolution);
+
+	UFUNCTION(BlueprintCallable)
+	inline FString GetChallengeDecoded()
+	{
+		FString ChallengeDecodedString = "";
+		FString _;
+
+		ChallengeToken.Split(".", &ChallengeDecodedString, &_);
+
+		FString ChallengeDecodedBytes;
+		FBase64::Decode(ChallengeDecodedString, ChallengeDecodedBytes);
+
+		return ChallengeDecodedBytes;
+	}
 };
 
 DECLARE_DELEGATE_OneParam(FOnBeamConnectivityEventCode, UBeamConnectivityManager*);
@@ -509,6 +526,12 @@ public:
 	void InitSDKWithFrictionlessLogin(FUserStateChangedHandler OnUserReadyHandler, FRuntimeError OnStartedFailedHandler, FRuntimeError OnUserReadyFailedHandler);
 
 	/**
+	 * @brief Get the operation event id for the 2FA auth subevent
+	 */
+	UFUNCTION(BlueprintCallable)
+	static inline FName GetOperationEventID_2FA_AuthTriggered() { return FName("2FA_AUTH_TRIGGERED"); }
+
+	/**
 	 * @brief Call this function if you want to initialize a subsystem that was set to manually initialize from the project settings.
 	 * This function will initialize all the passed subsystems
 	 */
@@ -842,12 +865,6 @@ public:
 
 
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Auth", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
-	FBeamOperationHandle BeginLoginExternalIdentityTwoFactorOperation(FUserSlot UserSlot, FString ExternalService, FString ExternalNamespace, FString ExternalToken, FBeamOperationEventHandler OnOperationEvent);
-
-	FBeamOperationHandle CPP_BeginLoginExternalIdentityTwoFactorOperation(FUserSlot UserSlot, FString ExternalService, FString ExternalNamespace, FString ExternalToken,
-	                                                                      FBeamOperationEventHandlerCode OnOperationEvent);
-
-	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Auth", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
 	FBeamOperationHandle CommitLoginExternalIdentityTwoFactorOperation(FUserSlot UserSlot, FString ExternalService, FString ExternalNamespace, FString ExternalToken, UChallengeSolutionObject* ChallengeSolution,
 	                                                                   FBeamOperationEventHandler OnOperationEvent);
 
@@ -879,14 +896,6 @@ public:
 	 */
 	FBeamOperationHandle CPP_AttachExternalIdentityOperation(FUserSlot UserSlot, FString MicroserviceName, FString IdentityNamespace, FString IdentityUserId, FString IdentityAuthToken,
 	                                                         FBeamOperationEventHandlerCode OnOperationEvent);
-
-
-	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Auth", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
-	FBeamOperationHandle BeginAttachExternalIdentityOperation(FUserSlot UserSlot, FString MicroserviceName, FString IdentityNamespace, FString IdentityUserId, FString IdentityAuthToken,
-	                                                          FBeamOperationEventHandler OnOperationEvent);
-
-	FBeamOperationHandle CPP_BeginAttachExternalIdentityOperation(FUserSlot UserSlot, FString MicroserviceName, FString IdentityNamespace, FString IdentityUserId, FString IdentityAuthToken,
-	                                                              FBeamOperationEventHandlerCode OnOperationEvent);
 
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Auth", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
 	FBeamOperationHandle CommitAttachExternalIdentityOperation(FUserSlot UserSlot, FString MicroserviceName, FString IdentityNamespace, FString IdentityUserId, FString IdentityAuthToken,
@@ -964,12 +973,12 @@ private:
 	// BP/CPP Independent Operation Implementations	
 	void LoginFrictionless(FUserSlot UserSlot, FBeamOperationHandle Op);
 	void LoginExternalIdentity(FUserSlot UserSlot, FString ExternalService, FString ExternalNamespace, FString ExternalToken, FBeamOperationHandle Op);
-	void BeginLoginExternalIdentityTwoFactor(FUserSlot UserSlot, FString ExternalService, FString ExternalNamespace, FString ExternalToken, FBeamOperationHandle Op);
 	void CommitLoginExternalIdentityTwoFactor(FUserSlot UserSlot, FString ExternalService, FString ExternalNamespace, FString ExternalToken, UChallengeSolutionObject* ChallengeSolution, FBeamOperationHandle Op);
 	void LoginEmailAndPassword(FUserSlot UserSlot, FString Email, FString Password, FBeamOperationHandle Op);
-	void BeginAttachExternalIdentityTwoFactor(FUserSlot UserSlot, FString MicroserviceName, FString IdentityNamespace, FString IdentityUserId, FString IdentityAuthToken, FBeamOperationHandle Op);
 	void CommitAttachExternalIdentityTwoFactor(FUserSlot UserSlot, FString MicroserviceName, FString IdentityNamespace, FString IdentityUserId, FString IdentityAuthToken, UChallengeSolutionObject* ChallengeSolution,
 	                                           FBeamOperationHandle Op);
+
+	void AttachLocalIdentity(FUserSlot UserSlot, FString IdentityUserId, FString MicroserviceName, FString IdentityNamespace);
 	void AttachExternalIdentity(FUserSlot UserSlot, FString MicroserviceName, FString IdentityNamespace, FString IdentityUserId, FString IdentityAuthToken, FBeamOperationHandle Op);
 	void AttachEmailAndPassword(FUserSlot UserSlot, FString Email, FString Password, FBeamOperationHandle Op);
 	void SignUpExternalIdentity(FUserSlot UserSlot, FString MicroserviceName, FString IdentityNamespace, FString IdentityUserId, FString IdentityAuthToken, FBeamOperationHandle Op);

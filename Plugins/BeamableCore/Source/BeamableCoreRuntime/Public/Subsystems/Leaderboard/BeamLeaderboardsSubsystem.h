@@ -84,9 +84,9 @@ class BEAMABLECORERUNTIME_API UBeamLeaderboardsSubsystem : public UBeamRuntimeSu
 
 	UBeamLeaderboardsApi* LeaderboardsApi;
 
-	TSet<FString> AssignmentLeaderboardCache;
-
 	TMap<FString, FBeamLeaderboardView> LeaderboardsCache;
+
+	TMap<FString, FString> AssignmentLeaderboardCache;
 
 	virtual void InitializeWhenUnrealReady_Implementation(FBeamOperationHandle& ResultOp) override;
 
@@ -115,6 +115,15 @@ public:
 	 */
 	FOnUpdateLeaderboardCode OnUpdateLeaderboardCode;
 
+	/**
+	 * @brief For partitioned or cohorted leaderboards get the local state for a specific child leaderboard the player is assigned to e. g. "leaderboards. my_partitioned_board" -> "leaderboards. my_partitioned_board#0" -- where #0 denotes the partition identifier
+	 * If it is not a partitioned leaderboard it will only returns the leaderboard id.
+	 * @param PartitionedLeaderboardId: The output for the partitioned leaderboard
+	 */
+	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Leaderboards",
+		meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext", ExpandBoolAsExecs="ReturnValue"))
+	bool TryGetAssignedLeaderboard(FUserSlot UserSlot, FString LeaderboardId, FString& PartitionedLeaderboardId);
+	
 	/**
 	 * @brief Attempts to retrieve the local leaderboard state for a specific leaderboard.
 	 *
@@ -295,6 +304,23 @@ public:
 
 
 	// Operations
+
+	/**
+	 * @brief For partitioned or cohorted leaderboards Resolves the specific child leaderboard the player is assigned to e. g. "leaderboards. my_partitioned_board" -> "leaderboards. my_partitioned_board#0" -- where #0 denotes the partition identifier
+	 * If it is not a partitioned leaderboard it will only return the leaderboard id.
+	 * @param UserSlot: The target user slot to get the partitioned leaderboard
+	 * @param Join: If the player should join a partitioned leaderboard
+	 */
+	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Leaderboards",
+		meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
+	FBeamOperationHandle FetchAssignedLeaderboardOperation(FUserSlot UserSlot, FString LeaderboardId, bool Join,
+	                                                       FBeamOperationEventHandler OnOperationEvent);
+
+	/**
+	 * @copydoc FetchAssignedLeaderboardOperation
+	 */
+	FBeamOperationHandle CPP_FetchAssignedLeaderboardOperation(FUserSlot UserSlot, FString LeaderboardId, bool Join,
+	                                                           FBeamOperationEventHandlerCode OnOperationEvent);
 
 	/**
 	 * @brief This will fetch some entries in the beginning and in the end of the leaderboard and return a focus entry.
@@ -482,6 +508,8 @@ public:
 
 protected:
 	// Async Operations
+
+	void FetchAssignedLeaderboard(FUserSlot UserSlot, FString LeaderboardId, bool Join, FBeamOperationHandle Op);
 
 	void FetchLeaderboard(FUserSlot UserSlot, FString LeaderboardId, int From, int Max, FBeamOperationHandle Op);
 

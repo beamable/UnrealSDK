@@ -49,6 +49,22 @@ void UBeamLeaderboardsSubsystem::OnUserSignedOut_Implementation(const FUserSlot&
 	Super::OnUserSignedOut_Implementation(UserSlot, Reason, BeamRealmUser, ResultOp);
 }
 
+bool UBeamLeaderboardsSubsystem::TryGetAssignedLeaderboard(FUserSlot UserSlot, FString LeaderboardId, FString& PartitionedLeaderboardId)
+{
+	FBeamRealmUser RealmUser;
+	if (Runtime->UserSlotSystem->GetUserDataAtSlot(UserSlot, RealmUser, this))
+	{
+		FString LeaderboardAssignedKey = GetAssignmentLeaderboardKey(RealmUser.GamerTag, LeaderboardId);
+		
+		if (AssignmentLeaderboardCache.Contains(LeaderboardAssignedKey))
+		{
+			PartitionedLeaderboardId = AssignmentLeaderboardCache[LeaderboardAssignedKey];
+			return true;
+		}
+	}
+	return false;
+}
+
 bool UBeamLeaderboardsSubsystem::TryGetLeaderboard(FString LeaderboardId, FBeamLeaderboardView& LeaderboardView)
 {
 	if (!LeaderboardsCache.Contains(LeaderboardId))
@@ -337,6 +353,20 @@ bool UBeamLeaderboardsSubsystem::IsLeaderboardPageCached(FString LeaderboardId, 
 	return false;
 }
 
+FBeamOperationHandle UBeamLeaderboardsSubsystem::FetchAssignedLeaderboardOperation(FUserSlot UserSlot, FString LeaderboardId, bool Join, FBeamOperationEventHandler OnOperationEvent)
+{
+	const auto Handle = Runtime->RequestTrackerSystem->BeginOperation({UserSlot}, GetClass()->GetFName().ToString(), OnOperationEvent);
+	FetchAssignedLeaderboard(UserSlot, LeaderboardId, Join, Handle);
+	return Handle;
+}
+
+FBeamOperationHandle UBeamLeaderboardsSubsystem::CPP_FetchAssignedLeaderboardOperation(FUserSlot UserSlot, FString LeaderboardId, bool Join, FBeamOperationEventHandlerCode OnOperationEvent)
+{
+	const auto Handle = Runtime->RequestTrackerSystem->CPP_BeginOperation({UserSlot}, GetClass()->GetFName().ToString(), OnOperationEvent);
+	FetchAssignedLeaderboard(UserSlot, LeaderboardId, Join, Handle);
+	return Handle;
+}
+
 FBeamOperationHandle UBeamLeaderboardsSubsystem::FetchFocusRankEntriesOperation(FUserSlot UserSlot, FString LeaderboardId, int StartEntriesSize, FBeamGamerTag FocusEntryGamerTag, int LastEntriesSize,
                                                                                 FBeamOperationEventHandler OnOperationEvent)
 {
@@ -471,6 +501,57 @@ FBeamOperationHandle UBeamLeaderboardsSubsystem::CPP_DecrementLeaderboardScoreOp
 	const auto Handle = Runtime->RequestTrackerSystem->CPP_BeginOperation({UserSlot}, GetClass()->GetFName().ToString(), OnOperationEvent);
 	DecrementLeaderboardScore(UserSlot, LeaderboardId, PlayerGamerTag, Score, Stats, Handle);
 	return Handle;
+}
+
+void UBeamLeaderboardsSubsystem::FetchAssignedLeaderboard(FUserSlot UserSlot, FString LeaderboardId, bool Join, FBeamOperationHandle Op)
+{
+	if (!IsUserSlotAuthenticated(UserSlot, __FUNCTION__, Op))
+	{
+		return;
+	}
+	auto Handle = FOnBasicLeaderboardsGetAssignmentFullResponse::CreateLambda([this, LeaderboardId, Op, UserSlot](const FBasicLeaderboardsGetAssignmentFullResponse& Response)
+	{
+		if (Response.State == RS_Retrying) return;
+
+		if (Response.State == RS_Success)
+		{
+			FBeamRealmUser RealmUser;
+			if (Runtime->UserSlotSystem->GetUserDataAtSlot(UserSlot, RealmUser, this))
+			{
+				FString LeaderboardAssignedKey = GetAssignmentLeaderboardKey(RealmUser.GamerTag, LeaderboardId);
+				// This maps the player - leaderboard id to a partition leaderboard id.
+				if (!AssignmentLeaderboardCache.Contains(LeaderboardAssignedKey))
+				{
+					AssignmentLeaderboardCache.Add(LeaderboardAssignedKey, Response.SuccessData->LeaderboardId);
+				}
+				Runtime->RequestTrackerSystem->TriggerOperationSuccess(Op, TEXT(""));
+			}
+			else
+			{
+				Runtime->RequestTrackerSystem->TriggerOperationError(Op, TEXT("Couldn't found a authenticated player for the given user slot"));
+			}
+
+			return;
+		}
+
+		if (Response.State == RS_Error)
+		{
+			Runtime->RequestTrackerSystem->TriggerOperationError(Op, Response.ErrorData.message);
+			return;
+		}
+
+		if (Response.State == RS_Cancelled)
+		{
+			Runtime->RequestTrackerSystem->TriggerOperationCancelled(Op, Response.ErrorData.message);
+			return;
+		}
+	});
+
+	auto Request = UBasicLeaderboardsGetAssignmentRequest::Make(LeaderboardId, FOptionalBool(Join), this, {});
+
+	FBeamRequestContext Ctx;
+
+	LeaderboardsApi->CPP_BasicLeaderboardsGetAssignment(UserSlot, Request, Handle, Ctx, Op, this);
 }
 
 
