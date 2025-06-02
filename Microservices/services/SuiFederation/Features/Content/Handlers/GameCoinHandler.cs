@@ -51,6 +51,12 @@ public class GameCoinHandler : IService, IContentHandler
         return Task.FromResult<BaseMessage?>(EmptyMessageExtensions.Create());
     }
 
+    public Task<BaseMessage?> ConstructMessage(string transaction, string wallet, InventoryRequestDelete inventoryRequest,
+        IContentObject contentObject)
+    {
+        return Task.FromResult<BaseMessage?>(EmptyMessageExtensions.Create());
+    }
+
     private async Task<GameCoinMintMessage> PositiveAmountMessage(string transaction, string wallet, string function, InventoryRequest inventoryRequest)
     {
         var contract = await _contractService.GetByContentId<GameCoinContract>(inventoryRequest.ContentId);

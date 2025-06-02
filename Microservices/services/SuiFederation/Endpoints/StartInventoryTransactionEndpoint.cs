@@ -3,6 +3,7 @@ using System.Linq;
 using Beamable.Common;
 using Beamable.Common.Api.Inventory;
 using Beamable.Server;
+using Beamable.SuiFederation.Features.ChannelProcessor;
 using Beamable.SuiFederation.Features.Content.Models;
 using Beamable.SuiFederation.Features.Inventory;
 using Beamable.SuiFederation.Features.Inventory.Models;
@@ -26,7 +27,7 @@ public class StartInventoryTransactionEndpoint : IEndpoint
         _updatePlayerStateService = updatePlayerStateService;
     }
 
-    public async Promise<FederatedInventoryProxyState> StartInventoryTransaction(string id, string transaction, Dictionary<string, long> currencies, List<FederatedItemCreateRequest> newItems, List<FederatedItemDeleteRequest> deleteItems, List<FederatedItemUpdateRequest> updateItems)
+    public async Promise<FederatedInventoryProxyState> StartInventoryTransaction(string id, string transaction, Dictionary<string, long> currencies, List<FederatedItemCreateRequest> newItems, List<FederatedItemDeleteRequest> deleteItems, List<FederatedItemUpdateRequest> updateItems, UserRequestDataHandler user)
     {
         var transactionId = await _transactionManager.StartTransaction(id, nameof(StartInventoryTransaction), transaction, currencies, newItems, deleteItems, updateItems);
         _transactionManager.SetCurrentTransactionContext(transactionId);
@@ -35,7 +36,9 @@ public class StartInventoryTransactionEndpoint : IEndpoint
             // NEW ITEMS
             var currencyRequest = currencies.Select(c => new InventoryRequest(_requestContext.UserId, c.Key, c.Value, new Dictionary<string, string>()));
             var itemsRequest = newItems.Select(i => new InventoryRequest(_requestContext.UserId, i.contentId, 1, i.properties));
-            await _inventoryService.NewItems(transactionId.ToString(), id, currencyRequest.Union(itemsRequest));
+            await ChannelService.Enqueue(user, async (_) =>
+                await _inventoryService.NewItems(transactionId.ToString(), id, currencyRequest.Union(itemsRequest), user)
+            );
 
             // UPDATE ITEMS
             var updateItemsRequest = updateItems.Select(i => new InventoryRequestUpdate(_requestContext.UserId,
@@ -43,12 +46,24 @@ public class StartInventoryTransactionEndpoint : IEndpoint
                 i.properties
                     .Where(kvp => !NftContentItemExtensions.FixedProperties().Contains(kvp.Key))
                     .ToDictionary(kvp => kvp.Key, kvp => kvp.Value)));
-            await _inventoryService.UpdateItems(transactionId.ToString(), id, updateItemsRequest);
+            await ChannelService.Enqueue(user, async (_) =>
+                await _inventoryService.UpdateItems(transactionId.ToString(), id, updateItemsRequest, user)
+            );
 
-            await _updatePlayerStateService.Update(new InventoryTransactionNotification
-            {
-                InventoryTransactionId = transaction
-            });
+            // DELETE ITEMS
+            var deleteItemsRequest = deleteItems.Select(i => new InventoryRequestDelete(_requestContext.UserId,
+                i.contentId, i.proxyId));
+            await ChannelService.Enqueue(user, async (_) =>
+                await _inventoryService.DeleteItems(transactionId.ToString(), id, deleteItemsRequest, user)
+            );
+
+            await ChannelService.Enqueue(user, async (_) =>
+                await _updatePlayerStateService.Update(new InventoryTransactionNotification
+                {
+                    InventoryTransactionId = transaction
+                }, user)
+            );
+            BeamableLogger.Log("ChannelService queue lenght {GetQueueLength}", ChannelService.GetQueueLength());
         });
 
         return await _inventoryService.GetLastKnownState(id);

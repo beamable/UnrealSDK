@@ -1,7 +1,6 @@
 ﻿ARG BEAM_DOTNET_VERSION="8.0-noble"
 FROM mcr.microsoft.com/dotnet/runtime:${BEAM_DOTNET_VERSION} as base
-
-RUN apt-get update && apt-get install -y nodejs && apt-get install -y nodejs npm
+RUN apt-get update && apt-get install -y nodejs npm unzip
 
 FROM base AS final
 
@@ -19,7 +18,7 @@ ARG BEAM_APP_SRC_PATH
 #  This value is usually /beamApp/SuiFederation
 ARG BEAM_APP_DEST
 
-# <beamReserved> Beamable may inject custom settings into this Dockerfile. Please do not remove these lines. 
+# <beamReserved> Beamable may inject custom settings into this Dockerfile. Please do not remove these lines.
 # </beamReserved>
 
 # /beamApp is the directory that will hold the application
@@ -35,7 +34,7 @@ COPY $BEAM_SUPPORT_SRC_PATH .
 COPY $BEAM_APP_SRC_PATH .
 
 ENV SUI_PATH="/usr/local/bin/sui"
-RUN cp SuiTools/sui $SUI_PATH
+RUN unzip -o SuiTools/sui.zip -d /usr/local/bin/
 RUN chmod +x ${SUI_PATH}
 
 # ensure that the application is runnable

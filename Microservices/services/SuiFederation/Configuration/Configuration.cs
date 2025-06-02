@@ -35,8 +35,7 @@ public class Configuration : IService
 
     public ValueTask<string> SuiEnvironment => GetValue(nameof(SuiEnvironment), "devnet");
     public ValueTask<int> AuthenticationChallengeTtlSec => GetValue(nameof(AuthenticationChallengeTtlSec), 600);
-    public ValueTask<bool> FakeChallengeSolution => GetValue(nameof(FakeChallengeSolution), false);
-    public ValueTask<bool> AllowManagedAccounts => GetValue(nameof(AllowManagedAccounts), true);
+    public ValueTask<bool> SimulateChallengeSolution => GetValue(nameof(SimulateChallengeSolution), false);
 
     private async ValueTask<T> GetValue<T>(string key, T defaultValue) where T : IConvertible
     {

@@ -18,6 +18,7 @@ public class TransactionLog
 
     public DateTime StartTimestamp { get; set; } = DateTime.UtcNow;
     public DateTime? EndTimestamp { get; set; }
+    public DateTime? MintedTimestamp { get; set; }
     public string Request { get; set; } = null!;
 
     [BsonIgnoreIfNull]

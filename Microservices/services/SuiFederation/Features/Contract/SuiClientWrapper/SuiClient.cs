@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using Beamable.Common;
 using Beamable.SuiFederation.Extensions;
 using Beamable.SuiFederation.Features.Accounts;
-using Beamable.SuiFederation.Features.Accounts.Models;
 using Beamable.SuiFederation.Features.Common;
 using Beamable.SuiFederation.Features.Contract.SuiClientWrapper.Exceptions;
 using Beamable.SuiFederation.Features.Contract.SuiClientWrapper.Models;

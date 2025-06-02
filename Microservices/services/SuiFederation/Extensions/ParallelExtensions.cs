@@ -10,25 +10,22 @@ public static class ParallelExtensions
 {
     public static async Task<Dictionary<TKey, List<TValue>>> ParallelGroupByAsync<TSource, TKey, TValue>(
         this IEnumerable<TSource> source,
-        Func<TSource, Task<TValue?>> asyncSelector,
-        Func<TValue, TKey> keySelector)
+        Func<TSource, Task<(TKey key, TValue? value)>> asyncSelector)
         where TKey : notnull
         where TValue : class
     {
         var resultDictionary = new ConcurrentDictionary<TKey, List<TValue>>();
         await Parallel.ForEachAsync(source, async (item, cancellationToken) =>
         {
-            var value = await asyncSelector(item);
-            if (value != null) // Ensure we don't store null values
+            var (key, value) = await asyncSelector(item);
+            if (value != null)
             {
-                var key = keySelector(value);
-
                 resultDictionary.AddOrUpdate(
                     key,
                     _ => [value],
                     (_, list) =>
                     {
-                        lock (list) // Ensure thread-safety when modifying the list
+                        lock (list)
                         {
                             list.Add(value);
                         }
@@ -38,7 +35,6 @@ public static class ParallelExtensions
             }
         });
 
-        // Convert ConcurrentDictionary to a regular Dictionary before returning
         return resultDictionary.ToDictionary(entry => entry.Key, entry => entry.Value);
     }
 

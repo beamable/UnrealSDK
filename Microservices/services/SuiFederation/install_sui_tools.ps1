@@ -18,7 +18,12 @@ docker create --name $containerName $imageName | Out-Null
 Write-Host "Extracting $targetFile from $containerName..."
 docker cp "$containerName`:$targetFile" $destinationPath
 
-# Step 3: Remove the temporary container
+# Step 3: ZIP the SUI executable and delete
+Remove-Item -Path "$destinationPath/sui.zip" -Force
+Compress-Archive -Path "$destinationPath/sui" -DestinationPath "$destinationPath/sui.zip"
+Remove-Item -Path "$destinationPath/sui" -Force
+
+# Step 4: Remove the temporary container
 Write-Host "Removing temporary container..."
 docker rm $containerName | Out-Null
 

@@ -119,6 +119,16 @@ export interface NftUpdateMessage {
     Attributes: Attribute[]
 }
 
+export interface NftDeleteMessage {
+    ProxyId: string;
+    PackageId: string;
+    Module: string;
+    Function: string;
+    PlayerWalletKey: string;
+    PlayerWalletAddress: string;
+    OwnerObjectId: string;
+}
+
 export class CoinToken {
     Id: string;
     Balance: number;
@@ -135,6 +145,24 @@ export interface PaginatedResult<T> {
 }
 export interface InputParams {
     cursor?: string | null | undefined;
+}
+
+export interface CurrencyTransfer {
+    PackageId: string;
+    Module: string;
+    PlayerWalletAddress: string;
+    PlayerWalletKey: string;
+    TargetWalletAddress: string;
+    Amount: number;
+}
+
+export class CoinModel {
+    coinObjectId: string;
+    balance: number;
+    public constructor(coinObjectId: string, balance: number) {
+        this.coinObjectId = coinObjectId;
+        this.balance = balance;
+    }
 }
 
 export class SuiObject {

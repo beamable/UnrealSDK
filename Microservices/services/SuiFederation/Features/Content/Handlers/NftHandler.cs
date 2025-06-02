@@ -57,11 +57,6 @@ public class NftHandler : IService, IContentHandler
     {
         var contract = await _contractService.GetByContentId<NftContract>(inventoryRequest.ToNftType());
         var playerAccount = await _accountsService.GetAccountByAddress(wallet);
-        if (playerAccount is null)
-        {
-            BeamableLogger.LogWarning($"Wallet {wallet} does not exist.");
-            return null;
-        }
         return new NftUpdateMessage(
             inventoryRequest.ContentId,
             contract.PackageId,
@@ -77,12 +72,30 @@ public class NftHandler : IService, IContentHandler
         );
     }
 
+    public async Task<BaseMessage?> ConstructMessage(string transaction, string wallet, InventoryRequestDelete inventoryRequest,
+        IContentObject contentObject)
+    {
+        var contract = await _contractService.GetByContentId<NftContract>(inventoryRequest.ToNftType());
+        var playerAccount = await _accountsService.GetAccountByAddress(wallet);
+        return new NftDeleteMessage(
+            inventoryRequest.ContentId,
+            contract.PackageId,
+            contract.Module,
+            "burn",
+            wallet,
+            inventoryRequest.ProxyId,
+            contract.OwnerInfo,
+            playerAccount!.PrivateKey
+        );
+    }
+
     public async Task SendMessages(string transaction, List<BaseMessage> messages)
     {
         if (messages.Count == 0) return;
 
         var mintMessages = messages.OfType<NftMintMessage>().ToList();
         var updateMessages = messages.OfType<NftUpdateMessage>().ToList();
+        var deleteMessages = messages.OfType<NftDeleteMessage>().ToList();
 
         if (mintMessages.Count > 0)
         {
@@ -92,6 +105,42 @@ public class NftHandler : IService, IContentHandler
         if (updateMessages.Count > 0)
         {
             await SendUpdateMessages(transaction, updateMessages);
+        }
+
+        if (deleteMessages.Count > 0)
+        {
+            await SendDeleteMessages(transaction, deleteMessages);
+        }
+    }
+
+    private async Task SendDeleteMessages(string transaction, List<NftDeleteMessage> messages)
+    {
+        var transactionManager = _transactionManagerFactory.Create(transaction);
+        try
+        {
+            var result = await _suiApiService.DeleteNft(messages);
+            await transactionManager.AddChainTransaction(new ChainTransaction
+            {
+                Digest = result.digest,
+                Error = result.error,
+                Function = $"{nameof(NftHandler)}.{nameof(SendDeleteMessages)}",
+                GasUsed = result.gasUsed,
+                Data = messages.SerializeSelected(),
+                Status = result.status,
+            });
+            if (result.status != "success")
+            {
+                var message = $"{nameof(NftHandler)}.{nameof(SendDeleteMessages)} failed with status {result.status}";
+                BeamableLogger.LogError(message);
+                await transactionManager.TransactionError(transaction, new Exception(message));
+            }
+        }
+        catch (Exception e)
+        {
+            var message =
+                $"{nameof(NftHandler)}.{nameof(SendDeleteMessages)} failed with error {e.Message}";
+            BeamableLogger.LogError(message);
+            await transactionManager.TransactionError(transaction, new Exception(message));
         }
     }
 
