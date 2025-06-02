@@ -1319,20 +1319,20 @@ FBeamOperationHandle UBeamRuntime::CPP_LoginExternalIdentityOperation(FUserSlot 
 	return Handle;
 }
 
-FBeamOperationHandle UBeamRuntime::CommitLoginExternalIdentityTwoFactorOperation(FUserSlot UserSlot, FString ExternalService, FString ExternalNamespace, FString ExternalToken, UChallengeSolutionObject* ChallengeSolution,
+FBeamOperationHandle UBeamRuntime::CommitLoginExternalIdentity2FAOperation(FUserSlot UserSlot, FString ExternalService, FString ExternalNamespace, FString ExternalToken, UChallengeSolutionObject* ChallengeSolution,
                                                                                  FBeamOperationEventHandler OnOperationEvent)
 {
 	const FBeamOperationHandle Handle = RequestTrackerSystem->BeginOperation({UserSlot}, GetClass()->GetFName().ToString(), OnOperationEvent);
-	CommitLoginExternalIdentityTwoFactor(UserSlot, ExternalService, ExternalNamespace, ExternalToken, ChallengeSolution, Handle);
+	CommitLoginExternalIdentity2FA(UserSlot, ExternalService, ExternalNamespace, ExternalToken, ChallengeSolution, Handle);
 	return Handle;
 }
 
-FBeamOperationHandle UBeamRuntime::CPP_CommitLoginExternalIdentityTwoFactorOperation(FUserSlot UserSlot, FString ExternalService, FString ExternalNamespace, UChallengeSolutionObject* ChallengeSolution,
+FBeamOperationHandle UBeamRuntime::CPP_CommitLoginExternalIdentity2FAOperation(FUserSlot UserSlot, FString ExternalService, FString ExternalNamespace, UChallengeSolutionObject* ChallengeSolution,
                                                                                      FString ExternalToken,
                                                                                      FBeamOperationEventHandlerCode OnOperationEvent)
 {
 	const FBeamOperationHandle Handle = RequestTrackerSystem->CPP_BeginOperation({UserSlot}, GetClass()->GetFName().ToString(), OnOperationEvent);
-	CommitLoginExternalIdentityTwoFactor(UserSlot, ExternalService, ExternalNamespace, ExternalToken, ChallengeSolution, Handle);
+	CommitLoginExternalIdentity2FA(UserSlot, ExternalService, ExternalNamespace, ExternalToken, ChallengeSolution, Handle);
 	return Handle;
 }
 
@@ -1367,19 +1367,19 @@ FBeamOperationHandle UBeamRuntime::CPP_AttachExternalIdentityOperation(FUserSlot
 	return Handle;
 }
 
-FBeamOperationHandle UBeamRuntime::CommitAttachExternalIdentityOperation(FUserSlot UserSlot, FString MicroserviceName, FString IdentityNamespace, FString IdentityUserId, FString IdentityAuthToken,
+FBeamOperationHandle UBeamRuntime::CommitAttachExternalIdentity2FAOperation(FUserSlot UserSlot, FString MicroserviceName, FString IdentityNamespace, FString IdentityUserId, FString IdentityAuthToken,
                                                                          UChallengeSolutionObject* ChallengeSolution, FBeamOperationEventHandler OnOperationEvent)
 {
 	const FBeamOperationHandle Handle = RequestTrackerSystem->BeginOperation({UserSlot}, GetClass()->GetFName().ToString(), OnOperationEvent);
-	CommitAttachExternalIdentityTwoFactor(UserSlot, MicroserviceName, IdentityNamespace, IdentityUserId, IdentityAuthToken, ChallengeSolution, Handle);
+	CommitAttachExternalIdentity2FA(UserSlot, MicroserviceName, IdentityNamespace, IdentityUserId, IdentityAuthToken, ChallengeSolution, Handle);
 	return Handle;
 }
 
-FBeamOperationHandle UBeamRuntime::CPP_CommitAttachExternalIdentityOperation(FUserSlot UserSlot, FString MicroserviceName, FString IdentityNamespace, FString IdentityUserId, FString IdentityAuthToken,
+FBeamOperationHandle UBeamRuntime::CPP_CommitAttachExternalIdentity2FAOperation(FUserSlot UserSlot, FString MicroserviceName, FString IdentityNamespace, FString IdentityUserId, FString IdentityAuthToken,
                                                                              UChallengeSolutionObject* ChallengeSolution, FBeamOperationEventHandlerCode OnOperationEvent)
 {
 	const FBeamOperationHandle Handle = RequestTrackerSystem->CPP_BeginOperation({UserSlot}, GetClass()->GetFName().ToString(), OnOperationEvent);
-	CommitAttachExternalIdentityTwoFactor(UserSlot, MicroserviceName, IdentityNamespace, IdentityUserId, IdentityAuthToken, ChallengeSolution, Handle);
+	CommitAttachExternalIdentity2FA(UserSlot, MicroserviceName, IdentityNamespace, IdentityUserId, IdentityAuthToken, ChallengeSolution, Handle);
 	return Handle;
 }
 
@@ -1513,7 +1513,7 @@ void UBeamRuntime::LoginExternalIdentity(FUserSlot UserSlot, FString ExternalSer
 	}
 }
 
-void UBeamRuntime::CommitLoginExternalIdentityTwoFactor(FUserSlot UserSlot, FString ExternalService, FString ExternalNamespace, FString ExternalToken, UChallengeSolutionObject* ChallengeSolution, FBeamOperationHandle Op)
+void UBeamRuntime::CommitLoginExternalIdentity2FA(FUserSlot UserSlot, FString ExternalService, FString ExternalNamespace, FString ExternalToken, UChallengeSolutionObject* ChallengeSolution, FBeamOperationHandle Op)
 {
 	UAuthenticateRequest* Req = NewObject<UAuthenticateRequest>(GetTransientPackage());
 	Req->Body = NewObject<UTokenRequestWrapper>(Req);
@@ -1586,7 +1586,7 @@ void UBeamRuntime::LoginEmailAndPassword(FUserSlot UserSlot, FString Email, FStr
 	}
 }
 
-void UBeamRuntime::CommitAttachExternalIdentityTwoFactor(FUserSlot UserSlot, FString MicroserviceName, FString IdentityNamespace, FString IdentityUserId, FString IdentityAuthToken,
+void UBeamRuntime::CommitAttachExternalIdentity2FA(FUserSlot UserSlot, FString MicroserviceName, FString IdentityNamespace, FString IdentityUserId, FString IdentityAuthToken,
                                                          UChallengeSolutionObject* ChallengeSolution,
                                                          FBeamOperationHandle Op)
 {

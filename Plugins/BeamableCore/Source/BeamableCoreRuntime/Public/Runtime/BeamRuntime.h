@@ -865,11 +865,11 @@ public:
 
 
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Auth", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
-	FBeamOperationHandle CommitLoginExternalIdentityTwoFactorOperation(FUserSlot UserSlot, FString ExternalService, FString ExternalNamespace, FString ExternalToken, UChallengeSolutionObject* ChallengeSolution,
+	FBeamOperationHandle CommitLoginExternalIdentity2FAOperation(FUserSlot UserSlot, FString ExternalService, FString ExternalNamespace, FString ExternalToken, UChallengeSolutionObject* ChallengeSolution,
 	                                                                   FBeamOperationEventHandler OnOperationEvent);
 
 
-	FBeamOperationHandle CPP_CommitLoginExternalIdentityTwoFactorOperation(FUserSlot UserSlot, FString ExternalService, FString ExternalNamespace, UChallengeSolutionObject* ChallengeSolution, FString ExternalToken,
+	FBeamOperationHandle CPP_CommitLoginExternalIdentity2FAOperation(FUserSlot UserSlot, FString ExternalService, FString ExternalNamespace, UChallengeSolutionObject* ChallengeSolution, FString ExternalToken,
 	                                                                       FBeamOperationEventHandlerCode OnOperationEvent);
 
 
@@ -898,11 +898,11 @@ public:
 	                                                         FBeamOperationEventHandlerCode OnOperationEvent);
 
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Auth", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
-	FBeamOperationHandle CommitAttachExternalIdentityOperation(FUserSlot UserSlot, FString MicroserviceName, FString IdentityNamespace, FString IdentityUserId, FString IdentityAuthToken,
+	FBeamOperationHandle CommitAttachExternalIdentity2FAOperation(FUserSlot UserSlot, FString MicroserviceName, FString IdentityNamespace, FString IdentityUserId, FString IdentityAuthToken,
 	                                                           UChallengeSolutionObject* ChallengeSolution,
 	                                                           FBeamOperationEventHandler OnOperationEvent);
 
-	FBeamOperationHandle CPP_CommitAttachExternalIdentityOperation(FUserSlot UserSlot, FString MicroserviceName, FString IdentityNamespace, FString IdentityUserId, FString IdentityAuthToken,
+	FBeamOperationHandle CPP_CommitAttachExternalIdentity2FAOperation(FUserSlot UserSlot, FString MicroserviceName, FString IdentityNamespace, FString IdentityUserId, FString IdentityAuthToken,
 	                                                               UChallengeSolutionObject* ChallengeSolution,
 	                                                               FBeamOperationEventHandlerCode OnOperationEvent);
 
@@ -973,9 +973,9 @@ private:
 	// BP/CPP Independent Operation Implementations	
 	void LoginFrictionless(FUserSlot UserSlot, FBeamOperationHandle Op);
 	void LoginExternalIdentity(FUserSlot UserSlot, FString ExternalService, FString ExternalNamespace, FString ExternalToken, FBeamOperationHandle Op);
-	void CommitLoginExternalIdentityTwoFactor(FUserSlot UserSlot, FString ExternalService, FString ExternalNamespace, FString ExternalToken, UChallengeSolutionObject* ChallengeSolution, FBeamOperationHandle Op);
+	void CommitLoginExternalIdentity2FA(FUserSlot UserSlot, FString ExternalService, FString ExternalNamespace, FString ExternalToken, UChallengeSolutionObject* ChallengeSolution, FBeamOperationHandle Op);
 	void LoginEmailAndPassword(FUserSlot UserSlot, FString Email, FString Password, FBeamOperationHandle Op);
-	void CommitAttachExternalIdentityTwoFactor(FUserSlot UserSlot, FString MicroserviceName, FString IdentityNamespace, FString IdentityUserId, FString IdentityAuthToken, UChallengeSolutionObject* ChallengeSolution,
+	void CommitAttachExternalIdentity2FA(FUserSlot UserSlot, FString MicroserviceName, FString IdentityNamespace, FString IdentityUserId, FString IdentityAuthToken, UChallengeSolutionObject* ChallengeSolution,
 	                                           FBeamOperationHandle Op);
 
 	void AttachLocalIdentity(FUserSlot UserSlot, FString IdentityUserId, FString MicroserviceName, FString IdentityNamespace);
