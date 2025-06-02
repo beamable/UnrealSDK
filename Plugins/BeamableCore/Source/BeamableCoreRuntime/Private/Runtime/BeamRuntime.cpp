@@ -797,10 +797,10 @@ void UBeamRuntime::TriggerSubsystemPostUserSignIn(FBeamWaitCompleteEvent Evt, FU
 						Subsystem->CurrentUserState[UserSlot] = BeamInitializedWithUserData;
 					}
 				}
-
+				RequestTrackerSystem->TriggerOperationSuccess(AuthOpHandle, {});
+				
 				OnUserReadyCode.Broadcast(UserSlot);
 				OnUserReady.Broadcast(UserSlot);
-				RequestTrackerSystem->TriggerOperationSuccess(AuthOpHandle, {});
 			});
 			SignedInOpsWait = RequestTrackerSystem->CPP_WaitAll({}, SignedInOps, {}, SignedInOpsHandler);
 		}

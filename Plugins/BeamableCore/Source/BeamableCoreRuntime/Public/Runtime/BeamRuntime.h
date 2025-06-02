@@ -339,7 +339,7 @@ class BEAMABLECORERUNTIME_API UBeamRuntime : public UGameInstanceSubsystem
 	void TriggerOnUserSlotAuthenticated(const FUserSlot& UserSlot, const FBeamRealmUser& BeamRealmUser, const FBeamOperationHandle& AuthOpHandle, const UObject* Context);
 
 	/**
-	 * @brief 
+	 * @brief This is triggered after the user being authenticated and wait until all the system initialize to triggers the call back for the operation and then call the event of the OnUserReady Event
 	 */
 	void TriggerSubsystemPostUserSignIn(FBeamWaitCompleteEvent, FUserSlot UserSlot, FBeamRealmUser BeamRealmUser,
 	                                    FBeamOperationHandle AuthOpHandle);
