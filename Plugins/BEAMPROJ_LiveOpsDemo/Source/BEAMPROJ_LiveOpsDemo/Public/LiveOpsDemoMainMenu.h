@@ -163,49 +163,6 @@ protected:
 		Runtime->CPP_LoginFrictionlessOperation(OwnerUserSlot, {});
 	}
 
-	UFUNCTION(BlueprintCallable)
-	void DoIdentityLogin(FString WalletKey)
-	{
-		SuiWalletId = WalletKey;
-		// Cache the SUIWallet to use in the two factor step
-		const auto OnSuiIdentityHandler = FBeamOperationEventHandlerCode::CreateLambda([this](FBeamOperationEvent Evt)
-		{
-			if (Evt.EventType == OET_SUCCESS)
-			{
-				// Then, we can proceed with the sample flow
-				OnLiveOpsDemoReady.Broadcast();
-			}
-			else
-			{
-				// Login error sent back to login menu
-				OnLoginError.Broadcast();
-			}
-			// If successful, we will get the two factor challenge
-			if (Evt.EventType == OET_SUCCESS)
-			{
-				UChallengeSolutionObject* ChallengeSolution = Cast<UChallengeSolutionObject>(Evt.EventData.GetInterface());
-
-				FString ChallengeToken;
-				FString _;
-				// The challenge comes as a base 64 encoded with more information separated by "."
-				ChallengeSolution->ChallengeToken.Split(TEXT("."), &ChallengeToken, &_);
-				FString DecodedChallenge = GetBase64Decode(ChallengeToken);
-
-				OnReceiveTwoFactorChallenge.Broadcast(OwnerUserSlot, DecodedChallenge, ChallengeSolution);
-			}
-			else
-			{
-				UE_LOG(LogTemp, Error, TEXT("Could not login for identity! ERROR=%s"), *Evt.EventCode);
-				OnLoginError.Broadcast();
-			}
-		});
-
-		Runtime->CPP_LoginExternalIdentityOperation(OwnerUserSlot, GetSuiMicroserviceName(),
-		                                            GetSuiIdentityName(),
-		                                            SuiWalletId,
-		                                            OnSuiIdentityHandler);
-	}
-
 
 	UFUNCTION(BlueprintCallable)
 	void DoTwoFactorIdentityAttach(FString WalletKey)
@@ -236,6 +193,7 @@ protected:
 
 		Runtime->CPP_BeginAttachExternalIdentityTwoFactorOperation(OwnerUserSlot, GetSuiMicroserviceName(),
 		                                                           GetSuiExternalIdentityName(),
+		                                                           SuiWalletIdExternal,
 		                                                           SuiWalletIdExternal,
 		                                                           OnSuiIdentityHandler);
 	}
@@ -383,7 +341,7 @@ protected:
 		                                                            GetSuiMicroserviceName(),
 		                                                            GetSuiExternalIdentityName(),
 		                                                            SuiWalletIdExternal,
-		                                                            TEXT(""),
+		                                                            SuiWalletIdExternal,
 		                                                            ChallengeSolution,
 		                                                            OnSuitIdentityFinishTwoFactorHandler);
 	}
@@ -409,6 +367,23 @@ protected:
 			UE_LOG(LogTemp, Error, TEXT("Base64 decoding failed!"));
 		}
 
+		return "";
+	}
+
+	UFUNCTION(BlueprintCallable)
+	FString GetAttachedWalledKey()
+	{
+		FBeamRealmUser RealmUser;
+		if (Runtime->UserSlotSystem->GetUserDataAtSlot(OwnerUserSlot, RealmUser, this))
+		{
+			for (auto ExternalIdentity : RealmUser.ExternalIdentities)
+			{
+				if (ExternalIdentity.ProviderNamespace == GetSuiExternalIdentityName())
+				{
+					return ExternalIdentity.UserId;
+				}
+			}
+		}
 		return "";
 	}
 

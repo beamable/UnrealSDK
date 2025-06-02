@@ -1396,19 +1396,19 @@ FBeamOperationHandle UBeamRuntime::CPP_AttachExternalIdentityOperation(FUserSlot
 	return Handle;
 }
 
-FBeamOperationHandle UBeamRuntime::BeginAttachExternalIdentityTwoFactorOperation(FUserSlot UserSlot, FString MicroserviceName, FString IdentityNamespace, FString IdentityUserId,
+FBeamOperationHandle UBeamRuntime::BeginAttachExternalIdentityTwoFactorOperation(FUserSlot UserSlot, FString MicroserviceName, FString IdentityNamespace, FString IdentityUserId, FString IdentityAuthToken,
                                                                                  FBeamOperationEventHandler OnOperationEvent)
 {
 	const FBeamOperationHandle Handle = RequestTrackerSystem->BeginOperation({UserSlot}, GetClass()->GetFName().ToString(), OnOperationEvent);
-	BeginAttachExternalIdentityTwoFactor(UserSlot, MicroserviceName, IdentityNamespace, IdentityUserId, Handle);
+	BeginAttachExternalIdentityTwoFactor(UserSlot, MicroserviceName, IdentityNamespace, IdentityUserId, IdentityAuthToken, Handle);
 	return Handle;
 }
 
-FBeamOperationHandle UBeamRuntime::CPP_BeginAttachExternalIdentityTwoFactorOperation(FUserSlot UserSlot, FString MicroserviceName, FString IdentityNamespace, FString IdentityUserId,
+FBeamOperationHandle UBeamRuntime::CPP_BeginAttachExternalIdentityTwoFactorOperation(FUserSlot UserSlot, FString MicroserviceName, FString IdentityNamespace, FString IdentityUserId, FString IdentityAuthToken,
                                                                                      FBeamOperationEventHandlerCode OnOperationEvent)
 {
 	const FBeamOperationHandle Handle = RequestTrackerSystem->CPP_BeginOperation({UserSlot}, GetClass()->GetFName().ToString(), OnOperationEvent);
-	BeginAttachExternalIdentityTwoFactor(UserSlot, MicroserviceName, IdentityNamespace, IdentityUserId, Handle);
+	BeginAttachExternalIdentityTwoFactor(UserSlot, MicroserviceName, IdentityNamespace, IdentityUserId, IdentityAuthToken, Handle);
 	return Handle;
 }
 
@@ -1685,10 +1685,10 @@ void UBeamRuntime::LoginEmailAndPassword(FUserSlot UserSlot, FString Email, FStr
 	}
 }
 
-void UBeamRuntime::BeginAttachExternalIdentityTwoFactor(FUserSlot UserSlot, FString MicroserviceName, FString IdentityNamespace, FString IdentityUserId, FBeamOperationHandle Op)
+void UBeamRuntime::BeginAttachExternalIdentityTwoFactor(FUserSlot UserSlot, FString MicroserviceName, FString IdentityNamespace, FString IdentityUserId, FString IdentityAuthToken, FBeamOperationHandle Op)
 {
 	const auto CheckIdentityAvailableHandler = FOnGetAvailableExternalIdentityFullResponse::CreateLambda(
-		[this,UserSlot, Op, MicroserviceName, IdentityNamespace, IdentityUserId](FGetAvailableExternalIdentityFullResponse Resp)
+		[this,UserSlot, Op, MicroserviceName, IdentityNamespace, IdentityUserId, IdentityAuthToken](FGetAvailableExternalIdentityFullResponse Resp)
 		{
 			if (Resp.State == RS_Retrying) return;
 
@@ -1719,7 +1719,7 @@ void UBeamRuntime::BeginAttachExternalIdentityTwoFactor(FUserSlot UserSlot, FStr
 								GEngine->GetEngineSubsystem<UBeamRequestTracker>()->TriggerOperationError(Op, Resp.ErrorData.message);
 							}
 						});
-					const auto _ = AttachIdentityToUser(UserSlot, MicroserviceName, IdentityNamespace, TEXT(""), Op, AttachIdentityHandler);
+					const auto _ = AttachIdentityToUser(UserSlot, MicroserviceName, IdentityNamespace, IdentityAuthToken, Op, AttachIdentityHandler);
 				}
 				// If it has been assigned in this realm (a user exists in this realm for this external identity id), we log in with that user account into the requesting slot.			 
 				else
