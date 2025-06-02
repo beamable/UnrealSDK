@@ -189,4 +189,44 @@ module {{toLowerCase Name}}_package::{{toLowerCase Name}} {
         vec::push_back(attributes, new_attribute);
         };
     }
+
+    /// NFT burn function
+    public entry fun burn(
+    nft: {{toStructName Name}},
+    owner: &OwnerInfo,
+    clock: &Clock,
+    signature: vector<u8>,
+    timestamp: u64,
+    ctx: &mut TxContext) {
+    use sui::bcs;
+
+        // Check if the timestamp is within the last 2 minutes
+        let current_time = get_current_time(clock);
+        assert!(
+            current_time - timestamp <= 120_000,
+            ESignatureExpired);
+
+        let nft_id_bytes = bcs::to_bytes(&nft.id);
+        let timestamp_bytes = bcs::to_bytes(&timestamp);
+
+        let mut combined_bytes = vector::empty<u8>();
+        vec::append(&mut combined_bytes, nft_id_bytes);
+        vec::append(&mut combined_bytes, timestamp_bytes);
+
+        // Verify the signature
+        assert!(
+            ed25519::ed25519_verify(&signature, &owner.public_key, &combined_bytes),
+            EInvalidSignature);
+
+        let {{toStructName Name}} {
+            id,
+            name: _,
+            description: _,
+            url: _,
+            contentId: _,
+            attributes: _
+            } = nft;
+        object::delete(id);
+    }
+
 }

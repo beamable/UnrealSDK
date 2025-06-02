@@ -50,6 +50,12 @@ public class RegularCoinHandler : IService, IContentHandler
         return Task.FromResult<BaseMessage?>(EmptyMessageExtensions.Create());
     }
 
+    public Task<BaseMessage?> ConstructMessage(string transaction, string wallet, InventoryRequestDelete inventoryRequest,
+        IContentObject contentObject)
+    {
+        return Task.FromResult<BaseMessage?>(EmptyMessageExtensions.Create());
+    }
+
     private async Task<RegularCoinMintMessage> PositiveAmountMessage(string transaction, string wallet, string function, InventoryRequest inventoryRequest)
     {
         var contract = await _contractService.GetByContentId<CoinContract>(inventoryRequest.ContentId);

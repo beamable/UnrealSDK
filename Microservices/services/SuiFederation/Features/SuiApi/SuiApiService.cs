@@ -9,7 +9,7 @@ using Beamable.SuiFederation.Features.Content.FunctionMessages;
 using Beamable.SuiFederation.Features.Contract.FunctionMesseges;
 using Beamable.SuiFederation.Features.SuiApi.Exceptions;
 using Beamable.SuiFederation.Features.SuiApi.Models;
-using SuiFederationCommon.Node;
+using SuiNodeServicve;
 
 namespace Beamable.SuiFederation.Features.SuiApi;
 
@@ -241,6 +241,25 @@ public class SuiApiService : IService
         }
     }
 
+    public async Task<SuiTransactionResult> DeleteNft(List<NftDeleteMessage> request)
+    {
+        using (new Measure($"Sui.DeleteNft"))
+        {
+            try
+            {
+                var environment = await _configuration.SuiEnvironment;
+                var realmAccount = await _accountsService.GetOrCreateRealmAccount();
+                var mintRequestJson = JsonSerializer.Serialize(request);
+                var result = await NodeService.DeleteNfts(mintRequestJson, realmAccount.PrivateKey, environment);
+                return JsonSerializer.Deserialize<SuiTransactionResult>(result) ?? throw new Exception();
+            }
+            catch (Exception ex)
+            {
+                throw new SuiApiException($"DeleteNft: {ex.Message}");
+            }
+        }
+    }
+
     public async Task<SuiTransactionResult> UpdateNft(List<NftUpdateMessage> request)
     {
         using (new Measure($"Sui.UpdateNft"))
@@ -294,6 +313,25 @@ public class SuiApiService : IService
             catch (Exception ex)
             {
                 throw new SuiApiException($"ObjectExists: {ex.Message}");
+            }
+        }
+    }
+
+    public async Task<SuiTransactionResult> WithdrawCurrency(GameCoinTransferMessage transferMessage)
+    {
+        using (new Measure($"Sui.WithdrawCurrency"))
+        {
+            try
+            {
+                var environment = await _configuration.SuiEnvironment;
+                var realmAccount = await _accountsService.GetOrCreateRealmAccount();
+                var requestJson = JsonSerializer.Serialize(transferMessage);
+                var result = await NodeService.WithdrawCurrency(requestJson, realmAccount.PrivateKey, environment);
+                return JsonSerializer.Deserialize<SuiTransactionResult>(result) ?? throw new Exception();
+            }
+            catch (Exception ex)
+            {
+                throw new SuiApiException($"WithdrawCurrency: {ex.Message}");
             }
         }
     }

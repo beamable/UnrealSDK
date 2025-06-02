@@ -24,11 +24,11 @@
     <PackageReference Include="Beamable.Microservice.Runtime" Version="$(BeamableVersion)" />
     <PackageReference Include="Beamable.Microservice.SourceGen" Version="$(BeamableVersion)" OutputItemType="Analyzer" />
     <PackageReference Include="Handlebars.Net" Version="2.1.6" />
-    <PackageReference Include="LazyCache" Version="2.4.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SuiFederationCommon\SuiFederationCommon.csproj" />
     <ProjectReference Include="..\SuiFederationStorage\SuiFederationStorage.csproj" />
+    <ProjectReference Include="..\SuiNodeService\SuiNodeService.csproj" />
   </ItemGroup>
   <ItemGroup>
     <None Include="js\**\*">
@@ -50,13 +50,17 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-  <Target Name="PreBuild" BeforeTargets="Build">
-    <ItemGroup>
-      <NodeModulesFolder Include="node_modules" />
-    </ItemGroup>
-    <Exec Condition="!Exists('@(NodeModulesFolder)')" Command="npm install" />
+  <Target Name="NpmInstall" Condition="!Exists('node_modules')">
+    <Message Text="Installing npm packages..." Importance="high" />
+    <Exec Command="npm install" />
+  </Target>
+
+  <Target Name="NpmBuild" DependsOnTargets="NpmInstall">
+    <Message Text="Building npm project..." Importance="high" />
     <Exec Command="npm run build" />
     <Copy SourceFiles="js\bridge.js" DestinationFolder="$(OutputPath)\js" />
     <Copy SourceFiles="js\models.js" DestinationFolder="$(OutputPath)\js" />
   </Target>
+
+  <Target Name="PreBuild" BeforeTargets="Build" DependsOnTargets="NpmBuild" />
 </Project>

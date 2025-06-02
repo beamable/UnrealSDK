@@ -49,6 +49,13 @@ public class TransactionLogCollection : IService
 		await collection.UpdateOneAsync(x => x.Id == inventoryTransaction, update);
 	}
 
+	public async Task SetMintedDone(ObjectId inventoryTransaction)
+	{
+		var collection = await Get();
+		var update = Builders<TransactionLog>.Update.Set(x => x.MintedTimestamp, DateTime.UtcNow);
+		await collection.UpdateOneAsync(x => x.Id == inventoryTransaction, update);
+	}
+
 	public async Task SetError(ObjectId transactionId, string error)
 	{
 		var collection = await Get();

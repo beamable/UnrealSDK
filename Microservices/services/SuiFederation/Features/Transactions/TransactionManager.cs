@@ -10,6 +10,7 @@ using Beamable.SuiFederation.Extensions;
 using Beamable.SuiFederation.Features.Transactions.Exceptions;
 using Beamable.SuiFederation.Features.Transactions.Storage;
 using Beamable.SuiFederation.Features.Transactions.Storage.Models;
+using Beamable.SuiFederation.Features.Withdrawal.Models;
 using MongoDB.Bson;
 using Serilog;
 
@@ -62,6 +63,14 @@ public class TransactionManager
     public void SetCurrentTransactionContext(string transactionId)
     {
         _currentTransaction.Value = ObjectId.Parse(transactionId);
+    }
+
+    public async Task<ObjectId> StartTransaction(string walletAddress, string operationName, string inventoryTransaction, WithdrawalRequest requestedTransfer)
+    {
+        return await StartTransaction(walletAddress, inventoryTransaction, operationName, new
+        {
+            requestedTransfer
+        });
     }
 
     public async Task<ObjectId> StartTransaction(string walletAddress, string operationName, string inventoryTransaction, Dictionary<string, long> currencies, List<FederatedItemCreateRequest> newItems, List<FederatedItemDeleteRequest> deleteItems, List<FederatedItemUpdateRequest> updateItems)

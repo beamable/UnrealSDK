@@ -7,6 +7,7 @@ using Beamable.Server;
 using Beamable.SuiFederation.Endpoints;
 using Beamable.SuiFederation.Extensions;
 using Beamable.SuiFederation.Features.Accounts;
+using Beamable.SuiFederation.Features.ChannelProcessor;
 using SuiFederationCommon;
 
 namespace Beamable.SuiFederation
@@ -41,6 +42,8 @@ namespace Beamable.SuiFederation
 #if !DEBUG
 				await initializer.GetService<Features.Contract.ContractService>().InitializeContentContracts();
 #endif
+				//Start ChannelService queue processor
+				ChannelService.Start();
 			}
 			catch (Exception ex)
 			{
@@ -92,23 +95,24 @@ namespace Beamable.SuiFederation
 #endif
 		}
 
-		public async Promise<FederatedAuthenticationResponse> Authenticate(string token, string challenge, string solution)
+		async Promise<FederatedAuthenticationResponse> IFederatedLogin<SuiWeb3Identity>.Authenticate(string token, string challenge, string solution)
 		{
 			return await Provider.GetService<AuthenticateEndpoint>()
 				.Authenticate(token, challenge, solution);
 		}
 
-		public async Promise<FederatedInventoryProxyState> GetInventoryState(string id)
+		async Promise<FederatedInventoryProxyState> IFederatedInventory<SuiWeb3Identity>.GetInventoryState(string id)
 		{
 			return await Provider.GetService<GetInventoryStateEndpoint>()
 				.GetInventoryState(id);
 		}
 
-		public async Promise<FederatedInventoryProxyState> StartInventoryTransaction(string id, string transaction, Dictionary<string, long> currencies, List<FederatedItemCreateRequest> newItems, List<FederatedItemDeleteRequest> deleteItems,
+		async Promise<FederatedInventoryProxyState> IFederatedInventory<SuiWeb3Identity>.StartInventoryTransaction(string id, string transaction, Dictionary<string, long> currencies, List<FederatedItemCreateRequest> newItems, List<FederatedItemDeleteRequest> deleteItems,
 			List<FederatedItemUpdateRequest> updateItems)
 		{
+			var user = AssumeNewUser(Context.UserId, null, false);
 			return await Provider.GetService<StartInventoryTransactionEndpoint>()
-				.StartInventoryTransaction(id, transaction, currencies, newItems, deleteItems, updateItems);
+				.StartInventoryTransaction(id, transaction, currencies, newItems, deleteItems, updateItems, user);
 		}
 
 		[Callable]
@@ -116,6 +120,13 @@ namespace Beamable.SuiFederation
 		{
 			return await Provider.GetService<Configuration>()
 				.SuiEnvironment;
+		}
+
+		[ClientCallable]
+		public async Promise Withdraw(string contentId, long amount)
+		{
+			var user = AssumeNewUser(Context.UserId, null, false);
+			await Provider.GetService<WithdrawalEndpoint>().Withdraw(contentId, amount, user);
 		}
 	}
 }
