@@ -1,5 +1,7 @@
 #include "Subsystems/CLI/BeamCliCommand.h"
 
+#include "JsonDomBuilder.h"
+
 const FString UBeamCliCommand::PathToLocalCli = FString(TEXT("dotnet"));
 
 void UBeamCliLogEntry::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const

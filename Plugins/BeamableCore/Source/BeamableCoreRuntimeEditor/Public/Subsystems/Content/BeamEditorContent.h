@@ -253,6 +253,12 @@ public:
 	bool ForceSyncContent(FBeamContentManifestId ContentManifestId, TArray<FBeamContentId> Ids);
 
 	/**
+	 * @brief Resolve a detected conflict by either downloading from the realm OR accepting that your modifications will override the realm's values. 
+	 */
+	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Content", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext", ExpandBoolAsExecs="ReturnValue"))
+	bool ResolveConflict(FBeamContentManifestId ContentManifestId, TArray<FBeamContentId> Ids, bool bUseRealm);
+
+	/**
 	 * Checks if the given ContentName is a valid content name. 
 	 */
 	UFUNCTION(BlueprintCallable, Category="Beam|Content|Utils", meta=(ExpandBoolAsExecs="ReturnValue"))
