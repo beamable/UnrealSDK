@@ -565,7 +565,7 @@ void UBeamEditor::SignInWithCliInfo(const FBeamOperationHandle Op)
 			RequestTracker->TriggerOperationSuccess(MeCommandOp, TEXT(""));
 		}
 	};
-	Cli->RunCommandServer(MeCommand, {}, MeCommandOp);
+	Cli->RunCommandServer(MeCommand, {TEXT("--admin")}, MeCommandOp);
 
 	// Wait for both commands to run and then set up the realm selection.
 	RequestTracker->CPP_WaitAll({}, {RealmsCommandOp, MeCommandOp}, {}, FOnWaitCompleteCode::CreateLambda([this, Op](FBeamWaitCompleteEvent Evt)

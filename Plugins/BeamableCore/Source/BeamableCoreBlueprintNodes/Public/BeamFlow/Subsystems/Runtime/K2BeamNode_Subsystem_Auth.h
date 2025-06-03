@@ -197,8 +197,83 @@ class UK2BeamNode_Operation_LoginExternalIdentity : public UK2BeamNode_Operation
 
 	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamRuntime, LoginExternalIdentityOperation); }
 
+
+	virtual TArray<FName> GetOperationEventIds(EBeamOperationEventType Type) const override
+	{
+		TArray<FName> Ids = Super::GetOperationEventIds(Type);
+
+		switch (Type)
+		{
+		case OET_SUCCESS:
+			Ids.Add(UBeamRuntime::GetOperationEventID_2FA_AuthTriggered());
+			return Ids;
+		}
+
+		return Ids;
+	};
+
+	virtual TArray<FString> GetOperationEventIdTooltips(EBeamOperationEventType Type) const override
+	{
+		TArray<FString> Ids = Super::GetOperationEventIdTooltips(Type);
+
+		switch (Type)
+		{
+		case OET_SUCCESS:
+			Ids.Add(TEXT("Triggered when you have a two factor auth, if it is not the case it will only goes for the regular flow."));
+			return Ids;
+		}
+		return Ids;
+	}
+
+
 	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamRuntime::StaticClass(); }
 };
+#undef LOCTEXT_NAMESPACE
+
+#define LOCTEXT_NAMESPACE "K2BeamNode_Operation_CommitLoginExternalIdentityTwoFactorOperation"
+
+UCLASS(meta=(BeamFlowNode))
+class UK2BeamNode_Operation_CommitLoginExternalIdentityTwoFactorOperation : public UK2BeamNode_Operation
+{
+	GENERATED_BODY()
+
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Operation - Login - CommitLoginExternalIdentity2FAOperation"); }
+
+	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamRuntime, GetSelf); }
+
+	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamRuntime, CommitLoginExternalIdentity2FAOperation); }
+
+
+	virtual TArray<FName> GetOperationEventIds(EBeamOperationEventType Type) const override
+	{
+		TArray<FName> Ids = Super::GetOperationEventIds(Type);
+
+		switch (Type)
+		{
+		case OET_SUCCESS:
+			Ids.Add(UBeamRuntime::GetOperationEventID_2FA_AuthTriggered());
+			return Ids;
+		}
+
+		return Ids;
+	};
+
+	virtual TArray<FString> GetOperationEventIdTooltips(EBeamOperationEventType Type) const override
+	{
+		TArray<FString> Ids = Super::GetOperationEventIdTooltips(Type);
+
+		switch (Type)
+		{
+		case OET_SUCCESS:
+			Ids.Add(TEXT("Triggered when the microservice federation sent back the challenge"));
+			return Ids;
+		}
+		return Ids;
+	}
+
+	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamRuntime::StaticClass(); }
+};
+
 #undef LOCTEXT_NAMESPACE
 
 #define LOCTEXT_NAMESPACE "K2BeamNode_Operation_SignUpEmailAndPassword"
@@ -264,6 +339,52 @@ class UK2BeamNode_Operation_AttachExternalIdentity : public UK2BeamNode_Operatio
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamRuntime, GetSelf); }
 
 	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamRuntime, AttachExternalIdentityOperation); }
+
+
+	virtual TArray<FName> GetOperationEventIds(EBeamOperationEventType Type) const override
+	{
+		TArray<FName> Ids = Super::GetOperationEventIds(Type);
+
+		switch (Type)
+		{
+		case OET_SUCCESS:
+			Ids.Add(UBeamRuntime::GetOperationEventID_2FA_AuthTriggered());
+			return Ids;
+		}
+
+		return Ids;
+	};
+
+	virtual TArray<FString> GetOperationEventIdTooltips(EBeamOperationEventType Type) const override
+	{
+		TArray<FString> Ids = Super::GetOperationEventIdTooltips(Type);
+
+		switch (Type)
+		{
+		case OET_SUCCESS:
+			Ids.Add(TEXT("Triggered when the microservice federation sent back the challenge"));
+			return Ids;
+		}
+		return Ids;
+	}
+
+	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamRuntime::StaticClass(); }
+};
+
+#undef LOCTEXT_NAMESPACE
+
+#define LOCTEXT_NAMESPACE "K2BeamNode_Operation_CommitAttachExternalIdentityOperation"
+
+UCLASS(meta=(BeamFlowNode))
+class UK2BeamNode_Operation_CommitAttachExternalIdentityOperation : public UK2BeamNode_Operation
+{
+	GENERATED_BODY()
+
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Operation - Attach - CommitAttachExternalIdentity2FAOperation"); }
+
+	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamRuntime, GetSelf); }
+
+	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamRuntime, CommitAttachExternalIdentity2FAOperation); }
 
 	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamRuntime::StaticClass(); }
 };

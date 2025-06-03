@@ -61,6 +61,24 @@ class UK2BeamNode_EventRegister_LeaderboardsSubsystem : public UK2BeamNode_Event
 // | |__| (_) | (_| (_| | |     ___) | || (_| | ||  __/
 // |_____\___/ \___\__,_|_|    |____/ \__\__,_|\__\___|
 
+#define LOCTEXT_NAMESPACE "K2BeamNode_GetLocalState_TryGetAssignedLeaderboard"
+
+UCLASS(meta=(BeamGetLocalState))
+class UK2BeamNode_GetLocalState_TryGetAssignedLeaderboard : public UK2BeamNode_GetLocalState
+{
+	GENERATED_BODY()
+
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Local State - Leaderboards - TryGetAssignedLeaderboard"); }
+
+	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLeaderboardsSubsystem, GetSelf); }
+
+	virtual FName GetFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLeaderboardsSubsystem, TryGetAssignedLeaderboard); }
+
+	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamLeaderboardsSubsystem::StaticClass(); }
+};
+
+#undef LOCTEXT_NAMESPACE
+
 #define LOCTEXT_NAMESPACE "K2BeamNode_GetLocalState_TryGetLeaderboard"
 
 UCLASS(meta=(BeamGetLocalState))
@@ -284,6 +302,24 @@ class UK2BeamNode_GetLocalState_IsLeaderboardPageCached : public UK2BeamNode_Get
 // | |_| | |_) |  __/ | | (_| | |_| | (_) | | | \__ \
 //  \___/| .__/ \___|_|  \__,_|\__|_|\___/|_| |_|___/
 //       |_|     
+
+#define LOCTEXT_NAMESPACE "K2BeamNode_Operation_FetchAssignedLeaderboardOperation"
+
+UCLASS(meta=(BeamFlowNode))
+class UK2BeamNode_Operation_FetchAssignedLeaderboardOperation : public UK2BeamNode_Operation
+{
+	GENERATED_BODY()
+
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Operation - Leaderboards - FetchAssignedLeaderboardOperation"); }
+
+	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLeaderboardsSubsystem, GetSelf); }
+
+	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLeaderboardsSubsystem, FetchAssignedLeaderboardOperation); }
+
+	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamLeaderboardsSubsystem::StaticClass(); }
+};
+
+#undef LOCTEXT_NAMESPACE
 
 #define LOCTEXT_NAMESPACE "K2BeamNode_Operation_FetchFocusRankEntriesOperation"
 

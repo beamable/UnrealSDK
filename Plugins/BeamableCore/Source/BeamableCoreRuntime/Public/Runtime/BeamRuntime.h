@@ -40,6 +40,40 @@ enum EBeamRuntimeConnectivityState
 	CONN_Online,
 };
 
+
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORERUNTIME_API UChallengeSolutionObject : public UObject, public IBeamOperationEventData
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Challenge Token", Category="Beam")
+	FString ChallengeToken = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Solution", Category="Beam")
+	FString Solution = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Solution", Category="Beam")
+	FBeamOperationHandle OperationHandler;
+
+
+	UChallengeSolution* GetChallengeSolutionGenerated();
+
+	void SetChallengeSolution(UChallengeSolution* ChallengeSolution);
+
+	UFUNCTION(BlueprintCallable)
+	inline FString GetChallengeDecoded()
+	{
+		FString ChallengeDecodedString = "";
+		FString _;
+
+		ChallengeToken.Split(".", &ChallengeDecodedString, &_);
+
+		FString ChallengeDecodedBytes;
+		FBase64::Decode(ChallengeDecodedString, ChallengeDecodedBytes);
+
+		return ChallengeDecodedBytes;
+	}
+};
+
 DECLARE_DELEGATE_OneParam(FOnBeamConnectivityEventCode, UBeamConnectivityManager*);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnBeamConnectivityEvent, UBeamConnectivityManager*, Manager);
 
@@ -299,7 +333,7 @@ class BEAMABLECORERUNTIME_API UBeamRuntime : public UGameInstanceSubsystem
 	void TriggerOnUserSlotAuthenticated(const FUserSlot& UserSlot, const FBeamRealmUser& BeamRealmUser, const FBeamOperationHandle& AuthOpHandle, const UObject* Context);
 
 	/**
-	 * @brief 
+	 * @brief This is triggered after the user being authenticated and wait until all the system initialize to triggers the call back for the operation and then call the event of the OnUserReady Event
 	 */
 	void TriggerSubsystemPostUserSignIn(FBeamWaitCompleteEvent, FUserSlot UserSlot, FBeamRealmUser BeamRealmUser,
 	                                    FBeamOperationHandle AuthOpHandle);
@@ -487,6 +521,14 @@ public:
 
 
 	/**
+	 * @brief Get the operation event id for the 2FA auth subevent
+	 */
+	UFUNCTION(BlueprintCallable)
+	static inline FName GetOperationEventID_2FA_AuthTriggered() { return FName("2FA_AUTH_TRIGGERED"); }
+
+	/**
+	 * @brief Call this function if you want to initialize a subsystem that was set to manually initialize from the project settings.
+	 * This function will initialize all the passed subsystems
 	 * See @link ManuallyInitializeSubsystemOperation @endlink and @link TriggerManuallySetSubsystemsUserReady @endlink. 
 	 */
 	UFUNCTION(BlueprintCallable)
@@ -818,6 +860,15 @@ public:
 	                                                        FBeamOperationEventHandlerCode OnOperationEvent);
 
 
+	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Auth", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
+	FBeamOperationHandle CommitLoginExternalIdentity2FAOperation(FUserSlot UserSlot, FString ExternalService, FString ExternalNamespace, FString ExternalToken, UChallengeSolutionObject* ChallengeSolution,
+	                                                                   FBeamOperationEventHandler OnOperationEvent);
+
+
+	FBeamOperationHandle CPP_CommitLoginExternalIdentity2FAOperation(FUserSlot UserSlot, FString ExternalService, FString ExternalNamespace, UChallengeSolutionObject* ChallengeSolution, FString ExternalToken,
+	                                                                       FBeamOperationEventHandlerCode OnOperationEvent);
+
+
 	/**
 	 * @brief An operation that will authenticate a user with the beamable using a Federated Identity and persist that authentication locally.
 	 * If a user is already in the given slot, this operation will sign out entirely before signing in.
@@ -842,6 +893,14 @@ public:
 	FBeamOperationHandle CPP_AttachExternalIdentityOperation(FUserSlot UserSlot, FString MicroserviceName, FString IdentityNamespace, FString IdentityUserId, FString IdentityAuthToken,
 	                                                         FBeamOperationEventHandlerCode OnOperationEvent);
 
+	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Auth", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
+	FBeamOperationHandle CommitAttachExternalIdentity2FAOperation(FUserSlot UserSlot, FString MicroserviceName, FString IdentityNamespace, FString IdentityUserId, FString IdentityAuthToken,
+	                                                           UChallengeSolutionObject* ChallengeSolution,
+	                                                           FBeamOperationEventHandler OnOperationEvent);
+
+	FBeamOperationHandle CPP_CommitAttachExternalIdentity2FAOperation(FUserSlot UserSlot, FString MicroserviceName, FString IdentityNamespace, FString IdentityUserId, FString IdentityAuthToken,
+	                                                               UChallengeSolutionObject* ChallengeSolution,
+	                                                               FBeamOperationEventHandlerCode OnOperationEvent);
 
 	/**	 
 	 * If the given Email is NOT attached to an account in the current realm, we attach it to the account in the given slot.
@@ -929,7 +988,12 @@ private:
 	// BP/CPP Independent Operation Implementations	
 	void LoginFrictionless(FUserSlot UserSlot, TMap<FString, FString> InitProperties, FBeamOperationHandle Op);
 	void LoginExternalIdentity(FUserSlot UserSlot, FString ExternalService, FString ExternalNamespace, FString ExternalToken, FBeamOperationHandle Op);
+	void CommitLoginExternalIdentity2FA(FUserSlot UserSlot, FString ExternalService, FString ExternalNamespace, FString ExternalToken, UChallengeSolutionObject* ChallengeSolution, FBeamOperationHandle Op);
 	void LoginEmailAndPassword(FUserSlot UserSlot, FString Email, FString Password, FBeamOperationHandle Op);
+	void CommitAttachExternalIdentity2FA(FUserSlot UserSlot, FString MicroserviceName, FString IdentityNamespace, FString IdentityUserId, FString IdentityAuthToken, UChallengeSolutionObject* ChallengeSolution,
+	                                           FBeamOperationHandle Op);
+
+	void AttachLocalIdentity(FUserSlot UserSlot, FString IdentityUserId, FString MicroserviceName, FString IdentityNamespace);
 	void AttachExternalIdentity(FUserSlot UserSlot, FString MicroserviceName, FString IdentityNamespace, FString IdentityUserId, FString IdentityAuthToken, FBeamOperationHandle Op);
 	void AttachEmailAndPassword(FUserSlot UserSlot, FString Email, FString Password, FBeamOperationHandle Op);
 	void SignUpExternalIdentity(FUserSlot UserSlot, FString MicroserviceName, FString IdentityNamespace, FString IdentityUserId, FString IdentityAuthToken, bool bAutoLoginOnUnavailable,
@@ -939,6 +1003,7 @@ private:
 
 	// Reusable Operation Callbacks
 	void OnAuthenticated(FAuthenticateFullResponse Resp, FUserSlot UserSlot, FBeamOperationHandle Op, FDelayedOperation BeforeUserNotifyOperation);
+	void OnGetBeginTwoFactorResponse(FAuthenticateFullResponse Resp, FUserSlot UserSlot, FBeamOperationHandle Op);
 	void AuthenticateWithToken(FUserSlot UserSlot, const UTokenResponse* Token, FBeamOperationHandle Op, FDelayedOperation BeforeUserNotifyOperation);
 	void RunPostAuthenticationSetup(FUserSlot UserSlot, FBeamOperationHandle Op);
 	void RunPostAuthenticationSetup_OnGetMe(FBasicAccountsGetMeFullResponse Resp, FUserSlot UserSlot, FBeamOperationHandle Op);
@@ -952,6 +1017,8 @@ private:
 	FBeamRequestContext CheckEmailAvailable(FString Email, FBeamOperationHandle Op, FOnGetAvailableFullResponse Handler) const;
 	FBeamRequestContext AttachIdentityToUser(FUserSlot UserSlot, FString ExternalService, FString ExternalNamespace, FString ExternalToken, FBeamOperationHandle Op,
 	                                         FOnPostExternalIdentityFullResponse Handler) const;
+	FBeamRequestContext AttachIdentityToUserTwoFactor(FUserSlot UserSlot, FString ExternalService, FString ExternalNamespace, FString ExternalToken, UChallengeSolution* ChallengeSolution, FBeamOperationHandle Op,
+	                                                  FOnPostExternalIdentityFullResponse Handler) const;
 	FBeamRequestContext AttachEmailAndPasswordToUser(FUserSlot UserSlot, FString Email, FString Password, FBeamOperationHandle Op, FOnBasicAccountsPostRegisterFullResponse Handler) const;
 	FBeamRequestContext RemoveIdentityFromUser(FUserSlot UserSlot, FString ExternalService, FString ExternalNamespace, FString ExternalToken, FBeamOperationHandle Op,
 	                                           FOnDeleteExternalIdentityFullResponse Handler) const;

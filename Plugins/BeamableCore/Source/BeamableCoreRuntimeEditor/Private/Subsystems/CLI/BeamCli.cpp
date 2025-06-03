@@ -207,24 +207,24 @@ void UBeamCli::RunCommandServer(UBeamCliCommand* Command, const TArray<FString>&
 	if (CurrentCliServerUri.IsEmpty())
 	{
 		// Enqueue the Command 
-		EnqueuedProcesses.Add(Command);
+		EnqueuedProcesses.Add(FBeamEnqueuedCliCommand(Command, Params));
 
 		// Set the URL to be "BEAM_WAITING_FOR_CLI_TO_START" so that future invocations of this don't start new instances of the CLIServer.
 		CurrentCliServerUri = TEXT("BEAM_WAITING_FOR_CLI_TO_START");
 
 		// Run the server command so we boot the server up --- when its up, run the intended command.
-		auto ServerStartHandler = FBeamOperationEventHandlerCode::CreateLambda([this, Command, Params, Op](FBeamOperationEvent Evt)
+		auto ServerStartHandler = FBeamOperationEventHandlerCode::CreateLambda([this, Command, Op](FBeamOperationEvent Evt)
 		{
 			if (Evt.EventType == OET_SUCCESS)
 			{
 				CurrentCliServerUri = Evt.EventCode;
 
 				// Run and clear all enqueued processes
-				for (UBeamCliCommand* EnqueuedProcess : EnqueuedProcesses)
+				for (FBeamEnqueuedCliCommand EnqueuedCommand : EnqueuedProcesses)
 				{
-					UE_LOG(LogBeamCli, Display, TEXT("Now executing command. CMD=%s"), *Command->GetClass()->GetName());
-					EnqueuedProcess->RunServer(Evt.EventCode, Params, Op);
-					RunningProcesses.Add(EnqueuedProcess);
+					UE_LOG(LogBeamCli, Display, TEXT("Now executing command. CMD=%s"), *EnqueuedCommand.CliCommand->GetClass()->GetName());
+					EnqueuedCommand.CliCommand->RunServer(Evt.EventCode, EnqueuedCommand.Params, Op);
+					RunningProcesses.Add(EnqueuedCommand.CliCommand);
 				}
 				EnqueuedProcesses.Empty();
 			}
@@ -238,7 +238,7 @@ void UBeamCli::RunCommandServer(UBeamCliCommand* Command, const TArray<FString>&
 	}
 	else if (CurrentCliServerUri == TEXT("BEAM_WAITING_FOR_CLI_TO_START"))
 	{
-		EnqueuedProcesses.Add(Command);
+		EnqueuedProcesses.Add(FBeamEnqueuedCliCommand(Command, Params));
 	}
 	// If we do... just run it.
 	else
@@ -256,6 +256,11 @@ void UBeamCli::RunCommandSync(UBeamCliCommand* Command, const TArray<FString>& P
 
 void UBeamCli::OnCommandCompleted(UBeamCliCommand* Command)
 {
+	// The command can be null in the case of the process fail and this clean up being called more than once
+	if (Command)
+	{
+		UE_LOG(LogBeamCli, Verbose, TEXT("[CLI] Clean up from running process: %s"), *Command->GetClass()->GetName());
+	}
 	RunningProcesses.Remove(Command);
 }
 

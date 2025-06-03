@@ -35,6 +35,28 @@ struct FBeamCliError : public FBeamJsonSerializableUStruct
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override;
 };
 
+USTRUCT(BlueprintType)
+struct FBeamEnqueuedCliCommand
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	UBeamCliCommand* CliCommand;
+
+	UPROPERTY()
+	TArray<FString> Params;
+
+	FBeamEnqueuedCliCommand(): CliCommand(nullptr)
+	{
+	}
+
+	FBeamEnqueuedCliCommand(UBeamCliCommand* CliCommand, TArray<FString> Params)
+		: CliCommand(CliCommand),
+		  Params(Params)
+	{
+	}
+};
+
 /**
  * Class that we use whenever we want to expose a set of CLI errors that happen as part of a command invocation to Blueprint-land.
  * See our "content publish" logic for a usage example.
@@ -68,7 +90,7 @@ protected:
 	TArray<UBeamCliCommand*> RunningProcesses;
 
 	UPROPERTY()
-	TArray<UBeamCliCommand*> EnqueuedProcesses;
+	TArray<FBeamEnqueuedCliCommand> EnqueuedProcesses;
 
 	TUniquePtr<FMonitoredProcess> IsInstalledProcess;
 

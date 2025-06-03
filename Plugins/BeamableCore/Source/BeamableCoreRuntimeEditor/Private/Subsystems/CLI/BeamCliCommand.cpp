@@ -1,6 +1,7 @@
 #include "Subsystems/CLI/BeamCliCommand.h"
 
 #include "JsonDomBuilder.h"
+#include "Interfaces/IHttpResponse.h"
 
 const FString UBeamCliCommand::PathToLocalCli = FString(TEXT("dotnet"));
 
@@ -111,7 +112,7 @@ void UBeamCliCommand::RunServer(const FString Uri, const TArray<FString>& Comman
 	CmdRequest = FHttpModule::Get().CreateRequest().ToSharedPtr();
 	CmdRequest->SetVerb("POST");
 	CmdRequest->SetURL(Uri / TEXT("execute"));
-	CmdRequest->SetContentAsString(ReqContent);	
+	CmdRequest->SetContentAsString(ReqContent);
 	CmdRequest->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
 
 	CmdRequest->OnRequestProgress64().BindLambda([this, Op, CommandLineToExecute](TSharedPtr<IHttpRequest> HttpRequest, int64, int64 BytesReceived)
@@ -196,6 +197,7 @@ void UBeamCliCommand::RunServer(const FString Uri, const TArray<FString>& Comman
 		{
 			UE_LOG(LogBeamCli, Error, TEXT("BeamCli Server - Unexpected error in executing command. CMD=%s"), *CommandLineToExecute);
 			HandleStreamCompleted(Op, 999, true);
+			this->Cli->OnCommandCompleted(this);
 			return;
 		}
 
@@ -203,6 +205,7 @@ void UBeamCliCommand::RunServer(const FString Uri, const TArray<FString>& Comman
 		{
 			UE_LOG(LogBeamCli, Error, TEXT("BeamCli Server - Error in executing command. CMD=%s, ERR_CODE=%d"), *CommandLineToExecute, Errors[0].ExitCode);
 			HandleStreamCompleted(Op, Errors[0].ExitCode, true);
+			this->Cli->OnCommandCompleted(this);
 			return;
 		}
 
@@ -214,11 +217,13 @@ void UBeamCliCommand::RunServer(const FString Uri, const TArray<FString>& Comman
 
 			HandleStreamCompleted(Op, 0, true);
 			UE_LOG(LogBeamCli, Verbose, TEXT("BeamCli Server - Executed command. CMD=%s, ALL_MESSAGES=%s"), *CommandLineToExecute, *AllMessages);
+			this->Cli->OnCommandCompleted(this);
 			return;
 		}
 
 		UE_LOG(LogBeamCli, Error, TEXT("BeamCli Server - Error in executing command. CMD=%s, ALL_MESSAGES=%s"), *CommandLineToExecute, *Resp->GetContentAsString());
 		HandleStreamCompleted(Op, 500, true);
+		this->Cli->OnCommandCompleted(this);
 		return;
 	});
 
