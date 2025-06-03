@@ -14,6 +14,7 @@
 #include "Subsystems/CLI/Autogen/BeamCliContentPsCommand.h"
 #include "Subsystems/CLI/Autogen/BeamCliContentPublishCommand.h"
 #include "Subsystems/CLI/Autogen/BeamCliContentPullCommand.h"
+#include "Subsystems/CLI/Autogen/BeamCliContentResolveCommand.h"
 #include "Subsystems/CLI/Autogen/BeamCliContentSaveCommand.h"
 #include "Subsystems/CLI/Autogen/BeamCliContentSyncCommand.h"
 
@@ -235,6 +236,45 @@ bool UBeamEditorContent::ForceSyncContent(FBeamContentManifestId ContentManifest
 	Cli->RunCommandServer(SyncCommand, Params, {});
 
 	return true;
+}
+
+bool UBeamEditorContent::ResolveConflict(FBeamContentManifestId ContentManifestId, TArray<FBeamContentId> Ids, bool bUseRealm)
+{
+	const auto EditorSlot = Editor->GetMainEditorSlot();
+
+	// Do nothing unless ids were specified
+	if (Ids.Num() == 0)
+		return true;
+
+
+	UBeamCliContentResolveCommand* ResolveCommand = NewObject<UBeamCliContentResolveCommand>();;
+	ResolveCommand->OnCompleted = [this, ContentManifestId, Ids](const int& ResCode, const FBeamOperationHandle&)
+	{
+		if (ResCode == 0)
+		{
+			OnContentRevert.Broadcast(ContentManifestId, Ids);
+		}
+		else
+		{
+			OnContentRevertFailed.Broadcast(ContentManifestId, Ids);
+		}
+	};
+
+	// Get all the Content Ids in the form "type.id1 type.id2".
+	auto IdsStr = TArray<FString>{};
+	for (FBeamContentId Id : Ids) IdsStr.Add(Id.AsString);
+	auto IdsParam = Ids.Num() > 0 ? FString::Printf(TEXT("%s"), *FString::Join(IdsStr, TEXT(" "))) : TEXT("");
+
+	// Build the CLI args
+	TArray<FString> Params;
+	Params.Append({TEXT("--manifest-ids"), ContentManifestId.AsString});
+	Params.Append({TEXT("--filter"), IdsParam});
+	Params.Append({TEXT("--filter-type"), TEXT("ExactIds")});
+	Params.Append({TEXT("--use"), bUseRealm ? TEXT("realm") : TEXT("local")});	
+	Cli->RunCommandServer(ResolveCommand, Params, {});
+
+	return true;
+	
 }
 
 UClass* UBeamEditorContent::GetContentTypeByTypeId(FString TypeId)
