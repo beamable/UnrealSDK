@@ -26,23 +26,23 @@ public:
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("serviceId"), ServiceId);
-		Serializer->WriteValue(TEXT("message"), Message);
-		Serializer->WriteValue(TEXT("progressRatio"), ProgressRatio);	
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("serviceId"), ServiceId, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("message"), Message, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("progressRatio"), ProgressRatio, Serializer);	
 	}
 
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("serviceId"), ServiceId);
-		Serializer->WriteValue(TEXT("message"), Message);
-		Serializer->WriteValue(TEXT("progressRatio"), ProgressRatio);	
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("serviceId"), ServiceId, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("message"), Message, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("progressRatio"), ProgressRatio, Serializer);	
 	}
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		ServiceId = Bag->GetStringField(TEXT("serviceId"));
-		Message = Bag->GetStringField(TEXT("message"));
-		FDefaultValueHelper::ParseFloat(Bag->GetStringField(TEXT("progressRatio")), ProgressRatio);	
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("serviceId")), ServiceId);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("message")), Message);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("progressRatio")), ProgressRatio);	
 	}
 };
 
@@ -61,19 +61,19 @@ public:
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("serviceId"), ServiceId);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("serviceId"), ServiceId, Serializer);
 		UBeamJsonUtils::SerializeUObject<UProjectErrorReportBuildErrorsStreamData*>("report", Report, Serializer);	
 	}
 
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("serviceId"), ServiceId);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("serviceId"), ServiceId, Serializer);
 		UBeamJsonUtils::SerializeUObject<UProjectErrorReportBuildErrorsStreamData*>("report", Report, Serializer);	
 	}
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		ServiceId = Bag->GetStringField(TEXT("serviceId"));
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("serviceId")), ServiceId);
 		UBeamJsonUtils::DeserializeUObject<UProjectErrorReportBuildErrorsStreamData*>("report", Bag, Report, OuterOwner);	
 	}
 };
@@ -104,34 +104,34 @@ public:
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
 	{
 		UBeamJsonUtils::SerializeArray<URunProjectBuildErrorStreamErrorRunFailErrorOutputStreamData*>(TEXT("compilerErrors"), CompilerErrors, Serializer);
-		Serializer->WriteValue(TEXT("message"), Message);
-		Serializer->WriteValue(TEXT("invocation"), Invocation);
-		Serializer->WriteValue(TEXT("exitCode"), ExitCode);
-		Serializer->WriteValue(TEXT("typeName"), TypeName);
-		Serializer->WriteValue(TEXT("fullTypeName"), FullTypeName);
-		Serializer->WriteValue(TEXT("stackTrace"), StackTrace);	
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("message"), Message, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("invocation"), Invocation, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("exitCode"), ExitCode, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("typeName"), TypeName, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("fullTypeName"), FullTypeName, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("stackTrace"), StackTrace, Serializer);	
 	}
 
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
 	{
 		UBeamJsonUtils::SerializeArray<URunProjectBuildErrorStreamErrorRunFailErrorOutputStreamData*>(TEXT("compilerErrors"), CompilerErrors, Serializer);
-		Serializer->WriteValue(TEXT("message"), Message);
-		Serializer->WriteValue(TEXT("invocation"), Invocation);
-		Serializer->WriteValue(TEXT("exitCode"), ExitCode);
-		Serializer->WriteValue(TEXT("typeName"), TypeName);
-		Serializer->WriteValue(TEXT("fullTypeName"), FullTypeName);
-		Serializer->WriteValue(TEXT("stackTrace"), StackTrace);	
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("message"), Message, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("invocation"), Invocation, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("exitCode"), ExitCode, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("typeName"), TypeName, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("fullTypeName"), FullTypeName, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("stackTrace"), StackTrace, Serializer);	
 	}
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
 		UBeamJsonUtils::DeserializeArray<URunProjectBuildErrorStreamErrorRunFailErrorOutputStreamData*>(Bag->GetArrayField(TEXT("compilerErrors")), CompilerErrors, OuterOwner);
-		Message = Bag->GetStringField(TEXT("message"));
-		Invocation = Bag->GetStringField(TEXT("invocation"));
-		ExitCode = Bag->GetIntegerField(TEXT("exitCode"));
-		TypeName = Bag->GetStringField(TEXT("typeName"));
-		FullTypeName = Bag->GetStringField(TEXT("fullTypeName"));
-		StackTrace = Bag->GetStringField(TEXT("stackTrace"));	
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("message")), Message);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("invocation")), Invocation);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("exitCode")), ExitCode);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("typeName")), TypeName);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("fullTypeName")), FullTypeName);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("stackTrace")), StackTrace);	
 	}
 };
 
@@ -186,17 +186,17 @@ public:
 	inline static FString StreamType = FString(TEXT("stream"));
 	UPROPERTY() TArray<UBeamCliProjectRunStreamData*> Stream;
 	UPROPERTY() TArray<int64> Timestamps;
-	TFunction<void (const TArray<UBeamCliProjectRunStreamData*>& StreamData, const TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnStreamOutput;
+	TFunction<void (TArray<UBeamCliProjectRunStreamData*>& StreamData, TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnStreamOutput;
 
 	inline static FString StreamTypeBuildErrors = FString(TEXT("buildErrors"));
 	UPROPERTY() TArray<UBeamCliProjectRunBuildErrorsStreamData*> BuildErrorsStream;
 	UPROPERTY() TArray<int64> BuildErrorsTimestamps;
-	TFunction<void (const TArray<UBeamCliProjectRunBuildErrorsStreamData*>& StreamData, const TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnBuildErrorsStreamOutput;
+	TFunction<void (TArray<UBeamCliProjectRunBuildErrorsStreamData*>& StreamData, TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnBuildErrorsStreamOutput;
 
 	inline static FString StreamTypeErrorRunFailErrorOutput = FString(TEXT("errorRunFailErrorOutput"));
 	UPROPERTY() TArray<UBeamCliProjectRunErrorRunFailErrorOutputStreamData*> ErrorRunFailErrorOutputStream;
 	UPROPERTY() TArray<int64> ErrorRunFailErrorOutputTimestamps;
-	TFunction<void (const TArray<UBeamCliProjectRunErrorRunFailErrorOutputStreamData*>& StreamData, const TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnErrorRunFailErrorOutputStreamOutput;	
+	TFunction<void (TArray<UBeamCliProjectRunErrorRunFailErrorOutputStreamData*>& StreamData, TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnErrorRunFailErrorOutputStreamOutput;	
 
 	TFunction<void (const int& ResCode, const FBeamOperationHandle& Op)> OnCompleted;
 	virtual bool HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer) override;

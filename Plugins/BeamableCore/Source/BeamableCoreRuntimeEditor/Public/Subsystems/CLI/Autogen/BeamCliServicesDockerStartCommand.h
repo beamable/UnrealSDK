@@ -26,29 +26,29 @@ public:
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("attempted"), Attempted);
-		Serializer->WriteValue(TEXT("alreadyRunning"), AlreadyRunning);
-		Serializer->WriteValue(TEXT("unavailable"), Unavailable);
-		Serializer->WriteValue(TEXT("dockerDesktopUrl"), DockerDesktopUrl);
-		Serializer->WriteValue(TEXT("downloadUrl"), DownloadUrl);	
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("attempted"), Attempted, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("alreadyRunning"), AlreadyRunning, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("unavailable"), Unavailable, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("dockerDesktopUrl"), DockerDesktopUrl, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("downloadUrl"), DownloadUrl, Serializer);	
 	}
 
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("attempted"), Attempted);
-		Serializer->WriteValue(TEXT("alreadyRunning"), AlreadyRunning);
-		Serializer->WriteValue(TEXT("unavailable"), Unavailable);
-		Serializer->WriteValue(TEXT("dockerDesktopUrl"), DockerDesktopUrl);
-		Serializer->WriteValue(TEXT("downloadUrl"), DownloadUrl);	
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("attempted"), Attempted, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("alreadyRunning"), AlreadyRunning, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("unavailable"), Unavailable, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("dockerDesktopUrl"), DockerDesktopUrl, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("downloadUrl"), DownloadUrl, Serializer);	
 	}
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		Attempted = Bag->GetBoolField(TEXT("attempted"));
-		AlreadyRunning = Bag->GetBoolField(TEXT("alreadyRunning"));
-		Unavailable = Bag->GetBoolField(TEXT("unavailable"));
-		DockerDesktopUrl = Bag->GetStringField(TEXT("dockerDesktopUrl"));
-		DownloadUrl = Bag->GetStringField(TEXT("downloadUrl"));	
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("attempted")), Attempted);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("alreadyRunning")), AlreadyRunning);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("unavailable")), Unavailable);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("dockerDesktopUrl")), DockerDesktopUrl);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("downloadUrl")), DownloadUrl);	
 	}
 };
 
@@ -96,7 +96,7 @@ public:
 	inline static FString StreamType = FString(TEXT("stream"));
 	UPROPERTY() TArray<UBeamCliServicesDockerStartStreamData*> Stream;
 	UPROPERTY() TArray<int64> Timestamps;
-	TFunction<void (const TArray<UBeamCliServicesDockerStartStreamData*>& StreamData, const TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnStreamOutput;	
+	TFunction<void (TArray<UBeamCliServicesDockerStartStreamData*>& StreamData, TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnStreamOutput;	
 
 	TFunction<void (const int& ResCode, const FBeamOperationHandle& Op)> OnCompleted;
 	virtual bool HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer) override;

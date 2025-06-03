@@ -280,25 +280,22 @@ class BEAMABLECORERUNTIME_API UBeamRuntime : public UGameInstanceSubsystem
 	 * This enables all subsystems to have a chance to subscribe to BeamRuntime events should they choose to do so.
 	 * This is handled automatically for by all UBeamRuntimeSubsystems.
 	 */
-	virtual void TriggerInitializeWhenUnrealReady(bool ApplyFrictionlessLogin, FBeamRuntimeHandler SDKReadyHandler, FRuntimeError SDKInitilizationErrorHandler);
+	virtual void TriggerInitializeWhenUnrealReady(bool bApplyFrictionlessLogin, TMap<FString, FString> LoginInitProperties, FBeamRuntimeHandler OnStartedHandler, FRuntimeError OnStartedFailedHandler);
 
 	/**
 	 * @brief This gets called after all runtime systems had the opportunity to make requests to Beamable that do not depend on content information.
 	 */
-	void TriggerOnBeamableStarting(FBeamWaitCompleteEvent, bool ApplyFrictionlessLogin,
-	                               FBeamRuntimeHandler SDKInitializedHandler, FRuntimeError SDKInitializationErrorHandler);
+	void TriggerOnBeamableStarting(FBeamWaitCompleteEvent Evt, bool bApplyFrictionlessLogin, TMap<FString, FString> LoginInitProperties, FBeamRuntimeHandler OnStartedHandler, FRuntimeError OnStartedFailedHandler);
 
 	/**
 	 * @brief This gets called after all runtime systems had the opportunity to make initialization requests to Beamable that DO depend on content data.
 	 */
-	void TriggerOnContentReady(FBeamWaitCompleteEvent Evt, bool ApplyFrictionlessLogin,
-	                           FBeamRuntimeHandler SDKInitializedHandler, FRuntimeError SDKInitializationErrorHandler);
+	void TriggerOnContentReady(FBeamWaitCompleteEvent Evt, bool bApplyFrictionlessLogin, TMap<FString, FString> LoginInitProperties, FBeamRuntimeHandler OnStartedHandler, FRuntimeError OnStartedFailedHandler);
 
 	/**
 	 * @brief This gets called after all runtime subsystems have been initialized, but before the Owner Player's auth has been made.
 	 */
-	void TriggerOnStartedAndFrictionlessAuth(FBeamWaitCompleteEvent, bool ApplyFrictionlessLogin,
-	                                         FBeamRuntimeHandler SDKInitializedHandler, FRuntimeError SDKInitializationErrorHandler);
+	void TriggerOnStartedAndFrictionlessAuth(FBeamWaitCompleteEvent, bool bApplyFrictionlessLogin, TMap<FString, FString> LoginInitProperties, FBeamRuntimeHandler OnStartedHandler, FRuntimeError OnStartedFailedHandler);
 
 	/**
 	 * @brief This function gets called to start the flow of initializing subsystems manually
@@ -307,18 +304,15 @@ class BEAMABLECORERUNTIME_API UBeamRuntime : public UGameInstanceSubsystem
 	/**
 	* @brief This gets called after the first initialize call to set manually subsystems as started but without initializing the content
 	 */
-	void TriggerManuallySetSubsystemStarted(FBeamWaitCompleteEvent Evt, TArray<TSubclassOf<UBeamRuntimeSubsystem>> SubsystemsToInit, bool bInitializeUsers,
-	                                        FBeamOperationHandle Op);
+	void TriggerManuallySetSubsystemStarted(FBeamWaitCompleteEvent Evt, TArray<TSubclassOf<UBeamRuntimeSubsystem>> SubsystemsToInit, bool bInitializeUsers, FBeamOperationHandle Op);
 	/**
 	 * @brief This gets called after all the manually initialized subsystems had the opportunity to make initialization requests to Beamable that DO depend on content data.
 	 */
-	void TriggerManuallySetSubsystemContentReady(FBeamWaitCompleteEvent Evt, TArray<TSubclassOf<UBeamRuntimeSubsystem>> SubsystemsToInit, bool bInitializeUsers,
-	                                             FBeamOperationHandle Op);
+	void TriggerManuallySetSubsystemContentReady(FBeamWaitCompleteEvent Evt, TArray<TSubclassOf<UBeamRuntimeSubsystem>> SubsystemsToInit, bool bInitializeUsers, FBeamOperationHandle Op);
 	/**
 	 * @brief This gets called to initialize the users for the manually initialized subsystems.
 	 */
-	void TriggerManuallySetSubsystemsUserReady(FBeamWaitCompleteEvent Evt, TArray<TSubclassOf<UBeamRuntimeSubsystem>> SubsystemsToInit, bool bInitializeUsers,
-	                                           FBeamOperationHandle Op);
+	void TriggerManuallySetSubsystemsUserReady(FBeamWaitCompleteEvent Evt, TArray<TSubclassOf<UBeamRuntimeSubsystem>> SubsystemsToInit, bool bInitializeUsers, FBeamOperationHandle Op);
 
 	/**
 	 * @brief This gets called to trigger the post user sign in for the manually initialized subsystems.
@@ -516,14 +510,15 @@ public:
 	void InitSDK(FBeamRuntimeHandler OnStartedHandler, FRuntimeError OnStartedFailedHandler);
 
 	/**
-	 * @brief Call this function to initialize the SDK and apply frictionless login.
-	 * UserReadyHandler : Is triggered after the sdk initialization has finished and the user data has been initialized,
-	 * it can be triggered multiple times if there are more than one user slot.
-	 * SDKInitializationErrorHandler :  Is triggered if an error happened while initializing the SDK.
-	 * UserInitilizationError :  Is triggered if an error happened while initializing a user for the SDK.
+	 * @brief Call this function to initialize the SDK and apply frictionless login. The semantics for the login are the same as @link LoginFrictionlessOperation @endlink. 
+	 *
+	 * @param OnUserReadyHandler Is triggered after the sdk initialization has finished and the user data has been initialized, it can be triggered multiple times if there are more than one user slot.
+	 * @param OnStartedFailedHandler Is triggered if an error happened while initializing the SDK.
+	 * @param OnUserReadyFailedHandler Is triggered if an error happened while initializing a user for the SDK.
 	 */
-	UFUNCTION(BlueprintCallable)
-	void InitSDKWithFrictionlessLogin(FUserStateChangedHandler OnUserReadyHandler, FRuntimeError OnStartedFailedHandler, FRuntimeError OnUserReadyFailedHandler);
+	UFUNCTION(BlueprintCallable, meta=(AutoCreateRefTerm="LoginInitProperties"))
+	void InitSDKWithFrictionlessLogin(FUserStateChangedHandler OnUserReadyHandler, FRuntimeError OnStartedFailedHandler, FRuntimeError OnUserReadyFailedHandler, TMap<FString, FString> LoginInitProperties);
+
 
 	/**
 	 * @brief Get the operation event id for the 2FA auth subevent
@@ -534,33 +529,34 @@ public:
 	/**
 	 * @brief Call this function if you want to initialize a subsystem that was set to manually initialize from the project settings.
 	 * This function will initialize all the passed subsystems
+	 * See @link ManuallyInitializeSubsystemOperation @endlink and @link TriggerManuallySetSubsystemsUserReady @endlink. 
 	 */
 	UFUNCTION(BlueprintCallable)
 	static inline FName GetOperationEventID_SubsystemsInitializedWithoutUserData() { return FName("SUBSYSTEMS_STARTED"); }
 
+	/**
+	 * @brief Call this function if you want to initialize a subsystem that was set to manually initialize from the project settings.
+	 * This function will initialize all the passed subsystems.
+	 */
 	UFUNCTION(BlueprintCallable)
-	FBeamOperationHandle ManuallyInitializeSubsystemOperation(FUserSlot UserSlot, TArray<TSubclassOf<UBeamRuntimeSubsystem>> SubsystemsTypesToInitialize,
-	                                                          FBeamOperationEventHandler OnOperationEvent);
+	FBeamOperationHandle ManuallyInitializeSubsystemOperation(FUserSlot UserSlot, TArray<TSubclassOf<UBeamRuntimeSubsystem>> SubsystemsTypesToInitialize, FBeamOperationEventHandler OnOperationEvent);
 
 	/**
 	 * @copydoc ManuallyInitializeSubsystemOperation
 	 */
-	FBeamOperationHandle CPP_ManuallyInitializeSubsystemOperation(FUserSlot UserSlot, TArray<TSubclassOf<UBeamRuntimeSubsystem>> SubsystemsTypesToInitialize,
-	                                                              FBeamOperationEventHandlerCode OnOperationEvent);
+	FBeamOperationHandle CPP_ManuallyInitializeSubsystemOperation(FUserSlot UserSlot, TArray<TSubclassOf<UBeamRuntimeSubsystem>> SubsystemsTypesToInitialize, FBeamOperationEventHandlerCode OnOperationEvent);
 
 	/**
 	 * @brief Call this function if you want to initialize a subsystem that was set to manually initialize from the project settings.
 	 * This function will initialize all the passed subsystems along with the user data
 	 */
 	UFUNCTION(BlueprintCallable)
-	FBeamOperationHandle ManuallyInitializeSubsystemOperationWithUserData(FUserSlot UserSlot, TArray<TSubclassOf<UBeamRuntimeSubsystem>> SubsystemsTypesToInitialize,
-	                                                                      FBeamOperationEventHandler OnOperationEvent);
+	FBeamOperationHandle ManuallyInitializeSubsystemOperationWithUserData(FUserSlot UserSlot, TArray<TSubclassOf<UBeamRuntimeSubsystem>> SubsystemsTypesToInitialize, FBeamOperationEventHandler OnOperationEvent);
 
 	/**
 	 * @copydoc ManuallyInitializeSubsystemOperationWithUserData
 	 */
-	FBeamOperationHandle CPP_ManuallyInitializeSubsystemOperationWithUserData(FUserSlot UserSlot, TArray<TSubclassOf<UBeamRuntimeSubsystem>> SubsystemsTypesToInitialize,
-	                                                                          FBeamOperationEventHandlerCode OnOperationEvent);
+	FBeamOperationHandle CPP_ManuallyInitializeSubsystemOperationWithUserData(FUserSlot UserSlot, TArray<TSubclassOf<UBeamRuntimeSubsystem>> SubsystemsTypesToInitialize, FBeamOperationEventHandlerCode OnOperationEvent);
 
 	/**
 	 * Whether a particular slot has a user authenticated in it.	  
@@ -842,12 +838,12 @@ public:
 	/**
 	 * @brief An operation that will authenticate a user with the beamable and persist that authentication locally.
 	 */
-	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Auth", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
-	FBeamOperationHandle LoginFrictionlessOperation(FUserSlot UserSlot, FBeamOperationEventHandler OnOperationEvent);
+	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Auth", meta=(DefaultToSelf="CallingContext", AutoCreateRefTerm="InitProperties", AdvancedDisplay="CallingContext"))
+	FBeamOperationHandle LoginFrictionlessOperation(FUserSlot UserSlot, TMap<FString, FString> InitProperties, FBeamOperationEventHandler OnOperationEvent);
 	/**
 	 * @brief An operation that will authenticate a user with the beamable and persist that authentication locally.
 	 */
-	FBeamOperationHandle CPP_LoginFrictionlessOperation(FUserSlot UserSlot, FBeamOperationEventHandlerCode OnOperationEvent);
+	FBeamOperationHandle CPP_LoginFrictionlessOperation(FUserSlot UserSlot, TMap<FString, FString> InitProperties, FBeamOperationEventHandlerCode OnOperationEvent);
 
 
 	/**
@@ -919,16 +915,29 @@ public:
 	/**	 
 	 * If no user is in the given slot and the given ExternalIdentity is NOT attached to an account in the current realm, we create a new account and attach the given email/password to it as an atomic operation (client-side).
 	 * The new user is authenticated into the target slot at the end of this process ONLY IF THE ENTIRE PROCESS IS SUCCESSFUL.
+	 *
+	 * When bAutoLogin is true, if the identity is already in use by some account, we'll log in to that account instead.
+	 * The semantics for that login are like the ones in @link LoginExternalIdentity @endlink.
+	 * 
+	 * When using along with IFederatedPlayerInit in a microservice, this passes in the IdentityUserId and IdentityAuthToken values as InitProperties, in addition to the ones provided as a parameter here.
+	 * Their keys are '__beam_3rd_party_user_id__' and '__beam_3rd_party_auth_token__' respectively.
 	 */
-	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Auth", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
+	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Auth", meta=(DefaultToSelf="CallingContext", AutoCreateRefTerm="InitProperties", AdvancedDisplay="CallingContext"))
 	FBeamOperationHandle SignUpExternalIdentityOperation(FUserSlot UserSlot, FString MicroserviceName, FString IdentityNamespace, FString IdentityUserId, FString IdentityAuthToken,
-	                                                     FBeamOperationEventHandler OnOperationEvent);
+	                                                     bool bAutoLogin, TMap<FString, FString> InitProperties, FBeamOperationEventHandler OnOperationEvent);
+
 	/**	 
 	 * If no user is in the given slot and the given ExternalIdentity is NOT attached to an account in the current realm, we create a new account and attach the given email/password to it as an atomic operation (client-side).
-	 * The new user is authenticated into the target slot at the end of this process ONLY IF THE ENTIRE PROCESS IS SUCCESSFUL. 
+	 * The new user is authenticated into the target slot at the end of this process ONLY IF THE ENTIRE PROCESS IS SUCCESSFUL.
+	 *
+	 * When bAutoLogin is true, if the identity is already in use by some account, we'll log in to that account instead.
+	 * The semantics for that login are like the ones in @link LoginExternalIdentity @endlink.
+	 * 
+	 * When using along with IFederatedPlayerInit in a microservice, this passes in the IdentityUserId and IdentityAuthToken values as InitProperties, in addition to the ones provided as a parameter here.
+	 * Their keys are '__beam_3rd_party_user_id__' and '__beam_3rd_party_auth_token__' respectively.
 	 */
 	FBeamOperationHandle CPP_SignUpExternalIdentityOperation(FUserSlot UserSlot, FString MicroserviceName, FString IdentityNamespace, FString IdentityUserId, FString IdentityAuthToken,
-	                                                         FBeamOperationEventHandlerCode OnOperationEvent);
+	                                                         bool bAutoLogin, TMap<FString, FString> InitProperties, FBeamOperationEventHandlerCode OnOperationEvent);
 
 	/**	 
 	 * If no user is in the given slot and the given Email is NOT attached to an account in the current realm, we create a new account and attach the given email/password to it as an atomic operation (client-side).
@@ -936,17 +945,23 @@ public:
 	 *
 	 * When bAutoLogin is true, if the email account is already in use, we'll try to log in to that account with the provided email and password.
 	 * The semantics for that login are like the ones in @link LoginEmailAndPasswordOperation @endlink.
+	 *
+	 * When using along with IFederatedPlayerInit in a microservice, this passes in the email and password values as InitProperties, in addition to the ones provided  as a parameter here.
+	 * Their keys are '__beam_email__' and '__beam_password__' respectively.
 	 */
-	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Auth", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
-	FBeamOperationHandle SignUpEmailAndPasswordOperation(FUserSlot UserSlot, FString Email, FString Password, bool bAutoLogin, FBeamOperationEventHandler OnOperationEvent);
+	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Auth", meta=(DefaultToSelf="CallingContext", AutoCreateRefTerm="InitProperties", AdvancedDisplay="CallingContext"))
+	FBeamOperationHandle SignUpEmailAndPasswordOperation(FUserSlot UserSlot, FString Email, FString Password, bool bAutoLogin, TMap<FString, FString> InitProperties, FBeamOperationEventHandler OnOperationEvent);
 	/**	 
 	 * If no user is in the given slot and the given Email is NOT attached to an account in the current realm, we create a new account and attach the given email/password to it as an atomic operation (client-side).
 	 * The new user is authenticated into the target slot at the end of this process ONLY IF THE ENTIRE PROCESS IS SUCCESSFUL.
 	 *
 	 * When bAutoLogin is true, if the email account is already in use, we'll try to log in to that account with the provided email and password.
 	 * The semantics for that login are like the ones in @link LoginEmailAndPasswordOperation @endlink.
+	 *
+	 * When using along with IFederatedPlayerInit in a microservice, this passes in the email and password values as InitProperties, in addition to the ones provided  as a parameter here.
+	 * Their keys are '__beam_email__' and '__beam_password__' respectively.
 	 */
-	FBeamOperationHandle CPP_SignUpEmailAndPasswordOperation(FUserSlot UserSlot, FString Email, FString Password, bool bAutoLogin, FBeamOperationEventHandlerCode OnOperationEvent);
+	FBeamOperationHandle CPP_SignUpEmailAndPasswordOperation(FUserSlot UserSlot, FString Email, FString Password, bool bAutoLogin, TMap<FString, FString> InitProperties, FBeamOperationEventHandlerCode OnOperationEvent);
 
 	/**	 
 	 * If a user is logged into the given slot, we sign out (waiting for all systems to sign out) and then we trigger the operation's success.   
@@ -971,7 +986,7 @@ private:
 	void FrictionlessLoginIntoSlot(const FUserSlot& UserSlot);
 
 	// BP/CPP Independent Operation Implementations	
-	void LoginFrictionless(FUserSlot UserSlot, FBeamOperationHandle Op);
+	void LoginFrictionless(FUserSlot UserSlot, TMap<FString, FString> InitProperties, FBeamOperationHandle Op);
 	void LoginExternalIdentity(FUserSlot UserSlot, FString ExternalService, FString ExternalNamespace, FString ExternalToken, FBeamOperationHandle Op);
 	void CommitLoginExternalIdentity2FA(FUserSlot UserSlot, FString ExternalService, FString ExternalNamespace, FString ExternalToken, UChallengeSolutionObject* ChallengeSolution, FBeamOperationHandle Op);
 	void LoginEmailAndPassword(FUserSlot UserSlot, FString Email, FString Password, FBeamOperationHandle Op);
@@ -981,8 +996,9 @@ private:
 	void AttachLocalIdentity(FUserSlot UserSlot, FString IdentityUserId, FString MicroserviceName, FString IdentityNamespace);
 	void AttachExternalIdentity(FUserSlot UserSlot, FString MicroserviceName, FString IdentityNamespace, FString IdentityUserId, FString IdentityAuthToken, FBeamOperationHandle Op);
 	void AttachEmailAndPassword(FUserSlot UserSlot, FString Email, FString Password, FBeamOperationHandle Op);
-	void SignUpExternalIdentity(FUserSlot UserSlot, FString MicroserviceName, FString IdentityNamespace, FString IdentityUserId, FString IdentityAuthToken, FBeamOperationHandle Op);
-	void SignUpEmailAndPassword(FUserSlot UserSlot, FString Email, FString Password, bool bAutoLoginOnUnavailable, FBeamOperationHandle Op);
+	void SignUpExternalIdentity(FUserSlot UserSlot, FString MicroserviceName, FString IdentityNamespace, FString IdentityUserId, FString IdentityAuthToken, bool bAutoLoginOnUnavailable,
+	                            TMap<FString, FString> InitProperties, FBeamOperationHandle Op);
+	void SignUpEmailAndPassword(FUserSlot UserSlot, FString Email, FString Password, bool bAutoLoginOnUnavailable, TMap<FString, FString> InitProperties, FBeamOperationHandle Op);
 	void Logout(FUserSlot UserSlot, EUserSlotClearedReason Reason, bool bRemoveLocalData, FBeamOperationHandle Op);
 
 	// Reusable Operation Callbacks
@@ -995,7 +1011,7 @@ private:
 
 	// Reusable Helper Functions
 	void LoadCachedUserAtSlot(FUserSlot UserSlot, FBeamOperationHandle AuthOp, FSimpleDelegate RunIfNoUser);
-	FBeamRequestContext LoginGuest(FUserSlot UserSlot, FBeamOperationHandle Op, FDelayedOperation OnBeforePostAuthentication = {});
+	FBeamRequestContext LoginGuest(FUserSlot UserSlot, FBeamOperationHandle Op, TMap<FString, FString> InitProperties, FDelayedOperation OnBeforePostAuthentication = {});
 	FBeamRequestContext CheckExternalIdentityAvailable(FString ExternalService, FString ExternalNamespace, FString ExternalUserId, FBeamOperationHandle Op,
 	                                                   FOnGetAvailableExternalIdentityFullResponse Handler) const;
 	FBeamRequestContext CheckEmailAvailable(FString Email, FBeamOperationHandle Op, FOnGetAvailableFullResponse Handler) const;

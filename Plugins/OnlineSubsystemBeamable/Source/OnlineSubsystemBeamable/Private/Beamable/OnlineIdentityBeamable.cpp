@@ -206,7 +206,7 @@ bool FOnlineIdentityBeamable::Login(int32 LocalUserNum, const FOnlineAccountCred
 			const FString ExternalUserId = AccountCredentials.Id;
 			const FString ExternalToken = AccountCredentials.Token;
 
-			BeamRuntime->CPP_SignUpExternalIdentityOperation(TargetSlot, ServiceName, Namespace, ExternalUserId, ExternalToken, LoginHandler);
+			BeamRuntime->CPP_SignUpExternalIdentityOperation(TargetSlot, ServiceName, Namespace, ExternalUserId, ExternalToken, false, {}, LoginHandler);
 		}
 	}
 
@@ -303,7 +303,7 @@ bool FOnlineIdentityBeamable::Login(int32 LocalUserNum, const FOnlineAccountCred
 								TriggerOnLoginCompleteDelegates(LocalUserNum, false, *FUniqueNetIdBeamable::EmptyId(), Evt.EventCode);
 							}
 						});
-					BeamRuntime->CPP_SignUpExternalIdentityOperation(TargetSlot, ServiceName, Namespace, ExternalUserId, ExternalToken, OnSignUpWithExternalId);
+					BeamRuntime->CPP_SignUpExternalIdentityOperation(TargetSlot, ServiceName, Namespace, ExternalUserId, ExternalToken, false, {}, OnSignUpWithExternalId);
 				}
 				else
 				{

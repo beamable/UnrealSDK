@@ -48,23 +48,23 @@ public:
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("logLevel"), LogLevel);
-		Serializer->WriteValue(TEXT("message"), Message);
-		Serializer->WriteValue(TEXT("timestamp"), Timestamp);	
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("logLevel"), LogLevel, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("message"), Message, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("timestamp"), Timestamp, Serializer);	
 	}
 
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("logLevel"), LogLevel);
-		Serializer->WriteValue(TEXT("message"), Message);
-		Serializer->WriteValue(TEXT("timestamp"), Timestamp);	
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("logLevel"), LogLevel, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("message"), Message, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("timestamp"), Timestamp, Serializer);	
 	}
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		LogLevel = Bag->GetStringField(TEXT("logLevel"));
-		Message = Bag->GetStringField(TEXT("message"));
-		FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("timestamp")), Timestamp);	
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("logLevel")), LogLevel);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("message")), Message);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("timestamp")), Timestamp);	
 	}
 };
 
@@ -117,12 +117,12 @@ public:
 	inline static FString StreamType = FString(TEXT("stream"));
 	UPROPERTY() TArray<UBeamCliProjectStorageRestoreStreamData*> Stream;
 	UPROPERTY() TArray<int64> Timestamps;
-	TFunction<void (const TArray<UBeamCliProjectStorageRestoreStreamData*>& StreamData, const TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnStreamOutput;
+	TFunction<void (TArray<UBeamCliProjectStorageRestoreStreamData*>& StreamData, TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnStreamOutput;
 
 	inline static FString StreamTypeMongoLogs = FString(TEXT("mongoLogs"));
 	UPROPERTY() TArray<UBeamCliProjectStorageRestoreMongoLogsStreamData*> MongoLogsStream;
 	UPROPERTY() TArray<int64> MongoLogsTimestamps;
-	TFunction<void (const TArray<UBeamCliProjectStorageRestoreMongoLogsStreamData*>& StreamData, const TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnMongoLogsStreamOutput;	
+	TFunction<void (TArray<UBeamCliProjectStorageRestoreMongoLogsStreamData*>& StreamData, TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnMongoLogsStreamOutput;	
 
 	TFunction<void (const int& ResCode, const FBeamOperationHandle& Op)> OnCompleted;
 	virtual bool HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer) override;

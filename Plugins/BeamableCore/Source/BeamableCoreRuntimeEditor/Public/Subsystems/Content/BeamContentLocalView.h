@@ -3,16 +3,18 @@
 
 #include "BeamContentLocalView.generated.h"
 
-UENUM(BlueprintType)
-enum EBeamLocalContentStatus
+UENUM(BlueprintType, Flags, meta = (Bitflags, UseEnumValuesAsMaskValuesInEditor = "true"))
+enum class EBeamLocalContentStatus : uint8
 {
-	Beam_LocalContentCreated = 0,
-	Beam_LocalContentDeleted = 1,
-	Beam_LocalContentModified = 2,
-	Beam_LocalContentUpToDate = 3,
+	Beam_Invalid = 0 UMETA(Hidden),
+	Beam_LocalContentCreated = 1 << 0,
+	Beam_LocalContentDeleted = 1 << 1,
+	Beam_LocalContentModified = 1 << 2,
+	Beam_LocalContentUpToDate = 1 << 3,
 
-	Beam_LocalContentAny = 4, 
+	Beam_LocalContentAny = Beam_LocalContentCreated | Beam_LocalContentDeleted | Beam_LocalContentModified | Beam_LocalContentUpToDate, 
 };
+ENUM_CLASS_FLAGS(EBeamLocalContentStatus);
 
 UCLASS(BlueprintType)
 class BEAMABLECORERUNTIMEEDITOR_API UBeamContentLocalView : public UObject
@@ -24,7 +26,7 @@ public:
 	UBeamContentObject* ContentObject;
 
 	UPROPERTY(BlueprintReadOnly)
-	TEnumAsByte<EBeamLocalContentStatus> LocalStatus;
+	EBeamLocalContentStatus LocalStatus;
 
 	UPROPERTY(BlueprintReadOnly)
 	FText ContentFullId;
@@ -34,6 +36,9 @@ public:
 
 	UPROPERTY(BlueprintReadOnly)
 	FText ContentName;
+
+	UPROPERTY(BlueprintReadOnly)
+	bool bIsInConflict;
 };
 
 USTRUCT(BlueprintType)

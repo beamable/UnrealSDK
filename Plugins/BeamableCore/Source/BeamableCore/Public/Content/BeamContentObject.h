@@ -62,7 +62,7 @@ public:
 	virtual void BuildContentDefinitionJsonObject(FJsonDomBuilder::FObject& OutContentDefinition);
 
 	/**
-	 * @brief Generates an MD5 Hash of the ContentObject's properties.
+	 * @brief Generates an SHA-1 Hash of the ContentObject's subclass properties (serialized in a condensed way and with fields sorted by name).
 	 */
 	UFUNCTION(BlueprintCallable, Category="Beam")
 	FString CreatePropertiesHash();
@@ -184,6 +184,8 @@ public:
 	}
 
 public:
+	// STATIC UTILITIES
+
 	/**
 	 * Find the lowest UClass we have the code for that matches the type id string of this content object; if none is found, return a UBeamContentObject instance.
 	 * For example, with TypeID='items.my_item_type.my_item_sub_type':
@@ -204,57 +206,14 @@ public:
 	 * @param ContentTypeId The type id of a particular content object (this is the object's id without the last component).
 	 * @param OutObject The UBeamContentObject instance that is correct.
 	 */
-	static void NewFromTypeId(const TMap<FString, UClass*>& ContentTypeToContentClass, const FString& ContentTypeId, UBeamContentObject*& OutObject)
-	{
-		UClass* ObjectClass;
-		EBeamContentObjectSupportLevel SupportLevel;
-		GetClassForTypeId(ContentTypeToContentClass, ContentTypeId, ObjectClass, SupportLevel);
-		if (ObjectClass)
-		{
-			OutObject = NewObject<UBeamContentObject>(GetTransientPackage(), ObjectClass, NAME_None, EObjectFlags::RF_Public | EObjectFlags::RF_Standalone);
-			OutObject->SupportLevel = SupportLevel;
-		}
-	}
+	UFUNCTION(BlueprintCallable)
+	static void NewFromTypeId(const TMap<FString, UClass*>& ContentTypeToContentClass, const FString& ContentTypeId, UBeamContentObject*& OutObject);
 
 	/**
-	 * See NewFromTypeId.
+	 * See @link NewFromTypeId @endlink .
 	 */
-	static void GetClassForTypeId(const TMap<FString, UClass*>& ContentTypeToContentClass, const FString& ContentTypeId, UClass*& OutObjectClass, EBeamContentObjectSupportLevel& OutSupportLevel)
-	{
-		bool bKnowsType;
-		auto TypeStringCpy = ContentTypeId;
-		do
-		{
-			bKnowsType = ContentTypeToContentClass.Contains(TypeStringCpy);
-			if (bKnowsType)
-			{
-				OutObjectClass = *ContentTypeToContentClass.Find(TypeStringCpy);
-
-				// Set the support level to full support only if we found a UClass that's an exact match to the given type id; otherwise, PartialSupport it is. 
-				OutSupportLevel = TypeStringCpy.Equals(ContentTypeId) ? FullSupport : PartialSupport;
-			}
-			else
-			{
-				int32 LastDotIdx;
-				TypeStringCpy.FindLastChar('.', LastDotIdx);
-
-				// Cut off the part of the type and let us fall through to the while clause again.
-				if (LastDotIdx != INDEX_NONE)
-				{
-					TypeStringCpy.MidInline(0, LastDotIdx);
-				}
-				// If we were at the last possible type and we still didn't find a UClass to deserialize it in it...
-				else
-				{
-					// Clear the type string so we fall out of the while loop.
-					TypeStringCpy.Empty();
-					OutObjectClass = UBeamContentObject::StaticClass();
-					OutSupportLevel = NoSupport;
-				}
-			}
-		}
-		while (!bKnowsType && !TypeStringCpy.IsEmpty());
-	}
+	UFUNCTION(BlueprintCallable)
+	static void GetClassForTypeId(const TMap<FString, UClass*>& ContentTypeToContentClass, const FString& ContentTypeId, UClass*& OutObjectClass, TEnumAsByte<EBeamContentObjectSupportLevel>& OutSupportLevel);
 };
 
 

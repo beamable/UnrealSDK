@@ -20,20 +20,20 @@ public:
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("interfaceName"), InterfaceName);
-		Serializer->WriteValue(TEXT("federationId"), FederationId);	
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("interfaceName"), InterfaceName, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("federationId"), FederationId, Serializer);	
 	}
 
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("interfaceName"), InterfaceName);
-		Serializer->WriteValue(TEXT("federationId"), FederationId);	
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("interfaceName"), InterfaceName, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("federationId"), FederationId, Serializer);	
 	}
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		InterfaceName = Bag->GetStringField(TEXT("interfaceName"));
-		FederationId = Bag->GetStringField(TEXT("federationId"));	
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("interfaceName")), InterfaceName);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("federationId")), FederationId);	
 	}
 };
 

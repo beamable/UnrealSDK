@@ -31,32 +31,32 @@ public:
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("id"), Id);
-		Serializer->WriteValue(TEXT("created"), Created);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("id"), Id, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("created"), Created, Serializer);
 		UBeamJsonUtils::SerializeArray<UCliServiceReferenceStreamData*>(TEXT("manifest"), Manifest, Serializer);
 		UBeamJsonUtils::SerializeArray<UCliServiceStorageReferenceStreamData*>(TEXT("storageReference"), StorageReference, Serializer);
-		Serializer->WriteValue(TEXT("createdByAccountId"), CreatedByAccountId);
-		Serializer->WriteValue(TEXT("comments"), Comments);	
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("createdByAccountId"), CreatedByAccountId, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("comments"), Comments, Serializer);	
 	}
 
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("id"), Id);
-		Serializer->WriteValue(TEXT("created"), Created);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("id"), Id, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("created"), Created, Serializer);
 		UBeamJsonUtils::SerializeArray<UCliServiceReferenceStreamData*>(TEXT("manifest"), Manifest, Serializer);
 		UBeamJsonUtils::SerializeArray<UCliServiceStorageReferenceStreamData*>(TEXT("storageReference"), StorageReference, Serializer);
-		Serializer->WriteValue(TEXT("createdByAccountId"), CreatedByAccountId);
-		Serializer->WriteValue(TEXT("comments"), Comments);	
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("createdByAccountId"), CreatedByAccountId, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("comments"), Comments, Serializer);	
 	}
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		Id = Bag->GetStringField(TEXT("id"));
-		FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("created")), Created);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("id")), Id);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("created")), Created);
 		UBeamJsonUtils::DeserializeArray<UCliServiceReferenceStreamData*>(Bag->GetArrayField(TEXT("manifest")), Manifest, OuterOwner);
 		UBeamJsonUtils::DeserializeArray<UCliServiceStorageReferenceStreamData*>(Bag->GetArrayField(TEXT("storageReference")), StorageReference, OuterOwner);
-		FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("createdByAccountId")), CreatedByAccountId);
-		Comments = Bag->GetStringField(TEXT("comments"));	
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("createdByAccountId")), CreatedByAccountId);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("comments")), Comments);	
 	}
 };
 

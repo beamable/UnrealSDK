@@ -33,6 +33,13 @@ struct FBeamProjectRealmData
 
 	UPROPERTY(BlueprintReadOnly, Transient, VisibleAnywhere)
 	FString RealmSecret;
+
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	bool bIsDev = false;
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	bool bIsStaging = false;
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	bool bIsProduction = false;
 };
 
 USTRUCT(BlueprintType)
@@ -82,13 +89,7 @@ public:
 	 * @brief Users can customize the status icons displayed in the content window.
 	 */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Content")
-	TMap<TEnumAsByte<EBeamLocalContentStatus>, TSoftObjectPtr<UTexture2D>> LocalContentStatusIcons;
-
-	/**
-	 * @brief Just a view into all the project's data for each signed in User Slot.
-	 */
-	UPROPERTY(Config, VisibleAnywhere, BlueprintReadOnly, Category="User Slots")
-	TMap<FString, FBeamCustomerProjectData> PerSlotDeveloperProjectData;
+	TMap<EBeamLocalContentStatus, TSoftObjectPtr<UTexture2D>> LocalContentStatusIcons;
 
 	UPROPERTY(Config, VisibleAnywhere, BlueprintReadOnly, Category="UI/UX")
 	TMap<FString, FLinearColor> OptionalTypePinColors;
