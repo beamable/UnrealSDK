@@ -49,7 +49,30 @@ FBeamOperationHandle UBeamMicroservicesEditor::OnRealmInitialized(FBeamRealmHand
 	Editor->GetMainEditorSlot(EditorUser);
 	LocalTarget = EditorUser.Email;
 
-	return Super::OnRealmInitialized(NewRealm);
+	const auto Handler = RequestTracker->CPP_BeginOperation({}, GetName(), {});
+
+	// Get this machine's routing key
+	const auto GetRoutingKeyCommand = NewObject<UBeamCliFederationLocalKeyCommand>(this);
+	GetRoutingKeyCommand->OnStreamOutput = [this, Handler](const TArray<UBeamCliFederationLocalKeyStreamData*>& Stream, const TArray<int64>&, const FBeamOperationHandle&)
+	{
+		RequestTracker->TriggerOperationSuccess(Handler, TEXT(""));
+		for (UBeamCliFederationLocalKeyStreamData* LocalKeyStreamData : Stream)
+			LocalRoutingKey = LocalKeyStreamData->RoutingKey;
+
+		// After we have the routing key for this user and machine, set up a long-running command to get updates from the CLI about the state of microservices running locally. 
+		const auto ListenForStandaloneRunningServicesCommand = NewObject<UBeamCliProjectPsCommand>(this);
+		ListenForStandaloneRunningServicesCommand->OnStreamOutput = [this](TArray<UBeamCliProjectPsStreamData*>& Stream, TArray<int64>& Ts, const FBeamOperationHandle& Op)
+		{
+			OnUpdateLocalStateReceived(Stream, Ts, Op);
+			Stream.Empty();
+			Ts.Empty();
+		};
+		const auto ReqProcess = FString::Printf(TEXT("--require-process-id %d"), FPlatformProcess::GetCurrentProcessId());
+		Cli->RunCommand(ListenForStandaloneRunningServicesCommand, {TEXT("-w"), ReqProcess}, {});
+	};
+	Cli->RunCommandServer(GetRoutingKeyCommand, {}, Handler);
+
+	return Handler;
 }
 
 void UBeamMicroservicesEditor::OnReady()
@@ -68,26 +91,6 @@ void UBeamMicroservicesEditor::OnReady()
 		{
 			Backend->SetRoutingKeyMap(TEXT(""));
 		});
-
-		// Get this machine's routing key
-		const auto GetRoutingKeyCommand = NewObject<UBeamCliFederationLocalKeyCommand>(this);
-		GetRoutingKeyCommand->OnStreamOutput = [this](const TArray<UBeamCliFederationLocalKeyStreamData*>& Stream, const TArray<int64>&, const FBeamOperationHandle&)
-		{
-			for (UBeamCliFederationLocalKeyStreamData* LocalKeyStreamData : Stream)
-				LocalRoutingKey = LocalKeyStreamData->RoutingKey;
-
-			// After we have the routing key for this user and machine, set up a long-running command to get updates from the CLI about the state of microservices running locally. 
-			const auto ListenForStandaloneRunningServicesCommand = NewObject<UBeamCliProjectPsCommand>(this);
-			ListenForStandaloneRunningServicesCommand->OnStreamOutput = [this](TArray<UBeamCliProjectPsStreamData*>& Stream, TArray<int64>& Ts, const FBeamOperationHandle& Op)
-			{
-				OnUpdateLocalStateReceived(Stream, Ts, Op);
-				Stream.Empty();
-				Ts.Empty();
-			};
-			const auto ReqProcess = FString::Printf(TEXT("--require-process-id %d"), FPlatformProcess::GetCurrentProcessId());
-			Cli->RunCommand(ListenForStandaloneRunningServicesCommand, {TEXT("-w"), ReqProcess}, {});
-		};
-		Cli->RunCommandServer(GetRoutingKeyCommand, {}, {});
 	}
 }
 

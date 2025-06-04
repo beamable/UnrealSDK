@@ -269,6 +269,7 @@ public:
 	UPROPERTY(BlueprintReadOnly)
 	FBeamCustomerProjectData CurrentProjectData;
 
+	// This will list all the docs pages in the Unreal - (NOT IN USE)
 	UPROPERTY(BlueprintReadOnly, Category="Beam")
 	TArray<FDocsPageItem> DocsPages;
 	/**

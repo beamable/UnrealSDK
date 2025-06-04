@@ -1,9 +1,9 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 /* BEAMABLE USINGS TO COPY PASTE START */
+
 using System;
 /* BEAMABLE USINGS TO COPY PASTE END */
-
 using UnrealBuildTool;
 using System.Collections.Generic;
 using System.IO;
@@ -17,7 +17,7 @@ public class BeamableUnrealTarget : TargetRules
 		Type = TargetType.Game;
 		DefaultBuildSettings = BuildSettingsVersion.Latest;
 		IncludeOrderVersion = EngineIncludeOrderVersion.Latest;
-			
+
 		ExtraModuleNames.AddRange(new string[]
 		{
 			"BeamableUnreal",
@@ -25,13 +25,12 @@ public class BeamableUnrealTarget : TargetRules
 
 		var samplePluginName = GetCurrBeamProj(Target);
 		Console.WriteLine($"Configuring standalone project as beamproj={samplePluginName}.");
-		
+
 		ConfigureIfSandbox(this, samplePluginName);
 		ConfigureIfLiveOpsDemo(this, samplePluginName);
 		ConfigureIfHathoraDemo(this, samplePluginName);
 		ConfigureIfSteamDemo(this, samplePluginName);
 		ConfigureIfDiscordDemo(this, samplePluginName);
-		ApplyProjectOverrides(Target, samplePluginName);
 	}
 
 	public static string GetCurrBeamProj(TargetInfo Target)
@@ -52,7 +51,7 @@ public class BeamableUnrealTarget : TargetRules
 				}
 			}
 		}
-		
+
 		return kBeamProj_Sandbox;
 	}
 
@@ -82,7 +81,7 @@ public class BeamableUnrealTarget : TargetRules
 			}
 		}
 	}
-	
+
 	public const string kBeamProj_LiveOpsDemo = "BEAMPROJ_LiveOpsDemo";
 
 	public static void ConfigureIfLiveOpsDemo(TargetRules TargetRules, string beamProj)
@@ -197,74 +196,6 @@ public class BeamableUnrealTarget : TargetRules
 			else
 			{
 				throw new ArgumentOutOfRangeException();
-			}
-		}
-	}
-
-	public static void ApplyProjectOverrides(TargetInfo Target, string beamProj)
-	{
-		string[] overrides = new[]{
-			"steam_appid.txt"
-		};
-		var projRoot = Target.ProjectFile.Directory.ToDirectoryInfo().ToString();
-		var overridesRoot = Path.Combine(projRoot, "Plugins", beamProj, "Overrides");
-
-		foreach(var entry in overrides)
-		{
-			var filePath = Path.Combine(projRoot, entry);
-			if(File.Exists(filePath)) {
-				File.Delete(filePath);
-			}
-			string targetFilePath = Path.Combine(overridesRoot, entry);
-			if(File.Exists(targetFilePath)){
-				FileInfo file = new FileInfo(targetFilePath);
-				file.CopyTo(Path.Combine(projRoot, entry));
-			}
-		}
-		var overrideFolders = new[] { "Config", ".beamable/content" };
-
-		foreach (var overrideFolder in overrideFolders)
-		{
-			var projectPath = Path.Combine(projRoot, overrideFolder);
-			var overridesPath = Path.Combine(overridesRoot, overrideFolder);
-			if (!Directory.Exists(overridesPath))
-			{
-				Console.WriteLine($"{beamProj} project does not have Overrides directory for this expected override path. Create one at: {overridesPath}");
-				return;
-			}
-
-			if (Directory.Exists(projectPath))
-				Directory.Delete(projectPath, true);
-
-			CopyDirectory(overridesPath, projectPath);
-		}
-
-		static void CopyDirectory(string sourceDir, string destinationDir)
-		{
-			// Get information about the source directory
-			var dir = new DirectoryInfo(sourceDir);
-
-			// Check if the source directory exists
-			if (!dir.Exists)
-				throw new DirectoryNotFoundException($"Source directory not found: {dir.FullName}");
-
-			// Cache directories before we start copying
-			DirectoryInfo[] dirs = dir.GetDirectories();
-
-			// Create the destination directory
-			Directory.CreateDirectory(destinationDir);
-
-			// Get the files in the source directory and copy to the destination directory
-			foreach (FileInfo file in dir.GetFiles())
-			{
-				string targetFilePath = Path.Combine(destinationDir, file.Name);
-				file.CopyTo(targetFilePath, true);
-			}
-
-			foreach (DirectoryInfo subDir in dirs)
-			{
-				string newDestinationDir = Path.Combine(destinationDir, subDir.Name);
-				CopyDirectory(subDir.FullName, newDestinationDir);
 			}
 		}
 	}
