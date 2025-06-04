@@ -777,10 +777,32 @@ void UBeamEditor::SetActiveTargetRealmUnsafe(const FBeamRealmHandle& NewRealmHan
 
 void UBeamEditor::ApplyCurrentSettingsToBuild()
 {
-	// auto set = UEditorDialogLibrary::ShowMessage("Apply realm to build", "It will apply realm to build", EAppMsgType::YesNoCancel, "", EAppMsgCategory::Info);
-	auto Settings = GetMutableDefault<UBeamCoreSettings>();
-	Settings->SaveConfig(CPF_Config, *Settings->GetDefaultConfigFilename());
+	FBeamProjectRealmData RealmData;
+	FBeamCustomerProjectData ProjectData;
 
-	// Notify other systems that
-	if (OnAppliedSettingsToBuild.IsBound()) OnAppliedSettingsToBuild.Broadcast();
+	GetActiveProjectAndRealmData(ProjectData, RealmData);
+
+	const auto ConfigSetCmd = NewObject<UBeamCliConfigCommand>();
+
+	ConfigSetCmd->OnCompleted = [this](const int& ResCode, const FBeamOperationHandle& CmdOp)
+	{
+		if (ResCode == 0)
+		{
+			// auto set = UEditorDialogLibrary::ShowMessage("Apply realm to build", "It will apply realm to build", EAppMsgType::YesNoCancel, "", EAppMsgCategory::Info);
+			auto Settings = GetMutableDefault<UBeamCoreSettings>();
+			Settings->SaveConfig(CPF_Config, *Settings->GetDefaultConfigFilename());
+
+			// Notify other systems that
+			if (OnAppliedSettingsToBuild.IsBound()) OnAppliedSettingsToBuild.Broadcast();
+		}
+		else
+		{
+			RequestTracker->TriggerOperationError(CmdOp, FString::Printf(TEXT("CLI_ERROR. CODE=%d"), ResCode));
+		}
+	};
+
+	// Invoke the "Set Local Config Override" command in the CLI with the new realm
+	const auto Cli = GEditor->GetEditorSubsystem<UBeamCli>();
+	const auto Params = TArray<FString>{TEXT("--cid"), RealmData.CID.AsString, TEXT("--pid"), RealmData.PID.AsString, TEXT("--set"), TEXT("--no-overrides")};
+	Cli->RunCommandServer(ConfigSetCmd, Params, {});
 }

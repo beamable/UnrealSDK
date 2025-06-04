@@ -18,15 +18,14 @@ public class BeamableUnrealEditorTarget : TargetRules
 		{
 			"BeamableUnreal",
 			"BeamableUnrealBlueprintNodes",
-			"BeamableUnrealEditor"
+			"BeamableUnrealEditor",
 		});
-		
+
 		var samplePluginName = BeamableUnrealTarget.GetCurrBeamProj(Target);
-		
+
 		Console.WriteLine($"Configuring editor project as beamproj={samplePluginName}.");
 		BeamableUnrealTarget.ConfigureIfSandbox(this, samplePluginName);
 		BeamableUnrealTarget.ConfigureIfHathoraDemo(this, samplePluginName);
 		BeamableUnrealTarget.ConfigureIfSteamDemo(this, samplePluginName);
-		BeamableUnrealTarget.ApplyProjectOverrides(Target, samplePluginName);
 	}
 }
