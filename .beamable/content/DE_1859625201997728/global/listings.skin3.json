@@ -1,0 +1,31 @@
+{
+  "properties": {
+    "clientData": {
+      "data": {
+        "path": "/Script/BEAMPROJ_Beamball.BeamBallListingDataAsset\u0027/BEAMPROJ_Beamball/Database/Listing/Skin3.Skin3\u0027"
+      }
+    },
+    "offer": {
+      "data": {
+        "titles": [],
+        "descriptions": [],
+        "obtainCurrency": [],
+        "obtainItems": [
+          {
+            "contentId": "items.itemskin.skin3",
+            "properties": []
+          }
+        ]
+      }
+    },
+    "price": {
+      "data": {
+        "type": "currency",
+        "symbol": "currency.coins",
+        "amount": 50
+      }
+    }
+  },
+  "tags": [],
+  "referenceManifestId": "68406e9755091e7b548a8cb2"
+}
