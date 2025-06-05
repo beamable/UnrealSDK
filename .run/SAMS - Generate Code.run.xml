@@ -1,6 +1,6 @@
 ﻿<component name="ProjectRunConfigurationManager">
   <configuration default="false" name="SAMS - Generate Code" type="ShConfigurationType">
-    <option name="SCRIPT_TEXT" value="dotnet beam project generate-client some/path/to/a/microservice/dll --output-links --logs v" />
+    <option name="SCRIPT_TEXT" value="dotnet beam project generate-client &quot;&quot; --output-links --logs v" />
     <option name="INDEPENDENT_SCRIPT_PATH" value="true" />
     <option name="SCRIPT_PATH" value="" />
     <option name="SCRIPT_OPTIONS" value="project generate-client some/path/to/a/microservice/dll --output-links --logs v" />

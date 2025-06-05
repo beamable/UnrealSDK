@@ -185,7 +185,7 @@ bool FOnlineIdentityBeamable::Login(int32 LocalUserNum, const FOnlineAccountCred
 			const FString Password = AccountCredentials.Token;
 
 			UBeamRuntime* BeamRuntime = GameInstance->GetSubsystem<UBeamRuntime>();
-			BeamRuntime->CPP_SignUpEmailAndPasswordOperation(TargetSlot, Email, Password, false, LoginHandler);
+			BeamRuntime->CPP_SignUpEmailAndPasswordOperation(TargetSlot, Email, Password, false, {}, LoginHandler);
 		}
 
 		// If we are signing up with a federated identity.
@@ -216,7 +216,7 @@ bool FOnlineIdentityBeamable::Login(int32 LocalUserNum, const FOnlineAccountCred
 		if (LoginType.StartsWith(OSS_BEAMABLE_IDENTITY_TYPE_FRICTIONLESS()))
 		{
 			UBeamRuntime* BeamRuntime = GameInstance->GetSubsystem<UBeamRuntime>();
-			BeamRuntime->CPP_LoginFrictionlessOperation(TargetSlot, LoginHandler);
+			BeamRuntime->CPP_LoginFrictionlessOperation(TargetSlot, {}, LoginHandler);
 		}
 
 		// If we are logging in with email/password
@@ -250,7 +250,7 @@ bool FOnlineIdentityBeamable::Login(int32 LocalUserNum, const FOnlineAccountCred
 							TriggerOnLoginCompleteDelegates(LocalUserNum, false, *FUniqueNetIdBeamable::EmptyId(), Evt.EventCode);
 						}
 					});
-				BeamRuntime->CPP_SignUpEmailAndPasswordOperation(TargetSlot, Email, Password, false, OnSignUpWithEmail);
+				BeamRuntime->CPP_SignUpEmailAndPasswordOperation(TargetSlot, Email, Password, false, {}, OnSignUpWithEmail);
 			}
 			else
 			{
