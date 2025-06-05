@@ -169,17 +169,13 @@ public:
 
 	template <typename TInner>
 	static void BuildMap(FStrProperty* const StrKeyProperty, FJsonDomBuilder::FObject JsonMap, FScriptMapHelper MapHelper)
-	{
-		const auto MapNum = MapHelper.Num();
-		for (auto i = 0; i < MapNum; i++)
+	{		
+		for (FScriptMapHelper::FIterator i = MapHelper.CreateIterator(); i; ++i)
 		{
-			if (MapHelper.IsValidIndex(i))
-			{
-				const FString Key = StrKeyProperty->GetPropertyValue(MapHelper.GetKeyPtr(i));
-				const TInner* Data = reinterpret_cast<const TInner*>(MapHelper.GetValuePtr(i));
+			const FString Key = StrKeyProperty->GetPropertyValue(MapHelper.GetKeyPtr(i));
+			const TInner* Data = reinterpret_cast<const TInner*>(MapHelper.GetValuePtr(i));
 
-				JsonMap.Set(Key, *Data);
-			}
+			JsonMap.Set(Key, *Data);
 		}
 	}
 

@@ -5,16 +5,16 @@
 #include "Serialization/BeamJsonSerializable.h"
 #include "Serialization/BeamJsonUtils.h"
 
-#include "GetSamlpeStatRequestArgs.generated.h"
+#include "GetSampleStatRequestArgs.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLEUNREALMICROSERVICECLIENTS_API UGetSamlpeStatRequestArgs : public UObject, public IBeamJsonSerializableUObject
+class BEAMABLEUNREALMICROSERVICECLIENTS_API UGetSampleStatRequestArgs : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="User ID", Category="Beam")
-	int64 UserID = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Gamer Tag", Category="Beam")
+	int64 GamerTag = {};
 
 	
 

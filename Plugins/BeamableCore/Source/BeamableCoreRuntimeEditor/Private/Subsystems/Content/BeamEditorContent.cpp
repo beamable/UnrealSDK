@@ -418,7 +418,7 @@ bool UBeamEditorContent::SaveContentObject(const FBeamContentManifestId& Manifes
 	SaveCmd->OnCompleted = [this, ManifestId, Id](const int& ResCode, const FBeamOperationHandle&)
 	{
 		// Trigger a callback saying that a piece of content was modified
-		if (ResCode == 0 && OnContentSaved.IsBound())
+		if (ResCode == 0)
 		{
 			OnContentSaved.Broadcast(ManifestId, {Id});
 		}
