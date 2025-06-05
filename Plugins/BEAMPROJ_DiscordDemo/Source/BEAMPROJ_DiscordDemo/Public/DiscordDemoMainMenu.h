@@ -111,7 +111,7 @@ protected:
 		FRuntimeError SDKInitializationErrorHandler;
 		UserReadyHandler.BindDynamic(this, &UDiscordDemoMainMenu::OnBeamableUserReady);
 
-		Runtime->InitSDKWithFrictionlessLogin(UserReadyHandler, SDKInitializationErrorHandler, SDKInitializationErrorHandler);
+		Runtime->InitSDKWithFrictionlessLogin(UserReadyHandler, SDKInitializationErrorHandler, SDKInitializationErrorHandler, {});
 	}
 
 	UFUNCTION()
