@@ -482,6 +482,38 @@ UEdGraphPin* BeamK2::CreateEventPinFromProperty(UEdGraphNode* Node, const FPrope
 	return Pin;
 }
 
+TMap<UEdGraphPin*, TArray<UEdGraphPin*>> BeamK2::CreateExecutePinFromEventProperty(UEdGraphNode* Node, const FMulticastDelegateProperty* Property)
+{
+	TMap<UEdGraphPin*, TArray<UEdGraphPin*>> PinMap;
+
+	const UEdGraphSchema_K2* K2Schema = GetDefault<UEdGraphSchema_K2>();
+
+	UEdGraphPin* Pin = Node->CreatePin(EGPD_Output, UEdGraphSchema_K2::PC_Exec, Property->GetFName());
+
+	PinMap.Add(Pin, {});
+
+	// This gives you the function signature that any delegate bound to this must match
+	UFunction* SignatureFunction = Property->SignatureFunction;
+
+	if (SignatureFunction)
+	{
+		for (TFieldIterator<FProperty> It(SignatureFunction); It && (It->PropertyFlags & CPF_Parm); ++It)
+		{
+			FProperty* Param = *It;
+
+			FString ParamName = Property->GetName() + TEXT(" - ") + Param->GetName();
+
+			UEdGraphPin* ParamPin = Node->CreatePin(EGPD_Output, UEdGraphSchema_K2::PC_Wildcard, *ParamName);
+
+			const bool _ = K2Schema->ConvertPropertyToPinType(Param, /*out*/ ParamPin->PinType);
+
+			PinMap[Pin].Add(ParamPin);
+		}
+	}
+
+	return PinMap;
+}
+
 
 UK2Node_Event* BeamK2::CreateEventNodeForDelegate(UEdGraphNode* Node, FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph, const FString& DelegateName)
 {

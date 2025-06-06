@@ -15,9 +15,12 @@ class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_EventRegister : public UK2Node
 {
 	GENERATED_BODY()
 
-public:
+public:\
 	UPROPERTY()
 	TMap<FName, bool> EventPins = TMap<FName, bool>();
+
+	UPROPERTY()
+	TMap<FName, bool> EventPinsAsExecute;
 
 	virtual void GetMenuActions(FBlueprintActionDatabaseRegistrar& ActionRegistrar) const override;
 
@@ -65,4 +68,6 @@ protected:
 
 
 	virtual bool IsValidProperty(FMulticastDelegateProperty* DelegateProp);
+
+	virtual bool ShowAsExecuteProperty(FMulticastDelegateProperty* DelegateProp);
 };

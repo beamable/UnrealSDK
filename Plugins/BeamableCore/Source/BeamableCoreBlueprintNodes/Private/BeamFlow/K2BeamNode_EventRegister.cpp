@@ -8,6 +8,7 @@
 #include "BlueprintNodeSpawner.h"
 #include "K2Node_AssignDelegate.h"
 #include "K2Node_CallFunction.h"
+#include "K2Node_CustomEvent.h"
 #include "KismetCompiler.h"
 #include "SourceCodeNavigation.h"
 
@@ -36,7 +37,7 @@ void UK2BeamNode_EventRegister::AllocateDefaultPins()
 
 	// Create the out execution flow pin
 	const auto ThenPin = CreatePin(EGPD_Output, UEdGraphSchema_K2::PC_Exec, UEdGraphSchema_K2::PN_Then);
-	ThenPin->PinFriendlyName = FText::FromName(UEdGraphSchema_K2::PN_Then);
+	ThenPin->PinFriendlyName = FText::FromName(FName("After Bind - Then"));
 
 	const auto ReferenceClass = GetRuntimeSubsystemClass();
 
@@ -46,7 +47,14 @@ void UK2BeamNode_EventRegister::AllocateDefaultPins()
 		FMulticastDelegateProperty* DelegateProp = *It;
 		if (DelegateProp && IsValidProperty(DelegateProp))
 		{
-			BeamK2::CreateEventPinFromProperty(this, DelegateProp);
+			if (ShowAsExecuteProperty(DelegateProp))
+			{
+				BeamK2::CreateExecutePinFromEventProperty(this, DelegateProp);
+			}
+			else
+			{
+				BeamK2::CreateEventPinFromProperty(this, DelegateProp);
+			}
 		}
 	}
 }
@@ -73,7 +81,14 @@ void UK2BeamNode_EventRegister::PostEditChangeProperty(FPropertyChangedEvent& Pr
 	{
 		ReconstructNode();
 	}
+
+	const auto ShowEventPropName = GET_MEMBER_NAME_CHECKED(UK2BeamNode_EventRegister, EventPinsAsExecute);
+	if (PropertyChangedEvent.Property && PropertyChangedEvent.Property->GetNameCPP().Equals(ShowEventPropName.ToString()))
+	{
+		ReconstructNode();
+	}
 }
+
 
 void UK2BeamNode_EventRegister::ExpandNode(FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph)
 {
@@ -90,6 +105,7 @@ void UK2BeamNode_EventRegister::ExpandNode(FKismetCompilerContext& CompilerConte
 	// After do for every FMulticastDelegateProperty it will connect the remaining reference to the MainNode ThenPin.
 	UEdGraphPin* OutputPin = nullptr;
 
+
 	// Iterate over all the FMulticastDelegateProperty to create bind then.
 	for (TFieldIterator<FMulticastDelegateProperty> It(ReferenceClass); It; ++It)
 	{
@@ -99,9 +115,7 @@ void UK2BeamNode_EventRegister::ExpandNode(FKismetCompilerContext& CompilerConte
 		{
 			auto DelegatePropPin = FindPin(DelegateProp->GetFName());
 
-			// If the pin is not connect we will just ignore it to prevent the error for non connected events
-			// Event Dispatcher pin is not connected 
-			if (DelegatePropPin->LinkedTo.Num() == 0)
+			if (!ShowAsExecuteProperty(DelegateProp) && DelegatePropPin->LinkedTo.Num() == 0)
 			{
 				continue;
 			}
@@ -120,8 +134,41 @@ void UK2BeamNode_EventRegister::ExpandNode(FKismetCompilerContext& CompilerConte
 			const auto SubsystemReturnPin = CallGetSubsystem->GetReturnValuePin();
 			const auto _ = K2Schema->TryCreateConnection(SubsystemReturnPin, AddDelegate_Self);
 
-			// Connect the DelegateProperty Pin to the AddNodeDelegate Delegate Pin
-			CompilerContext.MovePinLinksToIntermediate(*DelegatePropPin, *AddDelegate_Delegate);
+			if (ShowAsExecuteProperty(DelegateProp))
+			{
+				auto CustomEventNode = CompilerContext.SpawnIntermediateNode<UK2Node_CustomEvent>(this, SourceGraph);
+
+				CustomEventNode->CustomFunctionName = CompilerContext.GetEventStubFunctionName(CustomEventNode);
+				CustomEventNode->SetDelegateSignature(DelegateProp->SignatureFunction);
+
+				CustomEventNode->AllocateDefaultPins();
+
+				CompilerContext.MovePinLinksToIntermediate(*DelegatePropPin, *CustomEventNode->GetThenPin());
+
+				// Connect the Custom Event Delegate Pin to the AddNodeDelegate Delegate Pin
+				K2Schema->TryCreateConnection(CustomEventNode->GetDelegatePin(), AddDelegate_Delegate);
+
+				//This gives you the function signature that any delegate bound to this must match
+
+				if (UFunction* SignatureFunction = DelegateProp->SignatureFunction)
+				{
+					for (TFieldIterator<FProperty> Property(SignatureFunction); Property && (Property->PropertyFlags & CPF_Parm); ++Property)
+					{
+						FProperty* ParamProperty = *Property;
+
+						FString ParamName = DelegateProp->GetName() + TEXT(" - ") + ParamProperty->GetName();
+
+						auto CustomEventPin = CustomEventNode->FindPin(ParamProperty->GetName());
+
+						CompilerContext.MovePinLinksToIntermediate(*FindPin(ParamName), *CustomEventPin);
+					}
+				}
+			}
+			else
+			{
+				// Connect the DelegateProperty Pin to the AddNodeDelegate Delegate Pin
+				CompilerContext.MovePinLinksToIntermediate(*DelegatePropPin, *AddDelegate_Delegate);
+			}
 
 
 			if (OutputPin == nullptr)
@@ -147,6 +194,7 @@ void UK2BeamNode_EventRegister::ExpandNode(FKismetCompilerContext& CompilerConte
 	{
 		CompilerContext.MessageLog.Error(TEXT("[EventRegister Node] There's no event binded for (@@) (@@)"), *GetRuntimeSubsystemClass()->GetName(), this);
 	}
+
 
 	// Break original links
 	BreakAllNodeLinks();
@@ -182,4 +230,14 @@ bool UK2BeamNode_EventRegister::IsValidProperty(FMulticastDelegateProperty* Dele
 		EventPins.Add(Name, true);
 	}
 	return EventPins[Name];
+}
+
+bool UK2BeamNode_EventRegister::ShowAsExecuteProperty(FMulticastDelegateProperty* DelegateProp)
+{
+	FName Name = DelegateProp->GetFName();
+	if (!EventPinsAsExecute.Contains(Name))
+	{
+		EventPinsAsExecute.Add(Name, false);
+	}
+	return EventPinsAsExecute[Name];
 }

@@ -91,6 +91,11 @@ namespace BeamK2
 	UEdGraphPin* CreateEventPinFromProperty(UEdGraphNode* Node, const FProperty* Property);
 
 	/**
+	 * @brief Utility that creates a correctly configured Event pin as Execute pin for a give FProperty
+	 */
+	TMap<UEdGraphPin*, TArray<UEdGraphPin*>> CreateExecutePinFromEventProperty(UEdGraphNode* Node, const FMulticastDelegateProperty* Property);
+
+	/**
 	 * @brief Utility that creates a correctly configured event node for the given delegate name.
 	 */
 	UK2Node_Event* CreateEventNodeForDelegate(UEdGraphNode* Node, FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph, const FString& DelegateName);

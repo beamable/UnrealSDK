@@ -1,6 +1,7 @@
 #pragma once
 
 #include "BeamFlow/K2BeamNode_EventRegister.h"
+#include "BeamFlow/K2BeamNode_EventUnregister.h"
 #include "BeamFlow/K2BeamNode_GetLocalState.h"
 #include "BeamFlow/K2BeamNode_GetLocalStateForeach.h"
 #include "BeamFlow/K2BeamNode_Operation.h"
