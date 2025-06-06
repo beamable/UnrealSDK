@@ -675,11 +675,13 @@ UEdGraphPin* BeamK2::EnforcePinExistence(UEdGraphNode* CustomNode, EEdGraphPinDi
 	{
 		CreatedPin = CustomNode->CreatePin(Direction, Category, CatSubObject, Name, Params);
 		CreatedPin->PinToolTip = Tooltip;
+		CreatedPin->PinFriendlyName = FText::FromString(FName::NameToDisplayString(Name.ToString(), false));
 	}
 	else
 	{
 		CreatedPin = CustomNode->CreatePin(Direction, Category, Name, Params);
 		CreatedPin->PinToolTip = Tooltip;
+		CreatedPin->PinFriendlyName = FText::FromString(FName::NameToDisplayString(Name.ToString(), false));
 	}
 
 	// Reconnect if they were broken

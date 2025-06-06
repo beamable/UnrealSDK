@@ -79,7 +79,7 @@ protected:
 		FRuntimeError SDKInitializationErrorHandler;
 		UserReadyHandler.BindDynamic(this, &USteamDemoMainMenu::OnBeamableUserReady);
 		
-		Runtime->InitSDKWithFrictionlessLogin(UserReadyHandler,SDKInitializationErrorHandler,SDKInitializationErrorHandler);
+		//Runtime->InitSDKWithFrictionlessLogin(UserReadyHandler,SDKInitializationErrorHandler,SDKInitializationErrorHandler);
 	}
 
 	UFUNCTION()
@@ -192,7 +192,7 @@ protected:
 						TEXT(
 							"[Federated Identity] User already associated with beamable account. Logging in instead."
 						));
-					Runtime->CPP_LoginExternalIdentityOperation(TargetSlot, ServiceName, Namespace,
+					Runtime->CPP_LoginFederatedOperation(TargetSlot, ServiceName, Namespace,
 					                                            ExternalToken, LoginHandler);
 					
 				}
@@ -202,7 +202,7 @@ protected:
 					this->OnLoginCompleteDelegate.Broadcast(false,*Evt.EventCode);
 				}
 			});
-		Runtime->CPP_AttachExternalIdentityOperation(TargetSlot, ServiceName, Namespace, 
+		Runtime->CPP_AttachFederatedOperation(TargetSlot, ServiceName, Namespace, 
 		                                             AccountID, ExternalToken, OnSignUpWithSteam);
 		
 	}

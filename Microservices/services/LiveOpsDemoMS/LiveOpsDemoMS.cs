@@ -44,7 +44,7 @@ namespace Beamable.LiveOpsDemoMS
             await user.Services.Inventory.Update(updateBuilder);
 
             //Set the initial sample stat to be 1
-            await user.Services.Stats.SetStats(StatsDomainType.Game, StatsAccessType.Private, gamerTagInRealm, new() { { PlaySampleStatID, "1" } });
+            await user.Services.Stats.SetStat(StatsDomainType.Game, StatsAccessType.Private, gamerTagInRealm, PlaySampleStatID, "1");
 
             // Return an ok result
             return new PlayerInitResult() { result = "" };
