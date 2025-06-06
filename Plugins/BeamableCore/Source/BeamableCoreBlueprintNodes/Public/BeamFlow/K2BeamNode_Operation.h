@@ -134,6 +134,12 @@ protected:
 	virtual UClass* GetRuntimeSubsystemClass() const;
 
 	/**
+	 * Returns 
+	 * */
+	virtual TMap<FName, UClass*> GetOperationEventCastClass(EBeamOperationEventType Type) const;
+
+	
+	/**
 	 * Returns the list of possible values for FBeamOperationEvent.EventCode given the type of the event (success/error/etc).
 	 * Must always include NAME_None as its first value (the base implementation guarantees this) so call it if you override this to expose other events. 
 	 */
@@ -186,7 +192,7 @@ protected:
 	                                   const TArray<TArray<UEdGraphNode*>>& PerFlowEventNodes);
 
 	void ExpandBeamFlowSubEvents(FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph, const UEdGraphSchema_K2* K2Schema,
-	                             const TArray<FName>& EventIds, const TArray<FName>& EventsFlowPinNames, UK2Node_BreakStruct* BreakOperationResultNode, UEdGraphPin* SubEventSwitchExecPin);
+	                             const TArray<FName>& EventIds, const TMap<FName, UClass*>& EventDataCasts, const TArray<FName>& EventsFlowPinNames, UK2Node_BreakStruct* BreakOperationResultNode, UEdGraphPin* SubEventSwitchExecPin);
 };
 
 #undef LOCTEXT_NAMESPACE
