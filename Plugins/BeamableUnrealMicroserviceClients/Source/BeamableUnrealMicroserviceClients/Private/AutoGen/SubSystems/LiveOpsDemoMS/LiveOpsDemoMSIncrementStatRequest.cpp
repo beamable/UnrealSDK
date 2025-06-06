@@ -27,7 +27,7 @@ void ULiveOpsDemoMSIncrementStatRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-ULiveOpsDemoMSIncrementStatRequest* ULiveOpsDemoMSIncrementStatRequest::Make(int64 _UserID, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
+ULiveOpsDemoMSIncrementStatRequest* ULiveOpsDemoMSIncrementStatRequest::Make(int64 _GamerTag, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	ULiveOpsDemoMSIncrementStatRequest* Req = NewObject<ULiveOpsDemoMSIncrementStatRequest>(RequestOwner);
 	Req->CustomHeaders = TMap{CustomHeaders};
@@ -37,7 +37,7 @@ ULiveOpsDemoMSIncrementStatRequest* ULiveOpsDemoMSIncrementStatRequest::Make(int
 	
 	// Makes a body and fill up with parameters (Blank if no body parameters exist)
 	Req->Body = NewObject<UIncrementStatRequestArgs>(Req);
-	Req->Body->UserID = _UserID;
+	Req->Body->GamerTag = _GamerTag;
 	
 
 	return Req;

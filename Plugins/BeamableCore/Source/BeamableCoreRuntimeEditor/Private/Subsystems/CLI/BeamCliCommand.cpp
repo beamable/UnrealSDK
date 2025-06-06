@@ -101,10 +101,11 @@ void UBeamCliCommand::RunServer(const FString Uri, const TArray<FString>& Comman
 	}
 
 	FString CommandLineToExecute = GetCommand();
-	CommandLineToExecute = PrepareParams(CommandLineToExecute);
 	for (const auto& CommandParam : CommandParams)
 		CommandLineToExecute.Appendf(TEXT(" %s"), *CommandParam);
 
+	CommandLineToExecute = PrepareParams(CommandLineToExecute);
+	
 	FJsonDomBuilder::FObject Obj;
 	Obj.Set(TEXT("commandLine"), CommandLineToExecute);
 

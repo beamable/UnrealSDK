@@ -13,8 +13,8 @@ class BEAMABLEUNREALMICROSERVICECLIENTS_API UUpgradeItemRequestArgs : public UOb
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="User ID", Category="Beam")
-	int64 UserID = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Gamer Tag", Category="Beam")
+	int64 GamerTag = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Item Instace ID", Category="Beam")
 	int64 ItemInstaceID = {};
 

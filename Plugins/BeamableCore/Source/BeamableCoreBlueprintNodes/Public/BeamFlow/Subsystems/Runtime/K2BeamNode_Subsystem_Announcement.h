@@ -54,10 +54,11 @@ class UK2BeamNode_EventRegister_AnnouncementsSubsystem : public UK2BeamNode_Even
 // | |__| (_) | (_| (_| | |     ___) | || (_| | ||  __/
 // |_____\___/ \___\__,_|_|    |____/ \__\__,_|\__\___|
 
-#define LOCTEXT_NAMESPACE "K2BeamNode_GetLocalStateForeach_GetAnnouncements"
 
-UCLASS(meta=(BeamGetLocalStateForeach))
-class UK2BeamNode_GetLocalStateForeach_GetAnnouncements : public UK2BeamNode_GetLocalStateForeach
+#define LOCTEXT_NAMESPACE "K2BeamNode_GetLocalState_GetAnnouncements"
+
+UCLASS(meta=(BeamGetLocalState))
+class UK2BeamNode_GetLocalState_GetAnnouncements : public UK2BeamNode_GetLocalState
 {
 	GENERATED_BODY()
 

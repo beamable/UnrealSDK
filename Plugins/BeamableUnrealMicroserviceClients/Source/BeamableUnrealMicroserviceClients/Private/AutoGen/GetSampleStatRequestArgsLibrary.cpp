@@ -1,10 +1,10 @@
 
-#include "BeamableUnrealMicroserviceClients/Public/AutoGen/IncrementStatRequestArgsLibrary.h"
+#include "BeamableUnrealMicroserviceClients/Public/AutoGen/GetSampleStatRequestArgsLibrary.h"
 
 #include "CoreMinimal.h"
 
 
-FString UIncrementStatRequestArgsLibrary::IncrementStatRequestArgsToJsonString(const UIncrementStatRequestArgs* Serializable, const bool Pretty)
+FString UGetSampleStatRequestArgsLibrary::GetSampleStatRequestArgsToJsonString(const UGetSampleStatRequestArgs* Serializable, const bool Pretty)
 {
 	FString Result = FString{};
 	if(Pretty)
@@ -22,15 +22,15 @@ FString UIncrementStatRequestArgsLibrary::IncrementStatRequestArgsToJsonString(c
 	return Result;
 }	
 
-UIncrementStatRequestArgs* UIncrementStatRequestArgsLibrary::Make(int64 GamerTag, UObject* Outer)
+UGetSampleStatRequestArgs* UGetSampleStatRequestArgsLibrary::Make(int64 GamerTag, UObject* Outer)
 {
-	auto Serializable = NewObject<UIncrementStatRequestArgs>(Outer);
+	auto Serializable = NewObject<UGetSampleStatRequestArgs>(Outer);
 	Serializable->GamerTag = GamerTag;
 	
 	return Serializable;
 }
 
-void UIncrementStatRequestArgsLibrary::Break(const UIncrementStatRequestArgs* Serializable, int64& GamerTag)
+void UGetSampleStatRequestArgsLibrary::Break(const UGetSampleStatRequestArgs* Serializable, int64& GamerTag)
 {
 	GamerTag = Serializable->GamerTag;
 		
