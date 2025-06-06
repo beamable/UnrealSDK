@@ -111,7 +111,7 @@ protected:
 		FRuntimeError SDKInitializationErrorHandler;
 		UserReadyHandler.BindDynamic(this, &UDiscordDemoMainMenu::OnBeamableUserReady);
 
-		Runtime->InitSDKWithFrictionlessLogin(UserReadyHandler, SDKInitializationErrorHandler, SDKInitializationErrorHandler, {});
+		//Runtime->InitSDKWithFrictionlessLogin(UserReadyHandler, SDKInitializationErrorHandler, SDKInitializationErrorHandler, {});
 	}
 
 	UFUNCTION()
@@ -178,7 +178,7 @@ protected:
 			else if (Evt.EventCode.Contains("EXTERNAL_IDENTITY_IN_USE"))
 			{
 				UE_LOG(LogTemp, Warning, TEXT( "[Federated Identity] User already associated with beamable account. Login in started on the account with third party identity." ));
-				Runtime->CPP_LoginExternalIdentityOperation(OwnerSlot, ServiceName, Namespace, DiscordUserData.OAuthToken, LoginHandler);
+				Runtime->CPP_LoginFederatedOperation(OwnerSlot, ServiceName, Namespace, DiscordUserData.OAuthToken, LoginHandler);
 			}
 			else
 			{
@@ -186,7 +186,7 @@ protected:
 				this->HandleLoggedIn(false, *Evt.EventCode);
 			}
 		});
-		Runtime->CPP_AttachExternalIdentityOperation(OwnerSlot, ServiceName, Namespace, AccountID, DiscordUserData.OAuthToken, OnSignUpWithDiscord);
+		Runtime->CPP_AttachFederatedOperation(OwnerSlot, ServiceName, Namespace, AccountID, DiscordUserData.OAuthToken, OnSignUpWithDiscord);
 	}
 
 	void HandleLoggedIn(bool bSuccess, const FString& Error)

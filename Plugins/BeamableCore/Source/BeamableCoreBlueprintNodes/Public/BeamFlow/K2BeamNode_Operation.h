@@ -62,7 +62,7 @@ class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_Operation : public UK2BeamNode_
 
 
 	UPROPERTY(EditAnywhere, Category="Beam|Operations")
-	TEnumAsByte<EOperationNodeModes> CurrentExpandedMode{OnCompleted};
+	TEnumAsByte<EOperationNodeModes> CurrentExpandedMode{Success_Error_Cancelled};
 
 	UPROPERTY()
 	TArray<FName> SuccessEventFlowPinNames;

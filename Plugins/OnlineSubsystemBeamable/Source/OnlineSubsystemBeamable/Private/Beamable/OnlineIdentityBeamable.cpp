@@ -160,7 +160,7 @@ bool FOnlineIdentityBeamable::Login(int32 LocalUserNum, const FOnlineAccountCred
 					{
 						UE_LOG_ONLINE_IDENTITY(Warning, TEXT("[Federated Identity] %s User already associated with beamable account. Logging in instead."),
 						                       *FString(ServiceName + "/" + Namespace));
-						GameInstance->GetSubsystem<UBeamRuntime>()->CPP_LoginExternalIdentityOperation(TargetSlot, ServiceName, Namespace, ExternalToken, LoginHandler);
+						GameInstance->GetSubsystem<UBeamRuntime>()->CPP_LoginFederatedOperation(TargetSlot, ServiceName, Namespace, ExternalToken, LoginHandler);
 					}
 					else
 					{
@@ -168,7 +168,7 @@ bool FOnlineIdentityBeamable::Login(int32 LocalUserNum, const FOnlineAccountCred
 						TriggerOnLoginCompleteDelegates(LocalUserNum, false, *UserId->Get(), Evt.EventCode);
 					}
 				});
-			BeamRuntime->CPP_AttachExternalIdentityOperation(TargetSlot, ServiceName, Namespace, ExternalUserId, ExternalToken, OnAttachWithExternalId);
+			BeamRuntime->CPP_AttachFederatedOperation(TargetSlot, ServiceName, Namespace, ExternalUserId, ExternalToken, OnAttachWithExternalId);
 		}
 
 		UserAccountPtr = UserAccounts.FindChecked(UserId->ToSharedRef());
@@ -206,7 +206,7 @@ bool FOnlineIdentityBeamable::Login(int32 LocalUserNum, const FOnlineAccountCred
 			const FString ExternalUserId = AccountCredentials.Id;
 			const FString ExternalToken = AccountCredentials.Token;
 
-			BeamRuntime->CPP_SignUpExternalIdentityOperation(TargetSlot, ServiceName, Namespace, ExternalUserId, ExternalToken, false, {}, LoginHandler);
+			BeamRuntime->CPP_SignUpFederatedOperation(TargetSlot, ServiceName, Namespace, ExternalUserId, ExternalToken, false, {}, LoginHandler);
 		}
 	}
 
@@ -295,7 +295,7 @@ bool FOnlineIdentityBeamable::Login(int32 LocalUserNum, const FOnlineAccountCred
 							{
 								UE_LOG_ONLINE_IDENTITY(Warning, TEXT("[Federated Identity] %s User already associated with beamable account. Logging in instead."),
 								                       *FString(ServiceName + "/" + Namespace));
-								GameInstance->GetSubsystem<UBeamRuntime>()->CPP_LoginExternalIdentityOperation(TargetSlot, ServiceName, Namespace, ExternalToken, LoginHandler);
+								GameInstance->GetSubsystem<UBeamRuntime>()->CPP_LoginFederatedOperation(TargetSlot, ServiceName, Namespace, ExternalToken, LoginHandler);
 							}
 							else
 							{
@@ -303,11 +303,11 @@ bool FOnlineIdentityBeamable::Login(int32 LocalUserNum, const FOnlineAccountCred
 								TriggerOnLoginCompleteDelegates(LocalUserNum, false, *FUniqueNetIdBeamable::EmptyId(), Evt.EventCode);
 							}
 						});
-					BeamRuntime->CPP_SignUpExternalIdentityOperation(TargetSlot, ServiceName, Namespace, ExternalUserId, ExternalToken, false, {}, OnSignUpWithExternalId);
+					BeamRuntime->CPP_SignUpFederatedOperation(TargetSlot, ServiceName, Namespace, ExternalUserId, ExternalToken, false, {}, OnSignUpWithExternalId);
 				}
 				else
 				{
-					GameInstance->GetSubsystem<UBeamRuntime>()->CPP_LoginExternalIdentityOperation(TargetSlot, ServiceName, Namespace, ExternalToken, LoginHandler);
+					GameInstance->GetSubsystem<UBeamRuntime>()->CPP_LoginFederatedOperation(TargetSlot, ServiceName, Namespace, ExternalToken, LoginHandler);
 				}
 			}
 		}

@@ -2070,8 +2070,7 @@ void UBeamContentObject::SerializeMapProperty(FString PropName, FJsonDomBuilder:
 			}
 		}
 		else if (CastField<FNameProperty>(MapProperty->ValueProp))
-		{
-			const auto MapNum = MapHelper.Num();
+		{			
 			for (FScriptMapHelper::FIterator i = MapHelper.CreateIterator(); i; ++i)
 			{
 				const FString Key = StrKeyProperty->GetPropertyValue(MapHelper.GetKeyPtr(i));

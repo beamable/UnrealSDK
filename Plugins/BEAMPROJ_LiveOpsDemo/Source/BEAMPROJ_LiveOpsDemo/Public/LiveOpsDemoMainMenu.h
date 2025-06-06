@@ -15,18 +15,11 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FDelegate_Simple);
  * 
  */
 UCLASS()
-class BEAMPROJ_LIVEOPSDEMO_API ULiveOpsDemoMainMenu : public UBeamLevelSubsystem
+class BEAMPROJ_LIVEOPSDEMO_API ULiveOpsDemoMainMenu : public UBeamRuntimeSubsystem
 {
 	GENERATED_BODY()
 
-	FDelegateHandle OnBeamableReadyHandle;
-
-	virtual FString GetSpecificLevelName() const override { return FString(TEXT("LiveOpsDemo")); }
-
 public:
-	UPROPERTY()
-	UBeamRuntime* Runtime;
-
 	UPROPERTY()
 	UBeamStatsSubsystem* Stats;
 
@@ -35,87 +28,62 @@ public:
 
 
 	UPROPERTY(BlueprintAssignable)
-	FDelegate_Simple OnLiveOpsDemoReady;
-
-	UPROPERTY(BlueprintAssignable)
-	FDelegate_Simple OnLiveOpsErrorConnecting;
-
-	UPROPERTY(BlueprintAssignable)
 	FDelegate_Simple OnSampleStatUpdated;
-
-	UPROPERTY(BlueprintAssignable)
-	FDelegate_Simple OnInventoryItemsUpdated;
 
 	UPROPERTY()
 	UBeamLiveOpsDemoMSApi* LiveOpsMS;
 
-	int64 CurrentSampleStatValue = 1;
+	int64 CurrentSampleStatValue;
 
 protected:
-	virtual void Deinitialize() override
+	virtual void Initialize(FSubsystemCollectionBase& Collection) override
 	{
-		Super::Deinitialize();
-	}
-
-	virtual void OnWorldBeginPlay(UWorld& InWorld) override
-	{
-		const auto GI = InWorld.GetGameInstance();
-		Runtime = GI->GetSubsystem<UBeamRuntime>();
-		Stats = GI->GetSubsystem<UBeamStatsSubsystem>();
-		Inventory = GI->GetSubsystem<UBeamInventorySubsystem>();
+		Super::Initialize(Collection);
+		Stats = Collection.InitializeDependency<UBeamStatsSubsystem>();
+		Inventory = Collection.InitializeDependency<UBeamInventorySubsystem>();
 		LiveOpsMS = GEngine->GetEngineSubsystem<UBeamLiveOpsDemoMSApi>();
-
-		Inventory->OnInventoryRefreshedCode.AddUObject(this, &ULiveOpsDemoMainMenu::OnInventoryRefreshed);
-
-		FUserStateChangedHandler UserReadyHandler;
-		FRuntimeError SDKInitializationErrorHandler;
-		UserReadyHandler.BindDynamic(this, &ULiveOpsDemoMainMenu::OnBeamableUserReady);
-		SDKInitializationErrorHandler.BindDynamic(this, &ULiveOpsDemoMainMenu::OnBeamableError);
-
-		Runtime->InitSDKWithFrictionlessLogin(UserReadyHandler, SDKInitializationErrorHandler, SDKInitializationErrorHandler, {});
 	}
 
-	UFUNCTION()
-	void OnBeamableError(FString ErrorMessage)
+	/**
+	 * Whenever a user signs in, we manually call our microservice's ULive endpoint 
+	 */
+	virtual void OnUserSignedIn_Implementation(const FUserSlot& UserSlot, const FBeamRealmUser& BeamRealmUser, const bool bIsOwnerUserAuth, FBeamOperationHandle& ResultOp) override
 	{
-		OnLiveOpsErrorConnecting.Broadcast();
-	}
+		// Create an operation that you return to Beamable
+		// This operation is now part of the Login flow; this means that if this operation fails your login will fail.
+		// It also means that when the login is completed successfully, this operation is guaranteed to have run correctly so you can read this system's local state.
+		ResultOp = Runtime->RequestTrackerSystem->CPP_BeginOperation({UserSlot}, GetName(), {});
 
-	UFUNCTION()
-	void OnBeamableUserReady(const FUserSlot& UserSlot)
-	{
-		OnLiveOpsDemoReady.Broadcast();
-	}
-
-	UFUNCTION()
-	void OnInventoryRefreshed(FBeamGamerTag GamerTag, FUserSlot UserSlot)
-	{
-		OnInventoryItemsUpdated.Broadcast();
-	}
-
-	UFUNCTION(BlueprintCallable)
-	void GetInventoryData(int64& GemsCount, int64& CoinsCount, TArray<FBeamItemState>& SampleItems)
-	{
-		const auto UserSlot = GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot();
+		// Get the data for the signed-in user.
 		FBeamRealmUser UserData;
 		if (Runtime->UserSlotSystem->GetUserDataAtSlot(UserSlot, UserData, this))
 		{
-			FString GemsID = "currency.gems";
-			FString CoinsID = "currency.coins";
+			TMap<FString, FString> Empty;
 
-			Inventory->TryGetCurrencyAmountByGamerTag(UserData.GamerTag, GemsID, GemsCount);
-			Inventory->TryGetCurrencyAmountByGamerTag(UserData.GamerTag, CoinsID, CoinsCount);
-
-			TArray<FBeamItemState> AllItems;
-			Inventory->TryGetAllItemsByGamerTag(UserData.GamerTag, AllItems);
-
-			for (auto ItemState : AllItems)
-			{
-				if (ItemState.ContentId.AsString == "items.sample_item")
+			// Prepare the request to the microservice and the handler.
+			const auto Request = ULiveOpsDemoMSGetSampleStatRequest::Make(UserData.GamerTag.AsLong, this, Empty);
+			const auto Handler = FOnLiveOpsDemoMSGetSampleStatFullResponse::CreateLambda(
+				[this, ResultOp](FLiveOpsDemoMSGetSampleStatFullResponse Resp)
 				{
-					SampleItems.Add(ItemState);
-				}
-			}
+					if (Resp.SuccessData)
+					{
+						CurrentSampleStatValue = Resp.SuccessData->Value;
+						OnSampleStatUpdated.Broadcast();
+						Runtime->RequestTrackerSystem->TriggerOperationSuccess(ResultOp, {});
+					}
+					else
+					{
+						Runtime->RequestTrackerSystem->TriggerOperationError(ResultOp, Resp.ErrorData.message);
+					}
+				});
+
+			// Make the request
+			FBeamRequestContext Ctx;
+			LiveOpsMS->CPP_GetSampleStat(UserSlot, Request, Handler, Ctx, ResultOp, this);
+		}
+		else
+		{
+			Runtime->RequestTrackerSystem->TriggerOperationError(ResultOp, TEXT("NO_SIGNED_IN_USER"));
 		}
 	}
 
@@ -128,11 +96,9 @@ protected:
 		if (Runtime->UserSlotSystem->GetUserDataAtSlot(UserSlot, UserData, this))
 		{
 			TMap<FString, FString> Empty;
-			ULiveOpsDemoMSIncrementStatRequest* Request =
-				ULiveOpsDemoMSIncrementStatRequest::Make(UserData.GamerTag.AsLong, this, Empty);
-
+			const auto Request = ULiveOpsDemoMSIncrementStatRequest::Make(UserData.GamerTag.AsLong, this, Empty);
 			const auto Handler = FOnLiveOpsDemoMSIncrementStatFullResponse::CreateLambda(
-				[this,UserData](FBeamFullResponse<ULiveOpsDemoMSIncrementStatRequest*, ULiveOpsDemoMSIncrementStatResponse*> Resp)
+				[this, UserData](FBeamFullResponse<ULiveOpsDemoMSIncrementStatRequest*, ULiveOpsDemoMSIncrementStatResponse*> Resp)
 				{
 					if (Resp.SuccessData)
 					{
@@ -146,7 +112,7 @@ protected:
 	}
 
 	UFUNCTION(BlueprintCallable)
-	int64 GetSampleStat()
+	int64 GetSampleStat() const
 	{
 		return CurrentSampleStatValue;
 	}
@@ -156,23 +122,19 @@ protected:
 	{
 		const auto UserSlot = GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot();
 
+		// Get the player's data so we can call our microservice
 		FBeamRealmUser UserData;
 		if (Runtime->UserSlotSystem->GetUserDataAtSlot(UserSlot, UserData, this))
 		{
+			// Prepare the request
 			TMap<FString, FString> Empty;
-			ULiveOpsDemoMSUpgradeItemRequest* Request =
-				ULiveOpsDemoMSUpgradeItemRequest::Make(UserData.GamerTag.AsLong, ItemInstanceID, this, Empty);
+			const auto Request = ULiveOpsDemoMSUpgradeItemRequest::Make(UserData.GamerTag.AsLong, ItemInstanceID, this, Empty);
 
-			const auto Handler = FOnLiveOpsDemoMSUpgradeItemFullResponse::CreateLambda(
-				[this,UserData](FBeamFullResponse<ULiveOpsDemoMSUpgradeItemRequest*, ULiveOpsDemoMSUpgradeItemResponse*> Resp)
-				{
-					if (Resp.SuccessData)
-					{
-						OnInventoryItemsUpdated.Broadcast();
-					}
-				});
+			// Make the request
+			// For this request, you don't need a handler since our UBeamInventorySubsystem implementation will receive a notification that this item
+			// was modified, refresh itself and then broadcast a multicast delegate our UI blueprints bind to so they refresh themselves.
 			FBeamRequestContext Ctx;
-			LiveOpsMS->CPP_UpgradeItem(UserSlot, Request, Handler, Ctx, {}, this);
+			LiveOpsMS->CPP_UpgradeItem(UserSlot, Request, {}, Ctx, {}, this);
 		}
 	}
 };
