@@ -320,8 +320,8 @@ void UK2BeamNode_Operation::EnforceBeamFlowModePins()
 			TArray<FName> CancelledTypeSubEvents = GetOperationEventIds(OET_CANCELLED);
 
 			TMap<FName, UClass*> SuccessCastClass = GetOperationEventCastClass(OET_SUCCESS);
-			TMap<FName, UClass*>  ErrorCastClass = GetOperationEventCastClass(OET_ERROR);
-			TMap<FName, UClass*>  CancelledCastClass = GetOperationEventCastClass(OET_CANCELLED);
+			TMap<FName, UClass*> ErrorCastClass = GetOperationEventCastClass(OET_ERROR);
+			TMap<FName, UClass*> CancelledCastClass = GetOperationEventCastClass(OET_CANCELLED);
 
 			const auto EnforceRelevantEventPins = [this](const TArray<FName>& AvailableSubEvents, const FName& BaseExecPinName, int& AddedCount, TArray<FName>& CreatedFlowPins, TMap<FName, UClass*> CastClasses)
 			{
@@ -336,11 +336,10 @@ void UK2BeamNode_Operation::EnforceBeamFlowModePins()
 					CreatedFlowPins.Add(ExecPinName);
 					EnforcePinExistence(this, EGPD_Output, UEdGraphSchema_K2::PC_Exec, ExecPinName, ExecPinTooltip);
 
-					
+
 					if (CastClasses.Contains(SubEvent))
 					{
-						auto CastedClass = NewObject<UObject>(GetTransientPackage(), CastClasses[SubEvent]);
-						EnforcePinExistence(this, EGPD_Output, UEdGraphSchema_K2::PC_Class, CastClasses[SubEvent]->GetFName(), ExecPinTooltip, {}, CastedClass);
+						EnforcePinExistence(this, EGPD_Output, UEdGraphSchema_K2::PC_Object, CastClasses[SubEvent]->GetFName(), ExecPinTooltip, {}, CastClasses[SubEvent]);
 					}
 
 					AddedCount += 1;
@@ -348,6 +347,16 @@ void UK2BeamNode_Operation::EnforceBeamFlowModePins()
 			};
 
 			for (auto CastClassToKeep : SuccessCastClass)
+			{
+				PinsToKeep.Add(CastClassToKeep.Value->GetFName());
+			}
+
+			for (auto CastClassToKeep : ErrorCastClass)
+			{
+				PinsToKeep.Add(CastClassToKeep.Value->GetFName());
+			}
+
+			for (auto CastClassToKeep : CancelledCastClass)
 			{
 				PinsToKeep.Add(CastClassToKeep.Value->GetFName());
 			}
@@ -701,7 +710,7 @@ void UK2BeamNode_Operation::SetUpPinsForSubEventsBeamFlow(FKismetCompilerContext
 	// Break the result struct out into its components
 	const auto OperationEventPin = IntermediateEventNode->FindPinChecked(OP_Operation_Event);
 	const auto BreakOperationResultNode = CreateBreakStructNode(this, CompilerContext, SourceGraph, K2Schema, FBeamOperationEvent::StaticStruct(), OperationEventPin);
-	
+
 	// Switch on the result code for the operation
 	const auto SwitchEnum = CreateSwitchEnumNode(this, CompilerContext, SourceGraph, K2Schema, StaticEnum<EBeamOperationEventType>(),
 	                                             IntermediateEventNode->FindPin(UEdGraphSchema_K2::PN_Then),
@@ -750,10 +759,6 @@ void UK2BeamNode_Operation::ExpandBeamFlowSubEvents(FKismetCompilerContext& Comp
 	{
 		const auto FlowPin = FindPin(EventsFlowPinNames[i]);
 
-		if (FlowPin->PinType.PinCategory != UEdGraphSchema_K2::PC_Exec)
-		{
-			continue;
-		}
 		
 		// Get the intermediate pins we'll need to connect to all the places our custom node's output pins are connected to.
 		// If we expect a string, than we forward the raw event data string. Otherwise...
@@ -766,23 +771,22 @@ void UK2BeamNode_Operation::ExpandBeamFlowSubEvents(FKismetCompilerContext& Comp
 			auto EventDataPin = BreakOperationResultNode->FindPin(GET_MEMBER_NAME_CHECKED(FBeamOperationEvent, EventData));
 			auto CastedOutputPin = FindPin(EventDataCasts[SubEventValue]->GetName());
 
-			auto CastNode = CompilerContext.SpawnIntermediateNode<UK2Node_DynamicCast>(this, SourceGraph);
-			CastNode->TargetType = EventDataCasts[SubEventValue];
-			CastNode->AllocateDefaultPins();
-
+			auto CastNode = CreateDynamicCastNode(this, CompilerContext, SourceGraph, EventDataCasts[SubEventValue]);
+			
 			K2Schema->TryCreateConnection(CastNode->GetCastSourcePin(), EventDataPin);
 
-			CompilerContext.MovePinLinksToIntermediate(*CastedOutputPin, *CastNode->GetCastResultPin());
+			K2Schema->TryCreateConnection(CastNode->GetExecPin(), IntermediateSubEventFlowPin);
 			
-			const auto SuccessFlowMovedCast = CompilerContext.MovePinLinksToIntermediate(*CastNode->GetExecPin(), *IntermediateSubEventFlowPin);
-			check(!SuccessFlowMovedCast.IsFatal());
+			const auto SuccessFlowCastObject =CompilerContext.MovePinLinksToIntermediate(*CastedOutputPin, *CastNode->GetCastResultPin());
+			check(!SuccessFlowCastObject.IsFatal());
 
 			const auto SuccessFlowMovedCastSuccess = CompilerContext.MovePinLinksToIntermediate(*FlowPin, *CastNode->GetValidCastPin());
 			check(!SuccessFlowMovedCastSuccess.IsFatal());
-			
+
 			const auto SuccessFlowMovedCastFail = CompilerContext.MovePinLinksToIntermediate(*FlowPin, *CastNode->GetInvalidCastPin());
 			check(!SuccessFlowMovedCastFail.IsFatal());
-		}else
+		}
+		else
 		{
 			// Get the flow pins
 			const auto SuccessFlowMoved = CompilerContext.MovePinLinksToIntermediate(*FlowPin, *IntermediateSubEventFlowPin);

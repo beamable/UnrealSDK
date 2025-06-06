@@ -225,6 +225,18 @@ class UK2BeamNode_Operation_LoginExternalIdentity : public UK2BeamNode_Operation
 		return Ids;
 	}
 
+	virtual TMap<FName, UClass*> GetOperationEventCastClass(EBeamOperationEventType Type) const override
+	{
+		TMap<FName, UClass*> Casts = Super::GetOperationEventCastClass(Type);
+
+		switch (Type)
+		{
+		case OET_SUCCESS:
+			Casts.Add(UBeamRuntime::GetOperationEventID_2FA_AuthTriggered(), UChallengeSolutionObject::StaticClass());
+			return Casts;
+		}
+		return Casts;
+	}
 
 	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamRuntime::StaticClass(); }
 };
@@ -244,8 +256,6 @@ class UK2BeamNode_Operation_CommitLoginExternalIdentityTwoFactorOperation : publ
 	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamRuntime, CommitLoginExternalIdentity2FAOperation); }
 
 private:
-
-	
 	virtual TArray<FName> GetOperationEventIds(EBeamOperationEventType Type) const override
 	{
 		TArray<FName> Ids = Super::GetOperationEventIds(Type);
@@ -273,18 +283,6 @@ private:
 		return Ids;
 	}
 
-	virtual TMap<FName, UClass*> GetOperationEventCastClass(EBeamOperationEventType Type) const override
-	{
-		TMap<FName, UClass*> Casts = Super::GetOperationEventCastClass(Type);
-		
-		switch (Type)
-		{
-		case OET_SUCCESS:
-			Casts.Add(UBeamRuntime::GetOperationEventID_2FA_AuthTriggered(), UChallengeSolutionObject::StaticClass());
-			return Casts;
-		}
-		return Casts;
-	}
 
 	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamRuntime::StaticClass(); }
 };
@@ -381,6 +379,19 @@ class UK2BeamNode_Operation_AttachExternalIdentity : public UK2BeamNode_Operatio
 			return Ids;
 		}
 		return Ids;
+	}
+
+	virtual TMap<FName, UClass*> GetOperationEventCastClass(EBeamOperationEventType Type) const override
+	{
+		TMap<FName, UClass*> Casts = Super::GetOperationEventCastClass(Type);
+
+		switch (Type)
+		{
+		case OET_SUCCESS:
+			Casts.Add(UBeamRuntime::GetOperationEventID_2FA_AuthTriggered(), UChallengeSolutionObject::StaticClass());
+			return Casts;
+		}
+		return Casts;
 	}
 
 	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamRuntime::StaticClass(); }

@@ -3,6 +3,7 @@
 
 #include "K2Node_BreakStruct.h"
 #include "K2Node_CallFunction.h"
+#include "K2Node_DynamicCast.h"
 #include "K2Node_EnumEquality.h"
 #include "K2Node_GetArrayItem.h"
 #include "K2Node_MakeArray.h"
@@ -433,6 +434,14 @@ UK2Node_SwitchName* BeamK2::CreateSwitchNameNode(UEdGraphNode* CustomNode, FKism
 	K2Schema->TryCreateConnection(Switch->GetSelectionPin(), SwitchOnValuePin);
 	K2Schema->TryCreateConnection(ExecFlowPin, Switch->GetExecPin());
 	return Switch;
+}
+
+UK2Node_DynamicCast* BeamK2::CreateDynamicCastNode(UEdGraphNode* CustomNode, FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph, UClass* TargetClass)
+{
+	UK2Node_DynamicCast* CastNode = CompilerContext.SpawnIntermediateNode<UK2Node_DynamicCast>(CustomNode, SourceGraph);
+	CastNode->TargetType = TargetClass;
+	CastNode->AllocateDefaultPins();
+	return CastNode;
 }
 
 UK2Node_EnumEquality* BeamK2::CreateEnumEqualityAgainstDefault(UEdGraphNode* CustomNode, FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph, const UEdGraphSchema_K2* K2Schema,

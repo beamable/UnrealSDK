@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "K2Node_AddDelegate.h"
 #include "K2Node_BreakStruct.h"
+#include "K2Node_DynamicCast.h"
 #include "K2Node_EnumEquality.h"
 #include "K2Node_Event.h"
 #include "K2Node_IfThenElse.h"
@@ -72,6 +73,13 @@ namespace BeamK2
 	 */
 	UK2Node_SwitchName* CreateSwitchNameNode(UEdGraphNode* CustomNode, FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph, const UEdGraphSchema_K2* K2Schema, TArray<FName> const StringOptions,
 	                                         UEdGraphPin* ExecFlowPin, UEdGraphPin* SwitchOnValuePin);
+
+	/**
+	 * Create a Dynamic Cast Node to cast generic objects.
+	 *
+	 * @param TargetClass: The UClass* result after the cast.
+	 */
+	UK2Node_DynamicCast* CreateDynamicCastNode(UEdGraphNode* CustomNode, FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph, UClass* TargetClass);
 
 	/**
 	 * @brief Utility that creates and configures an EnumEquality node of the given "EnumToCompareType" to compare "EnumToCompareAgainst" against "CompareAgainstPin".
