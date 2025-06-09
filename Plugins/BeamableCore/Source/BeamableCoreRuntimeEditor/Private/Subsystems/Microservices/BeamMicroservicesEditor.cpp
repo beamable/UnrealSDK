@@ -64,8 +64,6 @@ FBeamOperationHandle UBeamMicroservicesEditor::OnRealmInitialized(FBeamRealmHand
 		ListenForStandaloneRunningServicesCommand->OnStreamOutput = [this](TArray<UBeamCliProjectPsStreamData*>& Stream, TArray<int64>& Ts, const FBeamOperationHandle& Op)
 		{
 			OnUpdateLocalStateReceived(Stream, Ts, Op);
-			Stream.Empty();
-			Ts.Empty();
 		};
 		const auto ReqProcess = FString::Printf(TEXT("--require-process-id %d"), FPlatformProcess::GetCurrentProcessId());
 		Cli->RunCommand(ListenForStandaloneRunningServicesCommand, {TEXT("-w"), ReqProcess}, {});
