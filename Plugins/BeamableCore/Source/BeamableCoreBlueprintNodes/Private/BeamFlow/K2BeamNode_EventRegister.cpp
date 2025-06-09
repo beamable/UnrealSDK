@@ -182,7 +182,9 @@ void UK2BeamNode_EventRegister::ExpandNode(FKismetCompilerContext& CompilerConte
 			}
 			else
 			{
-				DelegatePinsMap.Add(DelegateProp->GetName(), DelegatePropPin);
+				// If it's a event, then we get the cached the linked reference to the even
+				DelegatePinsMap.Add(DelegateProp->GetName(), DelegatePropPin->LinkedTo[0]);
+
 				// Connect the DelegateProperty Pin to the AddNodeDelegate Delegate Pin
 				CompilerContext.MovePinLinksToIntermediate(*DelegatePropPin, *AddDelegate_Delegate);
 			}
@@ -219,9 +221,7 @@ void UK2BeamNode_EventRegister::ExpandNode(FKismetCompilerContext& CompilerConte
 
 		if (DelegateProp && IsValidProperty(DelegateProp) && ShowUnbindAsExecuteProperty(DelegateProp))
 		{
-			auto DelegatePropPin = FindPin(DelegateProp->GetFName());
-
-			if (!ShowAsExecuteProperty(DelegateProp) && DelegatePropPin->LinkedTo.Num() == 0)
+			if (!DelegatePinsMap.Contains(DelegateProp->GetName()))
 			{
 				continue;
 			}
@@ -239,16 +239,8 @@ void UK2BeamNode_EventRegister::ExpandNode(FKismetCompilerContext& CompilerConte
 			const auto SubsystemReturnPin = CallGetSubsystem->GetReturnValuePin();
 			const auto _ = K2Schema->TryCreateConnection(SubsystemReturnPin, RemoveDelegate_Self);
 
-			// Connect the DelegateProperty Pin to the RemoveDelegateNode Delegate Pin
-			if (ShowAsExecuteProperty(DelegateProp))
-			{
-				// K2Schema->TryCreateConnection(DelegatePinsMap[DelegateProp->GetName()], RemoveDelegate_Delegate);
-				K2Schema->TryCreateConnection(DelegatePinsMap[DelegateProp->GetName()], RemoveDelegate_Delegate);
-			}
-			else
-			{
-				CompilerContext.MovePinLinksToIntermediate(*DelegatePinsMap[DelegateProp->GetName()], *RemoveDelegate_Delegate);
-			}
+			// Create the connection between the cached delegate property and the remove delegate node pin
+			K2Schema->TryCreateConnection(DelegatePinsMap[DelegateProp->GetName()], RemoveDelegate_Delegate);
 
 			CompilerContext.MovePinLinksToIntermediate(*FindPin(DelegateProp->GetName() + TEXT("_Unbind")), *RemoveDelegate_ExecPin);
 		}
@@ -304,7 +296,7 @@ bool UK2BeamNode_EventRegister::ShowAsExecuteProperty(FMulticastDelegateProperty
 	FName Name = DelegateProp->GetFName();
 	if (!EventPinsAsExecute.Contains(Name))
 	{
-		EventPinsAsExecute.Add(Name, false);
+		EventPinsAsExecute.Add(Name, true);
 	}
 	return EventPinsAsExecute[Name];
 }

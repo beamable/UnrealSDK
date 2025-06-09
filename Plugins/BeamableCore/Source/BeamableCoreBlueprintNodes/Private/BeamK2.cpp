@@ -3,6 +3,7 @@
 
 #include "K2Node_BreakStruct.h"
 #include "K2Node_CallFunction.h"
+#include "K2Node_ClearDelegate.h"
 #include "K2Node_DynamicCast.h"
 #include "K2Node_EnumEquality.h"
 #include "K2Node_GetArrayItem.h"
@@ -594,6 +595,21 @@ UK2Node_RemoveDelegate* BeamK2::CreateRemoveDelegateNode(UEdGraphNode* Node, FKi
 	RemoveDelegateNode->AllocateDefaultPins();
 
 	return RemoveDelegateNode;
+}
+
+UK2Node_ClearDelegate* BeamK2::CreateClearDelegateNode(UEdGraphNode* Node, FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph, FMulticastDelegateProperty* MulticastDelegateProperty)
+{
+	auto ClearDelegateNode = CompilerContext.SpawnIntermediateNode<UK2Node_ClearDelegate>(Node, SourceGraph);
+
+	ClearDelegateNode->SetFromProperty(
+		MulticastDelegateProperty,
+		false,
+		MulticastDelegateProperty->GetOwnerClass()
+	);
+
+	ClearDelegateNode->AllocateDefaultPins();
+
+	return ClearDelegateNode;
 }
 
 

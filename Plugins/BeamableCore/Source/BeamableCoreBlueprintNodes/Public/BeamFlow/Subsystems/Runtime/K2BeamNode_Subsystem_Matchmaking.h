@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "BeamFlow/K2BeamNode_EventRegister.h"
 #include "BeamFlow/K2BeamNode_EventUnregister.h"
+#include "BeamFlow/K2BeamNode_EventUnregisterAll.h"
 #include "BeamFlow/K2BeamNode_GetLocalState.h"
 #include "BeamFlow/K2BeamNode_Operation.h"
 #include "Subsystems/Matchmaking/BeamMatchmakingSubsystem.h"
@@ -31,6 +32,21 @@ class UK2BeamNode_EventRegister_MatchmakingSubsystem : public UK2BeamNode_EventR
 	GENERATED_BODY()
 
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return FText::FromString("Events - Matchmaking - Bind"); }
+
+	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamMatchmakingSubsystem, GetSelf); }
+
+	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamMatchmakingSubsystem::StaticClass(); }
+};
+#undef LOCTEXT_NAMESPACE
+
+#define LOCTEXT_NAMESPACE "K2BeamNode_EventUnregisterAll_MatchmakingSubsystem"
+
+UCLASS(meta=(BeamGetLocalState))
+class UK2BeamNode_EventUnregisterAll_MatchmakingSubsystem : public UK2BeamNode_EventUnregisterAll
+{
+	GENERATED_BODY()
+
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return FText::FromString("Events - Matchmaking - Unbind All Events"); }
 
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamMatchmakingSubsystem, GetSelf); }
 

@@ -2,6 +2,7 @@
 
 #include "BeamFlow/K2BeamNode_EventRegister.h"
 #include "BeamFlow/K2BeamNode_EventUnregister.h"
+#include "BeamFlow/K2BeamNode_EventUnregisterAll.h"
 #include "BeamFlow/K2BeamNode_GetLocalState.h"
 #include "BeamFlow/K2BeamNode_Operation.h"
 #include "Runtime/BeamRuntime.h"
@@ -18,6 +19,23 @@
  *                                                
  *                                                
  */
+
+#define LOCTEXT_NAMESPACE "UK2BeamNode_EventUnregisterAll_Auth"
+
+UCLASS(meta=(BeamGetLocalState))
+class UK2BeamNode_EventUnregisterAll_Auth : public UK2BeamNode_EventUnregisterAll
+{
+	GENERATED_BODY()
+
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return FText::FromString("Events - Auth - Unbind All Events"); }
+
+	virtual FString GetServiceName() const override { return "Auth"; };
+
+	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamRuntime, GetSelf); }
+
+	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamRuntime::StaticClass(); }
+};
+#undef LOCTEXT_NAMESPACE
 
 #define LOCTEXT_NAMESPACE "UK2BeamNode_EventUnregister_Auth"
 

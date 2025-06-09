@@ -14,6 +14,8 @@
 #define LOCTEXT_NAMESPACE "BeamK2"
 
 
+class UK2Node_ClearDelegate;
+
 namespace BeamK2
 {
 	const FName MD_BeamFlowNode = FName(TEXT("BeamFlowNode"));
@@ -127,6 +129,11 @@ namespace BeamK2
 	 * @brief   Utility that creates a RemoveDelegate node targeting a specific FMulticastDelegate. 	
 	 */
 	UK2Node_RemoveDelegate* CreateRemoveDelegateNode(UEdGraphNode* Node, FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph, FMulticastDelegateProperty* MulticastDelegateProperty);
+
+	/**
+	 * @brief   Utility that creates a ClearDelegate node targeting a specific FMulticastDelegate. 	
+	 */
+	UK2Node_ClearDelegate* CreateClearDelegateNode(UEdGraphNode* Node, FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph, FMulticastDelegateProperty* MulticastDelegateProperty);
 
 
 	/**

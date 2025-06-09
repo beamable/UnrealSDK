@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "BeamFlow/K2BeamNode_EventUnregister.h"
+#include "BeamFlow/K2BeamNode_EventUnregisterAll.h"
 #include "BeamFlow/K2BeamNode_GetLocalState.h"
 #include "BeamFlow/K2BeamNode_GetLocalStateForeach.h"
 #include "BeamFlow/K2BeamNode_Operation.h"
@@ -32,6 +33,22 @@ class UK2BeamNode_EventRegister_LobbySubsystem : public UK2BeamNode_EventRegiste
 	GENERATED_BODY()
 
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return FText::FromString("Events - Lobby - Bind"); }
+
+	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLobbySubsystem, GetSelf); }
+
+	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamLobbySubsystem::StaticClass(); }
+};
+#undef LOCTEXT_NAMESPACE
+
+
+#define LOCTEXT_NAMESPACE "K2BeamNode_EventUnregisterAll_LobbySubsystem"
+
+UCLASS(meta=(BeamGetLocalState))
+class UK2BeamNode_EventUnregisterAll_LobbySubsystem : public UK2BeamNode_EventUnregisterAll
+{
+	GENERATED_BODY()
+
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return FText::FromString("Events - Lobby - Unbind All Events"); }
 
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLobbySubsystem, GetSelf); }
 

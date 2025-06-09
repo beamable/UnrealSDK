@@ -2,6 +2,7 @@
 
 #include "BeamFlow/K2BeamNode_EventRegister.h"
 #include "BeamFlow/K2BeamNode_EventUnregister.h"
+#include "BeamFlow/K2BeamNode_EventUnregisterAll.h"
 #include "BeamFlow/K2BeamNode_GetLocalState.h"
 #include "BeamFlow/K2BeamNode_Operation.h"
 #include "Subsystems/Stats/BeamStatsSubsystem.h"
@@ -20,6 +21,20 @@
  *                                                
  */
 
+#define LOCTEXT_NAMESPACE "UK2BeamNode_EventUnregisterAll_Stats"
+
+UCLASS(meta=(BeamGetLocalState))
+class UK2BeamNode_EventUnregisterAll_Stats : public UK2BeamNode_EventUnregisterAll
+{
+	GENERATED_BODY()
+
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return FText::FromString("Events - Stats - Unbind All Events"); }
+
+	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamStatsSubsystem, GetSelf); }
+
+	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamStatsSubsystem::StaticClass(); }
+};
+#undef LOCTEXT_NAMESPACE
 
 #define LOCTEXT_NAMESPACE "UK2BeamNode_EventUnregister_Stats"
 

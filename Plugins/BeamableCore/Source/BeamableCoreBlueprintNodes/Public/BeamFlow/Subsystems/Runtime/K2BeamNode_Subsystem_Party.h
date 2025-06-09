@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "BeamFlow/K2BeamNode_EventRegister.h"
 #include "BeamFlow/K2BeamNode_EventUnregister.h"
+#include "BeamFlow/K2BeamNode_EventUnregisterAll.h"
 #include "BeamFlow/K2BeamNode_GetLocalState.h"
 #include "BeamFlow/K2BeamNode_GetLocalStateForeach.h"
 #include "BeamFlow/K2BeamNode_Operation.h"
@@ -21,6 +22,21 @@
  *                                                
  *                                                
  */
+
+#define LOCTEXT_NAMESPACE "K2BeamNode_EventUnregisterAll_PartySubsystem"
+
+UCLASS(meta=(BeamGetLocalState))
+class UK2BeamNode_EventUnregisterAll_PartySubsystem : public UK2BeamNode_EventUnregisterAll
+{
+	GENERATED_BODY()
+
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return FText::FromString("Events - Party - Unbind All Events"); }
+
+	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamPartySubsystem, GetSelf); }
+
+	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamPartySubsystem::StaticClass(); }
+};
+#undef LOCTEXT_NAMESPACE
 
 #define LOCTEXT_NAMESPACE "K2BeamNode_EventUnregister_PartySubsystem"
 
