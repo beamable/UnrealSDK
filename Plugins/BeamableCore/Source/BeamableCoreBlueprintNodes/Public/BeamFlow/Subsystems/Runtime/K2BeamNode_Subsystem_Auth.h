@@ -250,7 +250,7 @@ class UK2BeamNode_Operation_LoginFederated : public UK2BeamNode_Operation
 		switch (Type)
 		{
 		case OET_SUCCESS:
-			Casts.Add(UBeamRuntime::GetOperationEventID_2FA_AuthTriggered(), UChallengeSolutionObject::StaticClass());
+			Casts.Add(UBeamRuntime::GetOperationEventID_MultiFactorAuthTriggered(), UBeamMultiFactorLoginData::StaticClass());
 			return Casts;
 		}
 		return Casts;
@@ -406,7 +406,7 @@ class UK2BeamNode_Operation_AttachFederated : public UK2BeamNode_Operation
 		switch (Type)
 		{
 		case OET_SUCCESS:
-			Casts.Add(UBeamRuntime::GetOperationEventID_2FA_AuthTriggered(), UChallengeSolutionObject::StaticClass());
+			Casts.Add(UBeamRuntime::GetOperationEventID_MultiFactorAuthTriggered(), UBeamMultiFactorLoginData::StaticClass());
 			return Casts;
 		}
 		return Casts;
