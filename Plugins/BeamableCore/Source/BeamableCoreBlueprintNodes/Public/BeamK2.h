@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "K2Node_AddDelegate.h"
 #include "K2Node_BreakStruct.h"
+#include "K2Node_DynamicCast.h"
 #include "K2Node_EnumEquality.h"
 #include "K2Node_Event.h"
 #include "K2Node_IfThenElse.h"
@@ -12,6 +13,8 @@
 
 #define LOCTEXT_NAMESPACE "BeamK2"
 
+
+class UK2Node_ClearDelegate;
 
 namespace BeamK2
 {
@@ -74,6 +77,13 @@ namespace BeamK2
 	                                         UEdGraphPin* ExecFlowPin, UEdGraphPin* SwitchOnValuePin);
 
 	/**
+	 * Create a Dynamic Cast Node to cast generic objects.
+	 *
+	 * @param TargetClass: The UClass* result after the cast.
+	 */
+	UK2Node_DynamicCast* CreateDynamicCastNode(UEdGraphNode* CustomNode, FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph, UClass* TargetClass);
+
+	/**
 	 * @brief Utility that creates and configures an EnumEquality node of the given "EnumToCompareType" to compare "EnumToCompareAgainst" against "CompareAgainstPin".
 	 */
 	UK2Node_EnumEquality* CreateEnumEqualityAgainstDefault(UEdGraphNode* CustomNode, FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph, const UEdGraphSchema_K2* K2Schema,
@@ -119,6 +129,11 @@ namespace BeamK2
 	 * @brief   Utility that creates a RemoveDelegate node targeting a specific FMulticastDelegate. 	
 	 */
 	UK2Node_RemoveDelegate* CreateRemoveDelegateNode(UEdGraphNode* Node, FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph, FMulticastDelegateProperty* MulticastDelegateProperty);
+
+	/**
+	 * @brief   Utility that creates a ClearDelegate node targeting a specific FMulticastDelegate. 	
+	 */
+	UK2Node_ClearDelegate* CreateClearDelegateNode(UEdGraphNode* Node, FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph, FMulticastDelegateProperty* MulticastDelegateProperty);
 
 
 	/**

@@ -57,6 +57,18 @@ void UK2BeamNode_EventRegister::AllocateDefaultPins()
 			}
 		}
 	}
+
+	// Iterate over all FMulticastDelegateProperty (bluprintassingnable delegates) and create the pin
+	for (TFieldIterator<FMulticastDelegateProperty> It(ReferenceClass); It; ++It)
+	{
+		FMulticastDelegateProperty* DelegateProp = *It;
+		if (DelegateProp && IsValidProperty(DelegateProp) && ShowUnbindAsExecuteProperty(DelegateProp))
+		{
+			// Create the out execution flow pin
+			const auto UnbindPin = CreatePin(EGPD_Input, UEdGraphSchema_K2::PC_Exec, FName(DelegateProp->GetName() + TEXT("_Unbind")));
+			UnbindPin->PinFriendlyName = FText::FromName(FName(TEXT("Unbind - ") + DelegateProp->GetName()));
+		}
+	}
 }
 
 
@@ -105,6 +117,7 @@ void UK2BeamNode_EventRegister::ExpandNode(FKismetCompilerContext& CompilerConte
 	// After do for every FMulticastDelegateProperty it will connect the remaining reference to the MainNode ThenPin.
 	UEdGraphPin* OutputPin = nullptr;
 
+	TMap<FString, UEdGraphPin*> DelegatePinsMap;
 
 	// Iterate over all the FMulticastDelegateProperty to create bind then.
 	for (TFieldIterator<FMulticastDelegateProperty> It(ReferenceClass); It; ++It)
@@ -137,7 +150,10 @@ void UK2BeamNode_EventRegister::ExpandNode(FKismetCompilerContext& CompilerConte
 			if (ShowAsExecuteProperty(DelegateProp))
 			{
 				auto CustomEventNode = CompilerContext.SpawnIntermediateNode<UK2Node_CustomEvent>(this, SourceGraph);
+				auto MemberReference = FMemberReference();
+				MemberReference.SetExternalMember(DelegateProp->GetFName(), ReferenceClass);
 
+				CustomEventNode->EventReference = MemberReference;
 				CustomEventNode->CustomFunctionName = CompilerContext.GetEventStubFunctionName(CustomEventNode);
 				CustomEventNode->SetDelegateSignature(DelegateProp->SignatureFunction);
 
@@ -147,7 +163,7 @@ void UK2BeamNode_EventRegister::ExpandNode(FKismetCompilerContext& CompilerConte
 
 				// Connect the Custom Event Delegate Pin to the AddNodeDelegate Delegate Pin
 				K2Schema->TryCreateConnection(CustomEventNode->GetDelegatePin(), AddDelegate_Delegate);
-
+				DelegatePinsMap.Add(DelegateProp->GetName(), CustomEventNode->GetDelegatePin());
 				//This gives you the function signature that any delegate bound to this must match
 
 				if (UFunction* SignatureFunction = DelegateProp->SignatureFunction)
@@ -166,6 +182,9 @@ void UK2BeamNode_EventRegister::ExpandNode(FKismetCompilerContext& CompilerConte
 			}
 			else
 			{
+				// If it's a event, then we get the cached the linked reference to the even
+				DelegatePinsMap.Add(DelegateProp->GetName(), DelegatePropPin->LinkedTo[0]);
+
 				// Connect the DelegateProperty Pin to the AddNodeDelegate Delegate Pin
 				CompilerContext.MovePinLinksToIntermediate(*DelegatePropPin, *AddDelegate_Delegate);
 			}
@@ -195,6 +214,37 @@ void UK2BeamNode_EventRegister::ExpandNode(FKismetCompilerContext& CompilerConte
 		CompilerContext.MessageLog.Error(TEXT("[EventRegister Node] There's no event binded for (@@) (@@)"), *GetRuntimeSubsystemClass()->GetName(), this);
 	}
 
+	// Iterate over all the FMulticastDelegateProperty to create unbind input.
+	for (TFieldIterator<FMulticastDelegateProperty> It(ReferenceClass); It; ++It)
+	{
+		FMulticastDelegateProperty* DelegateProp = *It;
+
+		if (DelegateProp && IsValidProperty(DelegateProp) && ShowUnbindAsExecuteProperty(DelegateProp))
+		{
+			if (!DelegatePinsMap.Contains(DelegateProp->GetName()))
+			{
+				continue;
+			}
+
+			// Create the RemoveDelegate node which will be responsible for unbind the delegate
+			auto RemoveDelegateNode = BeamK2::CreateRemoveDelegateNode(this, CompilerContext, SourceGraph, DelegateProp);
+
+			auto RemoveDelegate_Self = K2Schema->FindSelfPin(*RemoveDelegateNode, EGPD_Input);
+			auto RemoveDelegate_Delegate = RemoveDelegateNode->FindPin(TEXT("Delegate"));
+
+			auto RemoveDelegate_ExecPin = RemoveDelegateNode->GetExecPin();
+
+
+			// Connect the node with the target subsystem
+			const auto SubsystemReturnPin = CallGetSubsystem->GetReturnValuePin();
+			const auto _ = K2Schema->TryCreateConnection(SubsystemReturnPin, RemoveDelegate_Self);
+
+			// Create the connection between the cached delegate property and the remove delegate node pin
+			K2Schema->TryCreateConnection(DelegatePinsMap[DelegateProp->GetName()], RemoveDelegate_Delegate);
+
+			CompilerContext.MovePinLinksToIntermediate(*FindPin(DelegateProp->GetName() + TEXT("_Unbind")), *RemoveDelegate_ExecPin);
+		}
+	}
 
 	// Break original links
 	BreakAllNodeLinks();
@@ -224,6 +274,11 @@ UClass* UK2BeamNode_EventRegister::GetRuntimeSubsystemClass() const
 
 bool UK2BeamNode_EventRegister::IsValidProperty(FMulticastDelegateProperty* DelegateProp)
 {
+	// It's not valid if is not assignable by blueprint
+	if (!DelegateProp->HasAnyPropertyFlags(CPF_BlueprintAssignable))
+	{
+		return false;
+	}
 	FName Name = DelegateProp->GetFName();
 	if (!EventPins.Contains(Name))
 	{
@@ -234,10 +289,28 @@ bool UK2BeamNode_EventRegister::IsValidProperty(FMulticastDelegateProperty* Dele
 
 bool UK2BeamNode_EventRegister::ShowAsExecuteProperty(FMulticastDelegateProperty* DelegateProp)
 {
+	if (!DelegateProp->HasAnyPropertyFlags(CPF_BlueprintAssignable))
+	{
+		return false;
+	}
 	FName Name = DelegateProp->GetFName();
 	if (!EventPinsAsExecute.Contains(Name))
 	{
-		EventPinsAsExecute.Add(Name, false);
+		EventPinsAsExecute.Add(Name, true);
 	}
 	return EventPinsAsExecute[Name];
+}
+
+bool UK2BeamNode_EventRegister::ShowUnbindAsExecuteProperty(FMulticastDelegateProperty* DelegateProp)
+{
+	if (!DelegateProp->HasAnyPropertyFlags(CPF_BlueprintAssignable))
+	{
+		return false;
+	}
+	FName Name = DelegateProp->GetFName();
+	if (!EventUnbindPinsAsExecute.Contains(Name))
+	{
+		EventUnbindPinsAsExecute.Add(Name, false);
+	}
+	return EventUnbindPinsAsExecute[Name];
 }

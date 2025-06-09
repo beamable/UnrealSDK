@@ -22,6 +22,8 @@ void UK2BeamEventRegisterCustomization::CustomizeDetails(IDetailLayoutBuilder& D
 			GenerateHiddenDelegateCheckboxes(DetailBuilder, Node);
 
 			GenerateShowDelegateAsExecuteCheckboxes(DetailBuilder, Node);
+
+			GenerateShowUnbindAsExecuteCheckboxes(DetailBuilder, Node);
 		}
 	}
 }
@@ -36,6 +38,10 @@ void UK2BeamEventRegisterCustomization::GenerateHiddenDelegateCheckboxes(IDetail
 	{
 		FName DelegateName = It->GetFName();
 
+		if (!It->HasAnyPropertyFlags(CPF_BlueprintAssignable))
+		{
+			continue;
+		}
 		// Ensure entry exists
 		if (!Node->EventPins.Contains(DelegateName))
 		{
@@ -75,7 +81,10 @@ void UK2BeamEventRegisterCustomization::GenerateShowDelegateAsExecuteCheckboxes(
 	for (TFieldIterator<FMulticastDelegateProperty> It(ReferenceClass); It; ++It)
 	{
 		FName DelegateName = It->GetFName();
-
+		if (!It->HasAnyPropertyFlags(CPF_BlueprintAssignable))
+		{
+			continue;
+		}
 		// Ensure entry exists
 		if (!Node->EventPinsAsExecute.Contains(DelegateName))
 		{
@@ -100,6 +109,49 @@ void UK2BeamEventRegisterCustomization::GenerateShowDelegateAsExecuteCheckboxes(
 				{
 					Node->Modify();
 					Node->EventPinsAsExecute[DelegateName] = (NewState == ECheckBoxState::Checked);
+					Node->ReconstructNode(); // Optional: auto-refresh
+				})
+			];
+	}
+}
+
+void UK2BeamEventRegisterCustomization::GenerateShowUnbindAsExecuteCheckboxes(IDetailLayoutBuilder& DetailBuilder, UK2BeamNode_EventRegister* Node)
+{
+	IDetailCategoryBuilder& Category = DetailBuilder.EditCategory("Show Unbind as Execute Pin");
+
+	const auto ReferenceClass = Node->GetRuntimeSubsystemClass();
+
+	for (TFieldIterator<FMulticastDelegateProperty> It(ReferenceClass); It; ++It)
+	{
+		FName DelegateName = It->GetFName();
+		if (!It->HasAnyPropertyFlags(CPF_BlueprintAssignable))
+		{
+			continue;
+		}
+		// Ensure entry exists
+		if (!Node->EventUnbindPinsAsExecute.Contains(DelegateName))
+		{
+			Node->EventUnbindPinsAsExecute.Add(DelegateName, false);
+		}
+
+		Category.AddCustomRow(FText::FromName(DelegateName))
+		        .NameContent()
+			[
+				SNew(STextBlock)
+				.Text(FText::FromName(DelegateName))
+				.Font(IDetailLayoutBuilder::GetDetailFont())
+			]
+			.ValueContent()
+			[
+				SNew(SCheckBox)
+				.IsChecked_Lambda([Node, DelegateName]()
+				{
+					return Node->EventUnbindPinsAsExecute[DelegateName] ? ECheckBoxState::Checked : ECheckBoxState::Unchecked;
+				})
+				.OnCheckStateChanged_Lambda([Node, DelegateName](ECheckBoxState NewState)
+				{
+					Node->Modify();
+					Node->EventUnbindPinsAsExecute[DelegateName] = (NewState == ECheckBoxState::Checked);
 					Node->ReconstructNode(); // Optional: auto-refresh
 				})
 			];

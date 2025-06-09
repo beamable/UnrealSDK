@@ -1,17 +1,17 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "BeamFlow/K2BeamNode_EventUnregister.h"
+#include "BeamFlow/K2BeamNode_EventUnregisterAll.h"
 
 #include "BeamK2.h"
 #include "BlueprintActionDatabaseRegistrar.h"
 #include "BlueprintNodeSpawner.h"
-#include "K2Node_AssignDelegate.h"
 #include "K2Node_CallFunction.h"
+#include "K2Node_ClearDelegate.h"
 #include "KismetCompiler.h"
 #include "SourceCodeNavigation.h"
 
-void UK2BeamNode_EventUnregister::GetMenuActions(FBlueprintActionDatabaseRegistrar& ActionRegistrar) const
+void UK2BeamNode_EventUnregisterAll::GetMenuActions(FBlueprintActionDatabaseRegistrar& ActionRegistrar) const
 {
 	UClass* ActionKey = GetClass();
 	if (ActionRegistrar.IsOpenForRegistration(ActionKey))
@@ -24,7 +24,7 @@ void UK2BeamNode_EventUnregister::GetMenuActions(FBlueprintActionDatabaseRegistr
 }
 
 
-void UK2BeamNode_EventUnregister::AllocateDefaultPins()
+void UK2BeamNode_EventUnregisterAll::AllocateDefaultPins()
 {
 	UK2Node::AllocateDefaultPins();
 
@@ -46,36 +46,41 @@ void UK2BeamNode_EventUnregister::AllocateDefaultPins()
 		FMulticastDelegateProperty* DelegateProp = *It;
 		if (DelegateProp && IsValidProperty(DelegateProp))
 		{
-			BeamK2::CreateEventPinFromProperty(this, DelegateProp);
+			// Create the pin without any interaction just for visibility
+			UEdGraphPin* Pin = CreatePin(EGPD_Input, UEdGraphSchema_K2::PC_Wildcard, DelegateProp->GetFName());
+			Pin->PinFriendlyName = FText::FromString(DelegateProp->GetName() + " - Unbind All Events");
+			Pin->bNotConnectable = true;
+			Pin->bDefaultValueIsReadOnly = true;
 		}
 	}
 }
 
 
-FSlateIcon UK2BeamNode_EventUnregister::GetIconAndTint(FLinearColor& OutColor) const
+FSlateIcon UK2BeamNode_EventUnregisterAll::GetIconAndTint(FLinearColor& OutColor) const
 {
 	UK2Node::GetIconAndTint(OutColor);
 	OutColor = FLinearColor::FromSRGBColor(FColor::FromHex("#826CCF"));
 	return FSlateIcon(TEXT("BeamableCore"), "BeamIconSmall");
 }
 
-FLinearColor UK2BeamNode_EventUnregister::GetNodeTitleColor() const
+FLinearColor UK2BeamNode_EventUnregisterAll::GetNodeTitleColor() const
 {
 	return FLinearColor::FromSRGBColor(FColor::FromHex("#674CC5"));
 }
 
-void UK2BeamNode_EventUnregister::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
+void UK2BeamNode_EventUnregisterAll::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
 {
 	UK2Node::PostEditChangeProperty(PropertyChangedEvent);
 
 	const auto FlowPropName = GET_MEMBER_NAME_CHECKED(UK2BeamNode_EventUnregister, EventPins);
 	if (PropertyChangedEvent.Property && PropertyChangedEvent.Property->GetNameCPP().Equals(FlowPropName.ToString()))
 	{
+		// Modify();
 		ReconstructNode();
 	}
 }
 
-void UK2BeamNode_EventUnregister::ExpandNode(FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph)
+void UK2BeamNode_EventUnregisterAll::ExpandNode(FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph)
 {
 	UK2Node::ExpandNode(CompilerContext, SourceGraph);
 
@@ -97,44 +102,31 @@ void UK2BeamNode_EventUnregister::ExpandNode(FKismetCompilerContext& CompilerCon
 
 		if (DelegateProp && IsValidProperty(DelegateProp))
 		{
-			auto DelegatePropPin = FindPin(DelegateProp->GetFName());
+			// BeamK2::CreateIfThenElseNodeAgainstCondition(this, CompilerContext, SourceGraph, K2Schema, )
+			// Create the ClearDelegate node which will be responsible for unbind the delegate
+			UK2Node_ClearDelegate* ClearDelegateNode = BeamK2::CreateClearDelegateNode(this, CompilerContext, SourceGraph, DelegateProp);
 
-			// If the pin is not connect we will just ignore it to prevent the error for non connected events
-			// Event Dispatcher pin is not connected 
-			if (DelegatePropPin->LinkedTo.Num() == 0)
-			{
-				continue;
-			}
+			auto ClearDelegate_Self = K2Schema->FindSelfPin(*ClearDelegateNode, EGPD_Input);
 
-			// Create the RemoveDelegate node which will be responsible for unbind the delegate
-			auto RemoveDelegateNode = BeamK2::CreateRemoveDelegateNode(this, CompilerContext, SourceGraph, DelegateProp);
-
-			auto RemoveDelegate_Self = K2Schema->FindSelfPin(*RemoveDelegateNode, EGPD_Input);
-			auto RemoveDelegate_Delegate = RemoveDelegateNode->FindPin(TEXT("Delegate"));
-
-			auto RemoveDelegate_ExecPin = RemoveDelegateNode->GetExecPin();
-			auto RemoveDelegate_ThenPin = RemoveDelegateNode->GetThenPin();
+			auto ClearDelegate_ExecPin = ClearDelegateNode->GetExecPin();
+			auto ClearDelegate_ThenPin = ClearDelegateNode->GetThenPin();
 
 
 			// Connect the node with the target subsystem
 			const auto SubsystemReturnPin = CallGetSubsystem->GetReturnValuePin();
-			const auto _ = K2Schema->TryCreateConnection(SubsystemReturnPin, RemoveDelegate_Self);
-
-			// Connect the DelegateProperty Pin to the RemoveDelegateNode Delegate Pin
-			CompilerContext.MovePinLinksToIntermediate(*DelegatePropPin, *RemoveDelegate_Delegate);
-
+			const auto _ = K2Schema->TryCreateConnection(SubsystemReturnPin, ClearDelegate_Self);
 
 			if (OutputPin == nullptr)
 			{
-				CompilerContext.MovePinLinksToIntermediate(*GetExecPin(), *RemoveDelegate_ExecPin);
+				CompilerContext.MovePinLinksToIntermediate(*GetExecPin(), *ClearDelegate_ExecPin);
 			}
 			else
 			{
-				K2Schema->TryCreateConnection(OutputPin, RemoveDelegate_ExecPin);
+				K2Schema->TryCreateConnection(OutputPin, ClearDelegate_ExecPin);
 			}
 
 
-			OutputPin = RemoveDelegate_ThenPin;
+			OutputPin = ClearDelegate_ThenPin;
 		}
 	}
 
@@ -145,14 +137,14 @@ void UK2BeamNode_EventUnregister::ExpandNode(FKismetCompilerContext& CompilerCon
 	}
 	else // This is the case of there's no event unbinded or there's no event at all in the target class.
 	{
-		CompilerContext.MessageLog.Error(TEXT("[EventRegister Node] There's no event unbiding for (@@) (@@)"), *GetRuntimeSubsystemClass()->GetName(), this);
+		CompilerContext.MessageLog.Error(TEXT("[EventRegister Node] There's no event unbinding for (@@) (@@) Please, Activated at least one event in the details."), *GetRuntimeSubsystemClass()->GetName(), this);
 	}
 
 	// Break original links
 	BreakAllNodeLinks();
 }
 
-UObject* UK2BeamNode_EventUnregister::GetJumpTargetForDoubleClick() const
+UObject* UK2BeamNode_EventUnregisterAll::GetJumpTargetForDoubleClick() const
 {
 	const auto ClassReference = GetRuntimeSubsystemClass();
 
@@ -163,18 +155,18 @@ UObject* UK2BeamNode_EventUnregister::GetJumpTargetForDoubleClick() const
 	return UK2Node::GetJumpTargetForDoubleClick();
 }
 
-FName UK2BeamNode_EventUnregister::GetSubsystemSelfFunctionName() const
+FName UK2BeamNode_EventUnregisterAll::GetSubsystemSelfFunctionName() const
 {
 	return FName("K2BeamNode_GetState");
 }
 
-UClass* UK2BeamNode_EventUnregister::GetRuntimeSubsystemClass() const
+UClass* UK2BeamNode_EventUnregisterAll::GetRuntimeSubsystemClass() const
 {
 	return UClass::StaticClass();
 }
 
 
-bool UK2BeamNode_EventUnregister::IsValidProperty(FMulticastDelegateProperty* DelegateProp)
+bool UK2BeamNode_EventUnregisterAll::IsValidProperty(FMulticastDelegateProperty* DelegateProp)
 {
 	if (!DelegateProp->HasAnyPropertyFlags(CPF_BlueprintAssignable))
 	{

@@ -2,6 +2,7 @@
 
 #include "BeamFlow/K2BeamNode_EventRegister.h"
 #include "BeamFlow/K2BeamNode_EventUnregister.h"
+#include "BeamFlow/K2BeamNode_EventUnregisterAll.h"
 #include "BeamFlow/K2BeamNode_GetLocalState.h"
 #include "BeamFlow/K2BeamNode_Operation.h"
 #include "Runtime/BeamRuntime.h"
@@ -18,6 +19,23 @@
  *                                                
  *                                                
  */
+
+#define LOCTEXT_NAMESPACE "UK2BeamNode_EventUnregisterAll_Auth"
+
+UCLASS(meta=(BeamGetLocalState))
+class UK2BeamNode_EventUnregisterAll_Auth : public UK2BeamNode_EventUnregisterAll
+{
+	GENERATED_BODY()
+
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return FText::FromString("Events - Auth - Unbind All Events"); }
+
+	virtual FString GetServiceName() const override { return "Auth"; };
+
+	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamRuntime, GetSelf); }
+
+	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamRuntime::StaticClass(); }
+};
+#undef LOCTEXT_NAMESPACE
 
 #define LOCTEXT_NAMESPACE "UK2BeamNode_EventUnregister_Auth"
 
@@ -243,6 +261,18 @@ class UK2BeamNode_Operation_LoginFederated : public UK2BeamNode_Operation
 		return Ids;
 	}
 
+	virtual TMap<FName, UClass*> GetOperationEventCastClass(EBeamOperationEventType Type) const override
+	{
+		TMap<FName, UClass*> Casts = Super::GetOperationEventCastClass(Type);
+
+		switch (Type)
+		{
+		case OET_SUCCESS:
+			Casts.Add(UBeamRuntime::GetOperationEventID_MultiFactorAuthTriggered(), UBeamMultiFactorLoginData::StaticClass());
+			return Casts;
+		}
+		return Casts;
+	}
 
 	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamRuntime::StaticClass(); }
 };
@@ -261,7 +291,7 @@ class UK2BeamNode_Operation_CommitLoginFederated : public UK2BeamNode_Operation
 
 	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamRuntime, CommitLoginFederatedOperation); }
 
-
+private:
 	virtual TArray<FName> GetOperationEventIds(EBeamOperationEventType Type) const override
 	{
 		TArray<FName> Ids = Super::GetOperationEventIds(Type);
@@ -288,6 +318,7 @@ class UK2BeamNode_Operation_CommitLoginFederated : public UK2BeamNode_Operation
 		}
 		return Ids;
 	}
+
 
 	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamRuntime::StaticClass(); }
 };
@@ -384,6 +415,19 @@ class UK2BeamNode_Operation_AttachFederated : public UK2BeamNode_Operation
 			return Ids;
 		}
 		return Ids;
+	}
+
+	virtual TMap<FName, UClass*> GetOperationEventCastClass(EBeamOperationEventType Type) const override
+	{
+		TMap<FName, UClass*> Casts = Super::GetOperationEventCastClass(Type);
+
+		switch (Type)
+		{
+		case OET_SUCCESS:
+			Casts.Add(UBeamRuntime::GetOperationEventID_MultiFactorAuthTriggered(), UBeamMultiFactorLoginData::StaticClass());
+			return Casts;
+		}
+		return Casts;
 	}
 
 	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamRuntime::StaticClass(); }

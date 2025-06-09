@@ -15,6 +15,7 @@
 #include "AutoGen/Optionals/OptionalArrayOfBeamGamerTag.h"
 #include "AutoGen/Optionals/OptionalArrayOfBeamTag.h"
 #include "BeamBackend/ReplacementTypes/BeamClientPermission.h"
+#include "BeamFlow/K2BeamNode_EventUnregister.h"
 #include "Content/BeamContentTypes/BeamListingContent.h"
 #include "Kismet2/KismetEditorUtilities.h"
 #include "PropertyType/BeamClientPermissionCustomization.h"
@@ -23,6 +24,7 @@
 #include "PropertyType/FDocsPageItemCustomization.h"
 #include "PropertyType/RequestTypeCustomization.h"
 #include "PropertyType/UK2BeamEventRegisterCustomization.h"
+#include "PropertyType/UK2BeamEventUnregisterCustomization.h"
 #include "Subsystems/BeamEditor.h"
 #include "Subsystems/Content/BeamEditorContent.h"
 #include "Toolkits/AssetEditorToolkit.h"
@@ -77,6 +79,13 @@ void FBeamableCoreEditorModule::StartupModule()
 			UK2BeamNode_EventRegister::StaticClass()->GetFName(),
 			// this is where our MakeInstance() method is useful
 			FOnGetDetailCustomizationInstance::CreateStatic(&UK2BeamEventRegisterCustomization::MakeInstance));
+
+		// to register our custom property
+		PropertyModule.RegisterCustomClassLayout(
+			// This is the name of the Struct this tells the property editor which is the struct property our customization will applied on.
+			UK2BeamNode_EventUnregister::StaticClass()->GetFName(),
+			// this is where our MakeInstance() method is useful
+			FOnGetDetailCustomizationInstance::CreateStatic(&UK2BeamEventUnregisterCustomization::MakeInstance));
 
 		// to register our custom property
 		PropertyModule.RegisterCustomPropertyTypeLayout(

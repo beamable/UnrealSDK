@@ -12,11 +12,14 @@
  */
 
 UCLASS(NotBlueprintable, NotBlueprintType, Hidden, meta=(EventRegister))
-class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_EventUnregister : public UK2BeamNode_EventRegister
+class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_EventUnregister : public UK2Node
 {
 	GENERATED_BODY()
 
 public:
+	UPROPERTY()
+	TMap<FName, bool> EventPins = TMap<FName, bool>();
+
 	virtual void GetMenuActions(FBlueprintActionDatabaseRegistrar& ActionRegistrar) const override;
 
 	/**
@@ -27,6 +30,18 @@ public:
 		FString Category = FString::Printf(TEXT("Beam|%s|Events"), *GetServiceName());
 		return FText::FromString(Category);
 	};
+
+	virtual FString GetServiceName() const
+	{
+		// In order to have the service name we are extract it from the name of the subsystem removing the Beam and Subsystem words from the name.
+		// E.g BeamInventorySubsystem will become only Inventory.
+		// If this pattern don't match with the case override this.
+		FString Name = GetRuntimeSubsystemClass()->GetName();
+		Name = Name.Replace(TEXT("Beam"), TEXT(""));
+		Name = Name.Replace(TEXT("Subsystem"), TEXT(""));
+		return Name;
+	};
+
 
 	//UK2Node impl
 	virtual void AllocateDefaultPins() override;
@@ -41,7 +56,7 @@ public:
 	/**
 	 * @brief The UClass for a subsystem (GameInstanceSubsystem or BeamRuntimeSubsystem) that this function resides in. 
 	 */
-	virtual UClass* GetRuntimeSubsystemClass() const override;
+	virtual UClass* GetRuntimeSubsystemClass() const;
 
 protected:
 	/**
@@ -51,5 +66,5 @@ protected:
 	virtual FName GetSubsystemSelfFunctionName() const;
 
 
-	virtual bool IsValidProperty(FMulticastDelegateProperty* DelegateProp) override;
+	virtual bool IsValidProperty(FMulticastDelegateProperty* DelegateProp);
 };
