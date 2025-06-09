@@ -22,7 +22,7 @@ namespace Beamable.BeamballMs
     [Microservice("BeamballMs")]
     public partial class BeamballMs : Microservice, IFederatedPlayerInit<DefaultFederation>, IFederatedGameServer<BeamballFederation>
     {
-			private const string EmailKey = "__beam_email__";
+			private const string EmailKey = "__beam_user_email__";
 	    
 			public async Promise<PlayerInitResult> CreatePlayer(Account account, Dictionary<string, string> properties)
 			{
@@ -31,16 +31,16 @@ namespace Beamable.BeamballMs
 				var gamerTag = account.gamerTags[0].gamerTag;
 				
 				var userAPI = AssumeNewUser(gamerTag);
-				
-				var email = properties[EmailKey];
-				
-				var emailSplited = email.Split("@");
 
-				if (emailSplited.Length > 0)
+				if (properties.TryGetValue(EmailKey, out var email))
 				{
-					name = emailSplited[0];
+					var emailSplited = email.Split("@");
+
+					if (emailSplited.Length > 0)
+					{
+						name = emailSplited[0];
+					}
 				}
-				
 				// Add Initial Currency and Skin
 	
 				await userAPI.Services.Stats.SetStats(StatsDomainType.Client, StatsAccessType.Public, gamerTag, new Dictionary<string, string>(){{"player_name",name}});
