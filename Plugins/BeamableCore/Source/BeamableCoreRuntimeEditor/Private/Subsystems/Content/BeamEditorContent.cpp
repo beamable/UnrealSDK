@@ -3,8 +3,10 @@
 
 #include "Subsystems/Content/BeamEditorContent.h"
 
+#include "EditorStyleSet.h"
 #include "Content/BeamContentCache.h"
 #include "Content/DownloadContentState.h"
+#include "Framework/Notifications/NotificationManager.h"
 #include "Kismet/KismetStringLibrary.h"
 #include "Misc/FileHelper.h"
 #include "Serialization/ObjectWriter.h"
@@ -19,6 +21,7 @@
 #include "Subsystems/CLI/Autogen/BeamCliContentSaveCommand.h"
 #include "Subsystems/CLI/Autogen/BeamCliContentSyncCommand.h"
 #include "Subsystems/CLI/Autogen/BeamCliContentTagSetCommand.h"
+#include "Widgets/Notifications/SNotificationList.h"
 
 void UBeamEditorContent::Initialize(FSubsystemCollectionBase& Collection)
 {
@@ -459,7 +462,6 @@ bool UBeamEditorContent::SaveContentObject(const FBeamContentManifestId& Manifes
 		};
 
 
-	
 		TArray<FString> Params;
 		Params.Append({FString::Printf(TEXT("\"%s\""), *UKismetStringLibrary::JoinStringArray(EditingObject->Tags, TEXT(",")))});
 		Params.Append({TEXT("--manifest-ids"), ManifestId.AsString});
@@ -750,7 +752,57 @@ void UBeamEditorContent::RunPsCommand(FBeamOperationHandle FirstEventOp)
 				       "Remote content publish detected. PUBLISHER=%s, CONTENT_ID=%s"
 			       ), *Data->PublisherEmail,
 			       *FString::Join(Data->SyncReports[0]->ConflictingContents, TEXT(", ")));
-			// TODO: Bubble this up to the UI so we can add a UE UI-notification with relevant information.
+
+
+			// Bubble this up to the UI so we can add a UE UI-notification with relevant information.
+			if (Data->SyncReports.Num() > 0)
+			{
+				const auto SyncReport = Data->SyncReports[0];
+
+				const auto ConflictsDetectedOnIds = SyncReport->ConflictingContents;
+				const auto AutoSyncedIds = SyncReport->AutoSynchedContents;
+				const auto DeletedCreatedContentIds = SyncReport->DeletedCreatedContents;
+				const auto ReferenceUpdatedIds = SyncReport->ReferenceUpdatedContents;
+
+				const auto Title = FString(TEXT("[Beamable] Content Published to Realm - By ")) + Data->PublisherEmail;
+				auto Body = FString(TEXT(""));
+
+				if (ConflictsDetectedOnIds.Num() > 0)
+				{
+					Body += TEXT("Conflicts: \n");
+					for (FString ConflictsDetectedOnId : ConflictsDetectedOnIds)
+						Body += FString::Printf(TEXT("\t- %s\n"), *ConflictsDetectedOnId);
+				}
+
+				if (AutoSyncedIds.Num() > 0)
+				{
+					Body += TEXT("Downloaded Content: \n");
+					for (FString AutoSyncedId : AutoSyncedIds)
+						Body += FString::Printf(TEXT("\t- %s\n"), *AutoSyncedId);
+				}
+
+				if (DeletedCreatedContentIds.Num() > 0)
+				{
+					Body += TEXT("Deleted Content: \n");
+					for (FString DeletedCreatedContentId : DeletedCreatedContentIds)
+						Body += FString::Printf(TEXT("\t- %s\n"), *DeletedCreatedContentId);
+				}
+
+				// Create and send the notification
+				FNotificationInfo Info{FText::FromString(Title)};
+				Info.SubText = FText::FromString(Body);
+
+				//Set a default expire duration and other parameters
+				Info.ExpireDuration = 20.0f;
+				Info.FadeOutDuration = 2.0f;
+				Info.Image = ConflictsDetectedOnIds.Num() > 0 ? FAppStyle::GetBrush(TEXT("Icons.Warning")) : FAppStyle::GetBrush(TEXT("Icons.Success"));
+				Info.ForWindow = FSlateApplication::Get().GetActiveTopLevelWindow();
+
+				//And call Add Notification, this is pretty much it!
+				FSlateNotificationManager::Get().AddNotification(Info);
+			}
+
+
 			RebuildLocalManifestCache(Data->RelevantManifestsAgainstLatest);
 			OnContentRemotePublish.Broadcast();
 		}
