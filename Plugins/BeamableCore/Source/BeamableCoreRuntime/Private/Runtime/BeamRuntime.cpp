@@ -182,7 +182,7 @@ void UBeamRuntime::Initialize(FSubsystemCollectionBase& Collection)
 
 		// We do this so game-makers can choose their preferred ways of setting up dedicated server builds and deployments.
 		FString OverridenCustomer;
-		if (!FParse::Value(FCommandLine::Get(), TEXT("beamable-customer-override"), OverridenCustomer))
+		if (!FParse::Value(FCommandLine::Get(), TEXT("beamable-customer-override="), OverridenCustomer))
 		{
 			OverridenCustomer = FPlatformMisc::GetEnvironmentVariable(TEXT("BEAMABLE_CUSTOMER_OVERRIDE"));
 			if (!OverridenCustomer.IsEmpty())
@@ -200,7 +200,7 @@ void UBeamRuntime::Initialize(FSubsystemCollectionBase& Collection)
 
 		// We do this so game-makers can choose their preferred ways of setting up dedicated server builds and deployments.
 		FString OverridenRealm;
-		if (!FParse::Value(FCommandLine::Get(), TEXT("beamable-realm-override"), OverridenRealm))
+		if (!FParse::Value(FCommandLine::Get(), TEXT("beamable-realm-override="), OverridenRealm))
 		{
 			OverridenRealm = FPlatformMisc::GetEnvironmentVariable(TEXT("BEAMABLE_REALM_OVERRIDE"));
 			if (!OverridenRealm.IsEmpty())
@@ -218,7 +218,7 @@ void UBeamRuntime::Initialize(FSubsystemCollectionBase& Collection)
 
 		// We do this so game-makers can override any builds we provide to point to our BeamProdEnv regardless
 		FString OverridenEnv;
-		if (!FParse::Value(FCommandLine::Get(), TEXT("beamable-environment-override"), OverridenRealm))
+		if (!FParse::Value(FCommandLine::Get(), TEXT("beamable-environment-override="), OverridenRealm))
 		{
 			OverridenEnv = FPlatformMisc::GetEnvironmentVariable(TEXT("BEAMABLE_ENVIRONMENT_OVERRIDE"));
 			if (!OverridenEnv.IsEmpty())
@@ -507,7 +507,7 @@ void UBeamRuntime::TriggerOnBeamableStarting(FBeamWaitCompleteEvent Evt, bool bA
 		// We need this to support signed requests as the preferred way of having a secure server talk to beamable.
 		// This will likely change once we have Server Tokens (at which point, the request flow will likely leverage the UserSlot auth system and this should be removed).
 		FString RealmSecret;
-		if (!FParse::Value(FCommandLine::Get(), TEXT("beamable-realm-secret"), RealmSecret))
+		if (!FParse::Value(FCommandLine::Get(), TEXT("beamable-realm-secret="), RealmSecret))
 		{
 			RealmSecret = FPlatformMisc::GetEnvironmentVariable(TEXT("BEAMABLE_REALM_SECRET"));
 			if (!GIsEditor)

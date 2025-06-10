@@ -314,6 +314,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Beam|Editor|Microservice", meta=(ExpandBoolAsExecs="ReturnValue"))
 	bool SetCurrentRoutingKey(FString BeamoId, FString Target);
 
+	UFUNCTION(BlueprintCallable, Category="Beam|Editor|Microservice")
+	void SetRoutingKeyMapAsAdditionalLaunchArgs();
 
 	UFUNCTION(BlueprintCallable, Category="Beam|Editor|Microservice")
 	FString ConstructRoutingKeyMap();
