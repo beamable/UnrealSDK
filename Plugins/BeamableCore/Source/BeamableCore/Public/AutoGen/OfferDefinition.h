@@ -11,7 +11,7 @@
 
 #include "OfferDefinition.generated.h"
 
-UCLASS(BlueprintType, Category="Beam")
+UCLASS(BlueprintType, Category="Beam", DefaultToInstanced, EditInlineNew)
 class BEAMABLECORE_API UOfferDefinition : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()

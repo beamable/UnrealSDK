@@ -206,7 +206,7 @@ public:
 	 *  The modified file's in-memory representation is available immediately after this function call BUT the @link OnContentLocalChange @endlink still fires a little after this returns.
 	 */
 	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
-	bool SaveContentObject(const FBeamContentManifestId& ManifestId, UBeamContentObject* EditingObject, bool bIgnoreReferenceManifest = true);
+	bool SaveContentObject(const FBeamContentManifestId& ManifestId, UBeamContentObject* EditingObject, FString PropertyName, bool bIgnoreReferenceManifest = true);
 
 	/**
 	 *  Deletes the local file inside the ".beamable/content" folder representing the local content.

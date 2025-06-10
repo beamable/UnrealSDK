@@ -5,6 +5,7 @@
 
 #include "Content/BeamContentCache.h"
 #include "Content/DownloadContentState.h"
+#include "Kismet/KismetStringLibrary.h"
 #include "Misc/FileHelper.h"
 #include "Serialization/ObjectWriter.h"
 #include "Settings/ProjectPackagingSettings.h"
@@ -17,6 +18,7 @@
 #include "Subsystems/CLI/Autogen/BeamCliContentResolveCommand.h"
 #include "Subsystems/CLI/Autogen/BeamCliContentSaveCommand.h"
 #include "Subsystems/CLI/Autogen/BeamCliContentSyncCommand.h"
+#include "Subsystems/CLI/Autogen/BeamCliContentTagSetCommand.h"
 
 void UBeamEditorContent::Initialize(FSubsystemCollectionBase& Collection)
 {
@@ -270,11 +272,10 @@ bool UBeamEditorContent::ResolveConflict(FBeamContentManifestId ContentManifestI
 	Params.Append({TEXT("--manifest-ids"), ContentManifestId.AsString});
 	Params.Append({TEXT("--filter"), IdsParam});
 	Params.Append({TEXT("--filter-type"), TEXT("ExactIds")});
-	Params.Append({TEXT("--use"), bUseRealm ? TEXT("realm") : TEXT("local")});	
+	Params.Append({TEXT("--use"), bUseRealm ? TEXT("realm") : TEXT("local")});
 	Cli->RunCommandServer(ResolveCommand, Params, {});
 
 	return true;
-	
 }
 
 UClass* UBeamEditorContent::GetContentTypeByTypeId(FString TypeId)
@@ -343,7 +344,7 @@ bool UBeamEditorContent::CreateNewContent(const FBeamContentManifestId& Manifest
 	// Sets the ID and Tags based on the manifest row.
 	ContentObject->Id = NewContentId;
 	ContentObject->Tags.Append(Tags);
-	if (!SaveContentObject(ManifestId, ContentObject, false))
+	if (!SaveContentObject(ManifestId, ContentObject, "", false))
 	{
 		ErrMsg = FString::Format(TEXT("Failed to save the content object {0}"), {NewContentId});
 		UE_LOG(LogBeamContent, Error, TEXT("%s"), *ErrMsg);
@@ -407,6 +408,7 @@ bool UBeamEditorContent::GetContentForEditing(const FBeamContentManifestId& Mani
 
 bool UBeamEditorContent::SaveContentObject(const FBeamContentManifestId& ManifestId,
                                            UBeamContentObject* EditingObject,
+                                           FString PropertyName,
                                            bool bIgnoreReferenceManifest)
 {
 	// Get the ID and properties for this 
@@ -414,28 +416,65 @@ bool UBeamEditorContent::SaveContentObject(const FBeamContentManifestId& Manifes
 	FString PropertiesJsonContent;
 	EditingObject->ToPropertiesJson(PropertiesJsonContent);
 
-	auto SaveCmd = NewObject<UBeamCliContentSaveCommand>();
-	SaveCmd->OnCompleted = [this, ManifestId, Id](const int& ResCode, const FBeamOperationHandle&)
+	// Tags are saved using a different command from the CLI - Check: ContentTagSetCommand
+	if (!PropertyName.Equals("Tags"))
 	{
-		// Trigger a callback saying that a piece of content was modified
-		if (ResCode == 0)
+		auto SaveCmd = NewObject<UBeamCliContentSaveCommand>();
+		SaveCmd->OnCompleted = [this, ManifestId, Id](const int& ResCode, const FBeamOperationHandle&)
 		{
-			OnContentSaved.Broadcast(ManifestId, {Id});
-		}
-		else
+			// Trigger a callback saying that a piece of content was modified
+			if (ResCode == 0)
+			{
+				OnContentSaved.Broadcast(ManifestId, {Id});
+			}
+			else
+			{
+				OnContentSavedFailed.Broadcast(ManifestId, {Id});
+			}
+		};
+
+		TArray<FString> Params;
+		Params.Append({TEXT("--manifest-ids"), ManifestId.AsString});
+		Params.Append({TEXT("--content-ids"), Id});
+		Params.Append({TEXT("--content-properties"), FString::Printf(TEXT("%s"), *PropertiesJsonContent)});
+		if (bIgnoreReferenceManifest)
+			Params.Append({TEXT("--force")});
+
+		Cli->RunCommandServer(SaveCmd, Params, {});
+	}
+	else
+	{
+		auto SetTagCmd = NewObject<UBeamCliContentTagSetCommand>();
+		SetTagCmd->OnCompleted = [this, ManifestId, Id](const int& ResCode, const FBeamOperationHandle&)
 		{
-			OnContentSavedFailed.Broadcast(ManifestId, {Id});
+			// Trigger a callback saying that a piece of content was modified
+			if (ResCode == 0)
+			{
+				OnContentSaved.Broadcast(ManifestId, {Id});
+			}
+			else
+			{
+				OnContentSavedFailed.Broadcast(ManifestId, {Id});
+			}
+		};
+
+
+	
+		TArray<FString> Params;
+		Params.Append({FString::Printf(TEXT("\"%s\""), *UKismetStringLibrary::JoinStringArray(EditingObject->Tags, TEXT(",")))});
+		Params.Append({TEXT("--manifest-ids"), ManifestId.AsString});
+		Params.Append({TEXT("--filter"), Id});
+		Params.Append({TEXT("--filter-type"), TEXT("ExactIds")});
+		// If there's no tag in the field we pass the clear
+		if (EditingObject->Tags.Num() == 0)
+		{
+			Params.Append({TEXT("--clear")});
 		}
-	};
 
-	TArray<FString> Params;
-	Params.Append({TEXT("--manifest-ids"), ManifestId.AsString});
-	Params.Append({TEXT("--content-ids"), Id});
-	Params.Append({TEXT("--content-properties"), FString::Printf(TEXT("%s"), *PropertiesJsonContent)});
-	if (bIgnoreReferenceManifest)
-		Params.Append({TEXT("--force")});
 
-	Cli->RunCommandServer(SaveCmd, Params, {});
+		Cli->RunCommandServer(SetTagCmd, Params, {});
+	}
+
 	return true;
 }
 

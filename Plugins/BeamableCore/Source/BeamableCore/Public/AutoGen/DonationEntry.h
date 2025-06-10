@@ -8,7 +8,7 @@
 
 #include "DonationEntry.generated.h"
 
-UCLASS(BlueprintType, Category="Beam")
+UCLASS(BlueprintType, Category="Beam", DefaultToInstanced, EditInlineNew)
 class BEAMABLECORE_API UDonationEntry : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()

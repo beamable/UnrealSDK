@@ -13,28 +13,29 @@ class UBeamCliContentResolveStreamData : public UObject, public IBeamJsonSeriali
 
 public:	
 	
-	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<FString> ResolvedContentIds = {};
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
 	{
-			
+		UBeamJsonUtils::SerializeArray<FString>(TEXT("ResolvedContentIds"), ResolvedContentIds, Serializer);	
 	}
 
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
 	{
-			
+		UBeamJsonUtils::SerializeArray<FString>(TEXT("ResolvedContentIds"), ResolvedContentIds, Serializer);	
 	}
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-			
+		UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("ResolvedContentIds")), ResolvedContentIds, OuterOwner);	
 	}
 };
 
 
 /**
  Description:
-  Synchronizes the local content matching the filters to the latest content stored in the realm
+  Resolve between local changes ore realm based changes
 
 Usage:
   Beamable.Tools content resolve [options]

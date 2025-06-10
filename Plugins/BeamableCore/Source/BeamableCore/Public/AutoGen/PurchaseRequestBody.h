@@ -7,7 +7,7 @@
 
 #include "PurchaseRequestBody.generated.h"
 
-UCLASS(BlueprintType, Category="Beam")
+UCLASS(BlueprintType, Category="Beam", DefaultToInstanced, EditInlineNew)
 class BEAMABLECORE_API UPurchaseRequestBody : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()

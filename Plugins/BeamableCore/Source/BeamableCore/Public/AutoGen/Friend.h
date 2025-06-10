@@ -8,7 +8,7 @@
 
 #include "Friend.generated.h"
 
-UCLASS(BlueprintType, Category="Beam")
+UCLASS(BlueprintType, Category="Beam", DefaultToInstanced, EditInlineNew)
 class BEAMABLECORE_API UFriend : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()

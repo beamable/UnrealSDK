@@ -8,7 +8,7 @@
 
 #include "StatsSearchCriteria.generated.h"
 
-UCLASS(BlueprintType, Category="Beam")
+UCLASS(BlueprintType, Category="Beam", DefaultToInstanced, EditInlineNew)
 class BEAMABLECORE_API UStatsSearchCriteria : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()

@@ -8,7 +8,7 @@
 
 #include "RealmPromotion.generated.h"
 
-UCLASS(BlueprintType, Category="Beam")
+UCLASS(BlueprintType, Category="Beam", DefaultToInstanced, EditInlineNew)
 class BEAMABLECORE_API URealmPromotion : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()

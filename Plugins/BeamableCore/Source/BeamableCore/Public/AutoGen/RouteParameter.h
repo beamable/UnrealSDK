@@ -8,7 +8,7 @@
 
 #include "RouteParameter.generated.h"
 
-UCLASS(BlueprintType, Category="Beam")
+UCLASS(BlueprintType, Category="Beam", DefaultToInstanced, EditInlineNew)
 class BEAMABLECORE_API URouteParameter : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()

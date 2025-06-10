@@ -8,7 +8,7 @@
 
 #include "ExternalIdentityAvailableApiRequestBody.generated.h"
 
-UCLASS(BlueprintType, Category="Beam")
+UCLASS(BlueprintType, Category="Beam", DefaultToInstanced, EditInlineNew)
 class BEAMABLECORE_API UExternalIdentityAvailableApiRequestBody : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()

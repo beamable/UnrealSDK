@@ -8,7 +8,7 @@
 
 #include "ServerEvent.generated.h"
 
-UCLASS(BlueprintType, Category="Beam")
+UCLASS(BlueprintType, Category="Beam", DefaultToInstanced, EditInlineNew)
 class BEAMABLECORE_API UServerEvent : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()

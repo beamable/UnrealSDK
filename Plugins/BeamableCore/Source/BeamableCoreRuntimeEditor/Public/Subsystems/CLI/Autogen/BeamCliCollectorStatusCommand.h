@@ -2,7 +2,7 @@
 
 #include "Subsystems/CLI/BeamCliCommand.h"
 #include "Serialization/BeamJsonUtils.h"
-
+#include "Subsystems/CLI/Autogen/StreamData/CollectorLogEntryStreamData.h"
 #include "BeamCliCollectorStatusCommand.generated.h"
 
 
@@ -19,26 +19,31 @@ public:
 	bool IsReady = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int32 Pid = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<UCollectorLogEntryStreamData*> Logs = {};
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
 	{
 		UBeamJsonUtils::SerializeRawPrimitive(TEXT("isRunning"), IsRunning, Serializer);
 		UBeamJsonUtils::SerializeRawPrimitive(TEXT("isReady"), IsReady, Serializer);
-		UBeamJsonUtils::SerializeRawPrimitive(TEXT("pid"), Pid, Serializer);	
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("pid"), Pid, Serializer);
+		UBeamJsonUtils::SerializeArray<UCollectorLogEntryStreamData*>(TEXT("logs"), Logs, Serializer);	
 	}
 
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
 	{
 		UBeamJsonUtils::SerializeRawPrimitive(TEXT("isRunning"), IsRunning, Serializer);
 		UBeamJsonUtils::SerializeRawPrimitive(TEXT("isReady"), IsReady, Serializer);
-		UBeamJsonUtils::SerializeRawPrimitive(TEXT("pid"), Pid, Serializer);	
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("pid"), Pid, Serializer);
+		UBeamJsonUtils::SerializeArray<UCollectorLogEntryStreamData*>(TEXT("logs"), Logs, Serializer);	
 	}
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
 		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("isRunning")), IsRunning);
 		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("isReady")), IsReady);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("pid")), Pid);	
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("pid")), Pid);
+		UBeamJsonUtils::DeserializeArray<UCollectorLogEntryStreamData*>(Bag->GetArrayField(TEXT("logs")), Logs, OuterOwner);	
 	}
 };
 

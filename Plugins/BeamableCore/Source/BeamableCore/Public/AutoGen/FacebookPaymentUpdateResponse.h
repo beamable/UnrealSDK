@@ -7,7 +7,7 @@
 
 #include "FacebookPaymentUpdateResponse.generated.h"
 
-UCLASS(BlueprintType, Category="Beam")
+UCLASS(BlueprintType, Category="Beam", DefaultToInstanced, EditInlineNew)
 class BEAMABLECORE_API UFacebookPaymentUpdateResponse : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
