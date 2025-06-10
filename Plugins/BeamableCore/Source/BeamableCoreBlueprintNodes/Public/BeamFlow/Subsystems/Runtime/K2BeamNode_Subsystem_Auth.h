@@ -355,6 +355,46 @@ class UK2BeamNode_Operation_SignUpFederated : public UK2BeamNode_Operation
 
 	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamRuntime, SignUpFederatedOperation); }
 
+	virtual TArray<FName> GetOperationEventIds(EBeamOperationEventType Type) const override
+	{
+		TArray<FName> Ids = Super::GetOperationEventIds(Type);
+
+		switch (Type)
+		{
+		case OET_SUCCESS:
+			Ids.Add(UBeamRuntime::GetOperationEventID_MultiFactorAuthTriggered());
+			return Ids;
+		}
+
+		return Ids;
+	};
+
+	virtual TArray<FString> GetOperationEventIdTooltips(EBeamOperationEventType Type) const override
+	{
+		TArray<FString> Ids = Super::GetOperationEventIdTooltips(Type);
+
+		switch (Type)
+		{
+		case OET_SUCCESS:
+			Ids.Add(TEXT("Triggered when the microservice federation sent back the challenge"));
+			return Ids;
+		}
+		return Ids;
+	}
+
+	virtual TMap<FName, UClass*> GetOperationEventCastClass(EBeamOperationEventType Type) const override
+	{
+		TMap<FName, UClass*> Casts = Super::GetOperationEventCastClass(Type);
+
+		switch (Type)
+		{
+		case OET_SUCCESS:
+			Casts.Add(UBeamRuntime::GetOperationEventID_MultiFactorAuthTriggered(), UBeamMultiFactorLoginData::StaticClass());
+			return Casts;
+		}
+		return Casts;
+	}
+	
 	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamRuntime::StaticClass(); }
 };
 #undef LOCTEXT_NAMESPACE

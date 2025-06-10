@@ -1827,30 +1827,24 @@ void UBeamRuntime::SignUpFederated(FUserSlot UserSlot, FString MicroserviceId, F
 					FillDefaultSignUpInitProperties(Props);
 					Props.Add(TEXT("__beam_3rd_party_user_id__"), FederatedUserId);
 					Props.Add(TEXT("__beam_3rd_party_auth_token__"), FederatedAuthToken);
-					LoginGuest(UserSlot, Op, Props, FDelayedOperation::CreateLambda([this, Op, UserSlot, MicroserviceId, FederationId, FederatedAuthToken]
+					LoginGuest(UserSlot, Op, Props, FDelayedOperation::CreateLambda([this, Op, UserSlot, MicroserviceId, FederationId, FederatedUserId, FederatedAuthToken]
 					{
 						// Begin an operation that'll only succeed if the attachment is successful
-						const auto DelayedOp = RequestTrackerSystem->CPP_BeginOperation({UserSlot}, GetName(), {});
-
-						// Attach email/password to the new guest user BEFORE notifying the SDK's runtime systems.
-						// If fail to attach, will fail the DelayedOp and error out the entire sign up operation and clear the slots auth state.					
-						const auto AttachIdentityHandler = FOnPostExternalIdentityFullResponse::CreateLambda([this, DelayedOp](FPostExternalIdentityFullResponse Resp)
-						{
-							if (Resp.State == RS_Retrying) return;
-
-							if (Resp.State == RS_Success)
-							{
-								UE_LOG(LogTemp, Warning, TEXT("Successfully Attached Id! Result = %s"), *Resp.SuccessData->Result);
-								GEngine->GetEngineSubsystem<UBeamRequestTracker>()->TriggerOperationSuccess(DelayedOp, TEXT(""));
-							}
-
-							if (Resp.State == RS_Error)
-							{
-								UE_LOG(LogTemp, Error, TEXT("Failed to Attach Id! Result = %s"), *Resp.ErrorData.message);
-								GEngine->GetEngineSubsystem<UBeamRequestTracker>()->TriggerOperationError(DelayedOp, Resp.ErrorData.message);
-							}
-						});
-						const auto _ = AttachIdentityToUser(UserSlot, MicroserviceId, FederationId, FederatedAuthToken, DelayedOp, AttachIdentityHandler);
+						const auto DelayedOp =
+							CPP_AttachFederatedOperation(UserSlot,
+							                             MicroserviceId,
+							                             FederationId,
+							                             FederatedUserId,
+							                             FederatedAuthToken,
+							                             FBeamOperationEventHandlerCode::CreateLambda([this, Op](FBeamOperationEvent Evt)
+							                             {
+								                             if (Evt.EventType == OET_SUCCESS && Evt.EventId == GetOperationEventID_MultiFactorAuthTriggered())
+									                             RequestTrackerSystem->TriggerOperationEventWithData(Op,
+									                                                                                 OET_SUCCESS,
+									                                                                                 GetOperationEventID_MultiFactorAuthTriggered(),
+									                                                                                 TEXT("2FA_AUTH"),
+									                                                                                 Evt.EventData);
+							                             }));
 						return DelayedOp;
 					}));
 				}
@@ -1858,8 +1852,33 @@ void UBeamRuntime::SignUpFederated(FUserSlot UserSlot, FString MicroserviceId, F
 				else
 				{
 					// If this external id is already in use we try to log in if asked to do so. Otherwise, we error out.				
-					if (bAutoLoginOnUnavailable) LoginFederated(UserSlot, MicroserviceId, FederationId, FederatedAuthToken, Op);
-					else GEngine->GetEngineSubsystem<UBeamRequestTracker>()->TriggerOperationError(Op, TEXT("EXTERNAL_IDENTITY_IN_USE"));
+					if (bAutoLoginOnUnavailable)
+					{
+						const auto _ =
+							CPP_LoginFederatedOperation(UserSlot,
+							                            MicroserviceId,
+							                            FederationId,
+							                            FederatedAuthToken,
+							                            FBeamOperationEventHandlerCode::CreateLambda([this, Op](FBeamOperationEvent Evt)
+							                            {
+								                            if (Evt.EventType == OET_SUCCESS && Evt.EventId == GetOperationEventID_MultiFactorAuthTriggered())
+									                            RequestTrackerSystem->TriggerOperationEventWithData(Op,
+									                                                                                OET_SUCCESS,
+									                                                                                GetOperationEventID_MultiFactorAuthTriggered(),
+									                                                                                TEXT("2FA_AUTH"),
+									                                                                                Evt.EventData);
+								                            else if (Evt.EventType == OET_SUCCESS)
+									                            RequestTrackerSystem->TriggerOperationSuccess(Op, Evt.EventCode);
+								                            else if (Evt.EventType == OET_ERROR)
+									                            RequestTrackerSystem->TriggerOperationError(Op, Evt.EventCode);
+								                            else if (Evt.EventType == OET_CANCELLED)
+									                            RequestTrackerSystem->TriggerOperationCancelled(Op, Evt.EventCode);
+							                            }));
+					}
+					else
+					{
+						GEngine->GetEngineSubsystem<UBeamRequestTracker>()->TriggerOperationError(Op, TEXT("EXTERNAL_IDENTITY_IN_USE"));
+					}
 				}
 				return;
 			}
