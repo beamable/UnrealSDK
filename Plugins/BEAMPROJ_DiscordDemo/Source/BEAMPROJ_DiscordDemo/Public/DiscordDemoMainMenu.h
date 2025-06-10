@@ -100,6 +100,24 @@ protected:
 
 	virtual FString GetSpecificLevelName() const override { return FString(TEXT("DiscordDemo")); }
 
+	UFUNCTION()
+	void OnBeamableSDKReady()
+	{
+		FUserStateChangedHandler UserReadyHandler;
+		FRuntimeError SDKInitializationErrorHandler;
+		UserReadyHandler.BindDynamic(this, &UDiscordDemoMainMenu::OnBeamableUserReady);
+
+		Runtime->RegisterOnUserReady(UserReadyHandler);
+
+		const auto OwnerSlot = Runtime->GetOwnerSlotConnectivity()->UserSlot;
+		Runtime->CPP_LoginFrictionlessOperation(OwnerSlot, {}, {});
+	}
+
+	UFUNCTION()
+	void OnBeamableSDKFail(FString ErrorMessage)
+	{
+	}
+
 	UFUNCTION(BlueprintCallable)
 	void InitBeam()
 	{
@@ -107,11 +125,12 @@ protected:
 		auto GameInstance = GetWorld()->GetGameInstance();
 		Runtime = GameInstance->GetSubsystem<UBeamRuntime>();
 
-		FUserStateChangedHandler UserReadyHandler;
-		FRuntimeError SDKInitializationErrorHandler;
-		UserReadyHandler.BindDynamic(this, &UDiscordDemoMainMenu::OnBeamableUserReady);
+		FBeamRuntimeHandler OnStartedHandler;
+		OnStartedHandler.BindDynamic(this, &UDiscordDemoMainMenu::OnBeamableSDKReady);
+		FRuntimeError OnStarterFailHandler;
+		OnStarterFailHandler.BindDynamic(this, &UDiscordDemoMainMenu::OnBeamableSDKFail);
 
-		//Runtime->InitSDKWithFrictionlessLogin(UserReadyHandler, SDKInitializationErrorHandler, SDKInitializationErrorHandler, {});
+		Runtime->InitSDK(OnStartedHandler, OnStarterFailHandler);
 	}
 
 	UFUNCTION()
@@ -121,7 +140,8 @@ protected:
 		OnInitialized.Broadcast();
 
 		this->Runtime->SubscribeToCustomNotification<FOnMatchmakingAccessRefreshMessageCode, FMatchmakingAccessRefreshNotificationMessage>(UserSlotAuthenticated, CTX_KEY_Matchmaking_Refresh,
-			FOnMatchmakingAccessRefreshMessageCode::CreateUObject(this, &UDiscordDemoMainMenu::OnMatchmakingAccessRefreshed));
+		                                                                                                                                   FOnMatchmakingAccessRefreshMessageCode::CreateUObject(
+			                                                                                                                                   this, &UDiscordDemoMainMenu::OnMatchmakingAccessRefreshed));
 	}
 
 	UFUNCTION(BlueprintCallable)
