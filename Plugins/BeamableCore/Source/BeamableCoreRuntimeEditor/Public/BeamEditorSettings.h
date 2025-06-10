@@ -91,6 +91,12 @@ public:
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Content")
 	TMap<EBeamLocalContentStatus, TSoftObjectPtr<UTexture2D>> LocalContentStatusIcons;
 
+	/**
+	 * @brief Conflicted Status Icon
+	 */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Content")
+	TSoftObjectPtr<UTexture2D> ConflictedStatusIcon;
+
 	UPROPERTY(Config, VisibleAnywhere, BlueprintReadOnly, Category="UI/UX")
 	TMap<FString, FLinearColor> OptionalTypePinColors;
 

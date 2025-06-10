@@ -174,6 +174,13 @@ void UBeamEditorBootstrapper::Run_DelayedInitialize()
 		EditorSettings->LocalContentStatusIcons.Add(EBeamLocalContentStatus::Beam_LocalContentUpToDate, UpToDateIconPath);
 		bEditorSettingsChanged = true;
 	}
+	// Set up the conflicted status icon
+	if (!EditorSettings->ConflictedStatusIcon)
+	{
+		const auto ConflictedIconPath = TSoftObjectPtr<UTexture2D>(FSoftObjectPath(TEXT("/Script/Engine.Texture2D'/BeamableCore/Editor/Icons/IconLogs_WarningMsg.IconLogs_WarningMsg'")));
+		EditorSettings->ConflictedStatusIcon = ConflictedIconPath;
+		bEditorSettingsChanged = true;
+	}
 
 	// Set up Content Icons
 	if (EditorSettings->LocalContentViewConfigs.IsEmpty())
