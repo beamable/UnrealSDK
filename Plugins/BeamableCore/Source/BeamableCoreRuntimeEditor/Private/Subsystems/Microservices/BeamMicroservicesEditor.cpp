@@ -808,7 +808,8 @@ void UBeamMicroservicesEditor::SetupLogTail(FLocalMicroserviceData* RunningServi
 			}
 			AppendToLogs(LoggingService, Entries);
 		};
-		Cli->RunCommand(RunningService->TailLogsCommand, {BeamoId}, {});
+		const auto ReqProcess = FString::Printf(TEXT("--require-process-id %d"), FPlatformProcess::GetCurrentProcessId());
+		Cli->RunCommand(RunningService->TailLogsCommand, {BeamoId, ReqProcess}, {});
 	}
 }
 
