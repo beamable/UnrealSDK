@@ -4,7 +4,7 @@
       "data": "beamball"
     },
     "MaxWaitDurationSecs": {
-      "data": 60
+      "data": 15
     },
     "NumericRules": {
       "data": []
@@ -23,5 +23,5 @@
     }
   },
   "tags": [],
-  "referenceManifestId": "68406e9755091e7b548a8cb2"
+  "referenceManifestId": "684869c634255a389f28b473"
 }
