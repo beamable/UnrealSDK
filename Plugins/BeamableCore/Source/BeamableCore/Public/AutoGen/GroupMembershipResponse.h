@@ -4,12 +4,13 @@
 #include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalInt64.h"
-#include "BeamableCore/Public/AutoGen/Enums/GroupType.h"
+#include "Serialization/BeamJsonUtils.h"
+#include "BeamableCore/Public/AutoGen/Enums/BeamGroupType.h"
 #include "BeamableCore/Public/AutoGen/GroupMetaData.h"
 
 #include "GroupMembershipResponse.generated.h"
 
-UCLASS(BlueprintType, Category="Beam")
+UCLASS(BlueprintType, Category="Beam", DefaultToInstanced, EditInlineNew)
 class BEAMABLECORE_API UGroupMembershipResponse : public UObject, public IBeamJsonSerializableUObject, public IBeamBaseResponseBodyInterface
 {
 	GENERATED_BODY()
@@ -18,7 +19,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Member", Category="Beam")
 	bool bMember = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Type", Category="Beam")
-	EGroupType Type = {};
+	EBeamGroupType Type = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Group", Category="Beam")
 	UGroupMetaData* Group = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Sub Groups", Category="Beam")

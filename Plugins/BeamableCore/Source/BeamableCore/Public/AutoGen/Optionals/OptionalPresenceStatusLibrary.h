@@ -14,16 +14,16 @@ public:
 	/**
 	* @brief Constructs an FOptionalPresenceStatus struct from the given value.	  
 	*/
-	UFUNCTION(BlueprintPure, Category="Beam|Optionals", meta=(DisplayName="Beam - Make Optional PresenceStatus", NativeMakeFunc))
-	static FOptionalPresenceStatus MakeOptional(EPresenceStatus Value);
+	UFUNCTION(BlueprintPure, Category="Beam|Presence|Utils|Optionals", meta=(DisplayName="Make Optional BeamPresenceStatus", NativeMakeFunc))
+	static FOptionalPresenceStatus MakeOptional(EBeamPresenceStatus Value);
 
 	/**
-	 * @brief Converts an EPresenceStatus into an FOptionalPresenceStatus automatically.
-	 * @param Value The EPresenceStatus to convert.
-	 * @return An optional with the PresenceStatus set as it's value.
+	 * @brief Converts an EBeamPresenceStatus into an FOptionalPresenceStatus automatically.
+	 * @param Value The EBeamPresenceStatus to convert.
+	 * @return An optional with the BeamPresenceStatus set as it's value.
 	 */
-	UFUNCTION(BlueprintPure, Category="Beam|Optionals", meta = (DisplayName = "Beam - PresenceStatus To Optional", CompactNodeTitle = "->", BlueprintAutocast))
-	static FOptionalPresenceStatus Conv_OptionalFromValue(EPresenceStatus Value);
+	UFUNCTION(BlueprintPure, Category="Beam|Presence|Utils|Optionals", meta = (DisplayName="BeamPresenceStatus To Optional", CompactNodeTitle = "->", BlueprintAutocast))
+	static FOptionalPresenceStatus Conv_OptionalFromValue(EBeamPresenceStatus Value);
 	
 	/**
 	 * @brief Use this when the behavior changes based on whether or not a value is set on the optional.
@@ -31,8 +31,8 @@ public:
 	 * @param Value The value in the optional. 
 	 * @return Whether or not the value was set. We provide no guarantees on what the value is if the optional is not set. 
 	 */
-	UFUNCTION(BlueprintCallable, Category="Beam|Optionals", meta=(DisplayName="Beam - Optional Has Value", ExpandBoolAsExecs="ReturnValue"))
-	static bool HasValue(const FOptionalPresenceStatus& Optional, EPresenceStatus& Value);
+	UFUNCTION(BlueprintCallable, Category="Beam|Presence|Utils|Optionals", meta=(DisplayName="Optional Has Value", ExpandBoolAsExecs="ReturnValue"))
+	static bool HasValue(const FOptionalPresenceStatus& Optional, EBeamPresenceStatus& Value);
 
 	/**
 	 * @brief Use this when the behaviour doesnt change based on whether or not the value is set, instead just provide a default value instead.
@@ -41,8 +41,8 @@ public:
 	 * @param WasSet Whether or not the value was set. When false, the return value is the given DefaultValue.   
 	 * @return The default value, if the Optional IS NOT set. The optional value, otherwise.
 	 */
-	UFUNCTION(BlueprintPure, Category="Beam|Optionals", meta=(DisplayName="Beam - Get Optional's PresenceStatus Value"))
-	static EPresenceStatus GetOptionalValue(const FOptionalPresenceStatus& Optional, EPresenceStatus DefaultValue, bool& WasSet);
+	UFUNCTION(BlueprintPure, Category="Beam|Presence|Utils|Optionals", meta=(DisplayName="Get Optional's BeamPresenceStatus Value"))
+	static EBeamPresenceStatus GetOptionalValue(const FOptionalPresenceStatus& Optional, EBeamPresenceStatus DefaultValue, bool& WasSet);
 
 	
 };

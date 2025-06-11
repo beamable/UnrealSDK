@@ -1,4 +1,7 @@
-﻿#include "BeamJsonUtilsMocks.h"
+﻿#include <AutoGen/Enums/BeamContentType.h>
+#include <AutoGen/Optionals/OptionalDateTime.h>
+
+#include "BeamJsonUtilsMocks.h"
 
 #include "Misc/AutomationTest.h"
 #include "Serialization/BeamJsonUtils.h"
@@ -6,8 +9,9 @@
 #include "BeamBackend/SemanticTypes/BeamCid.h"
 
 
-BEGIN_DEFINE_SPEC(FBeamJsonUtilsSpec, "BeamableUnreal.BeamJsonUtils", EAutomationTestFlags::ProductFilter | EAutomationTestFlags::ApplicationContextMask)
+BEGIN_DEFINE_SPEC(FBeamJsonUtilsSpec, "BeamableUnreal.BeamJsonUtils", EAutomationTestFlags::ProductFilter | EAutomationTestFlags::EditorContext)
 END_DEFINE_SPEC(FBeamJsonUtilsSpec)
+
 
 void FBeamJsonUtilsSpec::Define()
 {
@@ -30,6 +34,7 @@ void FBeamJsonUtilsSpec::Define()
 			a = Bag->GetIntegerField(TEXT("a"));
 		}
 	};
+
 
 	struct FBeamArrayOfInt : FBeamArray
 	{
@@ -57,7 +62,32 @@ void FBeamJsonUtilsSpec::Define()
 			UBeamJsonUtils::DeserializeArray<int>(Elements, Values);
 		}
 	};
+	struct FBeamArrayOfDateTime : FBeamArray
+	{
+		TArray<FDateTime> Values;
 
+		FBeamArrayOfDateTime() = default;
+
+		FBeamArrayOfDateTime(const TArray<FDateTime>& Values)
+			: Values(Values)
+		{
+		}
+
+		virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
+		{
+			UBeamJsonUtils::SerializeArray<FDateTime>(Values, Serializer);
+		}
+
+		virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
+		{
+			UBeamJsonUtils::SerializeArray<FDateTime>(Values, Serializer);
+		}
+
+		virtual void BeamDeserializeElements(const TArray<TSharedPtr<FJsonValue>>& Elements) override
+		{
+			UBeamJsonUtils::DeserializeArray<FDateTime>(Elements, Values);
+		}
+	};
 	struct FBeamArrayOfBeamCid : public FBeamArray
 	{
 		TArray<FBeamCid> Values;
@@ -157,7 +187,7 @@ void FBeamJsonUtilsSpec::Define()
 
 		virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
 		{
-			UBeamJsonUtils::SerializeJsonObject(TEXT("blob"),Blob, Serializer);
+			UBeamJsonUtils::SerializeJsonObject(TEXT("blob"), Blob, Serializer);
 		}
 
 		virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
@@ -187,6 +217,56 @@ void FBeamJsonUtilsSpec::Define()
 			const FString Expected = ExpectedBag.ToJson(false);
 
 			TestEqual("Serialization output is not correct", OutJson, Expected);
+		});
+
+		It("should output a JSON Object representing a FOptionalDateTime serialization", [this]()
+		{
+			// The date that will be used to reference 
+			FString DateTimeStr = "2016-10-30T12:00:00.000Z";
+
+			// Parse the date from STR to a DateTime
+			FDateTime DateTime;
+			FDateTime::ParseIso8601(*DateTimeStr, DateTime);
+
+			// Creating the Optional DateTime 
+			FOptionalDateTime OptDateTime = FOptionalDateTime(DateTime);
+			//Serializing the OptionalDateTime
+			FString OutJson;
+			TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<TCHAR>>::Create(&OutJson);
+			JsonSerializer->WriteObjectStart();
+			UBeamJsonUtils::SerializeOptional<FDateTime>("date", &OptDateTime, JsonSerializer);
+			JsonSerializer->WriteObjectEnd();
+			JsonSerializer->Close();
+
+			// Creating the JSON to compare.
+			const FString ExpectedJson =
+				"{\"date\":\"" + DateTimeStr + "\"}";
+
+			TestEqual(DateTime.ToIso8601(), OutJson, ExpectedJson);
+		});
+
+		It("should output a JSON Object representing a FDateTime serialization", [this]()
+		{
+			// The date that will be used to reference 
+			FString DateTimeStr = "2016-10-30T12:00:00.000Z";
+
+			// Parse the date from STR to a DateTime
+			FDateTime DateTime;
+			FDateTime::ParseIso8601(*DateTimeStr, DateTime);
+
+			//Serializing the DateTime
+			FString OutJson;
+			TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<TCHAR>>::Create(&OutJson);
+			JsonSerializer->WriteObjectStart();
+			JsonSerializer->WriteValue(TEXT("date"), DateTime.ToIso8601());
+			JsonSerializer->WriteObjectEnd();
+			JsonSerializer->Close();
+
+			// Creating the JSON to compare.
+			const FString ExpectedJson =
+				"{\"date\":\"" + DateTimeStr + "\"}";
+
+			TestEqual(DateTime.ToIso8601(), OutJson, ExpectedJson);
 		});
 
 		It("should output a blank JSON Object (Optional Primitive without Set Value)", [this]()
@@ -271,7 +351,7 @@ void FBeamJsonUtilsSpec::Define()
 			FString OutJson;
 			TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<TCHAR>>::Create(&OutJson);
 			UBeamJsonUtils::SerializeUObject(asd, JsonSerializer);
-			JsonSerializer->Close();			
+			JsonSerializer->Close();
 
 			// Get a condensed string so we can easily compare with the condensed string we generate.
 			const FString ExpectedTemp =
@@ -389,6 +469,36 @@ void FBeamJsonUtilsSpec::Define()
 			}
 		});
 
+		It("should serialize correctly a enum", [this]()
+		{
+			EBeamContentType Val = EBeamContentType::BEAM_content;
+
+			auto Result = UBeamJsonUtils::EnumToSerializationName(Val);
+			FString ExpectedResult = "content";
+
+			TestEqual("Enum Optional serialized correctly", Result, ExpectedResult);
+		});
+		
+		It("should deserialize a int correctly into a enum", [this]()
+		{
+			EBeamContentType ExpectedResult = EBeamContentType::BEAM_content;
+		
+			auto Result = UBeamJsonUtils::SerializationIndexToEnum<EBeamContentType>(0);
+		
+			TestEqual("Enum deserialize correctly", Result, ExpectedResult);
+		});
+		
+		It("should deserialize a string correctly into a enum", [this]()
+		{
+			EBeamContentType ExpectedResult = EBeamContentType::BEAM_content;
+		
+			auto Result = UBeamJsonUtils::SerializationNameToEnum<EBeamContentType>("content");
+		
+			TestEqual("Enum deserialized correctly", Result, ExpectedResult);
+		});
+
+
+
 		It("should output a regular JSON Field (Optional FBeamJsonSerializable with Value)", [this]()
 		{
 			struct FTest : FBeamJsonSerializableUStruct
@@ -497,7 +607,42 @@ void FBeamJsonUtilsSpec::Define()
 
 				TestEqual("Optional Array of Int serialized correctly", OutJson, Expected);
 			}
+			// Test array with date time
+			{
+				struct FOptionalArrayDateTime : FBeamOptional
+				{
+					TArray<FDateTime> Val;
 
+					virtual const void* GetAddr() const override { return &Val; }
+
+					virtual void Set(const void* Data) override
+					{
+						Val = *static_cast<const TArray<FDateTime>*>(Data);
+						IsSet = true;
+					}
+				};
+
+				TArray<FDateTime> Array;
+				FDateTime ExpectedDate = FDateTime::Now();
+				Array.Add(ExpectedDate);
+				Array.Add(ExpectedDate);
+				Array.Add(ExpectedDate);
+				FOptionalArrayDateTime OptionalDate{};
+				FBeamOptional::Set<TArray<FDateTime>>(&OptionalDate, &Array);
+
+				FString OutJson;
+				TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<TCHAR>>::Create(&OutJson);
+				JsonSerializer->WriteObjectStart();
+				UBeamJsonUtils::SerializeOptional<TArray<FDateTime>, FDateTime>(TEXT("a"), &OptionalDate, JsonSerializer);
+				JsonSerializer->WriteObjectEnd();
+				JsonSerializer->Close();
+
+
+				// Get a condensed string so we can easily compare with the condensed string we generate.
+				const FString Expected = "{\"a\":[\"" + ExpectedDate.ToIso8601() + "\",\"" + ExpectedDate.ToIso8601() + "\",\"" + ExpectedDate.ToIso8601() + "\"]}";
+
+				TestEqual("Optional Array of FDateTime serialized correctly", OutJson, Expected);
+			}
 			// Test array with BeamJsonSerializable
 			{
 				struct FTest : FBeamJsonSerializableUStruct
@@ -626,6 +771,25 @@ void FBeamJsonUtilsSpec::Define()
 			// Get a condensed string so we can easily compare with the condensed string we generate.
 			const FString Expected = TEXT(R"([1,-1,0])");
 			TestEqual("Int-Array serialized correctly", OutJson, Expected);
+		});
+
+		It("should output a serialized raw JSON Array of FOptionalDateTime", [this]()
+		{
+			FString OutJson;
+			TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<TCHAR>>::Create(&OutJson);
+			FDateTime ReferenceDate = FDateTime::Now();
+			TArray<FDateTime> a;
+			a.Add(ReferenceDate);
+			a.Add(ReferenceDate);
+			a.Add(ReferenceDate);
+			const FBeamArrayOfDateTime BeamArray = a;
+			BeamArray.BeamSerialize(JsonSerializer);
+			JsonSerializer->Close();
+
+			FString ExpectedDateItem = "\"" + ReferenceDate.ToIso8601() + "\"";
+			// Get a condensed string so we can easily compare with the condensed string we generate.
+			const FString Expected = TEXT("["+ExpectedDateItem+","+ExpectedDateItem+","+ExpectedDateItem+"]");
+			TestEqual("JSON result", OutJson, Expected);
 		});
 
 		It("should output a serialized raw JSON Object of primitives", [this]()
@@ -827,6 +991,38 @@ void FBeamJsonUtilsSpec::Define()
 				const FString Expected = ExpectedBag.ToJson(false);
 
 				TestEqual("TMap<FString, T>, where T = BeamSemanticType, serialized correctly", OutJson, Expected);
+			}
+
+			// TMap<FString, FDateTime>
+			{
+				FString OutJson;
+				TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<TCHAR>>::Create(&OutJson);
+
+				TMap<FString, FDateTime> map;
+				FDateTime Now = FDateTime::Now();
+				map.Add("a1", Now);
+				map.Add("a2", Now);
+				map.Add("a3", Now);
+				JsonSerializer->WriteObjectStart();
+				UBeamJsonUtils::SerializeMap<FDateTime>(TEXT("map"), map, JsonSerializer);
+				JsonSerializer->WriteObjectEnd();
+				JsonSerializer->Close();
+
+				FString ExpectedDate = Now.ToIso8601();
+
+				// Get a condensed string so we can easily compare with the condensed string we generate.
+				const FString ExpectedTemp =
+					FString::Printf(TEXT(R"({"map":{
+						"a1": "%s",
+						"a2": "%s",
+						"a3": "%s"
+					}
+				})"), *ExpectedDate, *ExpectedDate, *ExpectedDate);
+				FJsonDataBag ExpectedBag;
+				ExpectedBag.FromJson(ExpectedTemp);
+				const FString Expected = ExpectedBag.ToJson(false);
+
+				TestEqual("TMap<FString, T>, where T = FDateTime, serialized correctly", OutJson, Expected);
 			}
 		});
 
@@ -1076,11 +1272,11 @@ void FBeamJsonUtilsSpec::Define()
 		It("should output a JSON Object with an arbitrary JSON-blob in it", [this]()
 		{
 			FJsonDataBag Bag;
-			if(!Bag.FromJson(TEXT(R"({ "arbitraryBool": false, "arbitraryString": "string", "arbitraryNumber": 0 })")))
+			if (!Bag.FromJson(TEXT(R"({ "arbitraryBool": false, "arbitraryString": "string", "arbitraryNumber": 0 })")))
 			{
-				TestTrue(TEXT("Should never see this... means the string above isn't valid"), false);				
+				TestTrue(TEXT("Should never see this... means the string above isn't valid"), false);
 			}
-			
+
 			FBeamJsonBlob Blob{};
 			Blob.Blob = Bag.JsonObject;
 
@@ -1114,6 +1310,54 @@ void FBeamJsonUtilsSpec::Define()
 			Test.BeamDeserialize(JsonInput);
 
 			TestTrue("Struct Properties were deserialized correctly", Test.a == 5);
+		});
+
+		It("should deserialize a JSON Object as FOptionalDateTime", [this]()
+		{
+			struct FTestOptionalDateTime : FBeamJsonSerializableUStruct
+			{
+				FOptionalDateTime date;
+
+				virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
+				{
+					UBeamJsonUtils::DeserializeOptional<FDateTime>("date", Bag, date);
+				}
+			};
+			// Get a mock json with a date time
+			const FString JsonInput =
+				TEXT(R"({
+							"date": "2016-10-30T12:00:00.000Z"
+						})");
+			FDateTime ExpectedDate;
+			FDateTime::ParseIso8601(TEXT("2016-10-30T12:00:00.000Z"), ExpectedDate);
+			FTestOptionalDateTime Test{};
+			Test.BeamDeserialize(JsonInput);
+
+			TestEqual("date", Test.date.Val, ExpectedDate);
+		});
+
+		It("should deserialize a JSON Object as FDateTime", [this]()
+		{
+			struct FTestDateTime : FBeamJsonSerializableUStruct
+			{
+				FDateTime date;
+
+				virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
+				{
+					FDateTime::ParseIso8601(*Bag->GetStringField(TEXT("date")), date);
+				}
+			};
+			// Get a mock json with a date time
+			const FString JsonInput =
+				TEXT(R"({
+							"date": "2016-10-30T12:00:00.000Z"
+						})");
+			FDateTime ExpectedDate;
+			FDateTime::ParseIso8601(TEXT("2016-10-30T12:00:00.000Z"), ExpectedDate);
+			FTestDateTime Test{};
+			Test.BeamDeserialize(JsonInput);
+
+			TestEqual("date", Test.date, ExpectedDate);
 		});
 
 		It("should deserialize a JSON Object as a UObject with nested properties", [this]()
@@ -1441,7 +1685,43 @@ void FBeamJsonUtilsSpec::Define()
 				TestTrue("Optional was deserialized with correct value at idx 2", Test.a.Val[2] == -1);
 				TestTrue("Optional was deserialized with IsSet == true", Test.a.IsSet);
 			}
+			// Test deserialize optional TArray<FDateTime>
+			{
+				struct FOptionalArrayDateTime : FBeamOptional
+				{
+					TArray<FDateTime> Val;
 
+					virtual const void* GetAddr() const override { return &Val; }
+
+					virtual void Set(const void* Data) override
+					{
+						Val = *static_cast<const TArray<FDateTime>*>(Data);
+						IsSet = true;
+					}
+				};
+
+				struct FTest : FBeamJsonSerializableUStruct
+				{
+					FOptionalArrayDateTime a;
+
+					virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
+					{
+						UBeamJsonUtils::DeserializeOptional<TArray<FDateTime>, FDateTime>("a", Bag, a);
+					}
+				};
+				FDateTime ExpectedDate = FDateTime::Now();
+				// Get a condensed string so we can easily compare with the condensed string we generate.
+				FString JsonInput =
+					"{\"a\": [\"" + ExpectedDate.ToIso8601() + "\", \"" + ExpectedDate.ToIso8601() + "\", \"" + ExpectedDate.ToIso8601() + "\"]}";
+
+				FTest Test2;
+				Test2.BeamDeserialize(JsonInput);
+
+				TestTrue("Optional date was deserialized with correct value at idx 0", Test2.a.Val[0] == ExpectedDate);
+				TestTrue("Optional date was deserialized with correct value at idx 1", Test2.a.Val[1] == ExpectedDate);
+				TestTrue("Optional date was deserialized with correct value at idx 2", Test2.a.Val[2] == ExpectedDate);
+				TestTrue("Optional was deserialized with IsSet == true", Test2.a.IsSet);
+			}
 			// Test deserialize optional TArray<FBeamSemanticType>
 			{
 				struct FOptionalArrayBeamCid : FBeamOptional
@@ -1605,7 +1885,52 @@ void FBeamJsonUtilsSpec::Define()
 				TestTrue("Optional was deserialized with correct value at idx 2", Test.a.Val.FindChecked("a3") == 3);
 				TestTrue("Optional was deserialized with IsSet == true", Test.a.IsSet);
 			}
+			// Test deserialize optional TMap<FDateTime>
+			{
+				struct FOptionalMapOfDateTime : FBeamOptional
+				{
+					TMap<FString, FDateTime> Val;
 
+					virtual const void* GetAddr() const override { return &Val; }
+
+					virtual void Set(const void* Data) override
+					{
+						Val = *static_cast<const TMap<FString, FDateTime>*>(Data);
+						IsSet = true;
+					}
+				};
+
+				struct FTest : FBeamJsonSerializableUStruct
+				{
+					FOptionalMapOfDateTime a;
+
+					virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
+					{
+						UBeamJsonUtils::DeserializeOptional<TMap<FString, FDateTime>, FDateTime>("a", Bag, a);
+					}
+				};
+
+				FDateTime Now = FDateTime::Now();
+
+				FString DateSTR = Now.ToIso8601();
+				// Get a condensed string so we can easily compare with the condensed string we generate.
+				const FString JsonInput =
+					FString::Printf(TEXT(R"({
+					"a": {
+						"a1": "%s",
+						"a2": "%s",
+						"a3": "%s"
+					}
+				})"), *DateSTR, *DateSTR, *DateSTR);
+
+				FTest Test;
+				Test.BeamDeserialize(JsonInput);
+
+				TestEqual("Optional was deserialized with correct value at idx 0", Test.a.Val.FindChecked("a1"), Now);
+				TestEqual("Optional was deserialized with correct value at idx 1", Test.a.Val.FindChecked("a2"), Now);
+				TestEqual("Optional was deserialized with correct value at idx 2", Test.a.Val.FindChecked("a3"), Now);
+				TestTrue("Optional was deserialized with IsSet == true", Test.a.IsSet);
+			}
 			// Test deserialize optional TArray<FBeamSemanticType>
 			{
 				struct FOptionalMapOfBeamCid : FBeamOptional

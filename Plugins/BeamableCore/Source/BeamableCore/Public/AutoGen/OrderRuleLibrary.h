@@ -13,12 +13,12 @@ class BEAMABLECORE_API UOrderRuleLibrary : public UBlueprintFunctionLibrary
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - OrderRule To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Leaderboards|Utils|Json", DisplayName="OrderRule To JSON String")
 	static FString OrderRuleToJsonString(const UOrderRule* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make OrderRule", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Leaderboards|Utils|Make/Break", DisplayName="Make OrderRule", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static UOrderRule* Make(FString V, int32 O, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break OrderRule", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Leaderboards|Utils|Make/Break", DisplayName="Break OrderRule", meta=(NativeBreakFunc))
 	static void Break(const UOrderRule* Serializable, FString& V, int32& O);
 };

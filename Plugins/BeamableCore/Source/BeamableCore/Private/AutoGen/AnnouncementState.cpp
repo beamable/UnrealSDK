@@ -7,23 +7,23 @@
 
 void UAnnouncementState::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("isClaimed"), bIsClaimed);
-	Serializer->WriteValue(TEXT("isDeleted"), bIsDeleted);
-	Serializer->WriteValue(TEXT("isRead"), bIsRead);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("isClaimed"), bIsClaimed, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("isDeleted"), bIsDeleted, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("isRead"), bIsRead, Serializer);
 }
 
 void UAnnouncementState::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("isClaimed"), bIsClaimed);
-	Serializer->WriteValue(TEXT("isDeleted"), bIsDeleted);
-	Serializer->WriteValue(TEXT("isRead"), bIsRead);		
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("isClaimed"), bIsClaimed, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("isDeleted"), bIsDeleted, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("isRead"), bIsRead, Serializer);		
 }
 
 void UAnnouncementState::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	bIsClaimed = Bag->GetBoolField(TEXT("isClaimed"));
-	bIsDeleted = Bag->GetBoolField(TEXT("isDeleted"));
-	bIsRead = Bag->GetBoolField(TEXT("isRead"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("isClaimed")), bIsClaimed);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("isDeleted")), bIsDeleted);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("isRead")), bIsRead);
 }
 
 

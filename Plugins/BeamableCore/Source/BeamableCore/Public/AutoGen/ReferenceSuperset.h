@@ -4,12 +4,13 @@
 
 #include "Serialization/BeamJsonSerializable.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfString.h"
+#include "Serialization/BeamJsonUtils.h"
 #include "BeamBackend/SemanticTypes/BeamContentId.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
 
 #include "ReferenceSuperset.generated.h"
 
-UCLASS(BlueprintType, Category="Beam")
+UCLASS(BlueprintType, Category="Beam", DefaultToInstanced, EditInlineNew)
 class BEAMABLECORE_API UReferenceSuperset : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()

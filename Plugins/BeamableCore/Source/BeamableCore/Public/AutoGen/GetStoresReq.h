@@ -7,7 +7,7 @@
 
 #include "GetStoresReq.generated.h"
 
-UCLASS(BlueprintType, Category="Beam")
+UCLASS(BlueprintType, Category="Beam", DefaultToInstanced, EditInlineNew)
 class BEAMABLECORE_API UGetStoresReq : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()

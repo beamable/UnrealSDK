@@ -13,12 +13,12 @@ class BEAMABLECORE_API USessionHistoryRequestBodyLibrary : public UBlueprintFunc
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - SessionHistoryRequestBody To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Session|Utils|Json", DisplayName="SessionHistoryRequestBody To JSON String")
 	static FString SessionHistoryRequestBodyToJsonString(const USessionHistoryRequestBody* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make SessionHistoryRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Month, Year, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Session|Utils|Make/Break", DisplayName="Make SessionHistoryRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Month, Year, Outer", NativeMakeFunc))
 	static USessionHistoryRequestBody* Make(int64 Dbid, FOptionalInt32 Month, FOptionalInt32 Year, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break SessionHistoryRequestBody", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Session|Utils|Make/Break", DisplayName="Break SessionHistoryRequestBody", meta=(NativeBreakFunc))
 	static void Break(const USessionHistoryRequestBody* Serializable, int64& Dbid, FOptionalInt32& Month, FOptionalInt32& Year);
 };

@@ -3,11 +3,11 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
-
+#include "Serialization/BeamJsonUtils.h"
 
 #include "CompletePurchaseRequestBody.generated.h"
 
-UCLASS(BlueprintType, Category="Beam")
+UCLASS(BlueprintType, Category="Beam", DefaultToInstanced, EditInlineNew)
 class BEAMABLECORE_API UCompletePurchaseRequestBody : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()

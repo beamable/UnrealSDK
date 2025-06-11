@@ -1,7 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/Enums/ContentType.h"
+#include "AutoGen/Enums/BeamContentType.h"
 #include "Serialization/BeamJsonSerializable.h"
 #include "Serialization/BeamOptional.h"
 #include "AutoGen/Optionals/OptionalString.h"

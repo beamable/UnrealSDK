@@ -20,19 +20,19 @@ public:
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("isSuccess"), IsSuccess);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("isSuccess"), IsSuccess, Serializer);
 		UBeamJsonUtils::SerializeArray<UProjectErrorResultBuildErrorsStreamData*>(TEXT("errors"), Errors, Serializer);	
 	}
 
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("isSuccess"), IsSuccess);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("isSuccess"), IsSuccess, Serializer);
 		UBeamJsonUtils::SerializeArray<UProjectErrorResultBuildErrorsStreamData*>(TEXT("errors"), Errors, Serializer);	
 	}
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		IsSuccess = Bag->GetBoolField(TEXT("isSuccess"));
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("isSuccess")), IsSuccess);
 		UBeamJsonUtils::DeserializeArray<UProjectErrorResultBuildErrorsStreamData*>(Bag->GetArrayField(TEXT("errors")), Errors, OuterOwner);	
 	}
 };

@@ -7,17 +7,17 @@
 
 void UGatewayLimits::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("maxConcurrentRequests"), MaxConcurrentRequests);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("maxConcurrentRequests"), MaxConcurrentRequests, Serializer);
 }
 
 void UGatewayLimits::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("maxConcurrentRequests"), MaxConcurrentRequests);		
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("maxConcurrentRequests"), MaxConcurrentRequests, Serializer);		
 }
 
 void UGatewayLimits::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	MaxConcurrentRequests = Bag->GetIntegerField(TEXT("maxConcurrentRequests"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("maxConcurrentRequests")), MaxConcurrentRequests);
 }
 
 

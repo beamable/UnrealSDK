@@ -12,17 +12,17 @@ void UMicroserviceSecretResponse::DeserializeRequestResponse(UObject* RequestDat
 
 void UMicroserviceSecretResponse::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("secret"), Secret);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("secret"), Secret, Serializer);
 }
 
 void UMicroserviceSecretResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("secret"), Secret);		
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("secret"), Secret, Serializer);		
 }
 
 void UMicroserviceSecretResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	Secret = Bag->GetStringField(TEXT("secret"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("secret")), Secret);
 }
 
 

@@ -12,9 +12,9 @@ void ULeaderboardDetails::DeserializeRequestResponse(UObject* RequestData, FStri
 
 void ULeaderboardDetails::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("lbid"), Lbid);
-	Serializer->WriteValue(TEXT("numberOfEntries"), NumberOfEntries);
-	Serializer->WriteValue(TEXT("fullName"), FullName);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("lbid"), Lbid, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("numberOfEntries"), NumberOfEntries, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("fullName"), FullName, Serializer);
 	UBeamJsonUtils::SerializeUObject<ULeaderBoardView*>("view", View, Serializer);
 	UBeamJsonUtils::SerializeOptional<UOrderRules*>(TEXT("orules"), &Orules, Serializer);
 	UBeamJsonUtils::SerializeOptional<UMetadataView*>(TEXT("metaData"), &MetaData, Serializer);
@@ -22,9 +22,9 @@ void ULeaderboardDetails::BeamSerializeProperties(TUnrealJsonSerializer& Seriali
 
 void ULeaderboardDetails::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("lbid"), Lbid);
-	Serializer->WriteValue(TEXT("numberOfEntries"), NumberOfEntries);
-	Serializer->WriteValue(TEXT("fullName"), FullName);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("lbid"), Lbid, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("numberOfEntries"), NumberOfEntries, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("fullName"), FullName, Serializer);
 	UBeamJsonUtils::SerializeUObject<ULeaderBoardView*>("view", View, Serializer);
 	UBeamJsonUtils::SerializeOptional<UOrderRules*>(TEXT("orules"), &Orules, Serializer);
 	UBeamJsonUtils::SerializeOptional<UMetadataView*>(TEXT("metaData"), &MetaData, Serializer);		
@@ -32,9 +32,9 @@ void ULeaderboardDetails::BeamSerializeProperties(TUnrealPrettyJsonSerializer& S
 
 void ULeaderboardDetails::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	Lbid = Bag->GetStringField(TEXT("lbid"));
-	NumberOfEntries = Bag->GetIntegerField(TEXT("numberOfEntries"));
-	FullName = Bag->GetStringField(TEXT("fullName"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("lbid")), Lbid);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("numberOfEntries")), NumberOfEntries);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("fullName")), FullName);
 	UBeamJsonUtils::DeserializeUObject<ULeaderBoardView*>("view", Bag, View, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<UOrderRules*>("orules", Bag, Orules, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<UMetadataView*>("metaData", Bag, MetaData, OuterOwner);

@@ -7,20 +7,20 @@
 
 void ULink::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("href"), Href);
-	Serializer->WriteValue(TEXT("rel"), Rel);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("href"), Href, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("rel"), Rel, Serializer);
 }
 
 void ULink::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("href"), Href);
-	Serializer->WriteValue(TEXT("rel"), Rel);		
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("href"), Href, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("rel"), Rel, Serializer);		
 }
 
 void ULink::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	Href = Bag->GetStringField(TEXT("href"));
-	Rel = Bag->GetStringField(TEXT("rel"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("href")), Href);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("rel")), Rel);
 }
 
 

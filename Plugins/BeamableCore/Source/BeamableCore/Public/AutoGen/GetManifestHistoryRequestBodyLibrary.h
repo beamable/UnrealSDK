@@ -13,12 +13,12 @@ class BEAMABLECORE_API UGetManifestHistoryRequestBodyLibrary : public UBlueprint
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - GetManifestHistoryRequestBody To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Content|Utils|Json", DisplayName="GetManifestHistoryRequestBody To JSON String")
 	static FString GetManifestHistoryRequestBodyToJsonString(const UGetManifestHistoryRequestBody* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make GetManifestHistoryRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Id, Limit, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Content|Utils|Make/Break", DisplayName="Make GetManifestHistoryRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Id, Limit, Outer", NativeMakeFunc))
 	static UGetManifestHistoryRequestBody* Make(FOptionalBeamContentManifestId Id, FOptionalInt32 Limit, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break GetManifestHistoryRequestBody", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Content|Utils|Make/Break", DisplayName="Break GetManifestHistoryRequestBody", meta=(NativeBreakFunc))
 	static void Break(const UGetManifestHistoryRequestBody* Serializable, FOptionalBeamContentManifestId& Id, FOptionalInt32& Limit);
 };

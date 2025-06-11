@@ -22,18 +22,18 @@ FString UUpgradeItemRequestArgsLibrary::UpgradeItemRequestArgsToJsonString(const
 	return Result;
 }	
 
-UUpgradeItemRequestArgs* UUpgradeItemRequestArgsLibrary::Make(int64 UserID, int64 ItemInstaceID, UObject* Outer)
+UUpgradeItemRequestArgs* UUpgradeItemRequestArgsLibrary::Make(int64 GamerTag, int64 ItemInstaceID, UObject* Outer)
 {
 	auto Serializable = NewObject<UUpgradeItemRequestArgs>(Outer);
-	Serializable->UserID = UserID;
+	Serializable->GamerTag = GamerTag;
 	Serializable->ItemInstaceID = ItemInstaceID;
 	
 	return Serializable;
 }
 
-void UUpgradeItemRequestArgsLibrary::Break(const UUpgradeItemRequestArgs* Serializable, int64& UserID, int64& ItemInstaceID)
+void UUpgradeItemRequestArgsLibrary::Break(const UUpgradeItemRequestArgs* Serializable, int64& GamerTag, int64& ItemInstaceID)
 {
-	UserID = Serializable->UserID;
+	GamerTag = Serializable->GamerTag;
 	ItemInstaceID = Serializable->ItemInstaceID;
 		
 }

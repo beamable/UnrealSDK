@@ -12,24 +12,24 @@ void UMatchMakingMatchesPvpResponse::DeserializeRequestResponse(UObject* Request
 
 void UMatchMakingMatchesPvpResponse::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("result"), Result);
-	Serializer->WriteValue(TEXT("totalEntries"), TotalEntries);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("result"), Result, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("totalEntries"), TotalEntries, Serializer);
 	UBeamJsonUtils::SerializeUObject<UMatchMakingRanking*>("playerRank", PlayerRank, Serializer);
 	UBeamJsonUtils::SerializeArray<UMatchMakingWindowResp*>(TEXT("windows"), Windows, Serializer);
 }
 
 void UMatchMakingMatchesPvpResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("result"), Result);
-	Serializer->WriteValue(TEXT("totalEntries"), TotalEntries);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("result"), Result, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("totalEntries"), TotalEntries, Serializer);
 	UBeamJsonUtils::SerializeUObject<UMatchMakingRanking*>("playerRank", PlayerRank, Serializer);
 	UBeamJsonUtils::SerializeArray<UMatchMakingWindowResp*>(TEXT("windows"), Windows, Serializer);		
 }
 
 void UMatchMakingMatchesPvpResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	Result = Bag->GetStringField(TEXT("result"));
-	TotalEntries = Bag->GetIntegerField(TEXT("totalEntries"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("result")), Result);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("totalEntries")), TotalEntries);
 	UBeamJsonUtils::DeserializeUObject<UMatchMakingRanking*>("playerRank", Bag, PlayerRank, OuterOwner);
 	UBeamJsonUtils::DeserializeArray<UMatchMakingWindowResp*>(Bag->GetArrayField(TEXT("windows")), Windows, OuterOwner);
 }

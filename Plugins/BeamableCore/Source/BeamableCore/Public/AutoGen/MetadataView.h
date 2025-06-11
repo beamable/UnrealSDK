@@ -5,13 +5,14 @@
 #include "Serialization/BeamJsonSerializable.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalInt64.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfString.h"
+#include "Serialization/BeamJsonUtils.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalLeaderboardCohortSettings.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalBeamClientPermission.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalInt32.h"
 
 #include "MetadataView.generated.h"
 
-UCLASS(BlueprintType, Category="Beam")
+UCLASS(BlueprintType, Category="Beam", DefaultToInstanced, EditInlineNew)
 class BEAMABLECORE_API UMetadataView : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()

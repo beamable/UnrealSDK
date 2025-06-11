@@ -13,12 +13,12 @@ class BEAMABLECORE_API UAvailabilityResponseLibrary : public UBlueprintFunctionL
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - AvailabilityResponse To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|GroupUsers|Utils|Json", DisplayName="AvailabilityResponse To JSON String")
 	static FString AvailabilityResponseToJsonString(const UAvailabilityResponse* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make AvailabilityResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|GroupUsers|Utils|Make/Break", DisplayName="Make AvailabilityResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static UAvailabilityResponse* Make(bool bName, bool bTag, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break AvailabilityResponse", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|GroupUsers|Utils|Make/Break", DisplayName="Break AvailabilityResponse", meta=(NativeBreakFunc))
 	static void Break(const UAvailabilityResponse* Serializable, bool& bName, bool& bTag);
 };

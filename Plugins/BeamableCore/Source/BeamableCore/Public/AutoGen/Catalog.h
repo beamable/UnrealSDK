@@ -3,12 +3,13 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
+#include "Serialization/BeamJsonUtils.h"
 #include "BeamableCore/Public/AutoGen/Store.h"
 #include "BeamableCore/Public/AutoGen/OfferDefinition.h"
 
 #include "Catalog.generated.h"
 
-UCLASS(BlueprintType, Category="Beam")
+UCLASS(BlueprintType, Category="Beam", DefaultToInstanced, EditInlineNew)
 class BEAMABLECORE_API UCatalog : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()

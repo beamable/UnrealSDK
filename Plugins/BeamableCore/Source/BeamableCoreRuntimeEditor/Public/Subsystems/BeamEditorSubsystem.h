@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "BeamEditor.h"
 #include "BeamBackend/BeamRealmHandle.h"
 #include "RequestTracker/BeamOperationHandle.h"
 #include "UObject/Object.h"
@@ -36,7 +37,7 @@ protected:
 public:
 	UFUNCTION(Category="Beam")
 	virtual FBeamOperationHandle InitializeWhenEditorReady();
-	
+
 	UFUNCTION(Category="Beam")
 	virtual FBeamOperationHandle PrepareForRealmChange(FBeamRealmHandle CurrRealm, FBeamRealmHandle NewRealm);
 
@@ -47,7 +48,7 @@ public:
 	virtual FBeamOperationHandle OnRealmInitialized(FBeamRealmHandle NewRealm);
 
 	UFUNCTION(Category="Beam")
-	virtual void OnReady();	
+	virtual void OnReady();
 
 	UFUNCTION(Category="Beam")
 	virtual void OnSignOut();

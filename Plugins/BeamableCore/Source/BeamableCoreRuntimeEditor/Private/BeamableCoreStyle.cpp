@@ -27,9 +27,10 @@ FBeamableCoreStyle::FBeamableCoreStyle() : FPluginStyleSet(TEXT("BeamableCore"))
 	const FVector2D IconSize(20.0f, 20.0f);
 	const FVector2D SmallIconSize(20.0f, 20.0f);
 	const FVector2D LabelIconSize(16.0f, 16.0f);
-	
+
 	Set("BeamIcon_AutoGenRequests", new FSlateImageBrush(RootToContentDir(TEXT("Editor/Icons/IconBeamNode_AutoGenRequests.png")), Icon20x20));
 	Set("BeamIcon_Operations", new FSlateImageBrush(RootToContentDir(TEXT("Editor/Icons/IconBeamNode_Operations.png")), Icon20x20));
+	Set("BeamIcon_ResyncProj", new FSlateImageBrush(RootToContentDir(TEXT("Editor/Icons/IconBeam_Download.png")), Icon40x40));
 	Set("BeamIcon", new FSlateImageBrush(RootToContentDir(TEXT("Editor/Icons/IconBeam_Beamable.png")), Icon40x40));
 	Set("BeamIconSmall", new FSlateImageBrush(RootToContentDir(TEXT("Editor/Icons/IconBeam_Beamable.png")), Icon20x20));
 

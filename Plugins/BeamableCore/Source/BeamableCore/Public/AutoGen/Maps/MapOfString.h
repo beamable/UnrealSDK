@@ -2,11 +2,11 @@
 
 #include "CoreMinimal.h"
 #include "Serialization/BeamMap.h"
-
+#include "Serialization/BeamJsonUtils.h"
 
 #include "MapOfString.generated.h"
 
-USTRUCT(BlueprintType, Category="Beam|Wrappers|Maps")
+USTRUCT(BlueprintType, Category="Beam|₢ServiceName₢|Wrappers|Maps")
 struct BEAMABLECORE_API FMapOfString : public FBeamMap
 {
 	GENERATED_BODY()

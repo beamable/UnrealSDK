@@ -7,7 +7,7 @@
 
 #include "RewardCalendarDay.generated.h"
 
-UCLASS(BlueprintType, Category="Beam")
+UCLASS(BlueprintType, Category="Beam", DefaultToInstanced, EditInlineNew)
 class BEAMABLECORE_API URewardCalendarDay : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()

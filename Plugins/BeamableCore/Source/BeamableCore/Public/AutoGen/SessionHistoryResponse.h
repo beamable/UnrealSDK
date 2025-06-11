@@ -6,10 +6,11 @@
 #include "BeamableCore/Public/AutoGen/PaymentTotal.h"
 #include "BeamableCore/Public/AutoGen/LocalDate.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
+#include "Serialization/BeamJsonUtils.h"
 
 #include "SessionHistoryResponse.generated.h"
 
-UCLASS(BlueprintType, Category="Beam")
+UCLASS(BlueprintType, Category="Beam", DefaultToInstanced, EditInlineNew)
 class BEAMABLECORE_API USessionHistoryResponse : public UObject, public IBeamJsonSerializableUObject, public IBeamBaseResponseBodyInterface
 {
 	GENERATED_BODY()

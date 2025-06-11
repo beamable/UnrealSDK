@@ -7,31 +7,31 @@
 
 void UServiceStorageReference::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("archived"), bArchived);
-	Serializer->WriteValue(TEXT("enabled"), bEnabled);
-	Serializer->WriteValue(TEXT("storageType"), StorageType);
-	Serializer->WriteValue(TEXT("id"), Id);
-	Serializer->WriteValue(TEXT("checksum"), Checksum);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("archived"), bArchived, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("enabled"), bEnabled, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("storageType"), StorageType, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("id"), Id, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("checksum"), Checksum, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("templateId"), &TemplateId, Serializer);
 }
 
 void UServiceStorageReference::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("archived"), bArchived);
-	Serializer->WriteValue(TEXT("enabled"), bEnabled);
-	Serializer->WriteValue(TEXT("storageType"), StorageType);
-	Serializer->WriteValue(TEXT("id"), Id);
-	Serializer->WriteValue(TEXT("checksum"), Checksum);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("archived"), bArchived, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("enabled"), bEnabled, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("storageType"), StorageType, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("id"), Id, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("checksum"), Checksum, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("templateId"), &TemplateId, Serializer);		
 }
 
 void UServiceStorageReference::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	bArchived = Bag->GetBoolField(TEXT("archived"));
-	bEnabled = Bag->GetBoolField(TEXT("enabled"));
-	StorageType = Bag->GetStringField(TEXT("storageType"));
-	Id = Bag->GetStringField(TEXT("id"));
-	Checksum = Bag->GetStringField(TEXT("checksum"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("archived")), bArchived);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("enabled")), bEnabled);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("storageType")), StorageType);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("id")), Id);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("checksum")), Checksum);
 	UBeamJsonUtils::DeserializeOptional<FString>("templateId", Bag, TemplateId, OuterOwner);
 }
 

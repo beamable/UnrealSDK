@@ -4,13 +4,14 @@
 
 #include "Serialization/BeamJsonSerializable.h"
 #include "BeamableCore/Public/AutoGen/ClientDataEntry.h"
+#include "Serialization/BeamJsonUtils.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalInt32.h"
 #include "BeamableCore/Public/AutoGen/PlayerOfferView.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalInt64.h"
 
 #include "PlayerListingView.generated.h"
 
-UCLASS(BlueprintType, Category="Beam")
+UCLASS(BlueprintType, Category="Beam", DefaultToInstanced, EditInlineNew)
 class BEAMABLECORE_API UPlayerListingView : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()

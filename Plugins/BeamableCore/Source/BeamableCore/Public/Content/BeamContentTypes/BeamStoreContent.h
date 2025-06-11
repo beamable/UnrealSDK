@@ -12,20 +12,18 @@
 /**
  * This type defines a %Beamable %ContentObject subclass for the %CommerceService and Store feature.
  */
-UCLASS(HideCategories=("hidden"))
+UCLASS(BlueprintType)
 class BEAMABLECORE_API UBeamStoreContent : public UBeamContentObject
 {
 	GENERATED_BODY()
+
 public:
 	UFUNCTION()
 	void GetContentType_UBeamStoreContent(FString& Result);
 
-	UPROPERTY(VisibleDefaultsOnly, Category="hidden", meta=(HideInDetailPanel, BeamContentTypeFilter="store",BeamContentTypeFilterMode="tree"))
-	FBeamContentId symbol;
-	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString title = {};
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(BeamContentTypeFilter="listing",BeamContentTypeFilterMode="tree"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(BeamContentTypeFilter="listing", BeamContentTypeFilterMode="tree"))
 	TArray<FBeamContentLink> listings = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FOptionalBool showInactiveListings = {};
@@ -33,12 +31,7 @@ public:
 	/// This is mostly so that you can reduce the size of payloads for store views of this type.	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FOptionalInt32 activeListingLimit = {};
-
-	virtual void BuildPropertiesJsonObject(FJsonDomBuilder::FObject& Properties) override
-	{
-		symbol = Id;
-		Super::BuildPropertiesJsonObject(Properties);
-	}
 	
 };
+
 DEFINE_CONTENT_TYPE_NAME(UBeamStoreContent, "stores")

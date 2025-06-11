@@ -4,10 +4,11 @@
 
 #include "Serialization/BeamJsonSerializable.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
+#include "Serialization/BeamJsonUtils.h"
 
 #include "FailedInFlightFilterRequestBody.generated.h"
 
-UCLASS(BlueprintType, Category="Beam")
+UCLASS(BlueprintType, Category="Beam", DefaultToInstanced, EditInlineNew)
 class BEAMABLECORE_API UFailedInFlightFilterRequestBody : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()

@@ -132,6 +132,144 @@ bool UBeamLobbySubsystem::TryGetCurrentLobby(FUserSlot Slot, ULobby*& Lobby)
 	return false;
 }
 
+
+bool UBeamLobbySubsystem::TryGetGlobalLobbyData(ULobby* Lobby, FString DataKey, FString DefaultValue, FString& GlobalData)
+{
+	GlobalData = DefaultValue;
+
+	if (!Lobby || !Lobby->Data.IsSet)
+	{
+		return false;
+	}
+
+	if (!Lobby->Data.Val.Contains(DataKey))
+	{
+		return false;
+	}
+
+	GlobalData = Lobby->Data.Val[DataKey];
+
+	return true;
+}
+
+bool UBeamLobbySubsystem::GetAllLobbyGlobalData(ULobby* Lobby, TArray<FString>& Keys, TArray<FString>& Values)
+{
+	Keys.Reset();
+	Values.Reset();
+
+	if (!Lobby || !Lobby->Data.IsSet)
+	{
+		return false;
+	}
+
+	for (auto LobbyData : Lobby->Data.Val)
+	{
+		Keys.Add(LobbyData.Key);
+		Values.Add(LobbyData.Value);
+	}
+
+	return true;
+}
+
+bool UBeamLobbySubsystem::TryGetLobbyPlayerData(ULobby* Lobby, FBeamGamerTag PlayerGamerTag, FString DataKey, FString DefaultValue, FString& PlayerData)
+{
+	PlayerData = DefaultValue;
+
+	if (!Lobby)
+	{
+		return false;
+	}
+
+	if (Lobby->Players.IsSet)
+	{
+		for (auto PlayerLobby : Lobby->Players.Val)
+		{
+			if (PlayerLobby->PlayerId.Val == PlayerGamerTag)
+			{
+				if (PlayerLobby->Tags.IsSet)
+				{
+					for (auto BeamTag : PlayerLobby->Tags.Val)
+					{
+						if (BeamTag.Name.Val == DataKey)
+						{
+							PlayerData = BeamTag.Value.Val;
+							return true;
+						}
+					}
+				}
+				// If the tag is not set then return false
+				return false;
+			}
+		}
+	}
+	return false;
+}
+
+bool UBeamLobbySubsystem::GetAllLobbyPlayerData(ULobby* Lobby, FBeamGamerTag PlayerGamerTag, TArray<FString>& Keys, TArray<FString>& Values)
+{
+	Keys.Reset();
+	Values.Reset();
+
+	if (!Lobby || !Lobby->Data.IsSet)
+	{
+		return false;
+	}
+
+	if (Lobby->Players.IsSet)
+	{
+		for (auto PlayerLobby : Lobby->Players.Val)
+		{
+			if (PlayerLobby->PlayerId.Val == PlayerGamerTag)
+			{
+				if (PlayerLobby->Tags.IsSet)
+				{
+					for (auto BeamTag : PlayerLobby->Tags.Val)
+					{
+						Keys.Add(BeamTag.Name.Val);
+						Values.Add(BeamTag.Value.Val);
+					}
+					return true;
+				}
+				// If the tag is not set then return false
+				return false;
+			}
+		}
+	}
+	return false;
+}
+
+bool UBeamLobbySubsystem::TryGetGlobalLobbyDataById(FGuid LobbyId, FString DataKey, FString DefaultValue, FString& GlobalData)
+{
+	ULobby* Lobby;
+	TryGetLobbyById(LobbyId, Lobby);
+
+	return TryGetGlobalLobbyData(Lobby, DataKey, DefaultValue, GlobalData);
+}
+
+bool UBeamLobbySubsystem::GetAllLobbyGlobalDataById(FGuid LobbyId, TArray<FString>& Keys, TArray<FString>& Values)
+{
+	ULobby* Lobby;
+	TryGetLobbyById(LobbyId, Lobby);
+
+	return GetAllLobbyGlobalData(Lobby, Keys, Values);
+}
+
+bool UBeamLobbySubsystem::TryGetLobbyPlayerDataById(FGuid LobbyId, FBeamGamerTag PlayerGamerTag, FString DataKey, FString DefaultValue, FString& PlayerData)
+{
+	ULobby* Lobby;
+	TryGetLobbyById(LobbyId, Lobby);
+
+	return TryGetLobbyPlayerData(Lobby, PlayerGamerTag, DataKey, DefaultValue, PlayerData);
+}
+
+bool UBeamLobbySubsystem::GetAllLobbyPlayerDataById(FGuid LobbyId, FBeamGamerTag PlayerGamerTag, TArray<FString>& Keys, TArray<FString>& Values)
+{
+	ULobby* Lobby;
+	TryGetLobbyById(LobbyId, Lobby);
+
+	return GetAllLobbyPlayerData(Lobby, PlayerGamerTag, Keys, Values);
+}
+
 bool UBeamLobbySubsystem::TryGetCurrentLobbyState(FUserSlot Slot, UBeamLobbyState*& Lobby)
 {
 	Lobby = LocalPlayerLobbyInfo.FindChecked(Slot);
@@ -189,7 +327,7 @@ void UBeamLobbySubsystem::PrepareUpdateDescription(FUserSlot Slot, const FString
 	UpdateCommands[Slot]->NewLobbyDescription = FOptionalString(NewDesc);
 }
 
-void UBeamLobbySubsystem::PrepareUpdateRestriction(FUserSlot Slot, const ELobbyRestriction& NewLobbyRestriction)
+void UBeamLobbySubsystem::PrepareUpdateRestriction(FUserSlot Slot, const EBeamLobbyRestriction& NewLobbyRestriction)
 {
 	UBeamLobbyState* LobbyState;
 	if (!GuardSlotIsInLobby(Slot, LobbyState)) return;
@@ -529,7 +667,7 @@ void UBeamLobbySubsystem::CreateOpenLobby(FUserSlot UserSlot, FString Name, FStr
 	});
 
 
-	FBeamRequestContext Ctx = RequestPostLobbies(UserSlot, Name, Desc, ELobbyRestriction::BEAM_Open, MatchType, 0, MaxPlayers, LobbyData, PlayerTags, Op, Handler);
+	FBeamRequestContext Ctx = RequestPostLobbies(UserSlot, Name, Desc, EBeamLobbyRestriction::BEAM_Open, MatchType, 0, MaxPlayers, LobbyData, PlayerTags, Op, Handler);
 }
 
 void UBeamLobbySubsystem::CreateClosedLobby(FUserSlot UserSlot, FString Name, FString Desc, FBeamContentId MatchType, int32 MaxPlayers, TMap<FString, FString> LobbyData, TArray<FBeamTag> PlayerTags,
@@ -556,7 +694,7 @@ void UBeamLobbySubsystem::CreateClosedLobby(FUserSlot UserSlot, FString Name, FS
 		}
 	});
 
-	FBeamRequestContext Ctx = RequestPostLobbies(UserSlot, Name, Desc, ELobbyRestriction::BEAM_Closed, MatchType, PasscodeSize, MaxPlayers, LobbyData, PlayerTags, Op, Handler);
+	FBeamRequestContext Ctx = RequestPostLobbies(UserSlot, Name, Desc, EBeamLobbyRestriction::BEAM_Closed, MatchType, PasscodeSize, MaxPlayers, LobbyData, PlayerTags, Op, Handler);
 }
 
 void UBeamLobbySubsystem::RefreshLobbyData(FUserSlot UserSlot, FGuid LobbyId, FBeamOperationHandle Op)
@@ -1091,7 +1229,7 @@ FBeamRequestContext UBeamLobbySubsystem::RequestGetLobbies(const FUserSlot& User
 	return Ctx;
 }
 
-FBeamRequestContext UBeamLobbySubsystem::RequestPostLobbies(const FUserSlot& UserSlot, FString LobbyName, FString LobbyDescription, ELobbyRestriction Restriction, FBeamContentId MatchType,
+FBeamRequestContext UBeamLobbySubsystem::RequestPostLobbies(const FUserSlot& UserSlot, FString LobbyName, FString LobbyDescription, EBeamLobbyRestriction Restriction, FBeamContentId MatchType,
                                                             int32 PasscodeLength, int32 MaxPlayers, TMap<FString, FString> LobbyData, TArray<FBeamTag> PlayerTags, FBeamOperationHandle Op,
                                                             FOnPostLobbiesFullResponse Handler) const
 {
@@ -1100,7 +1238,7 @@ FBeamRequestContext UBeamLobbySubsystem::RequestPostLobbies(const FUserSlot& Use
 	                                     FOptionalString(LobbyDescription),
 	                                     FOptionalLobbyRestriction(Restriction),
 	                                     !MatchType.AsString.IsEmpty() ? FOptionalBeamContentId(MatchType) : FOptionalBeamContentId(),
-	                                     Restriction == ELobbyRestriction::BEAM_Closed ? FOptionalInt32(PasscodeLength) : FOptionalInt32(),
+	                                     Restriction == EBeamLobbyRestriction::BEAM_Closed ? FOptionalInt32(PasscodeLength) : FOptionalInt32(),
 	                                     MaxPlayers ? FOptionalInt32(MaxPlayers) : FOptionalInt32(),
 	                                     PlayerTags.Num() ? FOptionalArrayOfBeamTag(PlayerTags) : FOptionalArrayOfBeamTag(),
 	                                     LobbyData.Num() ? FOptionalMapOfString{LobbyData} : FOptionalMapOfString(),

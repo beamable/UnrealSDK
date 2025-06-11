@@ -13,12 +13,12 @@ class BEAMABLECORE_API UBeamoBasicGetManifestRequestBodyLibrary : public UBluepr
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - BeamoBasicGetManifestRequestBody To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Beamo|Utils|Json", DisplayName="BeamoBasicGetManifestRequestBody To JSON String")
 	static FString BeamoBasicGetManifestRequestBodyToJsonString(const UBeamoBasicGetManifestRequestBody* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make BeamoBasicGetManifestRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="bArchived, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Beamo|Utils|Make/Break", DisplayName="Make BeamoBasicGetManifestRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="bArchived, Outer", NativeMakeFunc))
 	static UBeamoBasicGetManifestRequestBody* Make(FString Id, FOptionalBool bArchived, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break BeamoBasicGetManifestRequestBody", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Beamo|Utils|Make/Break", DisplayName="Break BeamoBasicGetManifestRequestBody", meta=(NativeBreakFunc))
 	static void Break(const UBeamoBasicGetManifestRequestBody* Serializable, FString& Id, FOptionalBool& bArchived);
 };

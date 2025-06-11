@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
-
+#include "Serialization/BeamJsonUtils.h"
 
 #include "IncrementStatRequestArgs.generated.h"
 
@@ -13,8 +13,8 @@ class BEAMABLEUNREALMICROSERVICECLIENTS_API UIncrementStatRequestArgs : public U
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="User ID", Category="Beam")
-	int64 UserID = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Gamer Tag", Category="Beam")
+	int64 GamerTag = {};
 
 	
 

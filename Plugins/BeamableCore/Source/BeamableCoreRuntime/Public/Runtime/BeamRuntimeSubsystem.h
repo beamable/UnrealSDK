@@ -35,12 +35,12 @@ enum ESubsystemUserState
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FRuntimeUserSlotDataChangedEvent, FUserSlot, UserSlot);
 
 UCLASS(Abstract, Blueprintable, meta=(IsBlueprintBase=true, ShowWorldContextPin))
-class BEAMABLECORERUNTIME_API	UBeamRuntimeSubsystem : public UGameInstanceSubsystem, public FTickableGameObject
+class BEAMABLECORERUNTIME_API UBeamRuntimeSubsystem : public UGameInstanceSubsystem, public FTickableGameObject
 {
 	GENERATED_BODY()
 
 	friend class UBeamRuntime;
-	
+
 protected:
 	/** @brief Initializes the subsystem.  */
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
@@ -65,20 +65,21 @@ protected:
 	}
 
 	/** @brief an enum that represents the state of the sdk if it is currently initialized and ready to be used or not */
-    UPROPERTY(BlueprintReadOnly, VisibleAnywhere, DisplayName="Subsystem State", Category="Beam")
-    TEnumAsByte<ESubsystemState> CurrentState;
-	
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, DisplayName="Subsystem State", Category="Beam")
+	TEnumAsByte<ESubsystemState> CurrentState;
+
 	/** @brief an enum that represents the state of the sdk if it is currently initialized and ready to be used or not */
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, DisplayName="Subsystem State", Category="Beam")
 	TMap<FUserSlot, TEnumAsByte<ESubsystemUserState>> CurrentUserState;
+
 public:
 	UPROPERTY()
 	UBeamRuntime* Runtime;
 
 	/** @brief returns the state of the subsystem if it is initalized and ready to be used or not */
 	UFUNCTION(BlueprintCallable, Category="Beam")
-	TEnumAsByte<ESubsystemState> GetSubsystemState() {return CurrentState;}
-	
+	TEnumAsByte<ESubsystemState> GetSubsystemState() { return CurrentState; }
+
 	/**
 	 * This is called after unreal is fully initialized but Beamable is not. Basically, this runs after all Engine and GameInstance Subsystems have
 	 * completed running their Initialize function. This callback is useful for reading cached local state and local configuration files.  
@@ -92,7 +93,7 @@ public:
 	 */
 	UFUNCTION()
 	virtual TArray<TSubclassOf<UBeamRuntimeSubsystem>> GetDependingOnSubsystems();
-	
+
 	/**
 	 * @brief At this point, you can make any non-authenticated request to beamable. But... you don't have access to any beamable content types (they are fetched at this point).
 	 * For example, downloading content at the start of a player session (see UBeamContentSubsystem for an example).
@@ -100,7 +101,7 @@ public:
 	 * After this runs, UBeamRuntime::OnStarted is invoked and user-level code can run to make non-authenticated requests to beamable (ie: game-specific signup/login flows). 
 	 */
 	UFUNCTION(BlueprintNativeEvent, Category="Beam")
-	void         OnBeamableStarting(FBeamOperationHandle& ResultOp);
+	void OnBeamableStarting(FBeamOperationHandle& ResultOp);
 	virtual void OnBeamableStarting_Implementation(FBeamOperationHandle& ResultOp);
 
 	/**
@@ -110,7 +111,7 @@ public:
 	 * After this runs, UBeamRuntime::OnStarted is invoked and user-level code can run to make non-authenticated requests to beamable (ie: game-specific signup/login flows). 
 	 */
 	UFUNCTION(BlueprintNativeEvent, Category="Beam")
-	void         OnBeamableContentReady(FBeamOperationHandle& ResultOp);
+	void OnBeamableContentReady(FBeamOperationHandle& ResultOp);
 	virtual void OnBeamableContentReady_Implementation(FBeamOperationHandle& ResultOp);
 
 	/**
@@ -141,16 +142,16 @@ public:
 	 * @brief Called on each BeamRuntimeSubsystem after the OnUserSignedOut operations of ALL BeamRuntimeSubsystems have run to completion (success or otherwise). 
 	 */
 	UFUNCTION(BlueprintNativeEvent, Category="Beam")
-	void OnPostUserSignedOut(const FUserSlot& UserSlot, const EUserSlotClearedReason Reason, const FBeamRealmUser& BeamRealmUser, FBeamOperationHandle&   ResultOp);
+	void OnPostUserSignedOut(const FUserSlot& UserSlot, const EUserSlotClearedReason Reason, const FBeamRealmUser& BeamRealmUser, FBeamOperationHandle& ResultOp);
 	virtual void OnPostUserSignedOut_Implementation(const FUserSlot& UserSlot, const EUserSlotClearedReason Reason, const FBeamRealmUser& BeamRealmUser, FBeamOperationHandle& ResultOp);
 
-	
+
 	/**
 	 * @brief Called whenever UBeamRuntime fails its frictionless authentication flow. This is only called if you have automatic frictionless authentication set up.
 	 * By default, this is called after the OnBeamableStarted step ONLY IF we fail to authenticate.
 	 */
 	UFUNCTION(BlueprintNativeEvent, Category="Beam")
-	void         OnFailedUserAuth(const FUserSlot& UserSlot);
+	void OnFailedUserAuth(const FUserSlot& UserSlot);
 	virtual void OnFailedUserAuth_Implementation(const FUserSlot& UserSlot);
 
 	/**
@@ -158,8 +159,13 @@ public:
 	 * OR the player has lost internet access. We don't give you By default, this is called after the OnBeamableStarted step ONLY IF we fail to authenticate.
 	 */
 	UFUNCTION(BlueprintNativeEvent, Category="Beam")
-	void         OnUserConnectionLost(const FUserSlot& UserSlot);
+	void OnUserConnectionLost(const FUserSlot& UserSlot);
 	virtual void OnUserConnectionLost_Implementation(const FUserSlot& UserSlot);
+
+	/**
+	 * Check if the user slot is authenticated and print the caller as a error.
+	 */
+	virtual bool IsUserSlotAuthenticated(FUserSlot UserSlot, FString FunctionName, FBeamOperationHandle OperationHandle);
 };
 
 
@@ -200,6 +206,7 @@ class BEAMABLECORERUNTIME_API UBeamRuntimeBlueprintSubsystems : public UGameInst
 			}
 		}
 	}
+
 
 	/** Cleans up the system.  */
 	virtual void Deinitialize() override

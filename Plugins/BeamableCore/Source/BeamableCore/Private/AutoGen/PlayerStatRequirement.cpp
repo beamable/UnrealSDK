@@ -7,27 +7,27 @@
 
 void UPlayerStatRequirement::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("stat"), Stat);
-	Serializer->WriteValue(TEXT("constraint"), Constraint);
-	Serializer->WriteValue(TEXT("value"), Value);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("stat"), Stat, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("constraint"), Constraint, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("value"), Value, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("domain"), &Domain, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("access"), &Access, Serializer);
 }
 
 void UPlayerStatRequirement::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("stat"), Stat);
-	Serializer->WriteValue(TEXT("constraint"), Constraint);
-	Serializer->WriteValue(TEXT("value"), Value);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("stat"), Stat, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("constraint"), Constraint, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("value"), Value, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("domain"), &Domain, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("access"), &Access, Serializer);		
 }
 
 void UPlayerStatRequirement::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	Stat = Bag->GetStringField(TEXT("stat"));
-	Constraint = Bag->GetStringField(TEXT("constraint"));
-	Value = Bag->GetStringField(TEXT("value"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("stat")), Stat);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("constraint")), Constraint);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("value")), Value);
 	UBeamJsonUtils::DeserializeOptional<FString>("domain", Bag, Domain, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("access", Bag, Access, OuterOwner);
 }

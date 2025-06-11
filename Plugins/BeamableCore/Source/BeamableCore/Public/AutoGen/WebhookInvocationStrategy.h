@@ -3,21 +3,21 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
-#include "BeamableCore/Public/AutoGen/Enums/WebhookInvocationType.h"
-#include "BeamableCore/Public/AutoGen/Enums/WebhookRetryType.h"
+#include "BeamableCore/Public/AutoGen/Enums/BeamWebhookInvocationType.h"
+#include "BeamableCore/Public/AutoGen/Enums/BeamWebhookRetryType.h"
 
 #include "WebhookInvocationStrategy.generated.h"
 
-UCLASS(BlueprintType, Category="Beam")
+UCLASS(BlueprintType, Category="Beam", DefaultToInstanced, EditInlineNew)
 class BEAMABLECORE_API UWebhookInvocationStrategy : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Invocation Type", Category="Beam")
-	EWebhookInvocationType InvocationType = {};
+	EBeamWebhookInvocationType InvocationType = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Retry Type", Category="Beam")
-	EWebhookRetryType RetryType = {};
+	EBeamWebhookRetryType RetryType = {};
 
 	
 

@@ -7,7 +7,7 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-
+#include "Serialization/BeamJsonUtils.h"
 #include "BeamableCore/Public/AutoGen/SetPresenceStatusRequestBody.h"
 #include "BeamableCore/Public/AutoGen/OnlineStatus.h"
 
@@ -38,7 +38,7 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Player", DisplayName="Beam - Make PutPresenceStatus",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Status,_Description,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Player|Utils|Make/Break", DisplayName="Make PutPresenceStatus",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Status,_Description,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
 	static UPutPresenceStatusRequest* Make(FString _PlayerId, FOptionalPresenceStatus _Status, FOptionalString _Description, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 

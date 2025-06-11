@@ -7,26 +7,26 @@
 
 void UServiceStorageStatus::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("isCurrent"), bIsCurrent);
-	Serializer->WriteValue(TEXT("isRunning"), bIsRunning);
-	Serializer->WriteValue(TEXT("id"), Id);
-	Serializer->WriteValue(TEXT("storageType"), StorageType);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("isCurrent"), bIsCurrent, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("isRunning"), bIsRunning, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("id"), Id, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("storageType"), StorageType, Serializer);
 }
 
 void UServiceStorageStatus::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("isCurrent"), bIsCurrent);
-	Serializer->WriteValue(TEXT("isRunning"), bIsRunning);
-	Serializer->WriteValue(TEXT("id"), Id);
-	Serializer->WriteValue(TEXT("storageType"), StorageType);		
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("isCurrent"), bIsCurrent, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("isRunning"), bIsRunning, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("id"), Id, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("storageType"), StorageType, Serializer);		
 }
 
 void UServiceStorageStatus::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	bIsCurrent = Bag->GetBoolField(TEXT("isCurrent"));
-	bIsRunning = Bag->GetBoolField(TEXT("isRunning"));
-	Id = Bag->GetStringField(TEXT("id"));
-	StorageType = Bag->GetStringField(TEXT("storageType"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("isCurrent")), bIsCurrent);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("isRunning")), bIsRunning);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("id")), Id);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("storageType")), StorageType);
 }
 
 

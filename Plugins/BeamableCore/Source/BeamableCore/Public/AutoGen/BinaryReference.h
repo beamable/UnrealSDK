@@ -3,12 +3,13 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
+#include "Serialization/BeamJsonUtils.h"
 #include "BeamBackend/SemanticTypes/BeamContentId.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
 
 #include "BinaryReference.generated.h"
 
-UCLASS(BlueprintType, Category="Beam")
+UCLASS(BlueprintType, Category="Beam", DefaultToInstanced, EditInlineNew)
 class BEAMABLECORE_API UBinaryReference : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()

@@ -22,23 +22,25 @@ FString UContentBasicManifestChecksumLibrary::ContentBasicManifestChecksumToJson
 	return Result;
 }	
 
-UContentBasicManifestChecksum* UContentBasicManifestChecksumLibrary::Make(FBeamContentManifestId Id, FString Checksum, int64 CreatedAt, FOptionalBool bArchived, UObject* Outer)
+UContentBasicManifestChecksum* UContentBasicManifestChecksumLibrary::Make(FBeamContentManifestId Id, FString Checksum, int64 CreatedAt, FOptionalBool bArchived, FOptionalString Uid, UObject* Outer)
 {
 	auto Serializable = NewObject<UContentBasicManifestChecksum>(Outer);
 	Serializable->Id = Id;
 	Serializable->Checksum = Checksum;
 	Serializable->CreatedAt = CreatedAt;
 	Serializable->bArchived = bArchived;
+	Serializable->Uid = Uid;
 	
 	return Serializable;
 }
 
-void UContentBasicManifestChecksumLibrary::Break(const UContentBasicManifestChecksum* Serializable, FBeamContentManifestId& Id, FString& Checksum, int64& CreatedAt, FOptionalBool& bArchived)
+void UContentBasicManifestChecksumLibrary::Break(const UContentBasicManifestChecksum* Serializable, FBeamContentManifestId& Id, FString& Checksum, int64& CreatedAt, FOptionalBool& bArchived, FOptionalString& Uid)
 {
 	Id = Serializable->Id;
 	Checksum = Serializable->Checksum;
 	CreatedAt = Serializable->CreatedAt;
 	bArchived = Serializable->bArchived;
+	Uid = Serializable->Uid;
 		
 }
 

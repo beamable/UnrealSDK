@@ -12,17 +12,17 @@ void UResultResponse::DeserializeRequestResponse(UObject* RequestData, FString R
 
 void UResultResponse::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("result"), bResult);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("result"), bResult, Serializer);
 }
 
 void UResultResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("result"), bResult);		
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("result"), bResult, Serializer);		
 }
 
 void UResultResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	bResult = Bag->GetBoolField(TEXT("result"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("result")), bResult);
 }
 
 

@@ -176,6 +176,44 @@ void UBeamStatsSubsystem::ResetUpdateCommand(FUserSlot Slot)
 	UpdateCommands.Remove(Slot);
 }
 
+/* * STATS SUBSYSTEM - Read Local State * */
+
+
+bool UBeamStatsSubsystem::TryGetAllStats(FUserSlot Slot, EBeamStatsDomain StatDomain, EBeamStatsVisibility StatVisibility, TArray<FString>& Keys, TArray<FString>& Values)
+{
+	FBeamRealmUser OutRealmUser;
+	if (UserSlots->GetUserDataAtSlot(Slot, OutRealmUser, this))
+	{
+		const auto StatType = UBeamStatsTypeLibrary::MakeStatsType(StatDomain, StatVisibility, OutRealmUser.GamerTag);
+		return _TryGetAllStats(StatType, Keys, Values);
+	}
+	return false;
+}
+
+bool UBeamStatsSubsystem::TryGetAllStatsByGamerTag(FUserSlot Slot, EBeamStatsDomain StatDomain, EBeamStatsVisibility StatVisibility, FBeamGamerTag StatOwner, TArray<FString>& Keys, TArray<FString>& Values)
+{
+	const auto StatType = UBeamStatsTypeLibrary::MakeStatsType(StatDomain, StatVisibility, StatOwner);
+	return _TryGetAllStats(StatType, Keys, Values);
+}
+
+bool UBeamStatsSubsystem::TryGetStat(FUserSlot Slot, EBeamStatsDomain StatDomain, EBeamStatsVisibility StatVisibility, FString StatKey, FString& Value)
+{
+	FBeamRealmUser OutRealmUser;
+	if (UserSlots->GetUserDataAtSlot(Slot, OutRealmUser, this))
+	{
+		const auto StatType = UBeamStatsTypeLibrary::MakeStatsType(StatDomain, StatVisibility, OutRealmUser.GamerTag);
+		return _TryGetStat(StatType, StatKey, Value);
+	}
+	return false;
+}
+
+bool UBeamStatsSubsystem::TryGetStatByGamerTag(FUserSlot Slot, EBeamStatsDomain StatDomain, EBeamStatsVisibility StatVisibility, FBeamGamerTag StatOwner, FString StatKey, FString& Value)
+{
+	const auto StatType = UBeamStatsTypeLibrary::MakeStatsType(StatDomain, StatVisibility, StatOwner);
+	return _TryGetStat(StatType, StatKey, Value);
+}
+
+
 /* * STATS SUBSYSTEM - Operations * */
 
 FBeamOperationHandle UBeamStatsSubsystem::RefreshStatsOperation(FUserSlot UserSlot, FBeamStatsType Type, FBeamOperationEventHandler OnOperationEvent)
@@ -702,4 +740,36 @@ FBeamRequestContext UBeamStatsSubsystem::RequestDeleteStats(const FUserSlot& Use
 	FBeamRequestContext Ctx;
 	StatsApi->CPP_DeleteStats(UserSlot, Req, Handler, Ctx, Op, this);
 	return Ctx;
+}
+
+
+/* * STATS SUBSYSTEM - Local Helper Functions * */
+
+bool UBeamStatsSubsystem::_TryGetAllStats(FBeamStatsType Type, TArray<FString>& Keys, TArray<FString>& Values)
+{
+	if (const auto CachePtr = this->PlayerStatCache.Find(Type))
+	{
+		const auto Cache = *CachePtr;
+		Cache->StringStats.GetKeys(Keys);
+		for (const FString& Key : Keys)
+		{
+			Values.Add(Cache->StringStats[Key]);
+		}
+		return true;
+	}
+	return false;
+}
+
+bool UBeamStatsSubsystem::_TryGetStat(FBeamStatsType Type, FString StatKey, FString& Value)
+{
+	if (const auto CachePtr = this->PlayerStatCache.Find(Type))
+	{
+		const auto Cache = *CachePtr;
+		if (const auto StatVal = Cache->StringStats.Find(StatKey))
+		{
+			Value = *StatVal;
+			return true;
+		}
+	}
+	return false;
 }

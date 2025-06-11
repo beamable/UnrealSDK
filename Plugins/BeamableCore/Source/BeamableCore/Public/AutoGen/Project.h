@@ -4,6 +4,7 @@
 
 #include "Serialization/BeamJsonSerializable.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
+#include "Serialization/BeamJsonUtils.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfString.h"
 #include "BeamBackend/SemanticTypes/BeamPid.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalMapOfString.h"
@@ -12,7 +13,7 @@
 
 #include "Project.generated.h"
 
-UCLASS(BlueprintType, Category="Beam")
+UCLASS(BlueprintType, Category="Beam", DefaultToInstanced, EditInlineNew)
 class BEAMABLECORE_API UProject : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()

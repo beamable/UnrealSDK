@@ -3,11 +3,11 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
-
+#include "Serialization/BeamJsonUtils.h"
 
 #include "LeaderboardPlayerRequestBody.generated.h"
 
-UCLASS(BlueprintType, Category="Beam")
+UCLASS(BlueprintType, Category="Beam", DefaultToInstanced, EditInlineNew)
 class BEAMABLECORE_API ULeaderboardPlayerRequestBody : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()

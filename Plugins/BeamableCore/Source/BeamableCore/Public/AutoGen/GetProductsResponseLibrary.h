@@ -13,12 +13,12 @@ class BEAMABLECORE_API UGetProductsResponseLibrary : public UBlueprintFunctionLi
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - GetProductsResponse To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Payments|Utils|Json", DisplayName="GetProductsResponse To JSON String")
 	static FString GetProductsResponseToJsonString(const UGetProductsResponse* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make GetProductsResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Payments|Utils|Make/Break", DisplayName="Make GetProductsResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static UGetProductsResponse* Make(TArray<UProductView*> Products, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break GetProductsResponse", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Payments|Utils|Make/Break", DisplayName="Break GetProductsResponse", meta=(NativeBreakFunc))
 	static void Break(const UGetProductsResponse* Serializable, TArray<UProductView*>& Products);
 };

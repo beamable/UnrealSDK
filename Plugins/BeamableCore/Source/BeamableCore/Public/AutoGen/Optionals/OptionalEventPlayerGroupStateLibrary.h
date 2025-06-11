@@ -14,7 +14,7 @@ public:
 	/**
 	* @brief Constructs an FOptionalEventPlayerGroupState struct from the given value.	  
 	*/
-	UFUNCTION(BlueprintPure, Category="Beam|Optionals", meta=(DisplayName="Beam - Make Optional EventPlayerGroupState", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|EventPlayers|Utils|Optionals", meta=(DisplayName="Make Optional EventPlayerGroupState", NativeMakeFunc))
 	static FOptionalEventPlayerGroupState MakeOptional(UEventPlayerGroupState* Value);
 
 	/**
@@ -22,7 +22,7 @@ public:
 	 * @param Value The UEventPlayerGroupState* to convert.
 	 * @return An optional with the EventPlayerGroupState set as it's value.
 	 */
-	UFUNCTION(BlueprintPure, Category="Beam|Optionals", meta = (DisplayName = "Beam - EventPlayerGroupState To Optional", CompactNodeTitle = "->", BlueprintAutocast))
+	UFUNCTION(BlueprintPure, Category="Beam|EventPlayers|Utils|Optionals", meta = (DisplayName="EventPlayerGroupState To Optional", CompactNodeTitle = "->", BlueprintAutocast))
 	static FOptionalEventPlayerGroupState Conv_OptionalFromValue(UEventPlayerGroupState* Value);
 	
 	/**
@@ -31,7 +31,7 @@ public:
 	 * @param Value The value in the optional. 
 	 * @return Whether or not the value was set. We provide no guarantees on what the value is if the optional is not set. 
 	 */
-	UFUNCTION(BlueprintCallable, Category="Beam|Optionals", meta=(DisplayName="Beam - Optional Has Value", ExpandBoolAsExecs="ReturnValue"))
+	UFUNCTION(BlueprintCallable, Category="Beam|EventPlayers|Utils|Optionals", meta=(DisplayName="Optional Has Value", ExpandBoolAsExecs="ReturnValue"))
 	static bool HasValue(const FOptionalEventPlayerGroupState& Optional, UEventPlayerGroupState*& Value);
 
 	/**
@@ -41,7 +41,7 @@ public:
 	 * @param WasSet Whether or not the value was set. When false, the return value is the given DefaultValue.   
 	 * @return The default value, if the Optional IS NOT set. The optional value, otherwise.
 	 */
-	UFUNCTION(BlueprintPure, Category="Beam|Optionals", meta=(DisplayName="Beam - Get Optional's EventPlayerGroupState Value"))
+	UFUNCTION(BlueprintPure, Category="Beam|EventPlayers|Utils|Optionals", meta=(DisplayName="Get Optional's EventPlayerGroupState Value"))
 	static UEventPlayerGroupState* GetOptionalValue(const FOptionalEventPlayerGroupState& Optional, UEventPlayerGroupState* DefaultValue, bool& WasSet);
 
 	

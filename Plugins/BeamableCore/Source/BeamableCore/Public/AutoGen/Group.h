@@ -4,6 +4,7 @@
 #include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfInFlightMessage.h"
+#include "Serialization/BeamJsonUtils.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfDonationRequestBody.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalMapOfDonationRequestBody.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
@@ -11,11 +12,11 @@
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalInt32.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfGroupRole.h"
 #include "BeamableCore/Public/AutoGen/Member.h"
-#include "BeamableCore/Public/AutoGen/Enums/GroupType.h"
+#include "BeamableCore/Public/AutoGen/Enums/BeamGroupType.h"
 
 #include "Group.generated.h"
 
-UCLASS(BlueprintType, Category="Beam")
+UCLASS(BlueprintType, Category="Beam", DefaultToInstanced, EditInlineNew)
 class BEAMABLECORE_API UGroup : public UObject, public IBeamJsonSerializableUObject, public IBeamBaseResponseBodyInterface
 {
 	GENERATED_BODY()
@@ -26,7 +27,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Max Size", Category="Beam")
 	int32 MaxSize = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Type", Category="Beam")
-	EGroupType Type = {};
+	EBeamGroupType Type = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Id", Category="Beam")
 	int64 Id = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Motd", Category="Beam")

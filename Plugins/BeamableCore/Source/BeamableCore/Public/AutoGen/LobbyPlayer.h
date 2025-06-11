@@ -5,11 +5,11 @@
 #include "Serialization/BeamJsonSerializable.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalBeamGamerTag.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfBeamTag.h"
-#include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalDateTime.h"
 
 #include "LobbyPlayer.generated.h"
 
-UCLASS(BlueprintType, Category="Beam")
+UCLASS(BlueprintType, Category="Beam", DefaultToInstanced, EditInlineNew)
 class BEAMABLECORE_API ULobbyPlayer : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
@@ -18,7 +18,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Player Id", Category="Beam")
 	FOptionalBeamGamerTag PlayerId = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Joined", Category="Beam")
-	FOptionalString Joined = {};
+	FOptionalDateTime Joined = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Tags", Category="Beam")
 	FOptionalArrayOfBeamTag Tags = {};
 

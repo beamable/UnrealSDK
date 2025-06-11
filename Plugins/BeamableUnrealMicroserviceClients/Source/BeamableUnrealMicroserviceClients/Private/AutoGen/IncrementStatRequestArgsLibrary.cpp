@@ -22,17 +22,17 @@ FString UIncrementStatRequestArgsLibrary::IncrementStatRequestArgsToJsonString(c
 	return Result;
 }	
 
-UIncrementStatRequestArgs* UIncrementStatRequestArgsLibrary::Make(int64 UserID, UObject* Outer)
+UIncrementStatRequestArgs* UIncrementStatRequestArgsLibrary::Make(int64 GamerTag, UObject* Outer)
 {
 	auto Serializable = NewObject<UIncrementStatRequestArgs>(Outer);
-	Serializable->UserID = UserID;
+	Serializable->GamerTag = GamerTag;
 	
 	return Serializable;
 }
 
-void UIncrementStatRequestArgsLibrary::Break(const UIncrementStatRequestArgs* Serializable, int64& UserID)
+void UIncrementStatRequestArgsLibrary::Break(const UIncrementStatRequestArgs* Serializable, int64& GamerTag)
 {
-	UserID = Serializable->UserID;
+	GamerTag = Serializable->GamerTag;
 		
 }
 

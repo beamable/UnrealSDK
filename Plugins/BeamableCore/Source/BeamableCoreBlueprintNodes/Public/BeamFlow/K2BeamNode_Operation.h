@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "K2BeamNode_BeamFlow.h"
+#include "K2BeamNode_GetLocalState.h"
 #include "K2Node_BreakStruct.h"
 #include "K2Node_CallFunction.h"
 #include "RequestTracker/BeamOperation.h"
@@ -16,7 +17,7 @@ class UK2Node_Event;
 UENUM(BlueprintType)
 enum EOperationNodeModes
 {
-	OnCompleted,	
+	OnCompleted,
 	Success_Error_Cancelled,
 	OnSubEvents
 };
@@ -24,7 +25,7 @@ enum EOperationNodeModes
 /**
  * 
  */
-UCLASS(Blueprintable, BlueprintType, meta=(BeamFlowNode))
+UCLASS(NotBlueprintable, NotBlueprintType, Hidden, meta=(BeamFlowNode))
 class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_Operation : public UK2BeamNode_BeamFlow
 {
 	GENERATED_BODY()
@@ -37,7 +38,7 @@ class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_Operation : public UK2BeamNode_
 
 	const FName OP_Operation_Expanded_OnSuccess = FName(TEXT("OnSuccess"));
 	const FName OP_Operation_Expanded_OnError = FName(TEXT("OnError"));
-	const FName OP_Operation_Expanded_OnCancelled = FName(TEXT("OnCancelled"));	
+	const FName OP_Operation_Expanded_OnCancelled = FName(TEXT("OnCancelled"));
 
 	const FString Operation_InvalidPinInFlowMessage = LOCTEXT("InvalidPinInFlowOfBeamOperationNode_Error",
 	                                                          "Node @@ in {0} Flow is attempting to use the {1} Pin! That is only available on {2} Flow(s)!")
@@ -60,8 +61,8 @@ class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_Operation : public UK2BeamNode_
 	bool bIsMultiUser;
 
 
-	UPROPERTY(EditAnywhere, Category="Beam Flow|Operations")
-	TEnumAsByte<EOperationNodeModes> CurrentExpandedMode{OnCompleted};
+	UPROPERTY(EditAnywhere, Category="Beam|Operations")
+	TEnumAsByte<EOperationNodeModes> CurrentExpandedMode{Success_Error_Cancelled};
 
 	UPROPERTY()
 	TArray<FName> SuccessEventFlowPinNames;
@@ -74,11 +75,36 @@ class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_Operation : public UK2BeamNode_
 	UPROPERTY()
 	TArray<FString> WrappedOperationFunctionInputPinNames;
 
+	virtual FString GetServiceName() const override
+	{
+		// In order to have the service name we are extract it from the name of the subsystem removing the Beam and Subsystem words from the name.
+		// E.g BeamInventorySubsystem will become only Inventory.
+		// If this pattern don't match with the case override this.
+		FString Name = GetRuntimeSubsystemClass()->GetName();
+		Name = Name.Replace(TEXT("Beam"), TEXT(""));
+		Name = Name.Replace(TEXT("Subsystem"), TEXT(""));
+		return Name;
+	};
+
+	virtual FText GetTooltipText() const override
+	{
+		auto Function = GetRuntimeSubsystemClass()->FindFunctionByName(GetOperationFunctionName());
+		FText BaseTooltip = {};
+		if (Function != nullptr)
+		{
+			return FText::FromString(ObjectTools::GetDefaultTooltipForFunction(Function));
+		}
+
+		return Super::GetTooltipText();
+	}
+
+	virtual FText GetKeywords() const override { return FText::FromString(FString::Printf(TEXT("Beam %s"), *GetServiceName())); };
 
 	//UK2Node impl
 	virtual void AllocateDefaultPins() override;
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
 	virtual void ExpandNode(FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph) override;
+	virtual UObject* GetJumpTargetForDoubleClick() const override;
 	//BeamFlowNode impl
 
 
@@ -107,6 +133,12 @@ protected:
 	 */
 	virtual UClass* GetRuntimeSubsystemClass() const;
 
+	/**
+	 * Returns 
+	 * */
+	virtual TMap<FName, UClass*> GetOperationEventCastClass(EBeamOperationEventType Type) const;
+
+	
 	/**
 	 * Returns the list of possible values for FBeamOperationEvent.EventCode given the type of the event (success/error/etc).
 	 * Must always include NAME_None as its first value (the base implementation guarantees this) so call it if you override this to expose other events. 
@@ -159,8 +191,8 @@ protected:
 	                                   UEdGraphPin* EventStructPin, const TArray<TArray<UEdGraphNode*>>& PerFlowNodes,
 	                                   const TArray<TArray<UEdGraphNode*>>& PerFlowEventNodes);
 
-	void ExpandBeamFlowSubEvents(FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph, const UEdGraphSchema_K2* K2Schema,	                             
-	                             const TArray<FName>& EventIds, const TArray<FName>& EventsFlowPinNames, UK2Node_BreakStruct* BreakOperationResultNode, UEdGraphPin* SubEventSwitchExecPin);
+	void ExpandBeamFlowSubEvents(FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph, const UEdGraphSchema_K2* K2Schema,
+	                             const TArray<FName>& EventIds, const TMap<FName, UClass*>& EventDataCasts, const TArray<FName>& EventsFlowPinNames, UK2Node_BreakStruct* BreakOperationResultNode, UEdGraphPin* SubEventSwitchExecPin);
 };
 
 #undef LOCTEXT_NAMESPACE

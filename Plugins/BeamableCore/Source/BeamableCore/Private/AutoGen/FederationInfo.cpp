@@ -7,22 +7,22 @@
 
 void UFederationInfo::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("service"), Service);
-	Serializer->WriteValue(TEXT("namespace"), Namespace);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("service"), Service, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("namespace"), Namespace, Serializer);
 	UBeamJsonUtils::SerializeJsonObject(TEXT("settings"), Settings, Serializer);
 }
 
 void UFederationInfo::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("service"), Service);
-	Serializer->WriteValue(TEXT("namespace"), Namespace);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("service"), Service, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("namespace"), Namespace, Serializer);
 	UBeamJsonUtils::SerializeJsonObject(TEXT("settings"), Settings, Serializer);		
 }
 
 void UFederationInfo::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	Service = Bag->GetStringField(TEXT("service"));
-	Namespace = Bag->GetStringField(TEXT("namespace"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("service")), Service);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("namespace")), Namespace);
 	UBeamJsonUtils::DeserializeJsonObject(TEXT("settings"), Bag, Settings, OuterOwner);
 }
 

@@ -36,7 +36,7 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Auth", DisplayName="Beam - Make PostTokensGuest",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Scope,_CustomerId,_RealmId,_Context,_InitProperties,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Auth|Utils|Make/Break", DisplayName="Make PostTokensGuest",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Scope,_CustomerId,_RealmId,_Context,_InitProperties,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
 	static UPostTokensGuestRequest* Make(FOptionalString _Scope, FOptionalBeamCid _CustomerId, FOptionalBeamPid _RealmId, FOptionalContextInfo _Context, FOptionalMapOfString _InitProperties, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 

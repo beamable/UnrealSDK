@@ -4,10 +4,11 @@
 
 #include "Serialization/BeamJsonSerializable.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalBeamContentManifestId.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
 
 #include "GetManifestRequestJson.generated.h"
 
-UCLASS(BlueprintType, Category="Beam")
+UCLASS(BlueprintType, Category="Beam", DefaultToInstanced, EditInlineNew)
 class BEAMABLECORE_API UGetManifestRequestJson : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
@@ -15,6 +16,8 @@ class BEAMABLECORE_API UGetManifestRequestJson : public UObject, public IBeamJso
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Id", Category="Beam")
 	FOptionalBeamContentManifestId Id = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Uid", Category="Beam")
+	FOptionalString Uid = {};
 
 	
 

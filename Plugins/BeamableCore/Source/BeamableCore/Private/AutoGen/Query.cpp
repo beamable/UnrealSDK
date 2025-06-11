@@ -12,17 +12,17 @@ void UQuery::DeserializeRequestResponse(UObject* RequestData, FString ResponseCo
 
 void UQuery::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("queryId"), QueryId);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("queryId"), QueryId, Serializer);
 }
 
 void UQuery::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("queryId"), QueryId);		
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("queryId"), QueryId, Serializer);		
 }
 
 void UQuery::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	QueryId = Bag->GetStringField(TEXT("queryId"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("queryId")), QueryId);
 }
 
 

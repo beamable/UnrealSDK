@@ -13,7 +13,7 @@ void USessionClientHistoryResponse::DeserializeRequestResponse(UObject* RequestD
 void USessionClientHistoryResponse::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeUObject<ULocalDate*>("date", Date, Serializer);
-	Serializer->WriteValue(TEXT("daysPlayed"), DaysPlayed);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("daysPlayed"), DaysPlayed, Serializer);
 	UBeamJsonUtils::SerializeArray<FString>(TEXT("sessions"), Sessions, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("installDate"), &InstallDate, Serializer);
 }
@@ -21,7 +21,7 @@ void USessionClientHistoryResponse::BeamSerializeProperties(TUnrealJsonSerialize
 void USessionClientHistoryResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeUObject<ULocalDate*>("date", Date, Serializer);
-	Serializer->WriteValue(TEXT("daysPlayed"), DaysPlayed);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("daysPlayed"), DaysPlayed, Serializer);
 	UBeamJsonUtils::SerializeArray<FString>(TEXT("sessions"), Sessions, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("installDate"), &InstallDate, Serializer);		
 }
@@ -29,7 +29,7 @@ void USessionClientHistoryResponse::BeamSerializeProperties(TUnrealPrettyJsonSer
 void USessionClientHistoryResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	UBeamJsonUtils::DeserializeUObject<ULocalDate*>("date", Bag, Date, OuterOwner);
-	DaysPlayed = Bag->GetIntegerField(TEXT("daysPlayed"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("daysPlayed")), DaysPlayed);
 	UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("sessions")), Sessions, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("installDate", Bag, InstallDate, OuterOwner);
 }

@@ -7,17 +7,17 @@
 
 void UAliasAvailableRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("alias"), Alias);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("alias"), Alias, Serializer);
 }
 
 void UAliasAvailableRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("alias"), Alias);		
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("alias"), Alias, Serializer);		
 }
 
 void UAliasAvailableRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	Alias = Bag->GetStringField(TEXT("alias"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("alias")), Alias);
 }
 
 

@@ -8,12 +8,13 @@
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalMapOfString.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfItemCreateRequestBody.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfEventInventoryRewardItem.h"
+#include "Serialization/BeamJsonUtils.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalDouble.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfEventRewardObtain.h"
 
 #include "EventRewardState.generated.h"
 
-UCLASS(BlueprintType, Category="Beam")
+UCLASS(BlueprintType, Category="Beam", DefaultToInstanced, EditInlineNew)
 class BEAMABLECORE_API UEventRewardState : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()

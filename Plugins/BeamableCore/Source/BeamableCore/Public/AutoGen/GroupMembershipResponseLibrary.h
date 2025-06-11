@@ -13,12 +13,12 @@ class BEAMABLECORE_API UGroupMembershipResponseLibrary : public UBlueprintFuncti
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - GroupMembershipResponse To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|GroupUsers|Utils|Json", DisplayName="GroupMembershipResponse To JSON String")
 	static FString GroupMembershipResponseToJsonString(const UGroupMembershipResponse* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make GroupMembershipResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="GamerTag, Outer", NativeMakeFunc))
-	static UGroupMembershipResponse* Make(bool bMember, EGroupType Type, UGroupMetaData* Group, TArray<int64> SubGroups, FOptionalInt64 GamerTag, UObject* Outer);
+	UFUNCTION(BlueprintPure, Category="Beam|GroupUsers|Utils|Make/Break", DisplayName="Make GroupMembershipResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="GamerTag, Outer", NativeMakeFunc))
+	static UGroupMembershipResponse* Make(bool bMember, EBeamGroupType Type, UGroupMetaData* Group, TArray<int64> SubGroups, FOptionalInt64 GamerTag, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break GroupMembershipResponse", meta=(NativeBreakFunc))
-	static void Break(const UGroupMembershipResponse* Serializable, bool& bMember, EGroupType& Type, UGroupMetaData*& Group, TArray<int64>& SubGroups, FOptionalInt64& GamerTag);
+	UFUNCTION(BlueprintPure, Category="Beam|GroupUsers|Utils|Make/Break", DisplayName="Break GroupMembershipResponse", meta=(NativeBreakFunc))
+	static void Break(const UGroupMembershipResponse* Serializable, bool& bMember, EBeamGroupType& Type, UGroupMetaData*& Group, TArray<int64>& SubGroups, FOptionalInt64& GamerTag);
 };

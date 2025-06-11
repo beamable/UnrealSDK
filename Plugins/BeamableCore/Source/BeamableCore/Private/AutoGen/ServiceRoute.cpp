@@ -7,23 +7,23 @@
 
 void UServiceRoute::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("service"), Service);
-	Serializer->WriteValue(TEXT("endpoint"), Endpoint);
-	Serializer->WriteValue(TEXT("serviceTypeStr"), UWebhookServiceTypeLibrary::WebhookServiceTypeToSerializationName(ServiceTypeStr));
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("service"), Service, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("endpoint"), Endpoint, Serializer);
+	Serializer->WriteValue(TEXT("serviceTypeStr"), UBeamJsonUtils::EnumToSerializationName(ServiceTypeStr));
 }
 
 void UServiceRoute::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("service"), Service);
-	Serializer->WriteValue(TEXT("endpoint"), Endpoint);
-	Serializer->WriteValue(TEXT("serviceTypeStr"), UWebhookServiceTypeLibrary::WebhookServiceTypeToSerializationName(ServiceTypeStr));		
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("service"), Service, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("endpoint"), Endpoint, Serializer);
+	Serializer->WriteValue(TEXT("serviceTypeStr"), UBeamJsonUtils::EnumToSerializationName(ServiceTypeStr));		
 }
 
 void UServiceRoute::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	Service = Bag->GetStringField(TEXT("service"));
-	Endpoint = Bag->GetStringField(TEXT("endpoint"));
-	ServiceTypeStr = UWebhookServiceTypeLibrary::SerializationNameToWebhookServiceType(Bag->GetStringField(TEXT("serviceTypeStr")));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("service")), Service);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("endpoint")), Endpoint);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("serviceTypeStr")), ServiceTypeStr);
 }
 
 

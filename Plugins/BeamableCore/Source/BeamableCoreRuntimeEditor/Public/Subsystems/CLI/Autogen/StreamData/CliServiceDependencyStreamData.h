@@ -20,20 +20,20 @@ public:
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("storageType"), StorageType);
-		Serializer->WriteValue(TEXT("id"), Id);	
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("storageType"), StorageType, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("id"), Id, Serializer);	
 	}
 
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("storageType"), StorageType);
-		Serializer->WriteValue(TEXT("id"), Id);	
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("storageType"), StorageType, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("id"), Id, Serializer);	
 	}
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		StorageType = Bag->GetStringField(TEXT("storageType"));
-		Id = Bag->GetStringField(TEXT("id"));	
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("storageType")), StorageType);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("id")), Id);	
 	}
 };
 

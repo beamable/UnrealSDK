@@ -2,8 +2,7 @@
 
 #include "Subsystems/CLI/BeamCliCommand.h"
 #include "Serialization/BeamJsonUtils.h"
-#include "Subsystems/CLI/Autogen/StreamData/LocalContentManifestStreamData.h"
-#include "Subsystems/CLI/Autogen/StreamData/LocalContentManifestEntryStreamData.h"
+
 #include "BeamCliContentPublishCommand.generated.h"
 
 
@@ -14,22 +13,21 @@ class UBeamCliContentPublishStreamData : public UObject, public IBeamJsonSeriali
 
 public:	
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TArray<ULocalContentManifestStreamData*> Manifests = {};
+	
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
 	{
-		UBeamJsonUtils::SerializeArray<ULocalContentManifestStreamData*>(TEXT("Manifests"), Manifests, Serializer);	
+			
 	}
 
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
 	{
-		UBeamJsonUtils::SerializeArray<ULocalContentManifestStreamData*>(TEXT("Manifests"), Manifests, Serializer);	
+			
 	}
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		UBeamJsonUtils::DeserializeArray<ULocalContentManifestStreamData*>(Bag->GetArrayField(TEXT("Manifests")), Manifests, OuterOwner);	
+			
 	}
 };
 
@@ -42,7 +40,7 @@ Usage:
   Beamable.Tools content publish [options]
 
 Options:
-  --manifest-ids <manifest-ids>          Inform a subset of ','-separated manifest ids for which to return data. By default, will return all manifests []
+  --manifest-ids <manifest-ids>          Inform a subset of ','-separated manifest ids for which to return data. By default, will return just the global manifest [default: global]
   --dryrun                               [DEPRECATED] Run as much of the command as possible without making any network calls
   --cid <cid>                            CID (CustomerId) to use (found in Portal->Account); defaults to whatever is in '.beamable/connection-configuration.json'
   --pid <pid>                            PID (Realm ID) to use (found in Portal -> Games -> Any Realm's details); defaults to whatever is in '.beamable/connection-configuration.json'
@@ -77,7 +75,7 @@ public:
 	inline static FString StreamType = FString(TEXT("stream"));
 	UPROPERTY() TArray<UBeamCliContentPublishStreamData*> Stream;
 	UPROPERTY() TArray<int64> Timestamps;
-	TFunction<void (const TArray<UBeamCliContentPublishStreamData*>& StreamData, const TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnStreamOutput;	
+	TFunction<void (TArray<UBeamCliContentPublishStreamData*>& StreamData, TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnStreamOutput;	
 
 	TFunction<void (const int& ResCode, const FBeamOperationHandle& Op)> OnCompleted;
 	virtual bool HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer) override;

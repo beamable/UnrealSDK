@@ -27,7 +27,7 @@ void ULiveOpsDemoMSUpgradeItemRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-ULiveOpsDemoMSUpgradeItemRequest* ULiveOpsDemoMSUpgradeItemRequest::Make(int64 _UserID, int64 _ItemInstaceID, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
+ULiveOpsDemoMSUpgradeItemRequest* ULiveOpsDemoMSUpgradeItemRequest::Make(int64 _GamerTag, int64 _ItemInstaceID, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	ULiveOpsDemoMSUpgradeItemRequest* Req = NewObject<ULiveOpsDemoMSUpgradeItemRequest>(RequestOwner);
 	Req->CustomHeaders = TMap{CustomHeaders};
@@ -37,7 +37,7 @@ ULiveOpsDemoMSUpgradeItemRequest* ULiveOpsDemoMSUpgradeItemRequest::Make(int64 _
 	
 	// Makes a body and fill up with parameters (Blank if no body parameters exist)
 	Req->Body = NewObject<UUpgradeItemRequestArgs>(Req);
-	Req->Body->UserID = _UserID;
+	Req->Body->GamerTag = _GamerTag;
 	Req->Body->ItemInstaceID = _ItemInstaceID;
 	
 

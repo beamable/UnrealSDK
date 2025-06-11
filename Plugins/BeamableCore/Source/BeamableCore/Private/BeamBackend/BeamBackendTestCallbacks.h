@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/Enums/GroupType.h"
+#include "AutoGen/Enums/BeamGroupType.h"
 #include "BeamBackend/BeamBackend.h"
 #include "BeamBackend/BeamBaseRequestInterface.h"
 #include "BeamBackend/BeamBaseResponseBodyInterface.h"
@@ -123,9 +123,9 @@ struct FBeamMockGetRequestCSVResponseRow : public FTableRowBase
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 	FString Field4;
-	
+
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
-	EGroupType Field5 = EGroupType::BEAM_guild;
+	EBeamGroupType Field5 = EBeamGroupType::BEAM_guild;
 };
 
 UCLASS(BlueprintType)
@@ -150,7 +150,7 @@ public:
 		                                  FBeamMockGetRequestCSVResponseRow::StaticStruct(),
 		                                  FBeamMockGetRequestCSVResponseRow::KeyField,
 		                                  ResponseContent);
-		
+
 		UBeamCsvUtils::StoreNameAsColumn<FBeamMockGetRequestCSVResponseRow>(FakeTable, FBeamMockGetRequestCSVResponseRow::KeyField);
 	}
 };

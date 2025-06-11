@@ -7,12 +7,12 @@
 
 void UCreatePlanRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("mongoSSL"), bMongoSSL);
-	Serializer->WriteValue(TEXT("sharded"), bSharded);
-	Serializer->WriteValue(TEXT("name"), Name);
-	Serializer->WriteValue(TEXT("memcachedHosts"), MemcachedHosts);
-	Serializer->WriteValue(TEXT("platformJBDC"), PlatformJBDC);
-	Serializer->WriteValue(TEXT("mongoHosts"), MongoHosts);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("mongoSSL"), bMongoSSL, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("sharded"), bSharded, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("name"), Name, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("memcachedHosts"), MemcachedHosts, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("platformJBDC"), PlatformJBDC, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("mongoHosts"), MongoHosts, Serializer);
 	UBeamJsonUtils::SerializeArray<URedisShardRequestBody*>(TEXT("redisShards"), RedisShards, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("mongoSrvAddress"), &MongoSrvAddress, Serializer);
 	UBeamJsonUtils::SerializeOptional<TArray<FString>, FString>(TEXT("messageBusAnalytics"), &MessageBusAnalytics, Serializer);
@@ -21,12 +21,12 @@ void UCreatePlanRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Seri
 
 void UCreatePlanRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("mongoSSL"), bMongoSSL);
-	Serializer->WriteValue(TEXT("sharded"), bSharded);
-	Serializer->WriteValue(TEXT("name"), Name);
-	Serializer->WriteValue(TEXT("memcachedHosts"), MemcachedHosts);
-	Serializer->WriteValue(TEXT("platformJBDC"), PlatformJBDC);
-	Serializer->WriteValue(TEXT("mongoHosts"), MongoHosts);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("mongoSSL"), bMongoSSL, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("sharded"), bSharded, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("name"), Name, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("memcachedHosts"), MemcachedHosts, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("platformJBDC"), PlatformJBDC, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("mongoHosts"), MongoHosts, Serializer);
 	UBeamJsonUtils::SerializeArray<URedisShardRequestBody*>(TEXT("redisShards"), RedisShards, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("mongoSrvAddress"), &MongoSrvAddress, Serializer);
 	UBeamJsonUtils::SerializeOptional<TArray<FString>, FString>(TEXT("messageBusAnalytics"), &MessageBusAnalytics, Serializer);
@@ -35,12 +35,12 @@ void UCreatePlanRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer
 
 void UCreatePlanRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	bMongoSSL = Bag->GetBoolField(TEXT("mongoSSL"));
-	bSharded = Bag->GetBoolField(TEXT("sharded"));
-	Name = Bag->GetStringField(TEXT("name"));
-	MemcachedHosts = Bag->GetStringField(TEXT("memcachedHosts"));
-	PlatformJBDC = Bag->GetStringField(TEXT("platformJBDC"));
-	MongoHosts = Bag->GetStringField(TEXT("mongoHosts"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("mongoSSL")), bMongoSSL);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("sharded")), bSharded);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("name")), Name);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("memcachedHosts")), MemcachedHosts);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("platformJBDC")), PlatformJBDC);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("mongoHosts")), MongoHosts);
 	UBeamJsonUtils::DeserializeArray<URedisShardRequestBody*>(Bag->GetArrayField(TEXT("redisShards")), RedisShards, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("mongoSrvAddress", Bag, MongoSrvAddress, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<TArray<FString>, FString>("messageBusAnalytics", Bag, MessageBusAnalytics, OuterOwner);

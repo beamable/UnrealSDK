@@ -12,7 +12,6 @@ using Beamable.Server.Api.RealmConfig;
 using Beamable.Server.Api.Stats;
 using Discord;
 using Discord.WebSocket;
-using Serilog;
 using UnityEngine;
 using EmptyResponse = Beamable.Common.Api.EmptyResponse;
 

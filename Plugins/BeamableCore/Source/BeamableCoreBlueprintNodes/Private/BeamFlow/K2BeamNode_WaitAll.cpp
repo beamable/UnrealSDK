@@ -36,12 +36,12 @@ const FName UK2BeamNode_WaitAll::P_Evt = FName("Evt");
 
 FText UK2BeamNode_WaitAll::GetMenuCategory() const
 {
-	return LOCTEXT("BeamNodeCategory", "Beam|Flow");
+	return LOCTEXT("BeamNodeCategory", "Beam|Operations");
 }
 
 FText UK2BeamNode_WaitAll::GetNodeTitle(ENodeTitleType::Type TitleType) const
 {
-	return LOCTEXT("BeamNodeTitle", "Flow - Utils - Wait All");
+	return LOCTEXT("BeamNodeTitle", "Beam - Operations - Utils - Wait All");
 }
 
 void UK2BeamNode_WaitAll::AllocateDefaultPins()

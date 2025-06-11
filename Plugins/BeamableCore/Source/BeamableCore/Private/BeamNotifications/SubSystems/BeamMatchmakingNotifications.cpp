@@ -58,14 +58,20 @@ void FMatchmakingUpdateNotificationMessage::BeamDeserializeProperties(const TSha
 
 void FMatchmakingTimeoutNotificationMessage::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
+	Serializer->WriteValue(TEXT("ticketId"), TicketId);
+	UBeamJsonUtils::SerializeArray<FString, FString>(TEXT("players"), Players, Serializer);
 }
 
 void FMatchmakingTimeoutNotificationMessage::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
+	Serializer->WriteValue(TEXT("ticketId"), TicketId);
+	UBeamJsonUtils::SerializeArray<FString, FString>(TEXT("players"), Players, Serializer);
 }
 
 void FMatchmakingTimeoutNotificationMessage::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
+	TicketId = Bag->GetStringField(TEXT("ticketId"));
+	UBeamJsonUtils::DeserializeArray<FString, FString>(Bag->GetArrayField(TEXT("players")), Players, OuterOwner);
 }
 
 void UBeamMatchmakingNotifications::Initialize(FSubsystemCollectionBase& Collection)
@@ -131,7 +137,7 @@ void UBeamMatchmakingNotifications::SubscribeToRemoteUpdate(const FUserSlot& Slo
 }
 
 FDelegateHandle UBeamMatchmakingNotifications::CPP_SubscribeToRemoteUpdate(const FUserSlot& Slot, const FName& SocketName, const FOnMatchmakingRemoteUpdateNotificationCode& Handler,
-                                                                                UObject* ContextObject) const
+                                                                           UObject* ContextObject) const
 {
 	FDelegateHandle Handle;
 	const auto Key = CTX_KEY_Matchmaking_RemoteUpdate;

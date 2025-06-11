@@ -24,7 +24,7 @@ class BEAMABLECORE_API UBeamLobbyEventLibrary : public UBlueprintFunctionLibrary
 	GENERATED_BODY()
 
 public:
-	UFUNCTION(BlueprintPure, meta = (DisplayName = "Beam - ContentType To Serialization Name", CompactNodeTitle = "->"), Category="Beam|Enums")
+	UFUNCTION(BlueprintPure, meta = (DisplayName="ContentType To Serialization Name", CompactNodeTitle = "->"), Category="Beam|Enums")
 	static FString ToSerializationName(EBeamLobbyEvent Value)
 	{
 		const UEnum* Enum = StaticEnum<EBeamLobbyEvent>();
@@ -35,7 +35,7 @@ public:
 		return SerializationName.RightChop(5);
 	}
 
-	UFUNCTION(BlueprintPure, meta = (DisplayName = "Beam - Serialization Name To ContentType", CompactNodeTitle = "->"), Category="Beam|Enums")
+	UFUNCTION(BlueprintPure, meta = (DisplayName="Serialization Name To ContentType", CompactNodeTitle = "->"), Category="Beam|Enums")
 	static EBeamLobbyEvent ToEnum(FString Value)
 	{
 		const UEnum* Enum = StaticEnum<EBeamLobbyEvent>();

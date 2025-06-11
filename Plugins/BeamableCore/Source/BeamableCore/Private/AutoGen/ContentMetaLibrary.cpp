@@ -1,4 +1,3 @@
-
 #include "BeamableCore/Public/AutoGen/ContentMetaLibrary.h"
 
 #include "CoreMinimal.h"
@@ -7,7 +6,7 @@
 FString UContentMetaLibrary::ContentMetaToJsonString(const UContentMeta* Serializable, const bool Pretty)
 {
 	FString Result = FString{};
-	if(Pretty)
+	if (Pretty)
 	{
 		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<TCHAR>>::Create(&Result);
 		Serializable->BeamSerialize(JsonSerializer);
@@ -17,26 +16,22 @@ FString UContentMetaLibrary::ContentMetaToJsonString(const UContentMeta* Seriali
 	{
 		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<TCHAR>>::Create(&Result);
 		Serializable->BeamSerialize(JsonSerializer);
-		JsonSerializer->Close();			
+		JsonSerializer->Close();
 	}
 	return Result;
-}	
+}
 
-UContentMeta* UContentMetaLibrary::Make(EContentVisibility Visibility, FOptionalString Text, FOptionalString Data, UObject* Outer)
+UContentMeta* UContentMetaLibrary::Make(EBeamContentVisibility Visibility, FOptionalString Text, UObject* Outer)
 {
 	auto Serializable = NewObject<UContentMeta>(Outer);
 	Serializable->Visibility = Visibility;
 	Serializable->Text = Text;
-	Serializable->Data = Data;
-	
+
 	return Serializable;
 }
 
-void UContentMetaLibrary::Break(const UContentMeta* Serializable, EContentVisibility& Visibility, FOptionalString& Text, FOptionalString& Data)
+void UContentMetaLibrary::Break(const UContentMeta* Serializable, EBeamContentVisibility& Visibility, FOptionalString& Text)
 {
 	Visibility = Serializable->Visibility;
 	Text = Serializable->Text;
-	Data = Serializable->Data;
-		
 }
-

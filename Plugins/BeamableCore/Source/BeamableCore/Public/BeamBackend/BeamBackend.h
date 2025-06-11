@@ -230,6 +230,11 @@ public:
 	static const FString HEADER_PROJECT_ID;
 	static const FString HEADER_ROUTING_KEY_MAP;
 
+	static const FString HEADER_BEAMABLE_VERSION;
+	static const FString HEADER_UNREAL_VERSION;
+	static const FString HEADER_ENGINE_TYPE;
+	static const FString HEADER_APPLICATION_VERSION;
+
 	/**
 	 * @brief List of error codes that mean we should re-auth and automatically make the request again.
 	 */
@@ -261,6 +266,9 @@ public:
 
 	/** Returns true only when at least one PIE world exists.  */
 	bool IsInPIE() const;
+
+	/** Returns the current project build version from the ini file.  */
+	FString GetProjectAppVersion() const;
 
 	/*
 	  _____                            _         __  _____                                      
@@ -526,9 +534,10 @@ public:
 
 		// Ensures we get a valid Next Id even if requests get made from multiple threads.
 		int64 ReqId;
+		auto ApiUrl = BeamEnvironment->GetAPIUrl();
 		auto Req = CreateUnpreparedRequest(ReqId, RetryConfig);
 		PrepareBeamableRequestToRealmWithAuthToken(Req, TargetRealm, AuthToken);
-		PrepareBeamableRequestVerbRouteBody<TRequestData>(Req, RequestData, BeamEnvironment->GetAPIUrl());
+		PrepareBeamableRequestVerbRouteBody<TRequestData>(Req, RequestData, ApiUrl);
 		PrepareBeamableRequestToRealmWithRoutingKey(Req, OutUserSlot);
 
 		// Add to the InFlight request list
@@ -1833,7 +1842,7 @@ public:
 		UTILITIES
 	*/
 
-	UFUNCTION(BlueprintCallable, Category="Beam|Requests", DisplayName="Beam - Did Timeout", meta=(ExpandBoolAsExecs="ReturnValue"))
+	UFUNCTION(BlueprintCallable, Category="Beam|Requests", DisplayName="Did Timeout", meta=(ExpandBoolAsExecs="ReturnValue"))
 	static bool IsRetryingTimeout(FBeamRequestContext Ctx);
 
 	static bool IsSuccessfulResponse(int32 ResponseCode);

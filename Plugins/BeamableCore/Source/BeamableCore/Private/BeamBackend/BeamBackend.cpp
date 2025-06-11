@@ -19,9 +19,15 @@ const FString UBeamBackend::HEADER_ACCEPT = FString(TEXT("Accept"));
 const FString UBeamBackend::HEADER_VALUE_ACCEPT_CONTENT_TYPE = FString(TEXT("application/json"));
 // C#-Stack => application/vnd.beamable.v1+json
 const FString UBeamBackend::HEADER_AUTHORIZATION = FString(TEXT("Authorization"));
-const FString UBeamBackend::HEADER_REQUEST_SCOPE = FString(TEXT("X-BEAM-SCOPE"));
 const FString UBeamBackend::HEADER_VALUE_AUTHORIZATION = FString(TEXT("Bearer {0}"));
+const FString UBeamBackend::HEADER_REQUEST_SCOPE = FString(TEXT("X-BEAM-SCOPE"));
 const FString UBeamBackend::HEADER_ROUTING_KEY_MAP = FString(TEXT("X-BEAM-SERVICE-ROUTING-KEY"));
+
+const FString UBeamBackend::HEADER_BEAMABLE_VERSION = FString(TEXT("X-BEAM-SDK-VERSION"));
+const FString UBeamBackend::HEADER_UNREAL_VERSION = FString(TEXT("X-BEAM-USER-AGENT-VERSION"));
+const FString UBeamBackend::HEADER_ENGINE_TYPE = FString(TEXT("X-BEAM-USER-AGENT"));
+const FString UBeamBackend::HEADER_APPLICATION_VERSION = FString(TEXT("X-BEAM-GAME-VERSION"));
+
 const TArray<FString> UBeamBackend::AUTH_ERROR_CODE_RETRY_ALLOWED = TArray<FString>{
 	TEXT("InvalidTokenError"), TEXT("TokenValidationError"), TEXT("ExpiredTokenError")
 };
@@ -40,7 +46,7 @@ void UBeamBackend::Initialize(FSubsystemCollectionBase& Collection)
 	// Get subsystem dependency...
 	BeamEnvironment = Cast<UBeamEnvironment>(Collection.InitializeDependency(UBeamEnvironment::StaticClass()));
 	BeamUserSlots = Cast<UBeamUserSlots>(Collection.InitializeDependency(UBeamUserSlots::StaticClass()));
-	
+
 	// Initialize a buffer of 16 simultaneous requests.
 	InFlightRequests.Reserve(1024 * 4);
 	InFlightRequestContexts.Reserve(1024 * 4);
@@ -58,6 +64,28 @@ void UBeamBackend::Initialize(FSubsystemCollectionBase& Collection)
 	AlwaysLogSuccessResponses = GetDefault<UBeamCoreSettings>()->AlwaysLogSuccessResponses;
 	AlwaysLogErrorResponses = GetDefault<UBeamCoreSettings>()->AlwaysLogErrorResponses;
 	AlwaysLogCompleteResponses = GetDefault<UBeamCoreSettings>()->AlwaysLogCompletedResponses;
+
+	// There are some things you can't test in PIE-mode and instead you must run as a Standalone Game.
+	// There is no way for us to programatically set the routing key map like we do for regular PIE so...
+	// In order to work with locally running microservices in this mode, this needs to be set via CommandLine or EnvVar.
+	// See our docs for more information on how to configure this.
+#if !UE_BUILD_SHIPPING
+	FString RoutingKeyMap;
+	if (!FParse::Value(FCommandLine::Get(), TEXT("beamable-routing-key-map="), RoutingKeyMap, false))
+	{
+		RoutingKeyMap = FPlatformMisc::GetEnvironmentVariable(TEXT("BEAMABLE_ROUTING_KEY_MAP"));
+		if (!RoutingKeyMap.IsEmpty())
+		{
+			SetRoutingKeyMap(RoutingKeyMap);
+			UE_LOG(LogBeamBackend, Display, TEXT("Parsed Routing Key from EnvVar | ROUTING_KEY_MAP=%s, NUM=%d"), *RoutingKeyMap, CurrentRoutingKeyMaps.Num());						
+		}
+	}
+	else
+	{
+		SetRoutingKeyMap(RoutingKeyMap);
+		UE_LOG(LogBeamBackend, Display, TEXT("Parsed Routing Key from CLArgs | ROUTING_KEY_MAP=%s, NUM=%d, FOR_OWNER=%s"), *RoutingKeyMap, CurrentRoutingKeyMaps.Num(), *CurrentRoutingKeyMaps[GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot()]);		
+	}
+#endif
 }
 
 void UBeamBackend::Deinitialize()
@@ -78,6 +106,19 @@ void UBeamBackend::UpdatePieState()
 bool UBeamBackend::IsInPIE() const
 {
 	return bIsInPIE;
+}
+
+FString UBeamBackend::GetProjectAppVersion() const
+{
+	FString AppVersion;
+	GConfig->GetString(
+		TEXT("/Script/EngineSettings.GeneralProjectSettings"),
+		TEXT("ProjectVersion"),
+		AppVersion,
+		GGameIni
+	);
+
+	return AppVersion;
 }
 
 void UBeamBackend::TryTriggerRequestCompleteDelegates(const int64& RequestId)
@@ -173,7 +214,7 @@ bool UBeamBackend::IsRequestCancelled(int64 RequestId) const
 int UBeamBackend::GetRequestFailureCount(int64 RequestId) const
 {
 	if (InFlightFailureCount.Contains(RequestId))
-		InFlightFailureCount[RequestId];
+		return InFlightFailureCount[RequestId];
 
 	return 0;
 }
@@ -183,6 +224,21 @@ void UBeamBackend::PrepareBeamableRequestToRealm(const TUnrealRequestPtr& Unreal
 {
 	UnrealRequest->SetHeader(HEADER_CONTENT_TYPE, HEADER_VALUE_ACCEPT_CONTENT_TYPE);
 	UnrealRequest->SetHeader(HEADER_ACCEPT, HEADER_VALUE_ACCEPT_CONTENT_TYPE);
+
+	// Checking if it's running in a packing build or in the editor.
+	if (FApp::IsGame())
+	{
+		UnrealRequest->SetHeader(HEADER_ENGINE_TYPE, "Unreal");
+	}
+	else
+	{
+		UnrealRequest->SetHeader(HEADER_ENGINE_TYPE, "UnrealEditor");
+	}
+
+	UnrealRequest->SetHeader(HEADER_BEAMABLE_VERSION, BeamEnvironment->Data->Version.ToString());
+	UnrealRequest->SetHeader(HEADER_UNREAL_VERSION, FEngineVersion::Current().ToString());
+	UnrealRequest->SetHeader(HEADER_APPLICATION_VERSION, GetProjectAppVersion());
+
 
 	const auto Cid = RealmHandle.Cid;
 	const auto Pid = RealmHandle.Pid;
@@ -435,7 +491,7 @@ bool UBeamBackend::TickRetryQueue(float DeltaTime)
 						FString NamespacedSlotId;
 						const auto WasMadeWithUserSlot = BeamUserSlots->GetUserDataWithRefreshTokenAndPid(
 							ReqAuthToken.RefreshToken, ReqRealmHandle.Pid, RealmUserData, UserSlot, NamespacedSlotId);
-						
+
 						const auto ResponseCode = Response->GetResponseCode();
 						const auto ResponseBody = Response->GetContentAsString();
 

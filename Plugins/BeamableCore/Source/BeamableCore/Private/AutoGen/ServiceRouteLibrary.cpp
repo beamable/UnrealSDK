@@ -22,7 +22,7 @@ FString UServiceRouteLibrary::ServiceRouteToJsonString(const UServiceRoute* Seri
 	return Result;
 }	
 
-UServiceRoute* UServiceRouteLibrary::Make(FString Service, FString Endpoint, EWebhookServiceType ServiceTypeStr, UObject* Outer)
+UServiceRoute* UServiceRouteLibrary::Make(FString Service, FString Endpoint, EBeamWebhookServiceType ServiceTypeStr, UObject* Outer)
 {
 	auto Serializable = NewObject<UServiceRoute>(Outer);
 	Serializable->Service = Service;
@@ -32,7 +32,7 @@ UServiceRoute* UServiceRouteLibrary::Make(FString Service, FString Endpoint, EWe
 	return Serializable;
 }
 
-void UServiceRouteLibrary::Break(const UServiceRoute* Serializable, FString& Service, FString& Endpoint, EWebhookServiceType& ServiceTypeStr)
+void UServiceRouteLibrary::Break(const UServiceRoute* Serializable, FString& Service, FString& Endpoint, EBeamWebhookServiceType& ServiceTypeStr)
 {
 	Service = Serializable->Service;
 	Endpoint = Serializable->Endpoint;

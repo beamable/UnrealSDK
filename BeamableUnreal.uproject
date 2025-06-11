@@ -1,6 +1,6 @@
 {
   "FileVersion":3,
-  "EngineAssociation":"5.4",
+  "EngineAssociation":"5.5",
   "Category":"",
   "Description":"",
   "Modules":[
@@ -54,7 +54,7 @@
     },
     {
       "Name":"BEAMPROJ_Sandbox",
-      "Enabled":true
+      "Enabled":false
     },
     {
       "Name":"BEAMPROJ_SteamDemo",
@@ -66,10 +66,14 @@
     },
     {
       "Name":"BEAMPROJ_LiveOpsDemo",
-      "Enabled":false
+      "Enabled":true
     },
     {
       "Name":"BEAMPROJ_DiscordDemo",
+      "Enabled":false
+    },
+    {
+      "Name":"BEAMPROJ_Beamball",
       "Enabled":false
     },
     {
@@ -90,7 +94,7 @@
     },
     {
       "Name":"AndroidFileServer",
-      "Enabled":false
+      "Enabled":true
     },
     {
       "Name":"GooglePAD",

@@ -3,14 +3,15 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
+#include "Serialization/BeamJsonUtils.h"
 #include "BeamBackend/SemanticTypes/BeamContentId.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalInt64.h"
-#include "BeamableCore/Public/AutoGen/Enums/ContentVisibility.h"
+#include "BeamableCore/Public/AutoGen/Enums/BeamContentVisibility.h"
 
 #include "ContentReference.generated.h"
 
-UCLASS(BlueprintType, Category="Beam")
+UCLASS(BlueprintType, Category="Beam", DefaultToInstanced, EditInlineNew)
 class BEAMABLECORE_API UContentReference : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
@@ -27,7 +28,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Type", Category="Beam")
 	FString Type = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Visibility", Category="Beam")
-	EContentVisibility Visibility = {};
+	EBeamContentVisibility Visibility = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Tags", Category="Beam")
 	TArray<FString> Tags = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Checksum", Category="Beam")

@@ -7,17 +7,17 @@
 
 void UGiveCouponReq::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("listing"), Listing);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("listing"), Listing, Serializer);
 }
 
 void UGiveCouponReq::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("listing"), Listing);		
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("listing"), Listing, Serializer);		
 }
 
 void UGiveCouponReq::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	Listing = Bag->GetStringField(TEXT("listing"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("listing")), Listing);
 }
 
 

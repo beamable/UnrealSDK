@@ -4,266 +4,203 @@
 #include "BeamProjSyncSubsystem.h"
 #include "Misc/Paths.h"
 #include "HAL/FileManager.h"
+#include "Interfaces/IPluginManager.h"
 #include "Misc/OutputDeviceDebug.h"
 
-FBeamOperationHandle UBeamProjSyncSubsystem::InitializeWhenEditorReady()
+static bool ShouldIgnoreDirectory(const FString& Path)
 {
-	TArray<FName> Modules;
-	TArray<FString> ModulesStr;
-	FModuleManager::Get().FindModules(TEXT("BEAMPROJ*"), Modules);
-	for (auto Module : Modules) ModulesStr.Add(Module.ToString());
-
-	if (ModulesStr.Num() <= 0)
+	bool ShouldIgnore = false;
+	TArray<FString> PathParts;
+	Path.ParseIntoArray(PathParts, TEXT("/"), true);
+	for (auto IgnoreDirectory : UBeamProjSyncSubsystem::IgnoreDirectories)
 	{
-		UE_LOG(LogTemp, Error, TEXT("Found no loaded BEAMPROJ module."));
-		return RequestTracker->CPP_BeginSuccessfulOperation({}, GetName(), {}, {});
-	}
-
-	if (ModulesStr.Num() > 1)
-	{
-		UE_LOG(LogTemp, Error, TEXT("Found more than one loaded BEAMPROJ module. LOADED=[%s]."), *FString::Join(ModulesStr, TEXT(",")));
-		return RequestTracker->CPP_BeginSuccessfulOperation({}, GetName(), {}, {});
-	}
-	FString FilePath = FPaths::Combine(FPaths::ProjectDir(), TEXT("Docs/mkdocs.yml"));
-
-	// Check if the file exists
-	if (!FPaths::FileExists(FilePath))
-	{
-		UE_LOG(LogTemp, Warning, TEXT("File does not exist: %s"), *FilePath);
-		return RequestTracker->CPP_BeginSuccessfulOperation({}, GetName(), {}, {});
-	}
-
-	// Read the file into an array of strings, one per line
-	TArray<FString> Lines;
-	if (!FFileHelper::LoadFileToStringArray(Lines, *FilePath))
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Failed to read file: %s"), *FilePath);
-		return RequestTracker->CPP_BeginSuccessfulOperation({}, GetName(), {}, {});
-	}
-
-	TArray<FDocsPageItem> NavItems;
-	bool bNavSectionFound = false;
-	int32 NavIndentation = 0;
-	FString CategoryId;
-	// Iterate over the lines
-	for (int32 i = 0; i < Lines.Num(); ++i)
-	{
-		FString Line = Lines[i];
-
-		// Ignore all lines until we find 'nav:'
-		if (!bNavSectionFound)
+		if (PathParts.Contains(IgnoreDirectory))
 		{
-			if (Line.TrimStart().StartsWith(TEXT("nav:")))
-			{
-				bNavSectionFound = true;
-				NavIndentation = Line.Len() - Line.TrimStart().Len();
-			}
-			continue;
-		}
-		int32 CurrentIndentation = Line.Len() - Line.TrimStart().Len();
-
-		// Only process lines until they are indented more than the 'nav:' line
-		if (CurrentIndentation <= NavIndentation)
-		{
+			ShouldIgnore = true;
 			break;
 		}
+	}
 
-		// Use regex to extract id and path
-		// Pattern matches lines like:
-		// - Title: 'path/to/file.md'
-		// - Title: "path/to/file.md"
-		// - Title: path/to/file.md
-		FRegexPattern Pattern(TEXT(R"(^\s*-\s*(.+?):\s*(?:'|")?(.*?)(?:\.md)?(?:'|")?$)"));
-		FRegexMatcher Matcher(Pattern, Line);
+	return ShouldIgnore;
+}
 
-		if (Matcher.FindNext())
+
+static bool CopyDirectoryRecursive(const FString& SourceDir, const FString& DestDir)
+{
+	IFileManager& FileManager = IFileManager::Get();
+
+	// Normalize directory paths (ensure trailing slash)
+	FString NormalizedSource = FPaths::ConvertRelativePathToFull(SourceDir) + TEXT("/");
+	FString NormalizedDest = FPaths::ConvertRelativePathToFull(DestDir) + TEXT("/");
+
+	// Get all files and directories recursively from the source
+	TArray<FString> FoundFilesAndDirs;
+	FileManager.FindFilesRecursive(FoundFilesAndDirs, *NormalizedSource, TEXT("*"), true, true);
+
+	for (const FString& Path : FoundFilesAndDirs)
+	{
+		// Get relative path to recreate structure in destination
+		FString RelativePath = Path;
+		FPaths::MakePathRelativeTo(RelativePath, *NormalizedSource);
+
+		// Check if any part of the relative path contains the ignore path.
+		if (!ShouldIgnoreDirectory(RelativePath))
 		{
-			FString Id = Matcher.GetCaptureGroup(1).TrimStartAndEnd();
-			FString Path = Matcher.GetCaptureGroup(2).TrimStartAndEnd();
+			FString TargetPath = FPaths::Combine(NormalizedDest, RelativePath);
 
-			// Remove any surrounding quotes from Path
-			Path = Path.Replace(TEXT("'"), TEXT("")).Replace(TEXT("\""), TEXT(""));
-
-			// Remove .md suffix if present
-			if (Path.EndsWith(TEXT(".md")))
+			if (FileManager.DirectoryExists(*Path))
 			{
-				Path = Path.LeftChop(3);
+				FileManager.MakeDirectory(*TargetPath, true);
 			}
-			if (Path.IsEmpty())
+			else if (FileManager.FileExists(*Path))
 			{
-				CategoryId = Id;
-				continue;
+				FString TargetDir = FPaths::GetPath(TargetPath);
+				FileManager.MakeDirectory(*TargetDir, true); // Ensure folder exists
+
+				IPlatformFile& platformFile = FPlatformFileManager::Get().GetPlatformFile();
+
+				if (!platformFile.CopyFile(*TargetPath, *Path, EPlatformFileRead::AllowWrite, EPlatformFileWrite::AllowRead))
+				{
+					UE_LOG(LogTemp, Warning, TEXT("Failed to copy file: %s , %s"), *Path, *TargetPath);
+					return false;
+				}
 			}
-
-			// Create a new NavItem and add it to the array
-			FDocsPageItem NavItem;
-			NavItem.Id = CategoryId + TEXT("/") + Id;
-			NavItem.Path = Path;
-			NavItems.Add(NavItem);
-
-			UE_LOG(LogTemp, Log, TEXT("Parsed Nav Item - Id: %s, Path: %s"), *NavItem.Id, *NavItem.Path);
 		}
 	}
 
-	// Now you have an array of NavItems you can use as needed
-	// For demonstration, let's log all of them
-	UE_LOG(LogTemp, Log, TEXT("Total Nav Items Parsed: %d"), NavItems.Num());
-	for (const FDocsPageItem& Item : NavItems)
-	{
-		UE_LOG(LogTemp, Log, TEXT("Id: %s, Path: %s"), *Item.Id, *Item.Path);
-	}
-	GEditor->GetEditorSubsystem<UBeamEditor>()->DocsPages = NavItems;
-
-	// Get the active BeamProj
-	ActiveBeamProj = ModulesStr[0];
-
-	// Listen for content changes and keep them in-sync
-	EditorContent = GEditor->GetEditorSubsystem<UBeamEditorContent>();
-	OnContentSavedHandle = EditorContent->OnContentSaved.AddUObject(this, &ThisClass::OnContentSaved);
-
-	// Listen for realm changes and keep them in-sync	
-	Editor->OnAppliedSettingsToBuild.AddUniqueDynamic(this, &ThisClass::UBeamProjSyncSubsystem::OnAppliedSettingsToBuild);
-
-	// Listen for file-system-level changes in all relevant directories 
-	FDirectoryWatcherModule& DirectoryWatcherModule = FModuleManager::Get().LoadModuleChecked<FDirectoryWatcherModule>(TEXT("DirectoryWatcher"));
-	IDirectoryWatcher* DirectoryWatcher = DirectoryWatcherModule.Get();
-
-	for (int i = 0; i < OverridenDirectories.Num(); ++i)
-	{
-		const auto OverridenDirectory = OverridenDirectories[i];
-
-		FString WatchDir, AbsWatchDir, TargetDir, AbsTargetDir;
-		GetPaths(OverridenDirectory, WatchDir, TargetDir, AbsWatchDir, AbsTargetDir);
-
-		const auto OnChanged = IDirectoryWatcher::FDirectoryChanged::CreateLambda([this, AbsWatchDir, AbsTargetDir](const TArray<FFileChangeData>& FileChanges)
-		{
-			IPlatformFile& PlatformFile = FPlatformFileManager::Get().GetPlatformFile();
-
-			if (PlatformFile.DirectoryExists(*AbsTargetDir))
-				PlatformFile.DeleteDirectoryRecursively(*AbsTargetDir);
-
-			if (PlatformFile.CopyDirectoryTree(*AbsTargetDir, *AbsWatchDir, true))
-			{
-				UE_LOG(LogTemp, Display, TEXT("Keeping BEAMPROJ in Sync. BEAMPROJ=%s WATCH_DIR=%s, TARGET_DIR=%s"), *ActiveBeamProj, *AbsWatchDir, *AbsTargetDir);
-			}
-			else
-			{
-				UE_LOG(LogTemp, Error, TEXT("Failed to Sync BEAMPROJ. BEAMPROJ=%s WATCH_DIR=%s, TARGET_DIR=%s"), *ActiveBeamProj, *AbsWatchDir, *AbsTargetDir);
-			}
-		});
-
-		if (IFileManager::Get().DirectoryExists(*AbsWatchDir))
-		{
-			DirectoryWatcher->RegisterDirectoryChangedCallback_Handle(AbsWatchDir, OnChanged, OverridenDirectoriesHandlers[i], IDirectoryWatcher::WatchOptions::IncludeDirectoryChanges);
-		}
-	}
-
-	// Listen for undo/redo
-	OnUndoRedoHandle = FEditorDelegates::PostUndoRedo.AddUObject(this, &ThisClass::OnObjectRedoUndo);
-	OnPreBeginPIEHandle = FEditorDelegates::PreBeginPIE.AddUObject(this, &ThisClass::OnEnterPie);
-
-	return RequestTracker->CPP_BeginSuccessfulOperation({}, GetName(), {}, {});
+	return true;
 }
 
-void UBeamProjSyncSubsystem::Deinitialize()
+
+bool UBeamProjSyncSubsystem::SyncAllOverridenDirectories() const
 {
-	// Stop listening to the content system
-	if (EditorContent)
-		EditorContent->OnContentSaved.Remove(OnContentSavedHandle);
-
-	// Stop listening to realm changes
-	if (Editor)
-		Editor->OnAppliedSettingsToBuild.RemoveDynamic(this, &ThisClass::OnAppliedSettingsToBuild);
-
-	// Stop listening for changes from the file system
-	FDirectoryWatcherModule& DirectoryWatcherModule = FModuleManager::Get().LoadModuleChecked<FDirectoryWatcherModule>(TEXT("DirectoryWatcher"));
-	IDirectoryWatcher* DirectoryWatcher = DirectoryWatcherModule.Get();
-
-	for (int i = 0; i < OverridenDirectories.Num(); ++i)
-	{
-		const auto OverridenDirectory = OverridenDirectories[i];
-
-		const auto WatchDir = FPaths::ProjectDir() / OverridenDirectory;
-		const auto AbsWatchDir = FPaths::IsRelative(WatchDir) ? FPaths::ConvertRelativePathToFull(WatchDir) : WatchDir;
-
-		if (IFileManager::Get().DirectoryExists(*AbsWatchDir))
-		{
-			DirectoryWatcher->UnregisterDirectoryChangedCallback_Handle(AbsWatchDir, OverridenDirectoriesHandlers[i]);
-		}
-	}
-
-	// Stop listening for undo/redo		
-	FEditorDelegates::PostUndoRedo.Remove(OnUndoRedoHandle);
-	FEditorDelegates::PreBeginPIE.Remove(OnPreBeginPIEHandle);
-}
-
-void UBeamProjSyncSubsystem::OnEnterPie(bool) const
-{
-	SyncAllOverridenDirectories();
-}
-
-void UBeamProjSyncSubsystem::OnObjectRedoUndo() const
-{
-	SyncAllOverridenDirectories();
-}
-
-void UBeamProjSyncSubsystem::OnContentSaved(FBeamContentManifestId ManifestId, FBeamContentId Id)
-{
-	FString WatchDir, AbsWatchDir, TargetDir, AbsTargetDir;
-	GetPaths(BeamableContentDir(), WatchDir, TargetDir, AbsWatchDir, AbsTargetDir);
-
-	IPlatformFile& PlatformFile = FPlatformFileManager::Get().GetPlatformFile();
-	if (PlatformFile.CopyDirectoryTree(*AbsTargetDir, *AbsWatchDir, true))
-	{
-		UE_LOG(LogTemp, Display, TEXT("Keeping BEAMPROJ in Sync. BEAMPROJ=%s WATCH_DIR=%s, TARGET_DIR=%s"), *ActiveBeamProj, *AbsWatchDir, *AbsTargetDir);
-	}
-	else
-	{
-		UE_LOG(LogTemp, Error, TEXT("Failed to Sync BEAMPROJ. BEAMPROJ=%s WATCH_DIR=%s, TARGET_DIR=%s"), *ActiveBeamProj, *AbsWatchDir, *AbsTargetDir);
-	}
-}
-
-void UBeamProjSyncSubsystem::OnAppliedSettingsToBuild()
-{
-	FString WatchDir, AbsWatchDir, TargetDir, AbsTargetDir;
-	GetPaths(UnrealConfigDir(), WatchDir, TargetDir, AbsWatchDir, AbsTargetDir);
-
-	IPlatformFile& PlatformFile = FPlatformFileManager::Get().GetPlatformFile();
-	if (PlatformFile.CopyDirectoryTree(*AbsTargetDir, *AbsWatchDir, true))
-	{
-		UE_LOG(LogTemp, Display, TEXT("Keeping BEAMPROJ in Sync. BEAMPROJ=%s WATCH_DIR=%s, TARGET_DIR=%s"), *ActiveBeamProj, *AbsWatchDir, *AbsTargetDir);
-	}
-	else
-	{
-		UE_LOG(LogTemp, Error, TEXT("Failed to Sync BEAMPROJ. BEAMPROJ=%s WATCH_DIR=%s, TARGET_DIR=%s"), *ActiveBeamProj, *AbsWatchDir, *AbsTargetDir);
-	}
-}
-
-void UBeamProjSyncSubsystem::SyncAllOverridenDirectories() const
-{
+	bool bSuccess = true;
 	for (int i = 0; i < OverridenDirectories.Num(); ++i)
 	{
 		const auto OverridenDirectory = OverridenDirectories[i];
 		FString WatchDir, AbsWatchDir, TargetDir, AbsTargetDir;
 		GetPaths(OverridenDirectory, WatchDir, TargetDir, AbsWatchDir, AbsTargetDir);
 
-		IPlatformFile& PlatformFile = FPlatformFileManager::Get().GetPlatformFile();
-		if (PlatformFile.CopyDirectoryTree(*AbsTargetDir, *AbsWatchDir, true))
+		auto Success = CopyDirectoryRecursive(WatchDir, TargetDir);
+		if (bSuccess)
 		{
-			UE_LOG(LogTemp, Display, TEXT("Keeping BEAMPROJ in Sync. BEAMPROJ=%s WATCH_DIR=%s, TARGET_DIR=%s"), *ActiveBeamProj, *AbsWatchDir, *AbsTargetDir);
+			UE_LOG(LogTemp, Display, TEXT("Keeping BEAMPROJ in Sync. BEAMPROJ=%s DIR=%s, TARGET_DIR=%s"), *GetActiveBeamProj(), *AbsWatchDir, *AbsTargetDir);
 		}
 		else
 		{
-			UE_LOG(LogTemp, Error, TEXT("Failed to Sync BEAMPROJ. BEAMPROJ=%s WATCH_DIR=%s, TARGET_DIR=%s"), *ActiveBeamProj, *AbsWatchDir, *AbsTargetDir);
+			UE_LOG(LogTemp, Error, TEXT("Failed to Sync BEAMPROJ. BEAMPROJ=%s DIR=%s, TARGET_DIR=%s"), *GetActiveBeamProj(), *AbsWatchDir, *AbsTargetDir);
 		}
+		bSuccess &= Success;
 	}
+	return bSuccess;
 }
 
 void UBeamProjSyncSubsystem::GetPaths(const FString& OverridenDirectory, FString& WatchDir, FString& TargetDir, FString& AbsWatchDir, FString& AbsTargetDir) const
 {
 	WatchDir = FPaths::ProjectDir() / OverridenDirectory;
-	TargetDir = FPaths::ProjectDir() / TEXT("Plugins") / ActiveBeamProj / TEXT("Overrides") / OverridenDirectory;
+	TargetDir = FPaths::ProjectDir() / TEXT("Plugins") / GetActiveBeamProj() / TEXT("Overrides") / OverridenDirectory;
 
 	AbsWatchDir = FPaths::IsRelative(WatchDir) ? FPaths::ConvertRelativePathToFull(WatchDir) : WatchDir;
 	AbsTargetDir = FPaths::IsRelative(TargetDir) ? FPaths::ConvertRelativePathToFull(TargetDir) : TargetDir;
+}
+
+FString UBeamProjSyncSubsystem::GetActiveBeamProj() const
+{
+	IPluginManager& PluginManager = IPluginManager::Get();
+
+	TArray<TSharedRef<IPlugin>> Plugins = PluginManager.GetDiscoveredPlugins();
+
+	for (const TSharedRef<IPlugin>& Plugin : Plugins)
+	{
+		// Check if the plugin is enabled
+		if (Plugin->GetName().StartsWith("BEAMPROJ_") && Plugin->IsEnabled())
+		{
+			return Plugin->GetName();
+		}
+	}
+
+	return KBeamProj_Sandbox;
+}
+
+void UBeamProjSyncSubsystem::ApplyProjectOverrides(const FString& BeamProj) const
+{
+	TArray<FString> Overrides = {TEXT("steam_appid.txt")};
+	FString ProjRoot = FPaths::ProjectDir();
+	FString OverridesRoot = FPaths::Combine(ProjRoot, TEXT("Plugins"), BeamProj, TEXT("Overrides"));
+
+	// Handling file overrides
+	for (const FString& Entry : Overrides)
+	{
+		FString FilePath = FPaths::Combine(ProjRoot, Entry);
+		if (FPaths::FileExists(FilePath))
+		{
+			IFileManager::Get().Delete(*FilePath); // Delete the file if it exists
+		}
+
+		FString TargetFilePath = FPaths::Combine(OverridesRoot, Entry);
+		if (FPaths::FileExists(TargetFilePath))
+		{
+			// Copy file from the overrides root to project root
+			IFileManager::Get().Copy(*FilePath, *TargetFilePath);
+		}
+	}
+
+	// Handling directory overrides
+	TArray<FString> OverrideFolders = {TEXT("Config"), TEXT(".beamable/content")};
+
+	for (const FString& OverrideFolder : OverrideFolders)
+	{
+		FString ProjectPath = FPaths::Combine(ProjRoot, OverrideFolder);
+		FString OverridesPath = FPaths::Combine(OverridesRoot, OverrideFolder);
+
+		if (!FPaths::DirectoryExists(OverridesPath))
+		{
+			UE_LOG(LogTemp, Warning, TEXT("%s project does not have Overrides directory for this expected override path. Create one at: %s"), *BeamProj, *OverridesPath);
+			return;
+		}
+
+		if (FPaths::DirectoryExists(ProjectPath))
+		{
+			// Delete existing directory (recursive)
+			IFileManager::Get().DeleteDirectory(*ProjectPath, false, true);
+		}
+
+		// Copy directory contents
+		CopyDirectory(OverridesPath, ProjectPath);
+	}
+}
+
+void UBeamProjSyncSubsystem::CopyDirectory(const FString& SourceDir, const FString& DestinationDir) const
+{
+	// Check if the source directory exists
+	if (!FPaths::DirectoryExists(SourceDir))
+	{
+		return;
+	}
+
+	// Create the destination directory if it doesn't exist
+	IFileManager::Get().MakeDirectory(*DestinationDir, true);
+
+	// Get all files in the source directory
+	TArray<FString> FileNames;
+	IFileManager::Get().FindFiles(FileNames, *SourceDir, TEXT("*"));
+
+	// Copy each file from source to destination
+	for (const FString& File : FileNames)
+	{
+		FString SourceFile = FPaths::Combine(SourceDir, File);
+		FString DestinationFile = FPaths::Combine(DestinationDir, File);
+		IFileManager::Get().Copy(*DestinationFile, *SourceFile);
+	}
+
+	// Get all subdirectories in the source directory
+	TArray<FString> SubDirs;
+	IFileManager::Get().FindFiles(SubDirs, *SourceDir, TEXT("*"));
+
+	for (const FString& SubDir : SubDirs)
+	{
+		FString NewSourceDir = FPaths::Combine(SourceDir, SubDir);
+		FString NewDestinationDir = FPaths::Combine(DestinationDir, SubDir);
+		CopyDirectory(NewSourceDir, NewDestinationDir); // Recursively copy subdirectories
+	}
 }

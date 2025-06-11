@@ -7,8 +7,8 @@
 
 void UDatabasePerformanceRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("storageObjectName"), StorageObjectName);
-	Serializer->WriteValue(TEXT("granularity"), Granularity);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("storageObjectName"), StorageObjectName, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("granularity"), Granularity, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("endDate"), &EndDate, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("startDate"), &StartDate, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("period"), &Period, Serializer);
@@ -16,8 +16,8 @@ void UDatabasePerformanceRequestBody::BeamSerializeProperties(TUnrealJsonSeriali
 
 void UDatabasePerformanceRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("storageObjectName"), StorageObjectName);
-	Serializer->WriteValue(TEXT("granularity"), Granularity);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("storageObjectName"), StorageObjectName, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("granularity"), Granularity, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("endDate"), &EndDate, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("startDate"), &StartDate, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("period"), &Period, Serializer);		
@@ -25,8 +25,8 @@ void UDatabasePerformanceRequestBody::BeamSerializeProperties(TUnrealPrettyJsonS
 
 void UDatabasePerformanceRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	StorageObjectName = Bag->GetStringField(TEXT("storageObjectName"));
-	Granularity = Bag->GetStringField(TEXT("granularity"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("storageObjectName")), StorageObjectName);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("granularity")), Granularity);
 	UBeamJsonUtils::DeserializeOptional<FString>("endDate", Bag, EndDate, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("startDate", Bag, StartDate, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("period", Bag, Period, OuterOwner);

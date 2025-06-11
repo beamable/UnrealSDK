@@ -3,11 +3,12 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
+#include "Serialization/BeamJsonUtils.h"
 #include "BeamableCore/Public/AutoGen/PlayerStatusUpdate.h"
 
 #include "UpdatePlayerStatusRequestBody.generated.h"
 
-UCLASS(BlueprintType, Category="Beam")
+UCLASS(BlueprintType, Category="Beam", DefaultToInstanced, EditInlineNew)
 class BEAMABLECORE_API UUpdatePlayerStatusRequestBody : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()

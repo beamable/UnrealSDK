@@ -7,10 +7,10 @@
 
 void UMetadataView::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("cohorted"), bCohorted);
-	Serializer->WriteValue(TEXT("frozen"), bFrozen);
-	Serializer->WriteValue(TEXT("partitioned"), bPartitioned);
-	Serializer->WriteValue(TEXT("parentLeaderboard"), ParentLeaderboard);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("cohorted"), bCohorted, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("frozen"), bFrozen, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("partitioned"), bPartitioned, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("parentLeaderboard"), ParentLeaderboard, Serializer);
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("freezeTime"), &FreezeTime, Serializer);
 	UBeamJsonUtils::SerializeOptional<ULeaderboardCohortSettings*>(TEXT("cohortSettings"), &CohortSettings, Serializer);
 	UBeamJsonUtils::SerializeOptional<FBeamClientPermission>(TEXT("permissions"), &Permissions, Serializer);
@@ -21,10 +21,10 @@ void UMetadataView::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) c
 
 void UMetadataView::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("cohorted"), bCohorted);
-	Serializer->WriteValue(TEXT("frozen"), bFrozen);
-	Serializer->WriteValue(TEXT("partitioned"), bPartitioned);
-	Serializer->WriteValue(TEXT("parentLeaderboard"), ParentLeaderboard);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("cohorted"), bCohorted, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("frozen"), bFrozen, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("partitioned"), bPartitioned, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("parentLeaderboard"), ParentLeaderboard, Serializer);
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("freezeTime"), &FreezeTime, Serializer);
 	UBeamJsonUtils::SerializeOptional<ULeaderboardCohortSettings*>(TEXT("cohortSettings"), &CohortSettings, Serializer);
 	UBeamJsonUtils::SerializeOptional<FBeamClientPermission>(TEXT("permissions"), &Permissions, Serializer);
@@ -35,10 +35,10 @@ void UMetadataView::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Seriali
 
 void UMetadataView::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	bCohorted = Bag->GetBoolField(TEXT("cohorted"));
-	bFrozen = Bag->GetBoolField(TEXT("frozen"));
-	bPartitioned = Bag->GetBoolField(TEXT("partitioned"));
-	ParentLeaderboard = Bag->GetStringField(TEXT("parentLeaderboard"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("cohorted")), bCohorted);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("frozen")), bFrozen);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("partitioned")), bPartitioned);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("parentLeaderboard")), ParentLeaderboard);
 	UBeamJsonUtils::DeserializeOptional<int64>("freezeTime", Bag, FreezeTime, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<ULeaderboardCohortSettings*>("cohortSettings", Bag, CohortSettings, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FBeamClientPermission>("permissions", Bag, Permissions, OuterOwner);

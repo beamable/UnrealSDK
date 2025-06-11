@@ -5,11 +5,12 @@
 #include "Serialization/BeamJsonSerializable.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalDouble.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalMapOfString.h"
+#include "Serialization/BeamJsonUtils.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalBool.h"
 
 #include "LeaderboardAddRequestBody.generated.h"
 
-UCLASS(BlueprintType, Category="Beam")
+UCLASS(BlueprintType, Category="Beam", DefaultToInstanced, EditInlineNew)
 class BEAMABLECORE_API ULeaderboardAddRequestBody : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()

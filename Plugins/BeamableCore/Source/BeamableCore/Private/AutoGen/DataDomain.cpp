@@ -7,8 +7,8 @@
 
 void UDataDomain::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("mongoSSLEnabled"), bMongoSSLEnabled);
-	Serializer->WriteValue(TEXT("mongoSharded"), bMongoSharded);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("mongoSSLEnabled"), bMongoSSLEnabled, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("mongoSharded"), bMongoSharded, Serializer);
 	UBeamJsonUtils::SerializeArray<FString>(TEXT("memcachedHosts"), MemcachedHosts, Serializer);
 	UBeamJsonUtils::SerializeArray<FString>(TEXT("mongoHosts"), MongoHosts, Serializer);
 	UBeamJsonUtils::SerializeOptional<bool>(TEXT("mongoSSL"), &bMongoSSL, Serializer);
@@ -20,8 +20,8 @@ void UDataDomain::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) con
 
 void UDataDomain::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("mongoSSLEnabled"), bMongoSSLEnabled);
-	Serializer->WriteValue(TEXT("mongoSharded"), bMongoSharded);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("mongoSSLEnabled"), bMongoSSLEnabled, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("mongoSharded"), bMongoSharded, Serializer);
 	UBeamJsonUtils::SerializeArray<FString>(TEXT("memcachedHosts"), MemcachedHosts, Serializer);
 	UBeamJsonUtils::SerializeArray<FString>(TEXT("mongoHosts"), MongoHosts, Serializer);
 	UBeamJsonUtils::SerializeOptional<bool>(TEXT("mongoSSL"), &bMongoSSL, Serializer);
@@ -33,8 +33,8 @@ void UDataDomain::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serialize
 
 void UDataDomain::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	bMongoSSLEnabled = Bag->GetBoolField(TEXT("mongoSSLEnabled"));
-	bMongoSharded = Bag->GetBoolField(TEXT("mongoSharded"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("mongoSSLEnabled")), bMongoSSLEnabled);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("mongoSharded")), bMongoSharded);
 	UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("memcachedHosts")), MemcachedHosts, OuterOwner);
 	UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("mongoHosts")), MongoHosts, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<bool>("mongoSSL", Bag, bMongoSSL, OuterOwner);

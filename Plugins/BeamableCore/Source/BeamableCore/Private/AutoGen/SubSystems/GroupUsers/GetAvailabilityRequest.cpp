@@ -27,7 +27,7 @@ void UGetAvailabilityRequest::BuildRoute(FString& RouteString) const
 	}
 
 	bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-	QueryParams.Appendf(TEXT("%s=%s"), TEXT("type"), *UGroupTypeLibrary::GroupTypeToSerializationName(Type));
+	QueryParams.Appendf(TEXT("%s=%s"), TEXT("type"), *UBeamJsonUtils::EnumToSerializationName(Type));
 	bIsFirstQueryParam = false;
 	
 	if(bSubGroup.IsSet){
@@ -44,7 +44,7 @@ void UGetAvailabilityRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetAvailabilityRequest* UGetAvailabilityRequest::Make(int64 _ObjectId, FOptionalString _Name, FOptionalString _Tag, EGroupType _Type, FOptionalBool _bSubGroup, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
+UGetAvailabilityRequest* UGetAvailabilityRequest::Make(int64 _ObjectId, FOptionalString _Name, FOptionalString _Tag, EBeamGroupType _Type, FOptionalBool _bSubGroup, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UGetAvailabilityRequest* Req = NewObject<UGetAvailabilityRequest>(RequestOwner);
 	Req->CustomHeaders = TMap{CustomHeaders};

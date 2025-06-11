@@ -24,26 +24,26 @@ public:
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("name"), Name);
-		Serializer->WriteValue(TEXT("projPath"), ProjPath);
-		Serializer->WriteValue(TEXT("dllName"), DllName);
-		Serializer->WriteValue(TEXT("type"), Type);	
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("name"), Name, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("projPath"), ProjPath, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("dllName"), DllName, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("type"), Type, Serializer);	
 	}
 
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("name"), Name);
-		Serializer->WriteValue(TEXT("projPath"), ProjPath);
-		Serializer->WriteValue(TEXT("dllName"), DllName);
-		Serializer->WriteValue(TEXT("type"), Type);	
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("name"), Name, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("projPath"), ProjPath, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("dllName"), DllName, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("type"), Type, Serializer);	
 	}
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		Name = Bag->GetStringField(TEXT("name"));
-		ProjPath = Bag->GetStringField(TEXT("projPath"));
-		DllName = Bag->GetStringField(TEXT("dllName"));
-		Type = Bag->GetStringField(TEXT("type"));	
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("name")), Name);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("projPath")), ProjPath);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("dllName")), DllName);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("type")), Type);	
 	}
 };
 
