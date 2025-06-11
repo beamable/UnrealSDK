@@ -7,17 +7,17 @@
 
 void USteamAuthRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("ticket"), Ticket);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("ticket"), Ticket, Serializer);
 }
 
 void USteamAuthRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("ticket"), Ticket);		
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("ticket"), Ticket, Serializer);		
 }
 
 void USteamAuthRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	Ticket = Bag->GetStringField(TEXT("ticket"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("ticket")), Ticket);
 }
 
 

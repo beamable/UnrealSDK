@@ -22,7 +22,7 @@ FString UEventObjectDataLibrary::EventObjectDataToJsonString(const UEventObjectD
 	return Result;
 }	
 
-UEventObjectData* UEventObjectDataLibrary::Make(bool bDone, bool bRunning, EEventState State, FString LeaderboardId, FString Id, UEvent* Content, FOptionalString LastChildEventId, FOptionalInt64 StartTime, FOptionalString RootEventId, FOptionalString OriginType, FOptionalEventPhaseRuntime Phase, FOptionalBeamClientPermission Permissions, FOptionalInt64 EndTime, FOptionalString Origin, FOptionalInt64 CreatedAt, FOptionalArrayOfInFlightMessage InFlight, FOptionalArrayOfEventPhaseTime PhaseTimes, UObject* Outer)
+UEventObjectData* UEventObjectDataLibrary::Make(bool bDone, bool bRunning, EBeamEventState State, FString LeaderboardId, FString Id, UEvent* Content, FOptionalString LastChildEventId, FOptionalInt64 StartTime, FOptionalString RootEventId, FOptionalString OriginType, FOptionalEventPhaseRuntime Phase, FOptionalBeamClientPermission Permissions, FOptionalInt64 EndTime, FOptionalString Origin, FOptionalInt64 CreatedAt, FOptionalArrayOfInFlightMessage InFlight, FOptionalArrayOfEventPhaseTime PhaseTimes, UObject* Outer)
 {
 	auto Serializable = NewObject<UEventObjectData>(Outer);
 	Serializable->bDone = bDone;
@@ -46,7 +46,7 @@ UEventObjectData* UEventObjectDataLibrary::Make(bool bDone, bool bRunning, EEven
 	return Serializable;
 }
 
-void UEventObjectDataLibrary::Break(const UEventObjectData* Serializable, bool& bDone, bool& bRunning, EEventState& State, FString& LeaderboardId, FString& Id, UEvent*& Content, FOptionalString& LastChildEventId, FOptionalInt64& StartTime, FOptionalString& RootEventId, FOptionalString& OriginType, FOptionalEventPhaseRuntime& Phase, FOptionalBeamClientPermission& Permissions, FOptionalInt64& EndTime, FOptionalString& Origin, FOptionalInt64& CreatedAt, FOptionalArrayOfInFlightMessage& InFlight, FOptionalArrayOfEventPhaseTime& PhaseTimes)
+void UEventObjectDataLibrary::Break(const UEventObjectData* Serializable, bool& bDone, bool& bRunning, EBeamEventState& State, FString& LeaderboardId, FString& Id, UEvent*& Content, FOptionalString& LastChildEventId, FOptionalInt64& StartTime, FOptionalString& RootEventId, FOptionalString& OriginType, FOptionalEventPhaseRuntime& Phase, FOptionalBeamClientPermission& Permissions, FOptionalInt64& EndTime, FOptionalString& Origin, FOptionalInt64& CreatedAt, FOptionalArrayOfInFlightMessage& InFlight, FOptionalArrayOfEventPhaseTime& PhaseTimes)
 {
 	bDone = Serializable->bDone;
 	bRunning = Serializable->bRunning;

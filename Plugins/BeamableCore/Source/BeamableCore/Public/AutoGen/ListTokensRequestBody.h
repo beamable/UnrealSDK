@@ -3,12 +3,13 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
+#include "Serialization/BeamJsonUtils.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalBeamCid.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalBeamPid.h"
 
 #include "ListTokensRequestBody.generated.h"
 
-UCLASS(BlueprintType, Category="Beam")
+UCLASS(BlueprintType, Category="Beam", DefaultToInstanced, EditInlineNew)
 class BEAMABLECORE_API UListTokensRequestBody : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()

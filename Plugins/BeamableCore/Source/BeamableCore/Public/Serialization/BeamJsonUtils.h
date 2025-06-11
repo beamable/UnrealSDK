@@ -101,6 +101,10 @@ class BEAMABLECORE_API UBeamJsonUtils final : public UBlueprintFunctionLibrary
 					FString ValStr = EnumToSerializationName<TDataType>(*val);
 					Serializer->WriteValue(Identifier, ValStr);
 				}
+				else if constexpr (std::is_same_v<TDataType, FDateTime>)
+				{
+					Serializer->WriteValue(Identifier, val->ToIso8601());
+				}
 				else
 				{
 					Serializer->WriteValue(Identifier, *val);
@@ -195,6 +199,10 @@ class BEAMABLECORE_API UBeamJsonUtils final : public UBlueprintFunctionLibrary
 				{
 					FString ValStr = EnumToSerializationName<TDataType>(Value);
 					Serializer->WriteValue(ValStr);
+				}
+				if constexpr (std::is_same_v<TDataType, FDateTime>)
+				{
+					Serializer->WriteValue(Value.ToIso8601());
 				}
 				else
 				{
@@ -300,6 +308,10 @@ class BEAMABLECORE_API UBeamJsonUtils final : public UBlueprintFunctionLibrary
 					FString ValStr = EnumToSerializationName<TDataType>(Kvp.Value);
 					Serializer->WriteValue(Kvp.Key, ValStr);
 				}
+				else if constexpr (std::is_same_v<TMapType, FDateTime>)
+				{
+					Serializer->WriteValue(Kvp.Key, Kvp.Value.ToIso8601());
+				}
 				else
 				{
 					Serializer->WriteValue(Kvp.Key, Kvp.Value);
@@ -382,6 +394,43 @@ public:
 		else
 		{
 			Serializer->WriteNull();
+		}
+	}
+
+	template <typename TPrimitiveType, typename TJsonType>
+	static void SerializeRawPrimitive(const FString& JsonField, TPrimitiveType& ToSerialize, TSharedRef<TJsonType>& Serializer)
+	{
+		if (TIsDerivedFrom<TPrimitiveType, FBeamSemanticType>::Value)
+		{
+			checkf(false, TEXT("TSerializationType cannot be a FBeamSemanticType type. We don't support it for now."))
+		}
+		else if constexpr (TIsPointer<TPrimitiveType>::Value)
+		{
+			checkf(false, TEXT("TSerializationType cannot be a UObject type. We don't support it for now."))
+		}
+		else if constexpr (TIsDerivedFrom<TPrimitiveType, FBeamMap>::Value)
+		{
+			checkf(false, TEXT("TSerializationType cannot be a FBeamMap. We don't support it for now."))
+		}
+		else if constexpr (TIsDerivedFrom<TPrimitiveType, FBeamArray>::Value)
+		{
+			checkf(false, TEXT("TSerializationType cannot be a FBeamArray. We don't support it for now."))
+		}
+		else if constexpr (TIsDerivedFrom<TPrimitiveType, FBeamJsonSerializableUStruct>::Value)
+		{
+			checkf(false, TEXT("TSerializationType cannot be a FBeamJsonSerializable. We don't support it for now."))
+		}
+		else if constexpr (TIsDerivedFrom<TPrimitiveType, FGuid>::Value)
+		{
+			Serializer->WriteValue(JsonField, ToSerialize.ToString(EGuidFormats::DigitsWithHyphensLower));
+		}
+		else if constexpr (TIsDerivedFrom<TPrimitiveType, FDateTime>::Value)
+		{
+			Serializer->WriteValue(JsonField, ToSerialize.ToIso8601());
+		}
+		else
+		{
+			Serializer->WriteValue(JsonField, ToSerialize);
 		}
 	}
 
@@ -586,6 +635,16 @@ public:
 		return TEnum();
 	}
 
+	template <typename TEnum>
+	static TEnum SerializationIndexToEnum(int Value)
+	{
+		static_assert(TIsUEnumClass<TEnum>::Value);
+
+		const UEnum* Enum = StaticEnum<TEnum>();
+
+		return static_cast<TEnum>(Enum->GetValueByIndex(Value));
+	}
+
 	template <typename TSerializationType>
 	static void DeserializeSemanticType(const TSharedPtr<FJsonValue>& JsonField, FBeamSemanticType& ToDeserialize, TWeakObjectPtr<UObject> OuterOwner = (UObject*)GetTransientPackage())
 	{
@@ -708,6 +767,26 @@ public:
 			ToDeserialize.BeamDeserializeProperties(OwnerBag->GetObjectField(Identifier));
 	}
 
+	template <typename TDataType>
+	static void GetEnumFromJsonField(const TSharedPtr<FJsonValue> JsonField, TDataType& ParsedEnum)
+	{
+		if (JsonField->Type == EJson::String)
+		{
+			FString Parsed = JsonField->AsString();
+			ParsedEnum = SerializationNameToEnum<TDataType>(Parsed);
+		}
+		else if (JsonField->Type == EJson::Number)
+		{
+			int Parsed = JsonField->AsNumber();
+			ParsedEnum = SerializationIndexToEnum<TDataType>(Parsed);
+		}
+		else
+		{
+			// This is impossible, the enum should be only a number or string
+			ensureAlways(false);
+		}
+	}
+
 	template <typename TOptionalType, typename TDataType = TOptionalType, typename TSemanticTypeRepresentation = TDataType>
 	static void DeserializeOptional(const FString& Identifier, const TSharedPtr<FJsonObject>& OwnerBag, FBeamOptional& ToDeserialize,
 	                                TWeakObjectPtr<UObject> OwnerOuter = (UObject*)GetTransientPackage())
@@ -751,6 +830,13 @@ public:
 						const FString Val = Item->AsString();
 						ParsedMap.Add(Key, Val);
 					}
+					else if constexpr (std::is_same_v<TDataType, FDateTime>)
+					{
+						const FString Val = Item->AsString();
+						FDateTime Parsed;
+						FDateTime::ParseIso8601(*Val, Parsed);
+						ParsedMap.Add(Key, Parsed);
+					}
 					else if constexpr (TIsDerivedFrom<TDataType, FBeamSemanticType>::Value)
 					{
 						TDataType Parsed;
@@ -780,8 +866,9 @@ public:
 					}
 					else if constexpr (TIsUEnumClass<TDataType>::Value)
 					{
-						FString Parsed = Item->AsString();
-						ParsedMap.Add(Key, SerializationNameToEnum<TDataType>(Parsed));
+						TDataType ParsedEnum;
+						GetEnumFromJsonField<TDataType>(JsonField, ParsedEnum);
+						ParsedMap.Add(Key, ParsedEnum);
 					}
 					else if constexpr (std::is_same_v<TDataType, int8>)
 					{
@@ -887,8 +974,9 @@ public:
 					}
 					else if constexpr (TIsUEnumClass<TDataType>::Value)
 					{
-						FString Parsed = ArrayJsonItem->AsString();
-						ParsedArray.Add(SerializationNameToEnum<TDataType>(Parsed));
+						TDataType ParsedEnum;
+						GetEnumFromJsonField<TDataType>(JsonField, ParsedEnum);
+						ParsedArray.Add(ParsedEnum);
 					}
 					else if constexpr (std::is_same_v<TDataType, int8>)
 					{
@@ -938,6 +1026,13 @@ public:
 						bool Parsed = Val.Equals(TEXT("true"), ESearchCase::IgnoreCase);
 						ParsedArray.Add(Parsed);
 					}
+					else if constexpr (std::is_same_v<TDataType, FDateTime>)
+					{
+						const FString Val = ArrayJsonItem->AsString();
+						FDateTime Parsed;
+						FDateTime::ParseIso8601(*Val, Parsed);
+						ParsedArray.Add(Parsed);
+					}
 				}
 				FBeamOptional::Set(&ToDeserialize, &ParsedArray);
 			}
@@ -954,6 +1049,12 @@ public:
 					Parsed->OuterOwner = OwnerOuter;
 					Parsed->BeamDeserializeProperties(JsonField->AsObject());
 					FBeamOptional::Set(&ToDeserialize, &Parsed);
+				}
+				else if constexpr (std::is_same_v<TOptionalType, FDateTime>)
+				{
+					FDateTime dateTime;
+					FDateTime::ParseIso8601(*JsonField->AsString(), dateTime);
+					FBeamOptional::Set(&ToDeserialize, &dateTime);
 				}
 				else if constexpr (std::is_same_v<TOptionalType, FString>)
 				{
@@ -986,8 +1087,8 @@ public:
 				}
 				else if constexpr (TIsUEnumClass<TDataType>::Value)
 				{
-					FString Parsed = JsonField->AsString();
-					TDataType ParsedEnum = SerializationNameToEnum<TDataType>(Parsed);
+					TDataType ParsedEnum;
+					GetEnumFromJsonField<TDataType>(JsonField, ParsedEnum);
 					FBeamOptional::Set(&ToDeserialize, &ParsedEnum);
 				}
 				else if constexpr (std::is_same_v<TDataType, int8>)
@@ -1102,9 +1203,16 @@ public:
 			}
 			else if constexpr (TIsUEnumClass<TDataType>::Value)
 			{
-				FString Parsed = JsonValue->AsString();
-				TDataType ParsedEnum = SerializationNameToEnum<TDataType>(Parsed);
+				TDataType ParsedEnum;
+				GetEnumFromJsonField<TDataType>(JsonValue, ParsedEnum);
 				Array.Add(ParsedEnum);
+			}
+			else if constexpr (std::is_same_v<TDataType, FDateTime>)
+			{
+				const FString val = JsonValue->AsString();
+				FDateTime Parsed;
+				FDateTime::ParseIso8601(*val, Parsed);
+				Array.Add(Parsed);
 			}
 			else if constexpr (std::is_same_v<TDataType, int>)
 			{
@@ -1217,9 +1325,17 @@ public:
 			}
 			else if constexpr (TIsUEnumClass<TMapType>::Value)
 			{
-				FString Parsed = Value.Value->AsString();
-				TMapType ParsedEnum = SerializationNameToEnum<TDataType>(Parsed);
+				TDataType ParsedEnum;
+				GetEnumFromJsonField<TDataType>(JsonValue, ParsedEnum);
+
 				Map.Add(Key, ParsedEnum);
+			}
+			else if constexpr (std::is_same_v<TMapType, FDateTime>)
+			{
+				const FString Val = Value.Value->AsString();
+				FDateTime Parsed;
+				FDateTime::ParseIso8601(*Val, Parsed);
+				Map.Add(Key, Parsed);
 			}
 			else if constexpr (std::is_same_v<TMapType, int>)
 			{
@@ -1277,8 +1393,15 @@ public:
 		}
 		else if constexpr (std::is_same_v<TPrimitiveType, FString>)
 		{
-			// We do this as the primitive content that is returned is a string enclosed with quotes.
-			ToDeserialize = JsonField.RightChop(1).LeftChop(1);
+			if (JsonField.StartsWith("\""))
+			{
+				// We do this as the primitive content that is returned is a string enclosed with quotes.
+				ToDeserialize = JsonField.RightChop(1).LeftChop(1);
+			}
+			else
+			{
+				ToDeserialize = JsonField;
+			}
 		}
 		else if constexpr (TIsDerivedFrom<TPrimitiveType, FBeamMap>::Value)
 		{
@@ -1294,8 +1417,16 @@ public:
 		}
 		else if constexpr (TIsUEnumClass<TPrimitiveType>::Value)
 		{
-			FString Parsed = JsonField;
-			ToDeserialize = SerializationNameToEnum<TPrimitiveType>(Parsed);
+			int EnumIndex = 0;
+			// Try to get the index if we can't then parse as a string
+			if (FDefaultValueHelper::ParseInt(JsonField, EnumIndex))
+			{
+				ToDeserialize = SerializationIndexToEnum<TPrimitiveType>(EnumIndex);
+			}
+			else
+			{
+				ToDeserialize = SerializationNameToEnum<TPrimitiveType>(JsonField);
+			}
 		}
 		else if constexpr (std::is_same_v<TPrimitiveType, FGuid>)
 		{
@@ -1350,6 +1481,16 @@ public:
 			const FString Val = JsonField;
 			const bool Parsed = Val.Equals(TEXT("true"), ESearchCase::IgnoreCase);
 			ToDeserialize = Parsed;
+		}
+		else if constexpr (TIsDerivedFrom<TPrimitiveType, FDateTime>::Value)
+		{
+			FString Val = JsonField;
+			if (JsonField.StartsWith("\""))
+			{
+				// We do this as the primitive content could come enclosed with quotes.
+				Val = JsonField.RightChop(1).LeftChop(1);
+			}
+			FDateTime::ParseIso8601(*Val, ToDeserialize);
 		}
 	}
 

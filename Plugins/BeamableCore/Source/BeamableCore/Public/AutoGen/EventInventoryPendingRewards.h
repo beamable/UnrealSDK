@@ -5,10 +5,11 @@
 #include "Serialization/BeamJsonSerializable.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalMapOfString.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfItemCreateRequestBody.h"
+#include "Serialization/BeamJsonUtils.h"
 
 #include "EventInventoryPendingRewards.generated.h"
 
-UCLASS(BlueprintType, Category="Beam")
+UCLASS(BlueprintType, Category="Beam", DefaultToInstanced, EditInlineNew)
 class BEAMABLECORE_API UEventInventoryPendingRewards : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()

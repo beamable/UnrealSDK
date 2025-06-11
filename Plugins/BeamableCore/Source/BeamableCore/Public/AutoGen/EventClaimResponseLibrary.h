@@ -13,12 +13,12 @@ class BEAMABLECORE_API UEventClaimResponseLibrary : public UBlueprintFunctionLib
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - EventClaimResponse To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|EventPlayers|Utils|Json", DisplayName="EventClaimResponse To JSON String")
 	static FString EventClaimResponseToJsonString(const UEventClaimResponse* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make EventClaimResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|EventPlayers|Utils|Make/Break", DisplayName="Make EventClaimResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static UEventClaimResponse* Make(UEventPlayerStateView* View, FString GameRspJson, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break EventClaimResponse", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|EventPlayers|Utils|Make/Break", DisplayName="Break EventClaimResponse", meta=(NativeBreakFunc))
 	static void Break(const UEventClaimResponse* Serializable, UEventPlayerStateView*& View, FString& GameRspJson);
 };

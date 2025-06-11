@@ -49,7 +49,28 @@ FBeamOperationHandle UBeamMicroservicesEditor::OnRealmInitialized(FBeamRealmHand
 	Editor->GetMainEditorSlot(EditorUser);
 	LocalTarget = EditorUser.Email;
 
-	return Super::OnRealmInitialized(NewRealm);
+	const auto Handler = RequestTracker->CPP_BeginOperation({}, GetName(), {});
+
+	// Get this machine's routing key
+	const auto GetRoutingKeyCommand = NewObject<UBeamCliFederationLocalKeyCommand>(this);
+	GetRoutingKeyCommand->OnStreamOutput = [this, Handler](const TArray<UBeamCliFederationLocalKeyStreamData*>& Stream, const TArray<int64>&, const FBeamOperationHandle&)
+	{
+		RequestTracker->TriggerOperationSuccess(Handler, TEXT(""));
+		for (UBeamCliFederationLocalKeyStreamData* LocalKeyStreamData : Stream)
+			LocalRoutingKey = LocalKeyStreamData->RoutingKey;
+
+		// After we have the routing key for this user and machine, set up a long-running command to get updates from the CLI about the state of microservices running locally. 
+		const auto ListenForStandaloneRunningServicesCommand = NewObject<UBeamCliProjectPsCommand>(this);
+		ListenForStandaloneRunningServicesCommand->OnStreamOutput = [this](TArray<UBeamCliProjectPsStreamData*>& Stream, TArray<int64>& Ts, const FBeamOperationHandle& Op)
+		{
+			OnUpdateLocalStateReceived(Stream, Ts, Op);
+		};
+		const auto ReqProcess = FString::Printf(TEXT("--require-process-id %d"), FPlatformProcess::GetCurrentProcessId());
+		Cli->RunCommand(ListenForStandaloneRunningServicesCommand, {TEXT("-w"), ReqProcess}, {});
+	};
+	Cli->RunCommandServer(GetRoutingKeyCommand, {}, Handler);
+
+	return Handler;
 }
 
 void UBeamMicroservicesEditor::OnReady()
@@ -68,23 +89,6 @@ void UBeamMicroservicesEditor::OnReady()
 		{
 			Backend->SetRoutingKeyMap(TEXT(""));
 		});
-
-		// Get this machine's routing key
-		const auto GetRoutingKeyCommand = NewObject<UBeamCliFederationLocalKeyCommand>(this);
-		GetRoutingKeyCommand->OnStreamOutput = [this](const TArray<UBeamCliFederationLocalKeyStreamData*>& Stream, const TArray<int64>&, const FBeamOperationHandle&)
-		{
-			for (UBeamCliFederationLocalKeyStreamData* LocalKeyStreamData : Stream)
-				LocalRoutingKey = LocalKeyStreamData->RoutingKey;
-
-			// After we have the routing key for this user and machine, set up a long-running command to get updates from the CLI about the state of microservices running locally. 
-			const auto ListenForStandaloneRunningServicesCommand = NewObject<UBeamCliProjectPsCommand>(this);
-			ListenForStandaloneRunningServicesCommand->OnStreamOutput = [this](const TArray<UBeamCliProjectPsStreamData*>& Stream, const TArray<int64>& Array, const FBeamOperationHandle& Op)
-			{
-				OnUpdateLocalStateReceived(Stream, Array, Op);
-			};
-			Cli->RunCommand(ListenForStandaloneRunningServicesCommand, {TEXT("-w")}, {});
-		};
-		Cli->RunCommandServer(GetRoutingKeyCommand, {}, {});
 	}
 }
 
@@ -276,10 +280,14 @@ bool UBeamMicroservicesEditor::IsCurrentRoutingKeyValid(FString BeamoId)
 	if (!LocalMicroservice)
 		return false;
 
-	// For local targets, we only consider them valid if they are running.
+	// For local targets, we only consider them valid if they are running OR if there are no valid realm target.
 	const auto Target = LocalMicroservice->CurrentTarget;
 	if (LocalTarget == Target)
-		return LocalMicroservice->TargetsToRoutingKeys.Contains(Target) && LocalMicroservice->RunningState != Stopped;
+	{
+		const auto ExistsAndItsRunning = LocalMicroservice->TargetsToRoutingKeys.Contains(Target) && LocalMicroservice->RunningState != Stopped;
+		const auto NoRealmDeployedExists = !LocalMicroservice->TargetsToRoutingKeys.Contains(TEXT("realm"));
+		return ExistsAndItsRunning || NoRealmDeployedExists;
+	}
 
 	return LocalMicroservice->TargetsToRoutingKeys.Contains(Target);
 }
@@ -294,7 +302,34 @@ bool UBeamMicroservicesEditor::SetCurrentRoutingKey(FString BeamoId, FString Tar
 		return false;
 
 	LocalMicroservice->CurrentTarget = Target;
+
+	// Synchronize the routing key map for Standalone Game PIE.
+	SetRoutingKeyMapAsAdditionalLaunchArgs();
+	
 	return true;
+}
+
+void UBeamMicroservicesEditor::SetRoutingKeyMapAsAdditionalLaunchArgs()
+{
+	const auto Params = GetDefault<ULevelEditorPlaySettings>()->AdditionalLaunchParameters;
+	auto NewParams = FString(Params);
+
+	const auto RoutingKeyMap = ConstructRoutingKeyMap();
+	const auto StartIdx = Params.Find(TEXT("beamable-routing-key-map"));
+
+	// We have it in the string, first we remove it 
+	if (StartIdx != INDEX_NONE)
+	{
+		auto EndIdx = Params.Find(TEXT(" "), ESearchCase::IgnoreCase, ESearchDir::FromStart, StartIdx);
+		if (EndIdx == INDEX_NONE) EndIdx = Params.Len();
+		NewParams.RemoveAt(StartIdx, EndIdx - StartIdx);
+	}
+
+	// Then we add the most recent routing key map	
+	NewParams.Append(FString::Printf(TEXT(" %s=%s"), TEXT("beamable-routing-key-map"), *RoutingKeyMap));
+
+	// Set the new parameters
+	GetMutableDefault<ULevelEditorPlaySettings>()->AdditionalLaunchParameters = NewParams;
 }
 
 FString UBeamMicroservicesEditor::ConstructRoutingKeyMap()
@@ -310,9 +345,13 @@ FString UBeamMicroservicesEditor::ConstructRoutingKeyMap()
 		}
 
 		const auto SelectedTarget = MicroserviceData.Value.CurrentTarget;
-		const auto RoutingKey = MicroserviceData.Value.TargetsToRoutingKeys[SelectedTarget];
-		if (!RoutingKey.IsEmpty())
-			RoutingKeyMapEntries.Add(TEXT("micro_") + BeamoId + TEXT(":") + RoutingKey);
+		// There is only ONE case where this can be false: the case of "No service deployed in the realm AND no locally running service"
+		if (MicroserviceData.Value.TargetsToRoutingKeys.Contains(SelectedTarget))
+		{
+			const auto RoutingKey = MicroserviceData.Value.TargetsToRoutingKeys[SelectedTarget];
+			if (!RoutingKey.IsEmpty())
+				RoutingKeyMapEntries.Add((TEXT("micro_") + BeamoId + TEXT(":") + RoutingKey));
+		}
 	}
 
 	return FString::Join(RoutingKeyMapEntries, TEXT(","));
@@ -374,10 +413,10 @@ void UBeamMicroservicesEditor::OnUpdateLocalStateReceived(const TArray<UBeamCliP
 					const auto FederationLocalSettings = Federation->LocalSettings[i];
 
 					FLocalFederationData FedData;
-					FedData.Type = static_cast<EFederationType>(StaticEnum<EFederationType>()->GetValueByNameString("BEAM_" + FederationType, EGetByNameFlags::CheckAuthoredName));
+					FedData.Type = static_cast<EBeamFederationType>(StaticEnum<EBeamFederationType>()->GetValueByNameString("BEAM_" + FederationType, EGetByNameFlags::CheckAuthoredName));
 					switch (FedData.Type)
 					{
-					case EFederationType::BEAM_IFederatedGameServer:
+					case EBeamFederationType::BEAM_IFederatedGameServer:
 						FedData.LocalSettings_FederatedGamerServer = NewObject<UBeamCliFederationLocalSettingsGetIFederatedGameServerStreamData>();
 						FedData.LocalSettings_FederatedGamerServer->BeamDeserialize(FederationLocalSettings);
 						break;
@@ -461,6 +500,8 @@ void UBeamMicroservicesEditor::OnUpdateLocalStateReceived(const TArray<UBeamCliP
 		}
 	}
 
+	// Ensure that the additional launch args are up-to-date with the locally running services.
+	SetRoutingKeyMapAsAdditionalLaunchArgs();
 	OnLocalMicroserviceUpdate.Broadcast();
 }
 
@@ -472,7 +513,7 @@ void UBeamMicroservicesEditor::SaveFederationProperties(FString ServiceId, FStri
 	Params.Add(ServiceId);
 	Params.Add(TEXT("--fed-id"));
 	Params.Add(FedId);
-	if (Federation.Type == EFederationType::BEAM_IFederatedGameServer)
+	if (Federation.Type == EBeamFederationType::BEAM_IFederatedGameServer)
 	{
 		if (Federation.LocalSettings_FederatedGamerServer->ContentIds.Num())
 		{
@@ -482,7 +523,7 @@ void UBeamMicroservicesEditor::SaveFederationProperties(FString ServiceId, FStri
 		}
 	}
 
-	
+
 	Cmd->OnCompleted = [this](const int& ResCode, const FBeamOperationHandle& Op)
 	{
 		if (ResCode != 0)
@@ -767,7 +808,8 @@ void UBeamMicroservicesEditor::SetupLogTail(FLocalMicroserviceData* RunningServi
 			}
 			AppendToLogs(LoggingService, Entries);
 		};
-		Cli->RunCommandServer(RunningService->TailLogsCommand, {BeamoId}, {});
+		const auto ReqProcess = FString::Printf(TEXT("--require-process-id %d"), FPlatformProcess::GetCurrentProcessId());
+		Cli->RunCommand(RunningService->TailLogsCommand, {BeamoId, ReqProcess}, {});
 	}
 }
 

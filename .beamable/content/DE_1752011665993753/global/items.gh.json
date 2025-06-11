@@ -1,0 +1,11 @@
+{
+  "properties": {
+    "clientPermission": {
+      "data": {
+        "write_self": false
+      }
+    }
+  },
+  "tags": [],
+  "referenceManifestId": "6750992c46e8e660d93e71fb"
+}

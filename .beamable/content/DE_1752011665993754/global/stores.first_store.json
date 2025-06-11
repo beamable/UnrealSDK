@@ -1,0 +1,13 @@
+{
+  "properties": {
+    "listings": {},
+    "showInactiveListings": {
+      "data": false
+    },
+    "title": {
+      "data": "The Store"
+    }
+  },
+  "tags": [],
+  "referenceManifestId": "681b668fe9ecaa0f33ace9e4"
+}

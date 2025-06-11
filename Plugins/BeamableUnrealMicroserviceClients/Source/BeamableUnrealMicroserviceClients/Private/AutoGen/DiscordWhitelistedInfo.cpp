@@ -12,17 +12,17 @@ void UDiscordWhitelistedInfo::DeserializeRequestResponse(UObject* RequestData, F
 
 void UDiscordWhitelistedInfo::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("matchmaking_discord_whitelisted"), bMatchmakingDiscordWhitelisted);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("matchmaking_discord_whitelisted"), bMatchmakingDiscordWhitelisted, Serializer);
 }
 
 void UDiscordWhitelistedInfo::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("matchmaking_discord_whitelisted"), bMatchmakingDiscordWhitelisted);		
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("matchmaking_discord_whitelisted"), bMatchmakingDiscordWhitelisted, Serializer);		
 }
 
 void UDiscordWhitelistedInfo::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	bMatchmakingDiscordWhitelisted = Bag->GetBoolField(TEXT("matchmaking_discord_whitelisted"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("matchmaking_discord_whitelisted")), bMatchmakingDiscordWhitelisted);
 }
 
 

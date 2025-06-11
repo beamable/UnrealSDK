@@ -13,12 +13,12 @@ class BEAMABLECORE_API UMatchMakingWindowRespLibrary : public UBlueprintFunction
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - MatchMakingWindowResp To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Leaderboards|Utils|Json", DisplayName="MatchMakingWindowResp To JSON String")
 	static FString MatchMakingWindowRespToJsonString(const UMatchMakingWindowResp* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make MatchMakingWindowResp", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Leaderboards|Utils|Make/Break", DisplayName="Make MatchMakingWindowResp", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static UMatchMakingWindowResp* Make(int32 Difficulty, TArray<UMatchMakingRanking*> Matches, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break MatchMakingWindowResp", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Leaderboards|Utils|Make/Break", DisplayName="Break MatchMakingWindowResp", meta=(NativeBreakFunc))
 	static void Break(const UMatchMakingWindowResp* Serializable, int32& Difficulty, TArray<UMatchMakingRanking*>& Matches);
 };

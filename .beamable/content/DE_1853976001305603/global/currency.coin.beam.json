@@ -1,0 +1,38 @@
+{
+  "properties": {
+    "clientPermission": {
+      "data": {
+        "write_self": true
+      }
+    },
+    "decimals": {
+      "data": 0
+    },
+    "description": {
+      "data": "Beam game coin"
+    },
+    "external": {
+      "data": {
+        "service": "SuiFederation",
+        "namespace": "SuiIdentity"
+      }
+    },
+    "image": {
+      "data": "https://cdn.pixabay.com/photo/2018/08/30/12/24/bitcoin-3642042_1280.png"
+    },
+    "initialSupply": {
+      "data": 1000
+    },
+    "name": {
+      "data": "Beam"
+    },
+    "startingAmount": {
+      "data": 0
+    },
+    "symbol": {
+      "data": "BEAM"
+    }
+  },
+  "tags": [],
+  "referenceManifestId": "6849974cf968c812ad340da7"
+}

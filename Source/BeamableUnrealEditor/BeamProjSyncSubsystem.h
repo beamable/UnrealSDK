@@ -26,36 +26,35 @@ class BEAMABLEUNREALEDITOR_API UBeamProjSyncSubsystem : public UBeamEditorSubsys
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(BlueprintReadOnly)
-	FString ActiveBeamProj;
+	// UPROPERTY(BlueprintReadOnly)
+	// FString ActiveBeamProj;
 
-private:	
+	bool SyncAllOverridenDirectories() const;
+
+	inline static TArray<FString> IgnoreDirectories = {TEXT("content"), TEXT("temp")};
+
+private:
 	inline static TArray<FString> OverridenDirectories = {TEXT("Config"), TEXT(".beamable")};
 	inline static TArray<FDelegateHandle> OverridenDirectoriesHandlers = {{}, {}};
-
+	inline static FString KBeamProj_Sandbox = "BEAMPROJ_Sandbox";
 
 	UPROPERTY()
 	UBeamEditorContent* EditorContent;
 
-	FDelegateHandle OnContentSavedHandle;
-	FDelegateHandle OnUndoRedoHandle;
-	FDelegateHandle OnPreBeginPIEHandle;	
+	// FDelegateHandle OnContentSavedHandle;
+	// FDelegateHandle OnUndoRedoHandle;
+	// FDelegateHandle OnPreBeginPIEHandle;	
 
 
 	FString UnrealConfigDir() { return OverridenDirectories[0]; }
 	FString BeamableContentDir() { return OverridenDirectories[1]; }
 
-	
-	virtual FBeamOperationHandle InitializeWhenEditorReady() override;
-	virtual void Deinitialize() override;
 
-	void OnEnterPie(bool) const;
-	void OnObjectRedoUndo() const;
-	void OnContentSaved(FBeamContentManifestId ManifestId, FBeamContentId Id);
-
-	UFUNCTION()
-	void OnAppliedSettingsToBuild();
-
-	void SyncAllOverridenDirectories() const;
 	void GetPaths(const FString& OverridenDirectory, FString& WatchDir, FString& TargetDir, FString& AbsWatchDir, FString& AbsTargetDir) const;
+
+	FString GetActiveBeamProj() const;
+
+	void ApplyProjectOverrides(const FString& BeamProj) const;
+
+	void CopyDirectory(const FString& SourceDir, const FString& DestinationDir) const;
 };

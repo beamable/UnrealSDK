@@ -13,12 +13,12 @@ class BEAMABLEUNREALMICROSERVICECLIENTS_API UMSPlaygroundAddResponseLibrary : pu
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - MSPlaygroundAddResponse To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|MSPlayground|Utils|Json", DisplayName="MSPlaygroundAddResponse To JSON String")
 	static FString MSPlaygroundAddResponseToJsonString(const UMSPlaygroundAddResponse* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make MSPlaygroundAddResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|MSPlayground|Utils|Make/Break", DisplayName="Make MSPlaygroundAddResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static UMSPlaygroundAddResponse* Make(int32 Value, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break MSPlaygroundAddResponse", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|MSPlayground|Utils|Make/Break", DisplayName="Break MSPlaygroundAddResponse", meta=(NativeBreakFunc))
 	static void Break(const UMSPlaygroundAddResponse* Serializable, int32& Value);
 };

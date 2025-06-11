@@ -5,7 +5,9 @@
 #include "CoreMinimal.h"
 #include "BeamEditorSettings.h"
 #include "WidgetBlueprint.h"
+#include "PropertyEditorClipboard.h"
 #include "BeamableEditorBlueprintLibrary.generated.h"
+
 
 UCLASS()
 class BEAMABLECOREEDITOR_API UBeamableEditorBlueprintLibrary : public UBlueprintFunctionLibrary
@@ -21,4 +23,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category="Beam|Editor")
 	static bool GetRunningPIEWorld(UWorld*& PIEWorld);
+
+	UFUNCTION(BlueprintCallable, Category="Beam|Editor")
+	static void CopyToClipboard(FString Text);
 };

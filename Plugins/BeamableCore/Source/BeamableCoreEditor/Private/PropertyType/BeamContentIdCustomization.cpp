@@ -40,7 +40,7 @@ void FBeamContentIdCustomization::CustomizeHeader(TSharedRef<IPropertyHandle> St
 			const auto BeamContentTypeFilter = StructPropertyHandle->GetMetaData("BeamContentTypeFilter");
 			BeamContentTypeFilter.ParseIntoArray(BeamContentTypeFilterArray, TEXT(","));
 			TArray<FName> TypesToRemove;
-			TMap<FString,TArray<FString>> OutMappings;
+			TMap<FString, FArrayOfString> OutMappings;
 			Content->FindSubTypesOfContentType(BeamContentTypeFilterArray,OutMappings);
 
 			for (const auto& Map : ContentTypeToIdsMap)
@@ -50,7 +50,7 @@ void FBeamContentIdCustomization::CustomizeHeader(TSharedRef<IPropertyHandle> St
 				bool GoodContent = false;
 				for(const auto& TT : OutMappings)
 				{
-					for(const auto& El: TT.Value)
+					for(const auto& El: TT.Value.Values)
 					{
 						if (!OnlyExplicitTypes && TypeId.StartsWith(El))
 						{

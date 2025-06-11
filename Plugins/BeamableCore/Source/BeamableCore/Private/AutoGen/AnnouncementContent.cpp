@@ -7,11 +7,11 @@
 
 void UAnnouncementContent::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("body"), Body);
-	Serializer->WriteValue(TEXT("channel"), Channel);
-	Serializer->WriteValue(TEXT("symbol"), Symbol);
-	Serializer->WriteValue(TEXT("title"), Title);
-	Serializer->WriteValue(TEXT("summary"), Summary);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("body"), Body, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("channel"), Channel, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("symbol"), Symbol, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("title"), Title, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("summary"), Summary, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("start_date"), &StartDate, Serializer);
 	UBeamJsonUtils::SerializeOptional<UPlayerReward*>(TEXT("gift"), &Gift, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("end_date"), &EndDate, Serializer);
@@ -23,11 +23,11 @@ void UAnnouncementContent::BeamSerializeProperties(TUnrealJsonSerializer& Serial
 
 void UAnnouncementContent::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("body"), Body);
-	Serializer->WriteValue(TEXT("channel"), Channel);
-	Serializer->WriteValue(TEXT("symbol"), Symbol);
-	Serializer->WriteValue(TEXT("title"), Title);
-	Serializer->WriteValue(TEXT("summary"), Summary);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("body"), Body, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("channel"), Channel, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("symbol"), Symbol, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("title"), Title, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("summary"), Summary, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("start_date"), &StartDate, Serializer);
 	UBeamJsonUtils::SerializeOptional<UPlayerReward*>(TEXT("gift"), &Gift, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("end_date"), &EndDate, Serializer);
@@ -39,11 +39,11 @@ void UAnnouncementContent::BeamSerializeProperties(TUnrealPrettyJsonSerializer& 
 
 void UAnnouncementContent::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	Body = Bag->GetStringField(TEXT("body"));
-	Channel = Bag->GetStringField(TEXT("channel"));
-	Symbol = Bag->GetStringField(TEXT("symbol"));
-	Title = Bag->GetStringField(TEXT("title"));
-	Summary = Bag->GetStringField(TEXT("summary"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("body")), Body);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("channel")), Channel);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("symbol")), Symbol);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("title")), Title);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("summary")), Summary);
 	UBeamJsonUtils::DeserializeOptional<FString>("start_date", Bag, StartDate, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<UPlayerReward*>("gift", Bag, Gift, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("end_date", Bag, EndDate, OuterOwner);

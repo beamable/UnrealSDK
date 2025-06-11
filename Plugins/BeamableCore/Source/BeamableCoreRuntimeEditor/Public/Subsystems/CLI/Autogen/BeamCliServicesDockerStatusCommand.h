@@ -22,23 +22,23 @@ public:
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("isDaemonRunning"), IsDaemonRunning);
-		Serializer->WriteValue(TEXT("isCliAccessible"), IsCliAccessible);
-		Serializer->WriteValue(TEXT("cliLocation"), CliLocation);	
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("isDaemonRunning"), IsDaemonRunning, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("isCliAccessible"), IsCliAccessible, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("cliLocation"), CliLocation, Serializer);	
 	}
 
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("isDaemonRunning"), IsDaemonRunning);
-		Serializer->WriteValue(TEXT("isCliAccessible"), IsCliAccessible);
-		Serializer->WriteValue(TEXT("cliLocation"), CliLocation);	
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("isDaemonRunning"), IsDaemonRunning, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("isCliAccessible"), IsCliAccessible, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("cliLocation"), CliLocation, Serializer);	
 	}
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		IsDaemonRunning = Bag->GetBoolField(TEXT("isDaemonRunning"));
-		IsCliAccessible = Bag->GetBoolField(TEXT("isCliAccessible"));
-		CliLocation = Bag->GetStringField(TEXT("cliLocation"));	
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("isDaemonRunning")), IsDaemonRunning);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("isCliAccessible")), IsCliAccessible);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("cliLocation")), CliLocation);	
 	}
 };
 
@@ -86,7 +86,7 @@ public:
 	inline static FString StreamType = FString(TEXT("stream"));
 	UPROPERTY() TArray<UBeamCliServicesDockerStatusStreamData*> Stream;
 	UPROPERTY() TArray<int64> Timestamps;
-	TFunction<void (const TArray<UBeamCliServicesDockerStatusStreamData*>& StreamData, const TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnStreamOutput;	
+	TFunction<void (TArray<UBeamCliServicesDockerStatusStreamData*>& StreamData, TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnStreamOutput;	
 
 	TFunction<void (const int& ResCode, const FBeamOperationHandle& Op)> OnCompleted;
 	virtual bool HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer) override;

@@ -13,12 +13,12 @@ class BEAMABLECORE_API UPlayersStatusResponseLibrary : public UBlueprintFunction
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - PlayersStatusResponse To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Presence|Utils|Json", DisplayName="PlayersStatusResponse To JSON String")
 	static FString PlayersStatusResponseToJsonString(const UPlayersStatusResponse* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make PlayersStatusResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="PlayersStatus, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Presence|Utils|Make/Break", DisplayName="Make PlayersStatusResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="PlayersStatus, Outer", NativeMakeFunc))
 	static UPlayersStatusResponse* Make(FOptionalArrayOfOnlineStatus PlayersStatus, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break PlayersStatusResponse", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Presence|Utils|Make/Break", DisplayName="Break PlayersStatusResponse", meta=(NativeBreakFunc))
 	static void Break(const UPlayersStatusResponse* Serializable, FOptionalArrayOfOnlineStatus& PlayersStatus);
 };

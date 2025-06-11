@@ -1,0 +1,47 @@
+{
+  "properties": {
+    "allowBuying": {
+      "data": ""
+    },
+    "allowSpending": {
+      "data": false
+    },
+    "allowTransfers": {
+      "data": ""
+    },
+    "clientPermission": {
+      "data": {
+        "write_self": true
+      }
+    },
+    "decimals": {
+      "data": 0
+    },
+    "description": {
+      "data": "In game gold"
+    },
+    "external": {
+      "data": {
+        "service": "SuiFederation",
+        "namespace": "SuiIdentity"
+      }
+    },
+    "image": {
+      "data": "https://cdn.pixabay.com/photo/2013/07/12/12/55/gold-bar-146539_1280.png"
+    },
+    "initialSupply": {
+      "data": 100
+    },
+    "name": {
+      "data": "Gold"
+    },
+    "startingAmount": {
+      "data": 0
+    },
+    "symbol": {
+      "data": "GLD"
+    }
+  },
+  "tags": [],
+  "referenceManifestId": "6849974cf968c812ad340da7"
+}

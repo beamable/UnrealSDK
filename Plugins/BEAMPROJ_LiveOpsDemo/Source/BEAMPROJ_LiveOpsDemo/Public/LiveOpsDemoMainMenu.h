@@ -11,7 +11,7 @@
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FDelegate_Simple);
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnReceiveTwoFactorChallenge, FUserSlot, UserSlot, FString, DecodedChallenge, UChallengeSolutionObject*, ChallengeSolution);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnReceiveTwoFactorChallenge, FUserSlot, UserSlot, FString, DecodedChallenge, UBeamMultiFactorLoginData*, ChallengeSolution);
 
 /**
  * 
@@ -160,7 +160,7 @@ protected:
 	void DoGuestLogin()
 	{
 		// Then, we sign in with a new guest account (or the second time around, this will sign in with whatever local credentials are cached)
-		Runtime->CPP_LoginFrictionlessOperation(OwnerUserSlot, {});
+		Runtime->CPP_LoginFrictionlessOperation(OwnerUserSlot, {}, {});
 	}
 
 
@@ -174,15 +174,17 @@ protected:
 			// If successful, we will get the two factor challenge
 			if (Evt.EventType == OET_SUCCESS)
 			{
-				UChallengeSolutionObject* ChallengeSolution = Cast<UChallengeSolutionObject>(Evt.EventData.GetInterface());
+				UBeamMultiFactorLoginData* ChallengeSolution = Cast<UBeamMultiFactorLoginData>(Evt.EventData.GetInterface());
+				if (ChallengeSolution)
+				{
+					FString ChallengeToken;
+					FString _;
+					// The challenge comes as a base 64 encoded with more information separated by "."
+					ChallengeSolution->ChallengeToken.Split(TEXT("."), &ChallengeToken, &_);
+					FString DecodedChallenge = GetBase64Decode(ChallengeToken);
 
-				FString ChallengeToken;
-				FString _;
-				// The challenge comes as a base 64 encoded with more information separated by "."
-				ChallengeSolution->ChallengeToken.Split(TEXT("."), &ChallengeToken, &_);
-				FString DecodedChallenge = GetBase64Decode(ChallengeToken);
-
-				OnReceiveTwoFactorChallenge.Broadcast(OwnerUserSlot, DecodedChallenge, ChallengeSolution);
+					OnReceiveTwoFactorChallenge.Broadcast(OwnerUserSlot, DecodedChallenge, ChallengeSolution);
+				}
 			}
 			else
 			{
@@ -191,11 +193,12 @@ protected:
 			}
 		});
 
-		Runtime->CPP_BeginAttachExternalIdentityTwoFactorOperation(OwnerUserSlot, GetSuiMicroserviceName(),
-		                                                           GetSuiExternalIdentityName(),
-		                                                           SuiWalletIdExternal,
-		                                                           SuiWalletIdExternal,
-		                                                           OnSuiIdentityHandler);
+		Runtime->CPP_AttachFederatedOperation(OwnerUserSlot,
+														GetSuiMicroserviceName(),
+		                                      GetSuiExternalIdentityName(),
+		                                      SuiWalletIdExternal,
+		                                      SuiWalletIdExternal,
+		                                      OnSuiIdentityHandler);
 	}
 
 	UFUNCTION(BlueprintCallable)
@@ -295,12 +298,12 @@ protected:
 
 
 				// Now that we have the handler defined, we ask the Beamable SDK to get the 2FA to our new account.
-				Runtime->CPP_AttachExternalIdentityOperation(OwnerUserSlot,
-				                                             GetSuiMicroserviceName(),
-				                                             GetSuiIdentityName(),
-				                                             TEXT(""),
-				                                             TEXT(""),
-				                                             OnSuiIdentityAttachedHandler);
+				Runtime->CPP_AttachFederatedOperation(OwnerUserSlot,
+				                                      GetSuiMicroserviceName(),
+				                                      GetSuiIdentityName(),
+				                                      TEXT(""),
+				                                      TEXT(""),
+				                                      OnSuiIdentityAttachedHandler);
 			}
 			// If we already have an Sui Wallet associated with our account
 			// To create new accounts when interacting with this sample in PIE, hit the Reset PIE Users button in the Beamable Window. 
@@ -319,7 +322,7 @@ protected:
 	}
 
 	UFUNCTION(BlueprintCallable)
-	void SendTwoFactorOperationHandler(FUserSlot UserSlot, UChallengeSolutionObject* ChallengeSolution)
+	void SendTwoFactorOperationHandler(FUserSlot UserSlot, UBeamMultiFactorLoginData* ChallengeSolution)
 	{
 		const auto OnSuitIdentityFinishTwoFactorHandler = FBeamOperationEventHandlerCode::CreateLambda([this](FBeamOperationEvent Evt)
 		{
@@ -337,13 +340,8 @@ protected:
 
 		// Now that we have the handler defined, we ask the Beamable SDK to attach the Sui identity to our new account.
 		// This should run once per new user.
-		Runtime->CPP_CommitAttachExternalIdentityTwoFactorOperation(UserSlot,
-		                                                            GetSuiMicroserviceName(),
-		                                                            GetSuiExternalIdentityName(),
-		                                                            SuiWalletIdExternal,
-		                                                            SuiWalletIdExternal,
-		                                                            ChallengeSolution,
-		                                                            OnSuitIdentityFinishTwoFactorHandler);
+		Runtime->CPP_CommitAttachFederatedOperation(UserSlot, ChallengeSolution,
+		                                            OnSuitIdentityFinishTwoFactorHandler);
 	}
 
 	FString GetBase64Decode(FString Base64String)

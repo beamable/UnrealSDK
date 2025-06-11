@@ -3,11 +3,12 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
-#include "BeamableCore/Public/AutoGen/Enums/WebhookServiceType.h"
+#include "Serialization/BeamJsonUtils.h"
+#include "BeamableCore/Public/AutoGen/Enums/BeamWebhookServiceType.h"
 
 #include "ServiceRoute.generated.h"
 
-UCLASS(BlueprintType, Category="Beam")
+UCLASS(BlueprintType, Category="Beam", DefaultToInstanced, EditInlineNew)
 class BEAMABLECORE_API UServiceRoute : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
@@ -18,7 +19,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Endpoint", Category="Beam")
 	FString Endpoint = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Service Type Str", Category="Beam")
-	EWebhookServiceType ServiceTypeStr = {};
+	EBeamWebhookServiceType ServiceTypeStr = {};
 
 	
 

@@ -7,7 +7,7 @@
 
 void ULeaderboardCreateRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("sharded"), bSharded);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("sharded"), bSharded, Serializer);
 	UBeamJsonUtils::SerializeOptional<bool>(TEXT("partitioned"), &bPartitioned, Serializer);
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("freezeTime"), &FreezeTime, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("scoreName"), &ScoreName, Serializer);
@@ -20,7 +20,7 @@ void ULeaderboardCreateRequestBody::BeamSerializeProperties(TUnrealJsonSerialize
 
 void ULeaderboardCreateRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("sharded"), bSharded);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("sharded"), bSharded, Serializer);
 	UBeamJsonUtils::SerializeOptional<bool>(TEXT("partitioned"), &bPartitioned, Serializer);
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("freezeTime"), &FreezeTime, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("scoreName"), &ScoreName, Serializer);
@@ -33,7 +33,7 @@ void ULeaderboardCreateRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSer
 
 void ULeaderboardCreateRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	bSharded = Bag->GetBoolField(TEXT("sharded"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("sharded")), bSharded);
 	UBeamJsonUtils::DeserializeOptional<bool>("partitioned", Bag, bPartitioned, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<int64>("freezeTime", Bag, FreezeTime, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("scoreName", Bag, ScoreName, OuterOwner);

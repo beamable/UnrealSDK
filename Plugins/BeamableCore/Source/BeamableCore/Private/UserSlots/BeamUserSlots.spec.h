@@ -5,7 +5,7 @@
 class UBeamUserSlotsTestCallbacks;
 
 
-BEGIN_DEFINE_SPEC(FBeamUserSlotsSpec, "BeamableUnreal.BeamUserSlots", EAutomationTestFlags::ProductFilter | EAutomationTestFlags::ApplicationContextMask)
+BEGIN_DEFINE_SPEC(FBeamUserSlotsSpec, "BeamableUnreal.BeamUserSlots", EAutomationTestFlags::ProductFilter | EAutomationTestFlags::EditorContext)
 	UBeamUserSlots* BeamUserSlots;
 	TArray<FDelegateHandle> AddedTestHandlers;
 	TArray<FName> AddedUObjectTestHandlers;

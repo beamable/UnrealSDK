@@ -20,27 +20,27 @@ public:
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("beamoId"), BeamoId);
-		Serializer->WriteValue(TEXT("filePath"), FilePath);	
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("beamoId"), BeamoId, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("filePath"), FilePath, Serializer);	
 	}
 
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("beamoId"), BeamoId);
-		Serializer->WriteValue(TEXT("filePath"), FilePath);	
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("beamoId"), BeamoId, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("filePath"), FilePath, Serializer);	
 	}
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		BeamoId = Bag->GetStringField(TEXT("beamoId"));
-		FilePath = Bag->GetStringField(TEXT("filePath"));	
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("beamoId")), BeamoId);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("filePath")), FilePath);	
 	}
 };
 
 
 /**
  Description:
-  Generate a C# client file based on a built C# microservice dll directory
+  [INTERNAL] Obsolete command, please use generate-client-oapi that used the OpenAPI specifications to generate the C# client code. The generate-client command will Generate a C# client file based on a built C# microservice dll directory using refactor
 
 Usage:
   Beamable.Tools project generate-client <source> [options]
@@ -54,9 +54,10 @@ Options:
   --with-group, --with-groups <with-group>             A set of BeamServiceGroup tags that will include the associated services
   --output-dir <output-dir>                            Directory to write the output client at
   --output-links                                       When true, generate the source client files to all associated projects [default: True]
+  --output-unity-projects <output-unity-projects>      Paths to unity projects to generate clients in
   --existing-fed-ids <existing-fed-ids>                A set of existing federation ids
-  --existing-fed-type-names <existing-fed-type-names>  A set of existing class names for federations
-  --output-path-hints <output-path-hints>              A special format, BEAMOID=PATH, that tells the generator where to place the client. The path should be relative to the linked project root
+  --existing-fed-type-names <existing-fed-type-names>  A set of existing class names for federations (Obsolete)
+  --output-path-hints <output-path-hints>              A special format, BEAMOID=PATH, that tells the generator where to place the client. The path should be relative to the linked project root (Obsolete)
   --dryrun                                             [DEPRECATED] Run as much of the command as possible without making any network calls
   --cid <cid>                                          CID (CustomerId) to use (found in Portal->Account); defaults to whatever is in '.beamable/connection-configuration.json'
   --pid <pid>                                          PID (Realm ID) to use (found in Portal -> Games -> Any Realm's details); defaults to whatever is in '.beamable/connection-configuration.json'
@@ -92,7 +93,7 @@ public:
 	inline static FString StreamType = FString(TEXT("stream"));
 	UPROPERTY() TArray<UBeamCliProjectGenerateClientStreamData*> Stream;
 	UPROPERTY() TArray<int64> Timestamps;
-	TFunction<void (const TArray<UBeamCliProjectGenerateClientStreamData*>& StreamData, const TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnStreamOutput;	
+	TFunction<void (TArray<UBeamCliProjectGenerateClientStreamData*>& StreamData, TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnStreamOutput;	
 
 	TFunction<void (const int& ResCode, const FBeamOperationHandle& Op)> OnCompleted;
 	virtual bool HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer) override;

@@ -41,11 +41,15 @@ void FBeamContentObjectSpec::Define()
 	FString TestLinkId = TEXT("mockcontentobject.content2");
 	FString TestVersion = TEXT("1");
 	FString TestBeamCid = TEXT("111111111");
+	FString TestStringText = TEXT("I'm a String Text");
+	FString TestTableId = TEXT("/BeamableCore/Tests/BEAM_TEST_TABLE.BEAM_TEST_TABLE");
+	FString TestTableKey = TEXT("BEAM_TEST_KEY");
+	FString TestTableText = TEXT("BEAM_ST₢") + TestTableId + TEXT("₢") + TestTableKey;
 	FString TestValueA = TEXT("1");
 	FString TestValueB = TEXT("2");
 	FString TestSoftObjPath = TEXT("/BeamableCore/Editor/Icons/BeamLogo.BeamLogo");
 	FString TestVectorObj = TEXT("{ \"x\": 1.0, \"y\": 1.0, \"z\": 1.0 }");
-	FString TestIntVectorObj = TEXT("{ \"x\": 1, \"y\": 1, \"z\": 1 }");	
+	FString TestIntVectorObj = TEXT("{ \"x\": 1, \"y\": 1, \"z\": 1 }");
 	FString TestColorObj = TEXT("{ \"a\": 255, \"b\": 0, \"g\": 0, \"r\": 0 }");
 	FString TestLinearColorObj = TEXT("{ \"a\": 1, \"b\": 0, \"g\": 0, \"r\": 0 }");
 	int32 TestValueAInt = 1;
@@ -66,6 +70,34 @@ void FBeamContentObjectSpec::Define()
     "BeamCid": {
       "data": "₢BeamCid₢"
     },
+	"StringText": {
+      "data": "₢StringText₢"
+	},
+	"StringTextArray": {
+      "data": [
+		"₢StringText₢",
+		"₢StringText₢"
+	  ]
+	},
+	"StringTextMap": {
+      "data": {
+		"a": "₢StringText₢"
+	  }
+	},
+	"TableText": {
+      "data": "₢TableText₢"
+	},
+	"TableTextArray": {
+      "data": [
+		"₢TableText₢",
+		"₢TableText₢"
+	  ]
+	},
+	"TableTextMap": {
+      "data": {
+		"a": "₢TableText₢"
+	  }
+	},
 	"UnrealVector": {
 	  "data": ₢UnrealVector₢	
 	},
@@ -270,6 +302,34 @@ void FBeamContentObjectSpec::Define()
     "BeamCid": {
       "data": "₢BeamCid₢"
     },
+	"StringText": {
+      "data": "₢StringText₢"
+	},
+	"StringTextArray": {
+      "data": [
+		"₢StringText₢",
+		"₢StringText₢"
+	  ]
+	},
+	"StringTextMap": {
+      "data": {
+		"a": "₢StringText₢"
+	  }
+	},
+	"TableText": {
+      "data": "TableText₢"
+	},
+	"TableTextArray": {
+      "data": [
+		"₢TableText₢",
+		"₢TableText₢"
+	  ]
+	},
+	"TableTextMap": {
+      "data": {
+		"a": "₢TableText₢"
+	  }
+	},
 	"UnrealVector": {
 	  "data": ₢UnrealVector₢	
 	},
@@ -445,6 +505,8 @@ void FBeamContentObjectSpec::Define()
 	FullObject = FullObject.Replace(TEXT("₢Id₢"), *TestId);
 	FullObject = FullObject.Replace(TEXT("₢Version₢"), *TestVersion);
 	FullObject = FullObject.Replace(TEXT("₢BeamCid₢"), *TestBeamCid);
+	FullObject = FullObject.Replace(TEXT("₢StringText₢"), *TestStringText);
+	FullObject = FullObject.Replace(TEXT("₢TableText₢"), *TestTableText);
 	FullObject = FullObject.Replace(TEXT("₢ValueA₢"), *TestValueA);
 	FullObject = FullObject.Replace(TEXT("₢ValueB₢"), *TestValueB);
 	FullObject = FullObject.Replace(TEXT("₢SoftObjPath₢"), *TestSoftObjPath);
@@ -461,6 +523,8 @@ void FBeamContentObjectSpec::Define()
 	WithoutOptionals = WithoutOptionals.Replace(TEXT("₢Id₢"), *TestId);
 	WithoutOptionals = WithoutOptionals.Replace(TEXT("₢Version₢"), *TestVersion);
 	WithoutOptionals = WithoutOptionals.Replace(TEXT("₢BeamCid₢"), *TestBeamCid);
+	WithoutOptionals = WithoutOptionals.Replace(TEXT("₢StringText₢"), *TestStringText);
+	WithoutOptionals = WithoutOptionals.Replace(TEXT("₢TableText₢"), *TestTableText);
 	WithoutOptionals = WithoutOptionals.Replace(TEXT("₢ValueA₢"), *TestValueA);
 	WithoutOptionals = WithoutOptionals.Replace(TEXT("₢ValueB₢"), *TestValueB);
 	WithoutOptionals = WithoutOptionals.Replace(TEXT("₢SoftObjPath₢"), *TestSoftObjPath);
@@ -484,6 +548,13 @@ void FBeamContentObjectSpec::Define()
 			ContentObject->Value = TestValueAInt;
 			ContentObject->BeamCid = TestBeamCid;
 
+			ContentObject->StringText = FText::FromString(TestStringText);
+			ContentObject->StringTextArray = {FText::FromString(TestStringText), FText::FromString(TestStringText)};
+			ContentObject->StringTextMap.Add(TEXT("a"), FText::FromString(TestStringText));
+			ContentObject->TableText = FText::FromStringTable(FName(TestTableId), TestTableKey);
+			ContentObject->TableTextArray = {FText::FromStringTable(FName(TestTableId), TestTableKey), FText::FromStringTable(FName(TestTableId), TestTableKey)};
+			ContentObject->TableTextMap.Add(TEXT("a"), FText::FromStringTable(FName(TestTableId), TestTableKey));
+
 			ContentObject->UnrealGameplayTag = FGameplayTag::RequestGameplayTag(FName(TestGameplayTagA), false);
 			ContentObject->GameplayTagsArray = {FGameplayTag::RequestGameplayTag(FName(TestGameplayTagA), false), FGameplayTag::RequestGameplayTag(FName(TestGameplayTagB), false)};
 			ContentObject->GameplayTagsMap.Add(TEXT("a"), FGameplayTag::RequestGameplayTag(FName(TestGameplayTagA), false));
@@ -494,11 +565,11 @@ void FBeamContentObjectSpec::Define()
 			ContentObject->VectorsMap.Add(TEXT("a"), FVector::One());
 			ContentObject->VectorsMap.Add(TEXT("b"), FVector::One());
 
-			ContentObject->UnrealIntVector = FIntVector(1,1,1);
-			ContentObject->IntVectorsArray = {FIntVector(1,1,1), FIntVector(1,1,1)};
-			ContentObject->IntVectorsMap.Add(TEXT("a"), FIntVector(1,1,1));
-			ContentObject->IntVectorsMap.Add(TEXT("b"), FIntVector(1,1,1));
-			
+			ContentObject->UnrealIntVector = FIntVector(1, 1, 1);
+			ContentObject->IntVectorsArray = {FIntVector(1, 1, 1), FIntVector(1, 1, 1)};
+			ContentObject->IntVectorsMap.Add(TEXT("a"), FIntVector(1, 1, 1));
+			ContentObject->IntVectorsMap.Add(TEXT("b"), FIntVector(1, 1, 1));
+
 			ContentObject->UnrealColor = FColor::Black;
 			ContentObject->ColorsArray = {FColor::Black, FColor::Black};
 			ContentObject->ColorsMap.Add(TEXT("a"), FColor::Black);
@@ -563,6 +634,30 @@ void FBeamContentObjectSpec::Define()
 
 			TestEqual("value serialized correctly", NewObj->Value, TestValueAInt);
 			NewObj = nullptr;
+		});
+
+		It("should serialize FText properly", [=, this]()
+		{
+			FString Json = FString{};
+			ContentObject->ToBasicJson(Json);
+
+			if (auto Bag = FJsonDataBag(); Bag.FromJson(*Json))
+			{
+				const auto Props = Bag.GetField(TEXT("properties"))->AsObject();
+				TestEqual("String-based FText serialized correctly", Props->GetObjectField(TEXT("StringText"))->GetStringField(TEXT("data")), TestStringText);
+				TestEqual("String-based FText serialized correctly", Props->GetObjectField(TEXT("StringTextArray"))->GetArrayField(TEXT("data"))[0]->AsString(), TestStringText);
+				TestEqual("String-based FText serialized correctly", Props->GetObjectField(TEXT("StringTextArray"))->GetArrayField(TEXT("data"))[1]->AsString(), TestStringText);
+				TestEqual("String-based FText serialized correctly", Props->GetObjectField(TEXT("StringTextMap"))->GetObjectField(TEXT("data"))->GetStringField(TEXT("a")), TestStringText);
+
+				TestEqual("String-based FText serialized correctly", Props->GetObjectField(TEXT("TableText"))->GetStringField(TEXT("data")), TestTableText);
+				TestEqual("String-based FText serialized correctly", Props->GetObjectField(TEXT("TableTextArray"))->GetArrayField(TEXT("data"))[0]->AsString(), TestTableText);
+				TestEqual("String-based FText serialized correctly", Props->GetObjectField(TEXT("TableTextArray"))->GetArrayField(TEXT("data"))[1]->AsString(), TestTableText);
+				TestEqual("String-based FText serialized correctly", Props->GetObjectField(TEXT("TableTextMap"))->GetObjectField(TEXT("data"))->GetStringField(TEXT("a")), TestTableText);
+			}
+			else
+			{
+				TestTrue(TEXT("Failed to deserialize"), false);
+			}
 		});
 
 		It("should serialize semantic types properly", [=, this]()
@@ -636,7 +731,7 @@ void FBeamContentObjectSpec::Define()
 
 			NewObj = nullptr;
 		});
-		
+
 		It("should serialize colors properly", [=, this]()
 		{
 			FString Json = FString{};
@@ -668,8 +763,8 @@ void FBeamContentObjectSpec::Define()
 			// If this errors out, make sure you have the expected GameplayTags created here your available ones.
 			TestEqual("LinearColor serialized correctly", NewObj->UnrealLinearColor, FLinearColor::Black);
 
-			TestEqual("LinearColor serialized correctly", NewObj->LinearColorsArray[0],  FLinearColor::Black);
-			TestEqual("LinearColor serialized correctly", NewObj->LinearColorsArray[1],  FLinearColor::Black);
+			TestEqual("LinearColor serialized correctly", NewObj->LinearColorsArray[0], FLinearColor::Black);
+			TestEqual("LinearColor serialized correctly", NewObj->LinearColorsArray[1], FLinearColor::Black);
 
 			TestEqual("LinearColor serialized correctly", NewObj->LinearColorsMap.FindRef(TEXT("a")), FLinearColor::Black);
 			TestEqual("LinearColor serialized correctly", NewObj->LinearColorsMap.FindRef(TEXT("b")), FLinearColor::Black);
@@ -840,6 +935,35 @@ void FBeamContentObjectSpec::Define()
 			TestEqual("BeamCid deserialized correctly", ContentObject->BeamCid, FBeamCid{TestBeamCid});
 		});
 
+		It("should deserialize FText types properly", [=, this]()
+		{
+			ContentObject->FromBasicJson(FullObject);
+
+
+			TestEqual("String-based FText serialized correctly", ContentObject->StringText.ToString(), TestStringText);
+			TestEqual("String-based FText serialized correctly", ContentObject->StringTextArray[0].ToString(), TestStringText);
+			TestEqual("String-based FText serialized correctly", ContentObject->StringTextArray[1].ToString(), TestStringText);
+			TestEqual("String-based FText serialized correctly", ContentObject->StringTextMap.FindRef(TEXT("a")).ToString(), TestStringText);
+
+			FName TableId;
+			FString Key;
+			FTextInspector::GetTableIdAndKey(ContentObject->TableText, TableId, Key);
+			TestEqual("Table-based FText serialized correctly", TableId.ToString(), TestTableId);
+			TestEqual("Table-based FText serialized correctly", Key, TestTableKey);
+
+			FTextInspector::GetTableIdAndKey(ContentObject->TableTextArray[0], TableId, Key);
+			TestEqual("Table-based FText serialized correctly", TableId.ToString(), TestTableId);
+			TestEqual("Table-based FText serialized correctly", Key, TestTableKey);
+
+			FTextInspector::GetTableIdAndKey(ContentObject->TableTextArray[1], TableId, Key);
+			TestEqual("Table-based FText serialized correctly", TableId.ToString(), TestTableId);
+			TestEqual("Table-based FText serialized correctly", Key, TestTableKey);
+
+			FTextInspector::GetTableIdAndKey(ContentObject->TableTextMap.FindRef(TEXT("a")), TableId, Key);
+			TestEqual("Table-based FText serialized correctly", TableId.ToString(), TestTableId);
+			TestEqual("Table-based FText serialized correctly", Key, TestTableKey);
+		});
+
 		It("should deserialize gameplay tags types properly", [=, this]()
 		{
 			ContentObject->FromBasicJson(FullObject);
@@ -875,7 +999,7 @@ void FBeamContentObjectSpec::Define()
 			TestEqual("FIntVector deserialized correctly", ContentObject->IntVectorsMap.FindRef(TEXT("a")), FIntVector(1, 1, 1));
 			TestEqual("FIntVector deserialized correctly", ContentObject->IntVectorsMap.FindRef(TEXT("b")), FIntVector(1, 1, 1));
 		});
-		
+
 		It("should deserialize color types properly", [=, this]()
 		{
 			ContentObject->FromBasicJson(FullObject);

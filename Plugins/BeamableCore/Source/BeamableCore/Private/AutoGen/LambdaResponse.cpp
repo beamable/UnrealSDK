@@ -12,19 +12,19 @@ void ULambdaResponse::DeserializeRequestResponse(UObject* RequestData, FString R
 
 void ULambdaResponse::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("statusCode"), StatusCode);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("statusCode"), StatusCode, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("body"), &Body, Serializer);
 }
 
 void ULambdaResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("statusCode"), StatusCode);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("statusCode"), StatusCode, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("body"), &Body, Serializer);		
 }
 
 void ULambdaResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	StatusCode = Bag->GetIntegerField(TEXT("statusCode"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("statusCode")), StatusCode);
 	UBeamJsonUtils::DeserializeOptional<FString>("body", Bag, Body, OuterOwner);
 }
 

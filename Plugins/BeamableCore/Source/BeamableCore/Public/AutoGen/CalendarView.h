@@ -3,11 +3,12 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
+#include "Serialization/BeamJsonUtils.h"
 #include "BeamableCore/Public/AutoGen/RewardCalendarDay.h"
 
 #include "CalendarView.generated.h"
 
-UCLASS(BlueprintType, Category="Beam")
+UCLASS(BlueprintType, Category="Beam", DefaultToInstanced, EditInlineNew)
 class BEAMABLECORE_API UCalendarView : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()

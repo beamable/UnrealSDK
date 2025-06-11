@@ -29,6 +29,5 @@ public class BeamableUnrealServerTarget : TargetRules
 		BeamableUnrealTarget.ConfigureIfSandbox(this, samplePluginName);
 		BeamableUnrealTarget.ConfigureIfHathoraDemo(this, samplePluginName);
 		BeamableUnrealTarget.ConfigureIfSteamDemo(this, samplePluginName);
-		BeamableUnrealTarget.ApplyProjectOverrides(Target, samplePluginName);
 	}
 }

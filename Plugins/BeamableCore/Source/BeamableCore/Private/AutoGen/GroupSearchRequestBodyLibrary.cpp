@@ -22,7 +22,7 @@ FString UGroupSearchRequestBodyLibrary::GroupSearchRequestBodyToJsonString(const
 	return Result;
 }	
 
-UGroupSearchRequestBody* UGroupSearchRequestBodyLibrary::Make(EGroupType Type, FOptionalBool bHasSlots, FOptionalBool bSubGroup, FOptionalString Name, FOptionalInt64 ScoreMin, FOptionalString SortField, FOptionalInt64 UserScore, FOptionalString EnrollmentTypes, FOptionalInt32 Offset, FOptionalInt64 ScoreMax, FOptionalInt32 SortValue, FOptionalInt32 Limit, UObject* Outer)
+UGroupSearchRequestBody* UGroupSearchRequestBodyLibrary::Make(EBeamGroupType Type, FOptionalBool bHasSlots, FOptionalBool bSubGroup, FOptionalString Name, FOptionalInt64 ScoreMin, FOptionalString SortField, FOptionalInt64 UserScore, FOptionalString EnrollmentTypes, FOptionalInt32 Offset, FOptionalInt64 ScoreMax, FOptionalInt32 SortValue, FOptionalInt32 Limit, UObject* Outer)
 {
 	auto Serializable = NewObject<UGroupSearchRequestBody>(Outer);
 	Serializable->Type = Type;
@@ -41,7 +41,7 @@ UGroupSearchRequestBody* UGroupSearchRequestBodyLibrary::Make(EGroupType Type, F
 	return Serializable;
 }
 
-void UGroupSearchRequestBodyLibrary::Break(const UGroupSearchRequestBody* Serializable, EGroupType& Type, FOptionalBool& bHasSlots, FOptionalBool& bSubGroup, FOptionalString& Name, FOptionalInt64& ScoreMin, FOptionalString& SortField, FOptionalInt64& UserScore, FOptionalString& EnrollmentTypes, FOptionalInt32& Offset, FOptionalInt64& ScoreMax, FOptionalInt32& SortValue, FOptionalInt32& Limit)
+void UGroupSearchRequestBodyLibrary::Break(const UGroupSearchRequestBody* Serializable, EBeamGroupType& Type, FOptionalBool& bHasSlots, FOptionalBool& bSubGroup, FOptionalString& Name, FOptionalInt64& ScoreMin, FOptionalString& SortField, FOptionalInt64& UserScore, FOptionalString& EnrollmentTypes, FOptionalInt32& Offset, FOptionalInt64& ScoreMax, FOptionalInt32& SortValue, FOptionalInt32& Limit)
 {
 	Type = Serializable->Type;
 	bHasSlots = Serializable->bHasSlots;

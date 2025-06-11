@@ -1,0 +1,44 @@
+{
+  "properties": {
+    "EntryRules": {
+      "data": {
+        "Constraint": "And",
+        "Values": [
+          "55"
+        ],
+        "Rules": [
+          {
+            "Constraint": "And",
+            "Values": [],
+            "Rules": []
+          }
+        ]
+      }
+    },
+    "MaxWaitDurationSecs": {
+      "data": 55
+    },
+    "NumericRules": {
+      "data": []
+    },
+    "StringRules": {
+      "data": []
+    },
+    "Teams": {
+      "data": [
+        {
+          "Name": "Aly",
+          "MinPlayers": 5,
+          "MaxPlayers": 6
+        },
+        {
+          "Name": "Pedro",
+          "MinPlayers": 1,
+          "MaxPlayers": 1
+        }
+      ]
+    }
+  },
+  "tags": [],
+  "referenceManifestId": "67bc6ae165c52f75e882ade2"
+}

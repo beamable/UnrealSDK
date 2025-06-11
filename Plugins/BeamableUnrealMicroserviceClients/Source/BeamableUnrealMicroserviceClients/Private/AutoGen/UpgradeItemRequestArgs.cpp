@@ -7,20 +7,20 @@
 
 void UUpgradeItemRequestArgs::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("userID"), UserID);
-	Serializer->WriteValue(TEXT("itemInstaceID"), ItemInstaceID);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("gamerTag"), GamerTag, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("itemInstaceID"), ItemInstaceID, Serializer);
 }
 
 void UUpgradeItemRequestArgs::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("userID"), UserID);
-	Serializer->WriteValue(TEXT("itemInstaceID"), ItemInstaceID);		
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("gamerTag"), GamerTag, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("itemInstaceID"), ItemInstaceID, Serializer);		
 }
 
 void UUpgradeItemRequestArgs::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("userID")), UserID);
-	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("itemInstaceID")), ItemInstaceID);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("gamerTag")), GamerTag);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("itemInstaceID")), ItemInstaceID);
 }
 
 

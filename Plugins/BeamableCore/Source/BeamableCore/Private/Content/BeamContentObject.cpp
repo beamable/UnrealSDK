@@ -139,7 +139,17 @@ void UBeamContentObject::BuildPropertiesJsonObject(FJsonDomBuilder::FObject& Pro
 {
 	const auto SelfClass = GetClass();
 	UE_LOG(LogBeamContent, Verbose, TEXT("BuildPropertiesJsonObject - Parsing Class: %s"), *SelfClass->GetName());
+
+	// First, we sort the fields by name
+	TArray<FProperty*> SortedProps;
 	for (TFieldIterator<FProperty> It(SelfClass); It; ++It)
+	{
+		SortedProps.Add(*It);
+	}
+	SortedProps.StableSort([](FProperty& A, FProperty& B) { return A.GetName() < B.GetName(); });
+
+	// Then we go through the sorted properties to build the JSON.
+	for (FProperty* It : SortedProps)
 	{
 		FJsonDomBuilder::FObject CurrProp = FJsonDomBuilder::FObject{};
 		FString CurrPropName = It->GetName();
@@ -152,13 +162,13 @@ void UBeamContentObject::BuildPropertiesJsonObject(FJsonDomBuilder::FObject& Pro
 
 
 		auto ShouldAddToJson = true;
-		if (const auto SoftObjectProperty = CastField<FSoftObjectProperty>(*It))
+		if (const auto SoftObjectProperty = CastField<FSoftObjectProperty>(It))
 		{
 			const auto Val = SoftObjectProperty->ContainerPtrToValuePtr<FSoftObjectPtr>(this);
 			if (Val->IsNull()) CurrProp.Set("data", "");
 			else CurrProp.Set("data", Val->ToSoftObjectPath().ToString());
 		}
-		else if (const auto StructProperty = CastField<FStructProperty>(*It))
+		else if (const auto StructProperty = CastField<FStructProperty>(It))
 		{
 			const auto ScriptStruct = StructProperty->Struct;
 			if (ScriptStruct && ScriptStruct->IsChildOf(FBeamOptional::StaticStruct()))
@@ -218,7 +228,7 @@ void UBeamContentObject::BuildPropertiesJsonObject(FJsonDomBuilder::FObject& Pro
 						else if (InnerOptionalStruct == TBaseStructure<FVector>::Get())
 						{
 							const FVector* ValueData = InnerOptionalStructProperty->ContainerPtrToValuePtr<FVector>(Data);
-							auto Bag = FJsonDomBuilder::FObject{};							
+							auto Bag = FJsonDomBuilder::FObject{};
 							Bag.Set(TEXT("x"), ValueData->X);
 							Bag.Set(TEXT("y"), ValueData->Y);
 							Bag.Set(TEXT("z"), ValueData->Z);
@@ -228,7 +238,7 @@ void UBeamContentObject::BuildPropertiesJsonObject(FJsonDomBuilder::FObject& Pro
 						else if (InnerOptionalStruct == TBaseStructure<FIntVector>::Get())
 						{
 							const FVector* ValueData = InnerOptionalStructProperty->ContainerPtrToValuePtr<FVector>(Data);
-							auto Bag = FJsonDomBuilder::FObject{};							
+							auto Bag = FJsonDomBuilder::FObject{};
 							Bag.Set(TEXT("x"), ValueData->X);
 							Bag.Set(TEXT("y"), ValueData->Y);
 							Bag.Set(TEXT("z"), ValueData->Z);
@@ -350,7 +360,20 @@ void UBeamContentObject::BuildPropertiesJsonObject(FJsonDomBuilder::FObject& Pro
 					else if (const auto TextProperty = CastField<FTextProperty>(ValueProp))
 					{
 						const auto Val = TextProperty->ContainerPtrToValuePtr<FText>(Data);
-						CurrProp.Set("data", TextProperty->GetPropertyValue(Val).ToString());
+						FString ToSerialize;
+						if (Val->IsFromStringTable())
+						{
+							FName TableId;
+							FString Key;
+							FTextInspector::GetTableIdAndKey(*Val, TableId, Key);
+							ToSerialize = TEXT("BEAM_ST₢") + TableId.ToString() + TEXT("₢") + Key;
+						}
+						else
+						{
+							ToSerialize = Val->ToString();
+						}
+
+						CurrProp.Set("data", ToSerialize);
 					}
 					else if (const auto NameProperty = CastField<FNameProperty>(ValueProp))
 					{
@@ -528,13 +551,13 @@ void UBeamContentObject::BuildPropertiesJsonObject(FJsonDomBuilder::FObject& Pro
 				UE_LOG(LogBeamContent, Error, TEXT("Field %s's Type is not supported by the Content serialization system.\n"), *It->GetName())
 			}
 		}
-		else if (const auto MapProperty = CastField<FMapProperty>(*It))
+		else if (const auto MapProperty = CastField<FMapProperty>(It))
 		{
 			FJsonDomBuilder::FObject MapJson = FJsonDomBuilder::FObject{};
 			SerializeMapProperty(CurrPropName, MapJson, MapProperty, this);
 			CurrProp.Set("data", MapJson);
 		}
-		else if (const auto ArrayProperty = CastField<FArrayProperty>(*It))
+		else if (const auto ArrayProperty = CastField<FArrayProperty>(It))
 		{
 			FJsonDomBuilder::FArray ArrayJson;
 			SerializeArrayProperty(CurrPropName, ArrayJson, ArrayProperty, this);
@@ -544,13 +567,13 @@ void UBeamContentObject::BuildPropertiesJsonObject(FJsonDomBuilder::FObject& Pro
 			else
 				CurrProp.Set("data", ArrayJson);
 		}
-		else if (const auto ClassProperty = CastField<FClassProperty>(*It))
+		else if (const auto ClassProperty = CastField<FClassProperty>(It))
 		{
 			const auto Val = ClassProperty->ContainerPtrToValuePtr<UClass>(this);
 			CurrProp.Set("data", FSoftClassPath(static_cast<UClass*>(ClassProperty->GetPropertyValue(Val))).ToString());
 		}
 
-		else if (const auto UObjectProperty = CastField<FObjectProperty>(*It))
+		else if (const auto UObjectProperty = CastField<FObjectProperty>(It))
 		{
 			const auto InnerOptionalClass = UObjectProperty->PropertyClass;
 			if (InnerOptionalClass->ImplementsInterface(UBeamJsonSerializableUObject::StaticClass()))
@@ -581,52 +604,65 @@ void UBeamContentObject::BuildPropertiesJsonObject(FJsonDomBuilder::FObject& Pro
 				       *It->GetName())
 			}
 		}
-		else if (const auto TextProperty = CastField<FTextProperty>(*It))
+		else if (const auto TextProperty = CastField<FTextProperty>(It))
 		{
 			const auto Val = TextProperty->ContainerPtrToValuePtr<FText>(this);
-			CurrProp.Set("data", TextProperty->GetPropertyValue(Val).ToString());
+			FString ToSerialize;
+			if (Val->IsFromStringTable())
+			{
+				FName TableId;
+				FString Key;
+				FTextInspector::GetTableIdAndKey(*Val, TableId, Key);
+				ToSerialize = TEXT("BEAM_ST₢") + TableId.ToString() + TEXT("₢") + Key;
+			}
+			else
+			{
+				ToSerialize = Val->ToString();
+			}
+
+			CurrProp.Set("data", ToSerialize);
 		}
-		else if (const auto NameProperty = CastField<FNameProperty>(*It))
+		else if (const auto NameProperty = CastField<FNameProperty>(It))
 		{
 			const auto Val = NameProperty->ContainerPtrToValuePtr<FName>(this);
 			CurrProp.Set("data", NameProperty->GetPropertyValue(Val).ToString());
 		}
-		else if (const auto StrProperty = CastField<FStrProperty>(*It))
+		else if (const auto StrProperty = CastField<FStrProperty>(It))
 		{
 			const auto Val = StrProperty->ContainerPtrToValuePtr<FString>(this);
 			CurrProp.Set("data", StrProperty->GetPropertyValue(Val));
 		}
-		else if (const auto BoolProperty = CastField<FBoolProperty>(*It))
+		else if (const auto BoolProperty = CastField<FBoolProperty>(It))
 		{
 			const auto Val = BoolProperty->ContainerPtrToValuePtr<bool>(this);
 			CurrProp.Set("data", BoolProperty->GetPropertyValue(Val));
 		}
-		else if (const auto FloatProperty = CastField<FFloatProperty>(*It))
+		else if (const auto FloatProperty = CastField<FFloatProperty>(It))
 		{
 			const auto Val = FloatProperty->ContainerPtrToValuePtr<float>(this);
 			CurrProp.Set("data", FloatProperty->GetFloatingPointPropertyValue(Val));
 		}
-		else if (const auto DoubleProperty = CastField<FDoubleProperty>(*It))
+		else if (const auto DoubleProperty = CastField<FDoubleProperty>(It))
 		{
 			const auto Val = DoubleProperty->ContainerPtrToValuePtr<double>(this);
 			CurrProp.Set("data", DoubleProperty->GetFloatingPointPropertyValue(Val));
 		}
-		else if (const auto Int32Property = CastField<FIntProperty>(*It))
+		else if (const auto Int32Property = CastField<FIntProperty>(It))
 		{
 			const auto Val = Int32Property->ContainerPtrToValuePtr<int32>(this);
 			CurrProp.Set("data", Int32Property->GetSignedIntPropertyValue(Val));
 		}
-		else if (const auto Int64Property = CastField<FInt64Property>(*It))
+		else if (const auto Int64Property = CastField<FInt64Property>(It))
 		{
 			const auto Val = Int64Property->ContainerPtrToValuePtr<int64>(this);
 			CurrProp.Set("data", Int64Property->GetSignedIntPropertyValue(Val));
 		}
-		else if (const auto ByteProperty = CastField<FByteProperty>(*It))
+		else if (const auto ByteProperty = CastField<FByteProperty>(It))
 		{
 			const auto Val = ByteProperty->ContainerPtrToValuePtr<uint8>(this);
 			CurrProp.Set("data", ByteProperty->GetUnsignedIntPropertyValue(Val));
 		}
-		else if (const auto EnumProperty = CastField<FEnumProperty>(*It))
+		else if (const auto EnumProperty = CastField<FEnumProperty>(It))
 		{
 			UEnum* Enum = EnumProperty->GetEnum();
 			void const* EnumValueAddress = EnumProperty->ContainerPtrToValuePtr<void>(this);
@@ -647,10 +683,11 @@ void UBeamContentObject::BuildPropertiesJsonObject(FJsonDomBuilder::FObject& Pro
 
 void UBeamContentObject::ParseBasicJsonObject(const TSharedPtr<FJsonObject>& Object)
 {
-	Id = Object->GetStringField(TEXT("id"));
-	Version = Object->GetStringField(TEXT("version"));
+	Object->TryGetStringField(TEXT("id"), Id);
+	Object->TryGetStringField(TEXT("version"), Version);
+	Object->TryGetStringArrayField(TEXT("tags"), Tags);
 
-	// We only parse properties IF we are a sup
+	// We only parse properties IF we are of the correct type to parse it at least partially.
 	if (!SupportLevel)
 	{
 		const auto Properties = Object->GetObjectField(TEXT("properties"));
@@ -749,7 +786,7 @@ void UBeamContentObject::ParsePropertiesJsonObject(const TSharedPtr<FJsonObject>
 						FVector* ValData = InnerOptionalStructProperty->ContainerPtrToValuePtr<FVector>(OptionalVal);
 						ValData->X = SubJsonSemantic->GetNumberField(TEXT("x"));
 						ValData->Y = SubJsonSemantic->GetNumberField(TEXT("y"));
-						ValData->Z = SubJsonSemantic->GetNumberField(TEXT("z"));						
+						ValData->Z = SubJsonSemantic->GetNumberField(TEXT("z"));
 						OptionalVal->Set(ValData);
 					}
 					else if (InnerOptionalStruct == TBaseStructure<FIntVector>::Get())
@@ -758,7 +795,7 @@ void UBeamContentObject::ParsePropertiesJsonObject(const TSharedPtr<FJsonObject>
 						FIntVector* ValData = InnerOptionalStructProperty->ContainerPtrToValuePtr<FIntVector>(OptionalVal);
 						ValData->X = SubJsonSemantic->GetNumberField(TEXT("x"));
 						ValData->Y = SubJsonSemantic->GetNumberField(TEXT("y"));
-						ValData->Z = SubJsonSemantic->GetNumberField(TEXT("z"));						
+						ValData->Z = SubJsonSemantic->GetNumberField(TEXT("z"));
 						OptionalVal->Set(ValData);
 					}
 					else if (InnerOptionalStruct == TBaseStructure<FColor>::Get())
@@ -866,8 +903,22 @@ void UBeamContentObject::ParsePropertiesJsonObject(const TSharedPtr<FJsonObject>
 				else if (const auto TextProperty = CastField<FTextProperty>(OptionalValueProp))
 				{
 					const auto Val = TextProperty->ContainerPtrToValuePtr<FText>(OptionalVal);
-					const auto StrVal = JsonProperties->GetObjectField(PropName)->GetStringField(TEXT("data"));
-					TextProperty->SetPropertyValue(Val, FText::FromString(StrVal));
+					auto SerializedVal = JsonProperties->GetObjectField(PropName)->GetStringField(TEXT("data"));
+					if (SerializedVal.StartsWith(TEXT("BEAM_ST₢")))
+					{
+						SerializedVal.RightChopInline(SerializedVal.Find(TEXT("₢")) + 1);
+
+						const auto SeparatorIdx = SerializedVal.Find(TEXT("₢"));
+						FString TableId = SerializedVal.Left(SeparatorIdx);
+						FString Key = SerializedVal.RightChop(SeparatorIdx + 1);
+						FString KeyStr(Key);
+						FName TableIdStr(TableId);
+						TextProperty->SetPropertyValue(Val, FText::FromStringTable(TableIdStr, KeyStr));
+					}
+					else
+					{
+						TextProperty->SetPropertyValue(Val, FText::FromString(FString(SerializedVal)));
+					}
 					OptionalVal->Set(OptionalVal->GetAddr());
 				}
 				else if (const auto NameProperty = CastField<FNameProperty>(OptionalValueProp))
@@ -969,7 +1020,7 @@ void UBeamContentObject::ParsePropertiesJsonObject(const TSharedPtr<FJsonObject>
 				FVector* ValData = StructProperty->ContainerPtrToValuePtr<FVector>(this);
 				ValData->X = SubJsonSemantic->GetNumberField(TEXT("x"));
 				ValData->Y = SubJsonSemantic->GetNumberField(TEXT("y"));
-				ValData->Z = SubJsonSemantic->GetNumberField(TEXT("z"));				
+				ValData->Z = SubJsonSemantic->GetNumberField(TEXT("z"));
 			}
 			else if (ScriptStruct && ScriptStruct == TBaseStructure<FIntVector>::Get())
 			{
@@ -977,7 +1028,7 @@ void UBeamContentObject::ParsePropertiesJsonObject(const TSharedPtr<FJsonObject>
 				FIntVector* ValData = StructProperty->ContainerPtrToValuePtr<FIntVector>(this);
 				ValData->X = SubJsonSemantic->GetNumberField(TEXT("x"));
 				ValData->Y = SubJsonSemantic->GetNumberField(TEXT("y"));
-				ValData->Z = SubJsonSemantic->GetNumberField(TEXT("z"));				
+				ValData->Z = SubJsonSemantic->GetNumberField(TEXT("z"));
 			}
 			else if (ScriptStruct && ScriptStruct == TBaseStructure<FColor>::Get())
 			{
@@ -1090,7 +1141,22 @@ void UBeamContentObject::ParsePropertiesJsonObject(const TSharedPtr<FJsonObject>
 		else if (const auto TextProperty = CastField<FTextProperty>(*It))
 		{
 			const auto Val = TextProperty->ContainerPtrToValuePtr<FText>(this);
-			TextProperty->SetPropertyValue(Val, FText::FromString(JsonProperties->GetObjectField(PropName)->GetStringField(TEXT("data"))));
+			auto SerializedVal = JsonProperties->GetObjectField(PropName)->GetStringField(TEXT("data"));
+			if (SerializedVal.StartsWith(TEXT("BEAM_ST₢")))
+			{
+				SerializedVal.RightChopInline(SerializedVal.Find(TEXT("₢")) + 1);
+
+				const auto SeparatorIdx = SerializedVal.Find(TEXT("₢"));
+				FString TableId = SerializedVal.Left(SeparatorIdx);
+				FString Key = SerializedVal.RightChop(SeparatorIdx + 1);
+				FString KeyStr(Key);
+				FName TableIdStr(TableId);
+				TextProperty->SetPropertyValue(Val, FText::FromStringTable(TableIdStr, KeyStr));
+			}
+			else
+			{
+				TextProperty->SetPropertyValue(Val, FText::FromString(FString(SerializedVal)));
+			}
 		}
 		else if (const auto NameProperty = CastField<FNameProperty>(*It))
 		{
@@ -1233,7 +1299,7 @@ void UBeamContentObject::SerializeArrayProperty(FString PropName, FJsonDomBuilde
 					auto Bag = FJsonDomBuilder::FObject();
 					Bag.Set(TEXT("x"), Data->X);
 					Bag.Set(TEXT("y"), Data->Y);
-					Bag.Set(TEXT("z"), Data->Z);					
+					Bag.Set(TEXT("z"), Data->Z);
 
 					JsonArray.Add(Bag.AsJsonObject());
 				}
@@ -1250,7 +1316,7 @@ void UBeamContentObject::SerializeArrayProperty(FString PropName, FJsonDomBuilde
 					auto Bag = FJsonDomBuilder::FObject();
 					Bag.Set(TEXT("x"), Data->X);
 					Bag.Set(TEXT("y"), Data->Y);
-					Bag.Set(TEXT("z"), Data->Z);					
+					Bag.Set(TEXT("z"), Data->Z);
 
 					JsonArray.Add(Bag.AsJsonObject());
 				}
@@ -1426,8 +1492,19 @@ void UBeamContentObject::SerializeArrayProperty(FString PropName, FJsonDomBuilde
 		for (auto i = 0; i < ArrayNum; i++)
 		{
 			const FText* Data = static_cast<const FText*>(Val->GetData());
-			const FString DataStr = (Data + i)->ToString();
-			JsonArray.Add(DataStr);
+			FString ToSerialize;
+			if (Data->IsFromStringTable())
+			{
+				FName TableId;
+				FString Key;
+				FTextInspector::GetTableIdAndKey(*(Data + i), TableId, Key);
+				ToSerialize = TEXT("BEAM_ST₢") + TableId.ToString() + TEXT("₢") + Key;
+			}
+			else
+			{
+				ToSerialize = (Data + i)->ToString();
+			}
+			JsonArray.Add(ToSerialize);
 		}
 	}
 	else if (CastField<FNameProperty>(ArrayProperty->Inner))
@@ -1549,7 +1626,7 @@ void UBeamContentObject::ParseArrayProperty(const FString& PropName, const TArra
 				ValData->Y = JsonStr->GetNumberField(TEXT("y"));
 				ValData->Z = JsonStr->GetNumberField(TEXT("z"));
 			}
-		}		
+		}
 		else if (InnerArrayStruct && InnerArrayStruct == TBaseStructure<FColor>::Get())
 		{
 			for (int i = 0; i < JsonArray.Num(); ++i)
@@ -1651,7 +1728,22 @@ void UBeamContentObject::ParseArrayProperty(const FString& PropName, const TArra
 		for (int i = 0; i < JsonArray.Num(); ++i)
 		{
 			const auto ValData = reinterpret_cast<FText*>(ArrayHelper.GetRawPtr(i));
-			*ValData = FText::FromString(JsonArray[i]->AsString());
+			auto SerializedVal = JsonArray[i]->AsString();
+			if (SerializedVal.StartsWith(TEXT("BEAM_ST₢")))
+			{
+				SerializedVal.RightChopInline(SerializedVal.Find(TEXT("₢")) + 1);
+
+				const auto SeparatorIdx = SerializedVal.Find(TEXT("₢"));
+				FString TableId = SerializedVal.Left(SeparatorIdx);
+				FString Key = SerializedVal.RightChop(SeparatorIdx + 1);
+				FString KeyStr(Key);
+				FName TableIdStr(TableId);
+				*ValData = FText::FromStringTable(TableIdStr, KeyStr);
+			}
+			else
+			{
+				*ValData = FText::FromString(SerializedVal);
+			}
 		}
 	}
 	else if (CastField<FNameProperty>(ArrayProperty->Inner))
@@ -1736,15 +1828,11 @@ void UBeamContentObject::SerializeMapProperty(FString PropName, FJsonDomBuilder:
 
 		if (CastField<FSoftObjectProperty>(MapProperty->ValueProp))
 		{
-			const auto MapNum = MapHelper.Num();
-			for (auto i = 0; i < MapNum; i++)
+			for (FScriptMapHelper::FIterator i = MapHelper.CreateIterator(); i; ++i)
 			{
-				if (MapHelper.IsValidIndex(i))
-				{
-					const FString Key = StrKeyProperty->GetPropertyValue(MapHelper.GetKeyPtr(i));
-					const FSoftObjectPtr* SoftObjectPtr = reinterpret_cast<const FSoftObjectPtr*>(MapHelper.GetValuePtr(i));
-					JsonMap.Set(Key, SoftObjectPtr->ToSoftObjectPath().ToString());
-				}
+				const FString Key = StrKeyProperty->GetPropertyValue(MapHelper.GetKeyPtr(i));
+				const FSoftObjectPtr* SoftObjectPtr = reinterpret_cast<const FSoftObjectPtr*>(MapHelper.GetValuePtr(i));
+				JsonMap.Set(Key, SoftObjectPtr->ToSoftObjectPath().ToString());
 			}
 		}
 		else if (const auto InnerStructProperty = CastField<FStructProperty>(MapProperty->ValueProp))
@@ -1759,18 +1847,14 @@ void UBeamContentObject::SerializeMapProperty(FString PropName, FJsonDomBuilder:
 					if (InnerMapProperty) break;
 				}
 
-				const auto MapNum = MapHelper.Num();
-				for (auto i = 0; i < MapNum; i++)
+				for (FScriptMapHelper::FIterator i = MapHelper.CreateIterator(); i; ++i)
 				{
-					if (MapHelper.IsValidIndex(i))
-					{
-						const FString Key = StrKeyProperty->GetPropertyValue(MapHelper.GetKeyPtr(i));
-						const FBeamMap* Data = reinterpret_cast<const FBeamMap*>(MapHelper.GetValuePtr(i));
+					const FString Key = StrKeyProperty->GetPropertyValue(MapHelper.GetKeyPtr(i));
+					const FBeamMap* Data = reinterpret_cast<const FBeamMap*>(MapHelper.GetValuePtr(i));
 
-						FJsonDomBuilder::FObject SubMap = FJsonDomBuilder::FObject{};
-						SerializeMapProperty(PropName, SubMap, InnerMapProperty, Data);
-						JsonMap.Set(Key, SubMap);
-					}
+					FJsonDomBuilder::FObject SubMap = FJsonDomBuilder::FObject{};
+					SerializeMapProperty(PropName, SubMap, InnerMapProperty, Data);
+					JsonMap.Set(Key, SubMap);
 				}
 			}
 			else if (InnerMapStruct->IsChildOf(FBeamArray::StaticStruct()))
@@ -1782,160 +1866,137 @@ void UBeamContentObject::SerializeMapProperty(FString PropName, FJsonDomBuilder:
 					if (InnerArrayProperty) break;
 				}
 
-				const auto MapNum = MapHelper.Num();
-				for (auto i = 0; i < MapNum; i++)
+				for (FScriptMapHelper::FIterator i = MapHelper.CreateIterator(); i; ++i)
 				{
-					if (MapHelper.IsValidIndex(i))
-					{
-						const FString Key = StrKeyProperty->GetPropertyValue(MapHelper.GetKeyPtr(i));
-						const FBeamArray* Data = reinterpret_cast<const FBeamArray*>(MapHelper.GetValuePtr(i));
+					const FString Key = StrKeyProperty->GetPropertyValue(MapHelper.GetKeyPtr(i));
+					const FBeamArray* Data = reinterpret_cast<const FBeamArray*>(MapHelper.GetValuePtr(i));
 
-						FJsonDomBuilder::FArray SubArray;
+					FJsonDomBuilder::FArray SubArray;
 
-						SerializeArrayProperty(PropName, SubArray, InnerArrayProperty, Data);
-						JsonMap.Set(Key, SubArray);
-					}
+					SerializeArrayProperty(PropName, SubArray, InnerArrayProperty, Data);
+					JsonMap.Set(Key, SubArray);
 				}
 			}
 			else if (InnerMapStruct == TBaseStructure<FVector>::Get())
 			{
-				const auto MapNum = MapHelper.Num();
-				for (auto i = 0; i < MapNum; i++)
+				for (FScriptMapHelper::FIterator i = MapHelper.CreateIterator(); i; ++i)
 				{
-					if (MapHelper.IsValidIndex(i))
-					{
-						const FString Key = StrKeyProperty->GetPropertyValue(MapHelper.GetKeyPtr(i));
-						const FVector* Data = reinterpret_cast<const FVector*>(MapHelper.GetValuePtr(i));
-						auto Bag = FJsonDomBuilder::FObject();
-						Bag.Set(TEXT("x"), Data->X);
-						Bag.Set(TEXT("y"), Data->Y);
-						Bag.Set(TEXT("z"), Data->Z);
+					const FString Key = StrKeyProperty->GetPropertyValue(MapHelper.GetKeyPtr(i));
+					const FVector* Data = reinterpret_cast<const FVector*>(MapHelper.GetValuePtr(i));
+					auto Bag = FJsonDomBuilder::FObject();
+					Bag.Set(TEXT("x"), Data->X);
+					Bag.Set(TEXT("y"), Data->Y);
+					Bag.Set(TEXT("z"), Data->Z);
 
-						JsonMap.Set(Key, Bag.AsJsonObject());
-					}
+					JsonMap.Set(Key, Bag.AsJsonObject());
 				}
 			}
 			else if (InnerMapStruct == TBaseStructure<FIntVector>::Get())
 			{
-				const auto MapNum = MapHelper.Num();
-				for (auto i = 0; i < MapNum; i++)
+				for (FScriptMapHelper::FIterator i = MapHelper.CreateIterator(); i; ++i)
 				{
-					if (MapHelper.IsValidIndex(i))
-					{
-						const FString Key = StrKeyProperty->GetPropertyValue(MapHelper.GetKeyPtr(i));
-						const FIntVector* Data = reinterpret_cast<const FIntVector*>(MapHelper.GetValuePtr(i));
-						auto Bag = FJsonDomBuilder::FObject();
-						Bag.Set(TEXT("x"), Data->X);
-						Bag.Set(TEXT("y"), Data->Y);
-						Bag.Set(TEXT("z"), Data->Z);
+					const FString Key = StrKeyProperty->GetPropertyValue(MapHelper.GetKeyPtr(i));
+					const FIntVector* Data = reinterpret_cast<const FIntVector*>(MapHelper.GetValuePtr(i));
+					auto Bag = FJsonDomBuilder::FObject();
+					Bag.Set(TEXT("x"), Data->X);
+					Bag.Set(TEXT("y"), Data->Y);
+					Bag.Set(TEXT("z"), Data->Z);
 
-						JsonMap.Set(Key, Bag.AsJsonObject());
-					}
+					JsonMap.Set(Key, Bag.AsJsonObject());
 				}
 			}
 			else if (InnerMapStruct == TBaseStructure<FColor>::Get())
 			{
-				const auto MapNum = MapHelper.Num();
-				for (auto i = 0; i < MapNum; i++)
+				for (FScriptMapHelper::FIterator i = MapHelper.CreateIterator(); i; ++i)
 				{
-					if (MapHelper.IsValidIndex(i))
-					{
-						const FString Key = StrKeyProperty->GetPropertyValue(MapHelper.GetKeyPtr(i));
-						const FColor* Data = reinterpret_cast<const FColor*>(MapHelper.GetValuePtr(i));
-						auto Bag = FJsonDomBuilder::FObject();
-						Bag.Set(TEXT("a"), Data->A);
-						Bag.Set(TEXT("b"), Data->B);
-						Bag.Set(TEXT("g"), Data->G);
-						Bag.Set(TEXT("r"), Data->R);
+					const FString Key = StrKeyProperty->GetPropertyValue(MapHelper.GetKeyPtr(i));
+					const FColor* Data = reinterpret_cast<const FColor*>(MapHelper.GetValuePtr(i));
+					auto Bag = FJsonDomBuilder::FObject();
+					Bag.Set(TEXT("a"), Data->A);
+					Bag.Set(TEXT("b"), Data->B);
+					Bag.Set(TEXT("g"), Data->G);
+					Bag.Set(TEXT("r"), Data->R);
 
-						JsonMap.Set(Key, Bag.AsJsonObject());
-					}
+					JsonMap.Set(Key, Bag.AsJsonObject());
 				}
 			}
 			else if (InnerMapStruct == TBaseStructure<FLinearColor>::Get())
 			{
-				const auto MapNum = MapHelper.Num();
-				for (auto i = 0; i < MapNum; i++)
+				for (FScriptMapHelper::FIterator i = MapHelper.CreateIterator(); i; ++i)
 				{
-					if (MapHelper.IsValidIndex(i))
-					{
-						const FString Key = StrKeyProperty->GetPropertyValue(MapHelper.GetKeyPtr(i));
-						const FLinearColor* Data = reinterpret_cast<const FLinearColor*>(MapHelper.GetValuePtr(i));
-						auto Bag = FJsonDomBuilder::FObject();
-						Bag.Set(TEXT("a"), Data->A);
-						Bag.Set(TEXT("b"), Data->B);
-						Bag.Set(TEXT("g"), Data->G);
-						Bag.Set(TEXT("r"), Data->R);
+					const FString Key = StrKeyProperty->GetPropertyValue(MapHelper.GetKeyPtr(i));
+					const FLinearColor* Data = reinterpret_cast<const FLinearColor*>(MapHelper.GetValuePtr(i));
+					auto Bag = FJsonDomBuilder::FObject();
+					Bag.Set(TEXT("a"), Data->A);
+					Bag.Set(TEXT("b"), Data->B);
+					Bag.Set(TEXT("g"), Data->G);
+					Bag.Set(TEXT("r"), Data->R);
 
-						JsonMap.Set(Key, Bag.AsJsonObject());
-					}
+					JsonMap.Set(Key, Bag.AsJsonObject());
 				}
 			}
 			else if (InnerMapStruct->IsChildOf(FGameplayTag::StaticStruct()))
 			{
 				const auto MapNum = MapHelper.Num();
-				for (auto i = 0; i < MapNum; i++)
+				for (FScriptMapHelper::FIterator i = MapHelper.CreateIterator(); i; ++i)
 				{
-					if (MapHelper.IsValidIndex(i))
-					{
-						const FString Key = StrKeyProperty->GetPropertyValue(MapHelper.GetKeyPtr(i));
-						const FGameplayTag* UnrealGameplayTag = reinterpret_cast<const FGameplayTag*>(MapHelper.GetValuePtr(i));
-						const FString UnderlyingString = UnrealGameplayTag->ToString();
-						JsonMap.Set(Key, UnderlyingString);
-					}
+					const FString Key = StrKeyProperty->GetPropertyValue(MapHelper.GetKeyPtr(i));
+					const FGameplayTag* UnrealGameplayTag = reinterpret_cast<const FGameplayTag*>(MapHelper.GetValuePtr(i));
+					const FString UnderlyingString = UnrealGameplayTag->ToString();
+					JsonMap.Set(Key, UnderlyingString);
 				}
 			}
 			else if (InnerMapStruct->IsChildOf(FGameplayTagContainer::StaticStruct()))
 			{
 				const auto MapNum = MapHelper.Num();
-				for (auto i = 0; i < MapNum; i++)
+				for (FScriptMapHelper::FIterator i = MapHelper.CreateIterator(); i; ++i)
 				{
-					if (MapHelper.IsValidIndex(i))
-					{
-						const FString Key = StrKeyProperty->GetPropertyValue(MapHelper.GetKeyPtr(i));
-						const FGameplayTagContainer* UnrealGameplayTag = reinterpret_cast<const FGameplayTagContainer*>(MapHelper.GetValuePtr(i));
-						const FString UnderlyingString = UnrealGameplayTag->ToString();
-						JsonMap.Set(Key, UnderlyingString);
-					}
+					const FString Key = StrKeyProperty->GetPropertyValue(MapHelper.GetKeyPtr(i));
+					const FGameplayTagContainer* UnrealGameplayTag = reinterpret_cast<const FGameplayTagContainer*>(MapHelper.GetValuePtr(i));
+					const FString UnderlyingString = UnrealGameplayTag->ToString();
+					JsonMap.Set(Key, UnderlyingString);
+				}
+			}
+			else if (InnerMapStruct->IsChildOf(FBeamContentLink::StaticStruct()))
+			{
+				const auto ArrayNum = MapHelper.Num();
+				for (FScriptMapHelper::FIterator i = MapHelper.CreateIterator(); i; ++i)
+				{
+					const FString Key = StrKeyProperty->GetPropertyValue(MapHelper.GetKeyPtr(i));
+					const FBeamContentLink* BeamSemantic = reinterpret_cast<const FBeamContentLink*>(MapHelper.GetValuePtr(i));
+					const FString* UnderlyingString = static_cast<const FString*>(BeamSemantic->GetAddr(0));
+					JsonMap.Set(Key, *UnderlyingString);
 				}
 			}
 			else if (InnerMapStruct->IsChildOf(FBeamSemanticType::StaticStruct()))
 			{
-				const auto MapNum = MapHelper.Num();
-				for (auto i = 0; i < MapNum; i++)
+				for (FScriptMapHelper::FIterator i = MapHelper.CreateIterator(); i; ++i)
 				{
-					if (MapHelper.IsValidIndex(i))
-					{
-						const FString Key = StrKeyProperty->GetPropertyValue(MapHelper.GetKeyPtr(i));
-						const FBeamSemanticType* BeamSemantic = reinterpret_cast<const FBeamSemanticType*>(MapHelper.GetValuePtr(i));
-						const FString* UnderlyingString = static_cast<const FString*>(BeamSemantic->GetAddr(0));
-						JsonMap.Set(Key, *UnderlyingString);
-					}
+					const FString Key = StrKeyProperty->GetPropertyValue(MapHelper.GetKeyPtr(i));
+					const FBeamSemanticType* BeamSemantic = reinterpret_cast<const FBeamSemanticType*>(MapHelper.GetValuePtr(i));
+					const FString* UnderlyingString = static_cast<const FString*>(BeamSemantic->GetAddr(0));
+					JsonMap.Set(Key, *UnderlyingString);
 				}
 			}
 			else if (InnerMapStruct->IsChildOf(FBeamJsonSerializableUStruct::StaticStruct()))
 			{
-				const auto MapNum = MapHelper.Num();
-				for (auto i = 0; i < MapNum; i++)
+				for (FScriptMapHelper::FIterator i = MapHelper.CreateIterator(); i; ++i)
 				{
-					if (MapHelper.IsValidIndex(i))
-					{
-						const FString Key = StrKeyProperty->GetPropertyValue(MapHelper.GetKeyPtr(i));
-						const FBeamJsonSerializableUStruct* Data = reinterpret_cast<const FBeamJsonSerializableUStruct*>(MapHelper.GetValuePtr(i));
+					const FString Key = StrKeyProperty->GetPropertyValue(MapHelper.GetKeyPtr(i));
+					const FBeamJsonSerializableUStruct* Data = reinterpret_cast<const FBeamJsonSerializableUStruct*>(MapHelper.GetValuePtr(i));
 
-						FString JsonBody;
-						TUnrealJsonSerializer Serializer = TJsonStringWriter<TCondensedJsonPrintPolicy<TCHAR>>::Create(&JsonBody);
-						Data->BeamSerialize(Serializer);
-						Serializer->Close();
+					FString JsonBody;
+					TUnrealJsonSerializer Serializer = TJsonStringWriter<TCondensedJsonPrintPolicy<TCHAR>>::Create(&JsonBody);
+					Data->BeamSerialize(Serializer);
+					Serializer->Close();
 
-						auto Bag = FJsonDataBag{};
-						Bag.FromJson(JsonBody);
+					auto Bag = FJsonDataBag{};
+					Bag.FromJson(JsonBody);
 
-						FJsonDomBuilder::FObject JsonObject = FJsonDomBuilder::FObject{};
-						JsonObject.CopyIf(*Bag.JsonObject, [](const FString&, const FJsonValue&) { return true; });
+					FJsonDomBuilder::FObject JsonObject = FJsonDomBuilder::FObject{};
+					JsonObject.CopyIf(*Bag.JsonObject, [](const FString&, const FJsonValue&) { return true; });
 
-						JsonMap.Set(Key, JsonObject);
-					}
+					JsonMap.Set(Key, JsonObject);
 				}
 			}
 			else
@@ -1946,24 +2007,19 @@ void UBeamContentObject::SerializeMapProperty(FString PropName, FJsonDomBuilder:
 
 		else if (CastField<FClassProperty>(MapProperty->ValueProp))
 		{
-			const auto MapNum = MapHelper.Num();
-			for (auto i = 0; i < MapNum; i++)
+			for (FScriptMapHelper::FIterator i = MapHelper.CreateIterator(); i; ++i)
 			{
-				if (MapHelper.IsValidIndex(i))
-				{
-					const FString Key = StrKeyProperty->GetPropertyValue(MapHelper.GetKeyPtr(i));
-					const UClass** Data = reinterpret_cast<const UClass**>(MapHelper.GetValuePtr(i));
+				const FString Key = StrKeyProperty->GetPropertyValue(MapHelper.GetKeyPtr(i));
+				const UClass** Data = reinterpret_cast<const UClass**>(MapHelper.GetValuePtr(i));
 
-					JsonMap.Set(Key, FSoftClassPath(*Data).ToString());
-				}
+				JsonMap.Set(Key, FSoftClassPath(*Data).ToString());
 			}
 		}
 		else if (const auto InnerObjectProp = CastField<FObjectProperty>(MapProperty->ValueProp))
 		{
 			if (InnerObjectProp->PropertyClass->ImplementsInterface(UBeamJsonSerializableUObject::StaticClass()))
 			{
-				const auto MapNum = MapHelper.Num();
-				for (int i = 0; i < MapNum; ++i)
+				for (FScriptMapHelper::FIterator i = MapHelper.CreateIterator(); i; ++i)
 				{
 					if (UObject* InstancedObject = *reinterpret_cast<UObject**>(MapHelper.GetValuePtr(i)))
 					{
@@ -1994,30 +2050,33 @@ void UBeamContentObject::SerializeMapProperty(FString PropName, FJsonDomBuilder:
 		}
 		else if (CastField<FTextProperty>(MapProperty->ValueProp))
 		{
-			const auto MapNum = MapHelper.Num();
-			for (auto i = 0; i < MapNum; i++)
+			for (FScriptMapHelper::FIterator i = MapHelper.CreateIterator(); i; ++i)
 			{
-				if (MapHelper.IsValidIndex(i))
+				const FString Key = StrKeyProperty->GetPropertyValue(MapHelper.GetKeyPtr(i));
+				const auto Data = reinterpret_cast<const FText*>(MapHelper.GetValuePtr(i));
+				FString ToSerialize;
+				if (Data->IsFromStringTable())
 				{
-					const FString Key = StrKeyProperty->GetPropertyValue(MapHelper.GetKeyPtr(i));
-					const FText* Data = reinterpret_cast<const FText*>(MapHelper.GetValuePtr(i));
-
-					JsonMap.Set(Key, (*Data).ToString());
+					FName TableId;
+					FString TableKey;
+					FTextInspector::GetTableIdAndKey(*Data, TableId, TableKey);
+					ToSerialize = TEXT("BEAM_ST₢") + TableId.ToString() + TEXT("₢") + TableKey;
 				}
+				else
+				{
+					ToSerialize = Data->ToString();
+				}
+				JsonMap.Set(Key, ToSerialize);
 			}
 		}
 		else if (CastField<FNameProperty>(MapProperty->ValueProp))
-		{
-			const auto MapNum = MapHelper.Num();
-			for (auto i = 0; i < MapNum; i++)
+		{			
+			for (FScriptMapHelper::FIterator i = MapHelper.CreateIterator(); i; ++i)
 			{
-				if (MapHelper.IsValidIndex(i))
-				{
-					const FString Key = StrKeyProperty->GetPropertyValue(MapHelper.GetKeyPtr(i));
-					const FName* Data = reinterpret_cast<const FName*>(MapHelper.GetValuePtr(i));
+				const FString Key = StrKeyProperty->GetPropertyValue(MapHelper.GetKeyPtr(i));
+				const FName* Data = reinterpret_cast<const FName*>(MapHelper.GetValuePtr(i));
 
-					JsonMap.Set(Key, (*Data).ToString());
-				}
+				JsonMap.Set(Key, (*Data).ToString());
 			}
 		}
 		else if (CastField<FStrProperty>(MapProperty->ValueProp))
@@ -2065,6 +2124,7 @@ void UBeamContentObject::ParseMapProperty(const FString& PropName, const TShared
 	{
 		const FScriptMap* Val = MapProperty->GetPropertyValuePtr(MapProperty->ContainerPtrToValuePtr<void>(MapOwner));
 		FScriptMapHelper MapHelper(MapProperty, Val);
+		MapHelper.EmptyValues();
 
 		if (const auto SoftObjectProperty = CastField<FSoftObjectProperty>(MapProperty->ValueProp))
 		{
@@ -2338,7 +2398,22 @@ void UBeamContentObject::ParseMapProperty(const FString& PropName, const TShared
 				*KeyData = Value.Key;
 
 				auto ValData = reinterpret_cast<FText*>(MapHelper.GetValuePtr(LastEntryIdx));
-				*ValData = FText::FromString(Value.Value->AsString());
+				auto SerializedVal = Value.Value->AsString();
+				if (SerializedVal.StartsWith(TEXT("BEAM_ST₢")))
+				{
+					SerializedVal.RightChopInline(SerializedVal.Find(TEXT("₢")) + 1);
+
+					const auto SeparatorIdx = SerializedVal.Find(TEXT("₢"));
+					FString TableId = SerializedVal.Left(SeparatorIdx);
+					FString Key = SerializedVal.RightChop(SeparatorIdx + 1);
+					FString KeyStr(Key);
+					FName TableIdStr(TableId);
+					*ValData = FText::FromStringTable(TableIdStr, KeyStr);
+				}
+				else
+				{
+					*ValData = FText::FromString(Value.Value->AsString());
+				}
 			}
 		}
 		else if (CastField<FNameProperty>(MapProperty->ValueProp))
@@ -2459,4 +2534,55 @@ void UBeamContentObject::ParseMapProperty(const FString& PropName, const TShared
 	{
 		UE_LOG(LogBeamContent, Error, TEXT("Content Serialization does not support maps with non-FString keys.\n"))
 	}
+}
+
+
+// STATIC UTILITIES
+void UBeamContentObject::NewFromTypeId(const TMap<FString, UClass*>& ContentTypeToContentClass, const FString& ContentTypeId, UBeamContentObject*& OutObject)
+{
+	UClass* ObjectClass;
+	TEnumAsByte<EBeamContentObjectSupportLevel> SupportLevel;
+	GetClassForTypeId(ContentTypeToContentClass, ContentTypeId, ObjectClass, SupportLevel);
+	if (ObjectClass)
+	{
+		OutObject = NewObject<UBeamContentObject>(GetTransientPackage(), ObjectClass, NAME_None, EObjectFlags::RF_Public | EObjectFlags::RF_Standalone);
+		OutObject->SupportLevel = SupportLevel;
+	}
+}
+
+void UBeamContentObject::GetClassForTypeId(const TMap<FString, UClass*>& ContentTypeToContentClass, const FString& ContentTypeId, UClass*& OutObjectClass, TEnumAsByte<EBeamContentObjectSupportLevel>& OutSupportLevel)
+{
+	bool bKnowsType;
+	auto TypeStringCpy = ContentTypeId;
+	do
+	{
+		bKnowsType = ContentTypeToContentClass.Contains(TypeStringCpy);
+		if (bKnowsType)
+		{
+			OutObjectClass = *ContentTypeToContentClass.Find(TypeStringCpy);
+
+			// Set the support level to full support only if we found a UClass that's an exact match to the given type id; otherwise, PartialSupport it is. 
+			OutSupportLevel = TypeStringCpy.Equals(ContentTypeId) ? FullSupport : PartialSupport;
+		}
+		else
+		{
+			int32 LastDotIdx;
+			TypeStringCpy.FindLastChar('.', LastDotIdx);
+
+			// Cut off the part of the type and let us fall through to the while clause again.
+			if (LastDotIdx != INDEX_NONE)
+			{
+				TypeStringCpy.MidInline(0, LastDotIdx);
+			}
+			// If we were at the last possible type and we still didn't find a UClass to deserialize it in it...
+			else
+			{
+				// Clear the type string so we fall out of the while loop.
+				TypeStringCpy.Empty();
+				OutObjectClass = UBeamContentObject::StaticClass();
+				OutSupportLevel = NoSupport;
+			}
+		}
+	}
+	while (!bKnowsType && !TypeStringCpy.IsEmpty());
 }

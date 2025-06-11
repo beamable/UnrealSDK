@@ -1,0 +1,17 @@
+{
+  "properties": {
+    "listings": {
+      "links": [
+        "listings.skin1",
+        "listings.skin2",
+        "listings.skin3",
+        "listings.skin4"
+      ]
+    },
+    "title": {
+      "data": "Skin Store"
+    }
+  },
+  "tags": [],
+  "referenceManifestId": "68497a08afaaea205e2e9516"
+}

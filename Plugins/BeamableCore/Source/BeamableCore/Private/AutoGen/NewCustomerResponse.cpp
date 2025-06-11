@@ -12,8 +12,9 @@ void UNewCustomerResponse::DeserializeRequestResponse(UObject* RequestData, FStr
 
 void UNewCustomerResponse::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("name"), Name);
-	Serializer->WriteValue(TEXT("projectName"), ProjectName);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("activationPending"), bActivationPending, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("name"), Name, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("projectName"), ProjectName, Serializer);
 	UBeamJsonUtils::SerializeSemanticType<int64>(TEXT("cid"), &Cid, Serializer);
 	UBeamJsonUtils::SerializeSemanticType<FString>(TEXT("pid"), &Pid, Serializer);
 	UBeamJsonUtils::SerializeUObject<UTokenResponse*>("token", Token, Serializer);
@@ -22,8 +23,9 @@ void UNewCustomerResponse::BeamSerializeProperties(TUnrealJsonSerializer& Serial
 
 void UNewCustomerResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("name"), Name);
-	Serializer->WriteValue(TEXT("projectName"), ProjectName);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("activationPending"), bActivationPending, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("name"), Name, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("projectName"), ProjectName, Serializer);
 	UBeamJsonUtils::SerializeSemanticType<int64>(TEXT("cid"), &Cid, Serializer);
 	UBeamJsonUtils::SerializeSemanticType<FString>(TEXT("pid"), &Pid, Serializer);
 	UBeamJsonUtils::SerializeUObject<UTokenResponse*>("token", Token, Serializer);
@@ -32,8 +34,9 @@ void UNewCustomerResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer& 
 
 void UNewCustomerResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	Name = Bag->GetStringField(TEXT("name"));
-	ProjectName = Bag->GetStringField(TEXT("projectName"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("activationPending")), bActivationPending);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("name")), Name);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("projectName")), ProjectName);
 	UBeamJsonUtils::DeserializeSemanticType<int64>(Bag->TryGetField(TEXT("cid")), Cid, OuterOwner);
 	UBeamJsonUtils::DeserializeSemanticType<FString>(Bag->TryGetField(TEXT("pid")), Pid, OuterOwner);
 	UBeamJsonUtils::DeserializeUObject<UTokenResponse*>("token", Bag, Token, OuterOwner);

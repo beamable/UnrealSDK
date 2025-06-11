@@ -1,0 +1,38 @@
+{
+  "properties": {
+    "clientPermission": {
+      "data": {
+        "write_self": true
+      }
+    },
+    "decimals": {
+      "data": 0
+    },
+    "description": {
+      "data": ""
+    },
+    "external": {
+      "data": {
+        "service": "SuiFederation",
+        "namespace": "SuiIdentity"
+      }
+    },
+    "image": {
+      "data": "https://cdn.pixabay.com/photo/2016/03/31/17/33/icons-1293736_1280.png"
+    },
+    "initialSupply": {
+      "data": 0
+    },
+    "name": {
+      "data": "Star coin"
+    },
+    "startingAmount": {
+      "data": 0
+    },
+    "symbol": {
+      "data": "STR"
+    }
+  },
+  "tags": [],
+  "referenceManifestId": "6849974cf968c812ad340da7"
+}

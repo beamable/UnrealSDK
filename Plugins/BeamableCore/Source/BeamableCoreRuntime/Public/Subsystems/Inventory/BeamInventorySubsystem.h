@@ -19,10 +19,10 @@ struct BEAMABLECORERUNTIME_API FBeamPlayerCurrency
 {
 	GENERATED_BODY()
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadWrite)
 	FUserSlot OwnerPlayer;
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadWrite)
 	FBeamContentId ContentId;
 
 	UPROPERTY(BlueprintReadWrite)

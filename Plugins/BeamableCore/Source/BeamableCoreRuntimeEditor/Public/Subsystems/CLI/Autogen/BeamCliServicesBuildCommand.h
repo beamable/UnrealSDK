@@ -22,23 +22,23 @@ public:
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("id"), Id);
-		Serializer->WriteValue(TEXT("message"), Message);
-		Serializer->WriteValue(TEXT("isFailure"), IsFailure);	
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("id"), Id, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("message"), Message, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("isFailure"), IsFailure, Serializer);	
 	}
 
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("id"), Id);
-		Serializer->WriteValue(TEXT("message"), Message);
-		Serializer->WriteValue(TEXT("isFailure"), IsFailure);	
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("id"), Id, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("message"), Message, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("isFailure"), IsFailure, Serializer);	
 	}
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		Id = Bag->GetStringField(TEXT("id"));
-		Message = Bag->GetStringField(TEXT("message"));
-		IsFailure = Bag->GetBoolField(TEXT("isFailure"));	
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("id")), Id);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("message")), Message);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("isFailure")), IsFailure);	
 	}
 };
 
@@ -59,23 +59,23 @@ public:
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("id"), Id);
-		Serializer->WriteValue(TEXT("totalSteps"), TotalSteps);
-		Serializer->WriteValue(TEXT("completedSteps"), CompletedSteps);	
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("id"), Id, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("totalSteps"), TotalSteps, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("completedSteps"), CompletedSteps, Serializer);	
 	}
 
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("id"), Id);
-		Serializer->WriteValue(TEXT("totalSteps"), TotalSteps);
-		Serializer->WriteValue(TEXT("completedSteps"), CompletedSteps);	
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("id"), Id, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("totalSteps"), TotalSteps, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("completedSteps"), CompletedSteps, Serializer);	
 	}
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		Id = Bag->GetStringField(TEXT("id"));
-		TotalSteps = Bag->GetIntegerField(TEXT("totalSteps"));
-		CompletedSteps = Bag->GetIntegerField(TEXT("completedSteps"));	
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("id")), Id);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("totalSteps")), TotalSteps);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("completedSteps")), CompletedSteps);	
 	}
 };
 
@@ -130,12 +130,12 @@ public:
 	inline static FString StreamType = FString(TEXT("stream"));
 	UPROPERTY() TArray<UBeamCliServicesBuildStreamData*> Stream;
 	UPROPERTY() TArray<int64> Timestamps;
-	TFunction<void (const TArray<UBeamCliServicesBuildStreamData*>& StreamData, const TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnStreamOutput;
+	TFunction<void (TArray<UBeamCliServicesBuildStreamData*>& StreamData, TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnStreamOutput;
 
 	inline static FString StreamTypeProgress = FString(TEXT("progress"));
 	UPROPERTY() TArray<UBeamCliServicesBuildProgressStreamData*> ProgressStream;
 	UPROPERTY() TArray<int64> ProgressTimestamps;
-	TFunction<void (const TArray<UBeamCliServicesBuildProgressStreamData*>& StreamData, const TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnProgressStreamOutput;	
+	TFunction<void (TArray<UBeamCliServicesBuildProgressStreamData*>& StreamData, TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnProgressStreamOutput;	
 
 	TFunction<void (const int& ResCode, const FBeamOperationHandle& Op)> OnCompleted;
 	virtual bool HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer) override;

@@ -20,20 +20,20 @@ public:
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("context"), Context);
-		Serializer->WriteValue(TEXT("payload"), Payload);	
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("context"), Context, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("payload"), Payload, Serializer);	
 	}
 
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("context"), Context);
-		Serializer->WriteValue(TEXT("payload"), Payload);	
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("context"), Context, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("payload"), Payload, Serializer);	
 	}
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		Context = Bag->GetStringField(TEXT("context"));
-		Payload = Bag->GetStringField(TEXT("payload"));	
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("context")), Context);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("payload")), Payload);	
 	}
 };
 
@@ -81,7 +81,7 @@ public:
 	inline static FString StreamType = FString(TEXT("stream"));
 	UPROPERTY() TArray<UBeamCliListenPlayerStreamData*> Stream;
 	UPROPERTY() TArray<int64> Timestamps;
-	TFunction<void (const TArray<UBeamCliListenPlayerStreamData*>& StreamData, const TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnStreamOutput;	
+	TFunction<void (TArray<UBeamCliListenPlayerStreamData*>& StreamData, TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnStreamOutput;	
 
 	TFunction<void (const int& ResCode, const FBeamOperationHandle& Op)> OnCompleted;
 	virtual bool HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer) override;

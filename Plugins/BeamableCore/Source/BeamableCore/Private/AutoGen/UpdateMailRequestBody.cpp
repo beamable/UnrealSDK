@@ -7,7 +7,7 @@
 
 void UUpdateMailRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("mailId"), MailId);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("mailId"), MailId, Serializer);
 	UBeamJsonUtils::SerializeOptional<bool>(TEXT("acceptAttachments"), &bAcceptAttachments, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("body"), &Body, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("expires"), &Expires, Serializer);
@@ -18,7 +18,7 @@ void UUpdateMailRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Seri
 
 void UUpdateMailRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("mailId"), MailId);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("mailId"), MailId, Serializer);
 	UBeamJsonUtils::SerializeOptional<bool>(TEXT("acceptAttachments"), &bAcceptAttachments, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("body"), &Body, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("expires"), &Expires, Serializer);
@@ -29,7 +29,7 @@ void UUpdateMailRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer
 
 void UUpdateMailRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("mailId")), MailId);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("mailId")), MailId);
 	UBeamJsonUtils::DeserializeOptional<bool>("acceptAttachments", Bag, bAcceptAttachments, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("body", Bag, Body, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("expires", Bag, Expires, OuterOwner);

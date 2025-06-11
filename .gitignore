@@ -81,12 +81,13 @@ ArchivedBuilds
 Plugins/BEAMPROJ_Sandbox/*
 Microservices/services/MSPlayground/*
 Microservices/services/DBPlayground/*
+Microservices/services/**/obj/*
+Microservices/services/**/bin/*
 BeamableSource/**
 Builds/**
 
 # Folders are kept in-sync via BEAMPROJ Overrides
 Config/**/*
-.beamable/content/**/*
 Docs/.obsidian/**/*
 
 # Only ignore the .SLN file in the root folder.

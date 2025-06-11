@@ -8,7 +8,7 @@
 
 #include "GamerTagAssociation.generated.h"
 
-UCLASS(BlueprintType, Category="Beam")
+UCLASS(BlueprintType, Category="Beam", DefaultToInstanced, EditInlineNew)
 class BEAMABLECORE_API UGamerTagAssociation : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()

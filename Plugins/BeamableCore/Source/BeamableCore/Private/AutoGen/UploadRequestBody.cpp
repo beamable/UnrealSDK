@@ -7,8 +7,8 @@
 
 void UUploadRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("objectKey"), ObjectKey);
-	Serializer->WriteValue(TEXT("sizeInBytes"), SizeInBytes);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("objectKey"), ObjectKey, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("sizeInBytes"), SizeInBytes, Serializer);
 	UBeamJsonUtils::SerializeOptional<bool>(TEXT("deleted"), &bDeleted, Serializer);
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("lastModified"), &LastModified, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("checksum"), &Checksum, Serializer);
@@ -17,8 +17,8 @@ void UUploadRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializ
 
 void UUploadRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("objectKey"), ObjectKey);
-	Serializer->WriteValue(TEXT("sizeInBytes"), SizeInBytes);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("objectKey"), ObjectKey, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("sizeInBytes"), SizeInBytes, Serializer);
 	UBeamJsonUtils::SerializeOptional<bool>(TEXT("deleted"), &bDeleted, Serializer);
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("lastModified"), &LastModified, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("checksum"), &Checksum, Serializer);
@@ -27,8 +27,8 @@ void UUploadRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Se
 
 void UUploadRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	ObjectKey = Bag->GetStringField(TEXT("objectKey"));
-	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("sizeInBytes")), SizeInBytes);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("objectKey")), ObjectKey);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("sizeInBytes")), SizeInBytes);
 	UBeamJsonUtils::DeserializeOptional<bool>("deleted", Bag, bDeleted, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<int64>("lastModified", Bag, LastModified, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("checksum", Bag, Checksum, OuterOwner);

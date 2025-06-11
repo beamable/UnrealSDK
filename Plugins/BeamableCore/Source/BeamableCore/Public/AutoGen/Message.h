@@ -4,15 +4,15 @@
 
 #include "Serialization/BeamJsonSerializable.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
-#include "BeamableCore/Public/AutoGen/Optionals/OptionalInt32.h"
-#include "BeamableCore/Public/AutoGen/Optionals/OptionalPlayerReward.h"
-#include "BeamableCore/Public/AutoGen/Optionals/OptionalMailRewards.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalInt64.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalPlayerReward.h"
+#include "Serialization/BeamJsonUtils.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalMailRewards.h"
 #include "BeamableCore/Public/AutoGen/Attachment.h"
 
 #include "Message.generated.h"
 
-UCLASS(BlueprintType, Category="Beam")
+UCLASS(BlueprintType, Category="Beam", DefaultToInstanced, EditInlineNew)
 class BEAMABLECORE_API UMessage : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
@@ -35,7 +35,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Body", Category="Beam")
 	FOptionalString Body = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Expires", Category="Beam")
-	FOptionalInt32 Expires = {};
+	FOptionalInt64 Expires = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Player Rewards", Category="Beam")
 	FOptionalPlayerReward PlayerRewards = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Subject", Category="Beam")

@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
+#include "Serialization/BeamJsonUtils.h"
 #include "BeamableCore/Public/AutoGen/EventPlayerPhaseView.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalEventPlayerPhaseView.h"
 #include "BeamableCore/Public/AutoGen/EventRewardState.h"
@@ -10,7 +11,7 @@
 
 #include "EventPlayerStateView.generated.h"
 
-UCLASS(BlueprintType, Category="Beam")
+UCLASS(BlueprintType, Category="Beam", DefaultToInstanced, EditInlineNew)
 class BEAMABLECORE_API UEventPlayerStateView : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()

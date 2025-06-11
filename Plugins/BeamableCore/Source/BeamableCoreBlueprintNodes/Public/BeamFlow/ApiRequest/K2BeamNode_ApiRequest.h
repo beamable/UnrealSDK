@@ -80,7 +80,7 @@ public:
 	virtual FName GetRequestFunctionName() const;
 	virtual FName GetMakeFunctionName() const;
 
-	virtual FString GetServiceName() const;
+	virtual FString GetServiceName() const override;
 	virtual FString GetEndpointName() const;
 	virtual UClass* GetApiClass() const;
 	virtual UClass* GetRequestClass() const;

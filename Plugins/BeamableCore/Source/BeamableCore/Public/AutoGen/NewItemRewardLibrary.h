@@ -13,12 +13,12 @@ class BEAMABLECORE_API UNewItemRewardLibrary : public UBlueprintFunctionLibrary
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - NewItemReward To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Announcements|Utils|Json", DisplayName="NewItemReward To JSON String")
 	static FString NewItemRewardToJsonString(const UNewItemReward* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make NewItemReward", meta=(DefaultToSelf="Outer", AdvancedDisplay="Properties, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Announcements|Utils|Make/Break", DisplayName="Make NewItemReward", meta=(DefaultToSelf="Outer", AdvancedDisplay="Properties, Outer", NativeMakeFunc))
 	static UNewItemReward* Make(FString Symbol, FOptionalMapOfString Properties, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break NewItemReward", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Announcements|Utils|Make/Break", DisplayName="Break NewItemReward", meta=(NativeBreakFunc))
 	static void Break(const UNewItemReward* Serializable, FString& Symbol, FOptionalMapOfString& Properties);
 };

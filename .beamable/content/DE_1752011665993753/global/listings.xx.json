@@ -1,0 +1,24 @@
+{
+  "properties": {
+    "clientData": {
+      "data": {}
+    },
+    "offer": {
+      "data": {
+        "titles": [],
+        "descriptions": [],
+        "obtainCurrency": [],
+        "obtainItems": []
+      }
+    },
+    "price": {
+      "data": {
+        "type": "sku",
+        "symbol": "currency.coins",
+        "amount": 0
+      }
+    }
+  },
+  "tags": [],
+  "referenceManifestId": "6750992c46e8e660d93e71fb"
+}

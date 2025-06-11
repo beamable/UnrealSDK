@@ -7,13 +7,13 @@
 
 void UBinaryReference::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("uploadMethod"), UploadMethod);
-	Serializer->WriteValue(TEXT("uri"), Uri);
-	Serializer->WriteValue(TEXT("version"), Version);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("uploadMethod"), UploadMethod, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("uri"), Uri, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("version"), Version, Serializer);
 	UBeamJsonUtils::SerializeSemanticType<FString>(TEXT("id"), &Id, Serializer);
-	Serializer->WriteValue(TEXT("uploadUri"), UploadUri);
-	Serializer->WriteValue(TEXT("type"), Type);
-	Serializer->WriteValue(TEXT("visibility"), Visibility);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("uploadUri"), UploadUri, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("type"), Type, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("visibility"), Visibility, Serializer);
 	UBeamJsonUtils::SerializeArray<FString>(TEXT("tags"), Tags, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("checksum"), &Checksum, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("lastChanged"), &LastChanged, Serializer);
@@ -22,13 +22,13 @@ void UBinaryReference::BeamSerializeProperties(TUnrealJsonSerializer& Serializer
 
 void UBinaryReference::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("uploadMethod"), UploadMethod);
-	Serializer->WriteValue(TEXT("uri"), Uri);
-	Serializer->WriteValue(TEXT("version"), Version);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("uploadMethod"), UploadMethod, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("uri"), Uri, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("version"), Version, Serializer);
 	UBeamJsonUtils::SerializeSemanticType<FString>(TEXT("id"), &Id, Serializer);
-	Serializer->WriteValue(TEXT("uploadUri"), UploadUri);
-	Serializer->WriteValue(TEXT("type"), Type);
-	Serializer->WriteValue(TEXT("visibility"), Visibility);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("uploadUri"), UploadUri, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("type"), Type, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("visibility"), Visibility, Serializer);
 	UBeamJsonUtils::SerializeArray<FString>(TEXT("tags"), Tags, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("checksum"), &Checksum, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("lastChanged"), &LastChanged, Serializer);
@@ -37,13 +37,13 @@ void UBinaryReference::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Seri
 
 void UBinaryReference::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UploadMethod = Bag->GetStringField(TEXT("uploadMethod"));
-	Uri = Bag->GetStringField(TEXT("uri"));
-	Version = Bag->GetStringField(TEXT("version"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("uploadMethod")), UploadMethod);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("uri")), Uri);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("version")), Version);
 	UBeamJsonUtils::DeserializeSemanticType<FString>(Bag->TryGetField(TEXT("id")), Id, OuterOwner);
-	UploadUri = Bag->GetStringField(TEXT("uploadUri"));
-	Type = Bag->GetStringField(TEXT("type"));
-	Visibility = Bag->GetStringField(TEXT("visibility"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("uploadUri")), UploadUri);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("type")), Type);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("visibility")), Visibility);
 	UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("tags")), Tags, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("checksum", Bag, Checksum, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("lastChanged", Bag, LastChanged, OuterOwner);

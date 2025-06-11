@@ -6,11 +6,12 @@
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalInt32.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalEntitlementClaimWindow.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalMapOfString.h"
+#include "Serialization/BeamJsonUtils.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
 
 #include "EntitlementGenerator.generated.h"
 
-UCLASS(BlueprintType, Category="Beam")
+UCLASS(BlueprintType, Category="Beam", DefaultToInstanced, EditInlineNew)
 class BEAMABLECORE_API UEntitlementGenerator : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()

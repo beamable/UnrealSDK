@@ -12,17 +12,17 @@ void UMSPlaygroundAddResponse::DeserializeRequestResponse(UObject* RequestData, 
 
 void UMSPlaygroundAddResponse::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("Value"), Value);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("Value"), Value, Serializer);
 }
 
 void UMSPlaygroundAddResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("Value"), Value);		
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("Value"), Value, Serializer);		
 }
 
 void UMSPlaygroundAddResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	Value = Bag->GetIntegerField(TEXT("Value"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("Value")), Value);
 }
 
 

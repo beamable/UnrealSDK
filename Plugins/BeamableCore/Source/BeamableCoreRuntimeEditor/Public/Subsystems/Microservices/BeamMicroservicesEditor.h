@@ -8,7 +8,7 @@
 #include "Subsystems/BeamEditorSubsystem.h"
 
 #include "BeamLogging.h"
-#include "AutoGen/Enums/FederationType.h"
+#include "AutoGen/Enums/BeamFederationType.h"
 #include "BeamBackend/BeamMicroserviceClientSubsystem.h"
 #include "Containers/CircularQueue.h"
 #include "Containers/SpscQueue.h"
@@ -37,7 +37,7 @@ struct FLocalFederationData
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	EFederationType Type = {};
+	EBeamFederationType Type = {};
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	UBeamCliFederationLocalSettingsGetIFederatedGameServerStreamData* LocalSettings_FederatedGamerServer = {};
@@ -300,7 +300,7 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category="Beam|Editor|Microservice", meta=(ExpandBoolAsExecs="ReturnValue"))
 	bool ClearLogs(FString BeamoId);
-	
+
 	/**
 	 * Whether or not the currently selected routing key for a particular service is valid right now or not.	  
 	 */
@@ -314,13 +314,15 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Beam|Editor|Microservice", meta=(ExpandBoolAsExecs="ReturnValue"))
 	bool SetCurrentRoutingKey(FString BeamoId, FString Target);
 
+	UFUNCTION(BlueprintCallable, Category="Beam|Editor|Microservice")
+	void SetRoutingKeyMapAsAdditionalLaunchArgs();
 
 	UFUNCTION(BlueprintCallable, Category="Beam|Editor|Microservice")
 	FString ConstructRoutingKeyMap();
-	
+
 	UFUNCTION(BlueprintCallable, Category="Beam|Editor|Microservice")
 	void SaveFederationProperties(FString ServiceId, FString FedId, FLocalFederationData Federation);
-	
+
 protected:
 	void DeployMicroservices(const TArray<FString>& EnableBeamoIds, const TArray<FString>& DisableBeamoIds, const FBeamOperationHandle& Op) const;
 

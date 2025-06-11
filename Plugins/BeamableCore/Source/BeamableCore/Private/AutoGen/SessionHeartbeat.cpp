@@ -12,19 +12,19 @@ void USessionHeartbeat::DeserializeRequestResponse(UObject* RequestData, FString
 
 void USessionHeartbeat::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("gt"), Gt);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("gt"), Gt, Serializer);
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("heartbeat"), &Heartbeat, Serializer);
 }
 
 void USessionHeartbeat::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("gt"), Gt);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("gt"), Gt, Serializer);
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("heartbeat"), &Heartbeat, Serializer);		
 }
 
 void USessionHeartbeat::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("gt")), Gt);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("gt")), Gt);
 	UBeamJsonUtils::DeserializeOptional<int64>("heartbeat", Bag, Heartbeat, OuterOwner);
 }
 

@@ -13,10 +13,10 @@ class BEAMABLECORE_API UApiPartiesMembersDeletePartyResponseLibrary : public UBl
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - ApiPartiesMembersDeletePartyResponse To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Party|Utils|Json", DisplayName="ApiPartiesMembersDeletePartyResponse To JSON String")
 	static FString ApiPartiesMembersDeletePartyResponseToJsonString(const UApiPartiesMembersDeletePartyResponse* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make ApiPartiesMembersDeletePartyResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Party|Utils|Make/Break", DisplayName="Make ApiPartiesMembersDeletePartyResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static UApiPartiesMembersDeletePartyResponse* Make(UObject* Outer);
 
 	

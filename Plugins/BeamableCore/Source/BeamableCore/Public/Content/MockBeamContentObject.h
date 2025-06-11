@@ -87,6 +87,24 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FBeamCid BeamCid;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FText StringText;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<FText> StringTextArray;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TMap<FString, FText> StringTextMap;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FText TableText;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<FText> TableTextArray;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TMap<FString, FText> TableTextMap;
+
 	/**
 	 * @brief Gameplay Tags are serialized as a regular string in content objects.  
 	 */
@@ -107,7 +125,7 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TMap<FString, FVector> VectorsMap;
-	
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FIntVector UnrealIntVector;
 
@@ -115,8 +133,8 @@ public:
 	TArray<FIntVector> IntVectorsArray;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TMap<FString, FIntVector> IntVectorsMap;	
-	
+	TMap<FString, FIntVector> IntVectorsMap;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FColor UnrealColor;
 
@@ -134,7 +152,7 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TMap<FString, FLinearColor> LinearColorsMap;
-	
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<FBeamCid> ArrayOfBeamCid;
 

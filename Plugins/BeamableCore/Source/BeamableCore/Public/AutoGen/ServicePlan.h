@@ -4,13 +4,14 @@
 
 #include "Serialization/BeamJsonSerializable.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
+#include "Serialization/BeamJsonUtils.h"
 #include "BeamableCore/Public/AutoGen/DataDomain.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalServiceLimits.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalInt64.h"
 
 #include "ServicePlan.generated.h"
 
-UCLASS(BlueprintType, Category="Beam")
+UCLASS(BlueprintType, Category="Beam", DefaultToInstanced, EditInlineNew)
 class BEAMABLECORE_API UServicePlan : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()

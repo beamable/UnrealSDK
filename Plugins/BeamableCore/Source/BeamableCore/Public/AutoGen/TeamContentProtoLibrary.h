@@ -13,12 +13,12 @@ class BEAMABLECORE_API UTeamContentProtoLibrary : public UBlueprintFunctionLibra
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - TeamContentProto To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Lobby|Utils|Json", DisplayName="TeamContentProto To JSON String")
 	static FString TeamContentProtoToJsonString(const UTeamContentProto* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make TeamContentProto", meta=(DefaultToSelf="Outer", AdvancedDisplay="Name, MaxPlayers, MinPlayers, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Lobby|Utils|Make/Break", DisplayName="Make TeamContentProto", meta=(DefaultToSelf="Outer", AdvancedDisplay="Name, MaxPlayers, MinPlayers, Outer", NativeMakeFunc))
 	static UTeamContentProto* Make(FOptionalString Name, FOptionalInt32 MaxPlayers, FOptionalInt32 MinPlayers, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break TeamContentProto", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Lobby|Utils|Make/Break", DisplayName="Break TeamContentProto", meta=(NativeBreakFunc))
 	static void Break(const UTeamContentProto* Serializable, FOptionalString& Name, FOptionalInt32& MaxPlayers, FOptionalInt32& MinPlayers);
 };

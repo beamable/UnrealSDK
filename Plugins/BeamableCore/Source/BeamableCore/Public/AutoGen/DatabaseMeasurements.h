@@ -6,10 +6,11 @@
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfDatabaseMeasurement.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
 #include "BeamableCore/Public/AutoGen/Link.h"
+#include "Serialization/BeamJsonUtils.h"
 
 #include "DatabaseMeasurements.generated.h"
 
-UCLASS(BlueprintType, Category="Beam")
+UCLASS(BlueprintType, Category="Beam", DefaultToInstanced, EditInlineNew)
 class BEAMABLECORE_API UDatabaseMeasurements : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()

@@ -6,6 +6,7 @@
 #include "RequestTracker/BeamOperationHandle.h"
 #include "Async/Async.h"
 #include "HttpModule.h"
+#include "Serialization/BeamJsonSerializable.h"
 #include "BeamCliCommand.generated.h"
 
 class FMonitoredProcess;
@@ -38,28 +39,7 @@ public:
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override;
 };
 
-USTRUCT()
-struct FBeamCliError : public FBeamJsonSerializableUStruct
-{
-	GENERATED_BODY()
 
-	UPROPERTY()
-	FString Message = {};
-	UPROPERTY()
-	FString Invocation = {};
-	UPROPERTY()
-	int32 ExitCode = {};
-	UPROPERTY()
-	FString TypeName = {};
-	UPROPERTY()
-	FString FullTypeName = {};
-	UPROPERTY()
-	FString StackTrace = {};
-
-	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;
-	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override;
-	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override;
-};
 
 UCLASS(Abstract)
 class UBeamCliCommand : public UObject

@@ -22,7 +22,7 @@ FString UOnlineStatusLibrary::OnlineStatusToJsonString(const UOnlineStatus* Seri
 	return Result;
 }	
 
-UOnlineStatus* UOnlineStatusLibrary::Make(FOptionalString LastOnline, FOptionalBool bOnline, FOptionalBeamGamerTag PlayerId, FOptionalPresenceStatus Status, FOptionalString Description, UObject* Outer)
+UOnlineStatus* UOnlineStatusLibrary::Make(FOptionalDateTime LastOnline, FOptionalBool bOnline, FOptionalBeamGamerTag PlayerId, FOptionalPresenceStatus Status, FOptionalString Description, UObject* Outer)
 {
 	auto Serializable = NewObject<UOnlineStatus>(Outer);
 	Serializable->LastOnline = LastOnline;
@@ -34,7 +34,7 @@ UOnlineStatus* UOnlineStatusLibrary::Make(FOptionalString LastOnline, FOptionalB
 	return Serializable;
 }
 
-void UOnlineStatusLibrary::Break(const UOnlineStatus* Serializable, FOptionalString& LastOnline, FOptionalBool& bOnline, FOptionalBeamGamerTag& PlayerId, FOptionalPresenceStatus& Status, FOptionalString& Description)
+void UOnlineStatusLibrary::Break(const UOnlineStatus* Serializable, FOptionalDateTime& LastOnline, FOptionalBool& bOnline, FOptionalBeamGamerTag& PlayerId, FOptionalPresenceStatus& Status, FOptionalString& Description)
 {
 	LastOnline = Serializable->LastOnline;
 	bOnline = Serializable->bOnline;

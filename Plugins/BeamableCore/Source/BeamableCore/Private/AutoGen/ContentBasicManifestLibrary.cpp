@@ -22,7 +22,7 @@ FString UContentBasicManifestLibrary::ContentBasicManifestToJsonString(const UCo
 	return Result;
 }	
 
-UContentBasicManifest* UContentBasicManifestLibrary::Make(FBeamContentManifestId Id, FString Checksum, int64 Created, TArray<UBaseContentReference*> References, FOptionalBool bArchived, UObject* Outer)
+UContentBasicManifest* UContentBasicManifestLibrary::Make(FBeamContentManifestId Id, FString Checksum, int64 Created, TArray<UBaseContentReference*> References, FOptionalBool bArchived, FOptionalInt64 PublisherAccountId, FOptionalString Uid, UObject* Outer)
 {
 	auto Serializable = NewObject<UContentBasicManifest>(Outer);
 	Serializable->Id = Id;
@@ -30,17 +30,21 @@ UContentBasicManifest* UContentBasicManifestLibrary::Make(FBeamContentManifestId
 	Serializable->Created = Created;
 	Serializable->References = References;
 	Serializable->bArchived = bArchived;
+	Serializable->PublisherAccountId = PublisherAccountId;
+	Serializable->Uid = Uid;
 	
 	return Serializable;
 }
 
-void UContentBasicManifestLibrary::Break(const UContentBasicManifest* Serializable, FBeamContentManifestId& Id, FString& Checksum, int64& Created, TArray<UBaseContentReference*>& References, FOptionalBool& bArchived)
+void UContentBasicManifestLibrary::Break(const UContentBasicManifest* Serializable, FBeamContentManifestId& Id, FString& Checksum, int64& Created, TArray<UBaseContentReference*>& References, FOptionalBool& bArchived, FOptionalInt64& PublisherAccountId, FOptionalString& Uid)
 {
 	Id = Serializable->Id;
 	Checksum = Serializable->Checksum;
 	Created = Serializable->Created;
 	References = Serializable->References;
 	bArchived = Serializable->bArchived;
+	PublisherAccountId = Serializable->PublisherAccountId;
+	Uid = Serializable->Uid;
 		
 }
 

@@ -26,29 +26,29 @@ public:
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("level"), Level);
-		Serializer->WriteValue(TEXT("formattedMessage"), FormattedMessage);
-		Serializer->WriteValue(TEXT("uri"), Uri);
-		Serializer->WriteValue(TEXT("line"), Line);
-		Serializer->WriteValue(TEXT("column"), Column);	
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("level"), Level, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("formattedMessage"), FormattedMessage, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("uri"), Uri, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("line"), Line, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("column"), Column, Serializer);	
 	}
 
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("level"), Level);
-		Serializer->WriteValue(TEXT("formattedMessage"), FormattedMessage);
-		Serializer->WriteValue(TEXT("uri"), Uri);
-		Serializer->WriteValue(TEXT("line"), Line);
-		Serializer->WriteValue(TEXT("column"), Column);	
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("level"), Level, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("formattedMessage"), FormattedMessage, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("uri"), Uri, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("line"), Line, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("column"), Column, Serializer);	
 	}
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		Level = Bag->GetStringField(TEXT("level"));
-		FormattedMessage = Bag->GetStringField(TEXT("formattedMessage"));
-		Uri = Bag->GetStringField(TEXT("uri"));
-		Line = Bag->GetIntegerField(TEXT("line"));
-		Column = Bag->GetIntegerField(TEXT("column"));	
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("level")), Level);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("formattedMessage")), FormattedMessage);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("uri")), Uri);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("line")), Line);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("column")), Column);	
 	}
 };
 

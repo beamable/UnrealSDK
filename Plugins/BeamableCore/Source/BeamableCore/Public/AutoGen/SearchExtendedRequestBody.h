@@ -4,10 +4,11 @@
 
 #include "Serialization/BeamJsonSerializable.h"
 #include "BeamableCore/Public/AutoGen/StatsSearchCriteria.h"
+#include "Serialization/BeamJsonUtils.h"
 
 #include "SearchExtendedRequestBody.generated.h"
 
-UCLASS(BlueprintType, Category="Beam")
+UCLASS(BlueprintType, Category="Beam", DefaultToInstanced, EditInlineNew)
 class BEAMABLECORE_API USearchExtendedRequestBody : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()

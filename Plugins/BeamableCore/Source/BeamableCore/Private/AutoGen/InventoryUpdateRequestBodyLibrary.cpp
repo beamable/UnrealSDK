@@ -22,12 +22,9 @@ FString UInventoryUpdateRequestBodyLibrary::InventoryUpdateRequestBodyToJsonStri
 	return Result;
 }	
 
-UInventoryUpdateRequestBody* UInventoryUpdateRequestBodyLibrary::Make(bool bEmpty, TArray<FString> CurrencyContentIds, TArray<FString> ItemContentIds, FOptionalBool bApplyVipBonus, FOptionalString Transaction, FOptionalArrayOfItemUpdateRequestBody UpdateItems, FOptionalArrayOfItemCreateRequestBody NewItems, FOptionalArrayOfItemDeleteRequestBody DeleteItems, FOptionalMapOfInt64 Currencies, FOptionalMapOfArrayOfCurrencyProperty CurrencyProperties, UObject* Outer)
+UInventoryUpdateRequestBody* UInventoryUpdateRequestBodyLibrary::Make(FOptionalBool bApplyVipBonus, FOptionalString Transaction, FOptionalArrayOfItemUpdateRequestBody UpdateItems, FOptionalArrayOfItemCreateRequestBody NewItems, FOptionalArrayOfItemDeleteRequestBody DeleteItems, FOptionalMapOfInt64 Currencies, FOptionalMapOfArrayOfCurrencyProperty CurrencyProperties, UObject* Outer)
 {
 	auto Serializable = NewObject<UInventoryUpdateRequestBody>(Outer);
-	Serializable->bEmpty = bEmpty;
-	Serializable->CurrencyContentIds = CurrencyContentIds;
-	Serializable->ItemContentIds = ItemContentIds;
 	Serializable->bApplyVipBonus = bApplyVipBonus;
 	Serializable->Transaction = Transaction;
 	Serializable->UpdateItems = UpdateItems;
@@ -39,11 +36,8 @@ UInventoryUpdateRequestBody* UInventoryUpdateRequestBodyLibrary::Make(bool bEmpt
 	return Serializable;
 }
 
-void UInventoryUpdateRequestBodyLibrary::Break(const UInventoryUpdateRequestBody* Serializable, bool& bEmpty, TArray<FString>& CurrencyContentIds, TArray<FString>& ItemContentIds, FOptionalBool& bApplyVipBonus, FOptionalString& Transaction, FOptionalArrayOfItemUpdateRequestBody& UpdateItems, FOptionalArrayOfItemCreateRequestBody& NewItems, FOptionalArrayOfItemDeleteRequestBody& DeleteItems, FOptionalMapOfInt64& Currencies, FOptionalMapOfArrayOfCurrencyProperty& CurrencyProperties)
+void UInventoryUpdateRequestBodyLibrary::Break(const UInventoryUpdateRequestBody* Serializable, FOptionalBool& bApplyVipBonus, FOptionalString& Transaction, FOptionalArrayOfItemUpdateRequestBody& UpdateItems, FOptionalArrayOfItemCreateRequestBody& NewItems, FOptionalArrayOfItemDeleteRequestBody& DeleteItems, FOptionalMapOfInt64& Currencies, FOptionalMapOfArrayOfCurrencyProperty& CurrencyProperties)
 {
-	bEmpty = Serializable->bEmpty;
-	CurrencyContentIds = Serializable->CurrencyContentIds;
-	ItemContentIds = Serializable->ItemContentIds;
 	bApplyVipBonus = Serializable->bApplyVipBonus;
 	Transaction = Serializable->Transaction;
 	UpdateItems = Serializable->UpdateItems;

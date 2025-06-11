@@ -9,6 +9,30 @@
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnBeamAnnouncementsUpdated, FUserSlot, Evt);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnBeamAnnouncementsUpdatedCode, FUserSlot);
 
+USTRUCT(BlueprintType)
+struct FBeamAnnouncementsState
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadWrite)
+	FUserSlot Slot;
+	
+	UPROPERTY(BlueprintReadWrite)
+	TArray<UAnnouncementView*> Announcements ={};
+
+	FBeamAnnouncementsState()
+	{
+		Slot = {};
+		Announcements = {};		
+	}
+	
+	FBeamAnnouncementsState(const FUserSlot& Slot, const TArray<UAnnouncementView*>& Announcements)
+		: Slot(Slot),
+		  Announcements(Announcements)
+	{
+	}
+};
+
 /**
  * 
  */
@@ -25,7 +49,8 @@ public:
 	UPROPERTY()
 	UBeamRequestTracker* RequestTracker;
 
-	TMap<FUserSlot, TArray<UAnnouncementView*>> PerUserAnnouncements;
+	UPROPERTY()
+	TMap<FUserSlot, FBeamAnnouncementsState> PerUserAnnouncements;
 
 	/**
 	 * @brief Triggered whenever we refresh the state of announcements from a particular player. 
@@ -133,5 +158,5 @@ public:
 														   FOptionalArrayOfString& Announcements);
 	
 	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
-	bool GetAnnouncements(FUserSlot Slot, TArray<UAnnouncementView*>& Announcements);
+	bool GetAnnouncements(FUserSlot Slot, FBeamAnnouncementsState& Announcements);
 };

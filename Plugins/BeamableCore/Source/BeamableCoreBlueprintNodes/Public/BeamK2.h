@@ -1,15 +1,20 @@
 ﻿#pragma once
+#include "K2Node_AddDelegate.h"
 #include "K2Node_BreakStruct.h"
+#include "K2Node_DynamicCast.h"
 #include "K2Node_EnumEquality.h"
 #include "K2Node_Event.h"
 #include "K2Node_IfThenElse.h"
 #include "K2Node_MakeArray.h"
+#include "K2Node_RemoveDelegate.h"
 #include "K2Node_SwitchEnum.h"
 #include "K2Node_SwitchName.h"
 #include "Kismet2/BlueprintEditorUtils.h"
 
 #define LOCTEXT_NAMESPACE "BeamK2"
 
+
+class UK2Node_ClearDelegate;
 
 namespace BeamK2
 {
@@ -38,8 +43,8 @@ namespace BeamK2
 	 * The entire point of this is to allow us to batch replace connections on all nodes in a "flow" with ReplaceConnectionsOnGraphFlow.
 	 */
 	void GetPerBeamFlowNodes(const FKismetCompilerContext& CompilerContext,
-	                                const UEdGraphNode* CustomNode, const TArray<UEdGraphPin*>& CustomNodeStartPins,
-	                                const TArray<FName> RelevantEventSpawningFunctionNames, TArray<TArray<UEdGraphNode*>>& PerPinForwardFlow, TArray<TArray<UEdGraphNode*>>& PerPinConnectedEventFlows);
+	                         const UEdGraphNode* CustomNode, const TArray<UEdGraphPin*>& CustomNodeStartPins,
+	                         const TArray<FName> RelevantEventSpawningFunctionNames, TArray<TArray<UEdGraphNode*>>& PerPinForwardFlow, TArray<TArray<UEdGraphNode*>>& PerPinConnectedEventFlows);
 
 
 	/**
@@ -52,7 +57,7 @@ namespace BeamK2
 	 * @brief Utility that creates a correctly configured BreakStruct not for a given UStruct.
 	 */
 	UK2Node_BreakStruct* CreateBreakStructNode(UEdGraphNode* CustomNode, FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph, const UEdGraphSchema_K2* K2Schema,
-	                                                  UScriptStruct* const StructToBreak, UEdGraphPin* StructInputPin);
+	                                           UScriptStruct* const StructToBreak, UEdGraphPin* StructInputPin);
 
 	/**
 	 * @brief Utility that creates a correctly configured Make Array node with the number of input pins created equal to PinCount.
@@ -63,25 +68,43 @@ namespace BeamK2
 	 * @brief Utility that creates a correctly configured SwitchEnum node following the given "ExecFlowPin" and switching on the given "SwitchOnValuePin".
 	 */
 	UK2Node_SwitchEnum* CreateSwitchEnumNode(UEdGraphNode* CustomNode, FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph, const UEdGraphSchema_K2* K2Schema, UEnum* const Enum,
-	                                                UEdGraphPin* ExecFlowPin, UEdGraphPin* SwitchOnValuePin);
+	                                         UEdGraphPin* ExecFlowPin, UEdGraphPin* SwitchOnValuePin);
 
 	/**
 	 * @brief Utility that creates a correctly configured SwitchString node following the given "ExecFlowPin" and switching on the given "SwitchOnValuePin".
 	 */
 	UK2Node_SwitchName* CreateSwitchNameNode(UEdGraphNode* CustomNode, FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph, const UEdGraphSchema_K2* K2Schema, TArray<FName> const StringOptions,
-												 UEdGraphPin* ExecFlowPin, UEdGraphPin* SwitchOnValuePin);
+	                                         UEdGraphPin* ExecFlowPin, UEdGraphPin* SwitchOnValuePin);
+
+	/**
+	 * Create a Dynamic Cast Node to cast generic objects.
+	 *
+	 * @param TargetClass: The UClass* result after the cast.
+	 */
+	UK2Node_DynamicCast* CreateDynamicCastNode(UEdGraphNode* CustomNode, FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph, UClass* TargetClass);
 
 	/**
 	 * @brief Utility that creates and configures an EnumEquality node of the given "EnumToCompareType" to compare "EnumToCompareAgainst" against "CompareAgainstPin".
 	 */
 	UK2Node_EnumEquality* CreateEnumEqualityAgainstDefault(UEdGraphNode* CustomNode, FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph, const UEdGraphSchema_K2* K2Schema,
-	                                                              const UEnum* EnumToCompareType, const int64 EnumToCompareAgainst, UEdGraphPin* const CompareAgainstPin);
+	                                                       const UEnum* EnumToCompareType, const int64 EnumToCompareAgainst, UEdGraphPin* const CompareAgainstPin);
 
 	/**
 	 * @brief Utility that creates and configures an IfThenElse node to run with the given condition.
 	 */
 	UK2Node_IfThenElse* CreateIfThenElseNodeAgainstCondition(UEdGraphNode* CustomNode, FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph, const UEdGraphSchema_K2* K2Schema,
-	                                                                UEdGraphPin* const ExecPin, UEdGraphPin* ConditionPin);
+	                                                         UEdGraphPin* const ExecPin, UEdGraphPin* ConditionPin);
+
+	/**
+	 * @brief Utility that creates a correctly configured Event pin for a give FProperty
+	 */
+	UEdGraphPin* CreateEventPinFromProperty(UEdGraphNode* Node, const FProperty* Property);
+
+	/**
+	 * @brief Utility that creates a correctly configured Event pin as Execute pin for a give FProperty
+	 */
+	TMap<UEdGraphPin*, TArray<UEdGraphPin*>> CreateExecutePinFromEventProperty(UEdGraphNode* Node, const FMulticastDelegateProperty* Property);
+
 	/**
 	 * @brief Utility that creates a correctly configured event node for the given delegate name.
 	 */
@@ -96,6 +119,22 @@ namespace BeamK2
 	 * @brief Utility that connects and checks both of the True and False pins to the respective output pins of the given IfThenElse Node.
 	 */
 	void ConnectIfThenElseNodeOutputs(FKismetCompilerContext& CompilerContext, UEdGraphPin* const TruePin, UEdGraphPin* const FalsePin, const UK2Node_IfThenElse* IfThenElseNode);
+
+	/**
+	 * @brief   Utility that creates a AddDelegate node targeting a specific FMulticastDelegate. 	
+	 */
+	UK2Node_AddDelegate* CreateAddDelegateNode(UEdGraphNode* Node, FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph, FMulticastDelegateProperty* MulticastDelegateProperty);
+
+	/**
+	 * @brief   Utility that creates a RemoveDelegate node targeting a specific FMulticastDelegate. 	
+	 */
+	UK2Node_RemoveDelegate* CreateRemoveDelegateNode(UEdGraphNode* Node, FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph, FMulticastDelegateProperty* MulticastDelegateProperty);
+
+	/**
+	 * @brief   Utility that creates a ClearDelegate node targeting a specific FMulticastDelegate. 	
+	 */
+	UK2Node_ClearDelegate* CreateClearDelegateNode(UEdGraphNode* Node, FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph, FMulticastDelegateProperty* MulticastDelegateProperty);
+
 
 	/**
 	 * @brief Utility that creates a call function node targeting a specific UClass's UFunction. 	 
@@ -124,7 +163,20 @@ namespace BeamK2
 	 * creates a pin for it and adds the pin name to the WrappedPinNames array.
 	 */
 	void ParseFunctionForNodeInputPins(UEdGraphNode* CustomNode, const UFunction* Function, TArray<FString>& WrappedPinNames,
-	                                          const CheckParamIsValidForNodePredicate Predicate);
+	                                   const CheckParamIsValidForNodePredicate Predicate);
+
+	/**
+	 * @brief Given a custom node and a UFUNCTION goes through the list of parameters of that function and, if that param passes the Predicate,
+	 * creates a pin for it and adds the pin name to the WrappedPinNames array.
+	 */
+	void ParseFunctionForNodePins(UEdGraphNode* CustomNode, const UFunction* Function, TArray<FString>& InputWrappedPinNames, TArray<FString>& OutputWrappedPinNames,
+	                              const CheckParamIsValidForNodePredicate Predicate);
+
+	/**
+	 * @brief Given a custom node and a UFUNCTION goes through the list of parameters of that function and, if that param passes the Predicate,
+	 * creates a output pin for it and adds array output as a ARRAY ELEMENT.
+	 */
+	void ParseFunctionForNodeOutputPinsArrayElement(UEdGraphNode* CustomNode, const UFunction* Function, TArray<FString>& OutputWrappedPinNames);
 
 	/**
 	* @brief  Given a custom node and a UFUNCTION, tries to create pins for all of the pins given.
@@ -136,7 +188,7 @@ namespace BeamK2
 	 * to the CompilerContext's message log.
 	 */
 	void ValidateOutputPinUsage(const FKismetCompilerContext& CompilerContext, const TArray<UEdGraphPin*>& InvalidPins, const TArray<FString>& InvalidPinErrorMessages,
-	                                   const TArray<UEdGraphNode*>& NodesToSearchIn);
+	                            const TArray<UEdGraphNode*>& NodesToSearchIn);
 
 	/**
 	 * @brief Checks if the given graph is a Macro or the default EventGraph.	  
@@ -153,13 +205,13 @@ namespace BeamK2
 	  
 	 */
 	UEdGraphPin* EnforcePinExistence(UEdGraphNode* CustomNode, EEdGraphPinDirection Direction, FName Category, FName Name, FString Tooltip,
-	                                        UEdGraphNode::FCreatePinParams Params = {}, UObject* CatSubObject = nullptr);
+	                                 UEdGraphNode::FCreatePinParams Params = {}, UObject* CatSubObject = nullptr);
 
 	/**
 	 * @brief Gets an array pin with the given name. If "!bIsArray", then create nodes to index into the array and return the element at "DefaultElementIdx".
 	 */
 	UEdGraphPin* ExpandIntoArrayOrRegularIntermediatePin(UEdGraphNode* CustomNode, FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph, const UK2Node_Event* IntermediateEventNode,
-	                                                            const FName PinName, bool bIsArray, int DefaultElementIdx = 0);
+	                                                     const FName PinName, bool bIsArray, int DefaultElementIdx = 0);
 
 	void RemoveAllPinsExcept(UEdGraphNode* CustomNode, PinPredicate ExceptPins);
 	void RemoveAllPinsExcept(UEdGraphNode* CustomNode, PinPredicate ExceptPins, TArray<TArray<UEdGraphPin*>>& Connections);

@@ -13,12 +13,12 @@ class BEAMABLECORE_API UManifestSummaryLibrary : public UBlueprintFunctionLibrar
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - ManifestSummary To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Content|Utils|Json", DisplayName="ManifestSummary To JSON String")
 	static FString ManifestSummaryToJsonString(const UManifestSummary* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make ManifestSummary", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Content|Utils|Make/Break", DisplayName="Make ManifestSummary", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static UManifestSummary* Make(FString Uid, UContentBasicManifestChecksum* Manifest, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break ManifestSummary", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Content|Utils|Make/Break", DisplayName="Break ManifestSummary", meta=(NativeBreakFunc))
 	static void Break(const UManifestSummary* Serializable, FString& Uid, UContentBasicManifestChecksum*& Manifest);
 };

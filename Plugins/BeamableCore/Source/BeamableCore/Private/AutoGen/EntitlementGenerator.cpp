@@ -7,8 +7,8 @@
 
 void UEntitlementGenerator::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("symbol"), Symbol);
-	Serializer->WriteValue(TEXT("action"), Action);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("symbol"), Symbol, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("action"), Action, Serializer);
 	UBeamJsonUtils::SerializeOptional<int32>(TEXT("quantity"), &Quantity, Serializer);
 	UBeamJsonUtils::SerializeOptional<UEntitlementClaimWindow*>(TEXT("claimWindow"), &ClaimWindow, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("specialization"), &Specialization, Serializer);
@@ -17,8 +17,8 @@ void UEntitlementGenerator::BeamSerializeProperties(TUnrealJsonSerializer& Seria
 
 void UEntitlementGenerator::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("symbol"), Symbol);
-	Serializer->WriteValue(TEXT("action"), Action);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("symbol"), Symbol, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("action"), Action, Serializer);
 	UBeamJsonUtils::SerializeOptional<int32>(TEXT("quantity"), &Quantity, Serializer);
 	UBeamJsonUtils::SerializeOptional<UEntitlementClaimWindow*>(TEXT("claimWindow"), &ClaimWindow, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("specialization"), &Specialization, Serializer);
@@ -27,8 +27,8 @@ void UEntitlementGenerator::BeamSerializeProperties(TUnrealPrettyJsonSerializer&
 
 void UEntitlementGenerator::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	Symbol = Bag->GetStringField(TEXT("symbol"));
-	Action = Bag->GetStringField(TEXT("action"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("symbol")), Symbol);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("action")), Action);
 	UBeamJsonUtils::DeserializeOptional<int32>("quantity", Bag, Quantity, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<UEntitlementClaimWindow*>("claimWindow", Bag, ClaimWindow, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("specialization", Bag, Specialization, OuterOwner);

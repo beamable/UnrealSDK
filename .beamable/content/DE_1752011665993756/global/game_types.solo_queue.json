@@ -1,0 +1,24 @@
+{
+  "properties": {
+    "FederatedGameServerNamespace": {
+      "data": "hathora"
+    },
+    "NumericRules": {
+      "data": []
+    },
+    "StringRules": {
+      "data": []
+    },
+    "Teams": {
+      "data": [
+        {
+          "Name": "Solo",
+          "MinPlayers": 2,
+          "MaxPlayers": 2
+        }
+      ]
+    }
+  },
+  "tags": [],
+  "referenceManifestId": "6849785d101302335c771c44"
+}

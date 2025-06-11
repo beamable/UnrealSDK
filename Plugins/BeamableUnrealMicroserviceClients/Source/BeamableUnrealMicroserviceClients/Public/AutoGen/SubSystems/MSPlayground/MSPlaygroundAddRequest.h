@@ -36,7 +36,7 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|MSPlayground", DisplayName="Beam - Make MSPlaygroundAdd",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|MSPlayground|Utils|Make/Break", DisplayName="Make MSPlaygroundAdd",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="RequestOwner", AutoCreateRefTerm="CustomHeaders"))
 	static UMSPlaygroundAddRequest* Make(int32 _A, int32 _B, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 

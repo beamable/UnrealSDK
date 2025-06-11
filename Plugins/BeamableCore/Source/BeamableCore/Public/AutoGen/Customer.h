@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
+#include "Serialization/BeamJsonUtils.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
 #include "BeamBackend/SemanticTypes/BeamCid.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalInt64.h"
@@ -11,7 +12,7 @@
 
 #include "Customer.generated.h"
 
-UCLASS(BlueprintType, Category="Beam")
+UCLASS(BlueprintType, Category="Beam", DefaultToInstanced, EditInlineNew)
 class BEAMABLECORE_API UCustomer : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
@@ -25,6 +26,8 @@ public:
 	TArray<UProject*> Projects = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Accounts", Category="Beam")
 	TArray<URealmsBasicAccount*> Accounts = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Activation Status", Category="Beam")
+	FOptionalString ActivationStatus = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Payment Status", Category="Beam")
 	FOptionalString PaymentStatus = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Image", Category="Beam")

@@ -4,12 +4,13 @@
 
 #include "Serialization/BeamJsonSerializable.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
+#include "Serialization/BeamJsonUtils.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfBeamExternalIdentity.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalGamerTagAssociation.h"
 
 #include "AccountUpdate.generated.h"
 
-UCLASS(BlueprintType, Category="Beam")
+UCLASS(BlueprintType, Category="Beam", DefaultToInstanced, EditInlineNew)
 class BEAMABLECORE_API UAccountUpdate : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()

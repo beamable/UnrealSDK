@@ -1,0 +1,29 @@
+{
+  "properties": {
+    "clientPermission": {
+      "data": {
+        "write_self": true
+      }
+    },
+    "customProperties": {
+      "data": {}
+    },
+    "description": {
+      "data": "An ancient lightsaber created by Tarre Vizsla"
+    },
+    "external": {
+      "data": {
+        "service": "SuiFederation",
+        "namespace": "SuiIdentity"
+      }
+    },
+    "image": {
+      "data": "https://cdn.pixabay.com/photo/2012/04/15/20/07/light-35144_1280.png"
+    },
+    "name": {
+      "data": "Darksaber"
+    }
+  },
+  "tags": [],
+  "referenceManifestId": "6849974cf968c812ad340da7"
+}

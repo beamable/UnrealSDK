@@ -20,20 +20,20 @@ public:
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("Path"), Path);
-		Serializer->WriteValue(TEXT("AssemblyName"), AssemblyName);	
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("Path"), Path, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("AssemblyName"), AssemblyName, Serializer);	
 	}
 
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("Path"), Path);
-		Serializer->WriteValue(TEXT("AssemblyName"), AssemblyName);	
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("Path"), Path, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("AssemblyName"), AssemblyName, Serializer);	
 	}
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		Path = Bag->GetStringField(TEXT("Path"));
-		AssemblyName = Bag->GetStringField(TEXT("AssemblyName"));	
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("Path")), Path);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("AssemblyName")), AssemblyName);	
 	}
 };
 

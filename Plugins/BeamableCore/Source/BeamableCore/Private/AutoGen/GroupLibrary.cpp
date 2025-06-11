@@ -22,7 +22,7 @@ FString UGroupLibrary::GroupToJsonString(const UGroup* Serializable, const bool 
 	return Result;
 }	
 
-UGroup* UGroupLibrary::Make(int64 Requirement, int32 MaxSize, EGroupType Type, int64 Id, FString Motd, FString Slogan, int64 Leader, int64 Created, FString Name, FString EnrollmentType, int32 FreeSlots, TArray<UGroup*> SubGroups, TArray<UMember*> Members, TMap<FString, FString> Scores, FOptionalBool bCanDisband, FOptionalBool bCanUpdateEnrollment, FOptionalBool bCanUpdateMOTD, FOptionalBool bCanUpdateSlogan, FOptionalString Shard, FOptionalString ClientData, FOptionalInt32 Version, FOptionalString Tag, FOptionalArrayOfDonationRequestBody Donations, FOptionalArrayOfGroupRole Roles, FOptionalArrayOfInFlightMessage InFlight, FOptionalMapOfDonationRequestBody MaybeDonations, UObject* Outer)
+UGroup* UGroupLibrary::Make(int64 Requirement, int32 MaxSize, EBeamGroupType Type, int64 Id, FString Motd, FString Slogan, int64 Leader, int64 Created, FString Name, FString EnrollmentType, int32 FreeSlots, TArray<UGroup*> SubGroups, TArray<UMember*> Members, TMap<FString, FString> Scores, FOptionalBool bCanDisband, FOptionalBool bCanUpdateEnrollment, FOptionalBool bCanUpdateMOTD, FOptionalBool bCanUpdateSlogan, FOptionalString Shard, FOptionalString ClientData, FOptionalInt32 Version, FOptionalString Tag, FOptionalArrayOfDonationRequestBody Donations, FOptionalArrayOfGroupRole Roles, FOptionalArrayOfInFlightMessage InFlight, FOptionalMapOfDonationRequestBody MaybeDonations, UObject* Outer)
 {
 	auto Serializable = NewObject<UGroup>(Outer);
 	Serializable->Requirement = Requirement;
@@ -55,7 +55,7 @@ UGroup* UGroupLibrary::Make(int64 Requirement, int32 MaxSize, EGroupType Type, i
 	return Serializable;
 }
 
-void UGroupLibrary::Break(const UGroup* Serializable, int64& Requirement, int32& MaxSize, EGroupType& Type, int64& Id, FString& Motd, FString& Slogan, int64& Leader, int64& Created, FString& Name, FString& EnrollmentType, int32& FreeSlots, TArray<UGroup*>& SubGroups, TArray<UMember*>& Members, TMap<FString, FString>& Scores, FOptionalBool& bCanDisband, FOptionalBool& bCanUpdateEnrollment, FOptionalBool& bCanUpdateMOTD, FOptionalBool& bCanUpdateSlogan, FOptionalString& Shard, FOptionalString& ClientData, FOptionalInt32& Version, FOptionalString& Tag, FOptionalArrayOfDonationRequestBody& Donations, FOptionalArrayOfGroupRole& Roles, FOptionalArrayOfInFlightMessage& InFlight, FOptionalMapOfDonationRequestBody& MaybeDonations)
+void UGroupLibrary::Break(const UGroup* Serializable, int64& Requirement, int32& MaxSize, EBeamGroupType& Type, int64& Id, FString& Motd, FString& Slogan, int64& Leader, int64& Created, FString& Name, FString& EnrollmentType, int32& FreeSlots, TArray<UGroup*>& SubGroups, TArray<UMember*>& Members, TMap<FString, FString>& Scores, FOptionalBool& bCanDisband, FOptionalBool& bCanUpdateEnrollment, FOptionalBool& bCanUpdateMOTD, FOptionalBool& bCanUpdateSlogan, FOptionalString& Shard, FOptionalString& ClientData, FOptionalInt32& Version, FOptionalString& Tag, FOptionalArrayOfDonationRequestBody& Donations, FOptionalArrayOfGroupRole& Roles, FOptionalArrayOfInFlightMessage& InFlight, FOptionalMapOfDonationRequestBody& MaybeDonations)
 {
 	Requirement = Serializable->Requirement;
 	MaxSize = Serializable->MaxSize;

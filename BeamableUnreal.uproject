@@ -1,6 +1,6 @@
 {
   "FileVersion":3,
-  "EngineAssociation":"5.4",
+  "EngineAssociation":"5.5",
   "Category":"",
   "Description":"",
   "Modules":[
@@ -73,6 +73,10 @@
       "Enabled":false
     },
     {
+      "Name":"BEAMPROJ_Beamball",
+      "Enabled":false
+    },
+    {
       "Name":"OpenImageDenoise",
       "Enabled":false
     },
@@ -90,7 +94,7 @@
     },
     {
       "Name":"AndroidFileServer",
-      "Enabled":false
+      "Enabled":true
     },
     {
       "Name":"GooglePAD",

@@ -13,12 +13,12 @@ class BEAMABLECORE_API UKickRequestBodyLibrary : public UBlueprintFunctionLibrar
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - KickRequestBody To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Groups|Utils|Json", DisplayName="KickRequestBody To JSON String")
 	static FString KickRequestBodyToJsonString(const UKickRequestBody* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make KickRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="SubGroup, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Groups|Utils|Make/Break", DisplayName="Make KickRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="SubGroup, Outer", NativeMakeFunc))
 	static UKickRequestBody* Make(int64 GamerTag, FOptionalInt64 SubGroup, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break KickRequestBody", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Groups|Utils|Make/Break", DisplayName="Break KickRequestBody", meta=(NativeBreakFunc))
 	static void Break(const UKickRequestBody* Serializable, int64& GamerTag, FOptionalInt64& SubGroup);
 };
