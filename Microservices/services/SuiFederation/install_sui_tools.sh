@@ -14,6 +14,7 @@ fi
 
 # Step 1: Create a temporary container
 echo "Creating temporary container from image $image_name..."
+docker pull "$imageName"
 docker create --name "$container_name" "$image_name" > /dev/null
 
 # Step 2: Copy the sui binary from the container to the local machine

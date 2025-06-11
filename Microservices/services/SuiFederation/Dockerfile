@@ -1,6 +1,6 @@
 ﻿ARG BEAM_DOTNET_VERSION="8.0-noble"
 FROM mcr.microsoft.com/dotnet/runtime:${BEAM_DOTNET_VERSION} as base
-RUN apt-get update && apt-get install -y nodejs && apt-get install -y nodejs npm
+RUN apt-get update && apt-get install -y nodejs npm unzip
 
 FROM base AS final
 

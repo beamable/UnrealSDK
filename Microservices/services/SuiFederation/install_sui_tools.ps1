@@ -12,6 +12,7 @@ if (-not (Get-Command docker -ErrorAction SilentlyContinue)) {
 
 # Step 1: Create a temporary container
 Write-Host "Creating temporary container from image $imageName..."
+docker pull $imageName
 docker create --name $containerName $imageName | Out-Null
 
 # Step 2: Copy the sui binary from the container to the local machine
