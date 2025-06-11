@@ -4,8 +4,11 @@
       "data": {
         "write_self": false
       }
+    },
+    "startingAmount": {
+      "data": 11
     }
   },
   "tags": [],
-  "referenceManifestId": "6750992c46e8e660d93e71fb"
+  "referenceManifestId": "68497398e0862f06aae6f324"
 }
