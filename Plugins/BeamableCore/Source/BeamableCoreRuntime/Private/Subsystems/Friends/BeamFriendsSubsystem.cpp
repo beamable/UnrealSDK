@@ -320,13 +320,27 @@ FBeamOperationHandle UBeamFriendsSubsystem::CPP_RemoveFriendOperation(FUserSlot 
 
 void UBeamFriendsSubsystem::FetchPlayerFriendState(FUserSlot UserSlot, FBeamOperationHandle Op)
 {
-	const auto Handler = FOnGetMyFullResponse::CreateLambda([this, Op](const FGetMyFullResponse& Resp)
+	if (!IsUserSlotAuthenticated(UserSlot, __FUNCSIG__, Op))
+	{
+		return;
+	}
+	const auto Handler = FOnGetMyFullResponse::CreateLambda([this, Op, UserSlot](const FGetMyFullResponse& Resp)
 	{
 		if (Resp.State == RS_Retrying) return;
 
 		if (Resp.State == RS_Success)
 		{
+			FBeamRealmUser BeamRealmUser;
+			if (!Runtime->UserSlotSystem->GetUserDataAtSlot(UserSlot, BeamRealmUser, this))
+			{
+				Runtime->RequestTrackerSystem->TriggerOperationError(Op, TEXT("Invalid UserSlot"));
+				return;
+			}
 			FBeamFriendState FriendState = MakeFriendState(Resp.SuccessData);
+			FriendState.ReceivedInvites.RemoveAll([BeamRealmUser](const FBeamFriendInvite& FriendInvite)
+			{
+				return FriendInvite.FriendGamerTag == BeamRealmUser.GamerTag;
+			});
 
 			// Refreshing the state of the PlayerGamerTag in the FriendStates
 			if (FriendStates.Contains(FriendState.PlayerGamerTag))
@@ -1173,7 +1187,7 @@ void UBeamFriendsSubsystem::MailRefreshNotificationHandler(FMailRefreshNotificat
 					//Compare the old invites with the new one and trigger the OnFriendInviteReceived with all the PlayerGamerTags of the received invites.
 					if (FriendStates.Contains(PlayerGamerTag))
 					{
-						for (auto FriendInvite : FriendStates[PlayerGamerTag].ReceivedInvites)
+						for (FBeamFriendInvite FriendInvite : FriendStates[PlayerGamerTag].ReceivedInvites)
 						{
 							if (!ReceivedInvites.Contains(FriendInvite))
 							{

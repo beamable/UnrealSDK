@@ -156,6 +156,7 @@ protected:
 			// Unregister this after execution so that when we reload this scene we don't have multiple callbacks bound to this.
 			Runtime->CPP_UnregisterOnStarted(OnBeamableStarted);
 		}));
+
 		FBeamRuntimeHandler RuntimeChangedHandler;
 		FRuntimeError SDKInitializationErrorHandler;
 		Runtime->InitSDK(RuntimeChangedHandler, SDKInitializationErrorHandler);
