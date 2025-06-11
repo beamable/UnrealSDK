@@ -1,0 +1,14 @@
+{
+  "properties": {
+    "clientPermission": {
+      "data": {
+        "write_self": false
+      }
+    },
+    "SkinData": {
+      "data": "/BEAMPROJ_Beamball/Database/Skins/Skin1.Skin1"
+    }
+  },
+  "tags": [],
+  "referenceManifestId": "68497a08afaaea205e2e9516"
+}

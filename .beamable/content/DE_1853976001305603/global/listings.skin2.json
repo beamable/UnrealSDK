@@ -1,0 +1,29 @@
+{
+  "properties": {
+    "clientData": {
+      "data": {}
+    },
+    "offer": {
+      "data": {
+        "titles": [],
+        "descriptions": [],
+        "obtainCurrency": [],
+        "obtainItems": [
+          {
+            "contentId": "itemskin.skin2",
+            "properties": []
+          }
+        ]
+      }
+    },
+    "price": {
+      "data": {
+        "type": "currency",
+        "symbol": "currency.coins",
+        "amount": 0
+      }
+    }
+  },
+  "tags": [],
+  "referenceManifestId": "68497c3bd3d9dc7cc901395e"
+}
