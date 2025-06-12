@@ -815,7 +815,7 @@ public:
 
 	/**
 	 * @brief In CPP, use this function to bind functions that will execute when any user slot is initialized.
-	 */	
+	 */
 	FDelegateHandle CPP_RegisterOnUserCleared(FUserStateChangedHandlerCode Handler)
 	{
 		return OnUserClearedCode.Add(Handler);
@@ -823,7 +823,7 @@ public:
 
 	/**
 	 * @brief In CPP, use this function to unbind functions that will execute when any user slot is initialized.
-	 */	
+	 */
 	void CPP_UnregisterOnUserCleared(FDelegateHandle Handler)
 	{
 		OnUserClearedCode.Remove(Handler);
@@ -865,6 +865,17 @@ public:
 	 * If a user is already in the given slot, this operation will sign out entirely before signing in.
 	 */
 	FBeamOperationHandle CPP_LoginFederatedOperation(FUserSlot UserSlot, FString MicroserviceId, FString FederationId, FString FederatedAuthToken, FBeamOperationEventHandlerCode OnOperationEvent);
+
+	/**
+	 * @brief It will get all the external identities for the user slot and set it to the given user slot. 
+	 */
+	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Auth", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
+	FBeamOperationHandle FetchExternalIdentityOperation(FUserSlot UserSlot, FBeamOperationEventHandler OnOperationEvent);
+
+	/**
+	 * @copydoc FetchExternalIdentityOperation
+	 */
+	FBeamOperationHandle CPP_FetchExternalIdentityOperation(FUserSlot UserSlot, FBeamOperationEventHandlerCode OnOperationEvent);
 
 
 	/**
@@ -999,6 +1010,7 @@ private:
 	void CommitLoginFederated(FUserSlot UserSlot, UBeamMultiFactorLoginData* ChallengeSolution, FBeamOperationHandle Op);
 	void LoginEmailAndPassword(FUserSlot UserSlot, FString Email, FString Password, FBeamOperationHandle Op);
 	void CommitAttachFederated(FUserSlot UserSlot, UBeamMultiFactorLoginData* ChallengeSolution, FBeamOperationHandle Op);
+	void FetchExternalIdentities(FUserSlot UserSlot, FBeamOperationHandle Op);
 
 	void AttachLocalIdentity(FUserSlot UserSlot, FString FederatedUserId, FString MicroserviceId, FString FederationId);
 	void AttachFederated(FUserSlot UserSlot, FString MicroserviceId, FString FederationId, FString FederatedUserId, FString FederatedAuthToken, FBeamOperationHandle Op);
