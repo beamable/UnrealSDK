@@ -1314,6 +1314,20 @@ FBeamOperationHandle UBeamRuntime::CPP_LoginFederatedOperation(FUserSlot UserSlo
 	return Handle;
 }
 
+FBeamOperationHandle UBeamRuntime::FetchExternalIdentityOperation(FUserSlot UserSlot, FBeamOperationEventHandler OnOperationEvent)
+{
+	const FBeamOperationHandle Handle = RequestTrackerSystem->BeginOperation({UserSlot}, GetClass()->GetFName().ToString(), OnOperationEvent);
+	FetchExternalIdentities(UserSlot, Handle);
+	return Handle;
+}
+
+FBeamOperationHandle UBeamRuntime::CPP_FetchExternalIdentityOperation(FUserSlot UserSlot, FBeamOperationEventHandlerCode OnOperationEvent)
+{
+	const FBeamOperationHandle Handle = RequestTrackerSystem->CPP_BeginOperation({UserSlot}, GetClass()->GetFName().ToString(), OnOperationEvent);
+	FetchExternalIdentities(UserSlot, Handle);
+	return Handle;
+}
+
 FBeamOperationHandle UBeamRuntime::CommitLoginFederatedOperation(FUserSlot UserSlot, UBeamMultiFactorLoginData* MultiFactorData, FBeamOperationEventHandler OnOperationEvent)
 {
 	const FBeamOperationHandle Handle = RequestTrackerSystem->BeginOperation({UserSlot}, GetClass()->GetFName().ToString(), OnOperationEvent);
@@ -1649,6 +1663,34 @@ void UBeamRuntime::CommitAttachFederated(FUserSlot UserSlot, UBeamMultiFactorLog
 	}
 
 	const auto _ = CheckFederatedIdentityAvailable(ChallengeSolution->MicroserviceId, ChallengeSolution->FederationId, ChallengeSolution->FederatedUserId, Op, CheckIdentityAvailableHandler);
+}
+
+void UBeamRuntime::FetchExternalIdentities(FUserSlot UserSlot, FBeamOperationHandle Op)
+{
+	auto Handler = FOnBasicAccountsGetMeFullResponse::CreateLambda([this, UserSlot, Op](const FBasicAccountsGetMeFullResponse& Response)
+	{
+		if (Response.State == RS_Retrying) return;
+
+		if (Response.State == RS_Success)
+		{
+			const auto ExternalIds = Response.SuccessData->External;
+			if (ExternalIds.IsSet) UserSlotSystem->SetExternalIdsAtSlot(UserSlot, ExternalIds.Val, this);
+
+			RequestTrackerSystem->TriggerOperationSuccess(Op, TEXT(""));
+		}
+		else
+		{
+			RequestTrackerSystem->TriggerOperationError(Op, Response.ErrorData.message);
+		}
+	});
+	
+	FBeamRequestContext RequestContext;
+	
+	const UBeamAccountsApi* AccountSubsystem = GEngine->GetEngineSubsystem<UBeamAccountsApi>();
+	
+	UBasicAccountsGetMeRequest* MeReq = UBasicAccountsGetMeRequest::Make(this, {});
+	
+	AccountSubsystem->CPP_GetMe(UserSlot, MeReq, Handler, RequestContext, Op, this);
 }
 
 void UBeamRuntime::AttachLocalIdentity(FUserSlot UserSlot, FString FederatedUserId, FString MicroserviceId, FString FederationId)

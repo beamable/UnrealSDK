@@ -278,6 +278,24 @@ class UK2BeamNode_Operation_LoginFederated : public UK2BeamNode_Operation
 };
 #undef LOCTEXT_NAMESPACE
 
+#define LOCTEXT_NAMESPACE "K2BeamNode_Operation_FetchExternalIdentityOperation"
+
+UCLASS(meta=(BeamFlowNode))
+class UK2BeamNode_Operation_FetchExternalIdentityOperation : public UK2BeamNode_Operation
+{
+	GENERATED_BODY()
+
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Operation - Identity - FetchExternalIdentityOperation"); }
+
+	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamRuntime, GetSelf); }
+
+	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamRuntime, FetchExternalIdentityOperation); }
+
+	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamRuntime::StaticClass(); }
+};
+
+#undef LOCTEXT_NAMESPACE
+
 #define LOCTEXT_NAMESPACE "K2BeamNode_Operation_CommitLoginFederated"
 
 UCLASS(meta=(BeamFlowNode))
@@ -394,7 +412,7 @@ class UK2BeamNode_Operation_SignUpFederated : public UK2BeamNode_Operation
 		}
 		return Casts;
 	}
-	
+
 	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamRuntime::StaticClass(); }
 };
 #undef LOCTEXT_NAMESPACE
