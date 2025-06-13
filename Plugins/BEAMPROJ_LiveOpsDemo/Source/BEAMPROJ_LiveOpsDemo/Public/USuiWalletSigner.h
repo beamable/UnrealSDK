@@ -256,10 +256,11 @@ public:
 	*	for backend calls
 	*/
 	UFUNCTION(BlueprintPure, Category = "SUI")
-	static void GetSUIExternalIdentityInfo(FString& MicroserviceId, FString& FederationId)
+	void GetSUIExternalIdentityInfo(FString& MicroserviceId, FString& FederationId, FString& OutWalletId)
 	{
 		FederationId = TEXT("SuiExternalIdentity");
 		MicroserviceId = GEngine->GetEngineSubsystem<UBeamSuiFederationApi>()->GetMicroserviceName();
+		OutWalletId = WalletId;
 	}
 
 	/**
@@ -267,10 +268,11 @@ public:
 	 * for backend calls
 	 */
 	UFUNCTION(BlueprintPure, Category = "SUI")
-	static void GetSUIIdentityInfo(FString& MicroserviceId, FString& FederationId)
+	void GetSUIIdentityInfo(FString& MicroserviceId, FString& FederationId, FString& OutWalletId)
 	{
 		FederationId = TEXT("SuiIdentity");
 		MicroserviceId = TEXT("SuiFederation");
+		OutWalletId = WalletId;
 	}
 
 	/**
