@@ -491,6 +491,12 @@ public:
 	UBeamConnectivityManager* GetSlotConnectivity(FUserSlot Slot) { return ConnectivityState[Slot]; }
 
 	/**
+	 * Try gets the external identity for a given namespace 
+	 */
+	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
+	bool TryGetExternalIdentity(FUserSlot Slot, FString FederationId, FString& ExternalId);
+
+	/**
 	 * Returns true when the SDK was initialized.  
 	 */
 	UFUNCTION(BlueprintCallable)
@@ -1024,7 +1030,8 @@ private:
 	void Logout(FUserSlot UserSlot, EUserSlotClearedReason Reason, bool bRemoveLocalData, FBeamOperationHandle Op);
 
 	// Reusable Operation Callbacks
-	void OnAuthenticated(FAuthenticateFullResponse Resp, FUserSlot UserSlot, FBeamOperationHandle Op, FDelayedOperation BeforeUserNotifyOperation);
+	void OnAuthenticated(FAuthenticateFullResponse Resp, FUserSlot UserSlot, FBeamOperationHandle Op, FDelayedOperation BeforeUserNotifyOperation, FString MicroserviceId, FString FederationId,
+	                     FString FederatedAuthToken);
 	void OnGetBeginTwoFactorResponse(FAuthenticateFullResponse Resp, FUserSlot UserSlot, FBeamOperationHandle Op);
 	void AuthenticateWithToken(FUserSlot UserSlot, const UTokenResponse* Token, FBeamOperationHandle Op, FDelayedOperation BeforeUserNotifyOperation);
 	void RunPostAuthenticationSetup(FUserSlot UserSlot, FBeamOperationHandle Op);
