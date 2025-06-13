@@ -118,6 +118,24 @@ class UK2BeamNode_GetLocalState_GetSlotConnectivity : public UK2BeamNode_GetLoca
 
 #undef LOCTEXT_NAMESPACE
 
+#define LOCTEXT_NAMESPACE "K2BeamNode_GetLocalState_TryGetExternalIdentity"
+
+UCLASS(meta=(BeamGetLocalState))
+class UK2BeamNode_GetLocalState_TryGetExternalIdentity : public UK2BeamNode_GetLocalState
+{
+	GENERATED_BODY()
+
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Local State - Identity - TryGetExternalIdentity"); }
+
+	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamRuntime, GetSelf); }
+
+	virtual FName GetFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamRuntime, TryGetExternalIdentity); }
+
+	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamRuntime::StaticClass(); }
+};
+
+#undef LOCTEXT_NAMESPACE
+
 #define LOCTEXT_NAMESPACE "K2BeamNode_GetLocalState_IsInitialized"
 
 UCLASS(meta=(BeamGetLocalState))
