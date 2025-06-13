@@ -80,12 +80,6 @@ protected:
 		FRuntimeError OnSdkInitErrorHandler;
 	}
 
-	UFUNCTION(BlueprintPure)
-	FString GetBase64(FString SourceText)
-	{
-		return FBase64::Encode(SourceText);
-	}
-
 	UFUNCTION(BlueprintCallable)
 	void UpgradeItem(int64 ItemInstanceID)
 	{
