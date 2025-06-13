@@ -26,10 +26,14 @@ This sample will not be supported on future updates but you can use as a sample 
 1. Open the generated `.sln` file in your IDE (e.g., Visual Studio, Rider...).
 2. Perform a Clean build of the Editor target.
 3. Run the `BeamableUnreal` Project and in the editor, go to Project Settings → Beamable Core → Beamable Environment and verify it’s set to `BeamProdEnv`.
-4. Sign in to your Beamable account in the Beamable Window.
 
 !!! warning "Clean Up Sample Realms"
 If you are using your own organization (the one you’ll use to ship your game) to test any of these samples, don’t forget to delete the test realms when you’re finished exploring!
+
+# Copy Realm Content
+
+1. After Signin in your account, you will need to run the command `dotnet beam content replace-local --from DE_1853976001305603 --to YOUR_REALM_ID` to bring all the content from the sample to your current realm
+2. Publish the content in the Content Tab.
 
 ## Setting up the Project
 To set up an organization and realm to run this sample, follow the steps below.
@@ -38,7 +42,9 @@ To set up an organization and realm to run this sample, follow the steps below.
 2. Compile and open the `BeamableUnreal` editor project.
 3. Sign into your Beamable account and go to the `liveops-demo-sui` realm.
    1. Optionally you can hit `Apply to Build` after the realm change is done.
-4. Let's Setup the Content
+4. After Signin in your account, you will need to run the command `dotnet beam content replace-local --from DE_1853976001305603 --to YOUR_REALM_ID` to bring all the content from the sample to your current realm
+   1. Publish the content in the Content Tab.
+5. Let's Setup the Content
    1. Open the `Content` window.
    2. Ensure there's two `SuiCoins` currencies with the name `beam` and `stars`
    3. Ensure there is one `SuiGameCoins` currency with the name `gold`
@@ -70,6 +76,23 @@ Now you're set up to run the sample.
    1. You can find it inside the `BEAMPROJ_LiveOpsDemo Content`  folder.
    2. If you can't see plugin content in your content browser, you can change the settings of the UE `Content Browser` to display it.
 7. Play the `LiveOpsDemo` in the Editor.
+
+## About the Sample
+
+- The sample project includes several important files that will help guide you through the sample flow.
+
+- The Blueprint handles almost everything not related to SUI. We're using it primarily for **Beamable SDK** integration and UI/widget management.
+
+- Be sure to take a look at the **WBP_LiveOpsUI Blueprint** — it contains the core flow and logic for the sample.
+
+- On the C++ side, the **USuiWalletSigner** class in the **BEAMPROJ_LiveOpsDemo** is responsible for all SUI-related functionality.
+
+- We are also using two external libraries for cryptographic operations:
+
+ - [BLAKE2](https://github.com/BLAKE2/BLAKE2) for Blake2b hashing
+
+ - [compact25519](https://github.com/DavyLandman/compact25519) for Ed25519 signature operations
+
 
 ## Can I use it as a Template?
 
