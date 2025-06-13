@@ -66,33 +66,28 @@ Now you're set up to run the sample.
 
 1. Open the Docker Desktop and Make sure it's running
 2. From a terminal Open the directory `microservices/services/SuiFederation` and run `npm install`
-2. Open a terminal and run `dotnet beam services run --ids SuiFederation`
-3. Open the Unreal Editor
-4. Go to the `Beamable -> Microservice` window. You should see the `SuiFederation` service running there.
-5. Reset PIE Users to clear any existing data.
+3. Open a terminal and run `dotnet beam services run --ids SuiFederation`
+4. Open the Unreal Editor
+5. Go to the `Beamable -> Microservice` window. You should see the `SuiFederation` service running there.
+6. Reset PIE Users to clear any existing data.
    1. Go to the `Home` window.
    2. Click on `Reset PIE Users`.
-6. Open the `LiveOpsDemo` Level if it's not opened yet.
+7. Open the `LiveOpsDemo` Level if it's not opened yet.
    1. You can find it inside the `BEAMPROJ_LiveOpsDemo Content`  folder.
    2. If you can't see plugin content in your content browser, you can change the settings of the UE `Content Browser` to display it.
-7. Play the `LiveOpsDemo` in the Editor.
+8. Play the `LiveOpsDemo` in the Editor.
 
 ## About the Sample
 
 - The sample project includes several important files that will help guide you through the sample flow.
-
-- The Blueprint handles almost everything not related to SUI. We're using it primarily for **Beamable SDK** integration and UI/widget management.
-
-- Be sure to take a look at the **WBP_LiveOpsUI Blueprint** — it contains the core flow and logic for the sample.
-
-- On the C++ side, the **USuiWalletSigner** class in the **BEAMPROJ_LiveOpsDemo** is responsible for all SUI-related functionality.
+  - Blueprint handles almost everything not related to SUI. We're using it primarily for **Beamable SDK** integration and UI/widget management.
+  - Be sure to take a look at the **WBP_LiveOpsUI Blueprint** — it contains the core flow and logic for the sample.
+  - On the C++ side, the **USuiWalletSigner** class in the **BEAMPROJ_LiveOpsDemo** is responsible for all SUI-related functionality.
 
 - We are also using two external libraries for cryptographic operations:
-
- - [BLAKE2](https://github.com/BLAKE2/BLAKE2) for Blake2b hashing
-
- - [compact25519](https://github.com/DavyLandman/compact25519) for Ed25519 signature operations
-
+  - [BLAKE2](https://github.com/BLAKE2/BLAKE2) for Blake2b hashing
+  - [compact25519](https://github.com/DavyLandman/compact25519) for Ed25519 signature operations
+   
 
 ## Can I use it as a Template?
 
