@@ -697,7 +697,7 @@ bool UBeamRequestTracker::TryGetOperationCancelationsWithId(const FBeamOperation
 	return TryGetOperationEvents(Op, OET_CANCELLED, FilterId, Events);
 }
 
-EBeamOperationEventType UBeamRequestTracker::TryGetOperationResult(const FBeamOperationHandle& Op, FString& EventCode, TScriptInterface<IBeamOperationEventData>& EventData)
+bool UBeamRequestTracker::TryGetOperationResult(const FBeamOperationHandle& Op, FString& EventCode, TScriptInterface<IBeamOperationEventData>& EventData, TEnumAsByte<EBeamOperationEventType>& OperationEventType)
 {
 	if (TArray<FBeamOperationEvent> Events; TryGetOperationEvents(Op, OET_NONE, NAME_None, Events))
 	{
@@ -706,10 +706,23 @@ EBeamOperationEventType UBeamRequestTracker::TryGetOperationResult(const FBeamOp
 
 		EventCode = Events[0].EventCode;
 		EventData = Events[0].EventData;
-		return Events[0].EventType;
+		OperationEventType = Events[0].EventType;
+		return true;
 	}
 
-	return OET_NONE;
+	return false;
+}
+
+bool UBeamRequestTracker::IsOperationActive(const FBeamOperationHandle& Op)
+{
+	if (const auto StatePtr = ActiveOperationState.Find(Op))
+	{
+		const auto State = *StatePtr;
+
+		return State->Status == 0;
+	}
+
+	return false;
 }
 
 
