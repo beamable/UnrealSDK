@@ -42,9 +42,9 @@ void UBeamMultiFactorLoginData::SetChallengeSolution(UChallengeSolution* Challen
 
 void UBeamConnectivityManager::ConnectionHandler(const FNotificationEvent& Evt, FBeamRealmUser BeamRealmUser, FBeamOperationHandle Op)
 {
-	FString _;
-	TScriptInterface<IBeamOperationEventData> __;
-	const auto IsDuringLogin = RequestTracker->TryGetOperationResult(Op, _, __) == OET_NONE;
+	// If the operation is active so that is happening during a login.
+	auto IsDuringLogin = RequestTracker->IsOperationActive(Op);
+
 	if (Evt.EventType == Connected)
 	{
 		// This only runs during Authentication
@@ -1556,31 +1556,42 @@ void UBeamRuntime::CommitLoginFederated(FUserSlot UserSlot, UBeamMultiFactorLogi
 
 	const UBeamAuthApi* AuthSubsystem = GEngine->GetEngineSubsystem<UBeamAuthApi>();
 
+	FOnAuthenticateFullResponse Handler =
+		FOnAuthenticateFullResponse::CreateLambda([this, UserSlot, ChallengeSolution, Op](FAuthenticateFullResponse Response)
+		{
+			// Triggers the Op operation and then triggers the challenge operation handle in the on authenticated method
+			if (Response.State == RS_Success)
+			{
+				RequestTrackerSystem->TriggerOperationSuccess(Op, TEXT(""));
+			}
+			else
+			{
+				RequestTrackerSystem->TriggerOperationError(Op, Response.ErrorData.message);
+			}
+			// Triggers the on authenticated after with the challenge operation.
+			OnAuthenticated(Response, UserSlot, ChallengeSolution->OperationHandler, FDelayedOperation{}, ChallengeSolution->MicroserviceId, ChallengeSolution->FederationId, ChallengeSolution->FederatedUserAuthToken);
+		});
+
 	// If we are already authenticated (we had a saved user in this slot), we sign out of the user at that slot, wait for all runtime systems to clean up the user and then sign back into the given user.
 	FBeamRealmUser RealmUser;
 	if (UserSlotSystem->GetUserDataAtSlot(UserSlot, RealmUser, this))
 	{
 		// Configure us to wait until the slot is fully unauthenticated and then sign in.
-		UserSlotClearedEnqueuedHandle = OnUserClearedCode.AddLambda([this, AuthSubsystem](FUserSlot UserSlot, FBeamOperationHandle OpHandle, FBeamOperationHandle TwoFactorOpHandle, UAuthenticateRequest* AuthReq,
-		                                                                                  FString MicroserviceId, FString FederationId, FString FederatedAuthToken)
+		UserSlotClearedEnqueuedHandle = OnUserClearedCode.AddLambda([this, AuthSubsystem](FUserSlot UserSlot, FBeamOperationHandle OpHandle, UAuthenticateRequest* AuthReq, const FOnAuthenticateFullResponse& Handler)
 		{
-			const auto AuthenticateHandler = FOnAuthenticateFullResponse::CreateUObject(this, &UBeamRuntime::OnAuthenticated, UserSlot, TwoFactorOpHandle, FDelayedOperation{}, MicroserviceId, FederationId,
-			                                                                            FederatedAuthToken);
 			FBeamRequestContext RequestContext;
-			AuthSubsystem->CPP_Authenticate(AuthReq, AuthenticateHandler, RequestContext, OpHandle);
+			AuthSubsystem->CPP_Authenticate(AuthReq, Handler, RequestContext, OpHandle);
 
 			// Clean Up handle
 			OnUserClearedCode.Remove(UserSlotClearedEnqueuedHandle);
 			UserSlotClearedEnqueuedHandle = {};
-		}, Op, ChallengeSolution->OperationHandler, Req, ChallengeSolution->MicroserviceId, ChallengeSolution->FederationId, ChallengeSolution->FederatedUserAuthToken);
+		}, Op, Req, Handler);
 		UserSlotSystem->ClearUserAtSlot(UserSlot, USCR_Manual, true, this);
 	}
 	else
 	{
-		const auto AuthenticateHandler = FOnAuthenticateFullResponse::CreateUObject(this, &UBeamRuntime::OnAuthenticated, UserSlot, ChallengeSolution->OperationHandler, FDelayedOperation{},
-		                                                                            ChallengeSolution->MicroserviceId, ChallengeSolution->FederationId, ChallengeSolution->FederatedUserAuthToken);
 		FBeamRequestContext RequestContext;
-		AuthSubsystem->CPP_Authenticate(Req, AuthenticateHandler, RequestContext, Op);
+		AuthSubsystem->CPP_Authenticate(Req, Handler, RequestContext, Op);
 	}
 }
 
@@ -1607,7 +1618,7 @@ void UBeamRuntime::LoginEmailAndPassword(FUserSlot UserSlot, FString Email, FStr
 				                                                                            FederatedAuthToken);
 
 				FBeamRequestContext RequestContext;
-				AuthSubsystem->CPP_Authenticate(AuthReq, AuthenticateHandler, RequestContext, OpHandle);
+				AuthSubsystem->CPP_Authenticate(AuthReq, AuthenticateHandler, RequestContext, OpHandle, this);
 
 				// Clean Up handle
 				OnUserClearedCode.Remove(UserSlotClearedEnqueuedHandle);

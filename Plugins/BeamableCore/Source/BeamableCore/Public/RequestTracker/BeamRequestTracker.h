@@ -445,10 +445,17 @@ public:
 	 * @param Op The operation to get the event from.	   
 	 * @param EventCode The FBeamOperationEvent.EventCode for the final emitted event of the operation.  
 	 * @param EventData The FBeamOperationEvent.EventData for the last emitted event of the operation.
-	 * @return OET_NONE, if the operation has not emitted its final event yet. OET_SUCCESS/OET_ERROR/OET_CANCELLED depending on what type was the final event.
+	 * @param OperationEventType OET_NONE, if the operation has not emitted its final event yet. OET_SUCCESS/OET_ERROR/OET_CANCELLED depending on what type was the final event.
+	 * @return True if the event exist and false if the event don't exist
+	*/
+	UFUNCTION(BlueprintCallable, Category="Beam|Operations", meta=(ExpandEnumAsExecs="OperationEventType", ExpandBoolAsExecs="ReturnValue"))
+	bool TryGetOperationResult(const FBeamOperationHandle& Op, FString& EventCode, TScriptInterface<IBeamOperationEventData>& EventData, TEnumAsByte<EBeamOperationEventType>& OperationEventType);
+
+	/**
+	 * Checks if the Operation exists and is not completed.
 	 */
-	UFUNCTION(BlueprintCallable, Category="Beam|Operations", meta=(ExpandEnumAsExecs="ReturnValue"))
-	EBeamOperationEventType TryGetOperationResult(const FBeamOperationHandle& Op, FString& EventCode, TScriptInterface<IBeamOperationEventData>& EventData);
+	UFUNCTION(BlueprintCallable, Category="Beam|Operations", meta=(ExpandBoolAsExecs="ReturnValue"))
+	bool IsOperationActive(const FBeamOperationHandle& Op);
 
 	/**
 	 * Shortcut function call that returns an empty operation that is completed with success. 
