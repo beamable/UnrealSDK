@@ -305,10 +305,6 @@ bool UBeamEditor::GetActiveProjectAndRealmData(FBeamCustomerProjectData& Project
 			}
 		}
 	}
-	else
-	{
-		ensureAlwaysMsgf(false, TEXT("No developer signed into the MainEditorDeveloper UserSlot! Please sign-in."));
-	}
 
 	RealmData = FBeamProjectRealmData{};
 	return false;
