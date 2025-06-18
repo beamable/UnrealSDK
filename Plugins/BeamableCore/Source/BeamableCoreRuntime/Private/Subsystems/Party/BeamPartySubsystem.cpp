@@ -1043,7 +1043,7 @@ void UBeamPartySubsystem::InvitePlayerToMyParty(FUserSlot UserSlot, FBeamGamerTa
 		return;
 	}
 	FBeamRealmUser RealmUser;
-	ensureAlwaysMsgf(!Runtime->UserSlotSystem->GetUserDataAtSlot(UserSlot, RealmUser, this),
+	ensureAlwaysMsgf(Runtime->UserSlotSystem->GetUserDataAtSlot(UserSlot, RealmUser, this),
 	                 TEXT(
 		                 "It's not possible to user don't have a realm if we validated it is authenticated before this call."
 	                 ));

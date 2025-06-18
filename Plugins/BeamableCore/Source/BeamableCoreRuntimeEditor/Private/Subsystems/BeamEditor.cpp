@@ -479,6 +479,9 @@ void UBeamEditor::SignInWithCliInfo(const FBeamOperationHandle Op)
 		return;
 	}
 
+	// Start the CLI server manually skipping the pre-warm 
+	Cli->StartCliServer(true);
+	
 	// If the CLI is installed, we use it to get the data around the current organization
 	const auto RealmsCommandOp = RequestTracker->CPP_BeginOperation({}, GetName(), {});
 	auto RealmsCommand = NewObject<UBeamCliOrgRealmsCommand>();

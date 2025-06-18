@@ -7,7 +7,7 @@
 
 #include "MSPlaygroundAddResponse.generated.h"
 
-UCLASS(BlueprintType, Category="Beam")
+UCLASS(BlueprintType, Category="Beam", DefaultToInstanced, EditInlineNew)
 class BEAMABLEUNREALMICROSERVICECLIENTS_API UMSPlaygroundAddResponse : public UObject, public IBeamJsonSerializableUObject, public IBeamBaseResponseBodyInterface
 {
 	GENERATED_BODY()

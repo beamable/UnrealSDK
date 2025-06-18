@@ -54,7 +54,7 @@
     },
     {
       "Name":"BEAMPROJ_Sandbox",
-      "Enabled":true
+      "Enabled":false
     },
     {
       "Name":"BEAMPROJ_SteamDemo",
@@ -62,7 +62,7 @@
     },
     {
       "Name":"BEAMPROJ_HathoraDemo",
-      "Enabled":false
+      "Enabled":true
     },
     {
       "Name":"BEAMPROJ_LiveOpsDemo",

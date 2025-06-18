@@ -561,11 +561,70 @@ public:
 	 */
 	FBeamOperationHandle CPP_ManuallyInitializeSubsystemOperationWithUserData(FUserSlot UserSlot, TArray<TSubclassOf<UBeamRuntimeSubsystem>> SubsystemsTypesToInitialize, FBeamOperationEventHandlerCode OnOperationEvent);
 
+	// UserSlot State
+public:
 	/**
 	 * Whether a particular slot has a user authenticated in it.	  
 	 */
+	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
+	bool IsLoggedIn(FUserSlot Slot) { return UserSlotSystem->IsUserSlotAuthenticated(Slot, this); }
+
+	/**
+	 * Tries to get the @link FBeamRealmUser @endlink for the user logged into the given Slot.
+	 * Returns false when no user is signed in and everything except the RealmHandle will be empty.
+	 */
+	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
+	bool TryGetSlotUserData(FUserSlot Slot, FBeamRealmUser& Data)
+	{
+		if (UserSlotSystem->GetUserDataAtSlot(Slot, Data, this))
+			return true;
+
+		Data.RealmHandle = GetDefault<UBeamCoreSettings>()->TargetRealm;
+		return false;
+	}
+
+	/**
+	 * Gets the @link FBeamGamerTag @endlink for the user logged into the given Slot.
+	 * If no user is signed in, returns an empty @link FBeamGamerTag @endlink.
+	 */
+	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
+	bool TryGetSlotGamerTag(FUserSlot Slot, FBeamGamerTag& GamerTag) const
+	{
+		FBeamRealmUser Data;
+		if (UserSlotSystem->GetUserDataAtSlot(Slot, Data, this))
+		{
+			GamerTag = Data.GamerTag;
+			return true;
+		}
+		Data = {};
+		return false;
+	}
+
+	/**
+	 * Gets the @link FBeamGamerTag @endlink for the user logged into the given Slot.
+	 * If no user is signed in, returns an empty @link FBeamGamerTag @endlink.
+	 */
 	UFUNCTION(BlueprintPure)
-	bool IsLoggedIn(FUserSlot Slot) const { return UserSlotSystem->IsUserSlotAuthenticated(Slot, this); }
+	FBeamGamerTag GetSlotGamerTag(FUserSlot Slot) const
+	{
+		FBeamRealmUser Data;
+		if (UserSlotSystem->GetUserDataAtSlot(Slot, Data, this)) return Data.GamerTag;
+		return {};
+	}
+
+	/**
+	 * Gets the @link FBeamRealmUser @endlink for the user logged into the given Slot.
+	 * If no user is signed in, everything except the RealmHandle will be empty.
+	 */
+	UFUNCTION(BlueprintPure)
+	FBeamRealmUser GetSlotUserData(FUserSlot Slot) const
+	{
+		FBeamRealmUser Data;
+		if (UserSlotSystem->GetUserDataAtSlot(Slot, Data, this))return Data;
+
+		Data.RealmHandle = GetDefault<UBeamCoreSettings>()->TargetRealm;
+		return Data;
+	}
 
 private:
 	/**
