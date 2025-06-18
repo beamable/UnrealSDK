@@ -7,7 +7,7 @@
 
 #include "UpgradeItemRequestArgs.generated.h"
 
-UCLASS(BlueprintType, Category="Beam")
+UCLASS(BlueprintType, Category="Beam", DefaultToInstanced, EditInlineNew)
 class BEAMABLEUNREALMICROSERVICECLIENTS_API UUpgradeItemRequestArgs : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()

@@ -83,8 +83,15 @@ void UK2BeamNode_GetLocalState::ExpandNode(FKismetCompilerContext& CompilerConte
 	BeamK2::SetUpPinsFunctionToOwnerSubsystem(CallGetSubsystem, CallFunction);
 
 	// Create the link to the node to the call function execute pin
-	CompilerContext.MovePinLinksToIntermediate(*GetExecPin(), *CallFunction->GetExecPin());
-
+	if (CallFunction->GetExecPin())
+	{
+		CompilerContext.MovePinLinksToIntermediate(*GetExecPin(), *CallFunction->GetExecPin());
+	}
+	else
+	{
+		CompilerContext.MessageLog.Error(TEXT("This node cannot work when the underlying function is a Blueprint Pure function."));
+		return;
+	}
 
 	// If the return type is a boolean we create the connections required to have a valid/invalid path
 	auto ReturnProperty = Function->GetReturnProperty();

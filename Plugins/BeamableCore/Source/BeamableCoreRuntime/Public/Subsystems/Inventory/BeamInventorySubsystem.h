@@ -307,7 +307,7 @@ public:
 	/**
 	 * @brief Adds an "Create Item" change to the FBeamInventoryUpdateCommand of the given player. Must be called between BeginInventoryUpdate and CommitInventoryUpdate.	 
 	 */
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, meta=(AutoCreateRefTerm="Properties"))
 	void PrepareCreateItem(FUserSlot Player, FBeamContentId ItemId, TMap<FString, FString> Properties);
 
 

@@ -131,7 +131,7 @@ FBeamOperationHandle UBeamCli::InitializeRealm(FBeamRealmHandle NewRealm)
 	return RequestTracker->CPP_BeginSuccessfulOperation({Slot}, GetName(), TEXT("CLI is installed."), {});
 }
 
-void UBeamCli::StartCliServer(FBeamOperationHandle Op)
+void UBeamCli::StartCliServer(bool bSkipPrewarm)
 {
 	// Ensure the CLI is installed
 	if (!IsInstalled())
@@ -140,14 +140,37 @@ void UBeamCli::StartCliServer(FBeamOperationHandle Op)
 		return;
 	}
 
+	// Run the server command so we boot the server up --- when its up, run the intended command.
+	auto ServerStartHandler = FBeamOperationEventHandlerCode::CreateLambda([this](FBeamOperationEvent Evt)
+	{
+		if (Evt.EventType == OET_SUCCESS)
+		{
+			CurrentCliServerUri = Evt.EventCode;
+
+			// Run and clear all enqueued processes
+			for (FBeamEnqueuedCliCommand EnqueuedCommand : EnqueuedProcesses)
+			{
+				UE_LOG(LogBeamCli, Display, TEXT("Now executing command. CMD=%s"), *EnqueuedCommand.CliCommand->GetClass()->GetName());
+				EnqueuedCommand.CliCommand->RunServer(Evt.EventCode, EnqueuedCommand.Params, EnqueuedCommand.Op);
+				RunningProcesses.Add(EnqueuedCommand.CliCommand);
+			}
+			EnqueuedProcesses.Empty();
+		}
+		else
+		{
+			UE_LOG(LogBeamCli, Error, TEXT("Should not be seeing this. If you do see it, please report a bug to Beamable."));
+		}
+	});
+	const auto ServerStartOp = RequestTracker->CPP_BeginOperation({}, GetName(), ServerStartHandler);
+
 	const auto ServerCmd = NewObject<UBeamCliServerServeCommand>();
-	ServerCmd->OnStreamOutput = [this, Op](const TArray<UBeamCliServerServeStreamData*>& Stream, const TArray<int64>&, const FBeamOperationHandle&)
+	ServerCmd->OnStreamOutput = [this, ServerStartOp](const TArray<UBeamCliServerServeStreamData*>& Stream, const TArray<int64>&, const FBeamOperationHandle&)
 	{
 		CurrentCliServerUri = Stream[0]->Uri;
 
 		// Complete the given operation
-		if (RequestTracker->ActiveOperations.Contains(Op) && RequestTracker->ActiveOperationState[Op]->Status == 0)
-			RequestTracker->TriggerOperationSuccess(Op, Stream[0]->Uri);
+		if (RequestTracker->ActiveOperations.Contains(ServerStartOp) && RequestTracker->ActiveOperationState[ServerStartOp]->Status == 0)
+			RequestTracker->TriggerOperationSuccess(ServerStartOp, Stream[0]->Uri);
 
 		UE_LOG(LogBeamCli, Display, TEXT("SERVER CLI STARTED. PORT=%d, URI=%s"), Stream[0]->Port, *Stream[0]->Uri)
 	};
@@ -162,8 +185,9 @@ void UBeamCli::StartCliServer(FBeamOperationHandle Op)
 	Params.Append({TEXT("--require-process-id"), FString::Printf(TEXT("%u"), FPlatformProcess::GetCurrentProcessId())});
 	Params.Append({TEXT("-d"), TEXT("0")});
 	Params.Append({TEXT("-cs")});
+	if (bSkipPrewarm) Params.Append({TEXT("-scpw")});
 
-	RunCommand(ServerCmd, Params, {});
+	RunCommand(ServerCmd, Params, ServerStartOp);
 }
 
 void UBeamCli::StopCli()
@@ -207,38 +231,17 @@ void UBeamCli::RunCommandServer(UBeamCliCommand* Command, const TArray<FString>&
 	if (CurrentCliServerUri.IsEmpty())
 	{
 		// Enqueue the Command 
-		EnqueuedProcesses.Add(FBeamEnqueuedCliCommand(Command, Params));
+		EnqueuedProcesses.Add(FBeamEnqueuedCliCommand(Command, Params, Op));
 
 		// Set the URL to be "BEAM_WAITING_FOR_CLI_TO_START" so that future invocations of this don't start new instances of the CLIServer.
 		CurrentCliServerUri = TEXT("BEAM_WAITING_FOR_CLI_TO_START");
 
-		// Run the server command so we boot the server up --- when its up, run the intended command.
-		auto ServerStartHandler = FBeamOperationEventHandlerCode::CreateLambda([this, Command, Op](FBeamOperationEvent Evt)
-		{
-			if (Evt.EventType == OET_SUCCESS)
-			{
-				CurrentCliServerUri = Evt.EventCode;
-
-				// Run and clear all enqueued processes
-				for (FBeamEnqueuedCliCommand EnqueuedCommand : EnqueuedProcesses)
-				{
-					UE_LOG(LogBeamCli, Display, TEXT("Now executing command. CMD=%s"), *EnqueuedCommand.CliCommand->GetClass()->GetName());
-					EnqueuedCommand.CliCommand->RunServer(Evt.EventCode, EnqueuedCommand.Params, Op);
-					RunningProcesses.Add(EnqueuedCommand.CliCommand);
-				}
-				EnqueuedProcesses.Empty();
-			}
-			else
-			{
-				UE_LOG(LogBeamCli, Error, TEXT("Should not be seeing this. If you do see it, please report a bug to Beamable. CMD=%s"), *Command->GetClass()->GetName());
-			}
-		});
-		const auto ServerStartOp = RequestTracker->CPP_BeginOperation({}, GetName(), ServerStartHandler);
-		StartCliServer(ServerStartOp);
+		// Start the CLI server WITH prewarm.
+		StartCliServer(false);
 	}
 	else if (CurrentCliServerUri == TEXT("BEAM_WAITING_FOR_CLI_TO_START"))
 	{
-		EnqueuedProcesses.Add(FBeamEnqueuedCliCommand(Command, Params));
+		EnqueuedProcesses.Add(FBeamEnqueuedCliCommand(Command, Params, Op));
 	}
 	// If we do... just run it.
 	else

@@ -14,9 +14,6 @@ public class BEAMPROJ_HathoraDemo : ModuleRules
 				"Core",
 				"ApplicationCore",
 				"CoreOnline",
-				"OnlineSubsystem",
-				"OnlineSubsystemUtils",
-				"OnlineSubsystemBeamable",
 				"HathoraSDK"
 			});
 			

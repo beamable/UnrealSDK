@@ -24,7 +24,7 @@ public:
 
 	virtual void BeginPlay() override
 	{
-		NetUpdateFrequency = 30;
+		SetNetUpdateFrequency(30);
 	}
 	
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override

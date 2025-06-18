@@ -125,7 +125,9 @@ class UK2BeamNode_GetLocalState_TryGetExternalIdentity : public UK2BeamNode_GetL
 {
 	GENERATED_BODY()
 
-	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Local State - Identity - TryGetExternalIdentity"); }
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Local State - Account - Try Get External Identity"); }
+
+	virtual FString GetServiceName() const override { return "Account"; };
 
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamRuntime, GetSelf); }
 
@@ -170,6 +172,46 @@ class UK2BeamNode_GetLocalState_IsLoggedIn : public UK2BeamNode_GetLocalState
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamRuntime, GetSelf); }
 
 	virtual FName GetFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamRuntime, IsLoggedIn); }
+
+	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamRuntime::StaticClass(); }
+};
+
+#undef LOCTEXT_NAMESPACE
+
+#define LOCTEXT_NAMESPACE "K2BeamNode_GetLocalState_TryGetSlotUserData"
+
+UCLASS(meta=(BeamGetLocalState))
+class UK2BeamNode_GetLocalState_TryGetSlotUserData : public UK2BeamNode_GetLocalState
+{
+	GENERATED_BODY()
+
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Local State - Account - Try Get Slot User Data"); }
+
+	virtual FString GetServiceName() const override { return "Account"; };
+
+	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamRuntime, GetSelf); }
+
+	virtual FName GetFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamRuntime, TryGetSlotUserData); }
+
+	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamRuntime::StaticClass(); }
+};
+
+#undef LOCTEXT_NAMESPACE
+
+#define LOCTEXT_NAMESPACE "K2BeamNode_GetLocalState_TryGetSlotGamerTag"
+
+UCLASS(meta=(BeamGetLocalState))
+class UK2BeamNode_GetLocalState_TryGetSlotGamerTag : public UK2BeamNode_GetLocalState
+{
+	GENERATED_BODY()
+
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Local State - Account - Try Get Slot GamerTag"); }
+
+	virtual FString GetServiceName() const override { return "Account"; };
+
+	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamRuntime, GetSelf); }
+
+	virtual FName GetFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamRuntime, TryGetSlotGamerTag); }
 
 	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamRuntime::StaticClass(); }
 };

@@ -18,23 +18,16 @@
 			"Name": "BEAMPROJ_HathoraDemo",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"
+		},
+		{
+			"Name": "BEAMPROJ_HathoraDemoBp",
+			"Type": "UncookedOnly",
+			"LoadingPhase": "Default"
 		}
 	],
 	"Plugins": [
 		{
 			"Name": "BeamableCore",
-			"Enabled": true
-		},
-		{
-			"Name": "OnlineSubsystem",
-			"Enabled": true
-		},
-		{
-			"Name": "OnlineSubsystemUtils",
-			"Enabled": true
-		},
-		{
-			"Name": "OnlineSubsystemBeamable",
 			"Enabled": true
 		},
 		{
