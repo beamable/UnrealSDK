@@ -32,8 +32,9 @@ If you are using your own organization (the one you’ll use to ship your game) 
 
 # Copy Realm Content
 
-1. After Signin in your account, you will need to run the command `dotnet beam content replace-local --from DE_1853976001305603 --to YOUR_REALM_ID` to bring all the content from the sample to your current realm
-2. Publish the content in the Content Tab.
+1. Sign in to your account using the `dotnet beam init` command.
+2. Then command `dotnet beam content replace-local --from DE_1853976001305603 --to YOUR_REALM_ID` to bring all the content from the sample to your current realm
+3. Publish the content in the Content Tab (or run a `dotnet beam content publish`).
 
 ## Setting up the Project
 To set up an organization and realm to run this sample, follow the steps below.
