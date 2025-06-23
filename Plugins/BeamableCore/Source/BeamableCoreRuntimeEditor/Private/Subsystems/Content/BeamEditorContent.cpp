@@ -49,6 +49,16 @@ void UBeamEditorContent::Initialize(FSubsystemCollectionBase& Collection)
 			ContentClassToContentTypeString.Add(*It, ContentTypeId);
 		}
 	}
+	AllContentTypes.Sort([](const UClass& A, const UClass& B)
+	{
+		FString ContentTypeIdA = A.GetDefaultObject<UBeamContentObject>()->BuildContentTypeString();
+		FString ContentTypeIdB = B.GetDefaultObject<UBeamContentObject>()->BuildContentTypeString();
+		return ContentTypeIdA.Compare(ContentTypeIdB) < 0;
+	});
+	AllContentTypeNames.Sort([](const TSharedPtr<FName>& A, const TSharedPtr<FName>& B)
+	{
+		return A.Get()->Compare(*B.Get()) < 0;
+	});
 }
 
 
