@@ -305,10 +305,6 @@ bool UBeamEditor::GetActiveProjectAndRealmData(FBeamCustomerProjectData& Project
 			}
 		}
 	}
-	else
-	{
-		ensureAlwaysMsgf(false, TEXT("No developer signed into the MainEditorDeveloper UserSlot! Please sign-in."));
-	}
 
 	RealmData = FBeamProjectRealmData{};
 	return false;
@@ -445,13 +441,18 @@ void UBeamEditor::SignIn(FString OrgName, FString Email, FString Password, const
 
 void UBeamEditor::SignInWithCliInfo(const FBeamOperationHandle Op)
 {
+	// Make sure that the CLI is correctly targeting some realm
+	FString PathToConfigJson = FPaths::ProjectDir() / TEXT(".beamable") / TEXT("connection-configuration.json");
+	FString ConfigJson;
+
+	// Read out the config file
+	const auto bCliIsTargetingRealm = FFileHelper::LoadFileToString(ConfigJson, *PathToConfigJson);
+	
 	// When the CLI is not installed, we should not do anything. 
 	const auto Cli = GEditor->GetEditorSubsystem<UBeamCli>();
 	if (!Cli->IsInstalled())
 	{
-		FString ConfigJson;
-		FString PathToConfigJson = FPaths::ProjectDir() / TEXT(".beamable") / TEXT("connection-configuration.json");
-		if (FFileHelper::LoadFileToString(ConfigJson, *PathToConfigJson))
+		if (bCliIsTargetingRealm)
 		{
 			FJsonDataBag ConfigJsonBag;
 			if (ConfigJsonBag.FromJson(ConfigJson))
@@ -483,6 +484,15 @@ void UBeamEditor::SignInWithCliInfo(const FBeamOperationHandle Op)
 		return;
 	}
 
+	if (!bCliIsTargetingRealm)
+	{
+		RequestTracker->TriggerOperationError(Op, TEXT("Beamable not configured with any CID/PID. Please Sign-In."));
+		return;
+	}
+
+	// Start the CLI server manually skipping the pre-warm 
+	Cli->StartCliServer(true);
+	
 	// If the CLI is installed, we use it to get the data around the current organization
 	const auto RealmsCommandOp = RequestTracker->CPP_BeginOperation({}, GetName(), {});
 	auto RealmsCommand = NewObject<UBeamCliOrgRealmsCommand>();

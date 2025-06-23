@@ -46,13 +46,17 @@ struct FBeamEnqueuedCliCommand
 	UPROPERTY()
 	TArray<FString> Params;
 
+	UPROPERTY()
+	FBeamOperationHandle Op;
+
 	FBeamEnqueuedCliCommand(): CliCommand(nullptr)
 	{
 	}
 
-	FBeamEnqueuedCliCommand(UBeamCliCommand* CliCommand, TArray<FString> Params)
+	FBeamEnqueuedCliCommand(UBeamCliCommand* CliCommand, TArray<FString> Params, FBeamOperationHandle Op)
 		: CliCommand(CliCommand),
-		  Params(Params)
+		  Params(Params),
+		  Op(Op)
 	{
 	}
 };
@@ -101,9 +105,12 @@ protected:
 	 */
 	FString CurrentCliServerUri;
 
-	void StartCliServer(FBeamOperationHandle Op);
+	
 
 public:
+
+	void StartCliServer(bool bSkipPrewarm);
+	
 	/**
 	 * @brief Just a helper function to kick off a command.
 	 * UBeamCliCommands run on a separate process and have a thread in this process watching them.

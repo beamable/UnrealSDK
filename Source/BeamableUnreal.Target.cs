@@ -118,12 +118,6 @@ public class BeamableUnrealTarget : TargetRules
 			var oss = new Beam.OssConfig()
 			{
 				IsEnabled = true,
-
-				HooksEnabled = true,
-				HookSubsystemImplementation = "FOnlineSubsystemHathoraDemo",
-				HookSubsystemIncludePath = "Customer/OnlineSubsystemHathoraDemo.h",
-
-				AdditionalHookModules = new[] { "HathoraSDK" }
 			};
 
 			if (TargetRules.Type == UnrealBuildTool.TargetType.Game)
@@ -448,6 +442,10 @@ public static class Beam
 
 			// Pass down, to the OnlineSubsystemBeamable plugin, a list of Module names that it'll also depend on
 			AdditionalData.OssAdditionalModules = OssConfig.AdditionalHookModules;
+		}
+		else
+		{
+			TargetRules.ProjectDefinitions.Add("BEAM_ENABLE_OSS_HOOKS=0");
 		}
 	}
 

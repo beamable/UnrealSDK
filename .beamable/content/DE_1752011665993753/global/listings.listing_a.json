@@ -1,0 +1,34 @@
+{
+  "properties": {
+    "clientData": {
+      "data": {}
+    },
+    "offer": {
+      "data": {
+        "titles": [],
+        "descriptions": [],
+        "obtainCurrency": [
+          {
+            "symbol": "currency.coins",
+            "amount": 200
+          }
+        ],
+        "obtainItems": [
+          {
+            "contentId": "items.super_item",
+            "properties": []
+          }
+        ]
+      }
+    },
+    "price": {
+      "data": {
+        "type": "sku",
+        "symbol": "currency.gems",
+        "amount": 10
+      }
+    }
+  },
+  "tags": [],
+  "referenceManifestId": "68497398e0862f06aae6f324"
+}

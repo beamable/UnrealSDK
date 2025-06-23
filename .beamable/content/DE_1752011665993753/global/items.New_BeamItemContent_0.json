@@ -4,11 +4,10 @@
       "data": {
         "write_self": true
       }
-    },
-    "startingAmount": {
-      "data": 245
     }
   },
-  "tags": [],
+  "tags": [
+    "beam-type-BeamItemContent"
+  ],
   "referenceManifestId": "68497398e0862f06aae6f324"
 }

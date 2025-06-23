@@ -14,7 +14,7 @@ public partial class OnlineSubsystemBeamable : ModuleRules
 		
 		
 		// Use the microservice clients in here.
-		BeamableUnrealMicroserviceClients.AddMicroserviceClients(this);
+		// BeamableUnrealMicroserviceClients.AddMicroserviceClients(this);
 	}
 	
 }

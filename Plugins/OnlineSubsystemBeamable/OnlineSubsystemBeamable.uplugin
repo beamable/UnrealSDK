@@ -33,18 +33,6 @@
 		{
 			"Name": "BeamableCore",
 			"Enabled": true
-		},
-		{
-			"Name": "DiscordSDK",
-			"Enabled": false
-		},
-		{
-			"Name": "HathoraSDK",
-			"Enabled": true
-		},
-		{
-			"Name": "BeamableUnrealMicroserviceClients",
-			"Enabled": true
 		}
 	]
 }

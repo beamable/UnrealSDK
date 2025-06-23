@@ -1,12 +1,9 @@
 {
   "properties": {
-    "clientPermission": {
+    "permissions": {
       "data": {
         "write_self": true
       }
-    },
-    "startingAmount": {
-      "data": 245
     }
   },
   "tags": [],
