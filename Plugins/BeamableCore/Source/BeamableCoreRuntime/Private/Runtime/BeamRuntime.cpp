@@ -45,7 +45,7 @@ void UBeamConnectivityManager::ConnectionHandler(const FNotificationEvent& Evt, 
 	// If the operation is active so that is happening during a login.
 	auto IsDuringLogin = RequestTracker->IsOperationActive(Op);
 
-	if (Evt.EventType == Connected)
+	if (Evt.EventType == BEAM_Connected)
 	{
 		// This only runs during Authentication
 		if (IsDuringLogin)
@@ -94,7 +94,7 @@ void UBeamConnectivityManager::ConnectionHandler(const FNotificationEvent& Evt, 
 			}
 		}
 	}
-	else if (Evt.EventType == ConnectionFailed)
+	else if (Evt.EventType == BEAM_ConnectionFailed)
 	{
 		// This only runs during Authentication
 		if (IsDuringLogin)
@@ -141,7 +141,7 @@ void UBeamConnectivityManager::ConnectionHandler(const FNotificationEvent& Evt, 
 			}
 		}
 	}
-	else if (Evt.EventType == Closed)
+	else if (Evt.EventType == BEAM_Closed)
 	{
 		// This only runs during Authentication
 		if (IsDuringLogin && Evt.ClosedData.StatusCode != Notifications->UserSignOutCloseCode)

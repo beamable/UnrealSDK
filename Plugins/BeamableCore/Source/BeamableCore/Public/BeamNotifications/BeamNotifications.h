@@ -23,10 +23,10 @@ class UBeamBackend;
 UENUM(BlueprintType)
 enum ENotificationMessageType
 {
-	Connected,
-	ConnectionFailed,
-	Message,
-	Closed
+	BEAM_Connected,
+	BEAM_ConnectionFailed,
+	BEAM_Message,
+	BEAM_Closed
 };
 
 /**
@@ -167,7 +167,7 @@ struct BEAMABLECORE_API FNotificationEvent
 	GENERATED_BODY()
 
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Beam")
-	TEnumAsByte<ENotificationMessageType> EventType = Connected;
+	TEnumAsByte<ENotificationMessageType> EventType = BEAM_Connected;
 
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Beam")
 	FNotificationConnected ConnectedData;
@@ -277,7 +277,7 @@ public:
 				{
 					const FOnNotificationEvent EventHandler = FOnNotificationEvent::CreateLambda([Slot, SocketName, ContextKey, Handler](FNotificationEvent Evt)
 					{
-						ensureAlways(Evt.EventType == Message);
+						ensureAlways(Evt.EventType == BEAM_Message);
 						ensureAlways(Evt.MessageData.Context.Equals(ContextKey));
 
 						TMessage MsgData;
@@ -296,7 +296,7 @@ public:
 				{
 					const FOnNotificationEvent EventHandler = FOnNotificationEvent::CreateLambda([Slot, SocketName, ContextKey, Handler](FNotificationEvent Evt)
 					{
-						ensureAlways(Evt.EventType == Message);
+						ensureAlways(Evt.EventType == BEAM_Message);
 						ensureAlways(Evt.MessageData.Context.Equals(ContextKey));
 
 						TMessage MsgData = NewObject<typename TRemovePointer<TMessage>::Type>();
