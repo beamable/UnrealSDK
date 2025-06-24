@@ -68,7 +68,7 @@ void UBeamNotifications::Connect(const FUserSlot& Slot, const FBeamRealmUser& Us
 #endif
 
 		FNotificationEvent Evt;
-		Evt.EventType = ENotificationMessageType::Connected;
+		Evt.EventType = ENotificationMessageType::BEAM_Connected;
 		Evt.ConnectedData.ConnectedHandle = OutHandle;
 
 		const FOnNotificationEvent& EvtHandler = ConnectionEventHandlers.FindChecked(OutHandle);
@@ -104,7 +104,7 @@ void UBeamNotifications::Connect(const FUserSlot& Slot, const FBeamRealmUser& Us
 
 		// Trigger the event and then remove the connection from the list
 		FNotificationEvent Evt;
-		Evt.EventType = ENotificationMessageType::ConnectionFailed;
+		Evt.EventType = ENotificationMessageType::BEAM_ConnectionFailed;
 		Evt.ConnectionFailedData.Error = Error;
 
 		// Bump the retry count
@@ -146,7 +146,7 @@ void UBeamNotifications::Connect(const FUserSlot& Slot, const FBeamRealmUser& Us
 
 		// Trigger the event 
 		FNotificationEvent Evt;
-		Evt.EventType = ENotificationMessageType::Closed;
+		Evt.EventType = ENotificationMessageType::BEAM_Closed;
 		Evt.ClosedData.Reason = Reason;
 		Evt.ClosedData.StatusCode = StatusCode;
 		Evt.ClosedData.bWasClean = bWasClean;
@@ -181,7 +181,7 @@ void UBeamNotifications::Connect(const FUserSlot& Slot, const FBeamRealmUser& Us
 #endif
 
 		FNotificationEvent Evt;
-		Evt.EventType = ENotificationMessageType::Message;
+		Evt.EventType = ENotificationMessageType::BEAM_Message;
 		Evt.MessageData.BeamDeserialize(Message);
 
 		TArray<FNotificationMessageEventHandler> EvtHandlers;
