@@ -267,17 +267,17 @@ void UK2BeamNode_Operation::EnforceBeamFlowModePins()
 				const TArray AllowedPins{
 					UEdGraphSchema_K2::PN_Then,
 					OP_Operation_Handle,
-					OP_Operation_UserSlots,
 
 					OP_Operation_OnOperationEvent,
-					OP_Operation_Event
+					OP_Operation_Event,
+					OP_Operation_UserSlots,
 				};
 				return Pin->Direction == EGPD_Input || AllowedPins.Contains(Pin->PinName);
 			});
 
-			EnforcePinExistence(this, EGPD_Output, UEdGraphSchema_K2::PC_Struct, OP_Operation_UserSlots, PinTooltipMap[OP_Operation_UserSlots], Params, FUserSlot::StaticStruct());
 			EnforcePinExistence(this, EGPD_Output, UEdGraphSchema_K2::PC_Exec, OP_Operation_OnOperationEvent, PinTooltipMap[OP_Operation_OnOperationEvent]);
 			EnforcePinExistence(this, EGPD_Output, UEdGraphSchema_K2::PC_Struct, OP_Operation_Event, PinTooltipMap[OP_Operation_Event], {}, FBeamOperationEvent::StaticStruct());
+			EnforcePinExistence(this, EGPD_Output, UEdGraphSchema_K2::PC_Struct, OP_Operation_UserSlots, PinTooltipMap[OP_Operation_UserSlots], Params, FUserSlot::StaticStruct());
 			break;
 		}
 	case Success_Error_Cancelled:
@@ -289,20 +289,20 @@ void UK2BeamNode_Operation::EnforceBeamFlowModePins()
 
 					UEdGraphSchema_K2::PN_Then,
 					OP_Operation_Handle,
-					OP_Operation_UserSlots,
 					OP_Operation_Expanded_OnSuccess,
 					OP_Operation_Expanded_OnError,
 					OP_Operation_Expanded_OnCancelled,
 					OP_Operation_Event,
+					OP_Operation_UserSlots,
 				};
 				return Pin->Direction == EGPD_Input || AllowedPins.Contains(Pin->PinName);
 			});
 
-			EnforcePinExistence(this, EGPD_Output, UEdGraphSchema_K2::PC_Struct, OP_Operation_UserSlots, PinTooltipMap[OP_Operation_UserSlots], Params, FUserSlot::StaticStruct());
 			EnforcePinExistence(this, EGPD_Output, UEdGraphSchema_K2::PC_Exec, OP_Operation_Expanded_OnSuccess, PinTooltipMap[OP_Operation_Expanded_OnSuccess]);
 			EnforcePinExistence(this, EGPD_Output, UEdGraphSchema_K2::PC_Exec, OP_Operation_Expanded_OnError, PinTooltipMap[OP_Operation_Expanded_OnError]);
 			EnforcePinExistence(this, EGPD_Output, UEdGraphSchema_K2::PC_Exec, OP_Operation_Expanded_OnCancelled, PinTooltipMap[OP_Operation_Expanded_OnCancelled]);
 			EnforcePinExistence(this, EGPD_Output, UEdGraphSchema_K2::PC_Struct, OP_Operation_Event, PinTooltipMap[OP_Operation_Event], {}, FBeamOperationEvent::StaticStruct());
+			EnforcePinExistence(this, EGPD_Output, UEdGraphSchema_K2::PC_Struct, OP_Operation_UserSlots, PinTooltipMap[OP_Operation_UserSlots], Params, FUserSlot::StaticStruct());
 			break;
 		}
 	case OnSubEvents:
@@ -316,8 +316,11 @@ void UK2BeamNode_Operation::EnforceBeamFlowModePins()
 
 			// Get the sub-events that are related to each higher event type.			
 			TArray<FName> SuccessTypeSubEvents = GetOperationEventIds(OET_SUCCESS);
+			SuccessTypeSubEvents.Sort([](const FName& A, const FName& B) { return A == NAME_None ? false : A.Compare(B) < 0; });
 			TArray<FName> ErrorTypeSubEvents = GetOperationEventIds(OET_ERROR);
+			ErrorTypeSubEvents.Sort([](const FName& A, const FName& B) { return A == NAME_None ? false : A.Compare(B) < 0; });
 			TArray<FName> CancelledTypeSubEvents = GetOperationEventIds(OET_CANCELLED);
+			CancelledTypeSubEvents.Sort([](const FName& A, const FName& B) { return A == NAME_None ? false : A.Compare(B) < 0; });
 
 			TMap<FName, UClass*> SuccessCastClass = GetOperationEventCastClass(OET_SUCCESS);
 			TMap<FName, UClass*> ErrorCastClass = GetOperationEventCastClass(OET_ERROR);
@@ -370,10 +373,6 @@ void UK2BeamNode_Operation::EnforceBeamFlowModePins()
 				PinsToKeep.Add(SuccessEventFlowPinNames[i]);
 			}
 
-
-			// Set up the UserSlot pins after the on success
-			EnforcePinExistence(this, EGPD_Output, UEdGraphSchema_K2::PC_Struct, OP_Operation_UserSlots, PinTooltipMap[OP_Operation_UserSlots], Params, FUserSlot::StaticStruct());
-
 			ErrorEventFlowPinNames.Empty();
 			EnforceRelevantEventPins(ErrorTypeSubEvents, OP_Operation_Expanded_OnError, RelevantEventsAdded, ErrorEventFlowPinNames, ErrorCastClass);
 			for (int i = 0; i < ErrorEventFlowPinNames.Num(); ++i)
@@ -384,13 +383,16 @@ void UK2BeamNode_Operation::EnforceBeamFlowModePins()
 			CancelledEventFlowPinNames.Empty();
 			EnforceRelevantEventPins(CancelledTypeSubEvents, OP_Operation_Expanded_OnCancelled, RelevantEventsAdded, CancelledEventFlowPinNames, CancelledCastClass);
 			for (int i = 0; i < CancelledEventFlowPinNames.Num(); ++i)
-			{
+			{				
 				PinsToKeep.Add(CancelledEventFlowPinNames[i]);
 			}
 
 			// We always expose the Event Data --- this is the entire `FBeamOperationEvent` struct and is valid in all flows here.
 			EnforcePinExistence(this, EGPD_Output, UEdGraphSchema_K2::PC_Struct, OP_Operation_Event, PinTooltipMap[OP_Operation_Event], {}, FBeamOperationEvent::StaticStruct());
 			PinsToKeep.Add(OP_Operation_Event);
+
+			// Set up the UserSlot pins after the on success
+			EnforcePinExistence(this, EGPD_Output, UEdGraphSchema_K2::PC_Struct, OP_Operation_UserSlots, PinTooltipMap[OP_Operation_UserSlots], Params, FUserSlot::StaticStruct());
 
 			// Remove all pins except the ones this mode cares about
 			RemoveAllPinsExcept(this, [this, PinsToKeep](const UEdGraphNode*, const UEdGraphPin* Pin)
