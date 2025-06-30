@@ -320,7 +320,7 @@ FBeamOperationHandle UBeamFriendsSubsystem::CPP_RemoveFriendOperation(FUserSlot 
 
 void UBeamFriendsSubsystem::FetchPlayerFriendState(FUserSlot UserSlot, FBeamOperationHandle Op)
 {
-	if (!IsUserSlotAuthenticated(UserSlot, __FUNCSIG__, Op))
+	if (!IsUserSlotAuthenticated(UserSlot, GET_FUNCTION_NAME_STRING_CHECKED(UBeamFriendsSubsystem, FetchPlayerFriendState), Op))
 	{
 		return;
 	}
@@ -496,7 +496,7 @@ void UBeamFriendsSubsystem::FetchFriendPresenceStatus(FUserSlot UserSlot, TArray
 
 void UBeamFriendsSubsystem::SendFriendInvite(FUserSlot UserSlot, FBeamGamerTag FriendGamerTag, FBeamOperationHandle Op)
 {
-	if (!IsUserSlotAuthenticated(UserSlot, __FUNCTION__, Op))
+	if (!IsUserSlotAuthenticated(UserSlot, GET_FUNCTION_NAME_STRING_CHECKED(UBeamFriendsSubsystem, SendFriendInvite), Op))
 	{
 		return;
 	}
@@ -546,7 +546,7 @@ void UBeamFriendsSubsystem::SendFriendInvite(FUserSlot UserSlot, FBeamGamerTag F
 
 void UBeamFriendsSubsystem::AcceptFriendInvite(FUserSlot UserSlot, FBeamGamerTag FriendGamerTag, FBeamOperationHandle Op)
 {
-	if (!IsUserSlotAuthenticated(UserSlot, __FUNCTION__, Op))
+	if (!IsUserSlotAuthenticated(UserSlot, GET_FUNCTION_NAME_STRING_CHECKED(UBeamFriendsSubsystem, AcceptFriendInvite), Op))
 	{
 		return;
 	}
@@ -621,7 +621,7 @@ void UBeamFriendsSubsystem::AcceptFriendInvite(FUserSlot UserSlot, FBeamGamerTag
 void UBeamFriendsSubsystem::DeclineFriendInvite(FUserSlot UserSlot, FBeamGamerTag FriendGamerTag,
                                                 FBeamOperationHandle Op)
 {
-	if (!IsUserSlotAuthenticated(UserSlot, __FUNCTION__, Op))
+	if (!IsUserSlotAuthenticated(UserSlot, GET_FUNCTION_NAME_STRING_CHECKED(UBeamFriendsSubsystem, DeclineFriendInvite), Op))
 	{
 		return;
 	}
@@ -674,7 +674,7 @@ void UBeamFriendsSubsystem::DeclineFriendInvite(FUserSlot UserSlot, FBeamGamerTa
 
 void UBeamFriendsSubsystem::BlockPlayer(FUserSlot UserSlot, FBeamGamerTag PlayerGamerTag, FBeamOperationHandle Op)
 {
-	if (!IsUserSlotAuthenticated(UserSlot, __FUNCTION__, Op))
+	if (!IsUserSlotAuthenticated(UserSlot, GET_FUNCTION_NAME_STRING_CHECKED(UBeamFriendsSubsystem, BlockPlayer), Op))
 	{
 		return;
 	}
@@ -747,7 +747,7 @@ void UBeamFriendsSubsystem::BlockPlayer(FUserSlot UserSlot, FBeamGamerTag Player
 
 void UBeamFriendsSubsystem::UnblockPlayer(FUserSlot UserSlot, FBeamGamerTag PlayerGamerTag, FBeamOperationHandle Op)
 {
-	if (!IsUserSlotAuthenticated(UserSlot, __FUNCTION__, Op))
+	if (!IsUserSlotAuthenticated(UserSlot, GET_FUNCTION_NAME_STRING_CHECKED(UBeamFriendsSubsystem, UnblockPlayer), Op))
 	{
 		return;
 	}
@@ -805,7 +805,7 @@ void UBeamFriendsSubsystem::UnblockPlayer(FUserSlot UserSlot, FBeamGamerTag Play
 
 void UBeamFriendsSubsystem::RemoveFriend(FUserSlot UserSlot, FBeamGamerTag FriendGamerTag, FBeamOperationHandle Op)
 {
-	if (!IsUserSlotAuthenticated(UserSlot, __FUNCTION__, Op))
+	if (!IsUserSlotAuthenticated(UserSlot, GET_FUNCTION_NAME_STRING_CHECKED(UBeamFriendsSubsystem, RemoveFriend), Op))
 	{
 		return;
 	}
