@@ -69,6 +69,36 @@ void UBeamEditor::Initialize(FSubsystemCollectionBase& Collection)
 {
 	UE_LOG(LogTemp, Log, TEXT("Initializing BeamEditor Subsystem!"));
 
+	// TODO: Use the in-memory store of a new "UBeamEditorPIE"-Subsystem (that manages) to figure out which users to move into the saved UserSlot directory for each configured  
+	// CLI to copy over the files into the saved folder.
+	// Our PIE Settings UI should make save changes to the "Config/DefaultBeamPIE.ini" which our UBeamPIE subsystem reads from.
+	//  IE.: Tell them that PIE 0 has user X, PIE 1 has user Y and any other configured data.
+	// We should expose a way for users to extend this callback by implementing and configuring a UObject interface and setting it up in the PIE settings.	
+	PreBeginPIEHandler = FEditorDelegates::PreBeginPIE.AddLambda([this](const bool)
+	{		
+		const auto PlaySettings = GetDefault<ULevelEditorPlaySettings>();		
+		if (PlaySettings)
+		{			
+			UE_LOG(LogTemp, Log, TEXT("Pre-Begin - Separate Server %d!"), PlaySettings->bLaunchSeparateServer ? 1 : 0);
+			UE_LOG(LogTemp, Log, TEXT("Pre-Begin - Separate Server Launch Params %s!"), *PlaySettings->AdditionalServerLaunchParameters);
+
+			int32 clientCount;
+			PlaySettings->GetPlayNumberOfClients(clientCount);
+			UE_LOG(LogTemp, Log, TEXT("Pre-Begin - Client Count %d!"), clientCount);
+
+			uint16 port;
+			PlaySettings->GetServerPort(port);
+			FString MapName;
+			PlaySettings->GetServerMapNameOverride(MapName);
+			UE_LOG(LogTemp, Log, TEXT("Pre-Begin - Server Port %u!"), port);
+			UE_LOG(LogTemp, Log, TEXT("Pre-Begin - Separate MapName %s!"), *MapName);
+		}
+		else
+		{
+			UE_LOG(LogTemp, Log, TEXT("Pre-Begin - No Params!"));
+		}
+	});
+
 	// Set us up to track whether we are running PIE
 	BeginPIEHandler = FEditorDelegates::BeginPIE.AddLambda([this](const bool)
 	{
@@ -107,6 +137,7 @@ void UBeamEditor::Deinitialize()
 {
 	UserSlots->GlobalUserSlotAuthenticatedCodeHandler.Remove(UserSlotAuthenticatedHandler);
 	UserSlots->GlobalUserSlotClearedCodeHandler.Remove(UserSlotClearedHandler);
+	FEditorDelegates::PreBeginPIE.Remove(PreBeginPIEHandler);
 	FEditorDelegates::BeginPIE.Remove(BeginPIEHandler);
 	FEditorDelegates::EndPIE.Remove(EndPIEHandler);
 	FEditorDelegates::OnEditorInitialized.Remove(EditorInitializedHandle);
@@ -481,7 +512,7 @@ void UBeamEditor::SignInWithCliInfo(const FBeamOperationHandle Op)
 
 	// Start the CLI server manually skipping the pre-warm 
 	Cli->StartCliServer(true);
-	
+
 	// If the CLI is installed, we use it to get the data around the current organization
 	const auto RealmsCommandOp = RequestTracker->CPP_BeginOperation({}, GetName(), {});
 	auto RealmsCommand = NewObject<UBeamCliOrgRealmsCommand>();

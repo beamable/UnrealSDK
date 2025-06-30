@@ -103,7 +103,7 @@ bool UBeamUserSlots::IsSameSlot(FUserSlot SlotA, FUserSlot SlotB, const UObject*
 
 TArray<FUserSlot> UBeamUserSlots::GetKnownSlots()
 {
-	TArray<FUserSlot> KnownSlots = {};	
+	TArray<FUserSlot> KnownSlots = {};
 	for (const auto& UserMapping : AuthenticatedUserMapping)
 	{
 		const auto NamespacedSlotId = UserMapping.Key;
@@ -376,7 +376,7 @@ void UBeamUserSlots::DeleteUserSlotCacheForPIE()
 	{
 		if (File.Contains("PIE_"))
 		{
-			FPlatformFileManager::Get().GetPlatformFile().DeleteFile(*File);			
+			FPlatformFileManager::Get().GetPlatformFile().DeleteFile(*File);
 		}
 	}
 }
@@ -554,7 +554,7 @@ int32 UBeamUserSlots::TryLoadSavedUserAtSlot(FUserSlot SlotId, UObject* CallingC
 			{
 				// We make the user be pointed at the correct realm (the one we are pointed at).
 				Pid = TargetRealm.Pid;
-				
+
 				// We try to deserialize the user slot data
 				FUserSlotAccountData SlotSerializedAccountData;
 				const auto DidDeserializeAccountData = FJsonObjectConverter::JsonObjectStringToUStruct(SlotAccountFile, &SlotSerializedAccountData);
@@ -612,58 +612,59 @@ void UBeamUserSlots::RemovePiePrefix(const FString& Str, FString& WithoutPiePref
 }
 #endif
 
-template <typename T>
-bool UBeamUserSlots::TryLoadSlotData(FString SlotDataTypeName, FUserSlot SlotId, T& OutSlotData, UObject* CallingContext) const
+/**
+   ______                           __               ______                                             __  
+  / ____/___ _____ ___  ___  ____  / /___ ___  __   / ____/________ _____ ___  ___ _      ______  _____/ /__
+ / / __/ __ `/ __ `__ \/ _ \/ __ \/ / __ `/ / / /  / /_  / ___/ __ `/ __ `__ \/ _ \ | /| / / __ \/ ___/ //_/
+/ /_/ / /_/ / / / / / /  __/ /_/ / / /_/ / /_/ /  / __/ / /  / /_/ / / / / / /  __/ |/ |/ / /_/ / /  / ,<   
+\____/\__,_/_/ /_/ /_/\___/ .___/_/\__,_/\__, /  /_/   /_/   \__,_/_/ /_/ /_/\___/|__/|__/\____/_/  /_/|_|  
+					 /_/            /____/                                                              
+ */
+
+FUniqueNetIdRepl UBeamUserSlots::GetUniqueNetIdForSlot(FUserSlot Slot, UObject* CallingContext)
 {
-	const auto NamespacedSlotId = GetNamespacedSlotId(SlotId, CallingContext);
-	const auto FilePath = GetSlotDataSavedFilePath(SlotDataTypeName, SlotId, CallingContext);
-	FString SlotFile;
-	if (FFileHelper::LoadFileToString(SlotFile, *FilePath))
-	{
-		const auto DidDeserializeAuthData = FJsonObjectConverter::JsonObjectStringToUStruct(SlotFile, &OutSlotData);
-		ensureAlwaysMsgf(DidDeserializeAuthData, TEXT("Failed deserialization of %s_%s.json file.\nPath=%s"), *NamespacedSlotId, *SlotDataTypeName, *FilePath);
-		return true;
-	}
-	return false;
+	if (const auto& LocalPlayer = GetLocalPlayerForSlot(Slot, CallingContext))
+		return LocalPlayer->GetUniqueNetIdForPlatformUser();
+	return FUniqueNetIdRepl::Invalid();
 }
 
-template <typename T>
-bool UBeamUserSlots::SaveSlotData(FString SlotDataTypeName, FUserSlot SlotId, T SlotData, const UObject* CallingContext)
+APlayerController* UBeamUserSlots::GetPlayerControllerForSlot(FUserSlot Slot, UObject* CallingContext)
 {
-	const auto NamespacedSlotId = GetNamespacedSlotId(SlotId, CallingContext);
-
-	FBeamRealmUser User;
-	const auto bWasAuthenticated = GetUserDataAtSlot(SlotId, User, CallingContext);
-
-#if !WITH_EDITOR
-		ensureAlwaysMsgf(!User.RealmHandle.Pid.AsString.IsEmpty(), TEXT("Customer-Scoped Tokens are not allowed in builds! If should never be seeing this!"));
-#endif
-
-	// Save the User's Auth data to the slot.
-	const auto SavedSlotDataPath = GetSlotDataSavedFilePath(SlotDataTypeName, SlotId, CallingContext);
-	FString JsonSerializedSlotData;
-	ensureAlways(FJsonObjectConverter::UStructToJsonObjectString(SlotData, JsonSerializedSlotData));
-
-	if (!bWasAuthenticated)
-	{
-		UE_LOG(LogBeamUserSlots, Warning,
-		       TEXT("Failed to create Saved User Slot - %s File! Must be authenticated in a slot in order to save data with it.\nUSER_SLOT=%s\nFILE_PATH=%s\nFILE_CONTENTS=%s"),
-		       *SlotDataTypeName, *NamespacedSlotId, *SavedSlotDataPath, *JsonSerializedSlotData)
-		return false;
-	}
-
-	if (FFileHelper::SaveStringToFile(*JsonSerializedSlotData, *SavedSlotDataPath))
-	{
-		UE_LOG(LogBeamUserSlots, Verbose, TEXT("Saved User Slot - %s File!\nUSER_SLOT=%s\nFILE_PATH=%s\nFILE_CONTENTS=%s"),
-		       *SlotDataTypeName, *NamespacedSlotId, *SavedSlotDataPath, *JsonSerializedSlotData);
-	}
-	else
-	{
-		UE_LOG(LogBeamUserSlots, Error, TEXT("Failed to create Saved User Slot - %s File!\nUSER_SLOT=%s\nFILE_PATH=%s\nFILE_CONTENTS=%s"),
-		       *SlotDataTypeName, *NamespacedSlotId, *SavedSlotDataPath, *JsonSerializedSlotData);
-	}
-
-	return bWasAuthenticated;
+	if (const auto& LocalPlayer = GetLocalPlayerForSlot(Slot, CallingContext))
+		return LocalPlayer->GetPlayerController(CallingContext->GetWorld());
+	return nullptr;
 }
 
-// TODO: Declare all specializations here.
+ULocalPlayer* UBeamUserSlots::GetLocalPlayerForSlot(FUserSlot Slot, UObject* CallingContext)
+{
+	const auto MappedIdx = GetKnownSlots().Find(Slot);
+	if (MappedIdx != INDEX_NONE)
+	{
+		if (const auto& LocalPlayer = CallingContext->GetWorld()->GetGameInstance()->GetLocalPlayerByIndex(MappedIdx))
+			return LocalPlayer;
+	}
+	else if (Slot.IsTestSlot())
+	{
+		// In test slots, you can add a "_Local_NUM" to map it to a local player
+		if (Slot.Name.Contains("_Local"))
+		{
+			const auto LocalStartIdx = Slot.Name.Find(TEXT("Local"));
+			const auto Local = Slot.Name.RightChop(LocalStartIdx);
+
+			TArray<FString> LocalArr;
+			Local.ParseIntoArray(LocalArr, TEXT("_"));
+			if (LocalArr.Num() >= 2)
+			{
+				const auto LocalIdxStr = LocalArr[1];
+				int32 LocalIdx;
+				if (FDefaultValueHelper::ParseInt(LocalIdxStr, LocalIdx))
+				{
+					if (const auto& LocalPlayer = CallingContext->GetWorld()->GetGameInstance()->GetLocalPlayerByIndex(LocalIdx))
+						return LocalPlayer;
+				}
+			}
+		}
+	}
+
+	return nullptr;
+}

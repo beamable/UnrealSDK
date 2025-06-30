@@ -89,8 +89,15 @@ struct BEAMABLECORE_API FBeamOperationEvent
 	/**
 	 * @brief An event data object that may or may not exist for each emitted event.
 	 */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category="Beam")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Beam")
 	TScriptInterface<IBeamOperationEventData> EventData;
+
+	bool CompletedWithSuccess() { return EventType == OET_SUCCESS && EventId == NAME_None; }
+	bool CompletedWithError() { return EventType == OET_ERROR && EventId == NAME_None; }
+	bool CompletedWithCancelling() { return EventType == OET_CANCELLED && EventId == NAME_None; }
+
+	bool IsSuccessSubEvent(FName SubEvent) { return EventType == OET_SUCCESS && EventId == SubEvent; }
+	bool IsErrorSubEvent(FName SubEvent) { return EventType == OET_ERROR && EventId == SubEvent; }
 };
 
 

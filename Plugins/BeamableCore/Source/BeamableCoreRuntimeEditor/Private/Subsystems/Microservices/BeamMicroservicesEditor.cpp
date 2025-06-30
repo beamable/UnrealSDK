@@ -305,31 +305,46 @@ bool UBeamMicroservicesEditor::SetCurrentRoutingKey(FString BeamoId, FString Tar
 
 	// Synchronize the routing key map for Standalone Game PIE.
 	SetRoutingKeyMapAsAdditionalLaunchArgs();
-	
+
 	return true;
 }
 
 void UBeamMicroservicesEditor::SetRoutingKeyMapAsAdditionalLaunchArgs()
 {
-	const auto Params = GetDefault<ULevelEditorPlaySettings>()->AdditionalLaunchParameters;
-	auto NewParams = FString(Params);
-
-	const auto RoutingKeyMap = ConstructRoutingKeyMap();
-	const auto StartIdx = Params.Find(TEXT("beamable-routing-key-map"));
-
-	// We have it in the string, first we remove it 
-	if (StartIdx != INDEX_NONE)
+	// Helper function to updated/set the routing key map to a string that might already contain it.
+	const auto AppendToParams = [](FString RoutingKeyMap, FString OldParams)
 	{
-		auto EndIdx = Params.Find(TEXT(" "), ESearchCase::IgnoreCase, ESearchDir::FromStart, StartIdx);
-		if (EndIdx == INDEX_NONE) EndIdx = Params.Len();
-		NewParams.RemoveAt(StartIdx, EndIdx - StartIdx);
-	}
+		auto NewParams = FString(OldParams);
 
-	// Then we add the most recent routing key map	
-	NewParams.Append(FString::Printf(TEXT(" %s=%s"), TEXT("beamable-routing-key-map"), *RoutingKeyMap));
+		const auto StartIdx = OldParams.Find(TEXT("beamable-routing-key-map"));
 
-	// Set the new parameters
-	GetMutableDefault<ULevelEditorPlaySettings>()->AdditionalLaunchParameters = NewParams;
+		// We have it in the string, first we remove it 
+		if (StartIdx != INDEX_NONE)
+		{
+			auto EndIdx = OldParams.Find(TEXT(" "), ESearchCase::IgnoreCase, ESearchDir::FromStart, StartIdx);
+			if (EndIdx == INDEX_NONE) EndIdx = OldParams.Len();
+			NewParams.RemoveAt(StartIdx, EndIdx - StartIdx);
+		}
+		// If it's not there, we add a space.
+		else
+		{
+			NewParams.Append(TEXT(" "));
+		}
+
+		// Then we add the most recent routing key map	
+		NewParams.Append(FString::Printf(TEXT("%s=%s"), TEXT("beamable-routing-key-map"), *RoutingKeyMap));
+
+		return NewParams;
+	};
+
+	// Construct the RoutingKeyMap and apply it to both Client and Server Launch Parameters.
+	const auto KeyMap = ConstructRoutingKeyMap();
+	const auto ClientParams = GetDefault<ULevelEditorPlaySettings>()->AdditionalLaunchParameters;
+	const auto ServerParams = GetDefault<ULevelEditorPlaySettings>()->AdditionalServerLaunchParameters;
+
+	// Set the updated paramters in both the server and the client launch parameters.
+	GetMutableDefault<ULevelEditorPlaySettings>()->AdditionalLaunchParameters = AppendToParams(KeyMap, ClientParams);
+	GetMutableDefault<ULevelEditorPlaySettings>()->AdditionalServerLaunchParameters = AppendToParams(KeyMap, ServerParams);
 }
 
 FString UBeamMicroservicesEditor::ConstructRoutingKeyMap()

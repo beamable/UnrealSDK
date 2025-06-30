@@ -149,7 +149,7 @@ public:
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 
 	/** Cleans up the system.  */
-	virtual void Deinitialize() override;	
+	virtual void Deinitialize() override;
 
 
 	static FString GetSavedSlotsDirectory();
@@ -182,7 +182,7 @@ public:
 	 */
 	UFUNCTION(BlueprintPure, Category="Beam", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
 	TArray<FUserSlot> GetKnownSlots();
-	
+
 	/**
 	 * @brief Tries to get the user currently  mapped to the given slot.	  
 	 * @return True, if there is a user mapped. False, if no user mapped was found. 
@@ -195,7 +195,6 @@ public:
 	 * @return True, if there is a user mapped. False, if no user mapped was found. 
 	 */
 	bool GetUserDataWithGamerTag(const FBeamGamerTag& GamerTag, FBeamRealmUser& OutUserData, FUserSlot& OutUserSlot, FString& NamespacedSlotId) const;
-
 
 	/**
 	 * @brief Tries to get the user currently  mapped to the given slot.	  
@@ -285,25 +284,11 @@ public:
 	bool IsUserSlotAuthenticated(FUserSlot SlotId, const UObject* CallingContext);
 
 	/**
-	 * @brief Attempts to load data locally stored in association to a given slot by another subsystem. T must be a UStruct	  
-	 * @return True, if there was a user authenticated at that slot. False, if no serialized user slot file was found or if the file does not contain a refresh token.  
-	 */
-	template <class T>
-	bool TryLoadSlotData(FString SlotDataTypeName, FUserSlot SlotId, T& OutSlotData, UObject* CallingContext) const;
-
-	/**
-	 * @brief Saves an arbitrary UStruct associated with that given slot. 
-	 * @returns TRUE, if the UserSlot was authenticated. FALSE, otherwise.
-	 */
-	template <class T>
-	bool SaveSlotData(FString SlotDataTypeName, FUserSlot SlotId, T SlotData, const UObject* CallingContext);
-
-	/**
 	 * Call to clear all slots that have the "PIE_" string in them. 
 	 */
 	UFUNCTION(BlueprintCallable)
 	void DeleteUserSlotCacheForPIE();
-	
+
 	/**
 	 * Returned by TryLoadSavedUserAtSlot when no slot was found.
 	 */
@@ -340,7 +325,7 @@ public:
 	 */
 	static FString GetNamespacedSlotId(FUserSlot SlotId, const UObject* CallingContext);
 
-	
+
 #if WITH_EDITOR
 	/**
 	 * Extracts the PIE Prefix (PIE_N_) from any given string. This is used to support Multiplayer PIE modes. 
@@ -352,6 +337,36 @@ public:
 	 */
 	static void RemovePiePrefix(const FString& Str, FString& WithoutPiePrefix);
 #endif
+
+	/**
+	______                           __               ______                                             __  
+  / ____/___ _____ ___  ___  ____  / /___ ___  __   / ____/________ _____ ___  ___ _      ______  _____/ /__
+ / / __/ __ `/ __ `__ \/ _ \/ __ \/ / __ `/ / / /  / /_  / ___/ __ `/ __ `__ \/ _ \ | /| / / __ \/ ___/ //_/
+/ /_/ / /_/ / / / / / /  __/ /_/ / / /_/ / /_/ /  / __/ / /  / /_/ / / / / / /  __/ |/ |/ / /_/ / /  / ,<   
+\____/\__,_/_/ /_/ /_/\___/ .___/_/\__,_/\__, /  /_/   /_/   \__,_/_/ /_/ /_/\___/|__/|__/\____/_/  /_/|_|  
+						 /_/            /____/                                                              
+	 */
+
+	/**
+	 * For integration with other implementations of Unreal's Online Subsystem --- this maps the indices of the array of @link UBeamCoreSettings::RuntimeUserSlots @endlink to
+	 * Unreal's @link FUniqueNetIdRepl @endlink, @link ULocalPlayer @endlink and @link APlayerController @endlink objects.
+	 */
+	UFUNCTION(BlueprintCallable, meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
+	FUniqueNetIdRepl GetUniqueNetIdForSlot(FUserSlot Slot, UObject* CallingContext);
+
+	/**
+	 * For integration with other implementations of Unreal's Online Subsystem --- this maps the indices of the array of @link UBeamCoreSettings::RuntimeUserSlots @endlink to
+	 * Unreal's @link FUniqueNetIdRepl @endlink, @link ULocalPlayer @endlink and @link APlayerController @endlink objects.
+	 */
+	UFUNCTION(BlueprintCallable, meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
+	APlayerController* GetPlayerControllerForSlot(FUserSlot Slot, UObject* CallingContext);
+
+	/**
+	 * For integration with other implementations of Unreal's Online Subsystem --- this maps the indices of the array of @link UBeamCoreSettings::RuntimeUserSlots @endlink to
+	 * Unreal's @link FUniqueNetIdRepl @endlink, @link ULocalPlayer @endlink and @link APlayerController @endlink objects.
+	 */
+	UFUNCTION(BlueprintCallable, meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
+	ULocalPlayer* GetLocalPlayerForSlot(FUserSlot Slot, UObject* CallingContext);
 
 	/**
 	 
