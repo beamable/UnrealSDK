@@ -53,7 +53,7 @@ void UK2BeamNode_GetLocalStateForeach::AllocateDefaultPins()
 		TArray<FString> InputArray = TArray<FString>();
 		TArray<FString> OutputArray = TArray<FString>();
 		BeamK2::ParseFunctionForNodePins(this, Function, InputArray, OutputArray, IsIgnoredPinOfReturnNonArrayType);
-		for (const auto Output : OutputArray)
+		for (const auto& Output : OutputArray)
 		{
 			WrappedOperationFunctionOutputPinNames.Add(Output);
 		}
@@ -103,13 +103,13 @@ void UK2BeamNode_GetLocalStateForeach::ExpandNode(FKismetCompilerContext& Compil
 	CompilerContext.MovePinLinksToIntermediate(*GetExecPin(), *CallFunction->GetExecPin());
 
 	// Connect the input pins from the custom node to the intermediate call functions
-	for (auto InputPinName : WrappedOperationFunctionInputPinNames)
+	for (const auto& InputPinName : WrappedOperationFunctionInputPinNames)
 	{
 		CompilerContext.MovePinLinksToIntermediate(*FindPin(FName(*InputPinName)), *CallFunction->FindPin(FName(*InputPinName)));
 	}
 
 	// Connect the output pins from the custom node to the intermediate call functions
-	for (auto OutputPinName : WrappedOperationFunctionOutputPinNames)
+	for (const auto& OutputPinName : WrappedOperationFunctionOutputPinNames)
 	{
 		CompilerContext.MovePinLinksToIntermediate(*FindPin(FName(*OutputPinName)), *CallFunction->FindPin(FName(*OutputPinName)));
 	}
@@ -225,7 +225,7 @@ void UK2BeamNode_GetLocalStateForeach::ExpandNode(FKismetCompilerContext& Compil
 	UEdGraphPin* MaxLengthPin = nullptr;
 
 	// Coerce the wildcard pin types
-	for (auto OutputPinArrayName : WrappedOperationFunctionOutputPinArrayNames)
+	for (const auto& OutputPinArrayName : WrappedOperationFunctionOutputPinArrayNames)
 	{
 		const auto ArrayPin = CallFunction->FindPinChecked(OutputPinArrayName);
 		ArrayPin->Direction = EGPD_Output;

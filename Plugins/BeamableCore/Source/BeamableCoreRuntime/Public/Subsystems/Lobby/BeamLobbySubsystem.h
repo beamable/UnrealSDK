@@ -139,6 +139,12 @@ class BEAMABLECORERUNTIME_API UBeamLobbySubsystem : public UBeamRuntimeSubsystem
 	GENERATED_BODY()
 
 public:
+	inline static const FString Reserved_GameServer_Property = TEXT("__beam_game_server_lobby__");
+	inline static const FString Reserved_ListenServer_Property = TEXT("__beam_listen_server_lobby__");
+	
+	inline static const FString Reserved_GameServer_Ready_Property = TEXT("__beam_game_server_ready_lobby__");	
+	inline static const FString Reserved_ListenServerHostPlayer_Property = TEXT("__beam_listen_server_host_player__");
+
 	UPROPERTY()
 	UBeamUserSlots* UserSlots;
 	UPROPERTY()
@@ -166,8 +172,6 @@ public:
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
 	TArray<ULobby*> KnownLobbies;
 
-	int32 DedicatedServerLobbyIdx;
-
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
 	TMap<FUserSlot, UBeamLobbyUpdateCommand*> UpdateCommands;
 
@@ -179,14 +183,12 @@ private:
 	virtual void OnUserSignedIn_Implementation(const FUserSlot& UserSlot, const FBeamRealmUser& BeamRealmUser, const bool bIsOwnerUserAuth, FBeamOperationHandle& ResultOp) override;
 	virtual void OnUserSignedOut_Implementation(const FUserSlot& UserSlot, const EUserSlotClearedReason Reason, const FBeamRealmUser& BeamRealmUser, FBeamOperationHandle& ResultOp) override;
 
-	/**
-	 * Used when given a lobby id through CLArg or EnvVar. Keeps track of that Lobby Id.
-	 */
-	FGuid DedicatedServerInstanceLobbyId;
-
 public:
 	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, meta=(DefaultToSelf="CallingContext"))
 	static UBeamLobbySubsystem* GetSelf(const UObject* CallingContext) { return CallingContext->GetWorld()->GetGameInstance()->GetSubsystem<UBeamLobbySubsystem>(); }
+
+
+	// LOCAL STATE
 
 	/**
 	 *  Gets the lobby that the given user is contained.
@@ -263,14 +265,6 @@ public:
 	bool TryGetCurrentLobbyState(FUserSlot Slot, UBeamLobbyState*& Lobby);
 
 	/**
-	 * You should only ever use this if you are running a single Lobby/Match per instance.
-	 * If you are running multiples, call TryGetLobby with the id of the lobby you want.
-	 * 
-	 */
-	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
-	bool TryGetDedicatedServerInstanceLobby(ULobby*& Lobby);
-
-	/**
 	 * Call this to begin building a set of batched updates to a lobby the player is in.
 	 * After this call, use the various PrepareUpdate______ functions to build out the update.
 	 * Finally, run the CommitLobbyUpdateOperation to submit the lobby changes.
@@ -336,6 +330,16 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable)
 	void PrepareDeleteGlobalData(FUserSlot Slot, const TArray<FString>& GlobalDataToRemove);
+
+	// LOCAL STATE - Dedicated Server
+
+	/**
+	 * You should only ever use this if you are running a single Lobby/Match per instance.
+	 * If you are running multiples, call TryGetLobby with the id of the lobby you want.
+	 * 
+	 */
+	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
+	bool TryGetDedicatedServerInstanceLobby(ULobby*& Lobby);
 
 
 	// OPERATIONS
@@ -509,6 +513,12 @@ public:
 	 */
 	FBeamOperationHandle CPP_ProvisionGameServerForLobbyOperation(FUserSlot UserSlot, FOptionalBeamContentId NewGameType, FBeamOperationEventHandlerCode OnOperationEvent);
 
+	// OPERATIONS - Dedicated Server	
+	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Lobby", meta=(AutoCreateRefTerm="NewGameType"))
+	FBeamOperationHandle AcceptUserIntoGameServerOperation(FUserSlot UserSlot, const FString& Options, const FString& Address, const FUniqueNetIdRepl& UniqueId, FBeamOperationEventHandler OnOperationEvent);
+
+	FBeamOperationHandle CPP_AcceptUserIntoGameServerOperation(FUserSlot UserSlot, const FString& Options, const FString& Address, const FUniqueNetIdRepl& UniqueId, FBeamOperationEventHandlerCode OnOperationEvent);
+
 private:
 	// Operation Implementations
 	void CreateOpenLobby(FUserSlot UserSlot, FString Name, FString Desc, FBeamContentId MatchType, int32 MaxPlayers = 32, TMap<FString, FString> LobbyData = {}, TArray<FBeamTag> PlayerTags = {},
@@ -525,6 +535,10 @@ private:
 	void UpdatePlayerTags(const FUserSlot& Slot, FBeamGamerTag TargetPlayer, TArray<FBeamTag> Tags, bool bShouldReplaceRepeatedTags, FBeamOperationHandle Op);
 	void DeletePlayerTags(const FUserSlot& Slot, FBeamGamerTag TargetPlayer, TArray<FBeamTag> Tags, FBeamOperationHandle Op);
 	void ProvisionGameServerForLobby(const FUserSlot& Slot, FOptionalBeamContentId NewGameContent, FBeamOperationHandle Op);
+
+	// Dedicated Server API
+	void SetLobbyAsReadyForConnections(const FUserSlot& Slot, const FGuid& LobbyId, FBeamOperationHandle Op);
+	void AcceptUserIntoGameServer(const FUserSlot& Slot, const FString& Options, const FString& Address, const FUniqueNetIdRepl& UniqueId, FBeamOperationHandle Op);
 
 	// Request Helper Functions
 	FBeamRequestContext RequestJoin(const FUserSlot& UserSlot, FGuid LobbyId, TArray<FBeamTag> PlayerTags, FBeamOperationHandle Op, FOnPutLobbyFullResponse Handler) const;
