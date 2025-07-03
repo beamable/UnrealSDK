@@ -3,51 +3,102 @@
 #include "Subsystems/CLI/BeamCliCommand.h"
 #include "Serialization/BeamJsonUtils.h"
 
-#include "BeamCliCollectorGetCommand.generated.h"
+#include "BeamCliLoginCommand.generated.h"
 
 
 UCLASS(BlueprintType)
-class UBeamCliCollectorGetStreamData : public UObject, public IBeamJsonSerializableUObject
+class UBeamCliLoginErrorLoginFailedErrorStreamData : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:	
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FString Path = {};
+	FString Message = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FString ConfigPath = {};
+	FString Invocation = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 ExitCode = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString TypeName = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString FullTypeName = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString StackTrace = {};
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
 	{
-		UBeamJsonUtils::SerializeRawPrimitive(TEXT("path"), Path, Serializer);
-		UBeamJsonUtils::SerializeRawPrimitive(TEXT("configPath"), ConfigPath, Serializer);	
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("message"), Message, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("invocation"), Invocation, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("exitCode"), ExitCode, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("typeName"), TypeName, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("fullTypeName"), FullTypeName, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("stackTrace"), StackTrace, Serializer);	
 	}
 
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
 	{
-		UBeamJsonUtils::SerializeRawPrimitive(TEXT("path"), Path, Serializer);
-		UBeamJsonUtils::SerializeRawPrimitive(TEXT("configPath"), ConfigPath, Serializer);	
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("message"), Message, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("invocation"), Invocation, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("exitCode"), ExitCode, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("typeName"), TypeName, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("fullTypeName"), FullTypeName, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("stackTrace"), StackTrace, Serializer);	
 	}
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("path")), Path);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("configPath")), ConfigPath);	
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("message")), Message);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("invocation")), Invocation);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("exitCode")), ExitCode);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("typeName")), TypeName);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("fullTypeName")), FullTypeName);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("stackTrace")), StackTrace);	
+	}
+};
+
+
+UCLASS(BlueprintType)
+class UBeamCliLoginStreamData : public UObject, public IBeamJsonSerializableUObject
+{
+	GENERATED_BODY()
+
+public:	
+	
+	
+
+	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
+	{
+			
+	}
+
+	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
+	{
+			
+	}
+
+	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
+	{
+			
 	}
 };
 
 
 /**
  Description:
-  Downloads the otel collector
+  Save credentials
 
 Usage:
-  Beamable.Tools collector get [options]
+  Beamable.Tools login [options]
 
 Options:
-  --platform <platform>                  The platform for the collector executable. [osx, win, lin] or defaults to system
-  --arch <arch>                          The architecture for the collector executable. [arm64, x64] or defaults to system
+  --email, --username <email>            Specify user email address
+  --password <password>                  User password
+  --save-to-environment                  Save login refresh token to environment variable
+  --no-token-save                        Prevent auth tokens from being saved to disk. This replaces the legacy --save-to-file option [default: False]
+  --realm-scoped                         Makes the resulting access/refresh token pair be realm scoped instead of the default customer scoped one
+  --refresh-token <refresh-token>        A Refresh Token to use for the requests. It overwrites the logged in user stored in connection-auth.json for THIS INVOCATION ONLY
+  --print-to-console                     Prints out login request response to console
   --dryrun                               [DEPRECATED] Run as much of the command as possible without making any network calls
   --cid <cid>                            CID (CustomerId) to use (found in Portal->Account); defaults to whatever is in '.beamable/connection-configuration.json'
   --pid <pid>                            PID (Realm ID) to use (found in Portal -> Games -> Any Realm's details); defaults to whatever is in '.beamable/connection-configuration.json'
@@ -74,15 +125,20 @@ Options:
 
  */
 UCLASS()
-class UBeamCliCollectorGetCommand : public UBeamCliCommand
+class UBeamCliLoginCommand : public UBeamCliCommand
 {
 	GENERATED_BODY()
 
 public:
+	inline static FString StreamTypeErrorLoginFailedError = FString(TEXT("errorLoginFailedError"));
+	UPROPERTY() TArray<UBeamCliLoginErrorLoginFailedErrorStreamData*> ErrorLoginFailedErrorStream;
+	UPROPERTY() TArray<int64> ErrorLoginFailedErrorTimestamps;
+	TFunction<void (TArray<UBeamCliLoginErrorLoginFailedErrorStreamData*>& StreamData, TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnErrorLoginFailedErrorStreamOutput;
+
 	inline static FString StreamType = FString(TEXT("stream"));
-	UPROPERTY() TArray<UBeamCliCollectorGetStreamData*> Stream;
+	UPROPERTY() TArray<UBeamCliLoginStreamData*> Stream;
 	UPROPERTY() TArray<int64> Timestamps;
-	TFunction<void (TArray<UBeamCliCollectorGetStreamData*>& StreamData, TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnStreamOutput;	
+	TFunction<void (TArray<UBeamCliLoginStreamData*>& StreamData, TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnStreamOutput;	
 
 	TFunction<void (const int& ResCode, const FBeamOperationHandle& Op)> OnCompleted;
 	virtual bool HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer) override;

@@ -27,6 +27,40 @@ bool UBeamCliMeCommand::HandleStreamReceived(FBeamOperationHandle Op, FString Re
 		
 		return true;				
 	}
+
+	if(ReceivedStreamType.Equals(StreamTypeErrorNoTokenError) && OnErrorNoTokenErrorStreamOutput)
+	{
+		UBeamCliMeErrorNoTokenErrorStreamData* Data = NewObject<UBeamCliMeErrorNoTokenErrorStreamData>(this);
+		Data->OuterOwner = this;
+		Data->BeamDeserializeProperties(DataJson);
+
+		ErrorNoTokenErrorStream.Add(Data);
+		ErrorNoTokenErrorTimestamps.Add(Timestamp);
+		
+		AsyncTask(ENamedThreads::GameThread, [this, Op]
+		{
+			OnErrorNoTokenErrorStreamOutput(ErrorNoTokenErrorStream, ErrorNoTokenErrorTimestamps, Op);
+		});
+		
+		return true;				
+	}
+
+	if(ReceivedStreamType.Equals(StreamTypeErrorInvalidTokenError) && OnErrorInvalidTokenErrorStreamOutput)
+	{
+		UBeamCliMeErrorInvalidTokenErrorStreamData* Data = NewObject<UBeamCliMeErrorInvalidTokenErrorStreamData>(this);
+		Data->OuterOwner = this;
+		Data->BeamDeserializeProperties(DataJson);
+
+		ErrorInvalidTokenErrorStream.Add(Data);
+		ErrorInvalidTokenErrorTimestamps.Add(Timestamp);
+		
+		AsyncTask(ENamedThreads::GameThread, [this, Op]
+		{
+			OnErrorInvalidTokenErrorStreamOutput(ErrorInvalidTokenErrorStream, ErrorInvalidTokenErrorTimestamps, Op);
+		});
+		
+		return true;				
+	}
 	
 	return false;
 }

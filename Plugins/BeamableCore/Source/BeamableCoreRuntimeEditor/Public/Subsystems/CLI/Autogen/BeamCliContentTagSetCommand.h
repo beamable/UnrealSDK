@@ -18,6 +18,7 @@ Arguments:
   <tag>  List of tags for us to affect
 
 Options:
+  --clear                                                                  Set the tags to a empty value, if you pass something in [<tag>] it will be ignored
   --filter-type <ExactIds|Regexes|Tags|TypeHierarchy|TypeHierarchyStrict>  Defines the semantics for the `filter` argument. When no filters are given, affects all existing content.
                                                                            ExactIds => Will only add the given tags to the ','-separated list of filters
                                                                            Regexes => Will add the given tags to any content whose Id is matched by any of the ','-separated list of filters (C# regex string)

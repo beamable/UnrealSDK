@@ -2,65 +2,56 @@
 
 #include "Subsystems/CLI/BeamCliCommand.h"
 #include "Serialization/BeamJsonUtils.h"
-
-#include "BeamCliProjectLogsCommand.generated.h"
+#include "Subsystems/CLI/Autogen/StreamData/DeveloperUserDataStreamData.h"
+#include "BeamCliDeveloperUserManagerPsCommand.generated.h"
 
 
 UCLASS(BlueprintType)
-class UBeamCliProjectLogsStreamData : public UObject, public IBeamJsonSerializableUObject
+class UBeamCliDeveloperUserManagerPsStreamData : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:	
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FString Raw = {};
+	int32 EventType = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FString LogLevel = {};
+	TArray<UDeveloperUserDataStreamData*> ToUpdate = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FString Message = {};
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FString TimeStamp = {};
+	TArray<int64> ToRemove = {};
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
 	{
-		UBeamJsonUtils::SerializeRawPrimitive(TEXT("raw"), Raw, Serializer);
-		UBeamJsonUtils::SerializeRawPrimitive(TEXT("logLevel"), LogLevel, Serializer);
-		UBeamJsonUtils::SerializeRawPrimitive(TEXT("message"), Message, Serializer);
-		UBeamJsonUtils::SerializeRawPrimitive(TEXT("timeStamp"), TimeStamp, Serializer);	
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("EventType"), EventType, Serializer);
+		UBeamJsonUtils::SerializeArray<UDeveloperUserDataStreamData*>(TEXT("ToUpdate"), ToUpdate, Serializer);
+		UBeamJsonUtils::SerializeArray<int64>(TEXT("ToRemove"), ToRemove, Serializer);	
 	}
 
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
 	{
-		UBeamJsonUtils::SerializeRawPrimitive(TEXT("raw"), Raw, Serializer);
-		UBeamJsonUtils::SerializeRawPrimitive(TEXT("logLevel"), LogLevel, Serializer);
-		UBeamJsonUtils::SerializeRawPrimitive(TEXT("message"), Message, Serializer);
-		UBeamJsonUtils::SerializeRawPrimitive(TEXT("timeStamp"), TimeStamp, Serializer);	
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("EventType"), EventType, Serializer);
+		UBeamJsonUtils::SerializeArray<UDeveloperUserDataStreamData*>(TEXT("ToUpdate"), ToUpdate, Serializer);
+		UBeamJsonUtils::SerializeArray<int64>(TEXT("ToRemove"), ToRemove, Serializer);	
 	}
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("raw")), Raw);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("logLevel")), LogLevel);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("message")), Message);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("timeStamp")), TimeStamp);	
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("EventType")), EventType);
+		UBeamJsonUtils::DeserializeArray<UDeveloperUserDataStreamData*>(Bag->GetArrayField(TEXT("ToUpdate")), ToUpdate, OuterOwner);
+		UBeamJsonUtils::DeserializeArray<int64>(Bag->GetArrayField(TEXT("ToRemove")), ToRemove, OuterOwner);	
 	}
 };
 
 
 /**
  Description:
-  Tail the logs of a microservice
 
 Usage:
-  Beamable.Tools project logs <service> [options]
-
-Arguments:
-  <service>  The name of the service to view logs for
+  Beamable.Tools developer-user-manager ps [options]
 
 Options:
+  -w, --watch                                When true, the command will run forever and watch the state of the program
   --require-process-id <require-process-id>  Listens to the given process id. Terminates this long-running command when the it no longer is running
-  --reconnect                                If the service stops, and reconnect is enabled, then the logs command will wait for the service to restart and then reattach to logs [default: True]
   --dryrun                                   [DEPRECATED] Run as much of the command as possible without making any network calls
   --cid <cid>                                CID (CustomerId) to use (found in Portal->Account); defaults to whatever is in '.beamable/connection-configuration.json'
   --pid <pid>                                PID (Realm ID) to use (found in Portal -> Games -> Any Realm's details); defaults to whatever is in '.beamable/connection-configuration.json'
@@ -85,18 +76,17 @@ Options:
 
 
 
-
  */
 UCLASS()
-class UBeamCliProjectLogsCommand : public UBeamCliCommand
+class UBeamCliDeveloperUserManagerPsCommand : public UBeamCliCommand
 {
 	GENERATED_BODY()
 
 public:
 	inline static FString StreamType = FString(TEXT("stream"));
-	UPROPERTY() TArray<UBeamCliProjectLogsStreamData*> Stream;
+	UPROPERTY() TArray<UBeamCliDeveloperUserManagerPsStreamData*> Stream;
 	UPROPERTY() TArray<int64> Timestamps;
-	TFunction<void (TArray<UBeamCliProjectLogsStreamData*>& StreamData, TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnStreamOutput;	
+	TFunction<void (TArray<UBeamCliDeveloperUserManagerPsStreamData*>& StreamData, TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnStreamOutput;	
 
 	TFunction<void (const int& ResCode, const FBeamOperationHandle& Op)> OnCompleted;
 	virtual bool HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer) override;

@@ -2,25 +2,59 @@
 
 #include "Subsystems/CLI/BeamCliCommand.h"
 #include "Serialization/BeamJsonUtils.h"
+#include "Subsystems/CLI/Autogen/StreamData/DeveloperUserDataStreamData.h"
+#include "BeamCliDeveloperUserManagerSaveUserCommand.generated.h"
 
-#include "BeamCliProjectOpenSwaggerCommand.generated.h"
 
+UCLASS(BlueprintType)
+class UBeamCliDeveloperUserManagerSaveUserStreamData : public UObject, public IBeamJsonSerializableUObject
+{
+	GENERATED_BODY()
+
+public:	
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<UDeveloperUserDataStreamData*> CreatedUsers = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<UDeveloperUserDataStreamData*> DeletedUsers = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<UDeveloperUserDataStreamData*> SavedUsers = {};
+
+	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
+	{
+		UBeamJsonUtils::SerializeArray<UDeveloperUserDataStreamData*>(TEXT("CreatedUsers"), CreatedUsers, Serializer);
+		UBeamJsonUtils::SerializeArray<UDeveloperUserDataStreamData*>(TEXT("DeletedUsers"), DeletedUsers, Serializer);
+		UBeamJsonUtils::SerializeArray<UDeveloperUserDataStreamData*>(TEXT("SavedUsers"), SavedUsers, Serializer);	
+	}
+
+	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
+	{
+		UBeamJsonUtils::SerializeArray<UDeveloperUserDataStreamData*>(TEXT("CreatedUsers"), CreatedUsers, Serializer);
+		UBeamJsonUtils::SerializeArray<UDeveloperUserDataStreamData*>(TEXT("DeletedUsers"), DeletedUsers, Serializer);
+		UBeamJsonUtils::SerializeArray<UDeveloperUserDataStreamData*>(TEXT("SavedUsers"), SavedUsers, Serializer);	
+	}
+
+	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
+	{
+		UBeamJsonUtils::DeserializeArray<UDeveloperUserDataStreamData*>(Bag->GetArrayField(TEXT("CreatedUsers")), CreatedUsers, OuterOwner);
+		UBeamJsonUtils::DeserializeArray<UDeveloperUserDataStreamData*>(Bag->GetArrayField(TEXT("DeletedUsers")), DeletedUsers, OuterOwner);
+		UBeamJsonUtils::DeserializeArray<UDeveloperUserDataStreamData*>(Bag->GetArrayField(TEXT("SavedUsers")), SavedUsers, OuterOwner);	
+	}
+};
 
 
 /**
  Description:
-  Opens the swagger page for a given service
 
 Usage:
-  Beamable.Tools project open-swagger [<service-name>] [options]
-
-Arguments:
-  <service-name>  Name of the service to open swagger to []
+  Beamable.Tools developer-user-manager save-user [options]
 
 Options:
-  -k, --routing-key <routing-key>        The routing key for the service instance we want. If not passed, defaults to the local service [default: desktop-qdgihj5_240e83a4f18322cec84caf519964bd4c]
-  -r, --remote                           When set, enforces the routing key to be the one for the service deployed to the realm. Cannot be specified when --routing-key is also set
-  --src-tool <src-tool>                  A hint to the Portal page which tool is being used [default: cli]
+  --access-token <access-token>
+  --refresh-token <refresh-token>
+  --pid <pid>
+  --cid <cid>
+  --gamer-tag <gamer-tag>
   --dryrun                               [DEPRECATED] Run as much of the command as possible without making any network calls
   --cid <cid>                            CID (CustomerId) to use (found in Portal->Account); defaults to whatever is in '.beamable/connection-configuration.json'
   --pid <pid>                            PID (Realm ID) to use (found in Portal -> Games -> Any Realm's details); defaults to whatever is in '.beamable/connection-configuration.json'
@@ -45,15 +79,17 @@ Options:
 
 
 
-
  */
 UCLASS()
-class UBeamCliProjectOpenSwaggerCommand : public UBeamCliCommand
+class UBeamCliDeveloperUserManagerSaveUserCommand : public UBeamCliCommand
 {
 	GENERATED_BODY()
 
 public:
-		
+	inline static FString StreamType = FString(TEXT("stream"));
+	UPROPERTY() TArray<UBeamCliDeveloperUserManagerSaveUserStreamData*> Stream;
+	UPROPERTY() TArray<int64> Timestamps;
+	TFunction<void (TArray<UBeamCliDeveloperUserManagerSaveUserStreamData*>& StreamData, TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnStreamOutput;	
 
 	TFunction<void (const int& ResCode, const FBeamOperationHandle& Op)> OnCompleted;
 	virtual bool HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer) override;

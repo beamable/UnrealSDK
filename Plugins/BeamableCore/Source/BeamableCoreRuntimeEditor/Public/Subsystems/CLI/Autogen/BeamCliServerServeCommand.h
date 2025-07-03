@@ -56,6 +56,7 @@ Options:
   -cs, --custom-splitter                               When true, will use custom logic to split the command line given to the server via HTTP request.
                                                        The default splitter (from Microsoft) does NOT allow you to pass in JSON blobs as arguments.
                                                        The custom splitter does its best to support all our commands correctly and accept json blobs as arguments [default: False]
+  -scpw, --skip-content-prewarm                        When true, will NOT pre-warm the content service with the latest content manifest [default: False]
   --dryrun                                             [DEPRECATED] Run as much of the command as possible without making any network calls
   --cid <cid>                                          CID (CustomerId) to use (found in Portal->Account); defaults to whatever is in '.beamable/connection-configuration.json'
   --pid <pid>                                          PID (Realm ID) to use (found in Portal -> Games -> Any Realm's details); defaults to whatever is in '.beamable/connection-configuration.json'

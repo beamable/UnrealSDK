@@ -5,7 +5,9 @@
 #include "CoreMinimal.h"
 #include "Subsystems/BeamEditorSubsystem.h"
 #include "Subsystems/CLI/BeamCli.h"
+#include "Subsystems/CLI/Autogen/BeamCliDeveloperUserManagerCreateUserBatchCommand.h"
 #include "Subsystems/CLI/Autogen/StreamData/DeveloperUserDataStreamData.h"
+
 #include "BeamUserDeveloperManagerEditor.generated.h"
 
 
@@ -17,6 +19,7 @@ class BEAMABLECORERUNTIMEEDITOR_API UBeamUserDeveloperManagerEditor : public UBe
 {
 	GENERATED_BODY()
 
+
 	UPROPERTY()
 	UBeamCli* BeamCli;
 
@@ -25,13 +28,18 @@ class BEAMABLECORERUNTIMEEDITOR_API UBeamUserDeveloperManagerEditor : public UBe
 
 	UPROPERTY()
 	TMap<FBeamGamerTag, UDeveloperUserDataStreamData*> LocalUserDeveloperCache;
-	
+
 	TMap<int32, TArray<FBeamRealmUser>> CapturedUsers;
 
 	/**
 	 * @brief Stored lambda delegate handle for what this subsystem does when a user slot is authenticated.
 	 */
 	FDelegateHandle UserSlotAuthenticatedHandler;
+
+
+	FDelegateHandle PreBeginPieHandler;
+
+	FDelegateHandle BeginPieHandler;
 
 
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
@@ -61,8 +69,13 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void CreateDeveloperUser(const FBeamOperationHandle& BeamOperationHandle, FString alias = "", FString decription = "");
 
+	
+	void CreateTemporaryDeveloperUser(TMap<FBeamGamerTag, int32> TemplateGamerTagAmount, const FBeamOperationHandle& BeamOperationHandle, TFunction<void(TArray<UBeamCliDeveloperUserManagerCreateUserBatchStreamData*>& StreamData, TArray<int64>&
+		                                  Timestamps, const FBeamOperationHandle& Op)> OnResult);
+
 	UFUNCTION(BlueprintCallable)
-	void CreateTemporaryDeveloperUser(FString TemplateGamerTag, const FBeamOperationHandle& BeamOperationHandle);
+	void CaptureUser(TArray<FBeamRealmUser> RealmUsers, const FBeamOperationHandle& BeamOperationHandle);
+
 
 	UFUNCTION(BlueprintCallable)
 	void GetAllUsers(TArray<UDeveloperUserDataStreamData*>& AllUsers);
@@ -70,7 +83,10 @@ public:
 protected:
 	void RebuildLocalDeveloperUserCache(TArray<UDeveloperUserDataStreamData*> AllEntries);
 
-	void UpdateLocalDeveloperUserCache(TArray<UDeveloperUserDataStreamData*> ToUpdate, TArray<UDeveloperUserDataStreamData*> ToRemove);
+	void UpdateLocalDeveloperUserCache(TArray<UDeveloperUserDataStreamData*> ToUpdate, TArray<int64> ToRemove);
 
 	void TriggerOnUserSlotAuthenticated(const FUserSlot& UserSlot, const FBeamRealmUser& BeamRealmUser, const FBeamOperationHandle& BeamOperationHandle, const UObject* Context);
+	void TriggerOnPreBeginPie(const bool IsSimulating);
+
+	void TriggerOnBeginPie(bool IsSimulating);
 };
