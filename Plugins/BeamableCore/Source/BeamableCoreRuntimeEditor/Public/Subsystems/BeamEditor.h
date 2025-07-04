@@ -185,11 +185,6 @@ class BEAMABLECORERUNTIMEEDITOR_API UBeamEditor : public UEditorSubsystem
 	 * @brief Stored lambda delegate handle for what this subsystem does when a user slot is cleared.
 	 */
 	FDelegateHandle UserSlotClearedHandler;
-
-	/**
-	 * @brief Stored lambda delegate handle for what this subsystem does before we even start the PIE (mostly just trigger a callback).
-	 */
-	FDelegateHandle PreBeginPIEHandler;
 	
 	/**
 	 * @brief Stored lambda delegate handle for what this subsystem does when we enter PIE mode (mostly just trigger a callback).

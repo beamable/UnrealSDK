@@ -8,6 +8,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Subsystems/Inventory/BeamInventorySubsystem.h"
 #include "Subsystems/Matchmaking/BeamMatchmakingSubsystem.h"
+#include "Subsystems/PIE/BeamPIE.h"
 
 void UBeamLobbySubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
@@ -387,7 +388,7 @@ bool UBeamLobbySubsystem::TryGetDedicatedServerInstanceLobby(ULobby*& Lobby)
 	{
 		if (KnownLobby->Data.IsSet)
 		{
-			if (KnownLobby->Data.Val.Contains(Reserved_GameServer_Property))
+			if (KnownLobby->Data.Val.Contains(Reserved_Lobby_From_Editor_Play_Mode_Property))
 			{
 				Lobby = KnownLobby;
 				return true;
@@ -655,6 +656,34 @@ FBeamOperationHandle UBeamLobbySubsystem::CPP_ProvisionGameServerForLobbyOperati
 }
 
 // Dedicated Server Operations API
+FBeamOperationHandle UBeamLobbySubsystem::RegisterLobbyWithServerOperation(FUserSlot UserSlot, const FGuid& LobbyId, FBeamOperationEventHandler OnOperationEvent)
+{
+	const auto Handle = Runtime->RequestTrackerSystem->BeginOperation({UserSlot}, GetClass()->GetFName().ToString(), OnOperationEvent);
+	RegisterLobbyWithServer(UserSlot, LobbyId, Handle);
+	return Handle;
+}
+
+FBeamOperationHandle UBeamLobbySubsystem::CPP_RegisterLobbyWithServerOperation(FUserSlot UserSlot, const FGuid& LobbyId, FBeamOperationEventHandlerCode OnOperationEvent)
+{
+	const auto Handle = Runtime->RequestTrackerSystem->CPP_BeginOperation({UserSlot}, GetClass()->GetFName().ToString(), OnOperationEvent);
+	RegisterLobbyWithServer(UserSlot, LobbyId, Handle);
+	return Handle;
+}
+
+FBeamOperationHandle UBeamLobbySubsystem::NotifyLobbyReadyForClientsOperation(FUserSlot UserSlot, const FGuid& LobbyId, FBeamOperationEventHandler OnOperationEvent)
+{
+	const auto Handle = Runtime->RequestTrackerSystem->BeginOperation({UserSlot}, GetClass()->GetFName().ToString(), OnOperationEvent);
+	NotifyLobbyReadyForClients(UserSlot, LobbyId, Handle);
+	return Handle;
+}
+
+FBeamOperationHandle UBeamLobbySubsystem::CPP_NotifyLobbyReadyForClientsOperation(FUserSlot UserSlot, const FGuid& LobbyId, FBeamOperationEventHandlerCode OnOperationEvent)
+{
+	const auto Handle = Runtime->RequestTrackerSystem->CPP_BeginOperation({UserSlot}, GetClass()->GetFName().ToString(), OnOperationEvent);
+	NotifyLobbyReadyForClients(UserSlot, LobbyId, Handle);
+	return Handle;
+}
+
 FBeamOperationHandle UBeamLobbySubsystem::AcceptUserIntoGameServerOperation(FUserSlot UserSlot, const FString& Options, const FString& Address, const FUniqueNetIdRepl& UniqueId,
                                                                             FBeamOperationEventHandler OnOperationEvent)
 {
@@ -670,6 +699,7 @@ FBeamOperationHandle UBeamLobbySubsystem::CPP_AcceptUserIntoGameServerOperation(
 	AcceptUserIntoGameServer(UserSlot, Options, Address, UniqueId, Handle);
 	return Handle;
 }
+
 
 // OPERATIONS Implementations
 
@@ -1201,13 +1231,36 @@ void UBeamLobbySubsystem::ProvisionGameServerForLobby(const FUserSlot& Slot, FOp
 	auto _ = RequestPostServer(Slot, LobbyState->LobbyId, NewGameContent, Op, Handler);
 }
 
-
 // Dedicated Server API
-void UBeamLobbySubsystem::SetLobbyAsReadyForConnections(const FUserSlot& Slot, const FGuid& LobbyId, FBeamOperationHandle Op)
+void UBeamLobbySubsystem::RegisterLobbyWithServer(const FUserSlot& Slot, const FGuid& LobbyId, FBeamOperationHandle Op)
 {
-	checkf(IsRunningDedicatedServer(), TEXT("This can only be run from inside a dedicated server!"))
+	ensureAlwaysMsgf(Runtime->IsDedicatedGameServer(), TEXT("This can only be run from inside a dedicated server!"));
+
+	// We start by fetching the lobby...
+	const auto Handler = FBeamOperationEventHandlerCode::CreateLambda([this, Op](FBeamOperationEvent Evt)
+	{
+		// If we failed to fetch the lobby, fail to register it.
+		if (!Evt.CompletedWithSuccess())
+		{
+			RequestTracker->TriggerOperationError(Op, TEXT("FAILED_TO_FETCH_LOBBY_DATA"));
+			return;
+		}
+
+		// TODO: Expose hook at the last mile of this process, after hook redesign.
+
+		// TODO: Set up a notification handler for this lobby that becomes aware (we need to fix)
+		// LobbyNotification->CPP_SubscribeToLobbyUpdate()
+		// For now, we just complete the op successfully after we fetch it.
+		RequestTracker->TriggerOperationSuccess(Op, TEXT(""));
+	});
+	CPP_RefreshLobbyDataOperation(Slot, Handler, LobbyId);
+}
+
+void UBeamLobbySubsystem::NotifyLobbyReadyForClients(const FUserSlot& Slot, const FGuid& LobbyId, FBeamOperationHandle Op)
+{
+	ensureAlwaysMsgf(Runtime->IsDedicatedGameServer(), TEXT("This can only be run from inside a dedicated server!"));
 	RequestUpdateLobbyMetadata(Slot, LobbyId, FOptionalString{}, FOptionalString{}, FOptionalLobbyRestriction{}, FOptionalBeamContentId{}, FOptionalBeamGamerTag{},
-	                           FOptionalInt32{}, FOptionalMapOfString{TMap<FString, FString>{{Reserved_GameServer_Ready_Property, TEXT("true")}}}, FOptionalArrayOfString{}, Op,
+	                           FOptionalInt32{}, FOptionalMapOfString{TMap<FString, FString>{{Reserved_Game_Server_Ready_Property, TEXT("true")}}}, FOptionalArrayOfString{}, Op,
 	                           FOnApiLobbyPutMetadataByIdFullResponse::CreateLambda([this, Op](FApiLobbyPutMetadataByIdFullResponse Resp)
 	                           {
 		                           if (Resp.State != RS_Success)
@@ -1221,32 +1274,107 @@ void UBeamLobbySubsystem::SetLobbyAsReadyForConnections(const FUserSlot& Slot, c
 
 void UBeamLobbySubsystem::AcceptUserIntoGameServer(const FUserSlot& Slot, const FString& Options, const FString& Address, const FUniqueNetIdRepl& UniqueId, FBeamOperationHandle Op)
 {
-	checkf(IsRunningDedicatedServer(), TEXT("This can only be run from inside a dedicated server!"))
+	ensureAlwaysMsgf(Runtime->IsDedicatedGameServer(), TEXT("This can only be run from inside a dedicated server!"));
 
-#if WITH_EDITOR
-	// TODO: First thing is starting a BeamPIE operation that sees if it's initialization process is complete.
-	// TODO:  Outside of PIE, this does NOTHING other than immediately complete.
-#endif
-    // TODO: Then, we can parse the options.
-	// TODO: If there are no options, just trigger a successful operation.
-	// TODO: If there are options, do the "Use the AccessToken"->"Validate person is in Lobby"
-	const FString& ConnectingAccessToken = UGameplayStatics::ParseOption(Options, "BeamAccessToken");
-	const FString& ConnectingToLobby = UGameplayStatics::ParseOption(Options, "BeamLobbyId");
-
-	const auto AccountsApi = GEngine->GetEngineSubsystem<UBeamAccountsApi>();
-
-	// FBeamRequestContext Ctx;
-	const auto Req = UBasicAccountsGetMeRequest::Make(GetTransientPackage(), {});
-	GEngine->GetEngineSubsystem<UBeamBackend>()->OverrideRequestAuthorization(Req, ConnectingAccessToken);
-
-	FBeamRequestContext Ctx;
-	AccountsApi->CPP_GetMe(Slot, Req, FOnBasicAccountsGetMeFullResponse::CreateLambda([this](FBasicAccountsGetMeFullResponse Resp)
+	// First thing is starting a BeamPIE operation that sees if it's initialization process is complete.
+	// Outside of PIE, this does NOTHING other than immediately complete.
+	const auto PIE = GEngine->GetEngineSubsystem<UBeamPIE>();
+	const auto PostBeamPIE = FBeamOperationEventHandlerCode::CreateLambda([this, Options, Op, PIE](FBeamOperationEvent Evt)
 	{
-		if (Resp.State == RS_Success)
+		// Do nothing on error or cancellation (should never happen unless something fails in the PIE initialization flow)
+		if (Evt.CompletedWithError() || Evt.CompletedWithCancelling())
 		{
-			const auto GamerTag = Resp.SuccessData->Id;
+			// Just error out the user with a server not ready code.
+			RequestTracker->TriggerOperationError(Op, "SERVER_NOT_READY");
+			return;
 		}
-	}), Ctx, Op, this);
+
+		// Then, we can parse the options.
+		const auto bHasAccessToken = UGameplayStatics::HasOption(Options, "BeamAccessToken");
+		const auto bHasLobby = UGameplayStatics::HasOption(Options, "BeamLobbyId");
+
+		// If we are missing either of the two required options...			
+		if (!(bHasAccessToken || bHasLobby))
+		{
+			// ... and we are configured to create a fake lobby...
+			const auto Setting = PIE->GetSelectedPIESettings();
+			if (Setting.IsValid() && Setting->FakeLobby.bShouldAutoCreateLobby)
+			{
+				/// ... accept the user even without any options
+				/// (we need to do this in this way because UE does not allow us to define options when entering PIE)
+				RequestTracker->TriggerOperationSuccess(Op, TEXT(""));
+			}
+			else
+			{
+				// Reject the user because they MUST pass these options.
+				if (bHasAccessToken)
+					RequestTracker->TriggerOperationError(Op, TEXT("NO_LOBBY_ID_PROVIDED"));
+				else if (bHasLobby)
+					RequestTracker->TriggerOperationError(Op, TEXT("NO_ACCESS_TOKEN_PROVIDED"));
+				else
+					RequestTracker->TriggerOperationError(Op, TEXT("NO_OPTIONS_PROVIDED"));
+			}
+		}
+		// If there are options...
+		else
+		{
+			// ... fetch the beamable specific options
+			const FString& ConnectingAccessToken = UGameplayStatics::ParseOption(Options, "BeamAccessToken");
+			const FString& ConnectingToLobby = UGameplayStatics::ParseOption(Options, "BeamLobbyId");
+
+			// ... make the provided lobby id is parseable
+			FGuid LobbyGuid;
+			if (!FGuid::Parse(ConnectingToLobby, LobbyGuid))
+			{
+				RequestTracker->TriggerOperationError(Op, TEXT("INVALID_LOBBY_ID_FORMAT_PROVIDED"));
+				return;				
+			}
+
+
+			// ... make sure the provided Lobby id is managed by this game server
+			// (failing this is an invalid state -- you must ensure that the server has fetched the lobby data
+			// via the RegisterLobbyWithServerOperation before trying to accept any user)
+			ULobby* TargetLobby = nullptr;
+			if (!TryGetLobbyById(LobbyGuid, TargetLobby))
+			{
+				RequestTracker->TriggerOperationError(Op, TEXT("INVALID_LOBBY_ID_PROVIDED"));
+				return;
+			}
+
+			/// ... prepare and make a GetMe request using the provided access token.
+			const auto AccountsApi = GEngine->GetEngineSubsystem<UBeamAccountsApi>();
+			const auto Req = UBasicAccountsGetMeRequest::Make(GetTransientPackage(), {});
+			GEngine->GetEngineSubsystem<UBeamBackend>()->OverrideRequestAuthorization(Req, ConnectingAccessToken);
+			FBeamRequestContext Ctx;
+			AccountsApi->CPP_GetMe(
+				GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot(),
+				Req,
+				FOnBasicAccountsGetMeFullResponse::CreateLambda([this, TargetLobby, Op](FBasicAccountsGetMeFullResponse Resp)
+				{
+					if (Resp.State == RS_Success)
+					{
+						// Get the gamer tag from the token.
+						const auto RequestingGamerTag = Resp.SuccessData->Id;
+
+						// Compare it to the players in the target lobby
+						auto bIsInTargetLobby = false;
+						for (const auto& LP : TargetLobby->Players.Val)
+						{
+							const auto GT = LP->PlayerId.Val;
+							bIsInTargetLobby |= RequestingGamerTag == GT;
+						}
+
+						// TODO: Expose hook here, after hook redesign.
+
+						if (bIsInTargetLobby)
+							RequestTracker->TriggerOperationSuccess(Op, TEXT(""));
+						else
+							RequestTracker->TriggerOperationError(Op, TEXT("PLAYER_NOT_IN_LOBBY"));
+					}
+				}), Ctx, Op, this);
+		}
+	});
+	PIE->CPP_WaitForBeamPIEOperation(Slot, this, PostBeamPIE);
 }
 
 // REQUEST HELPERS

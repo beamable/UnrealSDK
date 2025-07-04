@@ -1149,7 +1149,23 @@ public:
 	 */
 	void SendAnalyticsEvent(const FUserSlot& Slot, const FString& EventOpCode, const FString& EventCategory, const FString& EventName, const TArray<TSharedRef<FJsonObject>>& EventParamsObj) const;
 
+	// Game Server Utilities
+public:
+	UFUNCTION(BlueprintGetter)
+	bool IsGameServer() const { return GetWorld()->GetNetMode() < NM_Client; }
 
+	UFUNCTION(BlueprintGetter)
+	bool IsDedicatedGameServer() const { return GetWorld()->IsNetMode(NM_DedicatedServer); }
+
+	UFUNCTION(BlueprintGetter)
+	bool IsListenGameServer() const { return GetWorld()->IsNetMode(NM_ListenServer); }
+	
+	UFUNCTION(BlueprintGetter)
+	bool IsClient() const { return GetWorld()->IsNetMode(NM_Client); }
+
+
+	// Notification Utilities
+public:
 	/**
 	 * Utility that can be used to subscribe to custom Notifications in an easier way than with UBeamNotifications::TrySubscribeForMessage.
 	 * @tparam THandler Type of the Notification Handler. Its signature should be "void (TMessage)".

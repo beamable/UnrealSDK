@@ -118,6 +118,7 @@ class BEAMABLECORE_API UBeamUserSlots : public UEngineSubsystem
 
 	friend class UBeamRuntime;
 	friend class UBeamEditor;
+	friend class UBeamPIE;
 
 	friend class UBeamUserDeveloperManagerEditor;
 
