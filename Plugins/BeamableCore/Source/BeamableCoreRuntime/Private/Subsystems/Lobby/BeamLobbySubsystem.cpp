@@ -1298,7 +1298,7 @@ void UBeamLobbySubsystem::AcceptUserIntoGameServer(const FUserSlot& Slot, const 
 		{
 			// ... and we are configured to create a fake lobby...
 			const auto Setting = PIE->GetSelectedPIESettings();
-			if (Setting.IsValid() && Setting->FakeLobby.bShouldAutoCreateLobby)
+			if (Setting && Setting->FakeLobby.bShouldAutoCreateLobby)
 			{
 				/// ... accept the user even without any options
 				/// (we need to do this in this way because UE does not allow us to define options when entering PIE)
@@ -1327,7 +1327,7 @@ void UBeamLobbySubsystem::AcceptUserIntoGameServer(const FUserSlot& Slot, const 
 			if (!FGuid::Parse(ConnectingToLobby, LobbyGuid))
 			{
 				RequestTracker->TriggerOperationError(Op, TEXT("INVALID_LOBBY_ID_FORMAT_PROVIDED"));
-				return;				
+				return;
 			}
 
 

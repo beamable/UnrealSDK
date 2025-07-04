@@ -98,8 +98,9 @@ public:
 	UPROPERTY()
 	UBeamRequestTracker* RequestTracker;
 
+	int32 InstanceOverride;
 
-	TSharedPtr<const FBeamPIE_Settings> SelectedSettings;
+	FBeamPIE_Settings const* SelectedSettings;
 	bool bFinishedSetup;
 
 	TMap<FBeamPIE_UserSlotHandle, FDelegateHandle> LobbyJoinedHandles;
@@ -121,20 +122,35 @@ public:
 		// Reload the config.
 		if (!GEngine->IsEditor())
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Standalone - Reading BeamPIE Config"))
+			FCoreUObjectDelegates::PreLoadMap.AddLambda([this](FString MapName)
+			{
+				FString GameUserSettingIni;
+				if (FParse::Value(FCommandLine::Get(), TEXT("GameUserSettingsINI="), GameUserSettingIni, false))
+				{
+					auto InstanceStr = GameUserSettingIni.Replace(TEXT("PIEGameUserSettings"), TEXT(""));
+		
+					if (!FDefaultValueHelper::ParseInt(InstanceStr, InstanceOverride))
+					{
+						UE_LOG(LogTemp, Error, TEXT("Error on parse the override instance for the STR: %s"), *InstanceStr);
+					}
+				}
+				UE_LOG(LogTemp, Warning, TEXT("Standalone - Reading BeamPIE Config"))
 
-			const auto Config = GetMutableDefault<UBeamPIEConfig>();
-			UE_LOG(LogTemp, Warning, TEXT("Standalone - Default Load BeamPIE Config - Is Running Server Locally: %d, Local Server Port: %s"),
-			       Config->bIsRunningGameServerLocally,
-			       *Config->CurrLocalServerPort);
+				const auto Config = GetMutableDefault<UBeamPIEConfig>();
+				UE_LOG(LogTemp, Warning, TEXT("Standalone - Default Load BeamPIE Config - Is Running Server Locally: %d, Local Server Port: %s"),
+					   Config->bIsRunningGameServerLocally,
+					   *Config->CurrLocalServerPort);
 
-			Config->LoadConfig(UBeamPIEConfig::StaticClass(), TEXT("BeamPIE"));
-			UE_LOG(LogTemp, Warning, TEXT("Standalone - Manual  Load BeamPIE Config - Is Running Server Locally: %d, Local Server Port: %s"),
-			       Config->bIsRunningGameServerLocally,
-			       *Config->CurrLocalServerPort);
+				Config->LoadConfig(UBeamPIEConfig::StaticClass(), TEXT("BeamPIE"));
+				UE_LOG(LogTemp, Warning, TEXT("Standalone - Manual  Load BeamPIE Config - Is Running Server Locally: %d, Local Server Port: %s"),
+					   Config->bIsRunningGameServerLocally,
+					   *Config->CurrLocalServerPort);
 
-			bFinishedSetup = false;
-			SelectedSettings = MakeShareable<const FBeamPIE_Settings>(ChooseSelectedPIESettings(FString{}));
+				bFinishedSetup = false;
+
+				SelectedSettings = ChooseSelectedPIESettings(UWorld::RemovePIEPrefix(MapName));
+			});
+		
 		}
 
 #if WITH_EDITOR
@@ -148,7 +164,7 @@ public:
 				return;
 			}
 			const auto PIE = GEngine->GetEngineSubsystem<UBeamPIE>();
-			SelectedSettings = MakeShareable<const FBeamPIE_Settings>(PIE->ChooseSelectedPIESettings(EditorWorld->GetMapName()));
+			SelectedSettings = PIE->ChooseSelectedPIESettings(UWorld::RemovePIEPrefix(EditorWorld->GetMapName()));
 
 			if (!SelectedSettings)
 			{
@@ -158,7 +174,7 @@ public:
 
 			auto DeveloperUserSubsystem = GEditor->GetEditorSubsystem<UBeamUserDeveloperManagerEditor>();
 
-			DeveloperUserSubsystem->TriggerOnPreBeginPIE(SelectedSettings.Get());
+			DeveloperUserSubsystem->TriggerOnPreBeginPIE(SelectedSettings);
 
 			if (auto PlaySettings = GetMutableDefault<ULevelEditorPlaySettings>())
 			{
@@ -325,7 +341,7 @@ public:
 	}
 
 
-	TSharedPtr<const FBeamPIE_Settings> GetSelectedPIESettings() const { return SelectedSettings; }
+	FBeamPIE_Settings const* GetSelectedPIESettings() const { return SelectedSettings; }
 
 	FBeamPIE_Settings const* ChooseSelectedPIESettings(FString MapName) const
 	{
@@ -334,8 +350,7 @@ public:
 #endif
 
 		const auto Config = GetDefault<UBeamPIEConfig>();
-		UE_LOG(LogBeamEditor, Display, TEXT("Loaded PIE Config - %d, %s"), Config->bIsRunningGameServerLocally, *Config->GetDefaultConfigFilename())
-
+	
 		if (Config->PerMapSelection.Contains(MapName))
 		{
 			const auto Id = GetDefault<UBeamPIEConfig>()->PerMapSelection[MapName];
@@ -348,10 +363,19 @@ public:
 
 	FString GetLogArgs(FString Header, FWorldContext* WorldContext)
 	{
-		const auto CurrMapName = WorldContext->World()->GetMapName();
-		return FString::Printf(TEXT("%s [Index: %d, Starting Map: %s, IsServer: %d] -"), *Header, WorldContext->PIEInstance, *CurrMapName, WorldContext->World()->GetNetMode() < NM_Client);
+		const auto CurrMapName = UWorld::RemovePIEPrefix(WorldContext->World()->GetMapName());
+		return FString::Printf(TEXT("%s [Index: %d, Starting Map: %s, IsServer: %d] -"), *Header, GetPIEInstance(WorldContext), *CurrMapName, WorldContext->World()->GetNetMode() < NM_Client);
 	}
 
+	int32 GetPIEInstance(FWorldContext* WorldContext)
+	{
+		if (WorldContext->PIEInstance == -1)
+		{
+			return InstanceOverride;
+		}
+		return WorldContext->PIEInstance;
+	}
+	
 	void BeamInitPIE(UObject* CallingContext, FBeamOperationHandle Op)
 	{
 		ensureAlwaysMsgf(CallingContext, TEXT("You must provide a calling context to this function!"));
@@ -424,7 +448,7 @@ public:
 	{
 		// If we don't have a setting selected, we should just complete the operation (this happens in builds).
 		const auto Setting = GetSelectedPIESettings();
-		if (!Setting.IsValid())
+		if (!Setting)
 		{
 			RequestTracker->TriggerOperationSuccess(Op, TEXT(""));
 			return;
@@ -435,7 +459,7 @@ public:
 		TArray<FBeamPIE_UserSlotHandle> PossibleSlotHandles;
 		for (const auto& AssignedUser : Setting->AssignedUsers)
 		{
-			if (AssignedUser.Key.PIEIndex == WorldContext->PIEInstance - 1 || WorldContext->RunAsDedicated)
+			if (AssignedUser.Key.PIEIndex == GetPIEInstance(WorldContext) || WorldContext->RunAsDedicated)
 			{
 				UE_LOG(LogBeamEditor, Log, TEXT("%s Found Assigned User. USER_SLOT=%s, PIE=%d"), *GetLogArgs(TEXT("Beam PIE Prepare"), WorldContext),
 				       *AssignedUser.Key.Slot.Name, AssignedUser.Key.PIEIndex);
@@ -444,7 +468,7 @@ public:
 		}
 
 		// If we are in the server...
-		if (WorldContext->RunAsDedicated)
+		if (WorldContext->World()->GetNetMode() < NM_Client)
 		{
 			// Try to create the lobby with these users in it --- keep trying until it succeeds (allow failing until all the users are online).
 			// Then, when the lobby is created:				
@@ -575,44 +599,45 @@ public:
 	{
 		// For each of them, check if we already are 
 		const auto LobbySystem = Runtime->GetGameInstance()->GetSubsystem<UBeamLobbySubsystem>();
-
-		auto bAreAllUsersAlreadyInTheLobby = true;
-		for (const auto& Handle : PossibleSlotHandles)
-		{
-			auto LobbyState = LobbySystem->GetCurrentSlotLobbyState(Handle.Slot);
-
-			// If the user is NOT already in the lobby, let's set up a notification that will trigger when they see that they've joined it.
-			ULobby* _ = nullptr;
-			if (!LobbySystem->TryGetCurrentLobby(Handle.Slot, _) && _->Data.Val.Contains(UBeamLobbySubsystem::Reserved_Lobby_From_Editor_Play_Mode_Property))
-			{
-				bAreAllUsersAlreadyInTheLobby = false;
-				// Add a notification for when the player joins the lobby
-				const auto LobbyJoinedHandle = LobbyState->OnLobbyJoinedCode.AddLambda([this, Handle, LobbySystem, LobbyState, PossibleSlotHandles, Op](const FUserSlot&, ULobby*, FLobbyUpdateNotificationMessage)
-				{
-					// Check to see if ALL slots managed by this PIE instance are already in the lobby.
-					auto bAreAllSlotsInTheLobby = true;
-					for (const auto& SlotHandle : PossibleSlotHandles)
-					{
-						ULobby* L = nullptr;
-						bAreAllSlotsInTheLobby &= LobbySystem->TryGetCurrentLobby(SlotHandle.Slot, L) && L->Data.Val.Contains(UBeamLobbySubsystem::Reserved_Lobby_From_Editor_Play_Mode_Property);
-					}
-
-					// If all slots in this instance are in the lobby, we are done and can complete the operation.
-					if (bAreAllSlotsInTheLobby)
-					{
-						LobbyState->OnLobbyJoinedCode.Remove(LobbyJoinedHandles[Handle]);
-						LobbyJoinedHandles.Remove(Handle);
-						RequestTracker->TriggerOperationSuccess(Op, TEXT(""));
-					}
-				});
-				LobbyJoinedHandles.Add(Handle, LobbyJoinedHandle);
-			}
-		}
-
-		if (bAreAllUsersAlreadyInTheLobby)
-		{
-			RequestTracker->TriggerOperationSuccess(Op, TEXT(""));
-		}
+		WaitUntilClientIsLoggedIn(Runtime, PossibleSlotHandles, Op);
+		return;
+		// auto bAreAllUsersAlreadyInTheLobby = true;
+		// for (const auto& Handle : PossibleSlotHandles)
+		// {
+		// 	auto LobbyState = LobbySystem->GetCurrentSlotLobbyState(Handle.Slot);
+		//
+		// 	// If the user is NOT already in the lobby, let's set up a notification that will trigger when they see that they've joined it.
+		// 	ULobby* _ = nullptr;
+		// 	if (!LobbySystem->TryGetCurrentLobby(Handle.Slot, _) && _->Data.Val.Contains(UBeamLobbySubsystem::Reserved_Lobby_From_Editor_Play_Mode_Property))
+		// 	{
+		// 		bAreAllUsersAlreadyInTheLobby = false;
+		// 		// Add a notification for when the player joins the lobby
+		// 		const auto LobbyJoinedHandle = LobbyState->OnLobbyJoinedCode.AddLambda([this, Handle, LobbySystem, LobbyState, PossibleSlotHandles, Op](const FUserSlot&, ULobby*, FLobbyUpdateNotificationMessage)
+		// 		{
+		// 			// Check to see if ALL slots managed by this PIE instance are already in the lobby.
+		// 			auto bAreAllSlotsInTheLobby = true;
+		// 			for (const auto& SlotHandle : PossibleSlotHandles)
+		// 			{
+		// 				ULobby* L = nullptr;
+		// 				bAreAllSlotsInTheLobby &= LobbySystem->TryGetCurrentLobby(SlotHandle.Slot, L) && L->Data.Val.Contains(UBeamLobbySubsystem::Reserved_Lobby_From_Editor_Play_Mode_Property);
+		// 			}
+		//
+		// 			// If all slots in this instance are in the lobby, we are done and can complete the operation.
+		// 			if (bAreAllSlotsInTheLobby)
+		// 			{
+		// 				LobbyState->OnLobbyJoinedCode.Remove(LobbyJoinedHandles[Handle]);
+		// 				LobbyJoinedHandles.Remove(Handle);
+		// 				RequestTracker->TriggerOperationSuccess(Op, TEXT(""));
+		// 			}
+		// 		});
+		// 		LobbyJoinedHandles.Add(Handle, LobbyJoinedHandle);
+		// 	}
+		// }
+		//
+		// if (bAreAllUsersAlreadyInTheLobby)
+		// {
+		// 	RequestTracker->TriggerOperationSuccess(Op, TEXT(""));
+		// }
 	}
 
 
@@ -634,7 +659,7 @@ public:
 					TArray<FBeamPIE_UserSlotHandle> PossibleSlotHandles;
 					for (const auto& AssignedUser : Setting->AssignedUsers)
 					{
-						if (AssignedUser.Key.PIEIndex == WorldContext->PIEInstance)
+						if (AssignedUser.Key.PIEIndex == GetPIEInstance(WorldContext) || WorldContext->RunAsDedicated)
 						{
 							PossibleSlotHandles.Add(AssignedUser.Key);
 						}
