@@ -9,7 +9,7 @@ struct BEAMABLECORE_API FBeamPIE_UserSlotHandle
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	int32 PIEIndex = -1;
+	int32 PIEIndex = 0;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FUserSlot Slot = FUserSlot{};

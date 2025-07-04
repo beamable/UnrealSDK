@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "PIE/BeamPIE_Settings.h"
 #include "Subsystems/BeamEditorSubsystem.h"
 #include "Subsystems/CLI/BeamCli.h"
 #include "Subsystems/CLI/Autogen/BeamCliDeveloperUserManagerCreateUserBatchCommand.h"
@@ -37,9 +38,6 @@ class BEAMABLECORERUNTIMEEDITOR_API UBeamUserDeveloperManagerEditor : public UBe
 	FDelegateHandle UserSlotAuthenticatedHandler;
 
 
-	FDelegateHandle PreBeginPieHandler;
-
-
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 
 	virtual void Deinitialize() override;
@@ -68,6 +66,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetUserInfo(FBeamGamerTag GamerTag, FString Alias, FString Description, TArray<FString> Tags);
 
+	void TriggerOnPreBeginPIE(const FBeamPIE_Settings* Settings);
+
 protected:
 	void RunPsCommand(FBeamOperationHandle FirstEventOp);
 
@@ -76,6 +76,4 @@ protected:
 	void UpdateLocalDeveloperUserCache(TArray<UDeveloperUserDataStreamData*> ToUpdate, TArray<int64> ToRemove);
 
 	void TriggerOnUserSlotAuthenticated(const FUserSlot& UserSlot, const FBeamRealmUser& BeamRealmUser, const FBeamOperationHandle& BeamOperationHandle, const UObject* Context);
-
-	void TriggerOnPreBeginPIE(const bool IsSimulating);
 };

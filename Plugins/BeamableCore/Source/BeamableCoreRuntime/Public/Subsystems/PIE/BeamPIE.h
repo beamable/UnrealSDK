@@ -9,6 +9,7 @@
 #include "BeamableCore/Public/PIE/BeamPIEConfig.h"
 #include "BeamableCore/Public/RequestTracker/BeamRequestTracker.h"
 #include "BeamableCore/Public/UserSlots/BeamUserSlots.h"
+#include "Subsystems/UserDeveloperManager/BeamUserDeveloperManagerEditor.h"
 
 
 #include "BeamPIE.generated.h"
@@ -140,17 +141,27 @@ public:
 		// Set up the Start PIE handler that integrates our settings with Unreal's Play Settings
 		StartPIEHandler = FEditorDelegates::StartPIE.AddLambda([this](const bool)
 		{
+			UWorld* EditorWorld = GEditor->GetEditorWorldContext().World();
+			if (!EditorWorld)
+			{
+				UE_LOG(LogBeamEditor, Error, TEXT("Could not find the editor world context!"));
+				return;
+			}
+			const auto PIE = GEngine->GetEngineSubsystem<UBeamPIE>();
+			SelectedSettings = MakeShareable<const FBeamPIE_Settings>(PIE->ChooseSelectedPIESettings(EditorWorld->GetMapName()));
+
+			if (!SelectedSettings)
+			{
+				UE_LOG(LogBeamEditor, Verbose, TEXT("No beam pie settings found!"));
+				return;
+			}
+
+			auto DeveloperUserSubsystem = GEditor->GetEditorSubsystem<UBeamUserDeveloperManagerEditor>();
+
+			DeveloperUserSubsystem->TriggerOnPreBeginPIE(SelectedSettings.Get());
+
 			if (auto PlaySettings = GetMutableDefault<ULevelEditorPlaySettings>())
 			{
-				const auto PIE = GEngine->GetEngineSubsystem<UBeamPIE>();
-				UWorld* EditorWorld = GEditor->GetEditorWorldContext().World();
-				if (!EditorWorld)
-				{
-					UE_LOG(LogBeamEditor, Error, TEXT("Could not find the editor world context!"));
-					return;
-				}
-
-				const auto SelectedSettings = PIE->ChooseSelectedPIESettings(EditorWorld->GetMapName());
 				if (SelectedSettings->FakeLobby.bShouldAutoCreateLobby)
 				{
 					if (SelectedSettings->FakeLobby.bIsDedicatedServer)
@@ -196,7 +207,12 @@ public:
 		// Reload from config any changes made by our PIE Settings window + our editor extension dropdown.
 		BeginPIEDelegate = FEditorDelegates::BeginPIE.AddLambda([this](bool)
 		{
-			SelectedSettings = MakeShareable<const FBeamPIE_Settings>(ChooseSelectedPIESettings(FString{}));
+			UWorld* EditorWorld = GEditor->GetEditorWorldContext().World();
+			if (!EditorWorld)
+			{
+				UE_LOG(LogBeamEditor, Error, TEXT("Could not find the editor world context!"));
+				return;
+			}
 			bFinishedSetup = false;
 		});
 #endif
@@ -318,7 +334,7 @@ public:
 #endif
 
 		const auto Config = GetDefault<UBeamPIEConfig>();
-		UE_LOG(LogBeamEditor, Verbose, TEXT("Loaded PIE Config - %d, %s"), Config->bIsRunningGameServerLocally, *Config->GetDefaultConfigFilename())
+		UE_LOG(LogBeamEditor, Display, TEXT("Loaded PIE Config - %d, %s"), Config->bIsRunningGameServerLocally, *Config->GetDefaultConfigFilename())
 
 		if (Config->PerMapSelection.Contains(MapName))
 		{
@@ -408,7 +424,7 @@ public:
 	{
 		// If we don't have a setting selected, we should just complete the operation (this happens in builds).
 		const auto Setting = GetSelectedPIESettings();
-		if (!Setting)
+		if (!Setting.IsValid())
 		{
 			RequestTracker->TriggerOperationSuccess(Op, TEXT(""));
 			return;
@@ -419,7 +435,7 @@ public:
 		TArray<FBeamPIE_UserSlotHandle> PossibleSlotHandles;
 		for (const auto& AssignedUser : Setting->AssignedUsers)
 		{
-			if (AssignedUser.Key.PIEIndex == WorldContext->PIEInstance)
+			if (AssignedUser.Key.PIEIndex == WorldContext->PIEInstance - 1 || WorldContext->RunAsDedicated)
 			{
 				UE_LOG(LogBeamEditor, Log, TEXT("%s Found Assigned User. USER_SLOT=%s, PIE=%d"), *GetLogArgs(TEXT("Beam PIE Prepare"), WorldContext),
 				       *AssignedUser.Key.Slot.Name, AssignedUser.Key.PIEIndex);
@@ -483,6 +499,9 @@ public:
 				// Trigger sub-event on PrepareOp "PIE_ClientLoggedIn" (let's pass in the UserSlot data)
 				RequestTracker->TriggerOperationEvent(PrepareOp, OET_SUCCESS, GetOperationEventID_PIE_ClientLoggedIn(), TEXT(""));
 
+				UE_LOG(LogBeamEditor, Log, TEXT("%s Client - Logging in from Cache. USER_SLOT=%s, PIE=%d"), *GetLogArgs(TEXT("Beam PIE Prepare"), GEngine->GetWorldContextFromWorld(Runtime->GetWorld())),
+				       *CurrSlotHandle.Slot.Name, CurrSlotHandle.PIEIndex);
+
 				// If we are creating the fake lobby, set up a "wait until we are in the lobby operation" that will complete the PrepareOp when it finishes.
 				if (Setting->FakeLobby.bShouldAutoCreateLobby)
 				{
@@ -499,10 +518,14 @@ public:
 			// This is guaranteed to succeed eventually for all configured users.
 			if (Evt.CompletedWithError())
 			{
-				const auto LoginLocalCacheHandler = FBeamOperationEventHandlerCode::CreateUFunction(
-					this, GET_FUNCTION_NAME_CHECKED(UBeamPIE, PIEClientLoginHandler),
-					Runtime, CurrSlotHandle, PossibleSlotHandles, PrepareOp);
-				Runtime->CPP_LoginFromCacheOperation(CurrSlotHandle.Slot, LoginLocalCacheHandler);
+				FTSTicker::GetCoreTicker().AddTicker(FTickerDelegate::CreateLambda([Runtime, CurrSlotHandle, this, PossibleSlotHandles, PrepareOp](const float)
+				{
+					const auto LoginLocalCacheHandler = FBeamOperationEventHandlerCode::CreateUFunction(
+						this, GET_FUNCTION_NAME_CHECKED(UBeamPIE, PIEClientLoginHandler),
+						Runtime, CurrSlotHandle, PossibleSlotHandles, PrepareOp);
+					Runtime->CPP_LoginFromCacheOperation(CurrSlotHandle.Slot, LoginLocalCacheHandler);
+					return false;
+				}), 0.5f);
 			}
 		}
 	}

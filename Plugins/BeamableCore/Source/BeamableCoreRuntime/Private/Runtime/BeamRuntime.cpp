@@ -343,7 +343,7 @@ void UBeamRuntime::InitSDK(FBeamRuntimeHandler OnStartedHandler, FRuntimeError S
 	else if (CurrentSdkState == Initialized)
 	{
 		// Everything is fine so let's continue initializing Beamable by firing off the OnStarted callback.
-		UE_LOG(LogBeamRuntime, Log, TEXT("SDK is already initializing. Calling OnStarted Handler."));		
+		UE_LOG(LogBeamRuntime, Log, TEXT("SDK is already initializing. Calling OnStarted Handler."));
 		OnStartedCode.Broadcast();
 		OnStarted.Broadcast();
 		OnStartedHandler.ExecuteIfBound();
@@ -652,7 +652,7 @@ void UBeamRuntime::TriggerOnStartedAndFrictionlessAuth(FBeamWaitCompleteEvent Ev
 
 	// For servers, don't try to authenticate.
 	if (const bool bIsDedicatedServer = GetGameInstance()->IsDedicatedServerInstance())
-	{		
+	{
 	}
 	// Sign in automatically to the owner player slot (if configured to do so).
 	else if (bApplyFrictionlessLogin)
@@ -2264,7 +2264,8 @@ void UBeamRuntime::LoadCachedUserAtSlot(FUserSlot UserSlot, FBeamOperationHandle
 				if (Resp.State == EBeamFullResponseState::RS_Success)
 				{
 					RunPostAuthenticationSetup(UserSlot, AuthOp);
-					UE_LOG(LogBeamRuntime, Display, TEXT("Authenticated User at Slot! SLOT=%s"), *UserSlot.Name);
+
+					UE_LOG(LogBeamRuntime, Display, TEXT("Authenticated User at Slot! SLOT=%s GAMER TAG=%s"), *UserSlot.Name, *Resp.SuccessData->Id.AsString);
 				}
 				// If this request failed entirely (all retries)... 
 				else if (Resp.State == EBeamFullResponseState::RS_Error)

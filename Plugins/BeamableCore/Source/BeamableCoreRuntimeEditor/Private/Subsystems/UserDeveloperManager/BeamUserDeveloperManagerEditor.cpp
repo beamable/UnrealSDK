@@ -12,7 +12,6 @@
 #include "Subsystems/CLI/Autogen/BeamCliDeveloperUserManagerPsCommand.h"
 #include "Subsystems/CLI/Autogen/BeamCliDeveloperUserManagerSaveUserCommand.h"
 #include "Subsystems/CLI/Autogen/BeamCliDeveloperUserManagerUpdateInfoCommand.h"
-#include "Subsystems/CLI/Autogen/BeamCliDeveloperUserManagerUpdateInfoUserCommand.h"
 
 
 void UBeamUserDeveloperManagerEditor::Initialize(FSubsystemCollectionBase& Collection)
@@ -23,8 +22,6 @@ void UBeamUserDeveloperManagerEditor::Initialize(FSubsystemCollectionBase& Colle
 	BeamCli = GEditor->GetEditorSubsystem<UBeamCli>();
 
 	UserSlotAuthenticatedHandler = BeamUserSlots->GlobalUserSlotAuthenticatedCodeHandler.AddUObject(this, &UBeamUserDeveloperManagerEditor::TriggerOnUserSlotAuthenticated);
-
-	PreBeginPieHandler = FEditorDelegates::PreBeginPIE.AddUObject(this, &UBeamUserDeveloperManagerEditor::TriggerOnPreBeginPIE);
 }
 
 void UBeamUserDeveloperManagerEditor::Deinitialize()
@@ -32,8 +29,6 @@ void UBeamUserDeveloperManagerEditor::Deinitialize()
 	Super::Deinitialize();
 
 	BeamUserSlots->GlobalUserSlotAuthenticatedCodeHandler.Remove(UserSlotAuthenticatedHandler);
-
-	FEditorDelegates::PreBeginPIE.Remove(PreBeginPieHandler);
 }
 
 FBeamOperationHandle UBeamUserDeveloperManagerEditor::OnRealmInitialized(FBeamRealmHandle NewRealm)
@@ -147,49 +142,16 @@ void UBeamUserDeveloperManagerEditor::TriggerOnUserSlotAuthenticated(const FUser
 			};
 
 			auto Handler = RequestTracker->CPP_BeginOperation({}, GetName(), {});
-			
+
 			BeamCli->RunCommandServer(SaveUserCommand, args, Handler);
 		}
 	}
 }
 
-void UBeamUserDeveloperManagerEditor::TriggerOnPreBeginPIE(const bool IsSimulating)
+void UBeamUserDeveloperManagerEditor::TriggerOnPreBeginPIE(const FBeamPIE_Settings* Settings)
 {
-	auto BeamPIESettings = GetDefault<UBeamPIEConfig>()->AllSettings.FindByPredicate([this](FBeamPIE_Settings& S) { return S.SettingsId == GetDefault<UBeamPIEConfig>()->SelectedSettingsId; });
-
-	const auto PlaySettings = GetDefault<ULevelEditorPlaySettings>();
-
-	if (PlaySettings)
-	{
-		UE_LOG(LogTemp, Log, TEXT("Pre-Begin - Separate Server %d!"), PlaySettings->bLaunchSeparateServer ? 1 : 0);
-		UE_LOG(LogTemp, Log, TEXT("Pre-Begin - Separate Server Launch Params %s!"), *PlaySettings->AdditionalServerLaunchParameters);
-
-		int32 clientCount;
-		PlaySettings->GetPlayNumberOfClients(clientCount);
-		UE_LOG(LogTemp, Log, TEXT("Pre-Begin - Client Count %d!"), clientCount);
-
-		uint16 port;
-		PlaySettings->GetServerPort(port);
-		FString MapName;
-		PlaySettings->GetServerMapNameOverride(MapName);
-		UE_LOG(LogTemp, Log, TEXT("Pre-Begin - Server Port %u!"), port);
-		UE_LOG(LogTemp, Log, TEXT("Pre-Begin - Separate MapName %s!"), *MapName);
-	}
-	else
-	{
-		UE_LOG(LogTemp, Log, TEXT("Pre-Begin - No Params!"));
-	}
-
-	FBeamPIE_Settings FakeSettings = {};
-
-	FakeSettings.AssignedUsers.Add(FBeamPIE_UserSlotHandle{0, FUserSlot("Test")}, FBeamGamerTag("1895013317660673"));
-	FakeSettings.AssignedUsers.Add(FBeamPIE_UserSlotHandle{1, FUserSlot("Test")}, FBeamGamerTag("1895013271097349"));
-	FakeSettings.AssignedUsers.Add(FBeamPIE_UserSlotHandle{2, FUserSlot("Test")}, FBeamGamerTag("1895013271097349"));
-	FakeSettings.AssignedUsers.Add(FBeamPIE_UserSlotHandle{3, FUserSlot("Test")}, FBeamGamerTag("1895013271097349"));
-
-
 	TMap<FBeamGamerTag, int32> TemplateAmount;
-	for (auto AssignedUserKeyPair : FakeSettings.AssignedUsers)
+	for (auto AssignedUserKeyPair : Settings->AssignedUsers)
 	{
 		auto UserSlotHandle = AssignedUserKeyPair.Key;
 		if (FBeamGamerTag GamerTag = AssignedUserKeyPair.Value; TemplateAmount.Contains(GamerTag))
@@ -206,8 +168,8 @@ void UBeamUserDeveloperManagerEditor::TriggerOnPreBeginPIE(const bool IsSimulati
 
 	UBeamCliDeveloperUserManagerCreateUserBatchCommand* CreateUserBatchCommand = NewObject<UBeamCliDeveloperUserManagerCreateUserBatchCommand>();
 
-	CreateUserBatchCommand->OnStreamOutput = [this, FakeSettings](const TArray<UBeamCliDeveloperUserManagerCreateUserBatchStreamData*>& Stream, const TArray<int64>&,
-	                                                              const FBeamOperationHandle&)
+	CreateUserBatchCommand->OnStreamOutput = [this, Settings](const TArray<UBeamCliDeveloperUserManagerCreateUserBatchStreamData*>& Stream, const TArray<int64>&,
+	                                                          const FBeamOperationHandle&)
 	{
 		auto Data = Stream.Last();
 
@@ -225,7 +187,7 @@ void UBeamUserDeveloperManagerEditor::TriggerOnPreBeginPIE(const bool IsSimulati
 			}
 		}
 
-		for (auto AssignedUserKeyPair : FakeSettings.AssignedUsers)
+		for (auto AssignedUserKeyPair : Settings->AssignedUsers)
 		{
 			auto CreatedUser = CreatedUserMap[AssignedUserKeyPair.Value.AsLong][0];
 
