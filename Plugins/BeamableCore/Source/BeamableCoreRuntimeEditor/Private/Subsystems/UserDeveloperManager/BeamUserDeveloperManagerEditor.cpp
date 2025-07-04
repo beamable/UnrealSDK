@@ -11,6 +11,8 @@
 #include "Subsystems/CLI/Autogen/BeamCliDeveloperUserManagerCreateUserCommand.h"
 #include "Subsystems/CLI/Autogen/BeamCliDeveloperUserManagerPsCommand.h"
 #include "Subsystems/CLI/Autogen/BeamCliDeveloperUserManagerSaveUserCommand.h"
+#include "Subsystems/CLI/Autogen/BeamCliDeveloperUserManagerUpdateInfoCommand.h"
+#include "Subsystems/CLI/Autogen/BeamCliDeveloperUserManagerUpdateInfoUserCommand.h"
 
 
 void UBeamUserDeveloperManagerEditor::Initialize(FSubsystemCollectionBase& Collection)
@@ -22,19 +24,16 @@ void UBeamUserDeveloperManagerEditor::Initialize(FSubsystemCollectionBase& Colle
 
 	UserSlotAuthenticatedHandler = BeamUserSlots->GlobalUserSlotAuthenticatedCodeHandler.AddUObject(this, &UBeamUserDeveloperManagerEditor::TriggerOnUserSlotAuthenticated);
 
-	PreBeginPieHandler = FEditorDelegates::PreBeginPIE.AddUObject(this, &UBeamUserDeveloperManagerEditor::TriggerOnPreBeginPie);
-	BeginPieHandler = FEditorDelegates::BeginPIE.AddUObject(this, &UBeamUserDeveloperManagerEditor::TriggerOnBeginPie);
-	FEditorDelegates::StartPIE.AddLambda([](const bool IsSimulating)
-	{
-		UE_LOG(LogTemp, Display, TEXT("Trigger start pie"));
-	});
+	PreBeginPieHandler = FEditorDelegates::PreBeginPIE.AddUObject(this, &UBeamUserDeveloperManagerEditor::TriggerOnPreBeginPIE);
 }
 
 void UBeamUserDeveloperManagerEditor::Deinitialize()
 {
 	Super::Deinitialize();
+
+	BeamUserSlots->GlobalUserSlotAuthenticatedCodeHandler.Remove(UserSlotAuthenticatedHandler);
+
 	FEditorDelegates::PreBeginPIE.Remove(PreBeginPieHandler);
-	FEditorDelegates::BeginPIE.Remove(BeginPieHandler);
 }
 
 FBeamOperationHandle UBeamUserDeveloperManagerEditor::OnRealmInitialized(FBeamRealmHandle NewRealm)
@@ -92,43 +91,168 @@ void UBeamUserDeveloperManagerEditor::RunPsCommand(FBeamOperationHandle FirstEve
 }
 
 
-void UBeamUserDeveloperManagerEditor::CreateDeveloperUser(const FBeamOperationHandle& BeamOperationHandle, FString alias, FString decription)
+void UBeamUserDeveloperManagerEditor::TriggerOnUserSlotAuthenticated(const FUserSlot& UserSlot, const FBeamRealmUser& BeamRealmUser, const FBeamOperationHandle& BeamOperationHandle, const UObject* Context)
 {
-	UBeamCliDeveloperUserManagerCreateUserCommand* CreateUserCommand = NewObject<UBeamCliDeveloperUserManagerCreateUserCommand>();
-	CreateUserCommand->OnStreamOutput = [this](const TArray<UBeamCliDeveloperUserManagerCreateUserStreamData*>& Data, const TArray<int64>&,
-	                                           const FBeamOperationHandle&)
+	if (Context)
 	{
-	};
-	CreateUserCommand->OnCompleted = [this](const int& ResCode, const FBeamOperationHandle&)
-	{
-	};
+		const auto WorldContext = GEngine->GetWorldContextFromWorld(Context->GetWorld());
+		if (WorldContext && WorldContext->WorldType == EWorldType::PIE)
+		{
+			TArray<FBeamRealmUser> RealmUsers = {BeamRealmUser};
 
-	auto args = {
-		FString::Printf(TEXT("--alias %s"), *alias),
-		FString::Printf(TEXT("--description %s"), *decription),
-	};
-	BeamCli->RunCommandServer(CreateUserCommand, args, BeamOperationHandle);
+			UBeamCliDeveloperUserManagerSaveUserCommand* SaveUserCommand = NewObject<UBeamCliDeveloperUserManagerSaveUserCommand>();
+			SaveUserCommand->OnStreamOutput = [this](const TArray<UBeamCliDeveloperUserManagerSaveUserStreamData*>& Stream, const TArray<int64>&,
+			                                         const FBeamOperationHandle&)
+			{
+				auto Data = Stream.Last();
+				for (auto SavedUser : Data->SavedUsers)
+				{
+					UE_LOG(LogTemp, Display, TEXT("Saved user %lld"), SavedUser->GamerTag);
+				}
+			};
+			SaveUserCommand->OnCompleted = [this](const int& ResCode, const FBeamOperationHandle& Handler)
+			{
+				if (ResCode == 0)
+				{
+					RequestTracker->TriggerOperationSuccess(Handler, TEXT(""));
+				}
+				else
+				{
+					RequestTracker->TriggerOperationError(Handler, TEXT(""));
+				}
+			};
+
+			TArray<FString> AccessToken;
+			TArray<FString> RefreshToken;
+			TArray<FString> Pid;
+			TArray<FString> Cid;
+			TArray<FString> GamerTag;
+
+
+			for (auto RealmUser : RealmUsers)
+			{
+				AccessToken.Add(RealmUser.AuthToken.AccessToken);
+				RefreshToken.Add(RealmUser.AuthToken.RefreshToken);
+				Pid.Add(RealmUser.RealmHandle.Pid.AsString);
+				Cid.Add(RealmUser.RealmHandle.Cid.AsString);
+				GamerTag.Add(RealmUser.GamerTag.AsString);
+			}
+
+			auto args = {
+				FString::Printf(TEXT("--access-token %s"), *FString::Join(AccessToken, TEXT(" "))),
+				FString::Printf(TEXT("--refresh-token %s"), *FString::Join(RefreshToken, TEXT(" "))),
+				FString::Printf(TEXT("--pid %s"), *FString::Join(Pid, TEXT(" "))),
+				FString::Printf(TEXT("--cid %s"), *FString::Join(Cid, TEXT(" "))),
+				FString::Printf(TEXT("--gamer-tag %s"), *FString::Join(GamerTag, TEXT(" "))),
+			};
+
+			auto Handler = RequestTracker->CPP_BeginOperation({}, GetName(), {});
+			
+			BeamCli->RunCommandServer(SaveUserCommand, args, Handler);
+		}
+	}
 }
 
-void UBeamUserDeveloperManagerEditor::CreateTemporaryDeveloperUser(TMap<FBeamGamerTag, int32> TemplateGamerTagAmount, const FBeamOperationHandle& BeamOperationHandle, TFunction<void(
-	                                                                   TArray<UBeamCliDeveloperUserManagerCreateUserBatchStreamData*>& StreamData, TArray<int64>&
-	                                                                   Timestamps, const FBeamOperationHandle& Op)> OnResult)
+void UBeamUserDeveloperManagerEditor::TriggerOnPreBeginPIE(const bool IsSimulating)
 {
+	auto BeamPIESettings = GetDefault<UBeamPIEConfig>()->AllSettings.FindByPredicate([this](FBeamPIE_Settings& S) { return S.SettingsId == GetDefault<UBeamPIEConfig>()->SelectedSettingsId; });
+
+	const auto PlaySettings = GetDefault<ULevelEditorPlaySettings>();
+
+	if (PlaySettings)
+	{
+		UE_LOG(LogTemp, Log, TEXT("Pre-Begin - Separate Server %d!"), PlaySettings->bLaunchSeparateServer ? 1 : 0);
+		UE_LOG(LogTemp, Log, TEXT("Pre-Begin - Separate Server Launch Params %s!"), *PlaySettings->AdditionalServerLaunchParameters);
+
+		int32 clientCount;
+		PlaySettings->GetPlayNumberOfClients(clientCount);
+		UE_LOG(LogTemp, Log, TEXT("Pre-Begin - Client Count %d!"), clientCount);
+
+		uint16 port;
+		PlaySettings->GetServerPort(port);
+		FString MapName;
+		PlaySettings->GetServerMapNameOverride(MapName);
+		UE_LOG(LogTemp, Log, TEXT("Pre-Begin - Server Port %u!"), port);
+		UE_LOG(LogTemp, Log, TEXT("Pre-Begin - Separate MapName %s!"), *MapName);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Log, TEXT("Pre-Begin - No Params!"));
+	}
+
+	FBeamPIE_Settings FakeSettings = {};
+
+	FakeSettings.AssignedUsers.Add(FBeamPIE_UserSlotHandle{0, FUserSlot("Test")}, FBeamGamerTag("1895013317660673"));
+	FakeSettings.AssignedUsers.Add(FBeamPIE_UserSlotHandle{1, FUserSlot("Test")}, FBeamGamerTag("1895013271097349"));
+	FakeSettings.AssignedUsers.Add(FBeamPIE_UserSlotHandle{2, FUserSlot("Test")}, FBeamGamerTag("1895013271097349"));
+	FakeSettings.AssignedUsers.Add(FBeamPIE_UserSlotHandle{3, FUserSlot("Test")}, FBeamGamerTag("1895013271097349"));
+
+
+	TMap<FBeamGamerTag, int32> TemplateAmount;
+	for (auto AssignedUserKeyPair : FakeSettings.AssignedUsers)
+	{
+		auto UserSlotHandle = AssignedUserKeyPair.Key;
+		if (FBeamGamerTag GamerTag = AssignedUserKeyPair.Value; TemplateAmount.Contains(GamerTag))
+		{
+			TemplateAmount[GamerTag]++;
+		}
+		else
+		{
+			TemplateAmount.Add(GamerTag, 1);
+		}
+	}
+
+	auto Handler = RequestTracker->CPP_BeginOperation({}, GetName(), {});
+
 	UBeamCliDeveloperUserManagerCreateUserBatchCommand* CreateUserBatchCommand = NewObject<UBeamCliDeveloperUserManagerCreateUserBatchCommand>();
 
-	CreateUserBatchCommand->OnStreamOutput = OnResult;
-	CreateUserBatchCommand->OnCompleted = [this, BeamOperationHandle](const int& ResCode, const FBeamOperationHandle&)
+	CreateUserBatchCommand->OnStreamOutput = [this, FakeSettings](const TArray<UBeamCliDeveloperUserManagerCreateUserBatchStreamData*>& Stream, const TArray<int64>&,
+	                                                              const FBeamOperationHandle&)
+	{
+		auto Data = Stream.Last();
+
+		TMap<long, TArray<UDeveloperUserDataStreamData*>> CreatedUserMap;
+
+		for (UDeveloperUserDataStreamData* CreatedUser : Data->CreatedUsers)
+		{
+			if (CreatedUserMap.Contains(CreatedUser->TemplatedGamerTag))
+			{
+				CreatedUserMap[CreatedUser->TemplatedGamerTag].Add(CreatedUser);
+			}
+			else
+			{
+				CreatedUserMap.Add(CreatedUser->TemplatedGamerTag, {CreatedUser});
+			}
+		}
+
+		for (auto AssignedUserKeyPair : FakeSettings.AssignedUsers)
+		{
+			auto CreatedUser = CreatedUserMap[AssignedUserKeyPair.Value.AsLong][0];
+
+			BeamUserSlots->SaveSlot(AssignedUserKeyPair.Key.Slot, AssignedUserKeyPair.Key.PIEIndex,
+			                        CreatedUser->GamerTag,
+			                        CreatedUser->AccessToken,
+			                        CreatedUser->RefreshToken,
+			                        FDateTime::UtcNow().ToUnixTimestamp(),
+			                        CreatedUser->ExpiresIn,
+			                        CreatedUser->Cid,
+			                        CreatedUser->Pid);
+
+			CreatedUserMap[AssignedUserKeyPair.Value.AsLong].Remove(CreatedUser);
+		}
+	};
+	CreateUserBatchCommand->OnCompleted = [this, Handler](const int& ResCode, const FBeamOperationHandle&)
 	{
 		if (ResCode != 0)
 		{
-			RequestTracker->TriggerOperationError(BeamOperationHandle, TEXT(""));
+			RequestTracker->TriggerOperationError(Handler, TEXT(""));
 		}
 	};
 
 	TArray<FString> Identifiers;
 	TArray<FString> AmountList;
 
-	for (auto TemplateGamerTagAmountKeyPair : TemplateGamerTagAmount)
+	for (auto TemplateGamerTagAmountKeyPair : TemplateAmount)
 	{
 		Identifiers.Add(TemplateGamerTagAmountKeyPair.Key.AsString);
 		AmountList.Add(std::to_string(TemplateGamerTagAmountKeyPair.Value).data());
@@ -139,67 +263,49 @@ void UBeamUserDeveloperManagerEditor::CreateTemporaryDeveloperUser(TMap<FBeamGam
 		FString::Printf(TEXT("--amount-list %s"), *FString::Join(AmountList, TEXT(" "))),
 		FString::Printf(TEXT("--rolling-buffer-size %d"), 10),
 	};
-	BeamCli->RunCommandServer(CreateUserBatchCommand, args, BeamOperationHandle);
-}
 
-void UBeamUserDeveloperManagerEditor::CaptureUser(TArray<FBeamRealmUser> RealmUsers, const FBeamOperationHandle& BeamOperationHandle)
-{
-	UBeamCliDeveloperUserManagerSaveUserCommand* SaveUserCommand = NewObject<UBeamCliDeveloperUserManagerSaveUserCommand>();
-	SaveUserCommand->OnStreamOutput = [this](const TArray<UBeamCliDeveloperUserManagerSaveUserStreamData*>& Stream, const TArray<int64>&,
-	                                         const FBeamOperationHandle&)
-	{
-		auto Data = Stream.Last();
-		for (auto SavedUser : Data->SavedUsers)
-		{
-			UE_LOG(LogTemp, Display, TEXT("Saved user %lld"), SavedUser->GamerTag);
-		}
-	};
-	SaveUserCommand->OnCompleted = [this, BeamOperationHandle](const int& ResCode, const FBeamOperationHandle&)
-	{
-		if (ResCode == 0)
-		{
-			RequestTracker->TriggerOperationSuccess(BeamOperationHandle, TEXT(""));
-		}
-		else
-		{
-			RequestTracker->TriggerOperationError(BeamOperationHandle, TEXT(""));
-		}
-	};
-
-	TArray<FString> AccessToken;
-	TArray<FString> RefreshToken;
-	TArray<FString> Pid;
-	TArray<FString> Cid;
-	TArray<FString> GamerTag;
-
-
-	for (auto RealmUser : RealmUsers)
-	{
-		AccessToken.Add(RealmUser.AuthToken.AccessToken);
-		RefreshToken.Add(RealmUser.AuthToken.RefreshToken);
-		Pid.Add(RealmUser.RealmHandle.Pid.AsString);
-		Cid.Add(RealmUser.RealmHandle.Cid.AsString);
-		GamerTag.Add(RealmUser.GamerTag.AsString);
-	}
-
-	auto args = {
-		FString::Printf(TEXT("--access-token %s"), *FString::Join(AccessToken, TEXT(" "))),
-		FString::Printf(TEXT("--refresh-token %s"), *FString::Join(RefreshToken, TEXT(" "))),
-		FString::Printf(TEXT("--pid %s"), *FString::Join(Pid, TEXT(" "))),
-		FString::Printf(TEXT("--cid %s"), *FString::Join(Cid, TEXT(" "))),
-		FString::Printf(TEXT("--gamer-tag %s"), *FString::Join(GamerTag, TEXT(" "))),
-	};
-	BeamCli->RunCommandServer(SaveUserCommand, args, BeamOperationHandle);
+	BeamCli->RunCommandServer(CreateUserBatchCommand, args, Handler);
 }
 
 void UBeamUserDeveloperManagerEditor::GetAllUsers(TArray<UDeveloperUserDataStreamData*>& AllUsers)
 {
 	AllUsers.Empty();
-
+	TArray<UDeveloperUserDataStreamData*> Result;
 	for (auto DeveloperUser : LocalUserDeveloperCache)
 	{
-		AllUsers.Add(DeveloperUser.Value);
+		Result.Add(DeveloperUser.Value);
 	}
+
+	Result.Sort([](const UDeveloperUserDataStreamData& A, const UDeveloperUserDataStreamData& B)
+	{
+		return A.DeveloperUserType > B.DeveloperUserType;
+	});
+
+	AllUsers = Result;
+}
+
+void UBeamUserDeveloperManagerEditor::SetUserInfo(FBeamGamerTag GamerTag, FString Alias, FString Description, TArray<FString> Tags)
+{
+	UBeamCliDeveloperUserManagerUpdateInfoCommand* UpdateInfoCommand = NewObject<UBeamCliDeveloperUserManagerUpdateInfoCommand>();
+
+	UpdateInfoCommand->OnStreamOutput = [this](const TArray<UBeamCliDeveloperUserManagerUpdateInfoStreamData*>& Stream, const TArray<int64>&,
+	                                           const FBeamOperationHandle&)
+	{
+	};
+	UpdateInfoCommand->OnCompleted = [this](const int&, const FBeamOperationHandle&)
+	{
+	};
+
+	auto args = {
+		FString::Printf(TEXT("--identifier \"%s\""), *GamerTag.AsString),
+		FString::Printf(TEXT("--alias \"%s\""), *Alias),
+		FString::Printf(TEXT("--description \"%s\""), *Description),
+		FString::Printf(TEXT("--tags \"%s\""), *FString::Join(Tags, TEXT(" "))),
+	};
+
+	auto Handler = RequestTracker->CPP_BeginOperation({}, GetName(), {});
+
+	BeamCli->RunCommandServer(UpdateInfoCommand, args, Handler);
 }
 
 
@@ -234,104 +340,4 @@ void UBeamUserDeveloperManagerEditor::UpdateLocalDeveloperUserCache(TArray<UDeve
 			LocalUserDeveloperCache.Remove(GamerTag);
 		}
 	}
-}
-
-void UBeamUserDeveloperManagerEditor::TriggerOnUserSlotAuthenticated(const FUserSlot& UserSlot, const FBeamRealmUser& BeamRealmUser, const FBeamOperationHandle& BeamOperationHandle, const UObject* Context)
-{
-	if (Context)
-	{
-		const auto WorldContext = GEngine->GetWorldContextFromWorld(Context->GetWorld());
-		if (WorldContext && WorldContext->WorldType == EWorldType::PIE)
-		{
-			auto Handler = RequestTracker->CPP_BeginOperation({}, GetName(), {});
-			CaptureUser({BeamRealmUser}, Handler);
-		}
-	}
-}
-
-void UBeamUserDeveloperManagerEditor::TriggerOnPreBeginPie(const bool IsSimulating)
-{
-	auto BeamPIESettings = GetDefault<UBeamPIEConfig>()->AllSettings.FindByPredicate([this](FBeamPIE_Settings& S) { return S.SettingsId == GetDefault<UBeamPIEConfig>()->SelectedSettingsId; });
-
-	const auto PlaySettings = GetDefault<ULevelEditorPlaySettings>();
-	if (PlaySettings)
-	{
-		UE_LOG(LogTemp, Log, TEXT("Pre-Begin - Separate Server %d!"), PlaySettings->bLaunchSeparateServer ? 1 : 0);
-		UE_LOG(LogTemp, Log, TEXT("Pre-Begin - Separate Server Launch Params %s!"), *PlaySettings->AdditionalServerLaunchParameters);
-
-		int32 clientCount;
-		PlaySettings->GetPlayNumberOfClients(clientCount);
-		UE_LOG(LogTemp, Log, TEXT("Pre-Begin - Client Count %d!"), clientCount);
-
-		uint16 port;
-		PlaySettings->GetServerPort(port);
-		FString MapName;
-		PlaySettings->GetServerMapNameOverride(MapName);
-		UE_LOG(LogTemp, Log, TEXT("Pre-Begin - Server Port %u!"), port);
-		UE_LOG(LogTemp, Log, TEXT("Pre-Begin - Separate MapName %s!"), *MapName);
-	}
-	else
-	{
-		UE_LOG(LogTemp, Log, TEXT("Pre-Begin - No Params!"));
-	}
-
-	FBeamPIE_Settings FakeSettings = {};
-
-	FakeSettings.AssignedUsers.Add(FBeamPIE_UserSlotHandle{0, FUserSlot("Test")}, FBeamGamerTag("1895013317660673"));
-	FakeSettings.AssignedUsers.Add(FBeamPIE_UserSlotHandle{1, FUserSlot("Test")}, FBeamGamerTag("1895013271097349"));
-	FakeSettings.AssignedUsers.Add(FBeamPIE_UserSlotHandle{2, FUserSlot("Test")}, FBeamGamerTag("1895013271097349"));
-	FakeSettings.AssignedUsers.Add(FBeamPIE_UserSlotHandle{3, FUserSlot("Test")}, FBeamGamerTag("1895013271097349"));
-
-	TMap<FBeamGamerTag, int32> TemplateAmount;
-	for (auto AssignedUserKeyPair : FakeSettings.AssignedUsers)
-	{
-		auto UserSlotHandle = AssignedUserKeyPair.Key;
-		FBeamGamerTag GamerTag = AssignedUserKeyPair.Value;
-		if (TemplateAmount.Contains(GamerTag))
-		{
-			TemplateAmount[GamerTag]++;
-		}
-		else
-		{
-			TemplateAmount.Add(GamerTag, 1);
-		}
-	}
-
-	auto Handler = RequestTracker->CPP_BeginOperation({}, GetName(), {});
-
-	CreateTemporaryDeveloperUser(TemplateAmount, Handler, [this, FakeSettings](const TArray<UBeamCliDeveloperUserManagerCreateUserBatchStreamData*>& Stream, const TArray<int64>&,
-	                                                                           const FBeamOperationHandle&)
-	{
-		auto Data = Stream.Last();
-		TMap<long, TArray<UDeveloperUserDataStreamData*>> CreatedUserMap;
-		for (UDeveloperUserDataStreamData* CreatedUser : Data->CreatedUsers)
-		{
-			if (CreatedUserMap.Contains(CreatedUser->TemplatedGamerTag))
-			{
-				CreatedUserMap[CreatedUser->TemplatedGamerTag].Add(CreatedUser);
-			}
-			else
-			{
-				CreatedUserMap.Add(CreatedUser->TemplatedGamerTag, {CreatedUser});
-			}
-		}
-		for (auto AssignedUserKeyPair : FakeSettings.AssignedUsers)
-		{
-			auto CreatedUser = CreatedUserMap[AssignedUserKeyPair.Value.AsLong][0];
-			// Get namespacedid 
-			BeamUserSlots->SetAuthenticationDataAtSlot(AssignedUserKeyPair.Key.Slot, CreatedUser->AccessToken, CreatedUser->RefreshToken, FDateTime::UtcNow().ToUnixTimestamp(), CreatedUser->ExpiresIn, CreatedUser->Cid,
-			                                           CreatedUser->Pid, nullptr);
-			BeamUserSlots->SetGamerTagAtSlot(AssignedUserKeyPair.Key.Slot, CreatedUser->GamerTag, nullptr);
-			BeamUserSlots->SaveSlot(AssignedUserKeyPair.Key.Slot, nullptr);
-
-			CreatedUserMap[AssignedUserKeyPair.Value.AsLong].Remove(CreatedUser);
-		}
-	});
-
-	UE_LOG(LogTemp, Display, TEXT("TriggerOnPreBeginPie called"));
-}
-
-void UBeamUserDeveloperManagerEditor::TriggerOnBeginPie(bool IsSimulating)
-{
-	UE_LOG(LogTemp, Display, TEXT("TriggerOnBeginPie called"));
 }

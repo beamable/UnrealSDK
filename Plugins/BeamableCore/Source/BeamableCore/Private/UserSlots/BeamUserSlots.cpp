@@ -79,6 +79,23 @@ FString UBeamUserSlots::GetNamespacedSlotId(FUserSlot SlotId, const UObject* Cal
 	return SlotId.Name;
 }
 
+FString UBeamUserSlots::GetNamespacedSlotId(FUserSlot SlotId, int32 PIEInstance)
+{
+#if WITH_EDITOR
+	// If we are already a namespaced name, we just return it.
+	if (SlotId.Name.StartsWith("PIE_"))
+		return SlotId;
+
+	// Format the namespace  
+	return FString::Printf(TEXT("PIE_%d_%s"), PIEInstance, *SlotId.Name);
+
+#else
+	
+	return SlotId.Name;
+
+#endif
+}
+
 bool UBeamUserSlots::GetSlotIdFromNamespacedSlotId(const FString NamespacedSlotId, FUserSlot& OutUserSlot)
 {
 	// If we start with PIE, we'll have the following format: PIE_-1_UserSlotName
@@ -667,4 +684,65 @@ ULocalPlayer* UBeamUserSlots::GetLocalPlayerForSlot(FUserSlot Slot, UObject* Cal
 	}
 
 	return nullptr;
+}
+
+void UBeamUserSlots::SaveSlot(FUserSlot SlotId, int32 PIEInstance, int64 GamerTag, const FString& AccessToken, const FString& RefreshToken, const int64& IssuedAt, const int64& ExpiresIn, const FBeamCid& Cid,
+                              const FBeamPid& Pid)
+{
+	// When we are running in PIE, we only save if we are configured to do so. Otherwise, we just act like we did. 
+#if WITH_EDITOR
+	if (!GetDefault<UBeamCoreSettings>()->bPersistRuntimeSlotDataWhenInPIE)
+		return;
+#endif
+
+	const auto NamespacedSlotId = GetNamespacedSlotId(SlotId, PIEInstance);
+
+#if !WITH_EDITOR
+		ensureAlwaysMsgf(!User.RealmHandle.Pid.AsString.IsEmpty(), TEXT("Customer-Scoped Tokens are not allowed in builds! If should never be seeing this!"));
+#endif
+
+	// Save the User's Auth data to the slot.
+	const auto SavedUserAuthDataPath = GetSavedSlotAuthFilePath(NamespacedSlotId);
+	const auto AuthDataForSlot = FUserSlotAuthData{
+		AccessToken,
+		RefreshToken,
+		ExpiresIn,
+		IssuedAt,
+		Cid,
+		Pid
+	};
+	FString JsonSerializedAuthData;
+	ensureAlways(FJsonObjectConverter::UStructToJsonObjectString(AuthDataForSlot, JsonSerializedAuthData));
+
+	if (FFileHelper::SaveStringToFile(*JsonSerializedAuthData, *SavedUserAuthDataPath))
+	{
+		UE_LOG(LogBeamUserSlots, Verbose, TEXT("Saved User Slot - Auth File!\nUSER_SLOT=%s\nFILE_PATH=%s\nFILE_CONTENTS=%s"), *NamespacedSlotId, *SavedUserAuthDataPath, *JsonSerializedAuthData);
+	}
+	else
+	{
+		UE_LOG(LogBeamUserSlots, Error, TEXT("Failed to create Saved User Slot - Auth File!\nUSER_SLOT=%s\nFILE_PATH=%s\nFILE_CONTENTS=%s"), *NamespacedSlotId, *SavedUserAuthDataPath,
+		       *JsonSerializedAuthData);
+	}
+
+	// Save the User Account data to the slot.
+	const auto SavedUserAccountDataPath = GetSavedSlotAccountFilePath(NamespacedSlotId);
+	const auto AccountDataForSlot = FUserSlotAccountData{
+		FBeamAccountId(),
+		FBeamGamerTag(GamerTag),
+		"",
+		{},
+	};
+	FString JsonSerializedAccountData;
+	ensureAlways(FJsonObjectConverter::UStructToJsonObjectString(AccountDataForSlot, JsonSerializedAccountData));
+
+	if (FFileHelper::SaveStringToFile(*JsonSerializedAccountData, *SavedUserAccountDataPath))
+	{
+		UE_LOG(LogBeamUserSlots, Verbose, TEXT("Saved User Slot - Account File!\nUSER_SLOT=%s\nFILE_PATH=%s\nFILE_CONTENTS=%s"), *NamespacedSlotId, *SavedUserAccountDataPath,
+		       *JsonSerializedAccountData);
+	}
+	else
+	{
+		UE_LOG(LogBeamUserSlots, Error, TEXT("Failed to create Saved User Slot - Account File!\nUSER_SLOT=%s\nFILE_PATH=%s\nFILE_CONTENTS=%s"), *NamespacedSlotId, *SavedUserAccountDataPath,
+		       *JsonSerializedAccountData);
+	}
 }

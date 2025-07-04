@@ -18,12 +18,15 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<UDeveloperUserDataStreamData*> ToUpdate = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<UDeveloperUserDataStreamData*> CorruptedUsers = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<int64> ToRemove = {};
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
 	{
 		UBeamJsonUtils::SerializeRawPrimitive(TEXT("EventType"), EventType, Serializer);
 		UBeamJsonUtils::SerializeArray<UDeveloperUserDataStreamData*>(TEXT("ToUpdate"), ToUpdate, Serializer);
+		UBeamJsonUtils::SerializeArray<UDeveloperUserDataStreamData*>(TEXT("CorruptedUsers"), CorruptedUsers, Serializer);
 		UBeamJsonUtils::SerializeArray<int64>(TEXT("ToRemove"), ToRemove, Serializer);	
 	}
 
@@ -31,6 +34,7 @@ public:
 	{
 		UBeamJsonUtils::SerializeRawPrimitive(TEXT("EventType"), EventType, Serializer);
 		UBeamJsonUtils::SerializeArray<UDeveloperUserDataStreamData*>(TEXT("ToUpdate"), ToUpdate, Serializer);
+		UBeamJsonUtils::SerializeArray<UDeveloperUserDataStreamData*>(TEXT("CorruptedUsers"), CorruptedUsers, Serializer);
 		UBeamJsonUtils::SerializeArray<int64>(TEXT("ToRemove"), ToRemove, Serializer);	
 	}
 
@@ -38,6 +42,7 @@ public:
 	{
 		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("EventType")), EventType);
 		UBeamJsonUtils::DeserializeArray<UDeveloperUserDataStreamData*>(Bag->GetArrayField(TEXT("ToUpdate")), ToUpdate, OuterOwner);
+		UBeamJsonUtils::DeserializeArray<UDeveloperUserDataStreamData*>(Bag->GetArrayField(TEXT("CorruptedUsers")), CorruptedUsers, OuterOwner);
 		UBeamJsonUtils::DeserializeArray<int64>(Bag->GetArrayField(TEXT("ToRemove")), ToRemove, OuterOwner);	
 	}
 };

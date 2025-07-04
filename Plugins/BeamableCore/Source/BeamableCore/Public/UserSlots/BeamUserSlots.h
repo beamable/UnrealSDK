@@ -101,7 +101,8 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FUserSlotClearedHandler, const EUs
                                               TriggeringContext);
 
 DECLARE_MULTICAST_DELEGATE_FourParams(FUserSlotAuthenticatedCodeHandler, const FUserSlot&, const FBeamRealmUser&, const FBeamOperationHandle&, const UObject*);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FUserSlotAuthenticatedHandler, const FUserSlot&, SlotId, const FBeamRealmUser&, AuthenticatedUser, const FBeamOperationHandle&, OperationHandle, const UObject*, TriggeringContext);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FUserSlotAuthenticatedHandler, const FUserSlot&, SlotId, const FBeamRealmUser&, AuthenticatedUser, const FBeamOperationHandle&, OperationHandle, const UObject*,
+                                              TriggeringContext);
 
 /**
  * 
@@ -117,6 +118,8 @@ class BEAMABLECORE_API UBeamUserSlots : public UEngineSubsystem
 
 	friend class UBeamRuntime;
 	friend class UBeamEditor;
+
+	friend class UBeamUserDeveloperManagerEditor;
 
 private:
 	/**
@@ -325,6 +328,7 @@ public:
 	 */
 	static FString GetNamespacedSlotId(FUserSlot SlotId, const UObject* CallingContext);
 
+	static FString GetNamespacedSlotId(FUserSlot SlotId, int32 PIEInstance);
 
 #if WITH_EDITOR
 	/**
@@ -379,6 +383,9 @@ public:
 																						
 	 */
 private:
+	void SaveSlot(FUserSlot SlotId, int32 PIEInstance, int64 GamerTag, const FString& AccessToken, const FString& RefreshToken, const int64& IssuedAt, const int64& ExpiresIn, const FBeamCid& Cid,
+	              const FBeamPid& Pid);
+
 	/**	 
 	 * @brief A global handler delegate that'll be called when a UserSlot gets cleared.
 	 * It'll have access to the data associated with that slot at the time when it was cleared out but the slot itself will be empty

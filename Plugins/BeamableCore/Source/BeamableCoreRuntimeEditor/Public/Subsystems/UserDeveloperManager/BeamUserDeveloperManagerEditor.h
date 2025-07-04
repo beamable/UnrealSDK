@@ -39,14 +39,10 @@ class BEAMABLECORERUNTIMEEDITOR_API UBeamUserDeveloperManagerEditor : public UBe
 
 	FDelegateHandle PreBeginPieHandler;
 
-	FDelegateHandle BeginPieHandler;
-
 
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 
 	virtual void Deinitialize() override;
-
-	void RunPsCommand(FBeamOperationHandle FirstEventOp);
 
 public:
 	inline static const FString DefaultBeamableUserDeveloperPath = TEXT("UserDeveloper");
@@ -67,26 +63,19 @@ public:
 	virtual FBeamOperationHandle OnRealmInitialized(FBeamRealmHandle NewRealm) override;
 
 	UFUNCTION(BlueprintCallable)
-	void CreateDeveloperUser(const FBeamOperationHandle& BeamOperationHandle, FString alias = "", FString decription = "");
-
-	
-	void CreateTemporaryDeveloperUser(TMap<FBeamGamerTag, int32> TemplateGamerTagAmount, const FBeamOperationHandle& BeamOperationHandle, TFunction<void(TArray<UBeamCliDeveloperUserManagerCreateUserBatchStreamData*>& StreamData, TArray<int64>&
-		                                  Timestamps, const FBeamOperationHandle& Op)> OnResult);
-
-	UFUNCTION(BlueprintCallable)
-	void CaptureUser(TArray<FBeamRealmUser> RealmUsers, const FBeamOperationHandle& BeamOperationHandle);
-
-
-	UFUNCTION(BlueprintCallable)
 	void GetAllUsers(TArray<UDeveloperUserDataStreamData*>& AllUsers);
 
+	UFUNCTION(BlueprintCallable)
+	void SetUserInfo(FBeamGamerTag GamerTag, FString Alias, FString Description, TArray<FString> Tags);
+
 protected:
+	void RunPsCommand(FBeamOperationHandle FirstEventOp);
+
 	void RebuildLocalDeveloperUserCache(TArray<UDeveloperUserDataStreamData*> AllEntries);
 
 	void UpdateLocalDeveloperUserCache(TArray<UDeveloperUserDataStreamData*> ToUpdate, TArray<int64> ToRemove);
 
 	void TriggerOnUserSlotAuthenticated(const FUserSlot& UserSlot, const FBeamRealmUser& BeamRealmUser, const FBeamOperationHandle& BeamOperationHandle, const UObject* Context);
-	void TriggerOnPreBeginPie(const bool IsSimulating);
 
-	void TriggerOnBeginPie(bool IsSimulating);
+	void TriggerOnPreBeginPIE(const bool IsSimulating);
 };
