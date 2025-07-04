@@ -16,6 +16,8 @@
 
 #include "Subsystems/BeamEditorSubsystem.h"
 #include "Misc/MessageDialog.h"
+#include "PIE/BeamPIEConfig.h"
+#include "PIE/BeamPIE_Settings.h"
 #include "Subsystems/CLI/BeamCli.h"
 #include "Subsystems/CLI/Autogen/BeamCliConfigCommand.h"
 #include "Subsystems/CLI/Autogen/BeamCliInitCommand.h"
@@ -67,37 +69,7 @@ void UBeamEditor::OpenDocsPage(FDocsPageItem item)
 
 void UBeamEditor::Initialize(FSubsystemCollectionBase& Collection)
 {
-	UE_LOG(LogTemp, Log, TEXT("Initializing BeamEditor Subsystem!"));
-
-	// TODO: Use the in-memory store of a new "UBeamEditorPIE"-Subsystem (that manages) to figure out which users to move into the saved UserSlot directory for each configured  
-	// CLI to copy over the files into the saved folder.
-	// Our PIE Settings UI should make save changes to the "Config/DefaultBeamPIE.ini" which our UBeamPIE subsystem reads from.
-	//  IE.: Tell them that PIE 0 has user X, PIE 1 has user Y and any other configured data.
-	// We should expose a way for users to extend this callback by implementing and configuring a UObject interface and setting it up in the PIE settings.	
-	PreBeginPIEHandler = FEditorDelegates::PreBeginPIE.AddLambda([this](const bool)
-	{		
-		const auto PlaySettings = GetDefault<ULevelEditorPlaySettings>();		
-		if (PlaySettings)
-		{			
-			UE_LOG(LogTemp, Log, TEXT("Pre-Begin - Separate Server %d!"), PlaySettings->bLaunchSeparateServer ? 1 : 0);
-			UE_LOG(LogTemp, Log, TEXT("Pre-Begin - Separate Server Launch Params %s!"), *PlaySettings->AdditionalServerLaunchParameters);
-
-			int32 clientCount;
-			PlaySettings->GetPlayNumberOfClients(clientCount);
-			UE_LOG(LogTemp, Log, TEXT("Pre-Begin - Client Count %d!"), clientCount);
-
-			uint16 port;
-			PlaySettings->GetServerPort(port);
-			FString MapName;
-			PlaySettings->GetServerMapNameOverride(MapName);
-			UE_LOG(LogTemp, Log, TEXT("Pre-Begin - Server Port %u!"), port);
-			UE_LOG(LogTemp, Log, TEXT("Pre-Begin - Separate MapName %s!"), *MapName);
-		}
-		else
-		{
-			UE_LOG(LogTemp, Log, TEXT("Pre-Begin - No Params!"));
-		}
-	});
+	UE_LOG(LogBeamEditor, Verbose, TEXT("Initializing BeamEditor Subsystem!"));
 
 	// Set us up to track whether we are running PIE
 	BeginPIEHandler = FEditorDelegates::BeginPIE.AddLambda([this](const bool)
@@ -137,7 +109,7 @@ void UBeamEditor::Deinitialize()
 {
 	UserSlots->GlobalUserSlotAuthenticatedCodeHandler.Remove(UserSlotAuthenticatedHandler);
 	UserSlots->GlobalUserSlotClearedCodeHandler.Remove(UserSlotClearedHandler);
-	FEditorDelegates::PreBeginPIE.Remove(PreBeginPIEHandler);
+	FEditorDelegates::StartPIE.Remove(StartPIEHandler);
 	FEditorDelegates::BeginPIE.Remove(BeginPIEHandler);
 	FEditorDelegates::EndPIE.Remove(EndPIEHandler);
 	FEditorDelegates::OnEditorInitialized.Remove(EditorInitializedHandle);
@@ -239,6 +211,31 @@ void UBeamEditorBootstrapper::Run_DelayedInitialize()
 	if (bEditorSettingsChanged)
 	{
 		EditorSettings->SaveConfig(CPF_Config, *EditorSettings->GetDefaultConfigFilename());
+	}
+
+	// Ensure we have a default empty PIE settings for all maps	
+	{
+		auto DefaultSettings = FBeamPIE_Settings{};
+		DefaultSettings.SettingsId = FBeamPIE_Settings::DefaultPieSettingsGuid;
+		DefaultSettings.Name = TEXT("Default");
+		DefaultSettings.AssignedUsers = {};
+		DefaultSettings.AllowedMapNamePattern = TEXT("*");
+		DefaultSettings.AllowedInMaps = {};
+		DefaultSettings.FakeLobby = FBeamPIE_LobbySettings{
+			false,
+			false,
+		};
+
+		// Clear it out if its there.
+		auto PIEConfig = GetMutableDefault<UBeamPIEConfig>();
+		if (const auto& Found = PIEConfig->AllSettings.IndexOfByPredicate([](const FBeamPIE_Settings& S) { return S.IsDefaultSettings(); }); Found != INDEX_NONE)
+			PIEConfig->AllSettings.RemoveAt(Found);
+
+		// Always have it as the first item in the list.
+		PIEConfig->AllSettings.Insert(DefaultSettings, 0);
+
+		// Save the config
+		PIEConfig->Save();
 	}
 
 	const auto Subsystems = GEditor->GetEditorSubsystemArrayCopy<UBeamEditorSubsystem>();

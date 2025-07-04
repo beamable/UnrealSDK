@@ -14,22 +14,24 @@ struct BEAMABLECORE_API FBeamPIE_LobbySettings
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool bShouldAutoCreateLobby = false;
 
-	// TODO: I should read this from ULevelEditorPlaySettings::PlayAsClient/PlayAsStandalone vs "PlayAsListenServer".
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(EditCondition="bShouldAutoCreateLobby", EditConditionHides))
 	bool bIsDedicatedServer = true;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(BeamContentTypeFilter="game_types", BeamContentTypeFilterMode="tree"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(EditCondition="bShouldAutoCreateLobby && bIsDedicatedServer", EditConditionHides))
+	FString ServerStartMapOverride;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(EditCondition="bShouldAutoCreateLobby", EditConditionHides, BeamContentTypeFilter="game_types", BeamContentTypeFilterMode="tree"))
 	FBeamContentId GameType = {};
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(EditCondition="!bIsDedicatedServer"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(EditCondition="bShouldAutoCreateLobby && !bIsDedicatedServer", EditConditionHides))
 	FBeamPIE_UserSlotHandle HostPlayer = {};
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(EditCondition="!bIsDedicatedServer"))
-	EBeamLobbyRestriction LobbyType = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(EditCondition="bShouldAutoCreateLobby && !bIsDedicatedServer", EditConditionHides))
+	EBeamLobbyRestriction LobbyType = EBeamLobbyRestriction::BEAM_Null;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(EditCondition="bShouldAutoCreateLobby", EditConditionHides))
 	TMap<FString, FString> LobbyGlobalData = {};
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(EditCondition="bShouldAutoCreateLobby", EditConditionHides))
 	TMap<FBeamPIE_UserSlotHandle, FBeamPIE_LobbyPlayerSettings> PerPlayerSettings = {};
 };

@@ -139,11 +139,14 @@ class BEAMABLECORERUNTIME_API UBeamLobbySubsystem : public UBeamRuntimeSubsystem
 	GENERATED_BODY()
 
 public:
-	inline static const FString Reserved_GameServer_Property = TEXT("__beam_game_server_lobby__");
-	inline static const FString Reserved_ListenServer_Property = TEXT("__beam_listen_server_lobby__");
-	
-	inline static const FString Reserved_GameServer_Ready_Property = TEXT("__beam_game_server_ready_lobby__");	
-	inline static const FString Reserved_ListenServerHostPlayer_Property = TEXT("__beam_listen_server_host_player__");
+	inline static const FString Reserved_Lobby_From_Editor_Play_Mode_Property = "__beam_lobby_from_editor_play_mode_settings__";
+
+	inline static const FString Reserved_Game_Server_Ready_Property = TEXT("__beam_game_server_ready_lobby__");
+	inline static const FString Reserved_Game_Server_url = TEXT("__beam_game_server_url_lobby__");
+	inline static const FString Reserved_Game_Server_port = TEXT("__beam_game_server_port_lobby__");
+
+	inline static const FString Reserved_Dedicated_Server_Property = TEXT("__beam_game_server_lobby__");
+	inline static const FString Reserved_Listen_Server_Property = TEXT("__beam_listen_server_lobby__");
 
 	UPROPERTY()
 	UBeamUserSlots* UserSlots;
@@ -513,7 +516,17 @@ public:
 	 */
 	FBeamOperationHandle CPP_ProvisionGameServerForLobbyOperation(FUserSlot UserSlot, FOptionalBeamContentId NewGameType, FBeamOperationEventHandlerCode OnOperationEvent);
 
-	// OPERATIONS - Dedicated Server	
+	// OPERATIONS - Dedicated Server
+	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Lobby", meta=(AutoCreateRefTerm="NewGameType"))
+	FBeamOperationHandle RegisterLobbyWithServerOperation(FUserSlot UserSlot, const FGuid& LobbyId, FBeamOperationEventHandler OnOperationEvent);
+
+	FBeamOperationHandle CPP_RegisterLobbyWithServerOperation(FUserSlot UserSlot, const FGuid& LobbyId, FBeamOperationEventHandlerCode OnOperationEvent);
+
+	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Lobby", meta=(AutoCreateRefTerm="NewGameType"))
+	FBeamOperationHandle NotifyLobbyReadyForClientsOperation(FUserSlot UserSlot, const FGuid& LobbyId, FBeamOperationEventHandler OnOperationEvent);
+
+	FBeamOperationHandle CPP_NotifyLobbyReadyForClientsOperation(FUserSlot UserSlot, const FGuid& LobbyId, FBeamOperationEventHandlerCode OnOperationEvent);
+
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Lobby", meta=(AutoCreateRefTerm="NewGameType"))
 	FBeamOperationHandle AcceptUserIntoGameServerOperation(FUserSlot UserSlot, const FString& Options, const FString& Address, const FUniqueNetIdRepl& UniqueId, FBeamOperationEventHandler OnOperationEvent);
 
@@ -537,7 +550,8 @@ private:
 	void ProvisionGameServerForLobby(const FUserSlot& Slot, FOptionalBeamContentId NewGameContent, FBeamOperationHandle Op);
 
 	// Dedicated Server API
-	void SetLobbyAsReadyForConnections(const FUserSlot& Slot, const FGuid& LobbyId, FBeamOperationHandle Op);
+	void RegisterLobbyWithServer(const FUserSlot& Slot, const FGuid& LobbyId, FBeamOperationHandle Op);
+	void NotifyLobbyReadyForClients(const FUserSlot& Slot, const FGuid& LobbyId, FBeamOperationHandle Op);
 	void AcceptUserIntoGameServer(const FUserSlot& Slot, const FString& Options, const FString& Address, const FUniqueNetIdRepl& UniqueId, FBeamOperationHandle Op);
 
 	// Request Helper Functions
