@@ -281,6 +281,7 @@ public:
 						ensureAlways(Evt.MessageData.Context.Equals(ContextKey));
 
 						TMessage MsgData;
+						MsgData.OuterOwner = GetTransientPackage();
 						MsgData.BeamDeserialize(Evt.MessageData.MessageFull);
 
 						const bool bDidRun = Handler.ExecuteIfBound(MsgData);
@@ -300,6 +301,7 @@ public:
 						ensureAlways(Evt.MessageData.Context.Equals(ContextKey));
 
 						TMessage MsgData = NewObject<typename TRemovePointer<TMessage>::Type>();
+						MsgData->OuterOwner = GetTransientPackage();
 						MsgData->BeamDeserialize(Evt.MessageData.MessageFull);
 
 						const bool bDidRun = Handler.ExecuteIfBound(MsgData);
