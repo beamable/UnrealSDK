@@ -108,8 +108,7 @@ void UBeamEditor::Initialize(FSubsystemCollectionBase& Collection)
 void UBeamEditor::Deinitialize()
 {
 	UserSlots->GlobalUserSlotAuthenticatedCodeHandler.Remove(UserSlotAuthenticatedHandler);
-	UserSlots->GlobalUserSlotClearedCodeHandler.Remove(UserSlotClearedHandler);
-	FEditorDelegates::StartPIE.Remove(StartPIEHandler);
+	UserSlots->GlobalUserSlotClearedCodeHandler.Remove(UserSlotClearedHandler);	
 	FEditorDelegates::BeginPIE.Remove(BeginPIEHandler);
 	FEditorDelegates::EndPIE.Remove(EndPIEHandler);
 	FEditorDelegates::OnEditorInitialized.Remove(EditorInitializedHandle);
