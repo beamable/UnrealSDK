@@ -107,8 +107,7 @@ public:
 	TMap<FBeamPIE_UserSlotHandle, FDelegateHandle> UserSlotAuthenticatedHandles;
 
 #if WITH_EDITOR
-	FDelegateHandle StartPIEHandler;
-	FDelegateHandle BeginPIEDelegate;
+	FDelegateHandle StartPIEHandler;	
 #endif
 
 
@@ -136,12 +135,19 @@ public:
 				}
 				UE_LOG(LogTemp, Warning, TEXT("Standalone - Reading BeamPIE Config"))
 
+				// Get the INI path from <ProjectDir>/Save/Config/<Platform>/MyPlugin.ini 
+				FString ConfigPath = FPaths::ConvertRelativePathToFull(FPaths::Combine(FPaths::ProjectSavedDir(), TEXT("Config"), FPlatformProperties::PlatformName(), TEXT("BeamPIE.ini")));
+
+				// Attempt to load the config file
+				GConfig->LoadFile(ConfigPath);
+
 				const auto Config = GetMutableDefault<UBeamPIEConfig>();
 				UE_LOG(LogTemp, Warning, TEXT("Standalone - Default Load BeamPIE Config - Is Running Server Locally: %d, Local Server Port: %s"),
 					   Config->bIsRunningGameServerLocally,
 					   *Config->CurrLocalServerPort);
 
-				Config->LoadConfig(UBeamPIEConfig::StaticClass(), TEXT("BeamPIE"));
+				//Config->LoadConfig(UBeamPIEConfig::StaticClass(), TEXT("BeamPIE"));
+				Config->LoadConfig();
 				UE_LOG(LogTemp, Warning, TEXT("Standalone - Manual  Load BeamPIE Config - Is Running Server Locally: %d, Local Server Port: %s"),
 					   Config->bIsRunningGameServerLocally,
 					   *Config->CurrLocalServerPort);
@@ -157,6 +163,8 @@ public:
 		// Set up the Start PIE handler that integrates our settings with Unreal's Play Settings
 		StartPIEHandler = FEditorDelegates::StartPIE.AddLambda([this](const bool)
 		{
+			bFinishedSetup = false;
+			
 			UWorld* EditorWorld = GEditor->GetEditorWorldContext().World();
 			if (!EditorWorld)
 			{
@@ -218,19 +226,7 @@ public:
 			{
 				UE_LOG(LogBeamEditor, Warning, TEXT("Beam Editor - Pre-Begin PIE - No Play Settings Found!"));
 			}
-		});
-
-		// Reload from config any changes made by our PIE Settings window + our editor extension dropdown.
-		BeginPIEDelegate = FEditorDelegates::BeginPIE.AddLambda([this](bool)
-		{
-			UWorld* EditorWorld = GEditor->GetEditorWorldContext().World();
-			if (!EditorWorld)
-			{
-				UE_LOG(LogBeamEditor, Error, TEXT("Could not find the editor world context!"));
-				return;
-			}
-			bFinishedSetup = false;
-		});
+		});		
 #endif
 	}
 
@@ -239,7 +235,6 @@ public:
 		Super::Deinitialize();
 #if WITH_EDITOR
 		FEditorDelegates::StartPIE.Remove(StartPIEHandler);
-		FEditorDelegates::PreBeginPIE.Remove(BeginPIEDelegate);
 #endif
 	}
 
@@ -459,7 +454,7 @@ public:
 		TArray<FBeamPIE_UserSlotHandle> PossibleSlotHandles;
 		for (const auto& AssignedUser : Setting->AssignedUsers)
 		{
-			if (AssignedUser.Key.PIEIndex == GetPIEInstance(WorldContext) || WorldContext->RunAsDedicated)
+			if (AssignedUser.Key.PIEIndex == GetPIEInstance(WorldContext) || WorldContext->World()->GetNetMode() < NM_Client)
 			{
 				UE_LOG(LogBeamEditor, Log, TEXT("%s Found Assigned User. USER_SLOT=%s, PIE=%d"), *GetLogArgs(TEXT("Beam PIE Prepare"), WorldContext),
 				       *AssignedUser.Key.Slot.Name, AssignedUser.Key.PIEIndex);

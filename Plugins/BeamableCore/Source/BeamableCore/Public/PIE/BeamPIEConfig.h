@@ -33,6 +33,6 @@ public:
 	void Save()
 	{
 		this->SaveConfig(CPF_Config);		
-		UE_LOG(LogTemp, Warning, TEXT("Saved PIE Config - %d, %s"), this->bIsRunningGameServerLocally, *this->GetDefaultConfigFilename())		
+		UE_LOG(LogTemp, Warning, TEXT("Saved PIE Config - %d"), this->bIsRunningGameServerLocally)		
 	}
 };
