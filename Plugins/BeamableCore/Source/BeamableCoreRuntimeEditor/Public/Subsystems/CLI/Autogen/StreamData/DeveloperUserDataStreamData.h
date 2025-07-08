@@ -32,7 +32,11 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString Cid = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool CreateCopyOnStart = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString Alias = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<FString> Tags = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString Description = {};
 
@@ -47,7 +51,9 @@ public:
 		UBeamJsonUtils::SerializeRawPrimitive(TEXT("ExpiresIn"), ExpiresIn, Serializer);
 		UBeamJsonUtils::SerializeRawPrimitive(TEXT("Pid"), Pid, Serializer);
 		UBeamJsonUtils::SerializeRawPrimitive(TEXT("Cid"), Cid, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("CreateCopyOnStart"), CreateCopyOnStart, Serializer);
 		UBeamJsonUtils::SerializeRawPrimitive(TEXT("Alias"), Alias, Serializer);
+		UBeamJsonUtils::SerializeArray<FString>(TEXT("Tags"), Tags, Serializer);
 		UBeamJsonUtils::SerializeRawPrimitive(TEXT("Description"), Description, Serializer);	
 	}
 
@@ -62,7 +68,9 @@ public:
 		UBeamJsonUtils::SerializeRawPrimitive(TEXT("ExpiresIn"), ExpiresIn, Serializer);
 		UBeamJsonUtils::SerializeRawPrimitive(TEXT("Pid"), Pid, Serializer);
 		UBeamJsonUtils::SerializeRawPrimitive(TEXT("Cid"), Cid, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("CreateCopyOnStart"), CreateCopyOnStart, Serializer);
 		UBeamJsonUtils::SerializeRawPrimitive(TEXT("Alias"), Alias, Serializer);
+		UBeamJsonUtils::SerializeArray<FString>(TEXT("Tags"), Tags, Serializer);
 		UBeamJsonUtils::SerializeRawPrimitive(TEXT("Description"), Description, Serializer);	
 	}
 
@@ -77,7 +85,9 @@ public:
 		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("ExpiresIn")), ExpiresIn);
 		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("Pid")), Pid);
 		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("Cid")), Cid);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("CreateCopyOnStart")), CreateCopyOnStart);
 		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("Alias")), Alias);
+		UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("Tags")), Tags, OuterOwner);
 		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("Description")), Description);	
 	}
 };

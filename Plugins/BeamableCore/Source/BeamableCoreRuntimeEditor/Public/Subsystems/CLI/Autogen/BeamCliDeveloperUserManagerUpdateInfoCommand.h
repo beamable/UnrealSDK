@@ -58,6 +58,7 @@ Options:
   --alias <alias>
   --identifier <identifier>
   --description <description>
+  --create-copy-on-start
   --tags <tags>
   --dryrun                               [DEPRECATED] Run as much of the command as possible without making any network calls
   --cid <cid>                            CID (CustomerId) to use (found in Portal->Account); defaults to whatever is in '.beamable/connection-configuration.json'

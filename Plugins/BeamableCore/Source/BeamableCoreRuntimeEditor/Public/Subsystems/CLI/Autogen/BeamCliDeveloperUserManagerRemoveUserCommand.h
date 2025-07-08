@@ -3,11 +3,11 @@
 #include "Subsystems/CLI/BeamCliCommand.h"
 #include "Serialization/BeamJsonUtils.h"
 #include "Subsystems/CLI/Autogen/StreamData/DeveloperUserDataStreamData.h"
-#include "BeamCliDeveloperUserManagerCreateUserCommand.generated.h"
+#include "BeamCliDeveloperUserManagerRemoveUserCommand.generated.h"
 
 
 UCLASS(BlueprintType)
-class UBeamCliDeveloperUserManagerCreateUserStreamData : public UObject, public IBeamJsonSerializableUObject
+class UBeamCliDeveloperUserManagerRemoveUserStreamData : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
@@ -52,14 +52,10 @@ public:
  Description:
 
 Usage:
-  Beamable.Tools developer-user-manager create-user [options]
+  Beamable.Tools developer-user-manager remove-user [options]
 
 Options:
-  --alias <alias>
-  --template <template>
-  --description <description>
-  --user-type <user-type>
-  --tags <tags>
+  --identifier <identifier>
   --dryrun                               [DEPRECATED] Run as much of the command as possible without making any network calls
   --cid <cid>                            CID (CustomerId) to use (found in Portal->Account); defaults to whatever is in '.beamable/connection-configuration.json'
   --pid <pid>                            PID (Realm ID) to use (found in Portal -> Games -> Any Realm's details); defaults to whatever is in '.beamable/connection-configuration.json'
@@ -86,15 +82,15 @@ Options:
 
  */
 UCLASS()
-class UBeamCliDeveloperUserManagerCreateUserCommand : public UBeamCliCommand
+class UBeamCliDeveloperUserManagerRemoveUserCommand : public UBeamCliCommand
 {
 	GENERATED_BODY()
 
 public:
 	inline static FString StreamType = FString(TEXT("stream"));
-	UPROPERTY() TArray<UBeamCliDeveloperUserManagerCreateUserStreamData*> Stream;
+	UPROPERTY() TArray<UBeamCliDeveloperUserManagerRemoveUserStreamData*> Stream;
 	UPROPERTY() TArray<int64> Timestamps;
-	TFunction<void (TArray<UBeamCliDeveloperUserManagerCreateUserStreamData*>& StreamData, TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnStreamOutput;	
+	TFunction<void (TArray<UBeamCliDeveloperUserManagerRemoveUserStreamData*>& StreamData, TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnStreamOutput;	
 
 	TFunction<void (const int& ResCode, const FBeamOperationHandle& Op)> OnCompleted;
 	virtual bool HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer) override;

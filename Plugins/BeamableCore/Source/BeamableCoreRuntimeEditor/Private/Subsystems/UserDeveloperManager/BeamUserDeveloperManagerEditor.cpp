@@ -10,6 +10,7 @@
 #include "Subsystems/CLI/Autogen/BeamCliDeveloperUserManagerCreateUserBatchCommand.h"
 #include "Subsystems/CLI/Autogen/BeamCliDeveloperUserManagerCreateUserCommand.h"
 #include "Subsystems/CLI/Autogen/BeamCliDeveloperUserManagerPsCommand.h"
+#include "Subsystems/CLI/Autogen/BeamCliDeveloperUserManagerRemoveUserCommand.h"
 #include "Subsystems/CLI/Autogen/BeamCliDeveloperUserManagerSaveUserCommand.h"
 #include "Subsystems/CLI/Autogen/BeamCliDeveloperUserManagerUpdateInfoCommand.h"
 
@@ -229,7 +230,7 @@ void UBeamUserDeveloperManagerEditor::TriggerOnPreBeginPIE(const FBeamPIE_Settin
 	BeamCli->RunCommandServer(CreateUserBatchCommand, args, Handler);
 }
 
-void UBeamUserDeveloperManagerEditor::GetAllUsers(TArray<UDeveloperUserDataStreamData*>& AllUsers)
+void UBeamUserDeveloperManagerEditor::GetAllUsers(FString NameFilter, FString TagFilter, TArray<UDeveloperUserDataStreamData*>& AllUsers)
 {
 	AllUsers.Empty();
 	TArray<UDeveloperUserDataStreamData*> Result;
@@ -238,15 +239,106 @@ void UBeamUserDeveloperManagerEditor::GetAllUsers(TArray<UDeveloperUserDataStrea
 		Result.Add(DeveloperUser.Value);
 	}
 
+	if (NameFilter != TEXT(""))
+	{
+		Result.RemoveAll([NameFilter](UDeveloperUserDataStreamData* Data)
+		{
+			return !Data->Alias.Contains(NameFilter) && !FString::Printf(TEXT("%llu"), Data->GamerTag).Contains(NameFilter);
+		});
+	}
+
+	if (TagFilter != TEXT(""))
+	{
+		TArray<FString> Tags;
+		TagFilter.ParseIntoArray(Tags, TEXT(","));
+		Result.RemoveAll([Tags](UDeveloperUserDataStreamData* Data)
+		{
+			bool ContainsAll = true;
+			for (auto FilterTag : Tags)
+			{
+				FilterTag.TrimStartAndEndInline();
+
+				bool Contains = false;
+				for (auto Tag : Data->Tags)
+				{
+					Contains |= Tag.Contains(FilterTag);
+				}
+				ContainsAll &= Contains;
+			}
+
+			return !ContainsAll;
+		});
+	}
+
 	Result.Sort([](const UDeveloperUserDataStreamData& A, const UDeveloperUserDataStreamData& B)
 	{
-		return A.DeveloperUserType > B.DeveloperUserType;
+		if (A.DeveloperUserType != B.DeveloperUserType)
+		{
+			return A.DeveloperUserType > B.DeveloperUserType;
+		}
+
+		return A.GamerTag > B.GamerTag;
 	});
 
 	AllUsers = Result;
 }
 
-void UBeamUserDeveloperManagerEditor::SetUserInfo(FBeamGamerTag GamerTag, FString Alias, FString Description, TArray<FString> Tags)
+void UBeamUserDeveloperManagerEditor::RemoveUser(FBeamGamerTag GamerTag)
+{
+	UBeamCliDeveloperUserManagerRemoveUserCommand* RemoveCommand = NewObject<UBeamCliDeveloperUserManagerRemoveUserCommand>();
+
+	RemoveCommand->OnStreamOutput = [this](const TArray<UBeamCliDeveloperUserManagerRemoveUserStreamData*>& Stream, const TArray<int64>&,
+	                                       const FBeamOperationHandle&)
+	{
+	};
+	RemoveCommand->OnCompleted = [this](const int&, const FBeamOperationHandle&)
+	{
+	};
+
+	auto args = {
+		FString::Printf(TEXT("--identifier \"%s\""), *GamerTag.AsString),
+	};
+
+	auto Handler = RequestTracker->CPP_BeginOperation({}, GetName(), {});
+
+	BeamCli->RunCommandServer(RemoveCommand, args, Handler);
+}
+
+
+void UBeamUserDeveloperManagerEditor::CopyUserToTarget(FBeamGamerTag TemplateGamerTag, EBeamDeveloperUserType DeveloperUserType, FBeamOperationEventHandler OperationEventHandle)
+{
+	auto OperationHandler = RequestTracker->BeginOperation({}, GetName(), OperationEventHandle);
+	UBeamCliDeveloperUserManagerCreateUserCommand* CreateUserCommand = NewObject<UBeamCliDeveloperUserManagerCreateUserCommand>();
+
+	CreateUserCommand->OnStreamOutput = [this](const TArray<UBeamCliDeveloperUserManagerCreateUserStreamData*>& Stream, const TArray<int64>&,
+	                                           const FBeamOperationHandle&)
+	{
+	};
+	CreateUserCommand->OnCompleted = [this, OperationHandler](const int& Res, const FBeamOperationHandle&)
+	{
+		if (Res == 0)
+		{
+			RequestTracker->TriggerOperationSuccess(OperationHandler, TEXT(""));
+		}
+		else
+		{
+			RequestTracker->TriggerOperationError(OperationHandler, TEXT(""));
+		}
+	};
+
+	auto args = {
+		FString::Printf(TEXT("--template \"%s\""), *TemplateGamerTag.AsString),
+		FString::Printf(TEXT("--alias \"%s\""), TEXT("")),
+		FString::Printf(TEXT("--description \"%s\""), TEXT("")),
+		FString::Printf(TEXT("--user-type %d"), DeveloperUserType),
+	};
+
+	auto Handler = RequestTracker->CPP_BeginOperation({}, GetName(), {});
+
+	BeamCli->RunCommandServer(CreateUserCommand, args, Handler);
+}
+
+void UBeamUserDeveloperManagerEditor::SetUserInfo(FBeamGamerTag GamerTag, FString Alias, FString Description, bool CreateCopyOnPIE, TArray<FString> Tags)
 {
 	UBeamCliDeveloperUserManagerUpdateInfoCommand* UpdateInfoCommand = NewObject<UBeamCliDeveloperUserManagerUpdateInfoCommand>();
 
@@ -258,12 +350,21 @@ void UBeamUserDeveloperManagerEditor::SetUserInfo(FBeamGamerTag GamerTag, FStrin
 	{
 	};
 
+	FString TagsStr = "";
+
+	for (auto tag : Tags)
+	{
+		TagsStr += FString::Printf(TEXT("--tags \"%s\" "), *tag);
+	}
+
 	auto args = {
 		FString::Printf(TEXT("--identifier \"%s\""), *GamerTag.AsString),
 		FString::Printf(TEXT("--alias \"%s\""), *Alias),
+		FString::Printf(TEXT("%s"), CreateCopyOnPIE ? TEXT("--create-copy-on-start") : TEXT("")),
 		FString::Printf(TEXT("--description \"%s\""), *Description),
-		FString::Printf(TEXT("--tags \"%s\""), *FString::Join(Tags, TEXT(" "))),
+		FString::Printf(TEXT("%s"), *TagsStr),
 	};
+
 
 	auto Handler = RequestTracker->CPP_BeginOperation({}, GetName(), {});
 

@@ -11,6 +11,13 @@
 
 #include "BeamUserDeveloperManagerEditor.generated.h"
 
+UENUM(BlueprintType)
+enum EBeamDeveloperUserType
+{
+	BEAM_CAPTURED = 0,
+	BEAM_LOCAL = 1,
+	BEAM_SHARED = 2
+};
 
 /**
  * 
@@ -18,6 +25,9 @@
 UCLASS(Blueprintable, BlueprintType)
 class BEAMABLECORERUNTIMEEDITOR_API UBeamUserDeveloperManagerEditor : public UBeamEditorSubsystem
 {
+	static constexpr int DeveloperUserTypeLocal = 1;
+	static constexpr int DeveloperUserTypeShared = 2;
+
 	GENERATED_BODY()
 
 
@@ -61,10 +71,17 @@ public:
 	virtual FBeamOperationHandle OnRealmInitialized(FBeamRealmHandle NewRealm) override;
 
 	UFUNCTION(BlueprintCallable)
-	void GetAllUsers(TArray<UDeveloperUserDataStreamData*>& AllUsers);
+	void GetAllUsers(FString NameFilter, FString TagFilter, TArray<UDeveloperUserDataStreamData*>& AllUsers);
 
 	UFUNCTION(BlueprintCallable)
-	void SetUserInfo(FBeamGamerTag GamerTag, FString Alias, FString Description, TArray<FString> Tags);
+	void RemoveUser(FBeamGamerTag GamerTag);
+
+
+	UFUNCTION(BlueprintCallable)
+	void CopyUserToTarget(FBeamGamerTag TemplateGamerTag, EBeamDeveloperUserType DeveloperUserType, FBeamOperationEventHandler OperationEventHandle);
+
+	UFUNCTION(BlueprintCallable)
+	void SetUserInfo(FBeamGamerTag GamerTag, FString Alias, FString Description, bool CreateCopyOnPIE, TArray<FString> Tags);
 
 	void TriggerOnPreBeginPIE(const FBeamPIE_Settings* Settings);
 
