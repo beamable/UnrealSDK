@@ -212,17 +212,17 @@ void UBeamUserDeveloperManagerEditor::TriggerOnPreBeginPIE(const FBeamPIE_Settin
 		}
 	};
 
-	TArray<FString> Identifiers;
+	TArray<FString> GamerTags;
 	TArray<FString> AmountList;
 
 	for (auto TemplateGamerTagAmountKeyPair : TemplateAmount)
 	{
-		Identifiers.Add(TemplateGamerTagAmountKeyPair.Key.AsString);
+		GamerTags.Add(TemplateGamerTagAmountKeyPair.Key.AsString);
 		AmountList.Add(std::to_string(TemplateGamerTagAmountKeyPair.Value).data());
 	}
 
 	auto args = {
-		FString::Printf(TEXT("--templates-list %s"), *FString::Join(Identifiers, TEXT(" "))),
+		FString::Printf(TEXT("--templates-list %s"), *FString::Join(GamerTags, TEXT(" "))),
 		FString::Printf(TEXT("--amount-list %s"), *FString::Join(AmountList, TEXT(" "))),
 		FString::Printf(TEXT("--rolling-buffer-size %d"), 10),
 	};
@@ -296,7 +296,7 @@ void UBeamUserDeveloperManagerEditor::RemoveUser(FBeamGamerTag GamerTag)
 	};
 
 	auto args = {
-		FString::Printf(TEXT("--identifier \"%s\""), *GamerTag.AsString),
+		FString::Printf(TEXT("--gamer-tag \"%s\""), *GamerTag.AsString),
 	};
 
 	auto Handler = RequestTracker->CPP_BeginOperation({}, GetName(), {});
@@ -338,7 +338,7 @@ void UBeamUserDeveloperManagerEditor::CopyUserToTarget(FBeamGamerTag TemplateGam
 	BeamCli->RunCommandServer(CreateUserCommand, args, Handler);
 }
 
-void UBeamUserDeveloperManagerEditor::SetUserInfo(FBeamGamerTag GamerTag, FString Alias, FString Description, bool CreateCopyOnPIE, TArray<FString> Tags)
+void UBeamUserDeveloperManagerEditor::SetUserInfo(FBeamGamerTag GamerTag, FString Alias, FString Description, TArray<FString> Tags)
 {
 	UBeamCliDeveloperUserManagerUpdateInfoCommand* UpdateInfoCommand = NewObject<UBeamCliDeveloperUserManagerUpdateInfoCommand>();
 
@@ -358,9 +358,8 @@ void UBeamUserDeveloperManagerEditor::SetUserInfo(FBeamGamerTag GamerTag, FStrin
 	}
 
 	auto args = {
-		FString::Printf(TEXT("--identifier \"%s\""), *GamerTag.AsString),
+		FString::Printf(TEXT("--gamer-tag \"%s\""), *GamerTag.AsString),
 		FString::Printf(TEXT("--alias \"%s\""), *Alias),
-		FString::Printf(TEXT("%s"), CreateCopyOnPIE ? TEXT("--create-copy-on-start") : TEXT("")),
 		FString::Printf(TEXT("--description \"%s\""), *Description),
 		FString::Printf(TEXT("%s"), *TagsStr),
 	};

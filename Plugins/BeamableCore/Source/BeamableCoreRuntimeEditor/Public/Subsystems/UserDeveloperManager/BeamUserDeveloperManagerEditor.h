@@ -81,7 +81,7 @@ public:
 	void CopyUserToTarget(FBeamGamerTag TemplateGamerTag, EBeamDeveloperUserType DeveloperUserType, FBeamOperationEventHandler OperationEventHandle);
 
 	UFUNCTION(BlueprintCallable)
-	void SetUserInfo(FBeamGamerTag GamerTag, FString Alias, FString Description, bool CreateCopyOnPIE, TArray<FString> Tags);
+	void SetUserInfo(FBeamGamerTag GamerTag, FString Alias, FString Description, TArray<FString> Tags);
 
 	void TriggerOnPreBeginPIE(const FBeamPIE_Settings* Settings);
 

@@ -60,11 +60,11 @@ Usage:
   Beamable.Tools developer-user-manager create-user [options]
 
 Options:
-  --alias <alias>
-  --template <template>
-  --description <description>
-  --user-type <user-type>
-  --tags <tags>
+  --alias <alias>                        The alias is a chosen name for this player which is not the same as the player name in the backend
+  --template <template>                  A gamer tag to a template that will be used to copy the stats and inventory to the created player
+  --description <description>            A shortly description of this new player
+  --user-type <user-type>                The user type of this player 0 - Captured 1 - Local 2 - Shared
+  --tags <tags>                          A list of tags to set in this new player (only locally)
   --dryrun                               [DEPRECATED] Run as much of the command as possible without making any network calls
   --cid <cid>                            CID (CustomerId) to use (found in Portal->Account); defaults to whatever is in '.beamable/connection-configuration.json'
   --pid <pid>                            PID (Realm ID) to use (found in Portal -> Games -> Any Realm's details); defaults to whatever is in '.beamable/connection-configuration.json'

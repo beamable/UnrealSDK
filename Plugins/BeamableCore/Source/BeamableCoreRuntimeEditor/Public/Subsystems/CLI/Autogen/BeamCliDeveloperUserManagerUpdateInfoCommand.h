@@ -60,11 +60,10 @@ Usage:
   Beamable.Tools developer-user-manager update-info [options]
 
 Options:
-  --alias <alias>
-  --identifier <identifier>
-  --description <description>
-  --create-copy-on-start
-  --tags <tags>
+  --alias <alias>                        A alias (Name) of the user, which is not the same name as in the portal
+  --gamer-tag <gamer-tag>                The gamer tag of the user to be updated
+  --description <description>            A new description for this user
+  --tags <tags>                          The tags to set in the local user data
   --dryrun                               [DEPRECATED] Run as much of the command as possible without making any network calls
   --cid <cid>                            CID (CustomerId) to use (found in Portal->Account); defaults to whatever is in '.beamable/connection-configuration.json'
   --pid <pid>                            PID (Realm ID) to use (found in Portal -> Games -> Any Realm's details); defaults to whatever is in '.beamable/connection-configuration.json'

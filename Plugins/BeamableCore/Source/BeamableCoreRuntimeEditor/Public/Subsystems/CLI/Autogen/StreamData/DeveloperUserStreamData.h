@@ -28,8 +28,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString Description = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool CreateCopyOnStart = {};
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<FString> Tags = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString AccessToken = {};
@@ -53,7 +51,6 @@ public:
 		UBeamJsonUtils::SerializeRawPrimitive(TEXT("TemplateGamerTag"), TemplateGamerTag, Serializer);
 		UBeamJsonUtils::SerializeRawPrimitive(TEXT("Alias"), Alias, Serializer);
 		UBeamJsonUtils::SerializeRawPrimitive(TEXT("Description"), Description, Serializer);
-		UBeamJsonUtils::SerializeRawPrimitive(TEXT("CreateCopyOnStart"), CreateCopyOnStart, Serializer);
 		UBeamJsonUtils::SerializeArray<FString>(TEXT("Tags"), Tags, Serializer);
 		UBeamJsonUtils::SerializeRawPrimitive(TEXT("AccessToken"), AccessToken, Serializer);
 		UBeamJsonUtils::SerializeRawPrimitive(TEXT("RefreshToken"), RefreshToken, Serializer);
@@ -72,7 +69,6 @@ public:
 		UBeamJsonUtils::SerializeRawPrimitive(TEXT("TemplateGamerTag"), TemplateGamerTag, Serializer);
 		UBeamJsonUtils::SerializeRawPrimitive(TEXT("Alias"), Alias, Serializer);
 		UBeamJsonUtils::SerializeRawPrimitive(TEXT("Description"), Description, Serializer);
-		UBeamJsonUtils::SerializeRawPrimitive(TEXT("CreateCopyOnStart"), CreateCopyOnStart, Serializer);
 		UBeamJsonUtils::SerializeArray<FString>(TEXT("Tags"), Tags, Serializer);
 		UBeamJsonUtils::SerializeRawPrimitive(TEXT("AccessToken"), AccessToken, Serializer);
 		UBeamJsonUtils::SerializeRawPrimitive(TEXT("RefreshToken"), RefreshToken, Serializer);
@@ -91,7 +87,6 @@ public:
 		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("TemplateGamerTag")), TemplateGamerTag);
 		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("Alias")), Alias);
 		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("Description")), Description);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("CreateCopyOnStart")), CreateCopyOnStart);
 		UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("Tags")), Tags, OuterOwner);
 		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("AccessToken")), AccessToken);
 		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("RefreshToken")), RefreshToken);

@@ -60,7 +60,7 @@ Usage:
   Beamable.Tools developer-user-manager remove-user [options]
 
 Options:
-  --identifier <identifier>
+  --gamer-tag <gamer-tag>                The gamer tag of the player that you would like to remove
   --dryrun                               [DEPRECATED] Run as much of the command as possible without making any network calls
   --cid <cid>                            CID (CustomerId) to use (found in Portal->Account); defaults to whatever is in '.beamable/connection-configuration.json'
   --pid <pid>                            PID (Realm ID) to use (found in Portal -> Games -> Any Realm's details); defaults to whatever is in '.beamable/connection-configuration.json'

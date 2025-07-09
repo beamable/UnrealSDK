@@ -61,8 +61,8 @@ Usage:
 
 Options:
   --rolling-buffer-size <rolling-buffer-size>  The max amount of temporary users that you can have before starting to delete the oldest
-  --templates-list <templates-list>
-  --amount-list <amount-list>
+  --templates-list <templates-list>            The gamer tag list for all templates that will be copied into a new player
+  --amount-list <amount-list>                  A parallel list of the template-list arg that contains the amount of users for each template
   --dryrun                                     [DEPRECATED] Run as much of the command as possible without making any network calls
   --cid <cid>                                  CID (CustomerId) to use (found in Portal->Account); defaults to whatever is in '.beamable/connection-configuration.json'
   --pid <pid>                                  PID (Realm ID) to use (found in Portal -> Games -> Any Realm's details); defaults to whatever is in '.beamable/connection-configuration.json'
