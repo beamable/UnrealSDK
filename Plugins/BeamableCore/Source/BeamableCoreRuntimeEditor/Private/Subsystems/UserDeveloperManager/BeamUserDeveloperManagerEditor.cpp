@@ -47,45 +47,6 @@ FBeamOperationHandle UBeamUserDeveloperManagerEditor::OnRealmInitialized(FBeamRe
 	return Op;
 }
 
-void UBeamUserDeveloperManagerEditor::RunPsCommand(FBeamOperationHandle FirstEventOp)
-{
-	auto WatchCommand = NewObject<UBeamCliDeveloperUserManagerPsCommand>();
-	WatchCommand->OnStreamOutput = [this, FirstEventOp](TArray<UBeamCliDeveloperUserManagerPsStreamData*>& Stream, TArray<int64>&, const FBeamOperationHandle&)
-	{
-		const auto Data = Stream.Last();
-		if (Data->EventType == EVT_TYPE_FullRebuild)
-		{
-			RebuildLocalDeveloperUserCache(Data->DeveloperUserReport->UpdatedUsers);
-			if (RequestTracker->IsOperationActive(FirstEventOp))
-			{
-				RequestTracker->TriggerOperationSuccess(FirstEventOp, TEXT(""));
-			}
-			OnDeveloperUserInfoFullRebuild.Broadcast();
-		}
-
-		if (Data->EventType == EVT_TYPE_ChangedUserInfo)
-		{
-			UpdateLocalDeveloperUserCache(Data->DeveloperUserReport->UpdatedUsers, Data->DeveloperUserReport->DeletedUsers);
-
-			OnDeveloperUserInfoChange.Broadcast();
-		}
-	};
-	WatchCommand->OnCompleted = [this, WatchCommand, FirstEventOp](const int& ResCode, const FBeamOperationHandle&)
-	{
-		if (ResCode != 0)
-		{
-			// If we completed without receiving the first event, we trigger an error of the first event.
-			if (WatchCommand->Stream.Num() == 0) RequestTracker->TriggerOperationError(FirstEventOp, TEXT("Failed to fetch initial full-rebuild event"));
-
-			const auto ReqProcess = FString::Printf(TEXT("--require-process-id %d"), FPlatformProcess::GetCurrentProcessId());
-			BeamCli->RunCommand(WatchCommand, {TEXT("-w"), ReqProcess}, {});
-		}
-	};
-
-	const auto ReqProcess = FString::Printf(TEXT("--require-process-id %d"), FPlatformProcess::GetCurrentProcessId());
-	BeamCli->RunCommand(WatchCommand, {TEXT("-w"), ReqProcess}, {});
-}
-
 
 void UBeamUserDeveloperManagerEditor::TriggerOnUserSlotAuthenticated(const FUserSlot& UserSlot, const FBeamRealmUser& BeamRealmUser, const FBeamOperationHandle& BeamOperationHandle, const UObject* Context)
 {
@@ -230,7 +191,7 @@ void UBeamUserDeveloperManagerEditor::TriggerOnPreBeginPIE(const FBeamPIE_Settin
 	BeamCli->RunCommandServer(CreateUserBatchCommand, args, Handler);
 }
 
-void UBeamUserDeveloperManagerEditor::GetAllUsers(FString NameFilter, FString TagFilter, TArray<UDeveloperUserStreamData*>& AllUsers)
+void UBeamUserDeveloperManagerEditor::GetUsersWithFilter(FString NameFilter, FString TagFilter, TArray<UDeveloperUserStreamData*>& AllUsers)
 {
 	AllUsers.Empty();
 	TArray<UDeveloperUserStreamData*> Result;
@@ -283,7 +244,7 @@ void UBeamUserDeveloperManagerEditor::GetAllUsers(FString NameFilter, FString Ta
 	AllUsers = Result;
 }
 
-void UBeamUserDeveloperManagerEditor::RemoveUser(FBeamGamerTag GamerTag)
+void UBeamUserDeveloperManagerEditor::DeleteUser(FBeamGamerTag GamerTag)
 {
 	UBeamCliDeveloperUserManagerRemoveUserCommand* RemoveCommand = NewObject<UBeamCliDeveloperUserManagerRemoveUserCommand>();
 
@@ -305,7 +266,7 @@ void UBeamUserDeveloperManagerEditor::RemoveUser(FBeamGamerTag GamerTag)
 }
 
 
-void UBeamUserDeveloperManagerEditor::CopyUserToTarget(FBeamGamerTag TemplateGamerTag, EBeamDeveloperUserType DeveloperUserType, FBeamOperationEventHandler OperationEventHandle)
+void UBeamUserDeveloperManagerEditor::CopyTemplateToNewUserOperation(FBeamGamerTag TemplateGamerTag, EBeamDeveloperUserType DeveloperUserType, FBeamOperationEventHandler OperationEventHandle)
 {
 	auto OperationHandler = RequestTracker->BeginOperation({}, GetName(), OperationEventHandle);
 	UBeamCliDeveloperUserManagerCreateUserCommand* CreateUserCommand = NewObject<UBeamCliDeveloperUserManagerCreateUserCommand>();
@@ -338,7 +299,7 @@ void UBeamUserDeveloperManagerEditor::CopyUserToTarget(FBeamGamerTag TemplateGam
 	BeamCli->RunCommandServer(CreateUserCommand, args, Handler);
 }
 
-void UBeamUserDeveloperManagerEditor::SetUserInfo(FBeamGamerTag GamerTag, FString Alias, FString Description, TArray<FString> Tags)
+void UBeamUserDeveloperManagerEditor::UpdateDeveloperUserInfo(FBeamGamerTag GamerTag, FString Alias, FString Description, TArray<FString> Tags)
 {
 	UBeamCliDeveloperUserManagerUpdateInfoCommand* UpdateInfoCommand = NewObject<UBeamCliDeveloperUserManagerUpdateInfoCommand>();
 
@@ -368,6 +329,45 @@ void UBeamUserDeveloperManagerEditor::SetUserInfo(FBeamGamerTag GamerTag, FStrin
 	auto Handler = RequestTracker->CPP_BeginOperation({}, GetName(), {});
 
 	BeamCli->RunCommandServer(UpdateInfoCommand, args, Handler);
+}
+
+void UBeamUserDeveloperManagerEditor::RunPsCommand(FBeamOperationHandle OperationHandle)
+{
+	auto WatchCommand = NewObject<UBeamCliDeveloperUserManagerPsCommand>();
+	WatchCommand->OnStreamOutput = [this, OperationHandle](TArray<UBeamCliDeveloperUserManagerPsStreamData*>& Stream, TArray<int64>&, const FBeamOperationHandle&)
+	{
+		const auto Data = Stream.Last();
+		if (Data->EventType == EVT_TYPE_FullRebuild)
+		{
+			RebuildLocalDeveloperUserCache(Data->DeveloperUserReport->UpdatedUsers);
+			if (RequestTracker->IsOperationActive(OperationHandle))
+			{
+				RequestTracker->TriggerOperationSuccess(OperationHandle, TEXT(""));
+			}
+			OnDeveloperUserInfoFullRebuild.Broadcast();
+		}
+
+		if (Data->EventType == EVT_TYPE_ChangedUserInfo)
+		{
+			UpdateLocalDeveloperUserCache(Data->DeveloperUserReport->UpdatedUsers, Data->DeveloperUserReport->DeletedUsers);
+
+			OnDeveloperUserInfoChange.Broadcast();
+		}
+	};
+	WatchCommand->OnCompleted = [this, WatchCommand, OperationHandle](const int& ResCode, const FBeamOperationHandle&)
+	{
+		if (ResCode != 0)
+		{
+			// If we completed without receiving the first event, we trigger an error of the first event.
+			if (WatchCommand->Stream.Num() == 0) RequestTracker->TriggerOperationError(OperationHandle, TEXT("Failed to fetch initial full-rebuild event"));
+
+			const auto ReqProcess = FString::Printf(TEXT("--require-process-id %d"), FPlatformProcess::GetCurrentProcessId());
+			BeamCli->RunCommand(WatchCommand, {TEXT("-w"), ReqProcess}, {});
+		}
+	};
+
+	const auto ReqProcess = FString::Printf(TEXT("--require-process-id %d"), FPlatformProcess::GetCurrentProcessId());
+	BeamCli->RunCommand(WatchCommand, {TEXT("-w"), ReqProcess}, {});
 }
 
 

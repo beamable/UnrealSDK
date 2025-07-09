@@ -12,7 +12,7 @@ struct BEAMABLECORE_API FBeamPIE_UserSlotHandle
 	int32 PIEIndex = 0;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool CreateCopyOnPIE;
+	bool CreateCopyOnPIE = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FUserSlot Slot = FUserSlot{};

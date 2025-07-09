@@ -25,8 +25,11 @@ enum EBeamDeveloperUserType
 UCLASS(Blueprintable, BlueprintType)
 class BEAMABLECORERUNTIMEEDITOR_API UBeamUserDeveloperManagerEditor : public UBeamEditorSubsystem
 {
-	static constexpr int DeveloperUserTypeLocal = 1;
-	static constexpr int DeveloperUserTypeShared = 2;
+	static constexpr int32 DEVELOPER_USER_TYPE_LOCAL = 1;
+	static constexpr int32 DEVELOPER_USER_TYPE_SHARED = 2;
+
+	static constexpr int32 EVT_TYPE_FullRebuild = 0;
+	static constexpr int32 EVT_TYPE_ChangedUserInfo = 1;
 
 	GENERATED_BODY()
 
@@ -53,40 +56,46 @@ class BEAMABLECORERUNTIMEEDITOR_API UBeamUserDeveloperManagerEditor : public UBe
 	virtual void Deinitialize() override;
 
 public:
-	inline static const FString DefaultBeamableUserDeveloperPath = TEXT("UserDeveloper");
-
-	inline static const FString DefaultBeamableProjectPath = FPaths::ProjectDir() / TEXT(".beamable");
-	inline static const FString DefaultBeamableProjectContentObjects = DefaultBeamableProjectPath / DefaultBeamableUserDeveloperPath;
-
 	UPROPERTY(BlueprintAssignable)
 	FEditorStateChangedEvent OnDeveloperUserInfoFullRebuild;
 
 	UPROPERTY(BlueprintAssignable)
 	FEditorStateChangedEvent OnDeveloperUserInfoChange;
 
-	inline static const int32 EVT_TYPE_FullRebuild = 0;
-
-	inline static const int32 EVT_TYPE_ChangedUserInfo = 1;
-
 	virtual FBeamOperationHandle OnRealmInitialized(FBeamRealmHandle NewRealm) override;
 
+	/**
+	 * @brief Get users that matches the name filter and a tag filter
+	 */
 	UFUNCTION(BlueprintCallable)
-	void GetAllUsers(FString NameFilter, FString TagFilter, TArray<UDeveloperUserStreamData*>& AllUsers);
+	void GetUsersWithFilter(FString NameFilter, FString TagFilter, TArray<UDeveloperUserStreamData*>& AllUsers);
 
+	/**
+	 * Delete a user from the local files
+	 * OBS: It will NOT delete the user from the portal
+	 */
 	UFUNCTION(BlueprintCallable)
-	void RemoveUser(FBeamGamerTag GamerTag);
+	void DeleteUser(FBeamGamerTag GamerTag);
 
-
+	/**
+	 * Create a new user and copy the stats and inventory to the created user from a template gamer tag
+	 */
 	UFUNCTION(BlueprintCallable)
-	void CopyUserToTarget(FBeamGamerTag TemplateGamerTag, EBeamDeveloperUserType DeveloperUserType, FBeamOperationEventHandler OperationEventHandle);
+	void CopyTemplateToNewUserOperation(FBeamGamerTag TemplateGamerTag, EBeamDeveloperUserType DeveloperUserType, FBeamOperationEventHandler OperationEventHandle);
 
+	/**
+	 * Create a new user and copy the stats and inventory to the created user from a template gamer tag
+	 */
 	UFUNCTION(BlueprintCallable)
-	void SetUserInfo(FBeamGamerTag GamerTag, FString Alias, FString Description, TArray<FString> Tags);
+	void UpdateDeveloperUserInfo(FBeamGamerTag GamerTag, FString Alias, FString Description, TArray<FString> Tags);
 
+	/**
+	 * Copy the users to the Saved folder to be loaded by the cache login
+	 */
 	void TriggerOnPreBeginPIE(const FBeamPIE_Settings* Settings);
 
 protected:
-	void RunPsCommand(FBeamOperationHandle FirstEventOp);
+	void RunPsCommand(FBeamOperationHandle OperationHandle);
 
 	void RebuildLocalDeveloperUserCache(TArray<UDeveloperUserStreamData*> AllEntries);
 
