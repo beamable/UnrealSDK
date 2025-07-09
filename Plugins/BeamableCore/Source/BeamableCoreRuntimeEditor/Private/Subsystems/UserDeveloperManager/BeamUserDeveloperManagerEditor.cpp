@@ -55,7 +55,7 @@ void UBeamUserDeveloperManagerEditor::RunPsCommand(FBeamOperationHandle FirstEve
 		const auto Data = Stream.Last();
 		if (Data->EventType == EVT_TYPE_FullRebuild)
 		{
-			RebuildLocalDeveloperUserCache(Data->ToUpdate);
+			RebuildLocalDeveloperUserCache(Data->DeveloperUserReport->UpdatedUsers);
 			if (RequestTracker->IsOperationActive(FirstEventOp))
 			{
 				RequestTracker->TriggerOperationSuccess(FirstEventOp, TEXT(""));
@@ -65,7 +65,7 @@ void UBeamUserDeveloperManagerEditor::RunPsCommand(FBeamOperationHandle FirstEve
 
 		if (Data->EventType == EVT_TYPE_ChangedUserInfo)
 		{
-			UpdateLocalDeveloperUserCache(Data->ToUpdate, Data->ToRemove);
+			UpdateLocalDeveloperUserCache(Data->DeveloperUserReport->UpdatedUsers, Data->DeveloperUserReport->DeletedUsers);
 
 			OnDeveloperUserInfoChange.Broadcast();
 		}
@@ -174,17 +174,17 @@ void UBeamUserDeveloperManagerEditor::TriggerOnPreBeginPIE(const FBeamPIE_Settin
 	{
 		auto Data = Stream.Last();
 
-		TMap<long, TArray<UDeveloperUserDataStreamData*>> CreatedUserMap;
+		TMap<long, TArray<UDeveloperUserStreamData*>> CreatedUserMap;
 
-		for (UDeveloperUserDataStreamData* CreatedUser : Data->CreatedUsers)
+		for (UDeveloperUserStreamData* CreatedUser : Data->CreatedUsers)
 		{
-			if (CreatedUserMap.Contains(CreatedUser->TemplatedGamerTag))
+			if (CreatedUserMap.Contains(CreatedUser->TemplateGamerTag))
 			{
-				CreatedUserMap[CreatedUser->TemplatedGamerTag].Add(CreatedUser);
+				CreatedUserMap[CreatedUser->TemplateGamerTag].Add(CreatedUser);
 			}
 			else
 			{
-				CreatedUserMap.Add(CreatedUser->TemplatedGamerTag, {CreatedUser});
+				CreatedUserMap.Add(CreatedUser->TemplateGamerTag, {CreatedUser});
 			}
 		}
 
@@ -230,10 +230,10 @@ void UBeamUserDeveloperManagerEditor::TriggerOnPreBeginPIE(const FBeamPIE_Settin
 	BeamCli->RunCommandServer(CreateUserBatchCommand, args, Handler);
 }
 
-void UBeamUserDeveloperManagerEditor::GetAllUsers(FString NameFilter, FString TagFilter, TArray<UDeveloperUserDataStreamData*>& AllUsers)
+void UBeamUserDeveloperManagerEditor::GetAllUsers(FString NameFilter, FString TagFilter, TArray<UDeveloperUserStreamData*>& AllUsers)
 {
 	AllUsers.Empty();
-	TArray<UDeveloperUserDataStreamData*> Result;
+	TArray<UDeveloperUserStreamData*> Result;
 	for (auto DeveloperUser : LocalUserDeveloperCache)
 	{
 		Result.Add(DeveloperUser.Value);
@@ -241,7 +241,7 @@ void UBeamUserDeveloperManagerEditor::GetAllUsers(FString NameFilter, FString Ta
 
 	if (NameFilter != TEXT(""))
 	{
-		Result.RemoveAll([NameFilter](UDeveloperUserDataStreamData* Data)
+		Result.RemoveAll([NameFilter](UDeveloperUserStreamData* Data)
 		{
 			return !Data->Alias.Contains(NameFilter) && !FString::Printf(TEXT("%llu"), Data->GamerTag).Contains(NameFilter);
 		});
@@ -251,7 +251,7 @@ void UBeamUserDeveloperManagerEditor::GetAllUsers(FString NameFilter, FString Ta
 	{
 		TArray<FString> Tags;
 		TagFilter.ParseIntoArray(Tags, TEXT(","));
-		Result.RemoveAll([Tags](UDeveloperUserDataStreamData* Data)
+		Result.RemoveAll([Tags](UDeveloperUserStreamData* Data)
 		{
 			bool ContainsAll = true;
 			for (auto FilterTag : Tags)
@@ -270,7 +270,7 @@ void UBeamUserDeveloperManagerEditor::GetAllUsers(FString NameFilter, FString Ta
 		});
 	}
 
-	Result.Sort([](const UDeveloperUserDataStreamData& A, const UDeveloperUserDataStreamData& B)
+	Result.Sort([](const UDeveloperUserStreamData& A, const UDeveloperUserStreamData& B)
 	{
 		if (A.DeveloperUserType != B.DeveloperUserType)
 		{
@@ -372,7 +372,7 @@ void UBeamUserDeveloperManagerEditor::SetUserInfo(FBeamGamerTag GamerTag, FStrin
 }
 
 
-void UBeamUserDeveloperManagerEditor::RebuildLocalDeveloperUserCache(TArray<UDeveloperUserDataStreamData*> AllEntries)
+void UBeamUserDeveloperManagerEditor::RebuildLocalDeveloperUserCache(TArray<UDeveloperUserStreamData*> AllEntries)
 {
 	LocalUserDeveloperCache.Reset();
 
@@ -382,7 +382,7 @@ void UBeamUserDeveloperManagerEditor::RebuildLocalDeveloperUserCache(TArray<UDev
 	}
 }
 
-void UBeamUserDeveloperManagerEditor::UpdateLocalDeveloperUserCache(TArray<UDeveloperUserDataStreamData*> ToUpdate, TArray<int64> ToRemove)
+void UBeamUserDeveloperManagerEditor::UpdateLocalDeveloperUserCache(TArray<UDeveloperUserStreamData*> ToUpdate, TArray<UDeveloperUserStreamData*> ToRemove)
 {
 	for (const auto& Entry : ToUpdate)
 	{
@@ -396,11 +396,11 @@ void UBeamUserDeveloperManagerEditor::UpdateLocalDeveloperUserCache(TArray<UDeve
 		}
 	}
 
-	for (const auto& GamerTag : ToRemove)
+	for (const auto& Entry : ToRemove)
 	{
-		if (LocalUserDeveloperCache.Contains(GamerTag))
+		if (LocalUserDeveloperCache.Contains(Entry->GamerTag))
 		{
-			LocalUserDeveloperCache.Remove(GamerTag);
+			LocalUserDeveloperCache.Remove(Entry->GamerTag);
 		}
 	}
 }

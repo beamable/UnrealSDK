@@ -2,7 +2,8 @@
 
 #include "Subsystems/CLI/BeamCliCommand.h"
 #include "Serialization/BeamJsonUtils.h"
-#include "Subsystems/CLI/Autogen/StreamData/DeveloperUserDataStreamData.h"
+#include "Subsystems/CLI/Autogen/StreamData/DeveloperUserResultStreamData.h"
+#include "Subsystems/CLI/Autogen/StreamData/DeveloperUserStreamData.h"
 #include "BeamCliDeveloperUserManagerPsCommand.generated.h"
 
 
@@ -16,34 +17,24 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int32 EventType = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TArray<UDeveloperUserDataStreamData*> ToUpdate = {};
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TArray<UDeveloperUserDataStreamData*> CorruptedUsers = {};
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TArray<int64> ToRemove = {};
+	UDeveloperUserResultStreamData* DeveloperUserReport = {};
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
 	{
 		UBeamJsonUtils::SerializeRawPrimitive(TEXT("EventType"), EventType, Serializer);
-		UBeamJsonUtils::SerializeArray<UDeveloperUserDataStreamData*>(TEXT("ToUpdate"), ToUpdate, Serializer);
-		UBeamJsonUtils::SerializeArray<UDeveloperUserDataStreamData*>(TEXT("CorruptedUsers"), CorruptedUsers, Serializer);
-		UBeamJsonUtils::SerializeArray<int64>(TEXT("ToRemove"), ToRemove, Serializer);	
+		UBeamJsonUtils::SerializeUObject<UDeveloperUserResultStreamData*>("DeveloperUserReport", DeveloperUserReport, Serializer);	
 	}
 
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
 	{
 		UBeamJsonUtils::SerializeRawPrimitive(TEXT("EventType"), EventType, Serializer);
-		UBeamJsonUtils::SerializeArray<UDeveloperUserDataStreamData*>(TEXT("ToUpdate"), ToUpdate, Serializer);
-		UBeamJsonUtils::SerializeArray<UDeveloperUserDataStreamData*>(TEXT("CorruptedUsers"), CorruptedUsers, Serializer);
-		UBeamJsonUtils::SerializeArray<int64>(TEXT("ToRemove"), ToRemove, Serializer);	
+		UBeamJsonUtils::SerializeUObject<UDeveloperUserResultStreamData*>("DeveloperUserReport", DeveloperUserReport, Serializer);	
 	}
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
 		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("EventType")), EventType);
-		UBeamJsonUtils::DeserializeArray<UDeveloperUserDataStreamData*>(Bag->GetArrayField(TEXT("ToUpdate")), ToUpdate, OuterOwner);
-		UBeamJsonUtils::DeserializeArray<UDeveloperUserDataStreamData*>(Bag->GetArrayField(TEXT("CorruptedUsers")), CorruptedUsers, OuterOwner);
-		UBeamJsonUtils::DeserializeArray<int64>(Bag->GetArrayField(TEXT("ToRemove")), ToRemove, OuterOwner);	
+		UBeamJsonUtils::DeserializeUObject<UDeveloperUserResultStreamData*>("DeveloperUserReport", Bag, DeveloperUserReport, OuterOwner);	
 	}
 };
 

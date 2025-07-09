@@ -38,7 +38,7 @@ class BEAMABLECORERUNTIMEEDITOR_API UBeamUserDeveloperManagerEditor : public UBe
 	UBeamUserSlots* BeamUserSlots;
 
 	UPROPERTY()
-	TMap<FBeamGamerTag, UDeveloperUserDataStreamData*> LocalUserDeveloperCache;
+	TMap<FBeamGamerTag, UDeveloperUserStreamData*> LocalUserDeveloperCache;
 
 	TMap<int32, TArray<FBeamRealmUser>> CapturedUsers;
 
@@ -71,7 +71,7 @@ public:
 	virtual FBeamOperationHandle OnRealmInitialized(FBeamRealmHandle NewRealm) override;
 
 	UFUNCTION(BlueprintCallable)
-	void GetAllUsers(FString NameFilter, FString TagFilter, TArray<UDeveloperUserDataStreamData*>& AllUsers);
+	void GetAllUsers(FString NameFilter, FString TagFilter, TArray<UDeveloperUserStreamData*>& AllUsers);
 
 	UFUNCTION(BlueprintCallable)
 	void RemoveUser(FBeamGamerTag GamerTag);
@@ -88,9 +88,9 @@ public:
 protected:
 	void RunPsCommand(FBeamOperationHandle FirstEventOp);
 
-	void RebuildLocalDeveloperUserCache(TArray<UDeveloperUserDataStreamData*> AllEntries);
+	void RebuildLocalDeveloperUserCache(TArray<UDeveloperUserStreamData*> AllEntries);
 
-	void UpdateLocalDeveloperUserCache(TArray<UDeveloperUserDataStreamData*> ToUpdate, TArray<int64> ToRemove);
+	void UpdateLocalDeveloperUserCache(TArray<UDeveloperUserStreamData*> ToUpdate, TArray<UDeveloperUserStreamData*> ToRemove);
 
 	void TriggerOnUserSlotAuthenticated(const FUserSlot& UserSlot, const FBeamRealmUser& BeamRealmUser, const FBeamOperationHandle& BeamOperationHandle, const UObject* Context);
 };
