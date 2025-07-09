@@ -22,7 +22,7 @@ FString UServiceComponentLibrary::ServiceComponentToJsonString(const UServiceCom
 	return Result;
 }	
 
-UServiceComponent* UServiceComponentLibrary::Make(FString Name, UObject* Outer)
+UServiceComponent* UServiceComponentLibrary::Make(FOptionalString Name, UObject* Outer)
 {
 	auto Serializable = NewObject<UServiceComponent>(Outer);
 	Serializable->Name = Name;
@@ -30,7 +30,7 @@ UServiceComponent* UServiceComponentLibrary::Make(FString Name, UObject* Outer)
 	return Serializable;
 }
 
-void UServiceComponentLibrary::Break(const UServiceComponent* Serializable, FString& Name)
+void UServiceComponentLibrary::Break(const UServiceComponent* Serializable, FOptionalString& Name)
 {
 	Name = Serializable->Name;
 		

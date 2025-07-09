@@ -19,7 +19,7 @@ FName UK2BeamNode_ApiRequest_BasicBeamoGetStatus::GetSelfFunctionName() const
 
 FName UK2BeamNode_ApiRequest_BasicBeamoGetStatus::GetRequestFunctionName() const
 {
-	return GET_FUNCTION_NAME_CHECKED(UBeamBeamoApi, GetStatus);
+	return GET_FUNCTION_NAME_CHECKED(UBeamBeamoApi, BasicBeamoGetStatus);
 }
 
 FName UK2BeamNode_ApiRequest_BasicBeamoGetStatus::GetMakeFunctionName() const
@@ -34,7 +34,7 @@ FString UK2BeamNode_ApiRequest_BasicBeamoGetStatus::GetServiceName() const
 
 FString UK2BeamNode_ApiRequest_BasicBeamoGetStatus::GetEndpointName() const
 {
-	return TEXT("GetStatus");
+	return TEXT("BasicBeamoGetStatus");
 }
 
 UClass* UK2BeamNode_ApiRequest_BasicBeamoGetStatus::GetApiClass() const

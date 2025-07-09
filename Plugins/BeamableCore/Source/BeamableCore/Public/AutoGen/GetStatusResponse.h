@@ -3,8 +3,8 @@
 #include "CoreMinimal.h"
 #include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
-#include "BeamableCore/Public/AutoGen/ServiceStatus.h"
-#include "Serialization/BeamJsonUtils.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfServiceStatus.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalBool.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfServiceStorageStatus.h"
 
 #include "GetStatusResponse.generated.h"
@@ -16,9 +16,9 @@ class BEAMABLECORE_API UGetStatusResponse : public UObject, public IBeamJsonSeri
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Is Current", Category="Beam")
-	bool bIsCurrent = {};
+	FOptionalBool bIsCurrent = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Services", Category="Beam")
-	TArray<UServiceStatus*> Services = {};
+	FOptionalArrayOfServiceStatus Services = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Storage Statuses", Category="Beam")
 	FOptionalArrayOfServiceStorageStatus StorageStatuses = {};
 

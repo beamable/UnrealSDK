@@ -12,17 +12,17 @@ void UGetTemplatesResponse::DeserializeRequestResponse(UObject* RequestData, FSt
 
 void UGetTemplatesResponse::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	UBeamJsonUtils::SerializeArray<UServiceTemplate*>(TEXT("templates"), Templates, Serializer);
+	UBeamJsonUtils::SerializeOptional<TArray<UServiceTemplateView*>, UServiceTemplateView*>(TEXT("templates"), &Templates, Serializer);
 }
 
 void UGetTemplatesResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	UBeamJsonUtils::SerializeArray<UServiceTemplate*>(TEXT("templates"), Templates, Serializer);		
+	UBeamJsonUtils::SerializeOptional<TArray<UServiceTemplateView*>, UServiceTemplateView*>(TEXT("templates"), &Templates, Serializer);		
 }
 
 void UGetTemplatesResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeArray<UServiceTemplate*>(Bag->GetArrayField(TEXT("templates")), Templates, OuterOwner);
+	UBeamJsonUtils::DeserializeOptional<TArray<UServiceTemplateView*>, UServiceTemplateView*>("templates", Bag, Templates, OuterOwner);
 }
 
 

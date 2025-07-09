@@ -16,9 +16,9 @@ public:
 	UFUNCTION(BlueprintPure, Category="Beam|Beamo|Utils|Json", DisplayName="GetStatusResponse To JSON String")
 	static FString GetStatusResponseToJsonString(const UGetStatusResponse* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Beamo|Utils|Make/Break", DisplayName="Make GetStatusResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="StorageStatuses, Outer", NativeMakeFunc))
-	static UGetStatusResponse* Make(bool bIsCurrent, TArray<UServiceStatus*> Services, FOptionalArrayOfServiceStorageStatus StorageStatuses, UObject* Outer);
+	UFUNCTION(BlueprintPure, Category="Beam|Beamo|Utils|Make/Break", DisplayName="Make GetStatusResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="bIsCurrent, Services, StorageStatuses, Outer", NativeMakeFunc))
+	static UGetStatusResponse* Make(FOptionalBool bIsCurrent, FOptionalArrayOfServiceStatus Services, FOptionalArrayOfServiceStorageStatus StorageStatuses, UObject* Outer);
 
 	UFUNCTION(BlueprintPure, Category="Beam|Beamo|Utils|Make/Break", DisplayName="Break GetStatusResponse", meta=(NativeBreakFunc))
-	static void Break(const UGetStatusResponse* Serializable, bool& bIsCurrent, TArray<UServiceStatus*>& Services, FOptionalArrayOfServiceStorageStatus& StorageStatuses);
+	static void Break(const UGetStatusResponse* Serializable, FOptionalBool& bIsCurrent, FOptionalArrayOfServiceStatus& Services, FOptionalArrayOfServiceStorageStatus& StorageStatuses);
 };

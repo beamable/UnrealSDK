@@ -16,9 +16,9 @@ public:
 	UFUNCTION(BlueprintPure, Category="Beam|Beamo|Utils|Json", DisplayName="ServiceStatus To JSON String")
 	static FString ServiceStatusToJsonString(const UServiceStatus* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Beamo|Utils|Make/Break", DisplayName="Make ServiceStatus", meta=(DefaultToSelf="Outer", AdvancedDisplay="ServiceDependencyReferences, Outer", NativeMakeFunc))
-	static UServiceStatus* Make(bool bIsCurrent, bool bRunning, FString ServiceName, FString ImageId, FOptionalArrayOfServiceDependencyReference ServiceDependencyReferences, UObject* Outer);
+	UFUNCTION(BlueprintPure, Category="Beam|Beamo|Utils|Make/Break", DisplayName="Make ServiceStatus", meta=(DefaultToSelf="Outer", AdvancedDisplay="bIsCurrent, bRunning, ServiceName, ImageId, ServiceDependencyReferences, Outer", NativeMakeFunc))
+	static UServiceStatus* Make(FOptionalBool bIsCurrent, FOptionalBool bRunning, FOptionalString ServiceName, FOptionalString ImageId, FOptionalArrayOfServiceDependencyReference ServiceDependencyReferences, UObject* Outer);
 
 	UFUNCTION(BlueprintPure, Category="Beam|Beamo|Utils|Make/Break", DisplayName="Break ServiceStatus", meta=(NativeBreakFunc))
-	static void Break(const UServiceStatus* Serializable, bool& bIsCurrent, bool& bRunning, FString& ServiceName, FString& ImageId, FOptionalArrayOfServiceDependencyReference& ServiceDependencyReferences);
+	static void Break(const UServiceStatus* Serializable, FOptionalBool& bIsCurrent, FOptionalBool& bRunning, FOptionalString& ServiceName, FOptionalString& ImageId, FOptionalArrayOfServiceDependencyReference& ServiceDependencyReferences);
 };

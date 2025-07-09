@@ -22,7 +22,7 @@ FString UGetTemplatesResponseLibrary::GetTemplatesResponseToJsonString(const UGe
 	return Result;
 }	
 
-UGetTemplatesResponse* UGetTemplatesResponseLibrary::Make(TArray<UServiceTemplate*> Templates, UObject* Outer)
+UGetTemplatesResponse* UGetTemplatesResponseLibrary::Make(FOptionalArrayOfServiceTemplateView Templates, UObject* Outer)
 {
 	auto Serializable = NewObject<UGetTemplatesResponse>(Outer);
 	Serializable->Templates = Templates;
@@ -30,7 +30,7 @@ UGetTemplatesResponse* UGetTemplatesResponseLibrary::Make(TArray<UServiceTemplat
 	return Serializable;
 }
 
-void UGetTemplatesResponseLibrary::Break(const UGetTemplatesResponse* Serializable, TArray<UServiceTemplate*>& Templates)
+void UGetTemplatesResponseLibrary::Break(const UGetTemplatesResponse* Serializable, FOptionalArrayOfServiceTemplateView& Templates)
 {
 	Templates = Serializable->Templates;
 		

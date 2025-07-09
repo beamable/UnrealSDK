@@ -22,7 +22,7 @@ FString UServiceDependencyReferenceLibrary::ServiceDependencyReferenceToJsonStri
 	return Result;
 }	
 
-UServiceDependencyReference* UServiceDependencyReferenceLibrary::Make(FString Id, FString StorageType, UObject* Outer)
+UServiceDependencyReference* UServiceDependencyReferenceLibrary::Make(FOptionalString Id, FOptionalString StorageType, UObject* Outer)
 {
 	auto Serializable = NewObject<UServiceDependencyReference>(Outer);
 	Serializable->Id = Id;
@@ -31,7 +31,7 @@ UServiceDependencyReference* UServiceDependencyReferenceLibrary::Make(FString Id
 	return Serializable;
 }
 
-void UServiceDependencyReferenceLibrary::Break(const UServiceDependencyReference* Serializable, FString& Id, FString& StorageType)
+void UServiceDependencyReferenceLibrary::Break(const UServiceDependencyReference* Serializable, FOptionalString& Id, FOptionalString& StorageType)
 {
 	Id = Serializable->Id;
 	StorageType = Serializable->StorageType;

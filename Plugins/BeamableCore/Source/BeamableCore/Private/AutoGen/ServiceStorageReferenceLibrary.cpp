@@ -22,27 +22,27 @@ FString UServiceStorageReferenceLibrary::ServiceStorageReferenceToJsonString(con
 	return Result;
 }	
 
-UServiceStorageReference* UServiceStorageReferenceLibrary::Make(bool bArchived, bool bEnabled, FString StorageType, FString Id, FString Checksum, FOptionalString TemplateId, UObject* Outer)
+UServiceStorageReference* UServiceStorageReferenceLibrary::Make(FOptionalBool bArchived, FOptionalBool bEnabled, FOptionalString Id, FOptionalString StorageType, FOptionalString TemplateId, FOptionalString Checksum, UObject* Outer)
 {
 	auto Serializable = NewObject<UServiceStorageReference>(Outer);
 	Serializable->bArchived = bArchived;
 	Serializable->bEnabled = bEnabled;
-	Serializable->StorageType = StorageType;
 	Serializable->Id = Id;
-	Serializable->Checksum = Checksum;
+	Serializable->StorageType = StorageType;
 	Serializable->TemplateId = TemplateId;
+	Serializable->Checksum = Checksum;
 	
 	return Serializable;
 }
 
-void UServiceStorageReferenceLibrary::Break(const UServiceStorageReference* Serializable, bool& bArchived, bool& bEnabled, FString& StorageType, FString& Id, FString& Checksum, FOptionalString& TemplateId)
+void UServiceStorageReferenceLibrary::Break(const UServiceStorageReference* Serializable, FOptionalBool& bArchived, FOptionalBool& bEnabled, FOptionalString& Id, FOptionalString& StorageType, FOptionalString& TemplateId, FOptionalString& Checksum)
 {
 	bArchived = Serializable->bArchived;
 	bEnabled = Serializable->bEnabled;
-	StorageType = Serializable->StorageType;
 	Id = Serializable->Id;
-	Checksum = Serializable->Checksum;
+	StorageType = Serializable->StorageType;
 	TemplateId = Serializable->TemplateId;
+	Checksum = Serializable->Checksum;
 		
 }
 

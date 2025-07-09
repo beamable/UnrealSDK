@@ -22,7 +22,7 @@ FString ULinkLibrary::LinkToJsonString(const ULink* Serializable, const bool Pre
 	return Result;
 }	
 
-ULink* ULinkLibrary::Make(FString Href, FString Rel, UObject* Outer)
+ULink* ULinkLibrary::Make(FOptionalString Href, FOptionalString Rel, UObject* Outer)
 {
 	auto Serializable = NewObject<ULink>(Outer);
 	Serializable->Href = Href;
@@ -31,7 +31,7 @@ ULink* ULinkLibrary::Make(FString Href, FString Rel, UObject* Outer)
 	return Serializable;
 }
 
-void ULinkLibrary::Break(const ULink* Serializable, FString& Href, FString& Rel)
+void ULinkLibrary::Break(const ULink* Serializable, FOptionalString& Href, FOptionalString& Rel)
 {
 	Href = Serializable->Href;
 	Rel = Serializable->Rel;

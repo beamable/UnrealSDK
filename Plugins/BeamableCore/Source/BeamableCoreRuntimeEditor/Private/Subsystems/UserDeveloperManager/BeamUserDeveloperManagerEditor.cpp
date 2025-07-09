@@ -148,11 +148,15 @@ void UBeamUserDeveloperManagerEditor::TriggerOnUserSlotAuthenticated(const FUser
 	}
 }
 
-void UBeamUserDeveloperManagerEditor::TriggerOnPreBeginPIE(const FBeamPIE_Settings* Settings)
+void UBeamUserDeveloperManagerEditor::TriggerOnPreBeginPIE(ULevelEditorPlaySettings* PlaySettings, const FBeamPIE_Settings* Settings)
 {
 	TMap<FBeamGamerTag, int32> TemplateAmount;
 	for (auto AssignedUserKeyPair : Settings->AssignedUsers)
 	{
+		// Clear the saved users from the previous session
+		BeamUserSlots->ClearAllCachedUserDataAtNamespacedSlot(BeamUserSlots->GetNamespacedSlotId(AssignedUserKeyPair.Key.Slot, AssignedUserKeyPair.Key.PIEIndex));
+		
+		// Count the numbers of each template
 		auto UserSlotHandle = AssignedUserKeyPair.Key;
 		if (FBeamGamerTag GamerTag = AssignedUserKeyPair.Value; TemplateAmount.Contains(GamerTag))
 		{

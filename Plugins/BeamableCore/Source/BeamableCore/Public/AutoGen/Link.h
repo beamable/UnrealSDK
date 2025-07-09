@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
-#include "Serialization/BeamJsonUtils.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
 
 #include "Link.generated.h"
 
@@ -14,9 +14,9 @@ class BEAMABLECORE_API ULink : public UObject, public IBeamJsonSerializableUObje
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Href", Category="Beam")
-	FString Href = {};
+	FOptionalString Href = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Rel", Category="Beam")
-	FString Rel = {};
+	FOptionalString Rel = {};
 
 	
 
