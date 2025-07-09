@@ -22,7 +22,7 @@ FString UDatabaseMeasurementLibrary::DatabaseMeasurementToJsonString(const UData
 	return Result;
 }	
 
-UDatabaseMeasurement* UDatabaseMeasurementLibrary::Make(FString Name, FString Units, TArray<UDataPoint*> DataPoints, UObject* Outer)
+UDatabaseMeasurement* UDatabaseMeasurementLibrary::Make(FString Name, FString Units, FOptionalArrayOfBeamoActorDataPoint DataPoints, UObject* Outer)
 {
 	auto Serializable = NewObject<UDatabaseMeasurement>(Outer);
 	Serializable->Name = Name;
@@ -32,7 +32,7 @@ UDatabaseMeasurement* UDatabaseMeasurementLibrary::Make(FString Name, FString Un
 	return Serializable;
 }
 
-void UDatabaseMeasurementLibrary::Break(const UDatabaseMeasurement* Serializable, FString& Name, FString& Units, TArray<UDataPoint*>& DataPoints)
+void UDatabaseMeasurementLibrary::Break(const UDatabaseMeasurement* Serializable, FString& Name, FString& Units, FOptionalArrayOfBeamoActorDataPoint& DataPoints)
 {
 	Name = Serializable->Name;
 	Units = Serializable->Units;

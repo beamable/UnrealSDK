@@ -3,8 +3,8 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
-#include "Serialization/BeamJsonUtils.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalBool.h"
 
 #include "ServiceStorageReference.generated.h"
 
@@ -15,17 +15,17 @@ class BEAMABLECORE_API UServiceStorageReference : public UObject, public IBeamJs
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Archived", Category="Beam")
-	bool bArchived = {};
+	FOptionalBool bArchived = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Enabled", Category="Beam")
-	bool bEnabled = {};
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Storage Type", Category="Beam")
-	FString StorageType = {};
+	FOptionalBool bEnabled = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Id", Category="Beam")
-	FString Id = {};
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Checksum", Category="Beam")
-	FString Checksum = {};
+	FOptionalString Id = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Storage Type", Category="Beam")
+	FOptionalString StorageType = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Template Id", Category="Beam")
 	FOptionalString TemplateId = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Checksum", Category="Beam")
+	FOptionalString Checksum = {};
 
 	
 

@@ -22,21 +22,25 @@ FString UClientManifestJsonResponseLibrary::ClientManifestJsonResponseToJsonStri
 	return Result;
 }	
 
-UClientManifestJsonResponse* UClientManifestJsonResponseLibrary::Make(TArray<FBeamRemoteContentManifestEntry> Entries, FOptionalString Uid, FOptionalInt64 PublisherAccountId, UObject* Outer)
+UClientManifestJsonResponse* UClientManifestJsonResponseLibrary::Make(TArray<FBeamRemoteContentManifestEntry> Entries, FOptionalInt64 LatestUpdate, FOptionalInt64 PublisherAccountId, FOptionalInt64 CreatedAt, FOptionalString Uid, UObject* Outer)
 {
 	auto Serializable = NewObject<UClientManifestJsonResponse>(Outer);
 	Serializable->Entries = Entries;
-	Serializable->Uid = Uid;
+	Serializable->LatestUpdate = LatestUpdate;
 	Serializable->PublisherAccountId = PublisherAccountId;
+	Serializable->CreatedAt = CreatedAt;
+	Serializable->Uid = Uid;
 	
 	return Serializable;
 }
 
-void UClientManifestJsonResponseLibrary::Break(const UClientManifestJsonResponse* Serializable, TArray<FBeamRemoteContentManifestEntry>& Entries, FOptionalString& Uid, FOptionalInt64& PublisherAccountId)
+void UClientManifestJsonResponseLibrary::Break(const UClientManifestJsonResponse* Serializable, TArray<FBeamRemoteContentManifestEntry>& Entries, FOptionalInt64& LatestUpdate, FOptionalInt64& PublisherAccountId, FOptionalInt64& CreatedAt, FOptionalString& Uid)
 {
 	Entries = Serializable->Entries;
-	Uid = Serializable->Uid;
+	LatestUpdate = Serializable->LatestUpdate;
 	PublisherAccountId = Serializable->PublisherAccountId;
+	CreatedAt = Serializable->CreatedAt;
+	Uid = Serializable->Uid;
 		
 }
 

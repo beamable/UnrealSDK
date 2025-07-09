@@ -280,6 +280,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Beam")
 	void ClearAllCachedUserDataAtSlot(FUserSlot SlotId);
 
+	void ClearAllCachedUserDataAtNamespacedSlot(FString NamespacedSlot);
+
 	/**
 		 * @brief Attempts to quickly authenticate a user with locally stored, serialized data.	  
 		 * @return True, if there was a user authenticated at that slot. False, if no serialized user slot file was found or if the file does not contain a refresh token.  
@@ -313,7 +315,18 @@ public:
 	 * @return True, if there was a user authenticated at that slot. False, if no serialized user slot file was found or if the file does not contain a refresh token.  
 	 */
 	UFUNCTION(BlueprintCallable, Category="Beam", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext", ExpandBoolAsExecs="ReturnValue"))
-	int32 TryLoadSavedUserAtSlot(FUserSlot SlotId, UObject* CallingContext);
+	int32 TryLoadSavedUserAtSlotAndAuth(FUserSlot SlotId, UObject* CallingContext);
+
+	/**
+	 * @copydoc @link TryLoadSavedUserAtSlotAndAuth @endlink 
+	 */
+	UFUNCTION(BlueprintCallable, Category="Beam", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext", ExpandBoolAsExecs="ReturnValue"))
+	int32 TryLoadSavedUserAtSlot(FUserSlot SlotId, FUserSlotAuthData& OutAuthData, FUserSlotAccountData& OutAccountData, UObject* CallingContext);
+
+	/**
+	 * @copydoc @link TryLoadSavedUserAtSlotAndAuth @endlink 
+	 */
+	int32 TryLoadSavedUserAtNamespacedSlot(FString NamespacedSlotId, FUserSlotAuthData& OutAuthData, FUserSlotAccountData& OutAccountData);
 
 
 	/**

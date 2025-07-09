@@ -22,7 +22,7 @@ FString UManifestViewLibrary::ManifestViewToJsonString(const UManifestView* Seri
 	return Result;
 }	
 
-UManifestView* UManifestViewLibrary::Make(FString Id, FString Checksum, int64 Created, TArray<UServiceReference*> Manifest, FOptionalInt64 CreatedByAccountId, FOptionalString Comments, FOptionalArrayOfServiceStorageReference StorageReference, UObject* Outer)
+UManifestView* UManifestViewLibrary::Make(FString Id, FString Checksum, int64 Created, TArray<UBeamoBasicServiceReference*> Manifest, FOptionalInt64 CreatedByAccountId, FOptionalString Comments, FOptionalArrayOfServiceStorageReference StorageReference, UObject* Outer)
 {
 	auto Serializable = NewObject<UManifestView>(Outer);
 	Serializable->Id = Id;
@@ -36,7 +36,7 @@ UManifestView* UManifestViewLibrary::Make(FString Id, FString Checksum, int64 Cr
 	return Serializable;
 }
 
-void UManifestViewLibrary::Break(const UManifestView* Serializable, FString& Id, FString& Checksum, int64& Created, TArray<UServiceReference*>& Manifest, FOptionalInt64& CreatedByAccountId, FOptionalString& Comments, FOptionalArrayOfServiceStorageReference& StorageReference)
+void UManifestViewLibrary::Break(const UManifestView* Serializable, FString& Id, FString& Checksum, int64& Created, TArray<UBeamoBasicServiceReference*>& Manifest, FOptionalInt64& CreatedByAccountId, FOptionalString& Comments, FOptionalArrayOfServiceStorageReference& StorageReference)
 {
 	Id = Serializable->Id;
 	Checksum = Serializable->Checksum;

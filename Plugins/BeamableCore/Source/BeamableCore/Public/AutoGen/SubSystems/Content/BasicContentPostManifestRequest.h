@@ -8,7 +8,7 @@
 #include "BeamBackend/BeamFullResponse.h"
 
 #include "BeamableCore/Public/AutoGen/SaveManifestRequestBody.h"
-#include "BeamableCore/Public/AutoGen/ContentBasicManifest.h"
+#include "BeamableCore/Public/AutoGen/SaveManifestResponse.h"
 
 #include "BasicContentPostManifestRequest.generated.h"
 
@@ -41,7 +41,7 @@ public:
 };
 
 UDELEGATE(BlueprintAuthorityOnly)
-DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnBasicContentPostManifestSuccess, FBeamRequestContext, Context, UBasicContentPostManifestRequest*, Request, UContentBasicManifest*, Response);
+DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnBasicContentPostManifestSuccess, FBeamRequestContext, Context, UBasicContentPostManifestRequest*, Request, USaveManifestResponse*, Response);
 
 UDELEGATE(BlueprintAuthorityOnly)
 DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnBasicContentPostManifestError, FBeamRequestContext, Context, UBasicContentPostManifestRequest*, Request, FBeamErrorResponse, Error);
@@ -49,5 +49,5 @@ DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnBasicContentPostManifestError, FBeamRequ
 UDELEGATE(BlueprintAuthorityOnly)
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FOnBasicContentPostManifestComplete, FBeamRequestContext, Context, UBasicContentPostManifestRequest*, Request);
 
-using FBasicContentPostManifestFullResponse = FBeamFullResponse<UBasicContentPostManifestRequest*, UContentBasicManifest*>;
+using FBasicContentPostManifestFullResponse = FBeamFullResponse<UBasicContentPostManifestRequest*, USaveManifestResponse*>;
 DECLARE_DELEGATE_OneParam(FOnBasicContentPostManifestFullResponse, FBasicContentPostManifestFullResponse);

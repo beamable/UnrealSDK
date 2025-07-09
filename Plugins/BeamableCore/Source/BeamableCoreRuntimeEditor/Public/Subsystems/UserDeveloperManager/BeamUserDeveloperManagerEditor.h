@@ -66,7 +66,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetUserInfo(FBeamGamerTag GamerTag, FString Alias, FString Description, TArray<FString> Tags);
 
-	void TriggerOnPreBeginPIE(const FBeamPIE_Settings* Settings);
+	void TriggerOnPreBeginPIE(ULevelEditorPlaySettings* PlaySettings, const FBeamPIE_Settings* Settings);
 
 protected:
 	void RunPsCommand(FBeamOperationHandle FirstEventOp);

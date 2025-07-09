@@ -22,7 +22,7 @@ FString UServiceStorageStatusLibrary::ServiceStorageStatusToJsonString(const USe
 	return Result;
 }	
 
-UServiceStorageStatus* UServiceStorageStatusLibrary::Make(bool bIsCurrent, bool bIsRunning, FString Id, FString StorageType, UObject* Outer)
+UServiceStorageStatus* UServiceStorageStatusLibrary::Make(FOptionalBool bIsCurrent, FOptionalBool bIsRunning, FOptionalString Id, FOptionalString StorageType, UObject* Outer)
 {
 	auto Serializable = NewObject<UServiceStorageStatus>(Outer);
 	Serializable->bIsCurrent = bIsCurrent;
@@ -33,7 +33,7 @@ UServiceStorageStatus* UServiceStorageStatusLibrary::Make(bool bIsCurrent, bool 
 	return Serializable;
 }
 
-void UServiceStorageStatusLibrary::Break(const UServiceStorageStatus* Serializable, bool& bIsCurrent, bool& bIsRunning, FString& Id, FString& StorageType)
+void UServiceStorageStatusLibrary::Break(const UServiceStorageStatus* Serializable, FOptionalBool& bIsCurrent, FOptionalBool& bIsRunning, FOptionalString& Id, FOptionalString& StorageType)
 {
 	bIsCurrent = Serializable->bIsCurrent;
 	bIsRunning = Serializable->bIsRunning;

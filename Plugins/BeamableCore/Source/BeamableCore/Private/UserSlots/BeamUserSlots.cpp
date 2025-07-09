@@ -527,16 +527,83 @@ void UBeamUserSlots::ClearAllCachedUserDataAtSlot(FUserSlot SlotId)
 	}
 }
 
+void UBeamUserSlots::ClearAllCachedUserDataAtNamespacedSlot(FString NamespacedSlot)
+{
+	TArray<FString> AllCachedUserSlots;
+	IFileManager::Get().FindFiles(AllCachedUserSlots, *GetSavedSlotsDirectory(),TEXT(".json"));
+
+	for (const auto& CachedUserSlotDataFile : AllCachedUserSlots)
+	{
+		if (!CachedUserSlotDataFile.Contains(NamespacedSlot)) continue;
+
+		if (CachedUserSlotDataFile.Contains(TEXT("_Auth.json")))
+		{			
+			const auto SavedUserAuthDataPath = GetSavedSlotsDirectory() / CachedUserSlotDataFile;
+			if (IFileManager::Get().Delete(*SavedUserAuthDataPath))
+			{
+				UE_LOG(LogBeamUserSlots, Verbose, TEXT("Cleared User Slot - Auth File!\nUSER_SLOT=%s\nFILE_PATH=%s"), *NamespacedSlot, *SavedUserAuthDataPath);
+			}
+			else
+			{
+				UE_LOG(LogBeamUserSlots, Error, TEXT("Failed to clear User Slot - Auth File!\nUSER_SLOT=%s\nFILE_PATH=%s"), *NamespacedSlot, *SavedUserAuthDataPath);
+			}
+		}
+
+		if (CachedUserSlotDataFile.Contains("_Account.json"))
+		{
+			// Save the User Account data to the slot.
+			const auto SavedUserAccountDataPath = GetSavedSlotsDirectory() / CachedUserSlotDataFile;			
+			if (IFileManager::Get().Delete(*SavedUserAccountDataPath))
+			{
+				UE_LOG(LogBeamUserSlots, Verbose, TEXT("Cleared User Slot - Account File!\nUSER_SLOT=%s\nFILE_PATH=%s"), *NamespacedSlot, *SavedUserAccountDataPath);
+			}
+			else
+			{
+				UE_LOG(LogBeamUserSlots, Error, TEXT("Failed to clear User Slot - Account File!\nUSER_SLOT=%s\nFILE_PATH=%s"), *NamespacedSlot, *SavedUserAccountDataPath);
+			}
+		}
+
+		UE_LOG(LogBeamUserSlots, Verbose, TEXT("Cleared Saved User Slot!\nUSER_SLOT=%s"), *NamespacedSlot);
+	}
+}
+
 bool UBeamUserSlots::IsUserSlotAuthenticated(FUserSlot SlotId, const UObject* CallingContext)
 {
 	return AuthenticatedUserMapping.Contains(GetNamespacedSlotId(SlotId, CallingContext));
 }
 
 
-int32 UBeamUserSlots::TryLoadSavedUserAtSlot(FUserSlot SlotId, UObject* CallingContext)
+int32 UBeamUserSlots::TryLoadSavedUserAtSlotAndAuth(FUserSlot SlotId, UObject* CallingContext)
+{
+	FUserSlotAuthData SlotSerializedAuthData;
+	FUserSlotAccountData SlotSerializedAccountData;
+	const auto Ret = TryLoadSavedUserAtSlot(SlotId, SlotSerializedAuthData, SlotSerializedAccountData, CallingContext);
+	if (Ret != LoadSavedUserResult_Failed)
+	{
+		const auto AccessToken = SlotSerializedAuthData.AccessToken;
+		const auto RefreshToken = SlotSerializedAuthData.RefreshToken;
+		const auto ExpiresIn = SlotSerializedAuthData.ExpiresIn;
+		const auto Cid = SlotSerializedAuthData.Cid;
+		auto Pid = SlotSerializedAuthData.Pid;
+
+		SetAuthenticationDataAtSlot(SlotId, AccessToken, RefreshToken, FDateTime::UtcNow().ToUnixTimestamp(), ExpiresIn, Cid, Pid, CallingContext);
+		SetAccountIdAtSlot(SlotId, SlotSerializedAccountData.AccountId, CallingContext);
+		SetGamerTagAtSlot(SlotId, SlotSerializedAccountData.GamerTag, CallingContext);
+		SetEmailAtSlot(SlotId, SlotSerializedAccountData.Email, CallingContext);
+		SetExternalIdsAtSlot(SlotId, SlotSerializedAccountData.ExternalIdentities, CallingContext);
+	}
+	return Ret;
+}
+
+int32 UBeamUserSlots::TryLoadSavedUserAtSlot(FUserSlot SlotId, FUserSlotAuthData& OutAuthData, FUserSlotAccountData& OutAccountData, UObject* CallingContext)
 {
 	FString NamespacedSlotId = GetNamespacedSlotId(SlotId, CallingContext);
+	return TryLoadSavedUserAtNamespacedSlot(NamespacedSlotId, OutAuthData, OutAccountData);
+}
 
+
+int32 UBeamUserSlots::TryLoadSavedUserAtNamespacedSlot(FString NamespacedSlotId, FUserSlotAuthData& OutAuthData, FUserSlotAccountData& OutAccountData)
+{
 	FString SlotAuthFile;
 	FString SlotAccountFile;
 	const auto SavedAuthDataPath = GetSavedSlotAuthFilePath(NamespacedSlotId);
@@ -550,41 +617,30 @@ int32 UBeamUserSlots::TryLoadSavedUserAtSlot(FUserSlot SlotId, UObject* CallingC
 	if (bLoadedAuthFile && bLoadedAccountFile)
 	{
 		// We try to deserialize the user slot data
-		FUserSlotAuthData SlotSerializedAuthData;
-		const auto DidDeserializeAuthData = FJsonObjectConverter::JsonObjectStringToUStruct(SlotAuthFile, &SlotSerializedAuthData);
+		OutAuthData = {};
+		const auto DidDeserializeAuthData = FJsonObjectConverter::JsonObjectStringToUStruct(SlotAuthFile, &OutAuthData);
 		ensureAlwaysMsgf(DidDeserializeAuthData, TEXT("Failed deserialization of %s_Auth.json file.\nPath=%s"), *NamespacedSlotId, *SavedAuthDataPath);
 
 		// If the refresh token is there, we can do a quick authentication. 
-		if (!SlotSerializedAuthData.RefreshToken.IsEmpty())
+		if (!OutAuthData.RefreshToken.IsEmpty())
 		{
-			const auto AccessToken = SlotSerializedAuthData.AccessToken;
-			const auto RefreshToken = SlotSerializedAuthData.RefreshToken;
-			const auto ExpiresIn = SlotSerializedAuthData.ExpiresIn;
-			const auto Cid = SlotSerializedAuthData.Cid;
-			auto Pid = SlotSerializedAuthData.Pid;
+			const auto AccessToken = OutAuthData.AccessToken;
+			const auto RefreshToken = OutAuthData.RefreshToken;
+			const auto ExpiresIn = OutAuthData.ExpiresIn;
+			const auto Cid = OutAuthData.Cid;
+			auto Pid = OutAuthData.Pid;
 
 			// We only consider ourselves authenticated if the realm is the same as it was saved.
-			// TODO: we might want to consider saving the auth data as a JSON Array of FUserSlotAuthData per slot and keeping auth data for each CID/PID... for now,
-			// TODO: we'll just overwrite whenever a realm change happens.
 			const auto TargetRealm = GetDefault<UBeamCoreSettings>()->TargetRealm;
-			if (Cid == TargetRealm.Cid)
+			if (Cid == TargetRealm.Cid && Pid == TargetRealm.Pid)
 			{
-				// We make the user be pointed at the correct realm (the one we are pointed at).
-				Pid = TargetRealm.Pid;
-
 				// We try to deserialize the user slot data
-				FUserSlotAccountData SlotSerializedAccountData;
-				const auto DidDeserializeAccountData = FJsonObjectConverter::JsonObjectStringToUStruct(SlotAccountFile, &SlotSerializedAccountData);
+				OutAccountData = {};
+				const auto DidDeserializeAccountData = FJsonObjectConverter::JsonObjectStringToUStruct(SlotAccountFile, &OutAccountData);
 				ensureAlwaysMsgf(DidDeserializeAccountData, TEXT("Failed deserialization of %s_Account.json file.\nPath=%s"), *NamespacedSlotId, *SavedAccountDataPath);
 
-				SetAuthenticationDataAtSlot(SlotId, AccessToken, RefreshToken, FDateTime::UtcNow().ToUnixTimestamp(), ExpiresIn, Cid, Pid, CallingContext);
-				SetAccountIdAtSlot(SlotId, SlotSerializedAccountData.AccountId, CallingContext);
-				SetGamerTagAtSlot(SlotId, SlotSerializedAccountData.GamerTag, CallingContext);
-				SetEmailAtSlot(SlotId, SlotSerializedAccountData.Email, CallingContext);
-				SetExternalIdsAtSlot(SlotId, SlotSerializedAccountData.ExternalIdentities, CallingContext);
-
 				UE_LOG(LogBeamUserSlots, Verbose, TEXT("Loaded user saved at slot!\nUSER_SLOT=%s, CID=%s, PID=%s"), *NamespacedSlotId, *Cid.AsString, *Pid.AsString);
-				return SlotSerializedAuthData.IsExpired() ? LoadSavedUserResult_ExpiredToken : LoadSavedUserResult_Success;
+				return OutAuthData.IsExpired() ? LoadSavedUserResult_ExpiredToken : LoadSavedUserResult_Success;
 			}
 
 			UE_LOG(LogBeamUserSlots, Warning, TEXT("Failed to load user saved at slot!\nUSER_SLOT=%s, CID=%s, PID=%s, TARGET_CID=%s, TARGET_PID=%s"), *NamespacedSlotId, *Cid.AsString, *Pid.AsString,
@@ -596,11 +652,11 @@ int32 UBeamUserSlots::TryLoadSavedUserAtSlot(FUserSlot SlotId, UObject* CallingC
 
 		// If the refresh token ISN'T there OR if we are now attempting sign-in into a different realm, we fail the fast path for authentication of the user slot. 
 		UE_LOG(LogBeamUserSlots, Verbose, TEXT("Invalid user saved at slot!\nUSER_SLOT=%s."), *NamespacedSlotId);
-		return 0;
+		return LoadSavedUserResult_Failed;
 	}
 
 	UE_LOG(LogBeamUserSlots, Verbose, TEXT("No user saved at slot!\nUSER_SLOT=%s."), *NamespacedSlotId);
-	return false;
+	return LoadSavedUserResult_Failed;
 }
 
 #if WITH_EDITOR

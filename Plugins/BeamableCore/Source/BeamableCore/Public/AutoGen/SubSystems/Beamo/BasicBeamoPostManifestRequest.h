@@ -36,8 +36,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Beamo|Utils|Make/Break", DisplayName="Make BasicBeamoPostManifest",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_bAutoDeploy,_Comments,_StorageReferences,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
-	static UBasicBeamoPostManifestRequest* Make(TArray<UServiceReference*> _Manifest, FOptionalBool _bAutoDeploy, FOptionalString _Comments, FOptionalArrayOfServiceStorageReference _StorageReferences, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Beamo|Utils|Make/Break", DisplayName="Make BasicBeamoPostManifest",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_bAutoDeploy,_Comments,_Manifest,_StorageReferences,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	static UBasicBeamoPostManifestRequest* Make(FOptionalBool _bAutoDeploy, FOptionalString _Comments, FOptionalArrayOfBeamoActorServiceReference _Manifest, FOptionalArrayOfServiceStorageReference _StorageReferences, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

@@ -3,7 +3,8 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
-#include "Serialization/BeamJsonUtils.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalBool.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfServiceDependencyReference.h"
 
 #include "ServiceStatus.generated.h"
@@ -15,13 +16,13 @@ class BEAMABLECORE_API UServiceStatus : public UObject, public IBeamJsonSerializ
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Is Current", Category="Beam")
-	bool bIsCurrent = {};
+	FOptionalBool bIsCurrent = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Running", Category="Beam")
-	bool bRunning = {};
+	FOptionalBool bRunning = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Service Name", Category="Beam")
-	FString ServiceName = {};
+	FOptionalString ServiceName = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Image Id", Category="Beam")
-	FString ImageId = {};
+	FOptionalString ImageId = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Service Dependency References", Category="Beam")
 	FOptionalArrayOfServiceDependencyReference ServiceDependencyReferences = {};
 

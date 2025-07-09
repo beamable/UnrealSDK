@@ -22,7 +22,7 @@ FString UGetStatusResponseLibrary::GetStatusResponseToJsonString(const UGetStatu
 	return Result;
 }	
 
-UGetStatusResponse* UGetStatusResponseLibrary::Make(bool bIsCurrent, TArray<UServiceStatus*> Services, FOptionalArrayOfServiceStorageStatus StorageStatuses, UObject* Outer)
+UGetStatusResponse* UGetStatusResponseLibrary::Make(FOptionalBool bIsCurrent, FOptionalArrayOfServiceStatus Services, FOptionalArrayOfServiceStorageStatus StorageStatuses, UObject* Outer)
 {
 	auto Serializable = NewObject<UGetStatusResponse>(Outer);
 	Serializable->bIsCurrent = bIsCurrent;
@@ -32,7 +32,7 @@ UGetStatusResponse* UGetStatusResponseLibrary::Make(bool bIsCurrent, TArray<USer
 	return Serializable;
 }
 
-void UGetStatusResponseLibrary::Break(const UGetStatusResponse* Serializable, bool& bIsCurrent, TArray<UServiceStatus*>& Services, FOptionalArrayOfServiceStorageStatus& StorageStatuses)
+void UGetStatusResponseLibrary::Break(const UGetStatusResponse* Serializable, FOptionalBool& bIsCurrent, FOptionalArrayOfServiceStatus& Services, FOptionalArrayOfServiceStorageStatus& StorageStatuses)
 {
 	bIsCurrent = Serializable->bIsCurrent;
 	Services = Serializable->Services;
