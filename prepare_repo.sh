@@ -185,7 +185,7 @@ fi
 
 
 if [ $SKIP_WAITING = 'false' ]; then
-  echo "Prepare Repo finished executing. Press any key to exit."
+  echo "Prepare Repo finished executing. Press return to exit."
   read -r
 else
   echo "Prepare Repo finished executing"
