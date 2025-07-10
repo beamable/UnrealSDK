@@ -163,50 +163,6 @@ void UBeamEditorBootstrapper::Run_DelayedInitialize()
 		bEditorSettingsChanged = true;
 	}
 
-	// Set up Status Icons
-	if (EditorSettings->LocalContentStatusIcons.IsEmpty())
-	{
-		const auto CreatedIconPath = TSoftObjectPtr<UTexture2D>(FSoftObjectPath(TEXT("/Script/Engine.Texture2D'/BeamableCore/Editor/Icons/IconStatus_Added.IconStatus_Added'")));
-		const auto DeletedIconPath = TSoftObjectPtr<UTexture2D>(FSoftObjectPath(TEXT("/Script/Engine.Texture2D'/BeamableCore/Editor/Icons/IconStatus_Deleted.IconStatus_Deleted'")));
-		const auto ModifiedIconPath = TSoftObjectPtr<UTexture2D>(FSoftObjectPath(TEXT("/Script/Engine.Texture2D'/BeamableCore/Editor/Icons/IconStatus_Modified.IconStatus_Modified'")));
-		const auto UpToDateIconPath = TSoftObjectPtr<UTexture2D>(FSoftObjectPath(TEXT("/Script/Engine.Texture2D'/BeamableCore/Editor/Icons/IconStatus_NC.IconStatus_NC'")));
-		EditorSettings->LocalContentStatusIcons.Add(EBeamLocalContentStatus::Beam_LocalContentCreated, CreatedIconPath);
-		EditorSettings->LocalContentStatusIcons.Add(EBeamLocalContentStatus::Beam_LocalContentDeleted, DeletedIconPath);
-		EditorSettings->LocalContentStatusIcons.Add(EBeamLocalContentStatus::Beam_LocalContentModified, ModifiedIconPath);
-		EditorSettings->LocalContentStatusIcons.Add(EBeamLocalContentStatus::Beam_LocalContentUpToDate, UpToDateIconPath);
-		bEditorSettingsChanged = true;
-	}
-	// Set up the conflicted status icon
-	if (!EditorSettings->ConflictedStatusIcon)
-	{
-		const auto ConflictedIconPath = TSoftObjectPtr<UTexture2D>(FSoftObjectPath(TEXT("/Script/Engine.Texture2D'/BeamableCore/Editor/Icons/IconLogs_WarningMsg.IconLogs_WarningMsg'")));
-		EditorSettings->ConflictedStatusIcon = ConflictedIconPath;
-		bEditorSettingsChanged = true;
-	}
-
-	// Set up Content Icons
-	if (EditorSettings->LocalContentViewConfigs.IsEmpty())
-	{
-		const auto BeamableColor = FColor::FromHex(TEXT("9176BCFF"));
-
-		FBeamContentViewConfig ItemConfig;
-		ItemConfig.BorderColor = BeamableColor;
-		ItemConfig.TypeForContentObject = TSoftObjectPtr<UTexture2D>(FSoftObjectPath(TEXT("/Script/Engine.Texture2D'/BeamableCore/Editor/Icons/IconBeam_Item.IconBeam_Item'")));
-
-		FBeamContentViewConfig CurrencyConfig;
-		CurrencyConfig.BorderColor = BeamableColor;
-		CurrencyConfig.TypeForContentObject = TSoftObjectPtr<UTexture2D>(FSoftObjectPath(TEXT("/Script/Engine.Texture2D'/BeamableCore/Editor/Icons/IconBeam_Currency.IconBeam_Currency'")));
-
-		FBeamContentViewConfig GameTypeConfig;
-		GameTypeConfig.BorderColor = BeamableColor;
-		GameTypeConfig.TypeForContentObject = TSoftObjectPtr<UTexture2D>(FSoftObjectPath(TEXT("/Script/Engine.Texture2D'/BeamableCore/Editor/Icons/IconBeam_GameType.IconBeam_GameType'")));
-
-		EditorSettings->LocalContentViewConfigs.Add(UBeamItemContent::StaticClass(), ItemConfig);
-		EditorSettings->LocalContentViewConfigs.Add(UBeamCurrencyContent::StaticClass(), CurrencyConfig);
-		EditorSettings->LocalContentViewConfigs.Add(UBeamGameTypeContent::StaticClass(), GameTypeConfig);
-		bEditorSettingsChanged = true;
-	}
-
 	if (bEditorSettingsChanged)
 	{
 		EditorSettings->SaveConfig(CPF_Config, *EditorSettings->GetDefaultConfigFilename());
