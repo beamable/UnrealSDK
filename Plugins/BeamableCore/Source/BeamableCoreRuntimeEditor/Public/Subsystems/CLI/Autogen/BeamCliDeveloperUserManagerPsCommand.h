@@ -3,7 +3,7 @@
 #include "Subsystems/CLI/BeamCliCommand.h"
 #include "Serialization/BeamJsonUtils.h"
 #include "Subsystems/CLI/Autogen/StreamData/DeveloperUserResultStreamData.h"
-#include "Subsystems/CLI/Autogen/StreamData/DeveloperUserStreamData.h"
+#include "Subsystems/CLI/Autogen/StreamData/DeveloperUserDataStreamData.h"
 #include "BeamCliDeveloperUserManagerPsCommand.generated.h"
 
 

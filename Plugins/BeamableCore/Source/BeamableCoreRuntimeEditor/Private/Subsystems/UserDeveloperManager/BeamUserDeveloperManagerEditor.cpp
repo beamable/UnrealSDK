@@ -135,9 +135,9 @@ void UBeamUserDeveloperManagerEditor::TriggerOnPreBeginPIE(const FBeamPIE_Settin
 	{
 		auto Data = Stream.Last();
 
-		TMap<long, TArray<UDeveloperUserStreamData*>> CreatedUserMap;
+		TMap<long, TArray<UDeveloperUserDataStreamData*>> CreatedUserMap;
 
-		for (UDeveloperUserStreamData* CreatedUser : Data->CreatedUsers)
+		for (UDeveloperUserDataStreamData* CreatedUser : Data->CreatedUsers)
 		{
 			if (CreatedUserMap.Contains(CreatedUser->TemplateGamerTag))
 			{
@@ -191,10 +191,10 @@ void UBeamUserDeveloperManagerEditor::TriggerOnPreBeginPIE(const FBeamPIE_Settin
 	BeamCli->RunCommandServer(CreateUserBatchCommand, args, Handler);
 }
 
-void UBeamUserDeveloperManagerEditor::GetUsersWithFilter(FString NameFilter, FString TagFilter, TArray<UDeveloperUserStreamData*>& AllUsers)
+void UBeamUserDeveloperManagerEditor::GetUsersWithFilter(FString NameFilter, FString TagFilter, TArray<UDeveloperUserDataStreamData*>& AllUsers)
 {
 	AllUsers.Empty();
-	TArray<UDeveloperUserStreamData*> Result;
+	TArray<UDeveloperUserDataStreamData*> Result;
 	for (auto DeveloperUser : LocalUserDeveloperCache)
 	{
 		Result.Add(DeveloperUser.Value);
@@ -202,7 +202,7 @@ void UBeamUserDeveloperManagerEditor::GetUsersWithFilter(FString NameFilter, FSt
 
 	if (NameFilter != TEXT(""))
 	{
-		Result.RemoveAll([NameFilter](UDeveloperUserStreamData* Data)
+		Result.RemoveAll([NameFilter](UDeveloperUserDataStreamData* Data)
 		{
 			return !Data->Alias.Contains(NameFilter) && !FString::Printf(TEXT("%llu"), Data->GamerTag).Contains(NameFilter);
 		});
@@ -212,7 +212,7 @@ void UBeamUserDeveloperManagerEditor::GetUsersWithFilter(FString NameFilter, FSt
 	{
 		TArray<FString> Tags;
 		TagFilter.ParseIntoArray(Tags, TEXT(","));
-		Result.RemoveAll([Tags](UDeveloperUserStreamData* Data)
+		Result.RemoveAll([Tags](UDeveloperUserDataStreamData* Data)
 		{
 			bool ContainsAll = true;
 			for (auto FilterTag : Tags)
@@ -231,7 +231,7 @@ void UBeamUserDeveloperManagerEditor::GetUsersWithFilter(FString NameFilter, FSt
 		});
 	}
 
-	Result.Sort([](const UDeveloperUserStreamData& A, const UDeveloperUserStreamData& B)
+	Result.Sort([](const UDeveloperUserDataStreamData& A, const UDeveloperUserDataStreamData& B)
 	{
 		if (A.DeveloperUserType != B.DeveloperUserType)
 		{
@@ -371,7 +371,7 @@ void UBeamUserDeveloperManagerEditor::RunPsCommand(FBeamOperationHandle Operatio
 }
 
 
-void UBeamUserDeveloperManagerEditor::RebuildLocalDeveloperUserCache(TArray<UDeveloperUserStreamData*> AllEntries)
+void UBeamUserDeveloperManagerEditor::RebuildLocalDeveloperUserCache(TArray<UDeveloperUserDataStreamData*> AllEntries)
 {
 	LocalUserDeveloperCache.Reset();
 
@@ -381,7 +381,7 @@ void UBeamUserDeveloperManagerEditor::RebuildLocalDeveloperUserCache(TArray<UDev
 	}
 }
 
-void UBeamUserDeveloperManagerEditor::UpdateLocalDeveloperUserCache(TArray<UDeveloperUserStreamData*> ToUpdate, TArray<UDeveloperUserStreamData*> ToRemove)
+void UBeamUserDeveloperManagerEditor::UpdateLocalDeveloperUserCache(TArray<UDeveloperUserDataStreamData*> ToUpdate, TArray<UDeveloperUserDataStreamData*> ToRemove)
 {
 	for (const auto& Entry : ToUpdate)
 	{

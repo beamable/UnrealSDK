@@ -41,7 +41,7 @@ class BEAMABLECORERUNTIMEEDITOR_API UBeamUserDeveloperManagerEditor : public UBe
 	UBeamUserSlots* BeamUserSlots;
 
 	UPROPERTY()
-	TMap<FBeamGamerTag, UDeveloperUserStreamData*> LocalUserDeveloperCache;
+	TMap<FBeamGamerTag, UDeveloperUserDataStreamData*> LocalUserDeveloperCache;
 
 	TMap<int32, TArray<FBeamRealmUser>> CapturedUsers;
 
@@ -68,7 +68,7 @@ public:
 	 * @brief Get users that matches the name filter and a tag filter
 	 */
 	UFUNCTION(BlueprintCallable)
-	void GetUsersWithFilter(FString NameFilter, FString TagFilter, TArray<UDeveloperUserStreamData*>& AllUsers);
+	void GetUsersWithFilter(FString NameFilter, FString TagFilter, TArray<UDeveloperUserDataStreamData*>& AllUsers);
 
 	/**
 	 * Delete a user from the local files
@@ -94,12 +94,21 @@ public:
 	 */
 	void TriggerOnPreBeginPIE(const FBeamPIE_Settings* Settings);
 
+	/**
+	 * Get the mutable reference to the PieSettings
+	 */
+
+	void GetMutablePIESettings()
+	{
+		
+	}
+
 protected:
 	void RunPsCommand(FBeamOperationHandle OperationHandle);
 
-	void RebuildLocalDeveloperUserCache(TArray<UDeveloperUserStreamData*> AllEntries);
+	void RebuildLocalDeveloperUserCache(TArray<UDeveloperUserDataStreamData*> AllEntries);
 
-	void UpdateLocalDeveloperUserCache(TArray<UDeveloperUserStreamData*> ToUpdate, TArray<UDeveloperUserStreamData*> ToRemove);
+	void UpdateLocalDeveloperUserCache(TArray<UDeveloperUserDataStreamData*> ToUpdate, TArray<UDeveloperUserDataStreamData*> ToRemove);
 
 	void TriggerOnUserSlotAuthenticated(const FUserSlot& UserSlot, const FBeamRealmUser& BeamRealmUser, const FBeamOperationHandle& BeamOperationHandle, const UObject* Context);
 };
