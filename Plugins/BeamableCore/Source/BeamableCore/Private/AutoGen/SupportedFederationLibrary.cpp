@@ -22,7 +22,7 @@ FString USupportedFederationLibrary::SupportedFederationToJsonString(const USupp
 	return Result;
 }	
 
-USupportedFederation* USupportedFederationLibrary::Make(EBeamFederationType Type, FOptionalString NameSpace, UObject* Outer)
+USupportedFederation* USupportedFederationLibrary::Make(FOptionalFederationType Type, FOptionalString NameSpace, UObject* Outer)
 {
 	auto Serializable = NewObject<USupportedFederation>(Outer);
 	Serializable->Type = Type;
@@ -31,7 +31,7 @@ USupportedFederation* USupportedFederationLibrary::Make(EBeamFederationType Type
 	return Serializable;
 }
 
-void USupportedFederationLibrary::Break(const USupportedFederation* Serializable, EBeamFederationType& Type, FOptionalString& NameSpace)
+void USupportedFederationLibrary::Break(const USupportedFederation* Serializable, FOptionalFederationType& Type, FOptionalString& NameSpace)
 {
 	Type = Serializable->Type;
 	NameSpace = Serializable->NameSpace;

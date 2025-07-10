@@ -1,26 +1,26 @@
 
 #include "BeamableCore/Public/AutoGen/ServiceDependencyReference.h"
-
+#include "Serialization/BeamJsonUtils.h"
 
 
 
 
 void UServiceDependencyReference::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	UBeamJsonUtils::SerializeRawPrimitive(TEXT("id"), Id, Serializer);
-	UBeamJsonUtils::SerializeRawPrimitive(TEXT("storageType"), StorageType, Serializer);
+	UBeamJsonUtils::SerializeOptional<FString>(TEXT("id"), &Id, Serializer);
+	UBeamJsonUtils::SerializeOptional<FString>(TEXT("storageType"), &StorageType, Serializer);
 }
 
 void UServiceDependencyReference::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	UBeamJsonUtils::SerializeRawPrimitive(TEXT("id"), Id, Serializer);
-	UBeamJsonUtils::SerializeRawPrimitive(TEXT("storageType"), StorageType, Serializer);		
+	UBeamJsonUtils::SerializeOptional<FString>(TEXT("id"), &Id, Serializer);
+	UBeamJsonUtils::SerializeOptional<FString>(TEXT("storageType"), &StorageType, Serializer);		
 }
 
 void UServiceDependencyReference::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("id")), Id);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("storageType")), StorageType);
+	UBeamJsonUtils::DeserializeOptional<FString>("id", Bag, Id, OuterOwner);
+	UBeamJsonUtils::DeserializeOptional<FString>("storageType", Bag, StorageType, OuterOwner);
 }
 
 

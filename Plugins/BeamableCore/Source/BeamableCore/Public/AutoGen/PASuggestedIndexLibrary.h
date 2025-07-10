@@ -17,8 +17,8 @@ public:
 	static FString PASuggestedIndexToJsonString(const UPASuggestedIndex* Serializable, const bool Pretty);
 
 	UFUNCTION(BlueprintPure, Category="Beam|Beamo|Utils|Make/Break", DisplayName="Make PASuggestedIndex", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
-	static UPASuggestedIndex* Make(FString Weight, FString Id, FString Namespace, TArray<FString> Impact, TArray<FString> Index, UObject* Outer);
+	static UPASuggestedIndex* Make(FString Id, FString Namespace, double Weight, TArray<FString> Impact, TArray<FMapOfInt32> Index, UObject* Outer);
 
 	UFUNCTION(BlueprintPure, Category="Beam|Beamo|Utils|Make/Break", DisplayName="Break PASuggestedIndex", meta=(NativeBreakFunc))
-	static void Break(const UPASuggestedIndex* Serializable, FString& Weight, FString& Id, FString& Namespace, TArray<FString>& Impact, TArray<FString>& Index);
+	static void Break(const UPASuggestedIndex* Serializable, FString& Id, FString& Namespace, double& Weight, TArray<FString>& Impact, TArray<FMapOfInt32>& Index);
 };

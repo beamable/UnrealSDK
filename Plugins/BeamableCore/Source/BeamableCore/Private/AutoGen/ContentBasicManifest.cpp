@@ -17,7 +17,9 @@ void UContentBasicManifest::BeamSerializeProperties(TUnrealJsonSerializer& Seria
 	UBeamJsonUtils::SerializeRawPrimitive(TEXT("created"), Created, Serializer);
 	UBeamJsonUtils::SerializeArray<UBaseContentReference*>(TEXT("references"), References, Serializer);
 	UBeamJsonUtils::SerializeOptional<bool>(TEXT("archived"), &bArchived, Serializer);
+	UBeamJsonUtils::SerializeOptional<FString>(TEXT("diffObjectKey"), &DiffObjectKey, Serializer);
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("publisherAccountId"), &PublisherAccountId, Serializer);
+	UBeamJsonUtils::SerializeOptional<int64>(TEXT("lastChanged"), &LastChanged, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("uid"), &Uid, Serializer);
 }
 
@@ -28,7 +30,9 @@ void UContentBasicManifest::BeamSerializeProperties(TUnrealPrettyJsonSerializer&
 	UBeamJsonUtils::SerializeRawPrimitive(TEXT("created"), Created, Serializer);
 	UBeamJsonUtils::SerializeArray<UBaseContentReference*>(TEXT("references"), References, Serializer);
 	UBeamJsonUtils::SerializeOptional<bool>(TEXT("archived"), &bArchived, Serializer);
+	UBeamJsonUtils::SerializeOptional<FString>(TEXT("diffObjectKey"), &DiffObjectKey, Serializer);
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("publisherAccountId"), &PublisherAccountId, Serializer);
+	UBeamJsonUtils::SerializeOptional<int64>(TEXT("lastChanged"), &LastChanged, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("uid"), &Uid, Serializer);		
 }
 
@@ -39,7 +43,9 @@ void UContentBasicManifest::BeamDeserializeProperties(const TSharedPtr<FJsonObje
 	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("created")), Created);
 	UBeamJsonUtils::DeserializeArray<UBaseContentReference*>(Bag->GetArrayField(TEXT("references")), References, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<bool>("archived", Bag, bArchived, OuterOwner);
+	UBeamJsonUtils::DeserializeOptional<FString>("diffObjectKey", Bag, DiffObjectKey, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<int64>("publisherAccountId", Bag, PublisherAccountId, OuterOwner);
+	UBeamJsonUtils::DeserializeOptional<int64>("lastChanged", Bag, LastChanged, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("uid", Bag, Uid, OuterOwner);
 }
 

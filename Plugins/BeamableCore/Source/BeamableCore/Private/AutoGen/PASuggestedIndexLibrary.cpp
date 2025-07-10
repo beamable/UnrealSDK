@@ -22,23 +22,23 @@ FString UPASuggestedIndexLibrary::PASuggestedIndexToJsonString(const UPASuggeste
 	return Result;
 }	
 
-UPASuggestedIndex* UPASuggestedIndexLibrary::Make(FString Weight, FString Id, FString Namespace, TArray<FString> Impact, TArray<FString> Index, UObject* Outer)
+UPASuggestedIndex* UPASuggestedIndexLibrary::Make(FString Id, FString Namespace, double Weight, TArray<FString> Impact, TArray<FMapOfInt32> Index, UObject* Outer)
 {
 	auto Serializable = NewObject<UPASuggestedIndex>(Outer);
-	Serializable->Weight = Weight;
 	Serializable->Id = Id;
 	Serializable->Namespace = Namespace;
+	Serializable->Weight = Weight;
 	Serializable->Impact = Impact;
 	Serializable->Index = Index;
 	
 	return Serializable;
 }
 
-void UPASuggestedIndexLibrary::Break(const UPASuggestedIndex* Serializable, FString& Weight, FString& Id, FString& Namespace, TArray<FString>& Impact, TArray<FString>& Index)
+void UPASuggestedIndexLibrary::Break(const UPASuggestedIndex* Serializable, FString& Id, FString& Namespace, double& Weight, TArray<FString>& Impact, TArray<FMapOfInt32>& Index)
 {
-	Weight = Serializable->Weight;
 	Id = Serializable->Id;
 	Namespace = Serializable->Namespace;
+	Weight = Serializable->Weight;
 	Impact = Serializable->Impact;
 	Index = Serializable->Index;
 		

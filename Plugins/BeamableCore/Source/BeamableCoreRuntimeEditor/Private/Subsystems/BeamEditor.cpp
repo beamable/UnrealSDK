@@ -211,32 +211,7 @@ void UBeamEditorBootstrapper::Run_DelayedInitialize()
 	{
 		EditorSettings->SaveConfig(CPF_Config, *EditorSettings->GetDefaultConfigFilename());
 	}
-
-	// Ensure we have a default empty PIE settings for all maps	
-	{
-		auto DefaultSettings = FBeamPIE_Settings{};
-		DefaultSettings.SettingsId = FBeamPIE_Settings::DefaultPieSettingsGuid;
-		DefaultSettings.Name = TEXT("Default");
-		DefaultSettings.AssignedUsers = {};
-		DefaultSettings.AllowedMapNamePattern = TEXT("*");
-		DefaultSettings.AllowedInMaps = {};
-		DefaultSettings.FakeLobby = FBeamPIE_LobbySettings{
-			false,
-			false,
-		};
-
-		// Clear it out if its there.
-		auto PIEConfig = GetMutableDefault<UBeamPIEConfig>();
-		if (const auto& Found = PIEConfig->AllSettings.IndexOfByPredicate([](const FBeamPIE_Settings& S) { return S.IsDefaultSettings(); }); Found != INDEX_NONE)
-			PIEConfig->AllSettings.RemoveAt(Found);
-
-		// Always have it as the first item in the list.
-		PIEConfig->AllSettings.Insert(DefaultSettings, 0);
-
-		// Save the config
-		PIEConfig->Save();
-	}
-
+	
 	const auto Subsystems = GEditor->GetEditorSubsystemArrayCopy<UBeamEditorSubsystem>();
 	BeamEditor->InitializeAfterEditorReadyOps.Reset(Subsystems.Num());
 	for (auto& Subsystem : Subsystems)

@@ -12,6 +12,7 @@
 #include "BeamBackend/BeamMicroserviceClientSubsystem.h"
 #include "Containers/CircularQueue.h"
 #include "Containers/SpscQueue.h"
+#include "PIE/BeamPIE_Settings.h"
 #include "Subsystems/BeamEditor.h"
 #include "Subsystems/CLI/BeamCli.h"
 #include "Subsystems/CLI/Autogen/BeamCliFederationLocalKeyCommand.h"
@@ -314,14 +315,18 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Beam|Editor|Microservice", meta=(ExpandBoolAsExecs="ReturnValue"))
 	bool SetCurrentRoutingKey(FString BeamoId, FString Target);
 
-	UFUNCTION(BlueprintCallable, Category="Beam|Editor|Microservice")
-	void SetRoutingKeyMapAsAdditionalLaunchArgs();
 
 	UFUNCTION(BlueprintCallable, Category="Beam|Editor|Microservice")
 	FString ConstructRoutingKeyMap();
 
 	UFUNCTION(BlueprintCallable, Category="Beam|Editor|Microservice")
 	void SaveFederationProperties(FString ServiceId, FString FedId, FLocalFederationData Federation);
+
+	/**
+	 * This runs before each time we will kick off PIE instances.
+	 * It will ensure that the correct routing key map is passed along to the PIE instances running on separate processes. 
+	 */
+	void TriggerOnPreBeginPIE(ULevelEditorPlaySettings* PlaySettings, FBeamPIE_Settings const* SelectedSettings);
 
 protected:
 	void DeployMicroservices(const TArray<FString>& EnableBeamoIds, const TArray<FString>& DisableBeamoIds, const FBeamOperationHandle& Op) const;
@@ -342,4 +347,5 @@ protected:
 	void AppendToLogs(FLocalMicroserviceData* RunningService, const TArray<UBeamCliLogEntry*>& Log);
 	void StopLogTail(FLocalMicroserviceData* RunningService);
 	void SplitByHostOrDocker(const TArray<FString>& BeamoIds, TArray<FString>& DockerBeamoIds, TArray<FString>& HostBeamoIds);
+	void SetRoutingKeyMapAsAdditionalLaunchArgs(ULevelEditorPlaySettings* PlaySettings);
 };

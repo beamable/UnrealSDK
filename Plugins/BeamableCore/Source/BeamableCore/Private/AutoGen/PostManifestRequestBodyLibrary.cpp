@@ -22,22 +22,22 @@ FString UPostManifestRequestBodyLibrary::PostManifestRequestBodyToJsonString(con
 	return Result;
 }	
 
-UPostManifestRequestBody* UPostManifestRequestBodyLibrary::Make(TArray<UServiceReference*> Manifest, FOptionalBool bAutoDeploy, FOptionalString Comments, FOptionalArrayOfServiceStorageReference StorageReferences, UObject* Outer)
+UPostManifestRequestBody* UPostManifestRequestBodyLibrary::Make(FOptionalBool bAutoDeploy, FOptionalString Comments, FOptionalArrayOfBeamoActorServiceReference Manifest, FOptionalArrayOfServiceStorageReference StorageReferences, UObject* Outer)
 {
 	auto Serializable = NewObject<UPostManifestRequestBody>(Outer);
-	Serializable->Manifest = Manifest;
 	Serializable->bAutoDeploy = bAutoDeploy;
 	Serializable->Comments = Comments;
+	Serializable->Manifest = Manifest;
 	Serializable->StorageReferences = StorageReferences;
 	
 	return Serializable;
 }
 
-void UPostManifestRequestBodyLibrary::Break(const UPostManifestRequestBody* Serializable, TArray<UServiceReference*>& Manifest, FOptionalBool& bAutoDeploy, FOptionalString& Comments, FOptionalArrayOfServiceStorageReference& StorageReferences)
+void UPostManifestRequestBodyLibrary::Break(const UPostManifestRequestBody* Serializable, FOptionalBool& bAutoDeploy, FOptionalString& Comments, FOptionalArrayOfBeamoActorServiceReference& Manifest, FOptionalArrayOfServiceStorageReference& StorageReferences)
 {
-	Manifest = Serializable->Manifest;
 	bAutoDeploy = Serializable->bAutoDeploy;
 	Comments = Serializable->Comments;
+	Manifest = Serializable->Manifest;
 	StorageReferences = Serializable->StorageReferences;
 		
 }

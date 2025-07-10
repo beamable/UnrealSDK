@@ -17,9 +17,9 @@ struct BEAMABLECORE_API FBeamPIE_LobbySettings
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(EditCondition="bShouldAutoCreateLobby", EditConditionHides))
 	bool bIsDedicatedServer = true;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(EditCondition="bShouldAutoCreateLobby && bIsDedicatedServer", EditConditionHides))
-	FString ServerStartMapOverride;
-	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(EditCondition="bShouldAutoCreateLobby && bIsDedicatedServer", EditConditionHides, AllowedClasses="/Script/Engine.World"))
+	TSoftObjectPtr<UWorld> ServerStartMapOverride;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(EditCondition="bShouldAutoCreateLobby", EditConditionHides, BeamContentTypeFilter="game_types", BeamContentTypeFilterMode="tree"))
 	FBeamContentId GameType = {};
 

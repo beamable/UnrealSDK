@@ -6,7 +6,7 @@
 
 #include "BeamableCore/Public/AutoGen/SubSystems/BeamContentApi.h"
 #include "BeamableCore/Public/AutoGen/SubSystems/Content/BasicContentPostManifestRequest.h"
-#include "BeamableCore/Public/AutoGen/ContentBasicManifest.h"
+#include "BeamableCore/Public/AutoGen/SaveManifestResponse.h"
 
 #define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_BasicContentPostManifest"
 
@@ -49,7 +49,7 @@ UClass* UK2BeamNode_ApiRequest_BasicContentPostManifest::GetRequestClass() const
 
 UClass* UK2BeamNode_ApiRequest_BasicContentPostManifest::GetResponseClass() const
 {
-	return UContentBasicManifest::StaticClass();
+	return USaveManifestResponse::StaticClass();
 }
 
 FString UK2BeamNode_ApiRequest_BasicContentPostManifest::GetRequestSuccessDelegateName() const

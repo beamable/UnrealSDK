@@ -92,7 +92,7 @@ public:
 	/**
 	 * Copy the users to the Saved folder to be loaded by the cache login
 	 */
-	void TriggerOnPreBeginPIE(const FBeamPIE_Settings* Settings);
+	void TriggerOnPreBeginPIE(ULevelEditorPlaySettings* PlaySettings, const FBeamPIE_Settings* Settings);
 
 	/**
 	 * Get the mutable reference to the PieSettings

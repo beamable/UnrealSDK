@@ -22,32 +22,32 @@ FString UDatabaseMeasurementsLibrary::DatabaseMeasurementsToJsonString(const UDa
 	return Result;
 }	
 
-UDatabaseMeasurements* UDatabaseMeasurementsLibrary::Make(FString DatabaseName, TArray<ULink*> Links, FOptionalString GroupId, FOptionalString HostId, FOptionalString Granularity, FOptionalString End, FOptionalString Start, FOptionalString ProcessId, FOptionalArrayOfDatabaseMeasurement Measurements, UObject* Outer)
+UDatabaseMeasurements* UDatabaseMeasurementsLibrary::Make(FString DatabaseName, FOptionalString Granularity, FOptionalString GroupId, FOptionalString HostId, FOptionalString ProcessId, FOptionalDateTime Start, FOptionalDateTime End, FOptionalArrayOfLink Links, FOptionalArrayOfDatabaseMeasurement Measurements, UObject* Outer)
 {
 	auto Serializable = NewObject<UDatabaseMeasurements>(Outer);
 	Serializable->DatabaseName = DatabaseName;
-	Serializable->Links = Links;
+	Serializable->Granularity = Granularity;
 	Serializable->GroupId = GroupId;
 	Serializable->HostId = HostId;
-	Serializable->Granularity = Granularity;
-	Serializable->End = End;
-	Serializable->Start = Start;
 	Serializable->ProcessId = ProcessId;
+	Serializable->Start = Start;
+	Serializable->End = End;
+	Serializable->Links = Links;
 	Serializable->Measurements = Measurements;
 	
 	return Serializable;
 }
 
-void UDatabaseMeasurementsLibrary::Break(const UDatabaseMeasurements* Serializable, FString& DatabaseName, TArray<ULink*>& Links, FOptionalString& GroupId, FOptionalString& HostId, FOptionalString& Granularity, FOptionalString& End, FOptionalString& Start, FOptionalString& ProcessId, FOptionalArrayOfDatabaseMeasurement& Measurements)
+void UDatabaseMeasurementsLibrary::Break(const UDatabaseMeasurements* Serializable, FString& DatabaseName, FOptionalString& Granularity, FOptionalString& GroupId, FOptionalString& HostId, FOptionalString& ProcessId, FOptionalDateTime& Start, FOptionalDateTime& End, FOptionalArrayOfLink& Links, FOptionalArrayOfDatabaseMeasurement& Measurements)
 {
 	DatabaseName = Serializable->DatabaseName;
-	Links = Serializable->Links;
+	Granularity = Serializable->Granularity;
 	GroupId = Serializable->GroupId;
 	HostId = Serializable->HostId;
-	Granularity = Serializable->Granularity;
-	End = Serializable->End;
-	Start = Serializable->Start;
 	ProcessId = Serializable->ProcessId;
+	Start = Serializable->Start;
+	End = Serializable->End;
+	Links = Serializable->Links;
 	Measurements = Serializable->Measurements;
 		
 }

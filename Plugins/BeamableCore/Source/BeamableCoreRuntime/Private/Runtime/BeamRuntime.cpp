@@ -2253,7 +2253,7 @@ void UBeamRuntime::RunPostAuthenticationSetup_PrepareNotificationService(FGetCli
 void UBeamRuntime::LoadCachedUserAtSlot(FUserSlot UserSlot, FBeamOperationHandle AuthOp, FSimpleDelegate RunIfNoUser)
 {
 	// Try to load the user at a specific slot
-	const int32 Result = UserSlotSystem->TryLoadSavedUserAtSlot(UserSlot, this);
+	const int32 Result = UserSlotSystem->TryLoadSavedUserAtSlotAndAuth(UserSlot, this);
 	if (Result != UBeamUserSlots::LoadSavedUserResult_Failed)
 	{
 		// If expired, let's make a request to get a new token through the auto-refresh for expired tokens and then trigger the auth.

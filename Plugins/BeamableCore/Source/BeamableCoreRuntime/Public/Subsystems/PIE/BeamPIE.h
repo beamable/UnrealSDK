@@ -3,13 +3,21 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "AutoGen/SubSystems/BeamLobbyApi.h"
+#include "AutoGen/SubSystems/Lobby/PutLobbiesRequest.h"
 #include "Subsystems/EngineSubsystem.h"
 #include "BeamableCoreRuntime/Public/Runtime/BeamRuntime.h"
 #include "BeamableCoreRuntime/Public/Subsystems/Lobby/BeamLobbySubsystem.h"
 #include "BeamableCore/Public/PIE/BeamPIEConfig.h"
 #include "BeamableCore/Public/RequestTracker/BeamRequestTracker.h"
 #include "BeamableCore/Public/UserSlots/BeamUserSlots.h"
+#include "Content/BeamContentTypes/BeamGameTypeContent.h"
+#include "Subsystems/Content/BeamContentSubsystem.h"
+
+#if WITH_EDITOR
+#include "Subsystems/Microservices/BeamMicroservicesEditor.h"
 #include "Subsystems/UserDeveloperManager/BeamUserDeveloperManagerEditor.h"
+#endif
 
 
 #include "BeamPIE.generated.h"
@@ -91,25 +99,69 @@ class BEAMABLECORERUNTIME_API UBeamPIE : public UEngineSubsystem
 {
 	GENERATED_BODY()
 
+	static inline FBeamPIE_Settings DefaultSettingsPtr = {};
+
 public:
+	/**
+	 * Fallback setting we use when there are no selected settings for the map.
+	 * Essentially, it does nothing.
+	 */
+	static FBeamPIE_Settings const* DefaultSettings()
+	{
+		if (!DefaultSettingsPtr.IsDefaultSettings())
+		{
+			DefaultSettingsPtr = {};
+			DefaultSettingsPtr.SettingsId = FBeamPIE_Settings::DefaultPieSettingsGuid;
+			DefaultSettingsPtr.Name = TEXT("Default");
+			DefaultSettingsPtr.AssignedUsers = {};
+			DefaultSettingsPtr.AllowedMapNamePattern = TEXT("*");
+			DefaultSettingsPtr.AllowedInMaps = {};
+			DefaultSettingsPtr.FakeLobby = FBeamPIE_LobbySettings{
+				false,
+				false,
+			};
+		}
+		return &DefaultSettingsPtr;
+	}
+
+	/**
+	 * @brief Get the operation event id for a sub-event that is triggered whenever a user signs in during the @link BeamPreparePIE @endlink flow.
+	 */
+	UFUNCTION(BlueprintCallable)
+	static inline FName GetOperationEventID_PIE_ClientLoggedIn() { return FName("ON_CLIENT_LOGGED_IN"); }
+
 	UPROPERTY()
 	UBeamUserSlots* UserSlots;
 
 	UPROPERTY()
 	UBeamRequestTracker* RequestTracker;
 
-	int32 InstanceOverride;
+	/**
+	 * Needed because when running as standalone processes we need to know which client process that is to map to the PIE/UserSlot handles.
+	 * This gets extracted from the CLArgs Unreal passes into the Standalone/Client PIE Instances (when ran as separate processes) during this subsystem's initialization.
+	 */
+	int32 InstanceOverride = -1;
 
+	/**
+	 * Pointer to the currently selected settings.
+	 * In the editor or separate-process-PIE-instances, this will always point to something inside @link UBeamPIEConfig::AllSettings @endlink OR to the @link DefaultSettings @endlink.
+	 * In builds, this is always null.
+	 */
 	FBeamPIE_Settings const* SelectedSettings;
+
+	/**
+	 * This ensures that the init flow only runs once per PIE run (even if you circle back to the starting map).
+	 */
 	bool bFinishedSetup;
 
 	TMap<FBeamPIE_UserSlotHandle, FDelegateHandle> LobbyJoinedHandles;
 	TMap<FBeamPIE_UserSlotHandle, FDelegateHandle> UserSlotAuthenticatedHandles;
 
 #if WITH_EDITOR
-	FDelegateHandle StartPIEHandler;	
+	FDelegateHandle StartPIEHandler;
+	FDelegateHandle OnInstancePreLoadMap;
+	TMap<FBeamPIE_UserSlotHandle, FBeamGamerTag> ServerGamerTags;
 #endif
-
 
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override
 	{
@@ -118,74 +170,100 @@ public:
 		UserSlots = Collection.InitializeDependency<UBeamUserSlots>();
 		RequestTracker = Collection.InitializeDependency<UBeamRequestTracker>();
 
-		// Reload the config.
+		// Set the default settings
+		SelectedSettings = DefaultSettings();
+
+#if WITH_EDITOR
+
+		// This block of code only runs on separate-process-PIE-instances.
 		if (!GEngine->IsEditor())
 		{
-			FCoreUObjectDelegates::PreLoadMap.AddLambda([this](FString MapName)
+			// We setup a delegate that will run before the separate process begins loading its starting map. 
+			OnInstancePreLoadMap = FCoreUObjectDelegates::PreLoadMap.AddLambda([this](FString MapName)
 			{
+				// First, we parse out which PIE-instance this is from an argument that Unreal sends down to every separate-process-PIE.
 				FString GameUserSettingIni;
 				if (FParse::Value(FCommandLine::Get(), TEXT("GameUserSettingsINI="), GameUserSettingIni, false))
 				{
 					auto InstanceStr = GameUserSettingIni.Replace(TEXT("PIEGameUserSettings"), TEXT(""));
-		
 					if (!FDefaultValueHelper::ParseInt(InstanceStr, InstanceOverride))
 					{
-						UE_LOG(LogTemp, Error, TEXT("Error on parse the override instance for the STR: %s"), *InstanceStr);
+						UE_LOG(LogBeamEditor, Error, TEXT("Error on parse the override instance for the STR: %s"), *InstanceStr);
 					}
 				}
-				UE_LOG(LogTemp, Warning, TEXT("Standalone - Reading BeamPIE Config"))
+				else
+				{
+					UE_LOG(LogBeamEditor, Error, TEXT("Failed to read expected `GameUserSettingsINI` argument from separate-process-PIE-instance."));
+					SelectedSettings = DefaultSettings();
+					return;
+				}
 
-				// Get the INI path from <ProjectDir>/Save/Config/<Platform>/MyPlugin.ini 
-				FString ConfigPath = FPaths::ConvertRelativePathToFull(FPaths::Combine(FPaths::ProjectSavedDir(), TEXT("Config"), FPlatformProperties::PlatformName(), TEXT("BeamPIE.ini")));
+				// Then, we get the path to the `BeamPIE.ini` file in the Saved directory. 
+				// FString ConfigPath = FPaths::ConvertRelativePathToFull(FPaths::Combine(FPaths::ProjectSavedDir(), TEXT("Config"), FPlatformProperties::PlatformName(), TEXT("BeamPIE.ini")));
+				//
+				// // Attempt to load the config file
+				// GConfig->LoadFile(ConfigPath);
 
-				// Attempt to load the config file
-				GConfig->LoadFile(ConfigPath);
-
+				// Then, we get the BeamPIEConfig and ensure it's values are loaded.
 				const auto Config = GetMutableDefault<UBeamPIEConfig>();
 				UE_LOG(LogTemp, Warning, TEXT("Standalone - Default Load BeamPIE Config - Is Running Server Locally: %d, Local Server Port: %s"),
-					   Config->bIsRunningGameServerLocally,
-					   *Config->CurrLocalServerPort);
+				       Config->bIsRunningGameServerLocally,
+				       *Config->CurrLocalServerPort);
 
-				//Config->LoadConfig(UBeamPIEConfig::StaticClass(), TEXT("BeamPIE"));
 				Config->LoadConfig();
 				UE_LOG(LogTemp, Warning, TEXT("Standalone - Manual  Load BeamPIE Config - Is Running Server Locally: %d, Local Server Port: %s"),
-					   Config->bIsRunningGameServerLocally,
-					   *Config->CurrLocalServerPort);
+				       Config->bIsRunningGameServerLocally,
+				       *Config->CurrLocalServerPort);
 
+				// Then, we clear the subsystem state to ensure we have a blank slate.
 				bFinishedSetup = false;
+				LobbyJoinedHandles.Reset();
+				UserSlotAuthenticatedHandles.Reset();
 
+				// Finally, we select the correct settings based on the initial map for the server and then clean up this delegate.
 				SelectedSettings = ChooseSelectedPIESettings(UWorld::RemovePIEPrefix(MapName));
+				FCoreUObjectDelegates::PreLoadMap.Remove(OnInstancePreLoadMap);
 			});
-		
 		}
 
-#if WITH_EDITOR
-		// Set up the Start PIE handler that integrates our settings with Unreal's Play Settings
+		// This block of code sets up the in-editor state for this system --- this runs for when you are entering PIE with all instances `Running Under One Process`.
+		// Regardless of whether we are Running Under One Process`, this runs before the PIE instances are open and therefore we can make modifications to parameters in ULevelEditorPlaySettings.
+		// Today, we add a few arguments for when we run PIE on separate processes such that it can work with local microservices and BeamPIE.
 		StartPIEHandler = FEditorDelegates::StartPIE.AddLambda([this](const bool)
 		{
-			bFinishedSetup = false;
-			
+			// Get the editor world so we can figure out what map is currently open (and, therefore, the map through which we are entering PIE).
 			UWorld* EditorWorld = GEditor->GetEditorWorldContext().World();
 			if (!EditorWorld)
 			{
 				UE_LOG(LogBeamEditor, Error, TEXT("Could not find the editor world context!"));
 				return;
 			}
+
+			// Select the settings based on our current map.
 			const auto PIE = GEngine->GetEngineSubsystem<UBeamPIE>();
 			SelectedSettings = PIE->ChooseSelectedPIESettings(UWorld::RemovePIEPrefix(EditorWorld->GetMapName()));
 
+			// If we found no settings, something went wrong. Still, we fallback to the default settings.
 			if (!SelectedSettings)
 			{
-				UE_LOG(LogBeamEditor, Verbose, TEXT("No beam pie settings found!"));
+				UE_LOG(LogBeamEditor, Error, TEXT("No beam pie settings found for map %s! Falling back to default settings!"), *EditorWorld->GetMapName());
+				SelectedSettings = DefaultSettings();
 				return;
 			}
 
-			auto DeveloperUserSubsystem = GEditor->GetEditorSubsystem<UBeamUserDeveloperManagerEditor>();
-
-			DeveloperUserSubsystem->TriggerOnPreBeginPIE(SelectedSettings);
-
+			// Now, we do some setup regarding the parameters with which we'll be starting the PIE instances.
 			if (auto PlaySettings = GetMutableDefault<ULevelEditorPlaySettings>())
 			{
+				// We start by asking the UBeamUserDeveloperManagerEditor to configure any mapped cached users in the `Saved/Beamable/UserSlots` directory.
+				// This makes it so that, when we `LoginCached` as part of our `BeamInitPIE`, the mapped users will be the ones we are loading.
+				// This may also clone the mapped users and use the clone depending on the settings. 
+				{
+					auto DeveloperUserSubsystem = GEditor->GetEditorSubsystem<UBeamUserDeveloperManagerEditor>();
+					DeveloperUserSubsystem->TriggerOnPreBeginPIE(PlaySettings, SelectedSettings);
+				}
+
+				// Then, if we are creating a FakeLobby in which we'll test our dedicated server map, we can define that map as the ServerMapOverride.
+				// This is useful when you want to have a few settings that will always start on a specific map (this means you don't have to manually configure that in UE's Advanced Networking tabs).
 				if (SelectedSettings->FakeLobby.bShouldAutoCreateLobby)
 				{
 					if (SelectedSettings->FakeLobby.bIsDedicatedServer)
@@ -195,18 +273,28 @@ public:
 						{
 							if (const auto StrProperty = CastField<FStrProperty>(OverrideProperty))
 							{
-								FString SettingsMapName = SelectedSettings->FakeLobby.ServerStartMapOverride;
-								const auto Val = StrProperty->ContainerPtrToValuePtr<FString>(PlaySettings);
-								StrProperty->SetPropertyValue(Val, SettingsMapName);
-								UE_LOG(LogBeamEditor, Log, TEXT("Beam Editor - Pre-Begin PIE - Setting ServerMapNameOverride from BeamPIE Settings! SETTINGS=%s, MAP=%s"),
-								       *SelectedSettings->Name, *SettingsMapName);
+								if (SelectedSettings->FakeLobby.ServerStartMapOverride.IsValid())
+								{
+									FString SettingsMapName = SelectedSettings->FakeLobby.ServerStartMapOverride->GetMapName();
+									const auto Val = StrProperty->ContainerPtrToValuePtr<FString>(PlaySettings);
+									StrProperty->SetPropertyValue(Val, SettingsMapName);
+									UE_LOG(LogBeamEditor, Log, TEXT("Beam Editor - Pre-Begin PIE - Setting ServerMapNameOverride from BeamPIE Settings! SETTINGS=%s, MAP=%s"),
+									       *SelectedSettings->Name, *SettingsMapName);
+								}
 							}
 						}
 					}
 				}
 
-				// Update the UBeamPIEConfig with data from the PlaySettings
-				// We do this because when launching as separate processes, we still want to know about this stuff so we can correctly decide what to do at runtime. 
+				// Then, we ask the MicroserviceEditor subsystem to fill out the routing key map into the arguments 
+				{
+					auto MicroserviceEditorSubsystem = GEditor->GetEditorSubsystem<UBeamMicroservicesEditor>();
+					MicroserviceEditorSubsystem->TriggerOnPreBeginPIE(PlaySettings, SelectedSettings);
+				}
+
+				// Finally, we update the BeamPIEConfig (the one inside `Saved/Config/WindowsEditor`) to reflect whether we are running game server locally (and its port).				
+				// We do this because when launching as separate processes, we still want to know about this so we can correctly decide what to do at runtime.
+				// Basically, 
 				if (EPlayNetMode Mode; PlaySettings->GetPlayNetMode(Mode))
 				{
 					const auto bIsLaunchingLocalServer = Mode == PIE_Client || (PlaySettings->bLaunchSeparateServer && Mode == PIE_Standalone);
@@ -226,7 +314,12 @@ public:
 			{
 				UE_LOG(LogBeamEditor, Warning, TEXT("Beam Editor - Pre-Begin PIE - No Play Settings Found!"));
 			}
-		});		
+
+			// Reset the state of this BeamPIE so we can coordinate the init flow.
+			bFinishedSetup = false;
+			LobbyJoinedHandles.Reset();
+			UserSlotAuthenticatedHandles.Reset();
+		});
 #endif
 	}
 
@@ -242,9 +335,12 @@ public:
 	static UBeamPIE* GetSelf(const UObject* CallingContext) { return GEngine->GetEngineSubsystem<UBeamPIE>(); }
 
 	/**
-	* When integrating with a game server orchestrator SDK (Hathora, Agones, etc...), you only need to run them if you are NOT running a dedicated server locally.
-	* Call this ONLY inside your Game Server's GameMode. 	
-	*/
+	 * When integrating with a game server orchestrator SDK (Hathora, Agones, etc...), you only need to run them if you are NOT running a dedicated server locally.
+	 * This function returns `true` only in those cases.
+	 *
+	 * This function is meant to be called in your dedicated server's start up flow in order to decide whether your orchestrator's SDK needs initialization or not.
+	 * You can also call this in clients to avoid doing orchestrator work, if your it also has a Client SDK for whatever reason. 
+	 */
 	UFUNCTION(BlueprintCallable, meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
 	bool RequiresGameServerOrchestratorSetup(UObject* CallingContext)
 	{
@@ -258,17 +354,14 @@ public:
 		// We only need to set up orchestrator if...		
 		if (CallingContext)
 		{
-			if (const auto World = CallingContext->GetWorld())
-			{
-				// We are in a deployed dedicated server (not running from the editor), we won't need to set up the orchestrator's SDK.
-				const auto bIsInDedicatedServer = World->IsNetMode(NM_DedicatedServer);
-				if (bIsInDedicatedServer && !GetDefault<UBeamPIEConfig>()->bIsRunningGameServerLocally)
-					return true;
-			}
+			// We are in a deployed dedicated server (not running from the editor), we won't need to set up the orchestrator's SDK.				
+			if (!GetDefault<UBeamPIEConfig>()->bIsRunningGameServerLocally)
+				return true;
 		}
 
 		return false;
 	}
+
 
 	/**
 	 * @brief Call this function if you want to initialize a subsystem that was set to manually initialize from the project settings.
@@ -336,43 +429,13 @@ public:
 	}
 
 
-	FBeamPIE_Settings const* GetSelectedPIESettings() const { return SelectedSettings; }
-
-	FBeamPIE_Settings const* ChooseSelectedPIESettings(FString MapName) const
-	{
-#if !WITH_EDITOR
-		return nullptr;
-#endif
-
-		const auto Config = GetDefault<UBeamPIEConfig>();
-	
-		if (Config->PerMapSelection.Contains(MapName))
-		{
-			const auto Id = GetDefault<UBeamPIEConfig>()->PerMapSelection[MapName];
-			return Config->AllSettings.FindByPredicate([Id](FBeamPIE_Settings& S) { return S.SettingsId == Id; });
-		}
-
-		// Guaranteed to exist from editor code.
-		return &GetDefault<UBeamPIEConfig>()->AllSettings[0];
-	}
-
-	FString GetLogArgs(FString Header, FWorldContext* WorldContext)
-	{
-		const auto CurrMapName = UWorld::RemovePIEPrefix(WorldContext->World()->GetMapName());
-		return FString::Printf(TEXT("%s [Index: %d, Starting Map: %s, IsServer: %d] -"), *Header, GetPIEInstance(WorldContext), *CurrMapName, WorldContext->World()->GetNetMode() < NM_Client);
-	}
-
-	int32 GetPIEInstance(FWorldContext* WorldContext)
-	{
-		if (WorldContext->PIEInstance == -1)
-		{
-			return InstanceOverride;
-		}
-		return WorldContext->PIEInstance;
-	}
-	
 	void BeamInitPIE(UObject* CallingContext, FBeamOperationHandle Op)
 	{
+#if !WITH_EDITOR
+		RequestTracker->TriggerOperationSuccess(Op, TEXT(""));
+		return;
+#endif
+
 		ensureAlwaysMsgf(CallingContext, TEXT("You must provide a calling context to this function!"));
 
 		// If we don't have a selected setting, don't do anything.
@@ -387,10 +450,9 @@ public:
 		const auto World = CallingContext->GetWorld();
 		ensureAlwaysMsgf(World, TEXT("You must provide a calling context with a valid World to this function!"));
 
-		// Get the world context and verify that it is a PIE world.
+		// Get the world context.
 		const auto WorldContext = GEngine->GetWorldContextFromWorld(World);
 		ensureAlwaysMsgf(WorldContext, TEXT("You should never see this!"));
-
 
 		// We only run this once per-PIE-Instance-Session (this is here since people might loop back around within a single PIE session --- in which case this should not run).
 		if (!bFinishedSetup)
@@ -418,6 +480,11 @@ public:
 
 	void BeamPreparePIE(UObject* CallingContext, FBeamOperationHandle Op)
 	{
+#if !WITH_EDITOR
+		RequestTracker->TriggerOperationSuccess(Op, TEXT(""));
+		return;
+#endif
+
 		ensureAlwaysMsgf(CallingContext, TEXT("You must provide a calling context to this function!"));
 
 		// If we don't have a selected setting, don't do anything.
@@ -441,6 +508,11 @@ public:
 
 	void BeamPreparePIE(FWorldContext* WorldContext, FBeamOperationHandle Op)
 	{
+#if !WITH_EDITOR
+		RequestTracker->TriggerOperationSuccess(Op, TEXT(""));
+		return;
+#endif
+
 		// If we don't have a setting selected, we should just complete the operation (this happens in builds).
 		const auto Setting = GetSelectedPIESettings();
 		if (!Setting)
@@ -449,61 +521,214 @@ public:
 			return;
 		}
 
-		// Let's get the list of PIE+Slot combinations for which we have configured users.
-		UE_LOG(LogBeamEditor, Log, TEXT("%s Building List of Assigned PIE Users"), *GetLogArgs(TEXT("Beam PIE Prepare"), WorldContext));
-		TArray<FBeamPIE_UserSlotHandle> PossibleSlotHandles;
-		for (const auto& AssignedUser : Setting->AssignedUsers)
+		// If we are a client instance...
+		if (WorldContext->World()->GetNetMode() == NM_Client)
 		{
-			if (AssignedUser.Key.PIEIndex == GetPIEInstance(WorldContext) || WorldContext->World()->GetNetMode() < NM_Client)
-			{
-				UE_LOG(LogBeamEditor, Log, TEXT("%s Found Assigned User. USER_SLOT=%s, PIE=%d"), *GetLogArgs(TEXT("Beam PIE Prepare"), WorldContext),
-				       *AssignedUser.Key.Slot.Name, AssignedUser.Key.PIEIndex);
-				PossibleSlotHandles.Add(AssignedUser.Key);
-			}
-		}
-
-		// If we are in the server...
-		if (WorldContext->World()->GetNetMode() < NM_Client)
-		{
-			// Try to create the lobby with these users in it --- keep trying until it succeeds (allow failing until all the users are online).
-			// Then, when the lobby is created:				
-			// IsDoneMap.Add(Kvp.Key.PIEIndex, false);
-		}
-		// If we are in the client... 
-		else
-		{
+			// Start preparing the client instances.
 			UE_LOG(LogBeamEditor, Log, TEXT("%s Client - Starting Preparation."), *GetLogArgs(TEXT("Beam PIE Prepare"), WorldContext));
+
+			// Let's get the list of PIE+Slot combinations for which we have configured users.
+			UE_LOG(LogBeamEditor, Log, TEXT("%s Client - Building List of Assigned PIE Users"), *GetLogArgs(TEXT("Beam PIE Prepare"), WorldContext));
+			TArray<FBeamPIE_UserSlotHandle> PossibleSlotHandles;
+			for (const auto& AssignedUser : Setting->AssignedUsers)
+			{
+				if (AssignedUser.Key.PIEIndex == GetPIEInstance(WorldContext))
+				{
+					UE_LOG(LogBeamEditor, Log, TEXT("%s Client - Found Assigned User. USER_SLOT=%s, PIE=%d"), *GetLogArgs(TEXT("Beam PIE Prepare"), WorldContext),
+					       *AssignedUser.Key.Slot.Name, AssignedUser.Key.PIEIndex);
+					PossibleSlotHandles.Add(AssignedUser.Key);
+				}
+			}
+
+			// If no users are configured, we complete the operation here.
+			if (PossibleSlotHandles.Num() == 0)
+			{
+				RequestTracker->TriggerOperationSuccess(Op,TEXT(""));
+				return;
+			}
+
 			// Let's iterate over the users we expect and have them try to log in from cache.
 			// This login will keep trying to log in from cache until it finds a user in the SLOT.
 			// Our editor system NEEDS to guarantee that the user is the one we expect it to be
 			// It does this by ALWAYS deleting the cached users of the configured PIE+Slot combinations before running the command to set those users up.				 
 			for (const auto& CurrSlotHandle : PossibleSlotHandles)
 			{
-				const auto ExpectedGamerTag = Setting->AssignedUsers[CurrSlotHandle];
-
+				// Get the world
 				const auto World = WorldContext->World();
 				ensureAlwaysMsgf(World, TEXT("You must provide a calling context with a valid World to this function!"));
 
+				// Get the game instance for that world
 				const auto GI = World->GetGameInstance();
 				ensureAlwaysMsgf(GI, TEXT("You should never see this!"));
 
-				// Set up a "retry until succeed here"
-				UE_LOG(LogBeamEditor, Log, TEXT("%s Client - Logging in from Cache. USER_SLOT=%s, PIE=%d"), *GetLogArgs(TEXT("Beam PIE Prepare"), WorldContext),
-				       *CurrSlotHandle.Slot.Name, CurrSlotHandle.PIEIndex);
-
+				// Get the UBeamRuntime subsystem so that we can auto-magically log in with the cached user.
+				// The cached user on the configured slots will eventually be there (because we tell the CLI to put them there).
 				const auto Runtime = GI->GetSubsystem<UBeamRuntime>();
-				const auto LoginLocalCacheHandler = FBeamOperationEventHandlerCode::CreateUFunction(this, GET_FUNCTION_NAME_CHECKED(UBeamPIE, PIEClientLoginHandler),
-				                                                                                    Runtime, CurrSlotHandle, PossibleSlotHandles, Op);
+				const auto LoginLocalCacheHandler = FBeamOperationEventHandlerCode::CreateUFunction(
+					this,
+					GET_FUNCTION_NAME_CHECKED(UBeamPIE, PIEClientLoginHandler),
+					Runtime,
+					CurrSlotHandle,
+					PossibleSlotHandles,
+					Op);
+
+				// Set up a "retry until succeed here"
+				UE_LOG(LogBeamEditor, Log, TEXT("%s Client - Logging in from Cache. USER_SLOT=%s, PIE=%d"),
+				       *GetLogArgs(TEXT("Beam PIE Prepare"), WorldContext), *CurrSlotHandle.Slot.Name, CurrSlotHandle.PIEIndex);
+
 				Runtime->CPP_LoginFromCacheOperation(CurrSlotHandle.Slot, LoginLocalCacheHandler);
 			}
 		}
-	}
+		// If we are in the server... 
+		else
+		{
+			// If we are not configured to create a lobby, we complete the operation here.
+			if (!Setting->FakeLobby.bShouldAutoCreateLobby)
+			{
+				RequestTracker->TriggerOperationSuccess(Op,TEXT(""));
+				return;
+			}
 
-	/**
-	 * @brief Get the operation event id for the 2FA auth subevent
-	 */
-	UFUNCTION(BlueprintCallable)
-	static inline FName GetOperationEventID_PIE_ClientLoggedIn() { return FName("ON_CLIENT_LOGGED_IN"); }
+			// Get the world
+			const auto World = WorldContext->World();
+			ensureAlwaysMsgf(World, TEXT("You must provide a calling context with a valid World to this function!"));
+
+			// Get the game instance for that world
+			const auto GI = World->GetGameInstance();
+			ensureAlwaysMsgf(GI, TEXT("You should never see this!"));
+
+			// Let's get the list of PIE+Slot combinations for which we have configured users.
+			UE_LOG(LogBeamEditor, Log, TEXT("%s Server - Building List of Assigned PIE Users"), *GetLogArgs(TEXT("Beam PIE Prepare"), WorldContext));
+			TArray<FBeamPIE_UserSlotHandle> PossibleSlotHandles;
+			for (const auto& AssignedUser : Setting->AssignedUsers)
+			{
+				UE_LOG(LogBeamEditor, Log, TEXT("%s Server - Found Assigned User. USER_SLOT=%s, PIE=%d"), *GetLogArgs(TEXT("Beam PIE Prepare"), WorldContext),
+				       *AssignedUser.Key.Slot.Name, AssignedUser.Key.PIEIndex);
+				PossibleSlotHandles.Add(AssignedUser.Key);
+			}
+
+			// First, we'll need wait until the configured PIE users are all in the Saved/Beamable/UserSlot folder
+			FTSTicker::GetCoreTicker().AddTicker(FTickerDelegate::CreateLambda([this, WorldContext, PossibleSlotHandles, Setting, Op](const float)
+			{
+				UE_LOG(LogBeamEditor, Log, TEXT("%s Server - Waiting for Users."), *GetLogArgs(TEXT("Beam PIE Prepare"), WorldContext));
+				// Let's try to load the user's from the Saved folder
+				bool bAreAllUsersReady = true;
+				for (FBeamPIE_UserSlotHandle PossibleSlotHandle : PossibleSlotHandles)
+				{
+					const auto NamespacedSlot = UserSlots->GetNamespacedSlotId(PossibleSlotHandle.Slot, PossibleSlotHandle.PIEIndex);
+
+					UE_LOG(LogBeamEditor, Log, TEXT("%s Server - Attempting to load data for Assigned User. USER_SLOT=%s, PIE=%d"),
+					       *GetLogArgs(TEXT("Beam PIE Prepare"), WorldContext), *PossibleSlotHandle.Slot.Name, PossibleSlotHandle.PIEIndex);
+
+					FUserSlotAuthData Auth;
+					FUserSlotAccountData Account;
+					const auto Res = UserSlots->TryLoadSavedUserAtNamespacedSlot(NamespacedSlot, Auth, Account);
+					const auto bDidLoad = Res != UBeamUserSlots::LoadSavedUserResult_Failed;
+					if (bDidLoad)
+					{
+						UE_LOG(LogBeamEditor, Log, TEXT("%s Server - Loaded data for Assigned User. USER_SLOT=%s, PIE=%d"),
+						       *GetLogArgs(TEXT("Beam PIE Prepare"), WorldContext), *PossibleSlotHandle.Slot.Name, PossibleSlotHandle.PIEIndex);
+						ServerGamerTags.Add(PossibleSlotHandle, Account.GamerTag);
+					}
+					bAreAllUsersReady &= bDidLoad;
+				}
+
+				// If all the users are loaded (and we now know their gamertags)... 
+				if (bAreAllUsersReady)
+				{
+					UE_LOG(LogBeamEditor, Log, TEXT("%s Server - Loaded data for All Assigned Users."), *GetLogArgs(TEXT("Beam PIE Prepare"), WorldContext));
+				
+					// // Then, we call the make magical lobby endpoint until it succeeds passing in these users.					
+					// const auto API = GEngine->GetEngineSubsystem<UBeamLobbyApi>();
+					// const auto ServerSlot = GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot();
+					//
+					// auto Req = NewObject<UPutLobbiesRequest>();
+					// ULobby* FakeLobby = NewObject<ULobby>();
+					//
+					// UE_LOG(LogBeamEditor, Log, TEXT("%s Server - Preparing Fake Lobby"), *GetLogArgs(TEXT("Beam PIE Prepare"), WorldContext));
+					// const auto& FakeLobbySettings = Setting->FakeLobby;
+					// if (FakeLobbySettings.bIsDedicatedServer)
+					// {
+					// 	// Set up the game type
+					// 	FakeLobby->MatchType.Val->Id = FOptionalBeamContentId{FakeLobbySettings.GameType};
+					// 	UE_LOG(LogBeamEditor, Log, TEXT("%s Server - Preparing Fake Lobby - Setting GameType %s"),
+					// 	       *GetLogArgs(TEXT("Beam PIE Prepare"), WorldContext), *FakeLobbySettings.GameType.AsString);
+					//
+					// 	// Add the configured global data (with a flag that tells us that the lobby is coming from PIE).
+					// 	FakeLobby->Data = FOptionalMapOfString{TMap<FString, FString>{UBeamLobbySubsystem::Reserved_Lobby_From_Editor_Play_Mode_Property, FString(TEXT("true"))}};
+					// 	for (const auto& LobbyGlobalData : FakeLobbySettings.LobbyGlobalData)
+					// 	{
+					// 		FakeLobby->Data.Val.Add(LobbyGlobalData.Key, LobbyGlobalData.Value);
+					// 		UE_LOG(LogBeamEditor, Log, TEXT("%s Server - Preparing Fake Lobby - Setting Global Data - Key=%s, Val=%s"),
+					// 		       *GetLogArgs(TEXT("Beam PIE Prepare"), WorldContext), *LobbyGlobalData.Key, *LobbyGlobalData.Value);
+					// 	}
+					//
+					// 	// Dedicated servers are always Null restriction
+					// 	FakeLobby->Restriction = FOptionalLobbyRestriction{EBeamLobbyRestriction::BEAM_Null};
+					// 	FakeLobby->Host = {};
+					//
+					// 	// Set up the players in the fake lobby.
+					// 	FakeLobby->Players = FOptionalArrayOfLobbyPlayer{{}};
+					// 	for (const auto& KVP : ServerGamerTags)
+					// 	{
+					// 		const auto& Handle = KVP.Key;
+					// 		const auto& GamerTag = KVP.Value;
+					// 		const auto& PlayerSettings = FakeLobbySettings.PerPlayerSettings[Handle];
+					// 		const auto& Tags = PlayerSettings.Tags;
+					//
+					// 		const auto LobbyPlayer = NewObject<ULobbyPlayer>();
+					// 		LobbyPlayer->PlayerId = FOptionalBeamGamerTag{GamerTag};
+					// 		LobbyPlayer->Tags = FOptionalArrayOfBeamTag{Tags};
+					// 		FakeLobby->Players.Val.Add(LobbyPlayer);
+					//
+					// 		for (FBeamTag Tag : Tags)
+					// 		{
+					// 			UE_LOG(LogBeamEditor, Log, TEXT("%s Server - Preparing Fake Lobby - Setting Player Data - GAMER_TAG=%s, Key=%s, Val=%s"),
+					// 			       *GetLogArgs(TEXT("Beam PIE Prepare"), WorldContext), *GamerTag.AsString, *Tag.Name.Val, *Tag.Value.Val);
+					// 		}
+					// 	}
+					// }
+					// else
+					// {
+					// }
+					//
+					// UE_LOG(LogBeamEditor, Log, TEXT("%s Server - Trying to Create the Fake Lobby"), *GetLogArgs(TEXT("Beam PIE Prepare"), WorldContext));
+					// const auto CreateLobbyHandler = FOnPutLobbiesFullResponse::CreateUFunction(this, GET_FUNCTION_NAME_CHECKED(UBeamPIE, PIEServerCreateLobbyHandler), WorldContext, Req, PossibleSlotHandles, Op);
+					// FBeamRequestContext Ctx;
+					// API->CPP_PutLobbies(ServerSlot, Req, CreateLobbyHandler, Ctx, Op, WorldContext->World());
+				}
+
+
+				return !bAreAllUsersReady;
+			}), 0.2f);
+		}
+	}
+	
+	void PIEServerCreateLobbyHandler(FPutLobbiesFullResponse Resp, FWorldContext* WorldContext, UPutLobbiesRequest* Req, TArray<FBeamPIE_UserSlotHandle> PossibleSlotHandles, FBeamOperationHandle PrepareOp)
+	{
+		if (Resp.State == RS_Success)
+		{
+			UE_LOG(LogBeamEditor, Log, TEXT("%s Server - Created Lobby."), *GetLogArgs(TEXT("Beam PIE Prepare"), WorldContext));
+			RequestTracker->TriggerOperationSuccess(PrepareOp, TEXT(""));
+		}
+		else
+		{
+			// If we fail, create a new handler and call the PutLobbies endpoint again
+			// This is guaranteed to succeed eventually because all clients are logging into the game.
+			FTSTicker::GetCoreTicker().AddTicker(FTickerDelegate::CreateLambda([this,WorldContext, PossibleSlotHandles, PrepareOp, Req](const float)
+			{
+				UE_LOG(LogBeamEditor, Log, TEXT("%s Server - Failed to create lobby. Trying again."), *GetLogArgs(TEXT("Beam PIE Prepare"), WorldContext));
+
+				const auto CreateLobbyHandler = FOnPutLobbiesFullResponse::CreateUFunction(this, GET_FUNCTION_NAME_CHECKED(UBeamPIE, PIEServerCreateLobbyHandler), WorldContext, Req, PossibleSlotHandles, PrepareOp);
+				FBeamRequestContext Ctx;
+
+				const auto ServerSlot = GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot();
+				const auto API = GEngine->GetEngineSubsystem<UBeamLobbyApi>();
+				API->CPP_PutLobbies(ServerSlot, Req, CreateLobbyHandler, Ctx, PrepareOp, WorldContext->World());
+				return false;
+			}), 0.2f);
+		}
+	}
 
 	/**
 	 * Keep trying to log in with local cache until that is done, login Local Cache with the expected users.	  
@@ -534,7 +759,7 @@ public:
 			}
 
 			// If we fail, create a new handler and call the Login from Cache Operation again
-			// This is guaranteed to succeed eventually for all configured users.
+			// This is guaranteed to succeed eventually for all configured users because the UBeamUserDeveloperManagerEditor will eventually write to it.
 			if (Evt.CompletedWithError())
 			{
 				FTSTicker::GetCoreTicker().AddTicker(FTickerDelegate::CreateLambda([Runtime, CurrSlotHandle, this, PossibleSlotHandles, PrepareOp](const float)
@@ -549,30 +774,42 @@ public:
 		}
 	}
 
-	inline static const FString Reserved_LobbyFromPIE_Property = TEXT("__beam_lobby_from_pie_settings__");
-
 	void WaitUntilClientIsLoggedIn(UBeamRuntime* Runtime, TArray<FBeamPIE_UserSlotHandle> PossibleSlotHandles, FBeamOperationHandle Op)
 	{
+		const auto WorldContext = GEngine->GetWorldContextFromWorld(Runtime->GetWorld());
+		const auto PieInstance = GetPIEInstance(WorldContext);
+
+		// Let's make sure all the users configured for this PIE instance are done logging in.
 		auto bAreAllUsersAlreadyLoggedIn = true;
 		for (const auto& CurrHandle : PossibleSlotHandles)
 		{
+			// We only care about the users in this PIE instance.
+			if (CurrHandle.PIEIndex != PieInstance) continue;
+
+			// If we are NOT already logged in...
 			FBeamRealmUser UserData;
 			if (!UserSlots->GetUserDataAtSlot(CurrHandle.Slot, UserData, Runtime))
 			{
+				// Set this as false
 				bAreAllUsersAlreadyLoggedIn = false;
+
+				// Set up a callback that will try to verify that we are all logged in whenever a user does log in.
 				const auto UserLoggedInHandler = UserSlots->GlobalUserSlotAuthenticatedCodeHandler.AddLambda(
-					[this, CurrHandle, Runtime, PossibleSlotHandles, Op]
+					[this, CurrHandle, Runtime, PieInstance, PossibleSlotHandles, Op]
 				(const FUserSlot&, const FBeamRealmUser&, const FBeamOperationHandle&, const UObject*)
 					{
 						// Check to see if ALL slots managed by this PIE instance are already logged in.
 						auto bAreAllSlotsInLoggedIn = true;
 						for (const auto& SlotHandle : PossibleSlotHandles)
 						{
+							// We only care about the users in this PIE instance.
+							if (SlotHandle.PIEIndex != PieInstance) continue;
+
 							FBeamRealmUser _;
 							bAreAllSlotsInLoggedIn &= UserSlots->GetUserDataAtSlot(SlotHandle.Slot, _, Runtime);
 						}
 
-						// If all slots in this instance are logged in, we are done and can complete the operation.
+						// If all slots in this instance are logged in, we are done and can complete the operation and remove this callback.
 						if (bAreAllSlotsInLoggedIn)
 						{
 							UserSlots->GlobalUserSlotAuthenticatedCodeHandler.Remove(UserSlotAuthenticatedHandles[CurrHandle]);
@@ -638,6 +875,13 @@ public:
 
 	void WaitUntilInitPIE(UObject* CallingContext, FBeamOperationHandle Op)
 	{
+		// When running outside of the editor, this is a no-op.
+#if !WITH_EDITOR
+		RequestTracker->TriggerOperationSuccess(Op, TEXT(""));
+		return;
+#endif
+
+		// When running in the editor/separate-process-PIE-instances... 
 		if (CallingContext)
 		{
 			if (const auto World = CallingContext->GetWorld())
@@ -645,25 +889,34 @@ public:
 				// If we don't have a selected setting, don't do anything.
 				const auto Setting = GetSelectedPIESettings();
 				if (!Setting)
+				{
+					RequestTracker->TriggerOperationSuccess(Op, TEXT(""));
 					return;
+				}
 
-				const auto WorldContext = GEngine->GetWorldContextFromWorld(World);
-				if (WorldContext && WorldContext->WorldType == EWorldType::PIE)
+				// Get the world context so that we can fill out the users we care about.
+				if (const auto WorldContext = GEngine->GetWorldContextFromWorld(World))
 				{
 					// Let's wait until the local cache has files in it in accordance to what is configured in the Settings.
 					TArray<FBeamPIE_UserSlotHandle> PossibleSlotHandles;
 					for (const auto& AssignedUser : Setting->AssignedUsers)
 					{
-						if (AssignedUser.Key.PIEIndex == GetPIEInstance(WorldContext) || WorldContext->RunAsDedicated)
+						if (AssignedUser.Key.PIEIndex == GetPIEInstance(WorldContext) || World->GetNetMode() < NM_Client)
 						{
 							PossibleSlotHandles.Add(AssignedUser.Key);
 						}
 					}
 
-					if (WorldContext->RunAsDedicated)
+					// If we are running a server...
+					if (World->GetNetMode() < NM_Client)
 					{
+						// ... but we shouldn't create a lobby --- just complete the operation cause the server is ready.
 						if (!Setting->FakeLobby.bShouldAutoCreateLobby)
+						{
 							RequestTracker->TriggerOperationSuccess(Op, TEXT(""));
+							return;
+						}
+
 
 						// TODO: Wait for Lobby to be set as "Ready"
 					}
@@ -683,5 +936,59 @@ public:
 				}
 			}
 		}
+	}
+
+
+	/**
+	 * Gets the currently selected setting (asserting its existence). 
+	 */
+	FBeamPIE_Settings const* GetSelectedPIESettings() const
+	{
+		// In the editor, this should never be null.
+#if WITH_EDITOR
+		ensureAlwaysMsgf(SelectedSettings, TEXT("This should never be null while in the editor."));
+#endif
+		return SelectedSettings;
+	}
+
+	/**
+	 * Based on the given MapName, we choose the selected setting. If no setting is selected for this map, this function returns the @link DefaultSettings @endlink. 
+	 */
+	static FBeamPIE_Settings const* ChooseSelectedPIESettings(FString MapName)
+	{
+#if !WITH_EDITOR
+		return nullptr;
+#endif
+
+		const auto Config = GetDefault<UBeamPIEConfig>();
+
+		if (Config->PerMapSelection.Contains(MapName))
+		{
+			const auto Id = GetDefault<UBeamPIEConfig>()->PerMapSelection[MapName];
+			return Config->AllSettings.FindByPredicate([Id](FBeamPIE_Settings& S) { return S.SettingsId == Id; });
+		}
+
+		// Guaranteed to exist from editor code.
+		return DefaultSettings();
+	}
+
+	/**
+	 * This will return either @link FWorldContext::PIEInstance @endlink or @link InstanceOverride @endlink based on whether we've
+	 * extracted from the CLArgs Unreal passes to separate-process-PIEs.
+	 */
+	int32 GetPIEInstance(FWorldContext* WorldContext) const
+	{
+		if (InstanceOverride != -1) return InstanceOverride;
+		return WorldContext->PIEInstance;
+	}
+
+
+	/**
+	 * Helper function for us to log things in this system with information about map and PIE instance.	  
+	 */
+	FString GetLogArgs(FString Header, FWorldContext* WorldContext)
+	{
+		const auto CurrMapName = UWorld::RemovePIEPrefix(WorldContext->World()->GetMapName());
+		return FString::Printf(TEXT("%s [Index: %d, Starting Map: %s, IsServer: %d] -"), *Header, GetPIEInstance(WorldContext), *CurrMapName, WorldContext->World()->GetNetMode() < NM_Client);
 	}
 };

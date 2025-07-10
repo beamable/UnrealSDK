@@ -22,7 +22,7 @@ FString UServiceStatusLibrary::ServiceStatusToJsonString(const UServiceStatus* S
 	return Result;
 }	
 
-UServiceStatus* UServiceStatusLibrary::Make(bool bIsCurrent, bool bRunning, FString ServiceName, FString ImageId, FOptionalArrayOfServiceDependencyReference ServiceDependencyReferences, UObject* Outer)
+UServiceStatus* UServiceStatusLibrary::Make(FOptionalBool bIsCurrent, FOptionalBool bRunning, FOptionalString ServiceName, FOptionalString ImageId, FOptionalArrayOfServiceDependencyReference ServiceDependencyReferences, UObject* Outer)
 {
 	auto Serializable = NewObject<UServiceStatus>(Outer);
 	Serializable->bIsCurrent = bIsCurrent;
@@ -34,7 +34,7 @@ UServiceStatus* UServiceStatusLibrary::Make(bool bIsCurrent, bool bRunning, FStr
 	return Serializable;
 }
 
-void UServiceStatusLibrary::Break(const UServiceStatus* Serializable, bool& bIsCurrent, bool& bRunning, FString& ServiceName, FString& ImageId, FOptionalArrayOfServiceDependencyReference& ServiceDependencyReferences)
+void UServiceStatusLibrary::Break(const UServiceStatus* Serializable, FOptionalBool& bIsCurrent, FOptionalBool& bRunning, FOptionalString& ServiceName, FOptionalString& ImageId, FOptionalArrayOfServiceDependencyReference& ServiceDependencyReferences)
 {
 	bIsCurrent = Serializable->bIsCurrent;
 	bRunning = Serializable->bRunning;
