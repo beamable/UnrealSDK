@@ -17,6 +17,7 @@ struct BEAMABLECORE_API FBeamPIE_UserSlotHandle
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FUserSlot Slot = FUserSlot{};
 
+
 	friend bool operator==(const FBeamPIE_UserSlotHandle& Lhs, const FBeamPIE_UserSlotHandle& RHS)
 	{
 		return Lhs.Slot == RHS.Slot && Lhs.PIEIndex == RHS.PIEIndex;

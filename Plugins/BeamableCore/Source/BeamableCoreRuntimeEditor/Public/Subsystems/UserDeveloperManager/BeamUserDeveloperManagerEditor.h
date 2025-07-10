@@ -98,7 +98,7 @@ public:
 	 * A utility that cast a soft object path to a UWorld Soft Pointer
 	 */
 	UFUNCTION(BlueprintPure)
-	void CastSoftReferenceToWorld(FSoftObjectPath SourcePointer, TSoftObjectPtr<UWorld>& CastedPointer)
+	static void CastSoftReferenceToWorld(FSoftObjectPath SourcePointer, TSoftObjectPtr<UWorld>& CastedPointer)
 	{
 		if (SourcePointer.IsValid())
 		{
@@ -106,6 +106,12 @@ public:
 
 			CastedPointer = variable;
 		}
+	}
+
+	UFUNCTION(BlueprintPure)
+	static bool ComparePIEUserSlotHandle(const FBeamPIE_UserSlotHandle& A, const FBeamPIE_UserSlotHandle& B)
+	{
+		return A == B;
 	}
 
 protected:
