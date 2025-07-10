@@ -637,7 +637,7 @@ public:
 				if (bAreAllUsersReady)
 				{
 					UE_LOG(LogBeamEditor, Log, TEXT("%s Server - Loaded data for All Assigned Users."), *GetLogArgs(TEXT("Beam PIE Prepare"), WorldContext));
-				
+
 					// // Then, we call the make magical lobby endpoint until it succeeds passing in these users.					
 					// const auto API = GEngine->GetEngineSubsystem<UBeamLobbyApi>();
 					// const auto ServerSlot = GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot();
@@ -703,7 +703,7 @@ public:
 			}), 0.2f);
 		}
 	}
-	
+
 	void PIEServerCreateLobbyHandler(FPutLobbiesFullResponse Resp, FWorldContext* WorldContext, UPutLobbiesRequest* Req, TArray<FBeamPIE_UserSlotHandle> PossibleSlotHandles, FBeamOperationHandle PrepareOp)
 	{
 		if (Resp.State == RS_Success)
@@ -982,6 +982,23 @@ public:
 		return WorldContext->PIEInstance;
 	}
 
+	/**
+	 * Get a mutable reference to the beam config for blueprint cache
+	 */
+	UFUNCTION(BlueprintCallable)
+	void GetMutableBeamConfig(UBeamPIEConfig*& BeamConfig)
+	{
+		BeamConfig = GetMutableDefault<UBeamPIEConfig>();
+	}
+
+	/**
+	 * Save a beam config passing a mutable reference
+	 */
+	UFUNCTION(BlueprintCallable)
+	void SaveMutableBeamConfig(UBeamPIEConfig* BeamConfig)
+	{
+		BeamConfig->Save();
+	}
 
 	/**
 	 * Helper function for us to log things in this system with information about map and PIE instance.	  

@@ -95,12 +95,17 @@ public:
 	void TriggerOnPreBeginPIE(ULevelEditorPlaySettings* PlaySettings, const FBeamPIE_Settings* Settings);
 
 	/**
-	 * Get the mutable reference to the PieSettings
+	 * A utility that cast a soft object path to a UWorld Soft Pointer
 	 */
-
-	void GetMutablePIESettings()
+	UFUNCTION(BlueprintPure)
+	void CastSoftReferenceToWorld(FSoftObjectPath SourcePointer, TSoftObjectPtr<UWorld>& CastedPointer)
 	{
-		
+		if (SourcePointer.IsValid())
+		{
+			TSoftObjectPtr<UWorld> variable(SourcePointer);
+
+			CastedPointer = variable;
+		}
 	}
 
 protected:
