@@ -10,6 +10,7 @@
 #include "BeamBackend/SemanticTypes/BeamContentManifestId.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalInt32.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalInt64.h"
 #include "BeamableCore/Public/AutoGen/GetManifestDiffsResponse.h"
 
 #include "GetManifestDiffsRequest.generated.h"
@@ -33,6 +34,10 @@ public:
 	FOptionalString ToUid = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Offset", Category="Beam")
 	FOptionalInt32 Offset = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="From Date", Category="Beam")
+	FOptionalInt64 FromDate = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="To Date", Category="Beam")
+	FOptionalInt64 ToDate = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Limit", Category="Beam")
 	FOptionalInt32 Limit = {};
 
@@ -46,8 +51,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Content|Utils|Make/Break", DisplayName="Make GetManifestDiffs",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_FromUid,_ToUid,_Offset,_Limit,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
-	static UGetManifestDiffsRequest* Make(FBeamContentManifestId _ManifestId, FOptionalString _FromUid, FOptionalString _ToUid, FOptionalInt32 _Offset, FOptionalInt32 _Limit, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Content|Utils|Make/Break", DisplayName="Make GetManifestDiffs",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_FromUid,_ToUid,_Offset,_FromDate,_ToDate,_Limit,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	static UGetManifestDiffsRequest* Make(FBeamContentManifestId _ManifestId, FOptionalString _FromUid, FOptionalString _ToUid, FOptionalInt32 _Offset, FOptionalInt64 _FromDate, FOptionalInt64 _ToDate, FOptionalInt32 _Limit, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

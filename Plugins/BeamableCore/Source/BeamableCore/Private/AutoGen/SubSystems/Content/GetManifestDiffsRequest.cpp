@@ -36,6 +36,18 @@ void UGetManifestDiffsRequest::BuildRoute(FString& RouteString) const
 		bIsFirstQueryParam = false;
 	}
 
+	if(FromDate.IsSet){
+		bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
+		QueryParams.Appendf(TEXT("%s=%s"), TEXT("fromDate"), *FString::FromInt(FromDate.Val));
+		bIsFirstQueryParam = false;
+	}
+
+	if(ToDate.IsSet){
+		bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
+		QueryParams.Appendf(TEXT("%s=%s"), TEXT("toDate"), *FString::FromInt(ToDate.Val));
+		bIsFirstQueryParam = false;
+	}
+
 	if(Limit.IsSet){
 		bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
 		QueryParams.Appendf(TEXT("%s=%s"), TEXT("limit"), *FString::FromInt(Limit.Val));
@@ -50,7 +62,7 @@ void UGetManifestDiffsRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetManifestDiffsRequest* UGetManifestDiffsRequest::Make(FBeamContentManifestId _ManifestId, FOptionalString _FromUid, FOptionalString _ToUid, FOptionalInt32 _Offset, FOptionalInt32 _Limit, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
+UGetManifestDiffsRequest* UGetManifestDiffsRequest::Make(FBeamContentManifestId _ManifestId, FOptionalString _FromUid, FOptionalString _ToUid, FOptionalInt32 _Offset, FOptionalInt64 _FromDate, FOptionalInt64 _ToDate, FOptionalInt32 _Limit, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UGetManifestDiffsRequest* Req = NewObject<UGetManifestDiffsRequest>(RequestOwner);
 	Req->CustomHeaders = TMap{CustomHeaders};
@@ -60,6 +72,8 @@ UGetManifestDiffsRequest* UGetManifestDiffsRequest::Make(FBeamContentManifestId 
 	Req->FromUid = _FromUid;
 	Req->ToUid = _ToUid;
 	Req->Offset = _Offset;
+	Req->FromDate = _FromDate;
+	Req->ToDate = _ToDate;
 	Req->Limit = _Limit;
 	
 	

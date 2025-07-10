@@ -256,7 +256,7 @@ bool UBeamEditor::GetActiveProjectAndRealmData(FBeamCustomerProjectData& Project
 	{
 		for (const auto& R : CurrentProjectData.AllRealms)
 		{
-			if (R.PID.AsString == MainEditorDeveloper.RealmHandle.Pid.AsString)
+			if (R.PID.AsString == GetDefault<UBeamCoreSettings>()->TargetRealm.Pid.AsString)
 			{
 				RealmData = R;
 				return true;
@@ -597,6 +597,14 @@ void UBeamEditor::SelectRealm_OnReadyForChange(FBeamWaitCompleteEvent, FBeamReal
 			const auto MainEditorSlot = GetMainEditorSlot(UserData);
 			UserSlots->SetPIDAtSlot(MainEditorSlot, NewRealmHandle.Pid, this);
 			SetActiveTargetRealmUnsafe(NewRealmHandle);
+
+			// Sets the realm secret
+			FBeamCustomerProjectData _;
+			FBeamProjectRealmData RealmData;
+			if (GetActiveProjectAndRealmData(_,RealmData))
+			{
+				GEngine->GetEngineSubsystem<UBeamBackend>()->RealmSecret = RealmData.RealmSecret;
+			} 
 
 			// Using the new Post endpoint that allows for Upsert to ensure that all Unreal games are using our custom notification pipeline instead of our legacy PubNub stuff.
 			const auto UpdateConfigReq = UPostConfigRequest::Make(FOptionalArrayOfString{}, FOptionalMapOfString{{{TEXT("notification|publisher"), TEXT("beamable")}}}, GetTransientPackage(), {});

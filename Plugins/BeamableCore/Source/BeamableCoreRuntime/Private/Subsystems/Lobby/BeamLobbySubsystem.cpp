@@ -1543,6 +1543,10 @@ FBeamRequestContext UBeamLobbySubsystem::RequestPostServer(const FUserSlot& User
 
 void UBeamLobbySubsystem::OnLobbyUpdatedHandler(FLobbyUpdateNotificationMessage Msg, FUserSlot Slot)
 {
+	UE_LOG(LogBeamLobby, Verbose, TEXT("Received lobby notification. TYPE=%s, LOBBY_ID=%s, USER_SLOT=%s"),
+	       *StaticEnum<EBeamLobbyEvent>()->GetNameStringByValue(static_cast<int64>(Msg.Type)),
+	       *Msg.LobbyId.ToString(EGuidFormats::DigitsWithHyphensLower), *Slot.Name);
+
 	if (Msg.Type == EBeamLobbyEvent::BEAM_LobbyDisbanded)
 	{
 		if (UBeamLobbyState** Info = LocalPlayerLobbyInfo.Find(Slot))

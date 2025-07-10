@@ -458,9 +458,8 @@ public:
 	/**
 	 * @brief Function that replaces UBeamBackend::DefaultExecuteRequestImpl when running in PIE mode.
 	 * 
-	 */
-	UFUNCTION()
-	void PIEExecuteRequestImpl(int64 ActiveRequestId);
+	 */	
+	static void PIEExecuteRequestImpl(int64 ActiveRequestId, const UObject* CallingContext);
 
 	/** @brief an enum that represents the state of the sdk if it is currently initialized and ready to be used or not */
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, DisplayName="SDK State")

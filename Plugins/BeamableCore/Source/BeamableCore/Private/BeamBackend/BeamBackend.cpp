@@ -22,9 +22,12 @@ const FString UBeamBackend::HEADER_AUTHORIZATION = FString(TEXT("Authorization")
 const FString UBeamBackend::HEADER_VALUE_AUTHORIZATION = FString(TEXT("Bearer {0}"));
 const FString UBeamBackend::HEADER_REQUEST_SCOPE = FString(TEXT("X-BEAM-SCOPE"));
 const FString UBeamBackend::HEADER_ROUTING_KEY_MAP = FString(TEXT("X-BEAM-SERVICE-ROUTING-KEY"));
-const FString UBeamBackend::HEADER_CLIENT_ID = FString(TEXT("X-BEAM-CID"));
-const FString UBeamBackend::HEADER_PROJECT_ID = FString(TEXT("X-BEAM-PID"));
+const FString UBeamBackend::HEADER_CLIENT_ID = FString(TEXT("X-KS-CLIENTID"));
+const FString UBeamBackend::HEADER_PROJECT_ID = FString(TEXT("X-KS-PROJECTID"));
 const FString UBeamBackend::HEADER_GAMERTAG = FString(TEXT("X-BEAM-GAMERTAG"));
+const FString UBeamBackend::HEADER_SIGNATURE = FString(TEXT("X-BEAM-SIGNATURE"));
+const FString UBeamBackend::HEADER_TIMEOUT = FString(TEXT("X-BEAM-TIMEOUT"));
+
 
 const FString UBeamBackend::HEADER_BEAMABLE_VERSION = FString(TEXT("X-BEAM-SDK-VERSION"));
 const FString UBeamBackend::HEADER_UNREAL_VERSION = FString(TEXT("X-BEAM-USER-AGENT-VERSION"));
@@ -177,14 +180,10 @@ TUnrealRequestPtr UBeamBackend::CreateUnpreparedRequest(int64& OutRequestId, con
 	// the value should not be lower than 10_000
 	if (timeoutInMilliseconds >= 10000)
 	{
-		Req->SetHeader(FString(TEXT("X-BEAM-TIMEOUT")), FString::Printf(TEXT("%lld"), timeoutInMilliseconds));
+		Req->SetHeader(FString(HEADER_TIMEOUT), FString::Printf(TEXT("%lld"), timeoutInMilliseconds));
 	}
 
 	UE_LOG(LogBeamBackend, Verbose, TEXT("Request Preparation: TIMEOUT_HEADER=%lld"), RetryConfig.Timeout);
-
-	// So we know this request comes from Unreal or an UnrealServer (dedicated server builds).
-	if (IsRunningDedicatedServer()) Req->SetHeader(TEXT("X-KS-USER-AGENT"), FString::Printf(TEXT("UnrealServer-%s"), *UGameplayStatics::GetPlatformName()));
-	else Req->SetHeader(TEXT("X-KS-USER-AGENT"), FString::Printf(TEXT("Unreal-%s"), *UGameplayStatics::GetPlatformName()));
 
 	// Prepares the Backend system to handle this request.
 	InFlightRequests.Add(OutRequestId, Req);
@@ -230,12 +229,14 @@ void UBeamBackend::PrepareBeamableRequestToRealm(const TUnrealRequestPtr& Unreal
 
 	// Checking if it's running in a packing build or in the editor.
 	if (FApp::IsGame())
-	{
-		UnrealRequest->SetHeader(HEADER_ENGINE_TYPE, "Unreal");
+	{		
+		// So we know this request comes from Unreal or an UnrealServer (dedicated server builds).
+		if (IsRunningDedicatedServer()) UnrealRequest->SetHeader(HEADER_ENGINE_TYPE, FString::Printf(TEXT("UnrealServer-%s"), *UGameplayStatics::GetPlatformName()));
+		else UnrealRequest->SetHeader(HEADER_ENGINE_TYPE, FString::Printf(TEXT("Unreal-%s"), *UGameplayStatics::GetPlatformName()));
 	}
 	else
 	{
-		UnrealRequest->SetHeader(HEADER_ENGINE_TYPE, "UnrealEditor");
+		UnrealRequest->SetHeader(HEADER_ENGINE_TYPE, FString::Printf(TEXT("UnrealEditor-%s"), *UGameplayStatics::GetPlatformName()));
 	}
 
 	UnrealRequest->SetHeader(HEADER_BEAMABLE_VERSION, BeamEnvironment->Data->Version.ToString());
@@ -345,9 +346,9 @@ bool UBeamBackend::HandlePIESessionRequestGuard(TUnrealRequestPtr Request, int64
 	return false;
 }
 
-void UBeamBackend::DefaultExecuteRequestImpl(int64 ActiveRequestId)
+void UBeamBackend::DefaultExecuteRequestImpl(int64 ActiveRequestId, const UObject* CallingContext)
 {
-	UE_LOG(LogBeamBackend, Display, TEXT("Sending Request via Unreal HttpRequest's ProcessRequest. REQUEST_ID=%llu"),
+	UE_LOG(LogBeamBackend, Verbose, TEXT("Sending Request via Unreal HttpRequest's ProcessRequest. REQUEST_ID=%llu"),
 	       ActiveRequestId);
 	if (InFlightRequests[ActiveRequestId]->ProcessRequest())
 	{
@@ -712,7 +713,7 @@ bool UBeamBackend::ExtractDataFromResponse(const FHttpRequestPtr Request, const 
 */
 
 
-void UBeamBackend::DedicatedServerExecuteRequestImpl(int64 ActiveRequestId)
+void UBeamBackend::DedicatedServerExecuteRequestImpl(int64 ActiveRequestId, const UObject* CallingContext)
 {
 	UE_LOG(LogBeamBackend, Verbose,
 	       TEXT("Sending Signed Request via Unreal HttpRequest's ProcessRequest . REQUEST_ID=%llu"), ActiveRequestId);
@@ -744,12 +745,12 @@ void UBeamBackend::DedicatedServerExecuteRequestImpl(int64 ActiveRequestId)
 
 	// Encode it into a Base64 string and set it as the signature header.
 	const auto Signature = FBase64::Encode(Digest, 16);
-	HttpRequest->SetHeader(TEXT("X-BEAM-SIGNATURE"), Signature);
+	HttpRequest->SetHeader(HEADER_SIGNATURE, Signature);
 
 	UE_LOG(LogBeamBackend, Verbose, TEXT(
 		       "Sending Signed Request via Unreal HttpRequest's ProcessRequest."
-		       " REQUEST_ID=%llu, PID=%s, URL=%s, BODY=%s, REALM_SECRET=%s, SIG_PARTS=%s, SIGNATURE=%s"
-	       ), ActiveRequestId, *Pid, *Url, *Body, *Secret, *SigPartsUTF16, *Signature)
+		       " REQUEST_ID=%llu, SCOPE=%s, PID=%s, URL=%s, BODY=%s, REALM_SECRET=%s, SIG_PARTS=%s, SIGNATURE=%s"
+	       ), ActiveRequestId, *HttpRequest->GetHeader(HEADER_REQUEST_SCOPE), *Pid, *Url, *Body, *Secret, *SigPartsUTF16, *Signature)
 
 	if (HttpRequest->ProcessRequest())
 	{

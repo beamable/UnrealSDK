@@ -43,7 +43,7 @@ void UBeamBeamballMsApi::BP_CreateMatchResultImpl(const FBeamRealmHandle& Target
 		const auto BeamRequestProcessor = Backend->MakeBlueprintRequestProcessor<UBeamballMsCreateMatchResultRequest, UBeamPlainTextResponseBody, FOnBeamballMsCreateMatchResultSuccess, FOnBeamballMsCreateMatchResultError, FOnBeamballMsCreateMatchResultComplete>
 			(OutRequestId, RequestData, OnSuccess, OnError, OnComplete);
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
-		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId);		
+		Backend->SendPreparedRequest(OutRequestId, CallingContext);		
 	}	
 }
 
@@ -73,7 +73,7 @@ void UBeamBeamballMsApi::CPP_CreateMatchResultImpl(const FBeamRealmHandle& Targe
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
-		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId);	
+		Backend->SendPreparedRequest(OutRequestId, CallingContext);	
 	}
 }
 

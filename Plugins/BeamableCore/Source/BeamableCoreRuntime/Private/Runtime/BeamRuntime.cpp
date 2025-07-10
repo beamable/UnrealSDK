@@ -264,9 +264,7 @@ void UBeamRuntime::Initialize(FSubsystemCollectionBase& Collection)
 	if (EngineSubsystem->IsInPIE())
 	{
 		// When running as a dedicated server instance, swap out the execute request delegate
-		const FName ExecuteRequestImpl = GET_FUNCTION_NAME_CHECKED(UBeamRuntime, PIEExecuteRequestImpl);
-
-		EngineSubsystem->ExecuteRequestDelegate.BindUFunction(this, ExecuteRequestImpl);
+		EngineSubsystem->ExecuteRequestDelegate.BindStatic(&UBeamRuntime::PIEExecuteRequestImpl);
 		UE_LOG(LogBeamRuntime, Verbose, TEXT("Initializing UBeamRuntime Subsystem - FROM PIE INSTANCE %d!"), GetGameInstance()->GetWorldContext()->PIEInstance);
 	}
 	else
@@ -386,19 +384,15 @@ void UBeamRuntime::Deinitialize()
 	CurrentSdkState = ESDKState::NotInitialized;
 }
 
-void UBeamRuntime::PIEExecuteRequestImpl(int64 ActiveRequestId)
+void UBeamRuntime::PIEExecuteRequestImpl(int64 ActiveRequestId, const UObject* CallingContext)
 {
-	UBeamBackend* BeamBackend = GEngine->GetEngineSubsystem<UBeamBackend>();
-
-	// TODO: We'll need to change the code-gen to be able to detect whether or not the request is actually coming from the PIE session.
-	// TODO: Basically, we need to have one delegate for build and another for editor. And the Beam___API classes need to not care about this other than forwarding the calling context to a function of BeamBackend.
-	// TODO: That function should decide which to use based on who is making the request ('Runtime' source PIE/Build or 'Editor' source).
+	UBeamBackend* BeamBackend = GEngine->GetEngineSubsystem<UBeamBackend>();	
 	const TUnrealRequestPtr Req = BeamBackend->InFlightRequests.FindRef(ActiveRequestId);
 	BeamBackend->InFlightPIERequests.Add(Req);
 
-	GetGameInstance()->IsDedicatedServerInstance()
-		? BeamBackend->DedicatedServerExecuteRequestImpl(ActiveRequestId)
-		: BeamBackend->DefaultExecuteRequestImpl(ActiveRequestId);
+	CallingContext->GetWorld()->GetGameInstance()->IsDedicatedServerInstance()
+		? BeamBackend->DedicatedServerExecuteRequestImpl(ActiveRequestId, CallingContext)
+		: BeamBackend->DefaultExecuteRequestImpl(ActiveRequestId, CallingContext);
 }
 
 // On Start Flow
@@ -537,18 +531,22 @@ void UBeamRuntime::TriggerOnBeamableStarting(FBeamWaitCompleteEvent Evt, bool bA
 		FString RealmSecret;
 		if (!FParse::Value(FCommandLine::Get(), TEXT("beamable-realm-secret="), RealmSecret))
 		{
-			RealmSecret = FPlatformMisc::GetEnvironmentVariable(TEXT("BEAMABLE_REALM_SECRET"));
-			if (!GIsEditor)
-			{
-				checkf(!RealmSecret.IsEmpty(), TEXT("To run a dedicated server that communicates with Beamable, either:\n"
-					       "- Start it with the command line \'-beamable-realm-secret <realm_secret>\'\n"
-					       "- Start it in an environment with the EnvVar \'BEAMABLE_REALM_SECRET\' set to your realm secret.\n"
-					       "To find your realm secret for your realms, look into your Project Settings => Editor => Beamable Editor => PerSlotDeveloperProjectData => All Realms\n"
-					       "Remember to set this command line argument in your Networking settings for playmode in Editor Settings => Level Editor => Play => Multiplayer Options => Server => Additional Server Launch Parameters."
-				       ))
-			}
+			RealmSecret = FPlatformMisc::GetEnvironmentVariable(TEXT("BEAMABLE_REALM_SECRET"));			
 		}
-		GEngine->GetEngineSubsystem<UBeamBackend>()->RealmSecret = RealmSecret;
+
+		// Set the realm secret outside of the editor
+		// In the editor, this is set by the UBeamEditor subsystem whenever you change realms. 
+		if (!GIsEditor)
+		{
+			checkf(!RealmSecret.IsEmpty(), TEXT("To run a dedicated server that communicates with Beamable, either:\n"
+					   "- Start it with the command line \'-beamable-realm-secret <realm_secret>\'\n"
+					   "- Start it in an environment with the EnvVar \'BEAMABLE_REALM_SECRET\' set to your realm secret.\n"
+					   "To find your realm secret for your realms, look into your Project Settings => Editor => Beamable Editor => PerSlotDeveloperProjectData => All Realms\n"
+					   "Remember to set this command line argument in your Networking settings for playmode in Editor Settings => Level Editor => Play => Multiplayer Options => Server => Additional Server Launch Parameters."
+				   ))
+			
+			GEngine->GetEngineSubsystem<UBeamBackend>()->RealmSecret = RealmSecret;			
+		}		
 	}
 
 	if (const UWorld* World = GetWorld())

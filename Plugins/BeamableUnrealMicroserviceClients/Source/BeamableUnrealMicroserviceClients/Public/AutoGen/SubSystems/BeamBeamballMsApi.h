@@ -21,7 +21,7 @@ class BEAMABLEUNREALMICROSERVICECLIENTS_API UBeamBeamballMsApi : public UBeamMic
 {
 private:
 	GENERATED_BODY()
-	/** @brief Initializes the auto-increment Id and binds the ExecuteRequestDelegate to DefaultExecuteRequestImpl  */
+	/** @brief Initializes the auto-increment Id */
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 
 	/** Cleans up the system.  */

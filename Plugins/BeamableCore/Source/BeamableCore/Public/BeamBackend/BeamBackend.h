@@ -115,7 +115,7 @@ struct FProcessingRequestRetry
 };
 
 
-DECLARE_DELEGATE_OneParam(FBeamMakeRequestDelegate, int64 /*ActiveRequestId*/);
+DECLARE_DELEGATE_TwoParams(FBeamMakeRequestDelegate, int64 /*ActiveRequestId*/, const UObject* /* CallingContext */);
 
 DECLARE_DELEGATE_TwoParams(FGlobalRequestErrorCodeHandler, const FBeamRequestContext&, const FBeamErrorResponse&);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FGlobalRequestErrorHandler, const FBeamRequestContext&, RequestContext,
@@ -230,6 +230,9 @@ public:
 	static const FString HEADER_PROJECT_ID;
 	static const FString HEADER_ROUTING_KEY_MAP;
 	static const FString HEADER_GAMERTAG;
+	static const FString HEADER_SIGNATURE;
+	static const FString HEADER_TIMEOUT;
+	
 
 	static const FString HEADER_BEAMABLE_VERSION;
 	static const FString HEADER_UNREAL_VERSION;
@@ -282,6 +285,10 @@ public:
 					|_|                                             |_|                         	                                                                               
 	*/
 
+	/**
+	 * @brief Function called by the auto-generated API to send over a request. 
+	 */
+	void SendPreparedRequest(int64 ActiveRequest, const UObject* CallingContext) const { ExecuteRequestDelegate.ExecuteIfBound(ActiveRequest, CallingContext); }
 
 	/**
 	 * @brief A delegate wrapper so we can easily replace the code that sends the request by assertions over the request data. 
@@ -401,7 +408,7 @@ public:
 	 *  
 	 */
 	UFUNCTION()
-	void DefaultExecuteRequestImpl(int64 ActiveRequestId);
+	void DefaultExecuteRequestImpl(int64 ActiveRequestId, const UObject* CallingContext);
 
 	/**
 	 * Takes in a fully formed URL from a TUnrealRequest (ie: https://dev.api.beamable.com/object/stats/game.public.player.1595037680985091/) and generates the correct form of it for the signature.
@@ -1860,8 +1867,8 @@ public:
 	 * @brief Used as delegate set in ExecuteRequestDelegate when running as a dedicated server. 
 	 */
 	UFUNCTION()
-	void DedicatedServerExecuteRequestImpl(int64 ActiveRequestId);
-	
+	void DedicatedServerExecuteRequestImpl(int64 ActiveRequestId, const UObject* CallingContext);
+
 	/**
 	 * Overrides the @link HEADER_AUTHORIZATION @endlink for the given request.
 	 */
@@ -1886,8 +1893,7 @@ public:
 					  |___/                           |___/ 
 
 	 */
-public:	
-
+public:
 	/**
 	* @brief Retry configuration data. Can be overriden at the request level. 
 	*/

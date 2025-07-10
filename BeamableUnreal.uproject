@@ -62,11 +62,11 @@
     },
     {
       "Name":"BEAMPROJ_HathoraDemo",
-      "Enabled":true
+      "Enabled":false
     },
     {
       "Name":"BEAMPROJ_LiveOpsDemo",
-      "Enabled":true
+      "Enabled":false
     },
     {
       "Name":"BEAMPROJ_DiscordDemo",
@@ -74,7 +74,7 @@
     },
     {
       "Name":"BEAMPROJ_Beamball",
-      "Enabled":false
+      "Enabled":true
     },
     {
       "Name":"OpenImageDenoise",
