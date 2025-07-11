@@ -117,7 +117,7 @@ void UBeamUserDeveloperManagerEditor::TriggerOnPreBeginPIE(ULevelEditorPlaySetti
 	{
 		// Clear the saved users from the previous session
 		BeamUserSlots->ClearAllCachedUserDataAtNamespacedSlot(BeamUserSlots->GetNamespacedSlotId(AssignedUserKeyPair.Key.Slot, AssignedUserKeyPair.Key.PIEIndex));
-		
+
 		// Count the numbers of each template
 		auto UserSlotHandle = AssignedUserKeyPair.Key;
 		if (FBeamGamerTag GamerTag = AssignedUserKeyPair.Value; TemplateAmount.Contains(GamerTag))
@@ -156,7 +156,7 @@ void UBeamUserDeveloperManagerEditor::TriggerOnPreBeginPIE(ULevelEditorPlaySetti
 		for (auto AssignedUserKeyPair : Settings->AssignedUsers)
 		{
 			auto CreatedUser = CreatedUserMap[AssignedUserKeyPair.Value.AsLong][0];
-
+			
 			BeamUserSlots->SaveSlot(AssignedUserKeyPair.Key.Slot, AssignedUserKeyPair.Key.PIEIndex,
 			                        CreatedUser->GamerTag,
 			                        CreatedUser->AccessToken,
@@ -171,10 +171,29 @@ void UBeamUserDeveloperManagerEditor::TriggerOnPreBeginPIE(ULevelEditorPlaySetti
 	};
 	CreateUserBatchCommand->OnCompleted = [this, Handler](const int& ResCode, const FBeamOperationHandle&)
 	{
-		if (ResCode != 0)
+		if (ResCode == CLI_ERROR_BACKEND)
 		{
-			RequestTracker->TriggerOperationError(Handler, TEXT(""));
+			UE_LOG(LogTemp, Error, TEXT("CREATE BATCH CLI COMMAND: CLI_ERROR_BACKEND %d"), ResCode);
+			RequestTracker->TriggerOperationError(Handler, TEXT("CLI_ERROR_BACKEND"));
 		}
+		else if (ResCode == CLI_ERROR_UNKNOWN_BACKEND)
+		{
+			UE_LOG(LogTemp, Error, TEXT("CREATE BATCH CLI COMMAND: CLI_ERROR_UNKNOWN_BACKEND %d"), ResCode);
+			RequestTracker->TriggerOperationError(Handler, TEXT("CLI_ERROR_UNKNOWN_BACKEND"));
+		}
+		else if (ResCode == CLI_ERROR_SAVE_FILE)
+		{
+			UE_LOG(LogTemp, Error, TEXT("CREATE BATCH CLI COMMAND: CLI_ERROR_SAVE_FILE %d"), ResCode);
+			RequestTracker->TriggerOperationError(Handler, TEXT("CLI_ERROR_SAVE_FILE"));
+		}else if (ResCode != 0)
+		{
+			// Unknown error
+			RequestTracker->TriggerOperationError(Handler, TEXT(""));
+		}else
+		{
+			RequestTracker->TriggerOperationSuccess(Handler, TEXT(""));
+		}
+		
 	};
 
 	TArray<FString> GamerTags;

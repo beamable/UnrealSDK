@@ -31,6 +31,10 @@ class BEAMABLECORERUNTIMEEDITOR_API UBeamUserDeveloperManagerEditor : public UBe
 	static constexpr int32 EVT_TYPE_FullRebuild = 0;
 	static constexpr int32 EVT_TYPE_ChangedUserInfo = 1;
 
+	static constexpr int32 CLI_ERROR_BACKEND = 400;
+	static constexpr int32 CLI_ERROR_UNKNOWN_BACKEND = 500;
+	static constexpr int32 CLI_ERROR_SAVE_FILE = 300;
+
 	GENERATED_BODY()
 
 

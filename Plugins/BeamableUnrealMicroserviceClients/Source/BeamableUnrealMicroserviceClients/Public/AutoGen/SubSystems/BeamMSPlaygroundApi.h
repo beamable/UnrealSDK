@@ -1,5 +1,3 @@
-
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -8,7 +6,6 @@
 #include "RequestTracker/BeamRequestTracker.h"
 
 #include "BeamableUnrealMicroserviceClients/Public/AutoGen/SubSystems/MSPlayground/MSPlaygroundAddRequest.h"
-#include "BeamableUnrealMicroserviceClients/Public/AutoGen/SubSystems/MSPlayground/MSPlaygroundTestNotificationRequest.h"
 #include "BeamBackend/BeamMicroserviceClientSubsystem.h"
 
 #include "BeamMSPlaygroundApi.generated.h"
@@ -37,30 +34,25 @@ private:
 	UPROPERTY()
 	UBeamResponseCache* ResponseCache;
 
-	
 
-	
 	/**
 	 * @brief Private implementation for requests that require authentication that all overloaded BP UFunctions call.	  
 	 */
 	void BP_AddImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, UMSPlaygroundAddRequest* RequestData,
-	                  const FOnMSPlaygroundAddSuccess& OnSuccess, const FOnMSPlaygroundAddError& OnError, const FOnMSPlaygroundAddComplete& OnComplete, 
-					  int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
+	                const FOnMSPlaygroundAddSuccess& OnSuccess, const FOnMSPlaygroundAddError& OnError, const FOnMSPlaygroundAddComplete& OnComplete,
+	                int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 	/**
 	 * @brief Overload version for binding lambdas when in C++ land. Prefer the BP version whenever possible, this is here mostly for quick experimentation purposes.	 
 	 */
 	void CPP_AddImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, UMSPlaygroundAddRequest* RequestData,
-	                   const FOnMSPlaygroundAddFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
+	                 const FOnMSPlaygroundAddFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 
 public:
-	
 	/** Used by a helper blueprint node so that you can easily chain requests in BP-land. */
 	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly)
 	static UBeamMSPlaygroundApi* GetSelf() { return GEngine->GetEngineSubsystem<UBeamMSPlaygroundApi>(); }
 
-	
 
-	
 	/**
 	 * @brief Makes an authenticated request to the Post /Add endpoint of the MSPlayground Service.
 	 *
@@ -74,10 +66,10 @@ public:
 	 * @param OpHandle When made as part of an Operation, you can pass this in and it'll register the request with the operation automatically.
 	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches. 
 	 */
-	void CPP_Add(const FUserSlot& UserSlot, UMSPlaygroundAddRequest* Request, const FOnMSPlaygroundAddFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
-	
+	void CPP_Add(const FUserSlot& UserSlot, UMSPlaygroundAddRequest* Request, const FOnMSPlaygroundAddFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(),
+	             const UObject* CallingContext = nullptr) const;
 
-	
+
 	/**
 	 * @brief Makes an authenticated request to the Post /Add endpoint of the MSPlayground Service.
 	 *
@@ -89,7 +81,8 @@ public:
 	 * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight.
 	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches.
 	 */
-	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|MSPlayground|Utils|Make/Break", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="OpHandle,CallingContext",AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete,OpHandle", BeamFlowFunction))
-	void Add(FUserSlot UserSlot, UMSPlaygroundAddRequest* Request, const FOnMSPlaygroundAddSuccess& OnSuccess, const FOnMSPlaygroundAddError& OnError, const FOnMSPlaygroundAddComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr);
-
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|MSPlayground|Utils|Make/Break",
+		meta=(DefaultToSelf="CallingContext", AdvancedDisplay="OpHandle,CallingContext", AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete,OpHandle", BeamFlowFunction))
+	void Add(FUserSlot UserSlot, UMSPlaygroundAddRequest* Request, const FOnMSPlaygroundAddSuccess& OnSuccess, const FOnMSPlaygroundAddError& OnError, const FOnMSPlaygroundAddComplete& OnComplete,
+	         FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr);
 };
