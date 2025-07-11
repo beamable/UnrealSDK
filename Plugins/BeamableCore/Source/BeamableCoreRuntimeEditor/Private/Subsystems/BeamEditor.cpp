@@ -167,6 +167,25 @@ void UBeamEditorBootstrapper::Run_DelayedInitialize()
 	{
 		EditorSettings->SaveConfig(CPF_Config, *EditorSettings->GetDefaultConfigFilename());
 	}
+
+	// Ensure a DefaultBeamPIE.ini exists (otherwise the one in saved will not work)
+	auto PIESettings = GetMutableDefault<UBeamPIEConfig>();
+	const auto PIESettingsPath = PIESettings->GetDefaultConfigFilename();
+	if (!IFileManager::Get().FileExists(*PIESettingsPath))
+	{
+		// We have to create an empty "DefaultBeamPIE.ini" with the section for the BeamableCore.BeamPIEConfig object.
+		// If we don't have the "Default____.ini" file, UE's config system will not correctly apply the diffs stored in the Saved/Config directory.
+		// So we make sure one of these exist.		
+		const auto bResult = FFileHelper::SaveStringToFile(FString(TEXT("[/Script/BeamableCore.BeamPIEConfig]")), *PIESettingsPath);
+		UE_LOG(LogBeamEditor, Display, TEXT("Created default BeamPIE config at %s. RES=%d"), *PIESettingsPath, bResult);
+		
+		// Then, we get the path to the `BeamPIE.ini` file in the Saved directory and load it, if it already exists. 
+		FString SavedConfigPath = FPaths::ConvertRelativePathToFull(FPaths::Combine(FPaths::ProjectSavedDir(), TEXT("Config"), FPlatformProperties::PlatformName(), TEXT("BeamPIE.ini")));
+		GConfig->LoadFile(SavedConfigPath);
+
+		// Finally, we reload the config.
+		PIESettings->LoadConfig();		
+	}
 	
 	const auto Subsystems = GEditor->GetEditorSubsystemArrayCopy<UBeamEditorSubsystem>();
 	BeamEditor->InitializeAfterEditorReadyOps.Reset(Subsystems.Num());
