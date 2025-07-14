@@ -644,10 +644,10 @@ public:
 
 		return static_cast<TEnum>(Enum->GetValueByIndex(Value));
 	}
-
 	template <typename TSerializationType>
 	static void DeserializeSemanticType(const TSharedPtr<FJsonValue>& JsonField, FBeamSemanticType& ToDeserialize, TWeakObjectPtr<UObject> OuterOwner = (UObject*)GetTransientPackage())
 	{
+			
 		const auto SemanticTypeName = FString(TNameOf<TSerializationType>::GetName());
 		if constexpr (TIsPointer<TSerializationType>::Value)
 		{
@@ -720,6 +720,13 @@ public:
 			const bool Parsed = Val.Equals(TEXT("true"), ESearchCase::IgnoreCase);
 			FBeamSemanticType::Set(&ToDeserialize, &Parsed, SemanticTypeName);
 		}
+	}
+	template <typename TSerializationType>
+	static void DeserializeSemanticType(const FString& Identifier, const TSharedPtr<FJsonObject>& OwnerBag, FBeamSemanticType& ToDeserialize, TWeakObjectPtr<UObject> OuterOwner = (UObject*)GetTransientPackage())
+	{
+		const TSharedPtr<FJsonValue>& JsonField = OwnerBag->TryGetField(Identifier);
+
+		DeserializeSemanticType<TSerializationType>(JsonField, ToDeserialize, OuterOwner);
 	}
 
 	template <typename TDataType>
@@ -1064,7 +1071,7 @@ public:
 				else if constexpr (TIsDerivedFrom<TOptionalType, FBeamSemanticType>::Value)
 				{
 					TOptionalType val;
-					DeserializeSemanticType<TDataType>(JsonField, val);
+					DeserializeSemanticType<TDataType>(Identifier, OwnerBag, val);
 					FBeamOptional::Set(&ToDeserialize, &val);
 				}
 				else if constexpr (TIsDerivedFrom<TOptionalType, FBeamMap>::Value)
@@ -1144,10 +1151,10 @@ public:
 			}
 		}
 	}
-
 	template <typename TDataType, typename TSemanticTypeRepresentation = TDataType>
-	static void DeserializeArray(const TArray<TSharedPtr<FJsonValue>>& JsonArray, TArray<TDataType>& Array, TWeakObjectPtr<UObject> OwnerOuter = (UObject*)GetTransientPackage())
+		static void DeserializeArray(const TArray<TSharedPtr<FJsonValue>>& JsonArray, TArray<TDataType>& Array, TWeakObjectPtr<UObject> OwnerOuter = (UObject*)GetTransientPackage())
 	{
+		
 		for (const TSharedPtr<FJsonValue>& JsonValue : JsonArray)
 		{
 			if constexpr (std::is_same_v<TDataType, FString>)
@@ -1254,10 +1261,18 @@ public:
 			}
 		}
 	}
+	template <typename TDataType, typename TSemanticTypeRepresentation = TDataType>
+	static void DeserializeArray(const FString& Identifier, const TSharedPtr<FJsonObject>& OwnerBag, TArray<TDataType>& Array, TWeakObjectPtr<UObject> OwnerOuter = (UObject*)GetTransientPackage())
+	{
+		const TArray<TSharedPtr<FJsonValue>>& JsonArray = OwnerBag->GetArrayField(Identifier);
+
+		DeserializeArray(JsonArray, Array, OwnerOuter);
+	}
 
 	template <typename TMapType, typename TDataType = TMapType, typename TSemanticTypeRepresentation = TDataType>
-	static void DeserializeMap(const TSharedPtr<FJsonObject>& JsonMap, TMap<FString, TMapType>& Map, TWeakObjectPtr<UObject> OwnerOuter = (UObject*)GetTransientPackage())
+		static void DeserializeMap(const TSharedPtr<FJsonObject>& JsonMap, TMap<FString, TMapType>& Map, TWeakObjectPtr<UObject> OwnerOuter = (UObject*)GetTransientPackage())
 	{
+		
 		if constexpr (TIsTArray<TMapType>::Value)
 			static_assert(TIsTemplateParam<TDataType, TMapType>::value, "When TMapType is an array, TDataType must be the type for that array.");
 
@@ -1379,9 +1394,16 @@ public:
 			}
 		}
 	}
-
+	
+	template <typename TMapType, typename TDataType = TMapType, typename TSemanticTypeRepresentation = TDataType>
+	static void DeserializeMap(const FString& Identifier, const TSharedPtr<FJsonObject>& OwnerBag, TMap<FString, TMapType>& Map, TWeakObjectPtr<UObject> OwnerOuter = (UObject*)GetTransientPackage())
+	{
+		const TSharedPtr<FJsonObject>& JsonMap = OwnerBag->GetObjectField(Identifier);
+		
+		DeserializeMap(JsonMap, Map, OwnerOuter);
+	}
 	template <typename TPrimitiveType>
-	static void DeserializeRawPrimitive(const FString& JsonField, TPrimitiveType& ToDeserialize, TWeakObjectPtr<UObject> OuterOwner = (UObject*)GetTransientPackage())
+		static void DeserializeRawPrimitive(const FString& JsonField, TPrimitiveType& ToDeserialize, TWeakObjectPtr<UObject> OuterOwner = (UObject*)GetTransientPackage())
 	{
 		if (TIsDerivedFrom<TPrimitiveType, FBeamSemanticType>::Value)
 		{
@@ -1492,6 +1514,13 @@ public:
 			}
 			FDateTime::ParseIso8601(*Val, ToDeserialize);
 		}
+	}
+	template <typename TPrimitiveType>
+	static void DeserializeRawPrimitive(const FString& Identifier, const TSharedPtr<FJsonObject>& OwnerBag, TPrimitiveType& ToDeserialize, TWeakObjectPtr<UObject> OuterOwner = (UObject*)GetTransientPackage())
+	{
+		const FString& JsonField = OwnerBag->GetStringField(Identifier);
+
+		DeserializeRawPrimitive<TPrimitiveType>(JsonField, ToDeserialize, OuterOwner);
 	}
 
 	static void DeserializeJsonObject(const FString Identifier, const TSharedPtr<FJsonObject>& Bag, TSharedPtr<FJsonObject>& Settings, TWeakObjectPtr<UObject> OuterOwner)

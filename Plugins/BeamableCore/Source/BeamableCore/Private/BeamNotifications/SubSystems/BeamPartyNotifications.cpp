@@ -17,8 +17,8 @@ void FPartyRefreshNotificationMessage::BeamSerializeProperties(TUnrealPrettyJson
 
 void FPartyRefreshNotificationMessage::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("Event")), Type, OuterOwner);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("Id")), PartyId, OuterOwner);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("Event"), Bag, Type, OuterOwner);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("Id"), Bag, PartyId, OuterOwner);
 }
 
 void UBeamPartyNotifications::Initialize(FSubsystemCollectionBase& Collection)

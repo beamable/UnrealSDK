@@ -19,8 +19,8 @@ void FLobbyUpdateNotificationMessage::BeamSerializeProperties(TUnrealPrettyJsonS
 
 void FLobbyUpdateNotificationMessage::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("Event")), Type);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("Id")), LobbyId);	
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("Event") ,Bag, Type);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("Id"), Bag, LobbyId);	
 }
 
 void UBeamLobbyNotifications::Initialize(FSubsystemCollectionBase& Collection)
