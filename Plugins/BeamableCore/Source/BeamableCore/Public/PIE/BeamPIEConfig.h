@@ -32,7 +32,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void Save()
 	{
-		this->SaveConfig(CPF_Config);		
-		UE_LOG(LogTemp, Warning, TEXT("Saved PIE Config - %d"), this->bIsRunningGameServerLocally)		
+				
 	}
 };

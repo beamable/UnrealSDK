@@ -198,12 +198,6 @@ public:
 					return;
 				}
 
-				// Then, we get the path to the `BeamPIE.ini` file in the Saved directory. 
-				// FString ConfigPath = FPaths::ConvertRelativePathToFull(FPaths::Combine(FPaths::ProjectSavedDir(), TEXT("Config"), FPlatformProperties::PlatformName(), TEXT("BeamPIE.ini")));
-				//
-				// // Attempt to load the config file
-				// GConfig->LoadFile(ConfigPath);
-
 				// Then, we get the BeamPIEConfig and ensure it's values are loaded.
 				const auto Config = GetMutableDefault<UBeamPIEConfig>();
 				UE_LOG(LogTemp, Warning, TEXT("Standalone - Default Load BeamPIE Config - Is Running Server Locally: %d, Local Server Port: %s"),
@@ -349,7 +343,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SaveMutableBeamConfig(UBeamPIEConfig* BeamConfig)
 	{
-		BeamConfig->Save();
+		BeamConfig->SaveConfig(CPF_Config);
 	}
 
 	/**
@@ -517,7 +511,7 @@ public:
 		const auto World = CallingContext->GetWorld();
 		ensureAlwaysMsgf(World, TEXT("You must provide a calling context with a valid World to this function!"));
 
-		// Get the world context and verify that it is a PIE world.
+		// Get the world context
 		const auto WorldContext = GEngine->GetWorldContextFromWorld(World);
 		ensureAlwaysMsgf(WorldContext, TEXT("You should never see this!"));
 
