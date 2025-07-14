@@ -115,6 +115,10 @@ void UBeamUserDeveloperManagerEditor::TriggerOnPreBeginPIE(ULevelEditorPlaySetti
 	TMap<FBeamGamerTag, int32> TemplateAmount;
 	for (auto AssignedUserKeyPair : Settings->AssignedUsers)
 	{
+		if (!AssignedUserKeyPair.Key.CreateCopyOnPIE)
+		{
+			continue;
+		}
 		// Clear the saved users from the previous session
 		BeamUserSlots->ClearAllCachedUserDataAtNamespacedSlot(BeamUserSlots->GetNamespacedSlotId(AssignedUserKeyPair.Key.Slot, AssignedUserKeyPair.Key.PIEIndex));
 
@@ -155,18 +159,22 @@ void UBeamUserDeveloperManagerEditor::TriggerOnPreBeginPIE(ULevelEditorPlaySetti
 
 		for (auto AssignedUserKeyPair : Settings->AssignedUsers)
 		{
-			auto CreatedUser = CreatedUserMap[AssignedUserKeyPair.Value.AsLong][0];
+			UDeveloperUserDataStreamData* DeveloperUser;
+			if (AssignedUserKeyPair.Key.CreateCopyOnPIE)
+				DeveloperUser = CreatedUserMap[AssignedUserKeyPair.Value.AsLong][0];
+			else
+				DeveloperUser = LocalUserDeveloperCache[AssignedUserKeyPair.Value.AsLong];
 			
 			BeamUserSlots->SaveSlot(AssignedUserKeyPair.Key.Slot, AssignedUserKeyPair.Key.PIEIndex,
-			                        CreatedUser->GamerTag,
-			                        CreatedUser->AccessToken,
-			                        CreatedUser->RefreshToken,
+			                        DeveloperUser->GamerTag,
+			                        DeveloperUser->AccessToken,
+			                        DeveloperUser->RefreshToken,
 			                        FDateTime::UtcNow().ToUnixTimestamp(),
-			                        CreatedUser->ExpiresIn,
-			                        CreatedUser->Cid,
-			                        CreatedUser->Pid);
+			                        DeveloperUser->ExpiresIn,
+			                        DeveloperUser->Cid,
+			                        DeveloperUser->Pid);
 
-			CreatedUserMap[AssignedUserKeyPair.Value.AsLong].Remove(CreatedUser);
+			CreatedUserMap[AssignedUserKeyPair.Value.AsLong].Remove(DeveloperUser);
 		}
 	};
 	CreateUserBatchCommand->OnCompleted = [this, Handler](const int& ResCode, const FBeamOperationHandle&)
