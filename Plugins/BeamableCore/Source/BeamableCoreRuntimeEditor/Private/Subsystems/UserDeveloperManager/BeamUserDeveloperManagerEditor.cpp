@@ -269,7 +269,9 @@ void UBeamUserDeveloperManagerEditor::GetUsersWithFilter(FString NameFilter, FSt
 			return A.DeveloperUserType > B.DeveloperUserType;
 		}
 
-		return A.GamerTag > B.GamerTag;
+		auto Source = FString::Printf(TEXT("%s%lld"), *A.Alias, A.CreatedDate);
+		auto Target = FString::Printf(TEXT("%s%lld"), *B.Alias, B.CreatedDate);
+		return Source.Compare(Target) < 0;
 	});
 
 	AllUsers = Result;
@@ -297,7 +299,7 @@ void UBeamUserDeveloperManagerEditor::DeleteUser(FBeamGamerTag GamerTag)
 }
 
 
-void UBeamUserDeveloperManagerEditor::CopyTemplateToNewUserOperation(FBeamGamerTag TemplateGamerTag, EBeamDeveloperUserType DeveloperUserType, FBeamOperationEventHandler OperationEventHandle)
+void UBeamUserDeveloperManagerEditor::CopyTemplateToNewUserOperation(UDeveloperUserDataStreamData* UserData, EBeamDeveloperUserType DeveloperUserType, FBeamOperationEventHandler OperationEventHandle)
 {
 	auto OperationHandler = RequestTracker->BeginOperation({}, GetName(), OperationEventHandle);
 	UBeamCliDeveloperUserManagerCreateUserCommand* CreateUserCommand = NewObject<UBeamCliDeveloperUserManagerCreateUserCommand>();
@@ -318,12 +320,20 @@ void UBeamUserDeveloperManagerEditor::CopyTemplateToNewUserOperation(FBeamGamerT
 		}
 	};
 
+	FString TagsStr = "";
+
+	for (auto tag : UserData->Tags)
+	{
+		TagsStr += FString::Printf(TEXT("--tags \"%s\" "), *tag);
+	}
+	
 	auto args = {
-		FString::Printf(TEXT("--template \"%s\""), *TemplateGamerTag.AsString),
-		FString::Printf(TEXT("--alias \"%s\""), TEXT("")),
-		FString::Printf(TEXT("--description \"%s\""), TEXT("")),
+		FString::Printf(TEXT("--template \"%lld\""), UserData->GamerTag),
+		FString::Printf(TEXT("--alias \"%s Copy\""), *UserData->Alias),
+		FString::Printf(TEXT("--description \"%s\""), *UserData->Description),
 		FString::Printf(TEXT("--user-type %d"), DeveloperUserType),
-	};
+		FString::Printf(TEXT("%s"), *TagsStr),
+	};	
 
 	auto Handler = RequestTracker->CPP_BeginOperation({}, GetName(), {});
 

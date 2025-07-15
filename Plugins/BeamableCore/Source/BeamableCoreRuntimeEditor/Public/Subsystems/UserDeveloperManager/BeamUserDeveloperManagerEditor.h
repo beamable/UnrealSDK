@@ -85,7 +85,7 @@ public:
 	 * Create a new user and copy the stats and inventory to the created user from a template gamer tag
 	 */
 	UFUNCTION(BlueprintCallable)
-	void CopyTemplateToNewUserOperation(FBeamGamerTag TemplateGamerTag, EBeamDeveloperUserType DeveloperUserType, FBeamOperationEventHandler OperationEventHandle);
+	void CopyTemplateToNewUserOperation(UDeveloperUserDataStreamData* UserData, EBeamDeveloperUserType DeveloperUserType, FBeamOperationEventHandler OperationEventHandle);
 
 	/**
 	 * Create a new user and copy the stats and inventory to the created user from a template gamer tag
