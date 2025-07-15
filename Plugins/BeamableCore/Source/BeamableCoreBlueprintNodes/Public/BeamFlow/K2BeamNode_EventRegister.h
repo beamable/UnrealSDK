@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "BeamK2.h"
-#include "BeamK2Node.h"
+#include "K2BeamNode.h"
 #include "K2BeamNode_EventRegister.generated.h"
 
 /**
@@ -12,7 +12,7 @@
  */
 
 UCLASS(NotBlueprintable, NotBlueprintType, Hidden, meta=(EventRegister))
-class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_EventRegister : public UBeamK2Node
+class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_EventRegister : public UK2BeamNode
 {
 	GENERATED_BODY()
 
@@ -55,10 +55,13 @@ public:
 	virtual FLinearColor GetNodeTitleColor() const override;
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
 	virtual bool ShouldShowNodeProperties() const override { return true; }
+
+protected:
+	virtual void JumpToDefinition() const override;
+
 	//BeamFlowNode impl
 
 
-protected:
 	virtual bool IsValidProperty(FMulticastDelegateProperty* DelegateProp);
 
 	virtual bool ShowAsExecuteProperty(FMulticastDelegateProperty* DelegateProp);

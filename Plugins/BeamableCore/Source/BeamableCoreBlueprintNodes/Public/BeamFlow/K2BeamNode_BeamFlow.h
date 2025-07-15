@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "BeamK2.h"
-#include "BeamK2Node.h"
+#include "K2BeamNode.h"
 #include "BlueprintActionDatabaseRegistrar.h"
 
 #include "K2BeamNode_BeamFlow.generated.h"
@@ -15,7 +15,7 @@
  * 
  */
 UCLASS(NotBlueprintable, NotBlueprintType, Hidden, meta=(BeamFlowNode))
-class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_BeamFlow : public UBeamK2Node
+class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_BeamFlow : public UK2BeamNode
 {
 	GENERATED_BODY()
 

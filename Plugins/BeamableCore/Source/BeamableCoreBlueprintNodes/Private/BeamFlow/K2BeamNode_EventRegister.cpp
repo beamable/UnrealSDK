@@ -251,6 +251,13 @@ void UK2BeamNode_EventRegister::ExpandNode(FKismetCompilerContext& CompilerConte
 }
 
 
+void UK2BeamNode_EventRegister::JumpToDefinition() const
+{
+	UClass* Class = GetRuntimeSubsystemClass();
+	if (!Class) return;
+	FSourceCodeNavigation::NavigateToClass(Class);
+}
+
 bool UK2BeamNode_EventRegister::IsValidProperty(FMulticastDelegateProperty* DelegateProp)
 {
 	// It's not valid if is not assignable by blueprint

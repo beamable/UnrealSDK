@@ -43,6 +43,8 @@ public:
 	virtual UClass* GetRuntimeSubsystemClass() const override;
 
 protected:
+	virtual void JumpToDefinition() const override;
+
 	/**
 	 * @brief The subsystem's GetSelf function name that we can use to call a function on it.
 	 * See default implementation to override it correctly.  

@@ -12,7 +12,7 @@
  */
 
 UCLASS(NotBlueprintable, NotBlueprintType, Hidden, meta=(EventRegister))
-class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_EventUnregister : public UBeamK2Node
+class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_EventUnregister : public UK2BeamNode
 {
 	GENERATED_BODY()
 
@@ -50,9 +50,11 @@ public:
 	virtual FLinearColor GetNodeTitleColor() const override;
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
 	virtual bool ShouldShowNodeProperties() const override { return true; }
+
+protected:
+	virtual void JumpToDefinition() const override;
 	//BeamFlowNode impl
 
 
-protected:
 	virtual bool IsValidProperty(FMulticastDelegateProperty* DelegateProp);
 };

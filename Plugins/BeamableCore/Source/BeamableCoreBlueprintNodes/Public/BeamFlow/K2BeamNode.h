@@ -4,13 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "K2Node.h"
-#include "BeamK2Node.generated.h"
+#include "K2BeamNode.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class BEAMABLECOREBLUEPRINTNODES_API UBeamK2Node : public UK2Node
+class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode : public UK2Node
 {
 	GENERATED_BODY()
 

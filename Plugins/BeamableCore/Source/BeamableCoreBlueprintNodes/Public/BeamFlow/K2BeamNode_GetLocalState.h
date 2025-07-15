@@ -12,7 +12,7 @@
  */
 
 UCLASS(NotBlueprintable, NotBlueprintType, Hidden, meta=(BeamGetLocalState))
-class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_GetLocalState : public UBeamK2Node
+class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_GetLocalState : public UK2BeamNode
 {
 	GENERATED_BODY()
 

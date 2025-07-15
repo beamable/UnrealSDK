@@ -152,6 +152,13 @@ void UK2BeamNode_EventUnregister::ExpandNode(FKismetCompilerContext& CompilerCon
 	BreakAllNodeLinks();
 }
 
+void UK2BeamNode_EventUnregister::JumpToDefinition() const
+{
+	UClass* Class = GetRuntimeSubsystemClass();
+	if (!Class) return;
+	FSourceCodeNavigation::NavigateToClass(Class);
+}
+
 bool UK2BeamNode_EventUnregister::IsValidProperty(FMulticastDelegateProperty* DelegateProp)
 {
 	if (!DelegateProp->HasAnyPropertyFlags(CPF_BlueprintAssignable))

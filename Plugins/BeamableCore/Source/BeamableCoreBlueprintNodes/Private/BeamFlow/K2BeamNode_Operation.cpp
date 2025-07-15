@@ -181,16 +181,6 @@ void UK2BeamNode_Operation::ExpandNode(FKismetCompilerContext& CompilerContext, 
 	BreakAllNodeLinks();
 }
 
-UObject* UK2BeamNode_Operation::GetJumpTargetForDoubleClick() const
-{
-	const auto Function = GetRuntimeSubsystemClass()->FindFunctionByName(GetFunctionName());
-
-	if (!Function) return nullptr;
-
-	FSourceCodeNavigation::NavigateToFunction(Function);
-
-	return Super::GetJumpTargetForDoubleClick();
-}
 
 FName UK2BeamNode_Operation::GetCornerIcon() const
 {

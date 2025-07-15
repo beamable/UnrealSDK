@@ -103,7 +103,6 @@ class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_Operation : public UK2BeamNode_
 	virtual void AllocateDefaultPins() override;
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
 	virtual void ExpandNode(FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph) override;
-	virtual UObject* GetJumpTargetForDoubleClick() const override;
 	//BeamFlowNode impl
 
 

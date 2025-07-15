@@ -1,27 +1,27 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "BeamFlow/BeamK2Node.h"
+#include "BeamFlow/K2BeamNode.h"
 
 #include "SourceCodeNavigation.h"
 
 
-FName UBeamK2Node::GetSubsystemSelfFunctionName() const
+FName UK2BeamNode::GetSubsystemSelfFunctionName() const
 {
 	return FName("K2BeamNode_GetState");
 }
 
-FName UBeamK2Node::GetFunctionName() const
+FName UK2BeamNode::GetFunctionName() const
 {
 	return FName("K2BeamNode_GetState");
 }
 
-UClass* UBeamK2Node::GetRuntimeSubsystemClass() const
+UClass* UK2BeamNode::GetRuntimeSubsystemClass() const
 {
 	return UClass::StaticClass();
 }
 
-void UBeamK2Node::JumpToDefinition() const
+void UK2BeamNode::JumpToDefinition() const
 {
 	const auto Function = GetRuntimeSubsystemClass()->FindFunctionByName(GetFunctionName());
 

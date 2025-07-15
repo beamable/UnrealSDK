@@ -154,6 +154,13 @@ UClass* UK2BeamNode_EventUnregisterAll::GetRuntimeSubsystemClass() const
 	return UClass::StaticClass();
 }
 
+void UK2BeamNode_EventUnregisterAll::JumpToDefinition() const
+{
+	UClass* Class = GetRuntimeSubsystemClass();
+	if (!Class) return;
+	FSourceCodeNavigation::NavigateToClass(Class);
+}
+
 
 bool UK2BeamNode_EventUnregisterAll::IsValidProperty(FMulticastDelegateProperty* DelegateProp)
 {
