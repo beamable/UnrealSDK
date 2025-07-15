@@ -49,7 +49,7 @@ class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_Operation_PerformPurchase : pub
 
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamStoreSubsystem, GetSelf); }
 
-	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamStoreSubsystem, PerformPurchaseOperation); }
+	virtual FName GetFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamStoreSubsystem, PerformPurchaseOperation); }
 
 	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamStoreSubsystem::StaticClass(); }
 };
@@ -67,7 +67,7 @@ class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_Operation_RefreshStore : public
 
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamStoreSubsystem, GetSelf); }
 
-	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamStoreSubsystem, RefreshStoreOperation); }
+	virtual FName GetFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamStoreSubsystem, RefreshStoreOperation); }
 
 	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamStoreSubsystem::StaticClass(); }
 };
@@ -85,7 +85,7 @@ class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_Operation_RefreshStores : publi
 
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamStoreSubsystem, GetSelf); }
 
-	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamStoreSubsystem, RefreshStoresOperation); }
+	virtual FName GetFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamStoreSubsystem, RefreshStoresOperation); }
 
 	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamStoreSubsystem::StaticClass(); }
 };

@@ -236,7 +236,7 @@ class UK2BeamNode_Operation_RefreshStatsOperation : public UK2BeamNode_Operation
 
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamStatsSubsystem, GetSelf); }
 
-	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamStatsSubsystem, RefreshStatsOperation); }
+	virtual FName GetFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamStatsSubsystem, RefreshStatsOperation); }
 
 	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamStatsSubsystem::StaticClass(); }
 };
@@ -254,7 +254,7 @@ class UK2BeamNode_Operation_RefreshSingleStatOperation : public UK2BeamNode_Oper
 
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamStatsSubsystem, GetSelf); }
 
-	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamStatsSubsystem, RefreshSingleStatOperation); }
+	virtual FName GetFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamStatsSubsystem, RefreshSingleStatOperation); }
 
 	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamStatsSubsystem::StaticClass(); }
 };
@@ -272,7 +272,7 @@ class UK2BeamNode_Operation_CommitStatsOperation : public UK2BeamNode_Operation
 
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamStatsSubsystem, GetSelf); }
 
-	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamStatsSubsystem, CommitStatsOperation); }
+	virtual FName GetFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamStatsSubsystem, CommitStatsOperation); }
 
 	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamStatsSubsystem::StaticClass(); }
 };
@@ -290,7 +290,7 @@ class UK2BeamNode_Operation_SetStatOperation : public UK2BeamNode_Operation
 
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamStatsSubsystem, GetSelf); }
 
-	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamStatsSubsystem, SetStatOperation); }
+	virtual FName GetFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamStatsSubsystem, SetStatOperation); }
 
 	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamStatsSubsystem::StaticClass(); }
 };
@@ -308,7 +308,7 @@ class UK2BeamNode_Operation_DeleteStatOperation : public UK2BeamNode_Operation
 
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamStatsSubsystem, GetSelf); }
 
-	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamStatsSubsystem, DeleteStatOperation); }
+	virtual FName GetFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamStatsSubsystem, DeleteStatOperation); }
 
 	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamStatsSubsystem::StaticClass(); }
 };
@@ -326,7 +326,7 @@ class UK2BeamNode_Operation_IncrementStatsOperation : public UK2BeamNode_Operati
 
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamStatsSubsystem, GetSelf); }
 
-	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamStatsSubsystem, IncrementStatsOperation); }
+	virtual FName GetFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamStatsSubsystem, IncrementStatsOperation); }
 
 	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamStatsSubsystem::StaticClass(); }
 };

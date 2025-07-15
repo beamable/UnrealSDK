@@ -162,7 +162,7 @@ class UK2BeamNode_Operation_FetchContentManifest : public UK2BeamNode_Operation
 
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamContentSubsystem, GetSelf); }
 
-	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamContentSubsystem, FetchContentManifestOperation); }
+	virtual FName GetFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamContentSubsystem, FetchContentManifestOperation); }
 
 	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamContentSubsystem::StaticClass(); }
 };
@@ -180,7 +180,7 @@ class UK2BeamNode_Operation_FetchIndividualContentBatch : public UK2BeamNode_Ope
 
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamContentSubsystem, GetSelf); }
 
-	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamContentSubsystem, FetchIndividualContentBatchOperation); }
+	virtual FName GetFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamContentSubsystem, FetchIndividualContentBatchOperation); }
 
 	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamContentSubsystem::StaticClass(); }
 };
@@ -198,7 +198,7 @@ class UK2BeamNode_Operation_FetchIndividualContent : public UK2BeamNode_Operatio
 
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamContentSubsystem, GetSelf); }
 
-	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamContentSubsystem, FetchIndividualContentOperation); }
+	virtual FName GetFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamContentSubsystem, FetchIndividualContentOperation); }
 
 	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamContentSubsystem::StaticClass(); }
 };

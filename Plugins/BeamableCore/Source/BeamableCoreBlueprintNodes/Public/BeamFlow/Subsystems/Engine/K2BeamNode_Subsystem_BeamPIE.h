@@ -22,7 +22,7 @@ class UK2BeamNode_GetLocalState_RequiresGameServerOrchestratorSetup : public UK2
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Local State - PIE - Require Orchestrator Setup"); }
 
 	virtual FText GetKeywords() const override { return FText::FromString(Super::GetKeywords().ToString() + " PIE"); }
-	
+
 	virtual FString GetServiceName() const override { return "PIE"; };
 
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamPIE, GetSelf); }
@@ -55,7 +55,7 @@ class UK2BeamNode_Operation_BeamInitPIE : public UK2BeamNode_Operation
 
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamPIE, GetSelf); }
 
-	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamPIE, BeamInitPIEOperation); }
+	virtual FName GetFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamPIE, BeamInitPIEOperation); }
 
 	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamPIE::StaticClass(); }
 };
@@ -73,7 +73,7 @@ class UK2BeamNode_Operation_BeamPreparePIE : public UK2BeamNode_Operation
 
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamPIE, GetSelf); }
 
-	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamPIE, BeamPreparePIEOperation); }
+	virtual FName GetFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamPIE, BeamPreparePIEOperation); }
 
 	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamPIE::StaticClass(); }
 };

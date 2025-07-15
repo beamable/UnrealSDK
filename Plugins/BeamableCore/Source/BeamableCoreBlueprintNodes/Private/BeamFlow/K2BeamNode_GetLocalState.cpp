@@ -138,29 +138,6 @@ void UK2BeamNode_GetLocalState::ExpandNode(FKismetCompilerContext& CompilerConte
 	BreakAllNodeLinks();
 }
 
-void UK2BeamNode_GetLocalState::JumpToDefinition() const
-{
-	const auto Function = GetRuntimeSubsystemClass()->FindFunctionByName(GetFunctionName());
-
-	if (!Function) return;
-
-	FSourceCodeNavigation::NavigateToFunction(Function);
-}
-
-FName UK2BeamNode_GetLocalState::GetSubsystemSelfFunctionName() const
-{
-	return FName("K2BeamNode_GetState");
-}
-
-FName UK2BeamNode_GetLocalState::GetFunctionName() const
-{
-	return FName("K2BeamNode_GetState");
-}
-
-UClass* UK2BeamNode_GetLocalState::GetRuntimeSubsystemClass() const
-{
-	return UClass::StaticClass();
-}
 
 BeamK2::CheckParamIsValidForNodePredicate UK2BeamNode_GetLocalState::GetIgnoredPinPredicate() const
 {

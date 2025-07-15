@@ -107,7 +107,7 @@ class UK2BeamNode_Operation_MarkSingleAnnouncementRead : public UK2BeamNode_Oper
 
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamAnnouncementsSubsystem, GetSelf); }
 
-	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamAnnouncementsSubsystem, MarkSingleAnnouncementReadOperation); }
+	virtual FName GetFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamAnnouncementsSubsystem, MarkSingleAnnouncementReadOperation); }
 
 	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamAnnouncementsSubsystem::StaticClass(); }
 };
@@ -125,7 +125,7 @@ class UK2BeamNode_Operation_MarkGroupAnnouncementsRead : public UK2BeamNode_Oper
 
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamAnnouncementsSubsystem, GetSelf); }
 
-	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamAnnouncementsSubsystem, MarkAnnouncementsReadOperation); }
+	virtual FName GetFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamAnnouncementsSubsystem, MarkAnnouncementsReadOperation); }
 
 	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamAnnouncementsSubsystem::StaticClass(); }
 };
@@ -143,7 +143,7 @@ class UK2BeamNode_Operation_ClaimSingleAnnouncement : public UK2BeamNode_Operati
 
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamAnnouncementsSubsystem, GetSelf); }
 
-	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamAnnouncementsSubsystem, ClaimSingleAnnouncementOperation); }
+	virtual FName GetFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamAnnouncementsSubsystem, ClaimSingleAnnouncementOperation); }
 
 	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamAnnouncementsSubsystem::StaticClass(); }
 };
@@ -161,7 +161,7 @@ class UK2BeamNode_Operation_ClaimGroupAnnouncements : public UK2BeamNode_Operati
 
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamAnnouncementsSubsystem, GetSelf); }
 
-	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamAnnouncementsSubsystem, ClaimAnnouncementsOperation); }
+	virtual FName GetFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamAnnouncementsSubsystem, ClaimAnnouncementsOperation); }
 
 	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamAnnouncementsSubsystem::StaticClass(); }
 };

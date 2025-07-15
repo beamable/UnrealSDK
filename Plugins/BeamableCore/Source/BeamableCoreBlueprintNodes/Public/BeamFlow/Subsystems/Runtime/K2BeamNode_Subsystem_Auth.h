@@ -237,7 +237,7 @@ class UK2BeamNode_Operation_LoginFromCache : public UK2BeamNode_Operation
 
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamRuntime, GetSelf); }
 
-	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamRuntime, LoginFromCacheOperation); }
+	virtual FName GetFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamRuntime, LoginFromCacheOperation); }
 
 	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamRuntime::StaticClass(); }
 };
@@ -257,7 +257,7 @@ class UK2BeamNode_Operation_LoginFrictionless : public UK2BeamNode_Operation
 
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamRuntime, GetSelf); }
 
-	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamRuntime, LoginFrictionlessOperation); }
+	virtual FName GetFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamRuntime, LoginFrictionlessOperation); }
 
 	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamRuntime::StaticClass(); }
 };
@@ -274,7 +274,7 @@ class UK2BeamNode_Operation_LoginEmailAndPassword : public UK2BeamNode_Operation
 
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamRuntime, GetSelf); }
 
-	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamRuntime, LoginEmailAndPasswordOperation); }
+	virtual FName GetFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamRuntime, LoginEmailAndPasswordOperation); }
 
 	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamRuntime::StaticClass(); }
 };
@@ -291,7 +291,7 @@ class UK2BeamNode_Operation_LoginFederated : public UK2BeamNode_Operation
 
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamRuntime, GetSelf); }
 
-	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamRuntime, LoginFederatedOperation); }
+	virtual FName GetFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamRuntime, LoginFederatedOperation); }
 
 
 	virtual TArray<FName> GetOperationEventIds(EBeamOperationEventType Type) const override
@@ -349,7 +349,7 @@ class UK2BeamNode_Operation_FetchExternalIdentityOperation : public UK2BeamNode_
 
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamRuntime, GetSelf); }
 
-	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamRuntime, FetchExternalIdentityOperation); }
+	virtual FName GetFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamRuntime, FetchExternalIdentityOperation); }
 
 	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamRuntime::StaticClass(); }
 };
@@ -367,7 +367,7 @@ class UK2BeamNode_Operation_CommitLoginFederated : public UK2BeamNode_Operation
 
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamRuntime, GetSelf); }
 
-	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamRuntime, CommitLoginFederatedOperation); }
+	virtual FName GetFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamRuntime, CommitLoginFederatedOperation); }
 
 private:
 	virtual TArray<FName> GetOperationEventIds(EBeamOperationEventType Type) const override
@@ -414,7 +414,7 @@ class UK2BeamNode_Operation_SignUpEmailAndPassword : public UK2BeamNode_Operatio
 
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamRuntime, GetSelf); }
 
-	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamRuntime, SignUpEmailAndPasswordOperation); }
+	virtual FName GetFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamRuntime, SignUpEmailAndPasswordOperation); }
 
 	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamRuntime::StaticClass(); }
 };
@@ -431,7 +431,7 @@ class UK2BeamNode_Operation_SignUpFederated : public UK2BeamNode_Operation
 
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamRuntime, GetSelf); }
 
-	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamRuntime, SignUpFederatedOperation); }
+	virtual FName GetFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamRuntime, SignUpFederatedOperation); }
 
 	virtual TArray<FName> GetOperationEventIds(EBeamOperationEventType Type) const override
 	{
@@ -488,7 +488,7 @@ class UK2BeamNode_Operation_AttachEmailAndPassword : public UK2BeamNode_Operatio
 
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamRuntime, GetSelf); }
 
-	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamRuntime, AttachEmailAndPasswordOperation); }
+	virtual FName GetFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamRuntime, AttachEmailAndPasswordOperation); }
 
 	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamRuntime::StaticClass(); }
 };
@@ -505,7 +505,7 @@ class UK2BeamNode_Operation_AttachFederated : public UK2BeamNode_Operation
 
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamRuntime, GetSelf); }
 
-	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamRuntime, AttachFederatedOperation); }
+	virtual FName GetFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamRuntime, AttachFederatedOperation); }
 
 
 	virtual TArray<FName> GetOperationEventIds(EBeamOperationEventType Type) const override
@@ -564,7 +564,7 @@ class UK2BeamNode_Operation_CommitAttachFederatedOperation : public UK2BeamNode_
 
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamRuntime, GetSelf); }
 
-	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamRuntime, CommitAttachFederatedOperation); }
+	virtual FName GetFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamRuntime, CommitAttachFederatedOperation); }
 
 	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamRuntime::StaticClass(); }
 };
@@ -582,7 +582,7 @@ class UK2BeamNode_Operation_Logout : public UK2BeamNode_Operation
 
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamRuntime, GetSelf); }
 
-	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamRuntime, LogoutOperation); }
+	virtual FName GetFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamRuntime, LogoutOperation); }
 
 	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamRuntime::StaticClass(); }
 };
@@ -600,7 +600,7 @@ class UK2BeamNode_Operation_ManuallyInitializeSubsystemWithUserData : public UK2
 
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamRuntime, GetSelf); }
 
-	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamRuntime, ManuallyInitializeSubsystemOperationWithUserData); }
+	virtual FName GetFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamRuntime, ManuallyInitializeSubsystemOperationWithUserData); }
 
 	virtual TArray<FName> GetOperationEventIds(EBeamOperationEventType Type) const override
 	{
@@ -645,7 +645,7 @@ class UK2BeamNode_Operation_ManuallyInitializeSubsystem : public UK2BeamNode_Ope
 
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamRuntime, GetSelf); }
 
-	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamRuntime, ManuallyInitializeSubsystemOperation); }
+	virtual FName GetFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamRuntime, ManuallyInitializeSubsystemOperation); }
 
 	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamRuntime::StaticClass(); }
 };

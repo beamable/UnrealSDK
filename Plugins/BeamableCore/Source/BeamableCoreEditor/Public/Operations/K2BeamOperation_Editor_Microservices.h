@@ -21,12 +21,12 @@ class UK2BeamOperation_Editor_Microservices_Run : public UK2BeamNode_Operation
 		return GET_FUNCTION_NAME_CHECKED(UBeamMicroservicesEditor, GetSelf);
 	}
 
-	virtual FName GetOperationFunctionName() const override
+	virtual FName GetFunctionName() const override
 	{
 		return GET_FUNCTION_NAME_CHECKED(UBeamMicroservicesEditor, RunLocalMicroservicesOperation);
 	}
 
-	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamMicroservicesEditor::StaticClass(); }	
+	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamMicroservicesEditor::StaticClass(); }
 };
 
 UCLASS(meta=(BeamFlowNode))
@@ -44,12 +44,12 @@ class UK2BeamOperation_Editor_Microservices_Deploy : public UK2BeamNode_Operatio
 		return GET_FUNCTION_NAME_CHECKED(UBeamMicroservicesEditor, GetSelf);
 	}
 
-	virtual FName GetOperationFunctionName() const override
+	virtual FName GetFunctionName() const override
 	{
 		return GET_FUNCTION_NAME_CHECKED(UBeamMicroservicesEditor, DeployRemoteMicroservicesOperation);
 	}
 
-	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamMicroservicesEditor::StaticClass(); }	
+	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamMicroservicesEditor::StaticClass(); }
 };
 
 UCLASS(meta=(BeamFlowNode))
@@ -67,12 +67,12 @@ class UK2BeamOperation_Editor_Microservices_Stop : public UK2BeamNode_Operation
 		return GET_FUNCTION_NAME_CHECKED(UBeamMicroservicesEditor, GetSelf);
 	}
 
-	virtual FName GetOperationFunctionName() const override
+	virtual FName GetFunctionName() const override
 	{
 		return GET_FUNCTION_NAME_CHECKED(UBeamMicroservicesEditor, StopLocalMicroservicesOperation);
 	}
 
-	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamMicroservicesEditor::StaticClass(); }	
+	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamMicroservicesEditor::StaticClass(); }
 };
 
 #undef LOCTEXT_NAMESPACE

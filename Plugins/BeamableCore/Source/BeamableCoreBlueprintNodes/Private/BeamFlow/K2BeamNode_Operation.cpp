@@ -19,15 +19,6 @@ using namespace BeamK2;
 
 #define LOCTEXT_NAMESPACE "K2BeamNode_Operation"
 
-FName UK2BeamNode_Operation::GetSubsystemSelfFunctionName() const
-{
-	return GET_FUNCTION_NAME_CHECKED(UBeamRuntime, GetSelf);
-}
-
-FName UK2BeamNode_Operation::GetOperationFunctionName() const
-{
-	return GET_FUNCTION_NAME_CHECKED(UBeamRuntime, LoginFrictionlessOperation);
-}
 
 void UK2BeamNode_Operation::BuildPinToolTipMap(TMap<FName, FString>& OutTooltipMap)
 {
@@ -79,12 +70,6 @@ void UK2BeamNode_Operation::BuildPinToolTipMap(TMap<FName, FString>& OutTooltipM
 	}
 }
 
-UClass* UK2BeamNode_Operation::GetRuntimeSubsystemClass() const
-{
-	return UBeamRuntime::StaticClass();
-	//return UClass::StaticClass();
-}
-
 TMap<FName, UClass*> UK2BeamNode_Operation::GetOperationEventCastClass(EBeamOperationEventType Type) const
 {
 	return {
@@ -115,7 +100,7 @@ void UK2BeamNode_Operation::AllocateDefaultPins()
 	// Create the input execution flow pin
 	const auto _ = CreatePin(EGPD_Input, UEdGraphSchema_K2::PC_Exec, UEdGraphSchema_K2::PN_Execute);
 
-	const auto OperationFunction = GetRuntimeSubsystemClass()->FindFunctionByName(GetOperationFunctionName());
+	const auto OperationFunction = GetRuntimeSubsystemClass()->FindFunctionByName(GetFunctionName());
 	bIsMultiUser = OperationFunction->HasMetaData(MD_BeamOperation_MultiUser);
 
 	// Create the input pins for this ExecuteRequest node
@@ -161,7 +146,7 @@ void UK2BeamNode_Operation::ExpandNode(FKismetCompilerContext& CompilerContext, 
 	const UEdGraphSchema_K2* K2Schema = GetDefault<UEdGraphSchema_K2>();
 
 	const UK2Node_CallFunction* CallGetSubsystem = CreateCallFunctionNode(this, CompilerContext, SourceGraph, GetSubsystemSelfFunctionName(), GetRuntimeSubsystemClass());
-	const UK2Node_CallFunction* CallRequestFunction = CreateCallFunctionNode(this, CompilerContext, SourceGraph, GetOperationFunctionName(), GetRuntimeSubsystemClass());
+	const UK2Node_CallFunction* CallRequestFunction = CreateCallFunctionNode(this, CompilerContext, SourceGraph, GetFunctionName(), GetRuntimeSubsystemClass());
 
 
 	// Gets all relevant pins
@@ -198,7 +183,7 @@ void UK2BeamNode_Operation::ExpandNode(FKismetCompilerContext& CompilerContext, 
 
 UObject* UK2BeamNode_Operation::GetJumpTargetForDoubleClick() const
 {
-	const auto Function = GetRuntimeSubsystemClass()->FindFunctionByName(GetOperationFunctionName());
+	const auto Function = GetRuntimeSubsystemClass()->FindFunctionByName(GetFunctionName());
 
 	if (!Function) return nullptr;
 
@@ -220,7 +205,7 @@ void UK2BeamNode_Operation::EnterBeamFlowModeImpl()
 void UK2BeamNode_Operation::ExitBeamFlowModeImpl()
 {
 	RemoveAllPins(this, {OP_Operation_OnOperationEvent, OP_Operation_UserSlots, OP_Operation_Event});
-	const auto RequestFunction = GetRuntimeSubsystemClass()->FindFunctionByName(GetOperationFunctionName());
+	const auto RequestFunction = GetRuntimeSubsystemClass()->FindFunctionByName(GetFunctionName());
 	ParseFunctionForNodeInputPins(this, RequestFunction, {OP_Operation_OnOperationEvent}, true);
 }
 
@@ -383,7 +368,7 @@ void UK2BeamNode_Operation::EnforceBeamFlowModePins()
 			CancelledEventFlowPinNames.Empty();
 			EnforceRelevantEventPins(CancelledTypeSubEvents, OP_Operation_Expanded_OnCancelled, RelevantEventsAdded, CancelledEventFlowPinNames, CancelledCastClass);
 			for (int i = 0; i < CancelledEventFlowPinNames.Num(); ++i)
-			{				
+			{
 				PinsToKeep.Add(CancelledEventFlowPinNames[i]);
 			}
 
@@ -761,7 +746,7 @@ void UK2BeamNode_Operation::ExpandBeamFlowSubEvents(FKismetCompilerContext& Comp
 	{
 		const auto FlowPin = FindPin(EventsFlowPinNames[i]);
 
-		
+
 		// Get the intermediate pins we'll need to connect to all the places our custom node's output pins are connected to.
 		// If we expect a string, than we forward the raw event data string. Otherwise...
 		const auto SubEventValue = EventIds[i];
@@ -774,12 +759,12 @@ void UK2BeamNode_Operation::ExpandBeamFlowSubEvents(FKismetCompilerContext& Comp
 			auto CastedOutputPin = FindPin(EventDataCasts[SubEventValue]->GetName());
 
 			auto CastNode = CreateDynamicCastNode(this, CompilerContext, SourceGraph, EventDataCasts[SubEventValue]);
-			
+
 			K2Schema->TryCreateConnection(CastNode->GetCastSourcePin(), EventDataPin);
 
 			K2Schema->TryCreateConnection(CastNode->GetExecPin(), IntermediateSubEventFlowPin);
-			
-			const auto SuccessFlowCastObject =CompilerContext.MovePinLinksToIntermediate(*CastedOutputPin, *CastNode->GetCastResultPin());
+
+			const auto SuccessFlowCastObject = CompilerContext.MovePinLinksToIntermediate(*CastedOutputPin, *CastNode->GetCastResultPin());
 			check(!SuccessFlowCastObject.IsFatal());
 
 			const auto SuccessFlowMovedCastSuccess = CompilerContext.MovePinLinksToIntermediate(*FlowPin, *CastNode->GetValidCastPin());

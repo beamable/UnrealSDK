@@ -12,7 +12,7 @@
  */
 
 UCLASS(NotBlueprintable, NotBlueprintType, Hidden, meta=(BeamGetLocalStateForeach))
-class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_GetLocalStateForeach : public UK2Node
+class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_GetLocalStateForeach : public UBeamK2Node
 {
 	GENERATED_BODY()
 
@@ -64,8 +64,6 @@ public:
 	virtual void ExpandNode(FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph) override;
 	virtual FSlateIcon GetIconAndTint(FLinearColor& OutColor) const override;
 	virtual FLinearColor GetNodeTitleColor() const override;
-	virtual bool CanJumpToDefinition() const override { return true; };
-	virtual void JumpToDefinition() const override;
 	virtual void GetMenuActions(FBlueprintActionDatabaseRegistrar& ActionRegistrar) const override;
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
 	//BeamFlowNode impl

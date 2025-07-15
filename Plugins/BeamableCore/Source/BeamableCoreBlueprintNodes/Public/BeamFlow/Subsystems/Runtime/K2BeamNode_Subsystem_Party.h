@@ -242,7 +242,7 @@ class UK2BeamNode_Operation_CreateParty : public UK2BeamNode_Operation
 		return GET_FUNCTION_NAME_CHECKED(UBeamPartySubsystem, GetSelf);
 	}
 
-	virtual FName GetOperationFunctionName() const override
+	virtual FName GetFunctionName() const override
 	{
 		return GET_FUNCTION_NAME_CHECKED(UBeamPartySubsystem, CreatePartyOperation);
 	}
@@ -269,7 +269,7 @@ class UK2BeamNode_Operation_JoinParty : public UK2BeamNode_Operation
 		return GET_FUNCTION_NAME_CHECKED(UBeamPartySubsystem, GetSelf);
 	}
 
-	virtual FName GetOperationFunctionName() const override
+	virtual FName GetFunctionName() const override
 	{
 		return GET_FUNCTION_NAME_CHECKED(UBeamPartySubsystem, JoinPartyOperation);
 	}
@@ -297,7 +297,7 @@ class UK2BeamNode_Operation_JoinPlayerParty : public UK2BeamNode_Operation
 		return GET_FUNCTION_NAME_CHECKED(UBeamPartySubsystem, GetSelf);
 	}
 
-	virtual FName GetOperationFunctionName() const override
+	virtual FName GetFunctionName() const override
 	{
 		return GET_FUNCTION_NAME_CHECKED(UBeamPartySubsystem, JoinPlayerPartyOperation);
 	}
@@ -325,7 +325,7 @@ class UK2BeamNode_Operation_LeaveParty : public UK2BeamNode_Operation
 		return GET_FUNCTION_NAME_CHECKED(UBeamPartySubsystem, GetSelf);
 	}
 
-	virtual FName GetOperationFunctionName() const override
+	virtual FName GetFunctionName() const override
 	{
 		return GET_FUNCTION_NAME_CHECKED(UBeamPartySubsystem, LeavePartyOperation);
 	}
@@ -352,7 +352,7 @@ class UK2BeamNode_Operation_InvitePlayer : public UK2BeamNode_Operation
 		return GET_FUNCTION_NAME_CHECKED(UBeamPartySubsystem, GetSelf);
 	}
 
-	virtual FName GetOperationFunctionName() const override
+	virtual FName GetFunctionName() const override
 	{
 		return GET_FUNCTION_NAME_CHECKED(UBeamPartySubsystem, InvitePlayerToPartyOperation);
 	}
@@ -380,7 +380,7 @@ class UK2BeamNode_Operation_InvitePlayerToMyParty : public UK2BeamNode_Operation
 		return GET_FUNCTION_NAME_CHECKED(UBeamPartySubsystem, GetSelf);
 	}
 
-	virtual FName GetOperationFunctionName() const override
+	virtual FName GetFunctionName() const override
 	{
 		return GET_FUNCTION_NAME_CHECKED(UBeamPartySubsystem, InvitePlayerToMyPartyOperation);
 	}
@@ -407,7 +407,7 @@ class UK2BeamNode_Operation_DeclinePlayerInvite : public UK2BeamNode_Operation
 		return GET_FUNCTION_NAME_CHECKED(UBeamPartySubsystem, GetSelf);
 	}
 
-	virtual FName GetOperationFunctionName() const override
+	virtual FName GetFunctionName() const override
 	{
 		return GET_FUNCTION_NAME_CHECKED(UBeamPartySubsystem, DeclinePlayerPartyInviteOperation);
 	}
@@ -435,7 +435,7 @@ class UK2BeamNode_Operation_DeclinePartyInvite : public UK2BeamNode_Operation
 		return GET_FUNCTION_NAME_CHECKED(UBeamPartySubsystem, GetSelf);
 	}
 
-	virtual FName GetOperationFunctionName() const override
+	virtual FName GetFunctionName() const override
 	{
 		return GET_FUNCTION_NAME_CHECKED(UBeamPartySubsystem, DeclinePartyInviteOperation);
 	}
@@ -462,7 +462,7 @@ class UK2BeamNode_Operation_FetchPartyState : public UK2BeamNode_Operation
 		return GET_FUNCTION_NAME_CHECKED(UBeamPartySubsystem, GetSelf);
 	}
 
-	virtual FName GetOperationFunctionName() const override
+	virtual FName GetFunctionName() const override
 	{
 		return GET_FUNCTION_NAME_CHECKED(UBeamPartySubsystem, FetchPartyStateOperation);
 	}
@@ -489,7 +489,7 @@ class UK2BeamNode_Operation_FetchPlayerPartyState : public UK2BeamNode_Operation
 		return GET_FUNCTION_NAME_CHECKED(UBeamPartySubsystem, GetSelf);
 	}
 
-	virtual FName GetOperationFunctionName() const override
+	virtual FName GetFunctionName() const override
 	{
 		return GET_FUNCTION_NAME_CHECKED(UBeamPartySubsystem, FetchPlayerPartyStateOperation);
 	}
@@ -516,7 +516,7 @@ class UK2BeamNode_Operation_FetchPartyInvites : public UK2BeamNode_Operation
 		return GET_FUNCTION_NAME_CHECKED(UBeamPartySubsystem, GetSelf);
 	}
 
-	virtual FName GetOperationFunctionName() const override
+	virtual FName GetFunctionName() const override
 	{
 		return GET_FUNCTION_NAME_CHECKED(UBeamPartySubsystem, FetchPartyInvitesOperation);
 	}
@@ -543,7 +543,7 @@ class UK2BeamNode_Operation_UpdateParty : public UK2BeamNode_Operation
 		return GET_FUNCTION_NAME_CHECKED(UBeamPartySubsystem, GetSelf);
 	}
 
-	virtual FName GetOperationFunctionName() const override
+	virtual FName GetFunctionName() const override
 	{
 		return GET_FUNCTION_NAME_CHECKED(UBeamPartySubsystem, UpdatePartyMetaOperation);
 	}
@@ -570,7 +570,7 @@ class UK2BeamNode_Operation_UpdateMyPartyMeta : public UK2BeamNode_Operation
 		return GET_FUNCTION_NAME_CHECKED(UBeamPartySubsystem, GetSelf);
 	}
 
-	virtual FName GetOperationFunctionName() const override
+	virtual FName GetFunctionName() const override
 	{
 		return GET_FUNCTION_NAME_CHECKED(UBeamPartySubsystem, UpdateMyPartyMetaOperation);
 	}
@@ -597,7 +597,7 @@ class UK2BeamNode_Operation_PartyKickPlayer : public UK2BeamNode_Operation
 		return GET_FUNCTION_NAME_CHECKED(UBeamPartySubsystem, GetSelf);
 	}
 
-	virtual FName GetOperationFunctionName() const override
+	virtual FName GetFunctionName() const override
 	{
 		return GET_FUNCTION_NAME_CHECKED(UBeamPartySubsystem, KickPlayerOperation);
 	}
@@ -624,7 +624,7 @@ class UK2BeamNode_Operation_KickPlayerFromMyParty : public UK2BeamNode_Operation
 		return GET_FUNCTION_NAME_CHECKED(UBeamPartySubsystem, GetSelf);
 	}
 
-	virtual FName GetOperationFunctionName() const override
+	virtual FName GetFunctionName() const override
 	{
 		return GET_FUNCTION_NAME_CHECKED(UBeamPartySubsystem, KickPlayerFromMyPartyOperation);
 	}
@@ -651,7 +651,7 @@ class UK2BeamNode_Operation_PromotePlayerToLeader : public UK2BeamNode_Operation
 		return GET_FUNCTION_NAME_CHECKED(UBeamPartySubsystem, GetSelf);
 	}
 
-	virtual FName GetOperationFunctionName() const override
+	virtual FName GetFunctionName() const override
 	{
 		return GET_FUNCTION_NAME_CHECKED(UBeamPartySubsystem, PromotePlayerToLeaderOperation);
 	}
@@ -678,7 +678,7 @@ class UK2BeamNode_Operation_PromotePlayerAsMyPartyLeader : public UK2BeamNode_Op
 		return GET_FUNCTION_NAME_CHECKED(UBeamPartySubsystem, GetSelf);
 	}
 
-	virtual FName GetOperationFunctionName() const override
+	virtual FName GetFunctionName() const override
 	{
 		return GET_FUNCTION_NAME_CHECKED(UBeamPartySubsystem, PromotePlayerToMyPartyLeaderOperation);
 	}
@@ -705,7 +705,7 @@ class UK2BeamNode_Operation_CancelSentPartyInvite : public UK2BeamNode_Operation
 		return GET_FUNCTION_NAME_CHECKED(UBeamPartySubsystem, GetSelf);
 	}
 
-	virtual FName GetOperationFunctionName() const override
+	virtual FName GetFunctionName() const override
 	{
 		return GET_FUNCTION_NAME_CHECKED(UBeamPartySubsystem, CancelSentPartyInviteOperation);
 	}
@@ -732,7 +732,7 @@ class UK2BeamNode_Operation_CancelPlayerPartyInvite : public UK2BeamNode_Operati
 		return GET_FUNCTION_NAME_CHECKED(UBeamPartySubsystem, GetSelf);
 	}
 
-	virtual FName GetOperationFunctionName() const override
+	virtual FName GetFunctionName() const override
 	{
 		return GET_FUNCTION_NAME_CHECKED(UBeamPartySubsystem, CancelPlayerPartyInviteOperation);
 	}

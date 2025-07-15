@@ -147,7 +147,7 @@ class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_Operation_TryJoinQueue : public
 
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamMatchmakingSubsystem, GetSelf); }
 
-	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamMatchmakingSubsystem, TryJoinQueueOperation); }
+	virtual FName GetFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamMatchmakingSubsystem, TryJoinQueueOperation); }
 
 	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamMatchmakingSubsystem::StaticClass(); }
 };
@@ -165,7 +165,7 @@ class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_Operation_TryJoinQueueWithTags 
 
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamMatchmakingSubsystem, GetSelf); }
 
-	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamMatchmakingSubsystem, TryJoinQueueWithTagsOperation); }
+	virtual FName GetFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamMatchmakingSubsystem, TryJoinQueueWithTagsOperation); }
 
 	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamMatchmakingSubsystem::StaticClass(); }
 };
@@ -183,7 +183,7 @@ class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_Operation_TryLeaveQueue : publi
 
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamMatchmakingSubsystem, GetSelf); }
 
-	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamMatchmakingSubsystem, TryLeaveQueueOperation); }
+	virtual FName GetFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamMatchmakingSubsystem, TryLeaveQueueOperation); }
 
 	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamMatchmakingSubsystem::StaticClass(); }
 };

@@ -329,7 +329,7 @@ class UK2BeamNode_Operation_FetchAssignedLeaderboardOperation : public UK2BeamNo
 
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLeaderboardsSubsystem, GetSelf); }
 
-	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLeaderboardsSubsystem, FetchAssignedLeaderboardOperation); }
+	virtual FName GetFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLeaderboardsSubsystem, FetchAssignedLeaderboardOperation); }
 
 	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamLeaderboardsSubsystem::StaticClass(); }
 };
@@ -347,7 +347,7 @@ class UK2BeamNode_Operation_FetchFocusRankEntriesOperation : public UK2BeamNode_
 
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLeaderboardsSubsystem, GetSelf); }
 
-	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLeaderboardsSubsystem, FetchFocusRankEntriesOperation); }
+	virtual FName GetFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLeaderboardsSubsystem, FetchFocusRankEntriesOperation); }
 
 	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamLeaderboardsSubsystem::StaticClass(); }
 };
@@ -365,7 +365,7 @@ class UK2BeamNode_Operation_FetchLeaderboardOperation : public UK2BeamNode_Opera
 
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLeaderboardsSubsystem, GetSelf); }
 
-	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLeaderboardsSubsystem, FetchLeaderboardOperation); }
+	virtual FName GetFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLeaderboardsSubsystem, FetchLeaderboardOperation); }
 
 	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamLeaderboardsSubsystem::StaticClass(); }
 };
@@ -383,7 +383,7 @@ class UK2BeamNode_Operation_FetchLeaderboardPageOperation : public UK2BeamNode_O
 
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLeaderboardsSubsystem, GetSelf); }
 
-	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLeaderboardsSubsystem, FetchLeaderboardPageOperation); }
+	virtual FName GetFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLeaderboardsSubsystem, FetchLeaderboardPageOperation); }
 
 	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamLeaderboardsSubsystem::StaticClass(); }
 };
@@ -401,7 +401,7 @@ class UK2BeamNode_Operation_FetchLeaderboardFocusPlayerOperation : public UK2Bea
 
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLeaderboardsSubsystem, GetSelf); }
 
-	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLeaderboardsSubsystem, FetchLeaderboardFocusPlayerOperation); }
+	virtual FName GetFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLeaderboardsSubsystem, FetchLeaderboardFocusPlayerOperation); }
 
 	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamLeaderboardsSubsystem::StaticClass(); }
 };
@@ -419,7 +419,7 @@ class UK2BeamNode_Operation_FetchPlayerRankOperation : public UK2BeamNode_Operat
 
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLeaderboardsSubsystem, GetSelf); }
 
-	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLeaderboardsSubsystem, FetchPlayerRankOperation); }
+	virtual FName GetFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLeaderboardsSubsystem, FetchPlayerRankOperation); }
 
 	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamLeaderboardsSubsystem::StaticClass(); }
 };
@@ -437,7 +437,7 @@ class UK2BeamNode_Operation_FetchFriendsRanksOperation : public UK2BeamNode_Oper
 
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLeaderboardsSubsystem, GetSelf); }
 
-	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLeaderboardsSubsystem, FetchFriendsRanksOperation); }
+	virtual FName GetFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLeaderboardsSubsystem, FetchFriendsRanksOperation); }
 
 	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamLeaderboardsSubsystem::StaticClass(); }
 };
@@ -455,7 +455,7 @@ class UK2BeamNode_Operation_UpdateLeaderboardScoreOperation : public UK2BeamNode
 
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLeaderboardsSubsystem, GetSelf); }
 
-	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLeaderboardsSubsystem, UpdateLeaderboardScoreOperation); }
+	virtual FName GetFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLeaderboardsSubsystem, UpdateLeaderboardScoreOperation); }
 
 	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamLeaderboardsSubsystem::StaticClass(); }
 };
@@ -473,7 +473,7 @@ class UK2BeamNode_Operation_IncrementLeaderboardScoreOperation : public UK2BeamN
 
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLeaderboardsSubsystem, GetSelf); }
 
-	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLeaderboardsSubsystem, IncrementLeaderboardScoreOperation); }
+	virtual FName GetFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLeaderboardsSubsystem, IncrementLeaderboardScoreOperation); }
 
 	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamLeaderboardsSubsystem::StaticClass(); }
 };
@@ -491,7 +491,7 @@ class UK2BeamNode_Operation_DecrementLeaderboardScoreOperation : public UK2BeamN
 
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLeaderboardsSubsystem, GetSelf); }
 
-	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLeaderboardsSubsystem, DecrementLeaderboardScoreOperation); }
+	virtual FName GetFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLeaderboardsSubsystem, DecrementLeaderboardScoreOperation); }
 
 	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamLeaderboardsSubsystem::StaticClass(); }
 };

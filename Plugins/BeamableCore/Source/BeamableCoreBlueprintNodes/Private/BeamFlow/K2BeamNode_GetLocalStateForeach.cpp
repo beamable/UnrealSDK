@@ -73,15 +73,6 @@ FLinearColor UK2BeamNode_GetLocalStateForeach::GetNodeTitleColor() const
 	return FLinearColor::FromSRGBColor(FColor::FromHex("#674CC5"));
 }
 
-void UK2BeamNode_GetLocalStateForeach::JumpToDefinition() const
-{
-	const auto Function = GetRuntimeSubsystemClass()->FindFunctionByName(GetFunctionName());
-
-	if (!Function) return;
-
-	FSourceCodeNavigation::NavigateToFunction(Function);
-}
-
 void UK2BeamNode_GetLocalStateForeach::ExpandNode(FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph)
 {
 	Super::ExpandNode(CompilerContext, SourceGraph);

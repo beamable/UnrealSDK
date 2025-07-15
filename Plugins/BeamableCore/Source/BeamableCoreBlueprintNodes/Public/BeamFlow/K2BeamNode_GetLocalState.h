@@ -12,7 +12,7 @@
  */
 
 UCLASS(NotBlueprintable, NotBlueprintType, Hidden, meta=(BeamGetLocalState))
-class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_GetLocalState : public UK2Node
+class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_GetLocalState : public UBeamK2Node
 {
 	GENERATED_BODY()
 
@@ -61,8 +61,6 @@ public:
 	//UK2Node impl
 	virtual void AllocateDefaultPins() override;
 	virtual void ExpandNode(FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph) override;
-	virtual bool CanJumpToDefinition() const override { return true; };
-	virtual void JumpToDefinition() const override;
 	virtual FSlateIcon GetIconAndTint(FLinearColor& OutColor) const override;
 	virtual FLinearColor GetNodeTitleColor() const override;
 	//BeamFlowNode impl
@@ -70,22 +68,6 @@ public:
 protected:
 	virtual FName GetSuccessPinName() { return FName("True"); }
 	virtual FName GetFailurePinName() { return FName("False"); }
-
-	/**
-	 * @brief The subsystem's GetSelf function name that we can use to call a function on it.
-	 * See default implementation to override it correctly.  
-	 */
-	virtual FName GetSubsystemSelfFunctionName() const;
-
-	/**
-	 * @brief The subsystem's function.
-	 */
-	virtual FName GetFunctionName() const;
-
-	/**
-	 * @brief The UClass for a subsystem (GameInstanceSubsystem or BeamRuntimeSubsystem) that this function resides in. 
-	 */
-	virtual UClass* GetRuntimeSubsystemClass() const;
 
 	/**
 	 * @brief This predicated can be override to hide specific pins in the function

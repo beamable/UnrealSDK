@@ -88,7 +88,7 @@ class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_Operation : public UK2BeamNode_
 
 	virtual FText GetTooltipText() const override
 	{
-		auto Function = GetRuntimeSubsystemClass()->FindFunctionByName(GetOperationFunctionName());
+		auto Function = GetRuntimeSubsystemClass()->FindFunctionByName(GetFunctionName());
 		FText BaseTooltip = {};
 		if (Function != nullptr)
 		{
@@ -109,19 +109,8 @@ class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_Operation : public UK2BeamNode_
 
 protected:
 	virtual FText GetKeywords() const override { return FText::FromString(FString::Printf(TEXT("Beam %s"), *GetServiceName())); };
-	
+
 	virtual FName GetCornerIcon() const override;
-
-	/**
-	 * @brief The subsystem's GetSelf function name that we can use to call a function on it.
-	 * See default implementation to override it correctly.  
-	 */
-	virtual FName GetSubsystemSelfFunctionName() const;
-
-	/**
-	 * @brief The subsystem's Operation function. This is any function that returns a FBeamOperationHandle and has a 'FBeamOperationEventHandler OnOperationEvent' parameter.
-	 */
-	virtual FName GetOperationFunctionName() const;
 
 	/**
 	 * @brief Override this to modify and override the tooltips for pin names. Gets recreated every time EnforceBeamFlowModePins gets called.  
@@ -129,17 +118,13 @@ protected:
 	 */
 	virtual void BuildPinToolTipMap(TMap<FName, FString>& OutTooltipMap);
 
-	/**
-	 * @brief The UClass for a subsystem (GameInstanceSubsystem or BeamRuntimeSubsystem) that this operation resides in. 
-	 */
-	virtual UClass* GetRuntimeSubsystemClass() const;
 
 	/**
 	 * Returns 
 	 * */
 	virtual TMap<FName, UClass*> GetOperationEventCastClass(EBeamOperationEventType Type) const;
 
-	
+
 	/**
 	 * Returns the list of possible values for FBeamOperationEvent.EventCode given the type of the event (success/error/etc).
 	 * Must always include NAME_None as its first value (the base implementation guarantees this) so call it if you override this to expose other events. 
@@ -193,7 +178,8 @@ protected:
 	                                   const TArray<TArray<UEdGraphNode*>>& PerFlowEventNodes);
 
 	void ExpandBeamFlowSubEvents(FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph, const UEdGraphSchema_K2* K2Schema,
-	                             const TArray<FName>& EventIds, const TMap<FName, UClass*>& EventDataCasts, const TArray<FName>& EventsFlowPinNames, UK2Node_BreakStruct* BreakOperationResultNode, UEdGraphPin* SubEventSwitchExecPin);
+	                             const TArray<FName>& EventIds, const TMap<FName, UClass*>& EventDataCasts, const TArray<FName>& EventsFlowPinNames, UK2Node_BreakStruct* BreakOperationResultNode,
+	                             UEdGraphPin* SubEventSwitchExecPin);
 };
 
 #undef LOCTEXT_NAMESPACE

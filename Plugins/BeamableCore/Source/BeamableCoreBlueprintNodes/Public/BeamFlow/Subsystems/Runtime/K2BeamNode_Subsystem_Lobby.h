@@ -512,7 +512,7 @@ class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_Operation_CreateOpenLobby : pub
 
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLobbySubsystem, GetSelf); }
 
-	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLobbySubsystem, CreateOpenLobbyOperation); }
+	virtual FName GetFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLobbySubsystem, CreateOpenLobbyOperation); }
 
 	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamLobbySubsystem::StaticClass(); }
 };
@@ -530,7 +530,7 @@ class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_Operation_CreateClosedLobby : p
 
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLobbySubsystem, GetSelf); }
 
-	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLobbySubsystem, CreateClosedLobbyOperation); }
+	virtual FName GetFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLobbySubsystem, CreateClosedLobbyOperation); }
 
 	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamLobbySubsystem::StaticClass(); }
 };
@@ -549,7 +549,7 @@ class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_Operation_RefreshLobbyData : pu
 
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLobbySubsystem, GetSelf); }
 
-	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLobbySubsystem, RefreshLobbyDataOperation); }
+	virtual FName GetFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLobbySubsystem, RefreshLobbyDataOperation); }
 
 	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamLobbySubsystem::StaticClass(); }
 };
@@ -567,7 +567,7 @@ class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_Operation_RefreshLobbiesData : 
 
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLobbySubsystem, GetSelf); }
 
-	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLobbySubsystem, RefreshLobbiesDataOperation); }
+	virtual FName GetFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLobbySubsystem, RefreshLobbiesDataOperation); }
 
 	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamLobbySubsystem::StaticClass(); }
 };
@@ -585,7 +585,7 @@ class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_Operation_JoinLobby : public UK
 
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLobbySubsystem, GetSelf); }
 
-	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLobbySubsystem, JoinLobbyOperation); }
+	virtual FName GetFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLobbySubsystem, JoinLobbyOperation); }
 
 	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamLobbySubsystem::StaticClass(); }
 };
@@ -603,7 +603,7 @@ class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_Operation_JoinLobbyByPasscode :
 
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLobbySubsystem, GetSelf); }
 
-	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLobbySubsystem, JoinLobbyByPasscodeOperation); }
+	virtual FName GetFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLobbySubsystem, JoinLobbyByPasscodeOperation); }
 
 	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamLobbySubsystem::StaticClass(); }
 };
@@ -621,7 +621,7 @@ class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_Operation_LeaveLobby : public U
 
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLobbySubsystem, GetSelf); }
 
-	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLobbySubsystem, LeaveLobbyOperation); }
+	virtual FName GetFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLobbySubsystem, LeaveLobbyOperation); }
 
 	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamLobbySubsystem::StaticClass(); }
 };
@@ -639,7 +639,7 @@ class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_Operation_KickPlayer : public U
 
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLobbySubsystem, GetSelf); }
 
-	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLobbySubsystem, KickPlayerOperation); }
+	virtual FName GetFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLobbySubsystem, KickPlayerOperation); }
 
 	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamLobbySubsystem::StaticClass(); }
 };
@@ -658,7 +658,7 @@ class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_Operation_CommitLobbyUpdate : p
 
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLobbySubsystem, GetSelf); }
 
-	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLobbySubsystem, CommitLobbyUpdateOperation); }
+	virtual FName GetFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLobbySubsystem, CommitLobbyUpdateOperation); }
 
 	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamLobbySubsystem::StaticClass(); }
 };
@@ -676,7 +676,7 @@ class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_Operation_UpdatePlayerData : pu
 
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLobbySubsystem, GetSelf); }
 
-	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLobbySubsystem, UpdatePlayerDataOperation); }
+	virtual FName GetFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLobbySubsystem, UpdatePlayerDataOperation); }
 
 	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamLobbySubsystem::StaticClass(); }
 };
@@ -694,7 +694,7 @@ class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_Operation_DeletePlayerData : pu
 
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLobbySubsystem, GetSelf); }
 
-	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLobbySubsystem, DeletePlayerDataOperation); }
+	virtual FName GetFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLobbySubsystem, DeletePlayerDataOperation); }
 
 	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamLobbySubsystem::StaticClass(); }
 };
@@ -712,7 +712,7 @@ class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_Operation_DeleteSlotPlayerData 
 
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLobbySubsystem, GetSelf); }
 
-	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLobbySubsystem, DeleteSlotPlayerDataOperation); }
+	virtual FName GetFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLobbySubsystem, DeleteSlotPlayerDataOperation); }
 
 	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamLobbySubsystem::StaticClass(); }
 };
@@ -730,7 +730,7 @@ class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_Operation_ProvisionGameServerFo
 
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLobbySubsystem, GetSelf); }
 
-	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLobbySubsystem, ProvisionGameServerForLobbyOperation); }
+	virtual FName GetFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLobbySubsystem, ProvisionGameServerForLobbyOperation); }
 
 	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamLobbySubsystem::StaticClass(); }
 };

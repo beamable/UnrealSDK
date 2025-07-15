@@ -16,9 +16,9 @@ class UK2BeamOperation_Editor_SignIn : public UK2BeamNode_Operation
 
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamEditor, GetSelf); }
 
-	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamEditor, SignInOperation); }
+	virtual FName GetFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamEditor, SignInOperation); }
 
-	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamEditor::StaticClass(); }	
+	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamEditor::StaticClass(); }
 };
 
 #undef LOCTEXT_NAMESPACE

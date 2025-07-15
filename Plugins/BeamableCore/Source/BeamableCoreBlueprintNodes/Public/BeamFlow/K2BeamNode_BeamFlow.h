@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "BeamK2.h"
+#include "BeamK2Node.h"
 #include "BlueprintActionDatabaseRegistrar.h"
 
 #include "K2BeamNode_BeamFlow.generated.h"
@@ -14,7 +15,7 @@
  * 
  */
 UCLASS(NotBlueprintable, NotBlueprintType, Hidden, meta=(BeamFlowNode))
-class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_BeamFlow : public UK2Node
+class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_BeamFlow : public UBeamK2Node
 {
 	GENERATED_BODY()
 
@@ -37,8 +38,6 @@ public:
 	virtual FSlateIcon GetIconAndTint(FLinearColor& OutColor) const override;
 	virtual FLinearColor GetNodeTitleColor() const override;
 	virtual FName GetCornerIcon() const override;
-
-	virtual UObject* GetJumpTargetForDoubleClick() const override;
 
 	virtual void GetNodeContextMenuActions(UToolMenu* Menu, UGraphNodeContextMenuContext* Context) const override;
 

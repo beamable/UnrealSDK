@@ -153,7 +153,7 @@ class UK2BeamNode_Operation_FetchPlayerFriendState : public UK2BeamNode_Operatio
 		return GET_FUNCTION_NAME_CHECKED(UBeamFriendsSubsystem, GetSelf);
 	}
 
-	virtual FName GetOperationFunctionName() const override
+	virtual FName GetFunctionName() const override
 	{
 		return GET_FUNCTION_NAME_CHECKED(UBeamFriendsSubsystem, FetchPlayerFriendStateOperation);
 	}
@@ -181,7 +181,7 @@ class UK2BeamNode_Operation_FetchFriendsState : public UK2BeamNode_Operation
 		return GET_FUNCTION_NAME_CHECKED(UBeamFriendsSubsystem, GetSelf);
 	}
 
-	virtual FName GetOperationFunctionName() const override
+	virtual FName GetFunctionName() const override
 	{
 		return GET_FUNCTION_NAME_CHECKED(UBeamFriendsSubsystem, FetchFriendsStateOperation);
 	}
@@ -208,7 +208,7 @@ class UK2BeamNode_Operation_FetchFriendPresenceStatus : public UK2BeamNode_Opera
 		return GET_FUNCTION_NAME_CHECKED(UBeamFriendsSubsystem, GetSelf);
 	}
 
-	virtual FName GetOperationFunctionName() const override
+	virtual FName GetFunctionName() const override
 	{
 		return GET_FUNCTION_NAME_CHECKED(UBeamFriendsSubsystem, FetchFriendPresenceStatusOperation);
 	}
@@ -235,7 +235,7 @@ class UK2BeamNode_Operation_SendFriendInvite : public UK2BeamNode_Operation
 		return GET_FUNCTION_NAME_CHECKED(UBeamFriendsSubsystem, GetSelf);
 	}
 
-	virtual FName GetOperationFunctionName() const override
+	virtual FName GetFunctionName() const override
 	{
 		return GET_FUNCTION_NAME_CHECKED(UBeamFriendsSubsystem, SendFriendInviteOperation);
 	}
@@ -262,7 +262,7 @@ class UK2BeamNode_Operation_AcceptFriendInvite : public UK2BeamNode_Operation
 		return GET_FUNCTION_NAME_CHECKED(UBeamFriendsSubsystem, GetSelf);
 	}
 
-	virtual FName GetOperationFunctionName() const override
+	virtual FName GetFunctionName() const override
 	{
 		return GET_FUNCTION_NAME_CHECKED(UBeamFriendsSubsystem, AcceptFriendInviteOperation);
 	}
@@ -290,7 +290,7 @@ class UK2BeamNode_Operation_DeclineFriendInvite : public UK2BeamNode_Operation
 		return GET_FUNCTION_NAME_CHECKED(UBeamFriendsSubsystem, GetSelf);
 	}
 
-	virtual FName GetOperationFunctionName() const override
+	virtual FName GetFunctionName() const override
 	{
 		return GET_FUNCTION_NAME_CHECKED(UBeamFriendsSubsystem, DeclineFriendInviteOperation);
 	}
@@ -318,7 +318,7 @@ class UK2BeamNode_Operation_BlockPlayer : public UK2BeamNode_Operation
 		return GET_FUNCTION_NAME_CHECKED(UBeamFriendsSubsystem, GetSelf);
 	}
 
-	virtual FName GetOperationFunctionName() const override
+	virtual FName GetFunctionName() const override
 	{
 		return GET_FUNCTION_NAME_CHECKED(UBeamFriendsSubsystem, BlockPlayerOperation);
 	}
@@ -345,7 +345,7 @@ class UK2BeamNode_Operation_UnblockPlayer : public UK2BeamNode_Operation
 		return GET_FUNCTION_NAME_CHECKED(UBeamFriendsSubsystem, GetSelf);
 	}
 
-	virtual FName GetOperationFunctionName() const override
+	virtual FName GetFunctionName() const override
 	{
 		return GET_FUNCTION_NAME_CHECKED(UBeamFriendsSubsystem, UnblockPlayerOperation);
 	}
@@ -374,7 +374,7 @@ class UK2BeamNode_Operation_RemoveFriend : public UK2BeamNode_Operation
 		return GET_FUNCTION_NAME_CHECKED(UBeamFriendsSubsystem, GetSelf);
 	}
 
-	virtual FName GetOperationFunctionName() const override
+	virtual FName GetFunctionName() const override
 	{
 		return GET_FUNCTION_NAME_CHECKED(UBeamFriendsSubsystem, RemoveFriendOperation);
 	}
