@@ -104,4 +104,8 @@ public:
 	/* Soft path will be converted to content reference before use */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "General")
 	TSoftObjectPtr<UWidgetBlueprint> BeamableMainWindow;
+
+	/* Path for dotnet that the Beam SDK CLI commands will use */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "General")
+	FString DotnetExecutablePath;
 };
