@@ -64,7 +64,7 @@ void UBeamFriendsSubsystem::OnUserSignedIn_Implementation(const FUserSlot& UserS
 					}
 					else
 					{
-						UE_LOG(LogBeamFriend, Error, TEXT("%hs() failed. Operation failed!"), __FUNCTION__);
+						UE_LOG(LogBeamFriend, Error, TEXT("%hs() failed. Operation failed!"), ANSI_TO_TCHAR(__FUNCTION__));
 					}
 				}));
 
@@ -320,7 +320,7 @@ FBeamOperationHandle UBeamFriendsSubsystem::CPP_RemoveFriendOperation(FUserSlot 
 
 void UBeamFriendsSubsystem::FetchPlayerFriendState(FUserSlot UserSlot, FBeamOperationHandle Op)
 {
-	if (!IsUserSlotAuthenticated(UserSlot, __FUNCSIG__, Op))
+	if (!IsUserSlotAuthenticated(UserSlot, ANSI_TO_TCHAR(__FUNCTION__), Op))
 	{
 		return;
 	}
@@ -496,7 +496,7 @@ void UBeamFriendsSubsystem::FetchFriendPresenceStatus(FUserSlot UserSlot, TArray
 
 void UBeamFriendsSubsystem::SendFriendInvite(FUserSlot UserSlot, FBeamGamerTag FriendGamerTag, FBeamOperationHandle Op)
 {
-	if (!IsUserSlotAuthenticated(UserSlot, __FUNCTION__, Op))
+	if (!IsUserSlotAuthenticated(UserSlot, ANSI_TO_TCHAR(__FUNCTION__), Op))
 	{
 		return;
 	}
@@ -546,7 +546,7 @@ void UBeamFriendsSubsystem::SendFriendInvite(FUserSlot UserSlot, FBeamGamerTag F
 
 void UBeamFriendsSubsystem::AcceptFriendInvite(FUserSlot UserSlot, FBeamGamerTag FriendGamerTag, FBeamOperationHandle Op)
 {
-	if (!IsUserSlotAuthenticated(UserSlot, __FUNCTION__, Op))
+	if (!IsUserSlotAuthenticated(UserSlot, ANSI_TO_TCHAR(__FUNCTION__), Op))
 	{
 		return;
 	}
@@ -621,7 +621,7 @@ void UBeamFriendsSubsystem::AcceptFriendInvite(FUserSlot UserSlot, FBeamGamerTag
 void UBeamFriendsSubsystem::DeclineFriendInvite(FUserSlot UserSlot, FBeamGamerTag FriendGamerTag,
                                                 FBeamOperationHandle Op)
 {
-	if (!IsUserSlotAuthenticated(UserSlot, __FUNCTION__, Op))
+	if (!IsUserSlotAuthenticated(UserSlot, ANSI_TO_TCHAR(__FUNCTION__), Op))
 	{
 		return;
 	}
@@ -674,7 +674,7 @@ void UBeamFriendsSubsystem::DeclineFriendInvite(FUserSlot UserSlot, FBeamGamerTa
 
 void UBeamFriendsSubsystem::BlockPlayer(FUserSlot UserSlot, FBeamGamerTag PlayerGamerTag, FBeamOperationHandle Op)
 {
-	if (!IsUserSlotAuthenticated(UserSlot, __FUNCTION__, Op))
+	if (!IsUserSlotAuthenticated(UserSlot, ANSI_TO_TCHAR(__FUNCTION__), Op))
 	{
 		return;
 	}
@@ -747,7 +747,7 @@ void UBeamFriendsSubsystem::BlockPlayer(FUserSlot UserSlot, FBeamGamerTag Player
 
 void UBeamFriendsSubsystem::UnblockPlayer(FUserSlot UserSlot, FBeamGamerTag PlayerGamerTag, FBeamOperationHandle Op)
 {
-	if (!IsUserSlotAuthenticated(UserSlot, __FUNCTION__, Op))
+	if (!IsUserSlotAuthenticated(UserSlot, ANSI_TO_TCHAR(__FUNCTION__), Op))
 	{
 		return;
 	}
@@ -805,7 +805,7 @@ void UBeamFriendsSubsystem::UnblockPlayer(FUserSlot UserSlot, FBeamGamerTag Play
 
 void UBeamFriendsSubsystem::RemoveFriend(FUserSlot UserSlot, FBeamGamerTag FriendGamerTag, FBeamOperationHandle Op)
 {
-	if (!IsUserSlotAuthenticated(UserSlot, __FUNCTION__, Op))
+	if (!IsUserSlotAuthenticated(UserSlot, ANSI_TO_TCHAR(__FUNCTION__), Op))
 	{
 		return;
 	}
@@ -1200,7 +1200,7 @@ void UBeamFriendsSubsystem::MailRefreshNotificationHandler(FMailRefreshNotificat
 				else
 				{
 					UE_LOG(LogBeamFriend, Error, TEXT("Failed to fetch the state of the friends in the %hs"),
-					       __FUNCTION__);
+					       ANSI_TO_TCHAR(__FUNCTION__));
 				}
 			});
 		CPP_FetchPlayerFriendStateOperation(UserSlot, Handler);
