@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Subsystems/Friends/BeamFriendsSubsystem.h"
@@ -320,7 +320,7 @@ FBeamOperationHandle UBeamFriendsSubsystem::CPP_RemoveFriendOperation(FUserSlot 
 
 void UBeamFriendsSubsystem::FetchPlayerFriendState(FUserSlot UserSlot, FBeamOperationHandle Op)
 {
-	if (!IsUserSlotAuthenticated(UserSlot, __FUNCSIG__, Op))
+	if (!IsUserSlotAuthenticated(UserSlot, __FUNCTION__, Op))
 	{
 		return;
 	}

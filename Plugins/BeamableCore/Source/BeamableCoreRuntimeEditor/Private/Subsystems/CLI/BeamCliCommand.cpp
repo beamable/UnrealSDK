@@ -3,7 +3,11 @@
 #include "JsonDomBuilder.h"
 #include "Interfaces/IHttpResponse.h"
 
+#if PLATFORM_MAC
+const FString UBeamCliCommand::PathToLocalCli = FString(TEXT("/usr/local/share/dotnet/dotnet"));
+#else
 const FString UBeamCliCommand::PathToLocalCli = FString(TEXT("dotnet"));
+#endif
 
 void UBeamCliLogEntry::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {

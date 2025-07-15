@@ -15,6 +15,7 @@
 
 FBeamOperationHandle UBeamCli::InitializeWhenEditorReady()
 {
+	FPlatformMisc::SetEnvironmentVar(TEXT("DOTNET_CLI_UI_LANGUAGE"), TEXT("en"));
 	const auto Op = RequestTracker->CPP_BeginOperation({}, GetName(), {});
 
 	// Make sure we have the BeamCliVersion.txt file
