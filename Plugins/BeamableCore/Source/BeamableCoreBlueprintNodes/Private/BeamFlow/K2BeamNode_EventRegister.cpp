@@ -250,15 +250,13 @@ void UK2BeamNode_EventRegister::ExpandNode(FKismetCompilerContext& CompilerConte
 	BreakAllNodeLinks();
 }
 
-UObject* UK2BeamNode_EventRegister::GetJumpTargetForDoubleClick() const
+void UK2BeamNode_EventRegister::JumpToDefinition() const
 {
 	const auto ClassReference = GetRuntimeSubsystemClass();
 
-	if (!ClassReference) return nullptr;
+	if (!ClassReference) return;
 
 	FSourceCodeNavigation::NavigateToClass(ClassReference);
-
-	return Super::GetJumpTargetForDoubleClick();
 }
 
 FName UK2BeamNode_EventRegister::GetSubsystemSelfFunctionName() const

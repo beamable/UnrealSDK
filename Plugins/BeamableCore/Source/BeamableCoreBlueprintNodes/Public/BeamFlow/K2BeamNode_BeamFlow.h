@@ -38,8 +38,6 @@ public:
 	virtual FLinearColor GetNodeTitleColor() const override;
 	virtual FName GetCornerIcon() const override;
 
-	virtual UObject* GetJumpTargetForDoubleClick() const override;
-
 	virtual void GetNodeContextMenuActions(UToolMenu* Menu, UGraphNodeContextMenuContext* Context) const override;
 
 	void ExitBeamFlowMode();
