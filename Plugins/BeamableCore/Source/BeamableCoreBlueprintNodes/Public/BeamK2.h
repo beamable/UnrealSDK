@@ -23,6 +23,8 @@ namespace BeamK2
 	const FName MD_BeamOptionalType = FName(TEXT("BeamOptionalType"));
 	const FName MD_BeamOperation_MultiUser = FName(TEXT("BeamOperationMultiUser"));
 
+	const FName CastTypeName = FName(TEXT("CastType"));
+	const FString DynamicCastParameterName = TEXT("DynamicCastParam");
 
 	/**
 	 * @brief For each of the custom node start pins, find all the execution flow nodes from the custom node's starting pin forward.
@@ -81,7 +83,7 @@ namespace BeamK2
 	 *
 	 * @param TargetClass: The UClass* result after the cast.
 	 */
-	UK2Node_DynamicCast* CreateDynamicCastNode(UEdGraphNode* CustomNode, FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph, UClass* TargetClass);
+	UK2Node_DynamicCast* CreateDynamicCastNode(UEdGraphNode* CustomNode, FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph, UClass* TargetClass, bool IsPure);
 
 	/**
 	 * @brief Utility that creates and configures an EnumEquality node of the given "EnumToCompareType" to compare "EnumToCompareAgainst" against "CompareAgainstPin".

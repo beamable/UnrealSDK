@@ -65,6 +65,7 @@ public:
 	virtual void JumpToDefinition() const override;
 	virtual FSlateIcon GetIconAndTint(FLinearColor& OutColor) const override;
 	virtual FLinearColor GetNodeTitleColor() const override;
+	virtual FString GetPinMetaData(FName InPinName, FName InKey) override;
 	//BeamFlowNode impl
 
 protected:

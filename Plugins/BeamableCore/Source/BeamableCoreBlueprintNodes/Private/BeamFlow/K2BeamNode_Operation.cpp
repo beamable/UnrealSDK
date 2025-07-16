@@ -383,7 +383,7 @@ void UK2BeamNode_Operation::EnforceBeamFlowModePins()
 			CancelledEventFlowPinNames.Empty();
 			EnforceRelevantEventPins(CancelledTypeSubEvents, OP_Operation_Expanded_OnCancelled, RelevantEventsAdded, CancelledEventFlowPinNames, CancelledCastClass);
 			for (int i = 0; i < CancelledEventFlowPinNames.Num(); ++i)
-			{				
+			{
 				PinsToKeep.Add(CancelledEventFlowPinNames[i]);
 			}
 
@@ -761,7 +761,7 @@ void UK2BeamNode_Operation::ExpandBeamFlowSubEvents(FKismetCompilerContext& Comp
 	{
 		const auto FlowPin = FindPin(EventsFlowPinNames[i]);
 
-		
+
 		// Get the intermediate pins we'll need to connect to all the places our custom node's output pins are connected to.
 		// If we expect a string, than we forward the raw event data string. Otherwise...
 		const auto SubEventValue = EventIds[i];
@@ -773,13 +773,13 @@ void UK2BeamNode_Operation::ExpandBeamFlowSubEvents(FKismetCompilerContext& Comp
 			auto EventDataPin = BreakOperationResultNode->FindPin(GET_MEMBER_NAME_CHECKED(FBeamOperationEvent, EventData));
 			auto CastedOutputPin = FindPin(EventDataCasts[SubEventValue]->GetName());
 
-			auto CastNode = CreateDynamicCastNode(this, CompilerContext, SourceGraph, EventDataCasts[SubEventValue]);
-			
+			auto CastNode = CreateDynamicCastNode(this, CompilerContext, SourceGraph, EventDataCasts[SubEventValue], false);
+
 			K2Schema->TryCreateConnection(CastNode->GetCastSourcePin(), EventDataPin);
 
 			K2Schema->TryCreateConnection(CastNode->GetExecPin(), IntermediateSubEventFlowPin);
-			
-			const auto SuccessFlowCastObject =CompilerContext.MovePinLinksToIntermediate(*CastedOutputPin, *CastNode->GetCastResultPin());
+
+			const auto SuccessFlowCastObject = CompilerContext.MovePinLinksToIntermediate(*CastedOutputPin, *CastNode->GetCastResultPin());
 			check(!SuccessFlowCastObject.IsFatal());
 
 			const auto SuccessFlowMovedCastSuccess = CompilerContext.MovePinLinksToIntermediate(*FlowPin, *CastNode->GetValidCastPin());

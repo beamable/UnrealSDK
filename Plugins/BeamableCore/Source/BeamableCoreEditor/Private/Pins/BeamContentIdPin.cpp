@@ -13,7 +13,14 @@ void SBeamContentIdPin::Construct(const FArguments& InArgs, UEdGraphPin* InGraph
 TSharedRef<SWidget> SBeamContentIdPin::GetDefaultValueWidget()
 {
 	Content = GEditor->GetEditorSubsystem<UBeamEditorContent>();
-	GetContentOptions(ContentTypeNames, ContentTypeToIdsMap);
+	FString Meta = GraphPinObj->GetOwningNode()->GetPinMetaData(GraphPinObj->PinName, FName("Test"));
+	TArray<FString> Filter;
+
+	if (!Meta.IsEmpty())
+	{
+		Filter.Add(Meta);
+	}
+	GetContentOptions(Filter, ContentTypeNames, ContentTypeToIdsMap);
 
 	// retrieve the previous value selected (or the first value as default)	
 	const auto InitialSelectedId = GetSelectedId();
@@ -25,27 +32,29 @@ TSharedRef<SWidget> SBeamContentIdPin::GetDefaultValueWidget()
 	if (GraphPinObj->LinkedTo.Num() > 0)
 		return SGraphPin::GetDefaultValueWidget();
 
-	if(const auto InitialIds = GetIdsForSelectedType())
+
+	if (const auto InitialIds = GetIdsForSelectedType())
 		Ids = TArray(*InitialIds);
-	
+
 	const auto InitialSelectedType = GetSelectedType();
-	return SAssignNew(WidgetContainer, SVerticalBox) + SVerticalBox::Slot()
+	return SAssignNew(WidgetContainer, SVerticalBox)
+		+ SVerticalBox::Slot()
 		[
 			SAssignNew(TypeComboBox, SNameComboBox) // you can display any widget here
-		.ContentPadding(FMargin(6.0f, 2.0f)) // you can stylize how you want by the way, check Slate library
-		.OptionsSource(&ContentTypeNames) // this to create all possibilities
-		.InitiallySelectedItem(InitialSelectedType) // the default or previous selected value
-		.OnComboBoxOpening(this, &SBeamContentIdPin::OnTypeComboBoxOpening) // this event is defined by the SNameComboBox
-		.OnSelectionChanged(this, &SBeamContentIdPin::OnTypeSelected) // dito
+			                                       .ContentPadding(FMargin(6.0f, 2.0f)) // you can stylize how you want by the way, check Slate library
+			                                       .OptionsSource(&ContentTypeNames) // this to create all possibilities
+			                                       .InitiallySelectedItem(InitialSelectedType) // the default or previous selected value
+			                                       .OnComboBoxOpening(this, &SBeamContentIdPin::OnTypeComboBoxOpening) // this event is defined by the SNameComboBox
+			                                       .OnSelectionChanged(this, &SBeamContentIdPin::OnTypeSelected) // dito
 		]
 		+ SVerticalBox::Slot()
 		[
 			SAssignNew(IdComboBox, SNameComboBox) // you can display any widget here
-		.ContentPadding(FMargin(6.0f, 2.0f)) // you can stylize how you want by the way, check Slate library
-		.OptionsSource(&Ids) // this to create all possibilities
-		.InitiallySelectedItem(InitialSelectedId) // the default or previous selected value
-		.OnComboBoxOpening(this, &SBeamContentIdPin::OnIdComboBoxOpening) // this event is defined by the SNameComboBox
-		.OnSelectionChanged(this, &SBeamContentIdPin::OnIdSelected) // dito
+			                                     .ContentPadding(FMargin(6.0f, 2.0f)) // you can stylize how you want by the way, check Slate library
+			                                     .OptionsSource(&Ids) // this to create all possibilities
+			                                     .InitiallySelectedItem(InitialSelectedId) // the default or previous selected value
+			                                     .OnComboBoxOpening(this, &SBeamContentIdPin::OnIdComboBoxOpening) // this event is defined by the SNameComboBox
+			                                     .OnSelectionChanged(this, &SBeamContentIdPin::OnIdSelected) // dito
 		];
 }
 
@@ -67,6 +76,14 @@ void SBeamContentIdPin::OnTypeSelected(TSharedPtr<FName> ItemSelected, ESelectIn
 			this->Ids = TArray(*NewIds);
 			IdComboBox->RefreshOptions();
 			IdComboBox->SetSelectedItem(GetSelectedId());
+			if (UPackage* Package = GraphPinObj->GetOwningNode()->GetGraph()->GetOutermost())
+			{
+				if (UMetaData* NodeMetaData = Package->GetMetaData())
+				{
+					NodeMetaData->SetValue(GraphPinObj->GetOwningNode(), FName("CastType"), *ItemSelected.Get()->ToString());
+					GraphPinObj->GetOwningNode()->ReconstructNode();
+				}
+			}
 		}
 	}
 }
@@ -236,13 +253,17 @@ EVisibility SBeamContentIdPin::GetDefaultValueVisibility() const
 	return SGraphPin::GetDefaultValueVisibility();
 }
 
-void SBeamContentIdPin::GetContentOptions(TArray<TSharedPtr<FName>>& TypeNames, TMap<FName, TArray<TSharedPtr<FName>>>& PerTypeNameIds) const
+void SBeamContentIdPin::GetContentOptions(TArray<FString> Filter, TArray<TSharedPtr<FName>>& TypeNames, TMap<FName, TArray<TSharedPtr<FName>>>& PerTypeNameIds) const
 {
 	Content->GetContentTypeToIdMaps(PerTypeNameIds);
 	TArray<FName> Names;
 	PerTypeNameIds.GetKeys(Names);
 	for (const auto& Name : Names)
 	{
+		if (Filter.Num() > 0 && !Filter.Contains(Name))
+		{
+			continue;
+		}
 		TypeNames.Add(MakeShareable(new FName(Name)));
 	}
 }
