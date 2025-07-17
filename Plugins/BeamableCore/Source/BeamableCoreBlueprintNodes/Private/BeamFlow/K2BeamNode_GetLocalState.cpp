@@ -73,30 +73,59 @@ FString UK2BeamNode_GetLocalState::GetPinMetaData(FName InPinName, FName InKey)
 	// If there's no metadata directly on the pin then check for metadata on the function
 	if (MetaData.IsEmpty())
 	{
-		if (UFunction* Function = GetRuntimeSubsystemClass()->FindFunctionByName(GetFunctionName()))
-		{
-			// Find the corresponding property for the pin and search that first
-			if (FProperty* Property = Function->FindPropertyByName(InPinName))
-			{
-				MetaData = Property->GetMetaData(InKey);
-			}
-
-			// Also look for metadata like DefaultToSelf on the function itself
-			if (MetaData.IsEmpty())
-			{
-				MetaData = Function->GetMetaData(InKey);
-				if (MetaData != InPinName.ToString())
-				{
-					// Only return if the value matches the pin name as we don't want general function metadata
-					MetaData.Empty();
-				}
-			}
-		}
+		return BeamK2::GetPinMetaData(InPinName, InKey, GetRuntimeSubsystemClass()->FindFunctionByName(GetFunctionName()));
 	}
 
 	return MetaData;
 }
 
+void UK2BeamNode_GetLocalState::PinDefaultValueChanged(UEdGraphPin* Pin)
+{
+	FString PinMetaData = GetPinMetaData(Pin->PinName, FName(BeamK2::MD_BeamCastTypeName));
+	if (!PinMetaData.IsEmpty())
+	{
+		Super::PinDefaultValueChanged(Pin);
+		if (Pin->LinkedTo.Num() == 0)
+		{
+			FString ClassName;
+			FString _;
+			Pin->GetDefaultAsString().Split(TEXT("."), &_, &ClassName);
+			NodeMetaData.Add(BeamK2::MD_BeamCastTypeName, *ClassName);
+			UE_LOG(LogTemp, Display, TEXT("UPDATE DEFAULT %s"), *ClassName);
+			ReconstructNode();
+		}
+	}
+	else
+	{
+		Super::PinDefaultValueChanged(Pin);
+	}
+}
+
+void UK2BeamNode_GetLocalState::NodeConnectionListChanged()
+{
+	bool ShouldReconstructNode = false;
+	for (auto Pin : Pins)
+	{
+		FString PinMetaData = GetPinMetaData(Pin->PinName, FName(BeamK2::MD_BeamCastTypeName));
+		if (!PinMetaData.IsEmpty())
+		{
+			if (Pin->LinkedTo.Num() > 0)
+			{
+				if (NodeMetaData.Contains(BeamK2::MD_BeamCastTypeName))
+				{
+					NodeMetaData.Remove(BeamK2::MD_BeamCastTypeName);
+					ShouldReconstructNode = true;
+				}
+			}
+		}
+	}
+	if (ShouldReconstructNode)
+	{
+		ReconstructNode();
+	}
+	
+	Super::NodeConnectionListChanged();
+}
 void UK2BeamNode_GetLocalState::ExpandNode(FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph)
 {
 	UK2Node::ExpandNode(CompilerContext, SourceGraph);
@@ -170,18 +199,19 @@ void UK2BeamNode_GetLocalState::ExpandNode(FKismetCompilerContext& CompilerConte
 		{
 			// Create the cast node 
 			UClass* StaticClassType = Cast<UClass>(OutputPin->PinType.PinSubCategoryObject.Get());
-			auto CastNode = BeamK2::CreateDynamicCastNode(this, CompilerContext, SourceGraph, StaticClassType, true);
+			if (StaticClassType)
+			{
+				auto CastNode = BeamK2::CreateDynamicCastNode(this, CompilerContext, SourceGraph, StaticClassType, true);
 
-			K2Schema->TryCreateConnection(CastNode->GetCastSourcePin(), CallFunctionOutputPin);
+				K2Schema->TryCreateConnection(CastNode->GetCastSourcePin(), CallFunctionOutputPin);
 
-			const auto SuccessFlowCastObject = CompilerContext.MovePinLinksToIntermediate(*OutputPin, *CastNode->GetCastResultPin());
-			check(!SuccessFlowCastObject.IsFatal());
-
-			// const auto SuccessFlowMovedCastSuccess = CompilerContext.MovePinLinksToIntermediate(*GetThenPin(), *CastNode->GetValidCastPin());
-			// check(!SuccessFlowMovedCastSuccess.IsFatal());
-
-			// const auto SuccessFlowMovedCastFail = CompilerContext.MovePinLinksToIntermediate(*FlowPin, *CastNode->GetInvalidCastPin());
-			// check(!SuccessFlowMovedCastFail.IsFatal());
+				const auto SuccessFlowCastObject = CompilerContext.MovePinLinksToIntermediate(*OutputPin, *CastNode->GetCastResultPin());
+				check(!SuccessFlowCastObject.IsFatal());
+			}
+			else
+			{
+				CompilerContext.MovePinLinksToIntermediate(*OutputPin, *CallFunctionOutputPin);
+			}
 		}
 		else
 		{

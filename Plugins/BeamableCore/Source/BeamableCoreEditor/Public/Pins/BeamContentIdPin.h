@@ -13,18 +13,19 @@
 class BEAMABLECOREEDITOR_API SBeamContentIdPin : public SGraphPin
 {
 public:
-	SLATE_BEGIN_ARGS(SBeamContentIdPin) {}
+	SLATE_BEGIN_ARGS(SBeamContentIdPin)
+		{
+		}
+
 	SLATE_END_ARGS()
-	
+
 	void Construct(const FArguments& InArgs, UEdGraphPin* InGraphPinObj);
 
 protected:
-
 	UPROPERTY()
 	UBeamEditorContent* Content = nullptr;
 
-	
-	
+
 	// this override is used to display slate widget used for customization.
 	virtual TSharedRef<SWidget> GetDefaultValueWidget() override;
 	void OnIdSelected(TSharedPtr<FName> ItemSelected, ESelectInfo::Type SelectInfo);
@@ -58,4 +59,9 @@ private:
 	 * TSharedPtr which our Pin object can works on.
 	 */
 	void GetContentOptions(TArray<FString> Filter, TArray<TSharedPtr<FName>>& TypeNames, TMap<FName, TArray<TSharedPtr<FName>>>& PerTypeNameIds) const;
+
+	/**
+	 * Update the node metadata with the selected type from content
+	 */
+	void UpdateNodeMetadata(TSharedPtr<FName> ItemSelected) const;
 };
