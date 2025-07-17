@@ -164,7 +164,7 @@ void UBeamUserDeveloperManagerEditor::TriggerOnPreBeginPIE(ULevelEditorPlaySetti
 				DeveloperUser = CreatedUserMap[AssignedUserKeyPair.Value.AsLong][0];
 			else
 				DeveloperUser = LocalUserDeveloperCache[AssignedUserKeyPair.Value.AsLong];
-			
+
 			BeamUserSlots->SaveSlot(AssignedUserKeyPair.Key.Slot, AssignedUserKeyPair.Key.PIEIndex,
 			                        DeveloperUser->GamerTag,
 			                        DeveloperUser->AccessToken,
@@ -193,15 +193,16 @@ void UBeamUserDeveloperManagerEditor::TriggerOnPreBeginPIE(ULevelEditorPlaySetti
 		{
 			UE_LOG(LogTemp, Error, TEXT("CREATE BATCH CLI COMMAND: CLI_ERROR_SAVE_FILE %d"), ResCode);
 			RequestTracker->TriggerOperationError(Handler, TEXT("CLI_ERROR_SAVE_FILE"));
-		}else if (ResCode != 0)
+		}
+		else if (ResCode != 0)
 		{
 			// Unknown error
 			RequestTracker->TriggerOperationError(Handler, TEXT(""));
-		}else
+		}
+		else
 		{
 			RequestTracker->TriggerOperationSuccess(Handler, TEXT(""));
 		}
-		
 	};
 
 	TArray<FString> GamerTags;
@@ -220,6 +221,15 @@ void UBeamUserDeveloperManagerEditor::TriggerOnPreBeginPIE(ULevelEditorPlaySetti
 	};
 
 	BeamCli->RunCommandServer(CreateUserBatchCommand, args, Handler);
+}
+
+UDeveloperUserDataStreamData* UBeamUserDeveloperManagerEditor::GetUserWithGamerTag(FBeamGamerTag GamerTag)
+{
+	if (LocalUserDeveloperCache.Contains(GamerTag))
+	{
+		return LocalUserDeveloperCache[GamerTag];
+	}
+	return nullptr;
 }
 
 void UBeamUserDeveloperManagerEditor::GetUsersWithFilter(FString NameFilter, FString TagFilter, TArray<UDeveloperUserDataStreamData*>& AllUsers)
@@ -326,14 +336,14 @@ void UBeamUserDeveloperManagerEditor::CopyTemplateToNewUserOperation(UDeveloperU
 	{
 		TagsStr += FString::Printf(TEXT("--tags \"%s\" "), *tag);
 	}
-	
+
 	auto args = {
 		FString::Printf(TEXT("--template \"%lld\""), UserData->GamerTag),
 		FString::Printf(TEXT("--alias \"%s Copy\""), *UserData->Alias),
 		FString::Printf(TEXT("--description \"%s\""), *UserData->Description),
 		FString::Printf(TEXT("--user-type %d"), DeveloperUserType),
 		FString::Printf(TEXT("%s"), *TagsStr),
-	};	
+	};
 
 	auto Handler = RequestTracker->CPP_BeginOperation({}, GetName(), {});
 
