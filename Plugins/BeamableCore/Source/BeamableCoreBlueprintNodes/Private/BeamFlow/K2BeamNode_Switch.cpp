@@ -20,26 +20,32 @@ void UK2BeamNode_Switch::AllocateDefaultPins()
 	ExecPin->PinFriendlyName = FText::FromName(UEdGraphSchema_K2::PC_Exec);
 
 	const auto ThenPin = CreatePin(EGPD_Output, UEdGraphSchema_K2::PC_Exec, UEdGraphSchema_K2::PN_Then);
-	ThenPin->PinFriendlyName = FText::FromName(FName("Default Output - Then"));
+	ThenPin->PinFriendlyName = FText::FromName(FName("Cast Failed"));
 
 	CreatePin(EGPD_Input, UEdGraphSchema_K2::PC_Wildcard, InputPinName);
 	CreatePin(EGPD_Output, UEdGraphSchema_K2::PC_Wildcard, OutputPinName);
 
-	TArray<FString> OutputDefaultValues;
-	DefaultValue.GenerateValueArray(OutputDefaultValues);
-
-	TArray<FName> OutputNamesKeys;
-	DefaultValue.GetKeys(OutputNamesKeys);
-
-	for (auto index = 0; index < OutputNamesKeys.Num(); ++index)
+	for (auto PinGuid : WildcardsPins)
 	{
-		auto Pin = CreatePin(EGPD_Input, UEdGraphSchema_K2::PC_Class, UObject::StaticClass(), OutputNamesKeys[index]);
-		Pin->bNotConnectable = true;
+		auto WildcardPin = CreatePin(EGPD_Input, UEdGraphSchema_K2::PC_Wildcard, GetInputWildcardPinName(PinGuid));
+		WildcardPin->PinFriendlyName = FText::FromName(FriendlyPassThrough);
+
+		auto OutputWildcardPin = CreatePin(EGPD_Output, UEdGraphSchema_K2::PC_Wildcard, GetOutputWildcardPinName(PinGuid));
+		OutputWildcardPin->PinFriendlyName = FText::FromName(FriendlyPassThroughOutput);
 	}
 
-	for (auto index = 0; index < OutputDefaultValues.Num(); ++index)
+	
+	for (auto index = 0; index < ClassInputPins.Num(); ++index)
 	{
-		FString ClassName = OutputDefaultValues[index];
+		auto Pin = CreatePin(EGPD_Input, UEdGraphSchema_K2::PC_Class, UObject::StaticClass(), FName(ClassInputPins[index].Guid.ToString()));
+		Pin->PinFriendlyName = FText::FromString(FString::Printf(TEXT("Cast Class %d"), (index + 1)));
+		Pin->bNotConnectable = true;
+		
+	}
+
+	for (auto index = 0; index < ClassInputPins.Num(); ++index)
+	{
+		FString ClassName = ClassInputPins[index].DefaultValue;
 
 		if (ClassName.IsEmpty()) continue;
 
@@ -71,15 +77,11 @@ void UK2BeamNode_Switch::ExpandNode(FKismetCompilerContext& CompilerContext, UEd
 		InputLinkPin = GetInputPin()->LinkedTo[0];
 	}
 
-	for (auto Pin : Pins)
+	for (auto ClassPinInput : ClassInputPins)
 	{
-		// If is a class input then will have a default value set
-		if (!DefaultValue.Contains(Pin->PinName))
-		{
-			continue;
-		}
-
-		FString ClassName = DefaultValue[Pin->PinName];
+		auto Pin = FindPin(ClassPinInput.Guid.ToString());
+		
+		FString ClassName = ClassPinInput.DefaultValue;
 
 		if (!Pin || ClassName.IsEmpty()) continue;
 
@@ -96,10 +98,12 @@ void UK2BeamNode_Switch::ExpandNode(FKismetCompilerContext& CompilerContext, UEd
 		auto CastNode = BeamK2::CreateDynamicCastNode(this, CompilerContext, SourceGraph, StaticClassType, false);
 
 		// Change the type of the cast node source pin to match the Input Pin
+		// For intermediate types we should update the cast source pin type
 		CastNode->GetCastSourcePin()->PinType = GetInputPin()->PinType;
 
 		// Link the input pin and the cast source pin
-
+		// The move link didn't work if you try to get multiple times the same pin input
+		// You need to connect manually
 		if (K2Schema->TryCreateConnection(InputLinkPin, CastNode->GetCastSourcePin()))
 		{
 			InputLinkPin->MakeLinkTo(CastNode->GetCastSourcePin());
@@ -135,40 +139,45 @@ void UK2BeamNode_Switch::ExpandNode(FKismetCompilerContext& CompilerContext, UEd
 	// After create all the pins we connect the last fail cast to the then pin for node
 	if (InvalidCastPin)
 	{
-		UClass* StaticClassType = Cast<UClass>(GetDefaultOutputPin()->PinType.PinSubCategoryObject.Get());
-
-		// Creating the cast node
-		auto CastNode = BeamK2::CreateDynamicCastNode(this, CompilerContext, SourceGraph, StaticClassType, false);
-
-		// Change the type of the cast node source pin to match the Input Pin
-		CastNode->GetCastSourcePin()->PinType = GetInputPin()->PinType;
-
-		// Link the input pin and the cast source pin
-		if (K2Schema->TryCreateConnection(InputLinkPin, CastNode->GetCastSourcePin()))
-		{
-			InputLinkPin->MakeLinkTo(CastNode->GetCastSourcePin());
-		}
-
-		// Link the cast result with the output class pin
-		const auto Connect2 = CompilerContext.MovePinLinksToIntermediate(*GetDefaultOutputPin(), *CastNode->GetCastResultPin());
-		check(!Connect2.IsFatal());
-
-		// Link the cast valid with the output class pin
-		const auto SuccessFlowMovedCastSuccess = CompilerContext.MovePinLinksToIntermediate(*GetThenPin(), *CastNode->GetValidCastPin());
-		check(!SuccessFlowMovedCastSuccess.IsFatal());
-
-		// Link the execute pin and the cast node execute
 		if (FirstCast)
 		{
-			// Link the execute pin and the cast node execute
-			const auto CastWork2 = CompilerContext.MovePinLinksToIntermediate(*GetExecPin(), *CastNode->GetExecPin());
-			check(!CastWork2.IsFatal());
+			K2Schema->TryCreateConnection(GetExecPin(), GetThenPin());
 		}
 		else
 		{
-			// Link the execute pin and the cast node execute
-			auto CastWork2 = K2Schema->TryCreateConnection(InvalidCastPin, CastNode->GetExecPin());
-			check(CastWork2);
+			CompilerContext.MovePinLinksToIntermediate(*GetThenPin(), *InvalidCastPin);
+		}
+
+		if (GetDefaultOutputPin()->LinkedTo.Num() > 0)
+		{
+			auto OutputPinLin = GetDefaultOutputPin()->LinkedTo[0];
+			if (K2Schema->TryCreateConnection(InputLinkPin, OutputPinLin))
+			{
+				InputLinkPin->MakeLinkTo(OutputPinLin);
+			}
+		}
+	}
+
+	// Link the wildcard pins
+
+	for (auto PinGuid : WildcardsPins)
+	{
+		auto InputPin = FindPin(GetInputWildcardPinName(PinGuid));
+		auto OutputPin = FindPin(GetOutputWildcardPinName(PinGuid));
+
+		if (InputPin->LinkedTo.Num() > 0 && OutputPin->LinkedTo.Num() > 0)
+		{
+			InputPin = InputPin->LinkedTo[0];
+			OutputPin = OutputPin->LinkedTo[0];
+		}
+		else
+		{
+			continue;
+		}
+
+		if (K2Schema->TryCreateConnection(InputPin, OutputPin))
+		{
+			InputPin->MakeLinkTo(OutputPin);
 		}
 	}
 }
@@ -185,6 +194,20 @@ void UK2BeamNode_Switch::GetMenuActions(FBlueprintActionDatabaseRegistrar& Actio
 	}
 }
 
+void UK2BeamNode_Switch::InteractiveAddWildcardInputPin()
+{
+	WildcardsPins.Add(FGuid::NewGuid());
+
+	ReconstructNode();
+}
+
+void UK2BeamNode_Switch::InteractiveRemoveWildcardInputPin(UEdGraphPin* EdGraphPin)
+{
+	WildcardsPins.Remove(FGuid(EdGraphPin->PinName.ToString()));
+
+	ReconstructNode();
+}
+
 void UK2BeamNode_Switch::GetNodeContextMenuActions(UToolMenu* Menu, UGraphNodeContextMenuContext* Context) const
 {
 	Super::GetNodeContextMenuActions(Menu, Context);
@@ -196,7 +219,7 @@ void UK2BeamNode_Switch::GetNodeContextMenuActions(UToolMenu* Menu, UGraphNodeCo
 		FTextKey LLOCTEXT_NAMESPACE;
 		if (Context->Pin != NULL)
 		{
-			if (Context->Pin->Direction == EGPD_Input && Context->Pin->ParentPin == nullptr)
+			if (Context->Pin->Direction == EGPD_Input && Context->Pin->ParentPin == nullptr && !WildcardsPins.Contains(FGuid(Context->Pin->PinName.ToString())))
 			{
 				Section.AddMenuEntry(
 					"RemovePin",
@@ -208,30 +231,31 @@ void UK2BeamNode_Switch::GetNodeContextMenuActions(UToolMenu* Menu, UGraphNodeCo
 					)
 				);
 			}
+			else
+			{
+				Section.AddMenuEntry(
+					"RemovePin",
+					LOCTEXT("RemovePin", "Remove array element pin"),
+					LOCTEXT("RemovePinTooltip", "Remove this array element pin"),
+					FSlateIcon(),
+					FUIAction(
+						FExecuteAction::CreateUObject(const_cast<UK2BeamNode_Switch*>(this), &UK2BeamNode_Switch::InteractiveRemoveWildcardInputPin, const_cast<UEdGraphPin*>(Context->Pin))
+					)
+				);
+			}
 		}
 		else
 		{
-			// Section.AddMenuEntry(
-			// 	"AddPin",
-			// 	LOCTEXT("AddPin", "Add array element pin"),
-			// 	LOCTEXT("AddPinTooltip", "Add another array element pin"),
-			// 	FSlateIcon(),
-			// 	FUIAction(
-			// 		FExecuteAction::CreateUObject(const_cast<UK2BeamNode_Switch*>(this), &UK2BeamNode_Switch::InteractiveAddInputPin)
-			// 	)
-			// );
+			Section.AddMenuEntry(
+				"AddPin Wildcard Pin",
+				LOCTEXT("AddPin", "Add a wildcard element pin"),
+				LOCTEXT("AddPinTooltip", "Add a wildcard element pin"),
+				FSlateIcon(),
+				FUIAction(
+					FExecuteAction::CreateUObject(const_cast<UK2BeamNode_Switch*>(this), &UK2BeamNode_Switch::InteractiveAddWildcardInputPin)
+				)
+			);
 		}
-
-		// Section.AddMenuEntry(
-		// 	"ResetToWildcard",
-		// 	LOCTEXT("ResetToWildcard", "Reset to wildcard"),
-		// 	LOCTEXT("ResetToWildcardTooltip", "Reset the node to have wildcard input/outputs. Requires no pins are connected."),
-		// 	FSlateIcon(),
-		// 	FUIAction(
-		// 		FExecuteAction::CreateUObject(const_cast<UK2BeamNode_Switch*>(this), &UK2BeamNode_Switch::ClearPinTypeToWildcard),
-		// 		FCanExecuteAction::CreateUObject(this, &UK2BeamNode_Switch::CanResetToWildcard)
-		// 	)
-		// );
 	}
 }
 
@@ -261,17 +285,8 @@ void UK2BeamNode_Switch::PostEditChangeProperty(FPropertyChangedEvent& PropertyC
 void UK2BeamNode_Switch::AddInputPin()
 {
 	Modify();
-	int32 Inputs = 0;
-	while (true)
-	{
-		FName NewName = GetClassInputPinName(Inputs);
-		if (!DefaultValue.Contains(NewName))
-		{
-			DefaultValue.Add(NewName);
-			break;
-		}
-		Inputs++;
-	}
+
+	ClassInputPins.Add(FSwitchClassInputPin(FGuid::NewGuid(), ""));
 
 	ReconstructNode();
 }
@@ -300,27 +315,48 @@ void UK2BeamNode_Switch::RemoveInputPin(UEdGraphPin* Pin)
 			PinToRemove->MarkAsGarbage();
 		}
 	};
-
-	if (DefaultValue.Contains(Pin->PinName))
+	for (int32 Index = 0; Index < ClassInputPins.Num(); ++Index)
 	{
-		DefaultValue.Remove(Pin->PinName);
+		if (ClassInputPins[Index].Guid == FGuid(Pin->PinName.ToString()))
+		{
+			ClassInputPins.RemoveAt(Index);
+			break;
+		}
 	}
-
-
+	
 	RemovePinLambda(Pin);
-	// PinConnectionListChanged(Pin);
-	// FBlueprintEditorUtils::MarkBlueprintAsStructurallyModified(GetBlueprint());
+
 	ReconstructNode();
 }
 
 void UK2BeamNode_Switch::PinDefaultValueChanged(UEdGraphPin* Pin)
 {
 	Super::PinDefaultValueChanged(Pin);
+
+	if (Pin->HasAnyConnections())
+	{
+		return;
+	}
+
 	FString ClassName;
 	FString _;
 	Pin->GetDefaultAsString().Split(TEXT("."), &_, &ClassName);
 
-	DefaultValue.Add(Pin->PinName, ClassName);
+	bool HasDefaultValue = false;
+	
+	for (int32 Index = 0; Index < ClassInputPins.Num(); ++Index)
+	{
+		if (ClassInputPins[Index].Guid == FGuid(Pin->PinName.ToString()))
+		{
+			ClassInputPins[Index] = FSwitchClassInputPin(ClassInputPins[Index].Guid, ClassName);
+			HasDefaultValue = true;
+		}
+	}
+	if (!HasDefaultValue)
+	{
+		ClassInputPins.Add(FSwitchClassInputPin(FGuid::NewGuid(), ClassName));
+	}
+	
 	ReconstructNode();
 }
 
@@ -342,6 +378,47 @@ void UK2BeamNode_Switch::PostReconstructNode()
 
 void UK2BeamNode_Switch::UpdateWildcardPinsType() const
 {
+	for (auto PinGuid : WildcardsPins)
+	{
+		auto InputPin = FindPin(GetInputWildcardPinName(PinGuid));
+		auto OutputPin = FindPin(GetOutputWildcardPinName(PinGuid));
+
+		if (InputPin->PinType.PinCategory == UEdGraphSchema_K2::PC_Wildcard && InputPin->LinkedTo.Num() > 0)
+		{
+			UEdGraphPin* EdGraphPin = InputPin->LinkedTo[0];
+
+			InputPin->PinType = EdGraphPin->PinType;
+			OutputPin->PinType = EdGraphPin->PinType;
+
+			if (!EdGraphPin->PinFriendlyName.IsEmpty())
+			{
+				InputPin->PinFriendlyName = EdGraphPin->PinFriendlyName;
+				OutputPin->PinFriendlyName = EdGraphPin->PinFriendlyName;
+			}
+			else
+			{
+				InputPin->PinFriendlyName = FText::FromName(EdGraphPin->PinName);
+				OutputPin->PinFriendlyName = FText::FromName(EdGraphPin->PinName);
+			}
+		}
+
+		if (InputPin->LinkedTo.Num() == 0 && OutputPin->LinkedTo.Num() == 0)
+		{
+			InputPin->PinType.PinCategory = UEdGraphSchema_K2::PC_Wildcard;
+			InputPin->PinType.PinSubCategory = TEXT("");
+			InputPin->PinType.PinSubCategoryObject = NULL;
+			InputPin->PinFriendlyName = FText::FromName(FriendlyPassThrough);;
+
+			OutputPin->PinType.PinCategory = UEdGraphSchema_K2::PC_Wildcard;
+			OutputPin->PinType.PinSubCategory = TEXT("");
+			OutputPin->PinType.PinSubCategoryObject = NULL;
+			OutputPin->PinFriendlyName = FText::FromName(FriendlyPassThroughOutput);
+
+			InputPin->BreakAllPinLinks();
+			OutputPin->BreakAllPinLinks();
+		}
+	}
+
 	UEdGraphPin* InputPin = GetInputPin();
 	UEdGraphPin* OutputPin = GetDefaultOutputPin();
 
@@ -371,6 +448,23 @@ void UK2BeamNode_Switch::UpdateWildcardPinsType() const
 		OutputPin->PinType = OutputPin->LinkedTo[0]->PinType;
 	}
 
+	if (InputPin->LinkedTo.Num() > 0)
+	{
+		UEdGraphPin* EdGraphPin = InputPin->LinkedTo[0];
+
+		InputPin->PinType = EdGraphPin->PinType;
+		OutputPin->PinType = EdGraphPin->PinType;
+
+		if (!EdGraphPin->PinFriendlyName.IsEmpty())
+		{
+			OutputPin->PinFriendlyName = FText::FromString("As" + EdGraphPin->PinFriendlyName.ToString());
+		}
+		else
+		{
+			OutputPin->PinFriendlyName = FText::FromString("As" + EdGraphPin->PinName.ToString());
+		}
+	}
+
 	if (InputPin->LinkedTo.Num() == 0 && OutputPin->LinkedTo.Num() == 0)
 	{
 		InputPin->PinType.PinCategory = UEdGraphSchema_K2::PC_Wildcard;
@@ -380,6 +474,8 @@ void UK2BeamNode_Switch::UpdateWildcardPinsType() const
 		OutputPin->PinType.PinCategory = UEdGraphSchema_K2::PC_Wildcard;
 		OutputPin->PinType.PinSubCategory = TEXT("");
 		OutputPin->PinType.PinSubCategoryObject = NULL;
+
+		OutputPin->PinFriendlyName = FText::FromName(OutputPinName);
 
 		InputPin->BreakAllPinLinks();
 		OutputPin->BreakAllPinLinks();
@@ -396,10 +492,6 @@ UEdGraphPin* UK2BeamNode_Switch::GetDefaultOutputPin() const
 	return FindPin(OutputPinName);
 }
 
-FName UK2BeamNode_Switch::GetPinName(int32 PinIndex) const
-{
-	return *FString::Printf(TEXT("[%d]"), PinIndex);
-}
 
 FNodeHandlingFunctor* UK2BeamNode_Switch::CreateNodeHandler(FKismetCompilerContext& CompilerContext) const
 {
