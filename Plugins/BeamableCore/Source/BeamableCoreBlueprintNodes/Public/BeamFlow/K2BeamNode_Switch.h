@@ -46,9 +46,6 @@ class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_Switch : public UK2Node, public
 	UPROPERTY()
 	TArray<FGuid> WildcardsPins;
 
-	// UPROPERTY()
-	// TMap<FName, FString> DefaultValue;
-
 	UPROPERTY()
 	TArray<FSwitchClassInputPin> ClassInputPins;
 

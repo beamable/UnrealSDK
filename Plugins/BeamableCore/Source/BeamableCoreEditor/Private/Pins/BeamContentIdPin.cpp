@@ -114,7 +114,9 @@ void SBeamContentIdPin::UpdateNodeMetadata(TSharedPtr<FName> ItemSelected) const
 
 		if (Value != "None")
 		{
-			Dict->Add(Key, Value); // Works even if the key exists (it replaces)
+			auto ReferenceClass = FindObject<UClass>(reinterpret_cast<UPackage*>(-1), *Value);
+			
+			Dict->Add(Key, FSoftClassPath{ReferenceClass}.GetAssetPath().ToString()); // Works even if the key exists (it replaces)
 		}
 		else
 		{

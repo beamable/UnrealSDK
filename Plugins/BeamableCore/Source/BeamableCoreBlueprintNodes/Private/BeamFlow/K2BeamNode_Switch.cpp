@@ -34,13 +34,12 @@ void UK2BeamNode_Switch::AllocateDefaultPins()
 		OutputWildcardPin->PinFriendlyName = FText::FromName(FriendlyPassThroughOutput);
 	}
 
-	
+
 	for (auto index = 0; index < ClassInputPins.Num(); ++index)
 	{
 		auto Pin = CreatePin(EGPD_Input, UEdGraphSchema_K2::PC_Class, UObject::StaticClass(), FName(ClassInputPins[index].Guid.ToString()));
 		Pin->PinFriendlyName = FText::FromString(FString::Printf(TEXT("Cast Class %d"), (index + 1)));
 		Pin->bNotConnectable = true;
-		
 	}
 
 	for (auto index = 0; index < ClassInputPins.Num(); ++index)
@@ -49,7 +48,7 @@ void UK2BeamNode_Switch::AllocateDefaultPins()
 
 		if (ClassName.IsEmpty()) continue;
 
-		UClass* MyClass = FindObject<UClass>(ANY_PACKAGE, *ClassName);
+		UClass* MyClass = FSoftClassPath{ClassName}.ResolveClass();
 
 		if (!MyClass) continue;
 
@@ -80,12 +79,13 @@ void UK2BeamNode_Switch::ExpandNode(FKismetCompilerContext& CompilerContext, UEd
 	for (auto ClassPinInput : ClassInputPins)
 	{
 		auto Pin = FindPin(ClassPinInput.Guid.ToString());
-		
-		FString ClassName = ClassPinInput.DefaultValue;
 
-		if (!Pin || ClassName.IsEmpty()) continue;
+		FString ClassPath = ClassPinInput.DefaultValue;
 
-		UClass* MyClass = FindObject<UClass>(ANY_PACKAGE, *ClassName);
+		if (!Pin || ClassPath.IsEmpty()) continue;
+
+		UClass* MyClass = FSoftClassPath{ClassPath}.ResolveClass();
+
 		// Theres any class setup for this pin name then we create a cast for it
 		if (!MyClass) continue;
 
@@ -301,6 +301,7 @@ void UK2BeamNode_Switch::RemoveInputPin(UEdGraphPin* Pin)
 	FScopedTransaction Transaction(LOCTEXT("RemovePinTx", "RemovePin"));
 	Modify();
 
+	// Remove the pin from the pins list
 	TFunction<void(UEdGraphPin*)> RemovePinLambda = [this, &RemovePinLambda](UEdGraphPin* PinToRemove)
 	{
 		for (int32 SubPinIndex = PinToRemove->SubPins.Num() - 1; SubPinIndex >= 0; --SubPinIndex)
@@ -323,7 +324,7 @@ void UK2BeamNode_Switch::RemoveInputPin(UEdGraphPin* Pin)
 			break;
 		}
 	}
-	
+
 	RemovePinLambda(Pin);
 
 	ReconstructNode();
@@ -338,12 +339,10 @@ void UK2BeamNode_Switch::PinDefaultValueChanged(UEdGraphPin* Pin)
 		return;
 	}
 
-	FString ClassName;
-	FString _;
-	Pin->GetDefaultAsString().Split(TEXT("."), &_, &ClassName);
+	FString ClassName = FSoftClassPath{Pin->DefaultObject->GetPathName()}.GetAssetPath().ToString();
 
 	bool HasDefaultValue = false;
-	
+
 	for (int32 Index = 0; Index < ClassInputPins.Num(); ++Index)
 	{
 		if (ClassInputPins[Index].Guid == FGuid(Pin->PinName.ToString()))
@@ -356,7 +355,7 @@ void UK2BeamNode_Switch::PinDefaultValueChanged(UEdGraphPin* Pin)
 	{
 		ClassInputPins.Add(FSwitchClassInputPin(FGuid::NewGuid(), ClassName));
 	}
-	
+
 	ReconstructNode();
 }
 
@@ -378,6 +377,7 @@ void UK2BeamNode_Switch::PostReconstructNode()
 
 void UK2BeamNode_Switch::UpdateWildcardPinsType() const
 {
+	// Set the wildcards types based on the linkTo array.
 	for (auto PinGuid : WildcardsPins)
 	{
 		auto InputPin = FindPin(GetInputWildcardPinName(PinGuid));
@@ -402,6 +402,7 @@ void UK2BeamNode_Switch::UpdateWildcardPinsType() const
 			}
 		}
 
+		// If there's no connection in the input or output we make it become a wildcard again
 		if (InputPin->LinkedTo.Num() == 0 && OutputPin->LinkedTo.Num() == 0)
 		{
 			InputPin->PinType.PinCategory = UEdGraphSchema_K2::PC_Wildcard;

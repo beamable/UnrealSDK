@@ -880,7 +880,15 @@ void BeamK2::ParseFunctionForNodePins(UEdGraphNode* CustomNode, const UFunction*
 			{
 				auto CastType = GetMetaData(CustomNode, MD_BeamCastTypeName);
 
-				UClass* MyClass = FindObject<UClass>(ANY_PACKAGE, *CastType);
+				if (!CastType.IsEmpty())
+				{
+					UE_LOG(LogTemp, Error, TEXT("Empty Metadata. The case of meta data of cast type existing for a node and be empty should be impossible."))
+				}
+				UClass* MyClass = FSoftClassPath{CastType}.ResolveClass();
+				if (!MyClass)
+				{
+					UE_LOG(LogTemp, Error, TEXT("Not found class [%s] for the node. That could means the class has been deleted and you still have some references for it."), *CastType)
+				}
 				Pin = CustomNode->CreatePin(EGPD_Output, UEdGraphSchema_K2::PC_Object, MyClass, Param->GetFName());
 				IsDynamicCast = true;
 			}
@@ -956,7 +964,7 @@ void BeamK2::ParseFunctionForNodeOutputPinsArrayElement(UEdGraphNode* CustomNode
 			{
 				auto CastType = GetMetaData(CustomNode, MD_BeamCastTypeName);
 
-				UClass* MyClass = FindObject<UClass>(ANY_PACKAGE, *CastType);
+				UClass* MyClass = FSoftClassPath{CastType}.ResolveClass();
 				Pin = CustomNode->CreatePin(Direction, UEdGraphSchema_K2::PC_Object, MyClass, *(Param->GetName() + "Element"));
 				Pin->PinFriendlyName = FText::FromString(PinFriendlyName);
 				IsDynamicCast = true;
