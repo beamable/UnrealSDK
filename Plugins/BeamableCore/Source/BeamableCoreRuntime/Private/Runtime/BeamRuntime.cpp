@@ -264,9 +264,7 @@ void UBeamRuntime::Initialize(FSubsystemCollectionBase& Collection)
 	if (EngineSubsystem->IsInPIE())
 	{
 		// When running as a dedicated server instance, swap out the execute request delegate
-		const FName ExecuteRequestImpl = GET_FUNCTION_NAME_CHECKED(UBeamRuntime, PIEExecuteRequestImpl);
-
-		EngineSubsystem->ExecuteRequestDelegate.BindUFunction(this, ExecuteRequestImpl);
+		EngineSubsystem->ExecuteRequestDelegate.BindStatic(&UBeamRuntime::PIEExecuteRequestImpl);
 		UE_LOG(LogBeamRuntime, Verbose, TEXT("Initializing UBeamRuntime Subsystem - FROM PIE INSTANCE %d!"), GetGameInstance()->GetWorldContext()->PIEInstance);
 	}
 	else
@@ -378,19 +376,15 @@ void UBeamRuntime::Deinitialize()
 	CurrentSdkState = ESDKState::NotInitialized;
 }
 
-void UBeamRuntime::PIEExecuteRequestImpl(int64 ActiveRequestId)
+void UBeamRuntime::PIEExecuteRequestImpl(int64 ActiveRequestId, const UObject* CallingContext)
 {
-	UBeamBackend* BeamBackend = GEngine->GetEngineSubsystem<UBeamBackend>();
-
-	// TODO: We'll need to change the code-gen to be able to detect whether or not the request is actually coming from the PIE session.
-	// TODO: Basically, we need to have one delegate for build and another for editor. And the Beam___API classes need to not care about this other than forwarding the calling context to a function of BeamBackend.
-	// TODO: That function should decide which to use based on who is making the request ('Runtime' source PIE/Build or 'Editor' source).
+	UBeamBackend* BeamBackend = GEngine->GetEngineSubsystem<UBeamBackend>();	
 	const TUnrealRequestPtr Req = BeamBackend->InFlightRequests.FindRef(ActiveRequestId);
 	BeamBackend->InFlightPIERequests.Add(Req);
 
-	GetGameInstance()->IsDedicatedServerInstance()
-		? BeamBackend->DedicatedServerExecuteRequestImpl(ActiveRequestId)
-		: BeamBackend->DefaultExecuteRequestImpl(ActiveRequestId);
+	CallingContext->GetWorld()->GetGameInstance()->IsDedicatedServerInstance()
+		? BeamBackend->DedicatedServerExecuteRequestImpl(ActiveRequestId, CallingContext)
+		: BeamBackend->DefaultExecuteRequestImpl(ActiveRequestId, CallingContext);
 }
 
 // On Start Flow
@@ -529,18 +523,22 @@ void UBeamRuntime::TriggerOnBeamableStarting(FBeamWaitCompleteEvent Evt, bool bA
 		FString RealmSecret;
 		if (!FParse::Value(FCommandLine::Get(), TEXT("beamable-realm-secret="), RealmSecret))
 		{
-			RealmSecret = FPlatformMisc::GetEnvironmentVariable(TEXT("BEAMABLE_REALM_SECRET"));
-			if (!GIsEditor)
-			{
-				checkf(!RealmSecret.IsEmpty(), TEXT("To run a dedicated server that communicates with Beamable, either:\n"
-					       "- Start it with the command line \'-beamable-realm-secret <realm_secret>\'\n"
-					       "- Start it in an environment with the EnvVar \'BEAMABLE_REALM_SECRET\' set to your realm secret.\n"
-					       "To find your realm secret for your realms, look into your Project Settings => Editor => Beamable Editor => PerSlotDeveloperProjectData => All Realms\n"
-					       "Remember to set this command line argument in your Networking settings for playmode in Editor Settings => Level Editor => Play => Multiplayer Options => Server => Additional Server Launch Parameters."
-				       ))
-			}
+			RealmSecret = FPlatformMisc::GetEnvironmentVariable(TEXT("BEAMABLE_REALM_SECRET"));			
 		}
-		GEngine->GetEngineSubsystem<UBeamBackend>()->RealmSecret = RealmSecret;
+
+		// Set the realm secret outside of the editor
+		// In the editor, this is set by the UBeamEditor subsystem whenever you change realms. 
+		if (!GIsEditor)
+		{
+			checkf(!RealmSecret.IsEmpty(), TEXT("To run a dedicated server that communicates with Beamable, either:\n"
+					   "- Start it with the command line \'-beamable-realm-secret <realm_secret>\'\n"
+					   "- Start it in an environment with the EnvVar \'BEAMABLE_REALM_SECRET\' set to your realm secret.\n"
+					   "To find your realm secret for your realms, look into your Project Settings => Editor => Beamable Editor => PerSlotDeveloperProjectData => All Realms\n"
+					   "Remember to set this command line argument in your Networking settings for playmode in Editor Settings => Level Editor => Play => Multiplayer Options => Server => Additional Server Launch Parameters."
+				   ))
+			
+			GEngine->GetEngineSubsystem<UBeamBackend>()->RealmSecret = RealmSecret;			
+		}		
 	}
 
 	if (const UWorld* World = GetWorld())
@@ -1528,7 +1526,7 @@ void UBeamRuntime::LoginFederated(FUserSlot UserSlot, FString MicroserviceId, FS
 				const auto AuthenticateHandler = FOnAuthenticateFullResponse::CreateUObject(this, &UBeamRuntime::OnAuthenticated, UserSlot, OpHandle, FDelayedOperation{}, MicroserviceId, FederationId,
 				                                                                            FederatedAuthToken);
 				FBeamRequestContext RequestContext;
-				AuthSubsystem->CPP_Authenticate(AuthReq, AuthenticateHandler, RequestContext, OpHandle);
+				AuthSubsystem->CPP_Authenticate(AuthReq, AuthenticateHandler, RequestContext, OpHandle, this);
 
 				// Clean Up handle
 				OnUserClearedCode.Remove(UserSlotClearedEnqueuedHandle);
@@ -1540,7 +1538,7 @@ void UBeamRuntime::LoginFederated(FUserSlot UserSlot, FString MicroserviceId, FS
 	{
 		const auto AuthenticateHandler = FOnAuthenticateFullResponse::CreateUObject(this, &UBeamRuntime::OnAuthenticated, UserSlot, Op, FDelayedOperation{}, MicroserviceId, FederationId, FederatedAuthToken);
 		FBeamRequestContext RequestContext;
-		AuthSubsystem->CPP_Authenticate(Req, AuthenticateHandler, RequestContext, Op);
+		AuthSubsystem->CPP_Authenticate(Req, AuthenticateHandler, RequestContext, Op, this);
 	}
 }
 
@@ -1580,7 +1578,7 @@ void UBeamRuntime::CommitLoginFederated(FUserSlot UserSlot, UBeamMultiFactorLogi
 		UserSlotClearedEnqueuedHandle = OnUserClearedCode.AddLambda([this, AuthSubsystem](FUserSlot UserSlot, FBeamOperationHandle OpHandle, UAuthenticateRequest* AuthReq, const FOnAuthenticateFullResponse& Handler)
 		{
 			FBeamRequestContext RequestContext;
-			AuthSubsystem->CPP_Authenticate(AuthReq, Handler, RequestContext, OpHandle);
+			AuthSubsystem->CPP_Authenticate(AuthReq, Handler, RequestContext, OpHandle, this);
 
 			// Clean Up handle
 			OnUserClearedCode.Remove(UserSlotClearedEnqueuedHandle);
@@ -1591,7 +1589,7 @@ void UBeamRuntime::CommitLoginFederated(FUserSlot UserSlot, UBeamMultiFactorLogi
 	else
 	{
 		FBeamRequestContext RequestContext;
-		AuthSubsystem->CPP_Authenticate(Req, Handler, RequestContext, Op);
+		AuthSubsystem->CPP_Authenticate(Req, Handler, RequestContext, Op, this);
 	}
 }
 
@@ -1631,7 +1629,7 @@ void UBeamRuntime::LoginEmailAndPassword(FUserSlot UserSlot, FString Email, FStr
 	{
 		const auto AuthenticateHandler = FOnAuthenticateFullResponse::CreateUObject(this, &UBeamRuntime::OnAuthenticated, UserSlot, Op, FDelayedOperation{}, FString{}, FString{}, FString{});
 		FBeamRequestContext RequestContext;
-		AuthSubsystem->CPP_Authenticate(Req, AuthenticateHandler, RequestContext, Op);
+		AuthSubsystem->CPP_Authenticate(Req, AuthenticateHandler, RequestContext, Op, this);
 	}
 }
 
@@ -2245,7 +2243,7 @@ void UBeamRuntime::RunPostAuthenticationSetup_PrepareNotificationService(FGetCli
 void UBeamRuntime::LoadCachedUserAtSlot(FUserSlot UserSlot, FBeamOperationHandle AuthOp, FSimpleDelegate RunIfNoUser)
 {
 	// Try to load the user at a specific slot
-	const int32 Result = UserSlotSystem->TryLoadSavedUserAtSlot(UserSlot, this);
+	const int32 Result = UserSlotSystem->TryLoadSavedUserAtSlotAndAuth(UserSlot, this);
 	if (Result != UBeamUserSlots::LoadSavedUserResult_Failed)
 	{
 		// If expired, let's make a request to get a new token through the auto-refresh for expired tokens and then trigger the auth.
@@ -2256,7 +2254,8 @@ void UBeamRuntime::LoadCachedUserAtSlot(FUserSlot UserSlot, FBeamOperationHandle
 				if (Resp.State == EBeamFullResponseState::RS_Success)
 				{
 					RunPostAuthenticationSetup(UserSlot, AuthOp);
-					UE_LOG(LogBeamRuntime, Display, TEXT("Authenticated User at Slot! SLOT=%s"), *UserSlot.Name);
+
+					UE_LOG(LogBeamRuntime, Display, TEXT("Authenticated User at Slot! SLOT=%s GAMER TAG=%s"), *UserSlot.Name, *Resp.SuccessData->Id.AsString);
 				}
 				// If this request failed entirely (all retries)... 
 				else if (Resp.State == EBeamFullResponseState::RS_Error)

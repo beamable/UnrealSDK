@@ -36,7 +36,7 @@ FBeamRequestContext UBeamGenericApi::CPP_ExecuteNonBeamRequest(UGenericBeamReque
 	Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
-	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId.RequestId);
+	Backend->SendPreparedRequest(OutRequestId.RequestId, CallingContext);
 
 	return OutRequestId;
 }

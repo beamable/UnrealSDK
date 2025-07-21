@@ -11,7 +11,7 @@
 
 #include "ContentMeta.generated.h"
 
-UCLASS(BlueprintType, Category="Beam")
+UCLASS(BlueprintType, Category="Beam", DefaultToInstanced, EditInlineNew)
 class BEAMABLECORE_API UContentMeta : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
@@ -22,9 +22,15 @@ public:
 	EBeamContentVisibility Visibility = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Text", Category="Beam")
 	FOptionalString Text = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Link", Category="Beam")
+	FOptionalBeamContentId link = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Links", Category="Beam")
+	FOptionalArrayOfBeamContentId links = {};
 
+	
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override;
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override;
+	
 };

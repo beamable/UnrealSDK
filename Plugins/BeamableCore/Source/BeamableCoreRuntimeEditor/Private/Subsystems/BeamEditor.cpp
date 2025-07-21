@@ -67,7 +67,7 @@ void UBeamEditor::OpenDocsPage(FDocsPageItem item)
 
 void UBeamEditor::Initialize(FSubsystemCollectionBase& Collection)
 {
-	UE_LOG(LogTemp, Log, TEXT("Initializing BeamEditor Subsystem!"));
+	UE_LOG(LogBeamEditor, Verbose, TEXT("Initializing BeamEditor Subsystem!"));
 
 	// Set us up to track whether we are running PIE
 	BeginPIEHandler = FEditorDelegates::BeginPIE.AddLambda([this](const bool)
@@ -106,7 +106,7 @@ void UBeamEditor::Initialize(FSubsystemCollectionBase& Collection)
 void UBeamEditor::Deinitialize()
 {
 	UserSlots->GlobalUserSlotAuthenticatedCodeHandler.Remove(UserSlotAuthenticatedHandler);
-	UserSlots->GlobalUserSlotClearedCodeHandler.Remove(UserSlotClearedHandler);
+	UserSlots->GlobalUserSlotClearedCodeHandler.Remove(UserSlotClearedHandler);	
 	FEditorDelegates::BeginPIE.Remove(BeginPIEHandler);
 	FEditorDelegates::EndPIE.Remove(EndPIEHandler);
 	FEditorDelegates::OnEditorInitialized.Remove(EditorInitializedHandle);
@@ -209,7 +209,7 @@ void UBeamEditorBootstrapper::Run_DelayedInitialize()
 	{
 		EditorSettings->SaveConfig(CPF_Config, *EditorSettings->GetDefaultConfigFilename());
 	}
-
+	
 	const auto Subsystems = GEditor->GetEditorSubsystemArrayCopy<UBeamEditorSubsystem>();
 	BeamEditor->InitializeAfterEditorReadyOps.Reset(Subsystems.Num());
 	for (auto& Subsystem : Subsystems)
@@ -298,7 +298,7 @@ bool UBeamEditor::GetActiveProjectAndRealmData(FBeamCustomerProjectData& Project
 	{
 		for (const auto& R : CurrentProjectData.AllRealms)
 		{
-			if (R.PID.AsString == MainEditorDeveloper.RealmHandle.Pid.AsString)
+			if (R.PID.AsString == GetDefault<UBeamCoreSettings>()->TargetRealm.Pid.AsString)
 			{
 				RealmData = R;
 				return true;
@@ -441,18 +441,13 @@ void UBeamEditor::SignIn(FString OrgName, FString Email, FString Password, const
 
 void UBeamEditor::SignInWithCliInfo(const FBeamOperationHandle Op)
 {
-	// Make sure that the CLI is correctly targeting some realm
-	FString PathToConfigJson = FPaths::ProjectDir() / TEXT(".beamable") / TEXT("connection-configuration.json");
-	FString ConfigJson;
-
-	// Read out the config file
-	const auto bCliIsTargetingRealm = FFileHelper::LoadFileToString(ConfigJson, *PathToConfigJson);
-	
 	// When the CLI is not installed, we should not do anything. 
 	const auto Cli = GEditor->GetEditorSubsystem<UBeamCli>();
 	if (!Cli->IsInstalled())
 	{
-		if (bCliIsTargetingRealm)
+		FString ConfigJson;
+		FString PathToConfigJson = FPaths::ProjectDir() / TEXT(".beamable") / TEXT("connection-configuration.json");
+		if (FFileHelper::LoadFileToString(ConfigJson, *PathToConfigJson))
 		{
 			FJsonDataBag ConfigJsonBag;
 			if (ConfigJsonBag.FromJson(ConfigJson))
@@ -484,15 +479,9 @@ void UBeamEditor::SignInWithCliInfo(const FBeamOperationHandle Op)
 		return;
 	}
 
-	if (!bCliIsTargetingRealm)
-	{
-		RequestTracker->TriggerOperationError(Op, TEXT("Beamable not configured with any CID/PID. Please Sign-In."));
-		return;
-	}
-
 	// Start the CLI server manually skipping the pre-warm 
 	Cli->StartCliServer(true);
-	
+
 	// If the CLI is installed, we use it to get the data around the current organization
 	const auto RealmsCommandOp = RequestTracker->CPP_BeginOperation({}, GetName(), {});
 	auto RealmsCommand = NewObject<UBeamCliOrgRealmsCommand>();
@@ -650,6 +639,14 @@ void UBeamEditor::SelectRealm_OnReadyForChange(FBeamWaitCompleteEvent, FBeamReal
 			const auto MainEditorSlot = GetMainEditorSlot(UserData);
 			UserSlots->SetPIDAtSlot(MainEditorSlot, NewRealmHandle.Pid, this);
 			SetActiveTargetRealmUnsafe(NewRealmHandle);
+
+			// Sets the realm secret
+			FBeamCustomerProjectData _;
+			FBeamProjectRealmData RealmData;
+			if (GetActiveProjectAndRealmData(_,RealmData))
+			{
+				GEngine->GetEngineSubsystem<UBeamBackend>()->RealmSecret = RealmData.RealmSecret;
+			} 
 
 			// Using the new Post endpoint that allows for Upsert to ensure that all Unreal games are using our custom notification pipeline instead of our legacy PubNub stuff.
 			const auto UpdateConfigReq = UPostConfigRequest::Make(FOptionalArrayOfString{}, FOptionalMapOfString{{{TEXT("notification|publisher"), TEXT("beamable")}}}, GetTransientPackage(), {});

@@ -128,7 +128,7 @@ void FBeamUserSlotsSpec::Define()
 			BeamUserSlots->SetGamerTagAtSlot(TestSlot, -1, nullptr);
 
 			// Load the user from the serialized file and see if it was loaded correctly.
-			const auto bLoaded = BeamUserSlots->TryLoadSavedUserAtSlot(TestSlot, nullptr);
+			const auto bLoaded = BeamUserSlots->TryLoadSavedUserAtSlotAndAuth(TestSlot, nullptr);
 			bFound             = BeamUserSlots->GetUserDataAtSlot(TestSlot, RealmUser, nullptr);
 
 			TestTrue("successfully added user to slot", bFound);
@@ -145,7 +145,7 @@ void FBeamUserSlotsSpec::Define()
 		It("should fail gracefully when trying to load an unsaved UserSlot", [=, this]()
 		{
 			// Tries to load the user from a non-existing Saved UserSlot and sees if it gracefully returns false.
-			const auto bLoaded = BeamUserSlots->TryLoadSavedUserAtSlot(TestSlot, nullptr);
+			const auto bLoaded = BeamUserSlots->TryLoadSavedUserAtSlotAndAuth(TestSlot, nullptr);
 			TestTrue("failed to add user to slot since no saved user existed at that slot", !bLoaded);
 		});
 
@@ -187,7 +187,7 @@ void FBeamUserSlotsSpec::Define()
 
 			// Load the user from the serialized file and see if it was loaded correctly.
 			FBeamRealmUser RealmUserAfterReload;
-			const auto     bLoaded           = BeamUserSlots->TryLoadSavedUserAtSlot(TestSlot, nullptr);
+			const auto     bLoaded           = BeamUserSlots->TryLoadSavedUserAtSlotAndAuth(TestSlot, nullptr);
 			const auto     bFoundAfterReload = BeamUserSlots->GetUserDataAtSlot(TestSlot, RealmUserAfterReload, nullptr);
 
 			// Test that the serialized file was not cleared.
@@ -238,7 +238,7 @@ void FBeamUserSlotsSpec::Define()
 
 			// Load the user from the serialized file and see if it was loaded correctly.
 			FBeamRealmUser RealmUserAfterReload;
-			const auto bLoaded = BeamUserSlots->TryLoadSavedUserAtSlot(TestSlot, nullptr);
+			const auto bLoaded = BeamUserSlots->TryLoadSavedUserAtSlotAndAuth(TestSlot, nullptr);
 
 			// Test that the serialized file was cleared.					
 			TestTrue("successfully added user to slot from serialized user file", !bLoaded);
