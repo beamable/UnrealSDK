@@ -1,13 +1,13 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "BeamFlow/K2BeamNode_Switch.h"
+#include "BeamFlow/K2BeamNode_CastNode.h"
 
 #include "BlueprintNodeSpawner.h"
 #include "K2Node_CallFunction.h"
 #include "KismetCompiler.h"
 
-void UK2BeamNode_Switch::AllocateDefaultPins()
+void UK2BeamNode_CastNode::AllocateDefaultPins()
 {
 	Super::AllocateDefaultPins();
 
@@ -60,7 +60,7 @@ void UK2BeamNode_Switch::AllocateDefaultPins()
 	}
 }
 
-void UK2BeamNode_Switch::ExpandNode(FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph)
+void UK2BeamNode_CastNode::ExpandNode(FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph)
 {
 	UK2Node::ExpandNode(CompilerContext, SourceGraph);
 
@@ -182,7 +182,7 @@ void UK2BeamNode_Switch::ExpandNode(FKismetCompilerContext& CompilerContext, UEd
 	}
 }
 
-void UK2BeamNode_Switch::GetMenuActions(FBlueprintActionDatabaseRegistrar& ActionRegistrar) const
+void UK2BeamNode_CastNode::GetMenuActions(FBlueprintActionDatabaseRegistrar& ActionRegistrar) const
 {
 	UClass* ActionKey = GetClass();
 	if (ActionRegistrar.IsOpenForRegistration(ActionKey))
@@ -194,21 +194,21 @@ void UK2BeamNode_Switch::GetMenuActions(FBlueprintActionDatabaseRegistrar& Actio
 	}
 }
 
-void UK2BeamNode_Switch::InteractiveAddWildcardInputPin()
+void UK2BeamNode_CastNode::InteractiveAddWildcardInputPin()
 {
 	WildcardsPins.Add(FGuid::NewGuid());
 
 	ReconstructNode();
 }
 
-void UK2BeamNode_Switch::InteractiveRemoveWildcardInputPin(UEdGraphPin* EdGraphPin)
+void UK2BeamNode_CastNode::InteractiveRemoveWildcardInputPin(UEdGraphPin* EdGraphPin)
 {
 	WildcardsPins.Remove(FGuid(EdGraphPin->PinName.ToString()));
 
 	ReconstructNode();
 }
 
-void UK2BeamNode_Switch::GetNodeContextMenuActions(UToolMenu* Menu, UGraphNodeContextMenuContext* Context) const
+void UK2BeamNode_CastNode::GetNodeContextMenuActions(UToolMenu* Menu, UGraphNodeContextMenuContext* Context) const
 {
 	Super::GetNodeContextMenuActions(Menu, Context);
 
@@ -227,7 +227,7 @@ void UK2BeamNode_Switch::GetNodeContextMenuActions(UToolMenu* Menu, UGraphNodeCo
 					LOCTEXT("RemovePinTooltip", "Remove this array element pin"),
 					FSlateIcon(),
 					FUIAction(
-						FExecuteAction::CreateUObject(const_cast<UK2BeamNode_Switch*>(this), &UK2BeamNode_Switch::RemoveInputPin, const_cast<UEdGraphPin*>(Context->Pin))
+						FExecuteAction::CreateUObject(const_cast<UK2BeamNode_CastNode*>(this), &UK2BeamNode_CastNode::RemoveInputPin, const_cast<UEdGraphPin*>(Context->Pin))
 					)
 				);
 			}
@@ -239,7 +239,7 @@ void UK2BeamNode_Switch::GetNodeContextMenuActions(UToolMenu* Menu, UGraphNodeCo
 					LOCTEXT("RemovePinTooltip", "Remove this array element pin"),
 					FSlateIcon(),
 					FUIAction(
-						FExecuteAction::CreateUObject(const_cast<UK2BeamNode_Switch*>(this), &UK2BeamNode_Switch::InteractiveRemoveWildcardInputPin, const_cast<UEdGraphPin*>(Context->Pin))
+						FExecuteAction::CreateUObject(const_cast<UK2BeamNode_CastNode*>(this), &UK2BeamNode_CastNode::InteractiveRemoveWildcardInputPin, const_cast<UEdGraphPin*>(Context->Pin))
 					)
 				);
 			}
@@ -252,46 +252,46 @@ void UK2BeamNode_Switch::GetNodeContextMenuActions(UToolMenu* Menu, UGraphNodeCo
 				LOCTEXT("AddPinTooltip", "Add a wildcard element pin"),
 				FSlateIcon(),
 				FUIAction(
-					FExecuteAction::CreateUObject(const_cast<UK2BeamNode_Switch*>(this), &UK2BeamNode_Switch::InteractiveAddWildcardInputPin)
+					FExecuteAction::CreateUObject(const_cast<UK2BeamNode_CastNode*>(this), &UK2BeamNode_CastNode::InteractiveAddWildcardInputPin)
 				)
 			);
 		}
 	}
 }
 
-FSlateIcon UK2BeamNode_Switch::GetIconAndTint(FLinearColor& OutColor) const
+FSlateIcon UK2BeamNode_CastNode::GetIconAndTint(FLinearColor& OutColor) const
 {
 	Super::GetIconAndTint(OutColor);
 	OutColor = FLinearColor::FromSRGBColor(FColor::FromHex("#826CCF"));
 	return FSlateIcon(TEXT("BeamableCore"), "BeamIconSmall");
 }
 
-FLinearColor UK2BeamNode_Switch::GetNodeTitleColor() const
+FLinearColor UK2BeamNode_CastNode::GetNodeTitleColor() const
 {
 	return FLinearColor::FromSRGBColor(FColor::FromHex("#674CC5"));
 }
 
-void UK2BeamNode_Switch::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
+void UK2BeamNode_CastNode::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
 {
 	Super::PostEditChangeProperty(PropertyChangedEvent);
 
-	const auto PropName = GET_MEMBER_NAME_CHECKED(UK2BeamNode_Switch, InputsNum);
+	const auto PropName = GET_MEMBER_NAME_CHECKED(UK2BeamNode_CastNode, InputsNum);
 	if (PropertyChangedEvent.Property && PropertyChangedEvent.Property->GetNameCPP().Equals(PropName.ToString()))
 	{
 		ReconstructNode();
 	}
 }
 
-void UK2BeamNode_Switch::AddInputPin()
+void UK2BeamNode_CastNode::AddInputPin()
 {
 	Modify();
 
-	ClassInputPins.Add(FSwitchClassInputPin(FGuid::NewGuid(), ""));
+	ClassInputPins.Add(FCastClassInputPin(FGuid::NewGuid(), ""));
 
 	ReconstructNode();
 }
 
-void UK2BeamNode_Switch::RemoveInputPin(UEdGraphPin* Pin)
+void UK2BeamNode_CastNode::RemoveInputPin(UEdGraphPin* Pin)
 {
 	check(Pin->Direction == EGPD_Input);
 	check(Pin->ParentPin == nullptr);
@@ -330,7 +330,7 @@ void UK2BeamNode_Switch::RemoveInputPin(UEdGraphPin* Pin)
 	ReconstructNode();
 }
 
-void UK2BeamNode_Switch::PinDefaultValueChanged(UEdGraphPin* Pin)
+void UK2BeamNode_CastNode::PinDefaultValueChanged(UEdGraphPin* Pin)
 {
 	Super::PinDefaultValueChanged(Pin);
 
@@ -347,19 +347,19 @@ void UK2BeamNode_Switch::PinDefaultValueChanged(UEdGraphPin* Pin)
 	{
 		if (ClassInputPins[Index].Guid == FGuid(Pin->PinName.ToString()))
 		{
-			ClassInputPins[Index] = FSwitchClassInputPin(ClassInputPins[Index].Guid, ClassName);
+			ClassInputPins[Index] = FCastClassInputPin(ClassInputPins[Index].Guid, ClassName);
 			HasDefaultValue = true;
 		}
 	}
 	if (!HasDefaultValue)
 	{
-		ClassInputPins.Add(FSwitchClassInputPin(FGuid::NewGuid(), ClassName));
+		ClassInputPins.Add(FCastClassInputPin(FGuid::NewGuid(), ClassName));
 	}
 
 	ReconstructNode();
 }
 
-void UK2BeamNode_Switch::NotifyPinConnectionListChanged(UEdGraphPin* Pin)
+void UK2BeamNode_CastNode::NotifyPinConnectionListChanged(UEdGraphPin* Pin)
 {
 	Super::NotifyPinConnectionListChanged(Pin);
 
@@ -369,13 +369,13 @@ void UK2BeamNode_Switch::NotifyPinConnectionListChanged(UEdGraphPin* Pin)
 	}
 }
 
-void UK2BeamNode_Switch::PostReconstructNode()
+void UK2BeamNode_CastNode::PostReconstructNode()
 {
 	UpdateWildcardPinsType();
 	Super::PostReconstructNode();
 }
 
-void UK2BeamNode_Switch::UpdateWildcardPinsType() const
+void UK2BeamNode_CastNode::UpdateWildcardPinsType() const
 {
 	// Set the wildcards types based on the linkTo array.
 	for (auto PinGuid : WildcardsPins)
@@ -483,18 +483,18 @@ void UK2BeamNode_Switch::UpdateWildcardPinsType() const
 	}
 }
 
-UEdGraphPin* UK2BeamNode_Switch::GetInputPin() const
+UEdGraphPin* UK2BeamNode_CastNode::GetInputPin() const
 {
 	return FindPin(InputPinName);
 }
 
-UEdGraphPin* UK2BeamNode_Switch::GetDefaultOutputPin() const
+UEdGraphPin* UK2BeamNode_CastNode::GetDefaultOutputPin() const
 {
 	return FindPin(OutputPinName);
 }
 
 
-FNodeHandlingFunctor* UK2BeamNode_Switch::CreateNodeHandler(FKismetCompilerContext& CompilerContext) const
+FNodeHandlingFunctor* UK2BeamNode_CastNode::CreateNodeHandler(FKismetCompilerContext& CompilerContext) const
 {
 	return new FNodeHandlingFunctor(CompilerContext);
 }

@@ -6,10 +6,10 @@
 #include "ObjectTools.h"
 #include "BeamFlow/K2BeamNode_BeamFlow.h"
 
-#include "K2BeamNode_Switch.generated.h"
+#include "K2BeamNode_CastNode.generated.h"
 
 USTRUCT()
-struct FSwitchClassInputPin
+struct FCastClassInputPin
 {
 	GENERATED_BODY()
 
@@ -20,23 +20,23 @@ public:
 	UPROPERTY()
 	FString DefaultValue;
 
-	FSwitchClassInputPin(FGuid Guid, FString DefaultValue)
+	FCastClassInputPin(FGuid Guid, FString DefaultValue)
 		: Guid(Guid),
 		  DefaultValue(DefaultValue)
 	{
 	}
 
-	FSwitchClassInputPin() = default;
+	FCastClassInputPin() = default;
 };
 
 
 /**
  * 
  */
-#define LOCTEXT_NAMESPACE "K2BeamNode_Switch"
+#define LOCTEXT_NAMESPACE "Beam Cast Node"
 
 UCLASS()
-class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_Switch : public UK2Node, public IK2Node_AddPinInterface
+class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_CastNode : public UK2Node, public IK2Node_AddPinInterface
 {
 	GENERATED_BODY()
 
@@ -47,7 +47,7 @@ class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_Switch : public UK2Node, public
 	TArray<FGuid> WildcardsPins;
 
 	UPROPERTY()
-	TArray<FSwitchClassInputPin> ClassInputPins;
+	TArray<FCastClassInputPin> ClassInputPins;
 
 	const FName InputPinName = FName("Object");
 	const FName OutputPinName = FName("Cast Failed - Object");
@@ -55,12 +55,15 @@ class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_Switch : public UK2Node, public
 	const FName FriendlyPassThroughOutput = FName("PassThrough - Output");
 
 public:
+
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return FText::FromString("Beam Cast Node"); }
+	
 	/**
 	 *  Get the menu category that will appears on the search node
 	 */
 	virtual FText GetMenuCategory() const override
 	{
-		FString Category = FString::Printf(TEXT("Beam|Switch"));
+		FString Category = FString::Printf(TEXT("Beam|Utility"));
 		return FText::FromString(Category);
 	};
 
