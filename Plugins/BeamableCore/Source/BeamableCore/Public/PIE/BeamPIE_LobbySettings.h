@@ -1,5 +1,5 @@
 #pragma once
-#include "BeamPIE_LobbyPlayerSettings.h"
+
 #include "BeamPIE_UserSlotHandle.h"
 #include "AutoGen/Enums/BeamLobbyRestriction.h"
 #include "BeamBackend/SemanticTypes/BeamContentId.h"
@@ -32,6 +32,7 @@ struct BEAMABLECORE_API FBeamPIE_LobbySettings
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(EditCondition="bShouldAutoCreateLobby", EditConditionHides))
 	TMap<FString, FString> LobbyGlobalData = {};
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(EditCondition="bShouldAutoCreateLobby", EditConditionHides))
-	TMap<FBeamPIE_UserSlotHandle, FBeamPIE_LobbyPlayerSettings> PerPlayerSettings = {};
+	// UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(EditCondition="bShouldAutoCreateLobby", EditConditionHides))
+	// TMap<FBeamPIE_UserSlotHandle, FBeamPIE_LobbyPlayerSettings> PerPlayerSettings = {};
 };
+

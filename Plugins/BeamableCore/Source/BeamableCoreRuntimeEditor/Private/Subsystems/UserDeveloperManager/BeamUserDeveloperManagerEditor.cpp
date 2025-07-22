@@ -124,7 +124,7 @@ void UBeamUserDeveloperManagerEditor::TriggerOnPreBeginPIE(ULevelEditorPlaySetti
 
 		// Count the numbers of each template
 		auto UserSlotHandle = AssignedUserKeyPair.Key;
-		if (FBeamGamerTag GamerTag = AssignedUserKeyPair.Value; TemplateAmount.Contains(GamerTag))
+		if (FBeamGamerTag GamerTag = AssignedUserKeyPair.Value.GamerTag; TemplateAmount.Contains(GamerTag))
 		{
 			TemplateAmount[GamerTag]++;
 		}
@@ -161,9 +161,9 @@ void UBeamUserDeveloperManagerEditor::TriggerOnPreBeginPIE(ULevelEditorPlaySetti
 		{
 			UDeveloperUserDataStreamData* DeveloperUser;
 			if (AssignedUserKeyPair.Key.CreateCopyOnPIE)
-				DeveloperUser = CreatedUserMap[AssignedUserKeyPair.Value.AsLong][0];
+				DeveloperUser = CreatedUserMap[AssignedUserKeyPair.Value.GamerTag.AsLong][0];
 			else
-				DeveloperUser = LocalUserDeveloperCache[AssignedUserKeyPair.Value.AsLong];
+				DeveloperUser = LocalUserDeveloperCache[AssignedUserKeyPair.Value.GamerTag.AsLong];
 
 			BeamUserSlots->SaveSlot(AssignedUserKeyPair.Key.Slot, AssignedUserKeyPair.Key.PIEIndex,
 			                        DeveloperUser->GamerTag,
@@ -174,7 +174,7 @@ void UBeamUserDeveloperManagerEditor::TriggerOnPreBeginPIE(ULevelEditorPlaySetti
 			                        DeveloperUser->Cid,
 			                        DeveloperUser->Pid);
 
-			CreatedUserMap[AssignedUserKeyPair.Value.AsLong].Remove(DeveloperUser);
+			CreatedUserMap[AssignedUserKeyPair.Value.GamerTag.AsLong].Remove(DeveloperUser);
 		}
 	};
 	CreateUserBatchCommand->OnCompleted = [this, Handler](const int& ResCode, const FBeamOperationHandle&)
