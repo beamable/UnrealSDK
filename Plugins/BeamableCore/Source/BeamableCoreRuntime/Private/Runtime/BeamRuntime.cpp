@@ -1534,7 +1534,7 @@ void UBeamRuntime::LoginFederated(FUserSlot UserSlot, FString MicroserviceId, FS
 				const auto AuthenticateHandler = FOnAuthenticateFullResponse::CreateUObject(this, &UBeamRuntime::OnAuthenticated, UserSlot, OpHandle, FDelayedOperation{}, MicroserviceId, FederationId,
 				                                                                            FederatedAuthToken);
 				FBeamRequestContext RequestContext;
-				AuthSubsystem->CPP_Authenticate(AuthReq, AuthenticateHandler, RequestContext, OpHandle);
+				AuthSubsystem->CPP_Authenticate(AuthReq, AuthenticateHandler, RequestContext, OpHandle, this);
 
 				// Clean Up handle
 				OnUserClearedCode.Remove(UserSlotClearedEnqueuedHandle);
@@ -1546,7 +1546,7 @@ void UBeamRuntime::LoginFederated(FUserSlot UserSlot, FString MicroserviceId, FS
 	{
 		const auto AuthenticateHandler = FOnAuthenticateFullResponse::CreateUObject(this, &UBeamRuntime::OnAuthenticated, UserSlot, Op, FDelayedOperation{}, MicroserviceId, FederationId, FederatedAuthToken);
 		FBeamRequestContext RequestContext;
-		AuthSubsystem->CPP_Authenticate(Req, AuthenticateHandler, RequestContext, Op);
+		AuthSubsystem->CPP_Authenticate(Req, AuthenticateHandler, RequestContext, Op, this);
 	}
 }
 
@@ -1586,7 +1586,7 @@ void UBeamRuntime::CommitLoginFederated(FUserSlot UserSlot, UBeamMultiFactorLogi
 		UserSlotClearedEnqueuedHandle = OnUserClearedCode.AddLambda([this, AuthSubsystem](FUserSlot UserSlot, FBeamOperationHandle OpHandle, UAuthenticateRequest* AuthReq, const FOnAuthenticateFullResponse& Handler)
 		{
 			FBeamRequestContext RequestContext;
-			AuthSubsystem->CPP_Authenticate(AuthReq, Handler, RequestContext, OpHandle);
+			AuthSubsystem->CPP_Authenticate(AuthReq, Handler, RequestContext, OpHandle, this);
 
 			// Clean Up handle
 			OnUserClearedCode.Remove(UserSlotClearedEnqueuedHandle);
@@ -1597,7 +1597,7 @@ void UBeamRuntime::CommitLoginFederated(FUserSlot UserSlot, UBeamMultiFactorLogi
 	else
 	{
 		FBeamRequestContext RequestContext;
-		AuthSubsystem->CPP_Authenticate(Req, Handler, RequestContext, Op);
+		AuthSubsystem->CPP_Authenticate(Req, Handler, RequestContext, Op, this);
 	}
 }
 
@@ -1637,7 +1637,7 @@ void UBeamRuntime::LoginEmailAndPassword(FUserSlot UserSlot, FString Email, FStr
 	{
 		const auto AuthenticateHandler = FOnAuthenticateFullResponse::CreateUObject(this, &UBeamRuntime::OnAuthenticated, UserSlot, Op, FDelayedOperation{}, FString{}, FString{}, FString{});
 		FBeamRequestContext RequestContext;
-		AuthSubsystem->CPP_Authenticate(Req, AuthenticateHandler, RequestContext, Op);
+		AuthSubsystem->CPP_Authenticate(Req, AuthenticateHandler, RequestContext, Op, this);
 	}
 }
 
