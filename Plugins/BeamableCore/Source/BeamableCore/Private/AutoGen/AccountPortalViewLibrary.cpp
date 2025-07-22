@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/AccountPortalViewLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UAccountPortalViewLibrary::AccountPortalViewToJsonString(const UAccountPortalView* Serializable, const bool Pretty)
@@ -39,14 +40,17 @@ UAccountPortalView* UAccountPortalViewLibrary::Make(FBeamAccountId Id, TArray<FS
 
 void UAccountPortalViewLibrary::Break(const UAccountPortalView* Serializable, FBeamAccountId& Id, TArray<FString>& Scopes, TArray<FString>& ThirdPartyAppAssociations, FOptionalString& Email, FOptionalString& RoleString, FOptionalString& Language, FOptionalArrayOfBeamExternalIdentity& External, FOptionalArrayOfRoleMapping& Roles)
 {
-	Id = Serializable->Id;
-	Scopes = Serializable->Scopes;
-	ThirdPartyAppAssociations = Serializable->ThirdPartyAppAssociations;
-	Email = Serializable->Email;
-	RoleString = Serializable->RoleString;
-	Language = Serializable->Language;
-	External = Serializable->External;
-	Roles = Serializable->Roles;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Id = Serializable->Id;
+		Scopes = Serializable->Scopes;
+		ThirdPartyAppAssociations = Serializable->ThirdPartyAppAssociations;
+		Email = Serializable->Email;
+		RoleString = Serializable->RoleString;
+		Language = Serializable->Language;
+		External = Serializable->External;
+		Roles = Serializable->Roles;
+	}
 		
 }
 

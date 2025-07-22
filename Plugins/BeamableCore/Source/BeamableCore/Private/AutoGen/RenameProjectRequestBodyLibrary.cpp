@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/RenameProjectRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString URenameProjectRequestBodyLibrary::RenameProjectRequestBodyToJsonString(const URenameProjectRequestBody* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ URenameProjectRequestBody* URenameProjectRequestBodyLibrary::Make(FBeamPid Proje
 
 void URenameProjectRequestBodyLibrary::Break(const URenameProjectRequestBody* Serializable, FBeamPid& ProjectId, FString& NewName)
 {
-	ProjectId = Serializable->ProjectId;
-	NewName = Serializable->NewName;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		ProjectId = Serializable->ProjectId;
+		NewName = Serializable->NewName;
+	}
 		
 }
 

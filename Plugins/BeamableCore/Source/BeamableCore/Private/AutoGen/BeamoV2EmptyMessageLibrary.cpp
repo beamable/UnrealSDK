@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/BeamoV2EmptyMessageLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UBeamoV2EmptyMessageLibrary::BeamoV2EmptyMessageToJsonString(const UBeamoV2EmptyMessage* Serializable, const bool Pretty)

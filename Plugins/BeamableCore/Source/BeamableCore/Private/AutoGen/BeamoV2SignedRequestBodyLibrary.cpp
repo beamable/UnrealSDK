@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/BeamoV2SignedRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UBeamoV2SignedRequestBodyLibrary::BeamoV2SignedRequestBodyToJsonString(const UBeamoV2SignedRequestBody* Serializable, const bool Pretty)
@@ -35,10 +36,13 @@ UBeamoV2SignedRequestBody* UBeamoV2SignedRequestBodyLibrary::Make(FOptionalStrin
 
 void UBeamoV2SignedRequestBodyLibrary::Break(const UBeamoV2SignedRequestBody* Serializable, FOptionalString& Url, FOptionalString& Body, FOptionalString& Method, FOptionalArrayOfBeamoV2StringStringKeyValuePair& Headers)
 {
-	Url = Serializable->Url;
-	Body = Serializable->Body;
-	Method = Serializable->Method;
-	Headers = Serializable->Headers;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Url = Serializable->Url;
+		Body = Serializable->Body;
+		Method = Serializable->Method;
+		Headers = Serializable->Headers;
+	}
 		
 }
 

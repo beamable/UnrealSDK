@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/GetTotalCouponResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UGetTotalCouponResponseLibrary::GetTotalCouponResponseToJsonString(const UGetTotalCouponResponse* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UGetTotalCouponResponse* UGetTotalCouponResponseLibrary::Make(int64 Count, UObje
 
 void UGetTotalCouponResponseLibrary::Break(const UGetTotalCouponResponse* Serializable, int64& Count)
 {
-	Count = Serializable->Count;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Count = Serializable->Count;
+	}
 		
 }
 

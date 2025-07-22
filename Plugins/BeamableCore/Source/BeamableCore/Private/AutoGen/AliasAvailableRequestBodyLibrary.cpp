@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/AliasAvailableRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UAliasAvailableRequestBodyLibrary::AliasAvailableRequestBodyToJsonString(const UAliasAvailableRequestBody* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UAliasAvailableRequestBody* UAliasAvailableRequestBodyLibrary::Make(FString Alia
 
 void UAliasAvailableRequestBodyLibrary::Break(const UAliasAvailableRequestBody* Serializable, FString& Alias)
 {
-	Alias = Serializable->Alias;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Alias = Serializable->Alias;
+	}
 		
 }
 

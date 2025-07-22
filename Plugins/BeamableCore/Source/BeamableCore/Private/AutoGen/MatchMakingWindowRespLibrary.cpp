@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/MatchMakingWindowRespLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UMatchMakingWindowRespLibrary::MatchMakingWindowRespToJsonString(const UMatchMakingWindowResp* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ UMatchMakingWindowResp* UMatchMakingWindowRespLibrary::Make(int32 Difficulty, TA
 
 void UMatchMakingWindowRespLibrary::Break(const UMatchMakingWindowResp* Serializable, int32& Difficulty, TArray<UMatchMakingRanking*>& Matches)
 {
-	Difficulty = Serializable->Difficulty;
-	Matches = Serializable->Matches;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Difficulty = Serializable->Difficulty;
+		Matches = Serializable->Matches;
+	}
 		
 }
 

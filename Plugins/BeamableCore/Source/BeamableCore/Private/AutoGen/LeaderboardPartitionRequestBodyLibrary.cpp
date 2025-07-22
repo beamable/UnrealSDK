@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/LeaderboardPartitionRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString ULeaderboardPartitionRequestBodyLibrary::LeaderboardPartitionRequestBodyToJsonString(const ULeaderboardPartitionRequestBody* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ ULeaderboardPartitionRequestBody* ULeaderboardPartitionRequestBodyLibrary::Make(
 
 void ULeaderboardPartitionRequestBodyLibrary::Break(const ULeaderboardPartitionRequestBody* Serializable, int64& PlayerId)
 {
-	PlayerId = Serializable->PlayerId;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		PlayerId = Serializable->PlayerId;
+	}
 		
 }
 

@@ -2,6 +2,7 @@
 #include "BeamableUnrealMicroserviceClients/Public/AutoGen/AddRequestArgsLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UAddRequestArgsLibrary::AddRequestArgsToJsonString(const UAddRequestArgs* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ UAddRequestArgs* UAddRequestArgsLibrary::Make(int32 A, int32 B, UObject* Outer)
 
 void UAddRequestArgsLibrary::Break(const UAddRequestArgs* Serializable, int32& A, int32& B)
 {
-	A = Serializable->A;
-	B = Serializable->B;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		A = Serializable->A;
+		B = Serializable->B;
+	}
 		
 }
 

@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/CloudsavingBasicReferenceLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UCloudsavingBasicReferenceLibrary::CloudsavingBasicReferenceToJsonString(const UCloudsavingBasicReference* Serializable, const bool Pretty)
@@ -36,11 +37,14 @@ UCloudsavingBasicReference* UCloudsavingBasicReferenceLibrary::Make(int64 Size, 
 
 void UCloudsavingBasicReferenceLibrary::Break(const UCloudsavingBasicReference* Serializable, int64& Size, int64& LastModified, FString& Key, FString& BucketName, FOptionalString& ETag)
 {
-	Size = Serializable->Size;
-	LastModified = Serializable->LastModified;
-	Key = Serializable->Key;
-	BucketName = Serializable->BucketName;
-	ETag = Serializable->ETag;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Size = Serializable->Size;
+		LastModified = Serializable->LastModified;
+		Key = Serializable->Key;
+		BucketName = Serializable->BucketName;
+		ETag = Serializable->ETag;
+	}
 		
 }
 

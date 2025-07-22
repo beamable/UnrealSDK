@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/GetManifestRequestJsonLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UGetManifestRequestJsonLibrary::GetManifestRequestJsonToJsonString(const UGetManifestRequestJson* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ UGetManifestRequestJson* UGetManifestRequestJsonLibrary::Make(FOptionalBeamConte
 
 void UGetManifestRequestJsonLibrary::Break(const UGetManifestRequestJson* Serializable, FOptionalBeamContentManifestId& Id, FOptionalString& Uid)
 {
-	Id = Serializable->Id;
-	Uid = Serializable->Uid;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Id = Serializable->Id;
+		Uid = Serializable->Uid;
+	}
 		
 }
 

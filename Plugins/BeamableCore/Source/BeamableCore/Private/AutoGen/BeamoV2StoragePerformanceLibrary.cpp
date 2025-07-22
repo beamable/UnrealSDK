@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/BeamoV2StoragePerformanceLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UBeamoV2StoragePerformanceLibrary::BeamoV2StoragePerformanceToJsonString(const UBeamoV2StoragePerformance* Serializable, const bool Pretty)
@@ -35,10 +36,13 @@ UBeamoV2StoragePerformance* UBeamoV2StoragePerformanceLibrary::Make(UBeamoV2Data
 
 void UBeamoV2StoragePerformanceLibrary::Break(const UBeamoV2StoragePerformance* Serializable, UBeamoV2DatabaseMeasurements*& DatabaseMeasurements, TArray<UBeamoV2PANamespace*>& Namespaces, TArray<UBeamoV2PASuggestedIndex*>& Indexes, TArray<UBeamoV2PASlowQuery*>& Queries)
 {
-	DatabaseMeasurements = Serializable->DatabaseMeasurements;
-	Namespaces = Serializable->Namespaces;
-	Indexes = Serializable->Indexes;
-	Queries = Serializable->Queries;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		DatabaseMeasurements = Serializable->DatabaseMeasurements;
+		Namespaces = Serializable->Namespaces;
+		Indexes = Serializable->Indexes;
+		Queries = Serializable->Queries;
+	}
 		
 }
 

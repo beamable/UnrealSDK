@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/BeamoV2ServiceRegistrationQueryLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UBeamoV2ServiceRegistrationQueryLibrary::BeamoV2ServiceRegistrationQueryToJsonString(const UBeamoV2ServiceRegistrationQuery* Serializable, const bool Pretty)
@@ -35,10 +36,13 @@ UBeamoV2ServiceRegistrationQuery* UBeamoV2ServiceRegistrationQueryLibrary::Make(
 
 void UBeamoV2ServiceRegistrationQueryLibrary::Break(const UBeamoV2ServiceRegistrationQuery* Serializable, FOptionalBool& bLocalOnly, FOptionalString& ServiceName, FOptionalString& RoutingKey, FOptionalBeamoV2SupportedFederation& Federation)
 {
-	bLocalOnly = Serializable->bLocalOnly;
-	ServiceName = Serializable->ServiceName;
-	RoutingKey = Serializable->RoutingKey;
-	Federation = Serializable->Federation;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		bLocalOnly = Serializable->bLocalOnly;
+		ServiceName = Serializable->ServiceName;
+		RoutingKey = Serializable->RoutingKey;
+		Federation = Serializable->Federation;
+	}
 		
 }
 

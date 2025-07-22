@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/LeaderboardCohortLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString ULeaderboardCohortLibrary::LeaderboardCohortToJsonString(const ULeaderboardCohort* Serializable, const bool Pretty)
@@ -34,9 +35,12 @@ ULeaderboardCohort* ULeaderboardCohortLibrary::Make(FString Id, TArray<UPlayerSt
 
 void ULeaderboardCohortLibrary::Break(const ULeaderboardCohort* Serializable, FString& Id, TArray<UPlayerStatRequirement*>& StatRequirements, FOptionalString& Description)
 {
-	Id = Serializable->Id;
-	StatRequirements = Serializable->StatRequirements;
-	Description = Serializable->Description;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Id = Serializable->Id;
+		StatRequirements = Serializable->StatRequirements;
+		Description = Serializable->Description;
+	}
 		
 }
 

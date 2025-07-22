@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/ListTokensRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UListTokensRequestBodyLibrary::ListTokensRequestBodyToJsonString(const UListTokensRequestBody* Serializable, const bool Pretty)
@@ -36,11 +37,14 @@ UListTokensRequestBody* UListTokensRequestBodyLibrary::Make(int32 PageSize, int3
 
 void UListTokensRequestBodyLibrary::Break(const UListTokensRequestBody* Serializable, int32& PageSize, int32& Page, int64& GamerTagOrAccountId, FOptionalBeamCid& Cid, FOptionalBeamPid& Pid)
 {
-	PageSize = Serializable->PageSize;
-	Page = Serializable->Page;
-	GamerTagOrAccountId = Serializable->GamerTagOrAccountId;
-	Cid = Serializable->Cid;
-	Pid = Serializable->Pid;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		PageSize = Serializable->PageSize;
+		Page = Serializable->Page;
+		GamerTagOrAccountId = Serializable->GamerTagOrAccountId;
+		Cid = Serializable->Cid;
+		Pid = Serializable->Pid;
+	}
 		
 }
 

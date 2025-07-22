@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/ClientDataEntryLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UClientDataEntryLibrary::ClientDataEntryToJsonString(const UClientDataEntry* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ UClientDataEntry* UClientDataEntryLibrary::Make(FString Name, FString Value, UOb
 
 void UClientDataEntryLibrary::Break(const UClientDataEntry* Serializable, FString& Name, FString& Value)
 {
-	Name = Serializable->Name;
-	Value = Serializable->Value;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Name = Serializable->Name;
+		Value = Serializable->Value;
+	}
 		
 }
 

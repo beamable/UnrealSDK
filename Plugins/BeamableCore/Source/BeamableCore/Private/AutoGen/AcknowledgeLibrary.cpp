@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/AcknowledgeLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UAcknowledgeLibrary::AcknowledgeToJsonString(const UAcknowledge* Serializable, const bool Pretty)

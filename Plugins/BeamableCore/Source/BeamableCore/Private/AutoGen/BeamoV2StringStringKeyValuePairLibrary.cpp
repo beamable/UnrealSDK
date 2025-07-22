@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/BeamoV2StringStringKeyValuePairLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UBeamoV2StringStringKeyValuePairLibrary::BeamoV2StringStringKeyValuePairToJsonString(const UBeamoV2StringStringKeyValuePair* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ UBeamoV2StringStringKeyValuePair* UBeamoV2StringStringKeyValuePairLibrary::Make(
 
 void UBeamoV2StringStringKeyValuePairLibrary::Break(const UBeamoV2StringStringKeyValuePair* Serializable, FOptionalString& Key, FOptionalString& Value)
 {
-	Key = Serializable->Key;
-	Value = Serializable->Value;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Key = Serializable->Key;
+		Value = Serializable->Value;
+	}
 		
 }
 

@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/BeamoV2PostManifestRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UBeamoV2PostManifestRequestBodyLibrary::BeamoV2PostManifestRequestBodyToJsonString(const UBeamoV2PostManifestRequestBody* Serializable, const bool Pretty)
@@ -35,10 +36,13 @@ UBeamoV2PostManifestRequestBody* UBeamoV2PostManifestRequestBodyLibrary::Make(FO
 
 void UBeamoV2PostManifestRequestBodyLibrary::Break(const UBeamoV2PostManifestRequestBody* Serializable, FOptionalBool& bAutoDeploy, FOptionalString& Comments, FOptionalArrayOfBeamoV2ServiceReference& Manifest, FOptionalArrayOfBeamoV2ServiceStorageReference& StorageReferences)
 {
-	bAutoDeploy = Serializable->bAutoDeploy;
-	Comments = Serializable->Comments;
-	Manifest = Serializable->Manifest;
-	StorageReferences = Serializable->StorageReferences;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		bAutoDeploy = Serializable->bAutoDeploy;
+		Comments = Serializable->Comments;
+		Manifest = Serializable->Manifest;
+		StorageReferences = Serializable->StorageReferences;
+	}
 		
 }
 

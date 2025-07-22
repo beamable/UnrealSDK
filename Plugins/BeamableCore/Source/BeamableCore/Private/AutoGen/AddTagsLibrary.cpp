@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/AddTagsLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UAddTagsLibrary::AddTagsToJsonString(const UAddTags* Serializable, const bool Pretty)
@@ -34,9 +35,12 @@ UAddTags* UAddTagsLibrary::Make(FOptionalBeamGamerTag PlayerId, FOptionalBool bR
 
 void UAddTagsLibrary::Break(const UAddTags* Serializable, FOptionalBeamGamerTag& PlayerId, FOptionalBool& bReplace, FOptionalArrayOfBeamTag& Tags)
 {
-	PlayerId = Serializable->PlayerId;
-	bReplace = Serializable->bReplace;
-	Tags = Serializable->Tags;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		PlayerId = Serializable->PlayerId;
+		bReplace = Serializable->bReplace;
+		Tags = Serializable->Tags;
+	}
 		
 }
 

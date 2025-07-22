@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/GetStatusResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UGetStatusResponseLibrary::GetStatusResponseToJsonString(const UGetStatusResponse* Serializable, const bool Pretty)
@@ -34,9 +35,12 @@ UGetStatusResponse* UGetStatusResponseLibrary::Make(bool bIsCurrent, TArray<USer
 
 void UGetStatusResponseLibrary::Break(const UGetStatusResponse* Serializable, bool& bIsCurrent, TArray<UServiceStatus*>& Services, FOptionalArrayOfServiceStorageStatus& StorageStatuses)
 {
-	bIsCurrent = Serializable->bIsCurrent;
-	Services = Serializable->Services;
-	StorageStatuses = Serializable->StorageStatuses;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		bIsCurrent = Serializable->bIsCurrent;
+		Services = Serializable->Services;
+		StorageStatuses = Serializable->StorageStatuses;
+	}
 		
 }
 

@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/SendMsgLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString USendMsgLibrary::SendMsgToJsonString(const USendMsg* Serializable, const bool Pretty)
@@ -34,9 +35,12 @@ USendMsg* USendMsgLibrary::Make(TArray<int64> To, FOptionalSendNotification Noti
 
 void USendMsgLibrary::Break(const USendMsg* Serializable, TArray<int64>& To, FOptionalSendNotification& Notification, FOptionalMapOfString& Data)
 {
-	To = Serializable->To;
-	Notification = Serializable->Notification;
-	Data = Serializable->Data;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		To = Serializable->To;
+		Notification = Serializable->Notification;
+		Data = Serializable->Data;
+	}
 		
 }
 

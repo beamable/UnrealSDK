@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/ApiPlayersLobbiesDeletePlayerLobbyResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UApiPlayersLobbiesDeletePlayerLobbyResponseLibrary::ApiPlayersLobbiesDeletePlayerLobbyResponseToJsonString(const UApiPlayersLobbiesDeletePlayerLobbyResponse* Serializable, const bool Pretty)

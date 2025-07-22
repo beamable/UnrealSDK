@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/ServiceLimitsLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UServiceLimitsLibrary::ServiceLimitsToJsonString(const UServiceLimits* Serializable, const bool Pretty)
@@ -34,9 +35,12 @@ UServiceLimits* UServiceLimitsLibrary::Make(FOptionalBeamoLimits Beamo, FOptiona
 
 void UServiceLimitsLibrary::Break(const UServiceLimits* Serializable, FOptionalBeamoLimits& Beamo, FOptionalContentLimits& Content, FOptionalGatewayLimits& Gateway)
 {
-	Beamo = Serializable->Beamo;
-	Content = Serializable->Content;
-	Gateway = Serializable->Gateway;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Beamo = Serializable->Beamo;
+		Content = Serializable->Content;
+		Gateway = Serializable->Gateway;
+	}
 		
 }
 

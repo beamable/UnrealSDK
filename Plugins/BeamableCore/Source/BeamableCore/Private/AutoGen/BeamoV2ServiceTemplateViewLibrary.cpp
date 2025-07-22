@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/BeamoV2ServiceTemplateViewLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UBeamoV2ServiceTemplateViewLibrary::BeamoV2ServiceTemplateViewToJsonString(const UBeamoV2ServiceTemplateView* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UBeamoV2ServiceTemplateView* UBeamoV2ServiceTemplateViewLibrary::Make(FOptionalS
 
 void UBeamoV2ServiceTemplateViewLibrary::Break(const UBeamoV2ServiceTemplateView* Serializable, FOptionalString& Id)
 {
-	Id = Serializable->Id;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Id = Serializable->Id;
+	}
 		
 }
 

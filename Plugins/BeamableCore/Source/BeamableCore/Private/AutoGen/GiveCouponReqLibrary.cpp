@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/GiveCouponReqLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UGiveCouponReqLibrary::GiveCouponReqToJsonString(const UGiveCouponReq* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UGiveCouponReq* UGiveCouponReqLibrary::Make(FString Listing, UObject* Outer)
 
 void UGiveCouponReqLibrary::Break(const UGiveCouponReq* Serializable, FString& Listing)
 {
-	Listing = Serializable->Listing;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Listing = Serializable->Listing;
+	}
 		
 }
 

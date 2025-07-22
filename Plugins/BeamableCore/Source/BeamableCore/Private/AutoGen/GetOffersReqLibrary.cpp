@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/GetOffersReqLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UGetOffersReqLibrary::GetOffersReqToJsonString(const UGetOffersReq* Serializable, const bool Pretty)
@@ -34,9 +35,12 @@ UGetOffersReq* UGetOffersReqLibrary::Make(FOptionalString Language, FOptionalStr
 
 void UGetOffersReqLibrary::Break(const UGetOffersReq* Serializable, FOptionalString& Language, FOptionalString& Time, FOptionalString& Stores)
 {
-	Language = Serializable->Language;
-	Time = Serializable->Time;
-	Stores = Serializable->Stores;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Language = Serializable->Language;
+		Time = Serializable->Time;
+		Stores = Serializable->Stores;
+	}
 		
 }
 

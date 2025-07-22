@@ -2,6 +2,7 @@
 #include "BeamableUnrealMicroserviceClients/Public/AutoGen/MSPlaygroundAddResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UMSPlaygroundAddResponseLibrary::MSPlaygroundAddResponseToJsonString(const UMSPlaygroundAddResponse* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UMSPlaygroundAddResponse* UMSPlaygroundAddResponseLibrary::Make(int32 Value, UOb
 
 void UMSPlaygroundAddResponseLibrary::Break(const UMSPlaygroundAddResponse* Serializable, int32& Value)
 {
-	Value = Serializable->Value;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Value = Serializable->Value;
+	}
 		
 }
 

@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/GetCurrentManifestRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UGetCurrentManifestRequestBodyLibrary::GetCurrentManifestRequestBodyToJsonString(const UGetCurrentManifestRequestBody* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UGetCurrentManifestRequestBody* UGetCurrentManifestRequestBodyLibrary::Make(FOpt
 
 void UGetCurrentManifestRequestBodyLibrary::Break(const UGetCurrentManifestRequestBody* Serializable, FOptionalBool& bArchived)
 {
-	bArchived = Serializable->bArchived;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		bArchived = Serializable->bArchived;
+	}
 		
 }
 

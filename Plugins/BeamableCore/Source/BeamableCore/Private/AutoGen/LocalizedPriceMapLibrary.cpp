@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/LocalizedPriceMapLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString ULocalizedPriceMapLibrary::LocalizedPriceMapToJsonString(const ULocalizedPriceMap* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ ULocalizedPriceMap* ULocalizedPriceMapLibrary::Make(FString Currency, TArray<ULo
 
 void ULocalizedPriceMapLibrary::Break(const ULocalizedPriceMap* Serializable, FString& Currency, TArray<ULocalizedPrice*>& Prices)
 {
-	Currency = Serializable->Currency;
-	Prices = Serializable->Prices;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Currency = Serializable->Currency;
+		Prices = Serializable->Prices;
+	}
 		
 }
 

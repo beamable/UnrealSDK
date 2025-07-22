@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/GatewayLimitsLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UGatewayLimitsLibrary::GatewayLimitsToJsonString(const UGatewayLimits* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UGatewayLimits* UGatewayLimitsLibrary::Make(int32 MaxConcurrentRequests, UObject
 
 void UGatewayLimitsLibrary::Break(const UGatewayLimits* Serializable, int32& MaxConcurrentRequests)
 {
-	MaxConcurrentRequests = Serializable->MaxConcurrentRequests;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		MaxConcurrentRequests = Serializable->MaxConcurrentRequests;
+	}
 		
 }
 

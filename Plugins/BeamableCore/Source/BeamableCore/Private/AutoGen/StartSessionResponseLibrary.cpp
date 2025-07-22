@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/StartSessionResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UStartSessionResponseLibrary::StartSessionResponseToJsonString(const UStartSessionResponse* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ UStartSessionResponse* UStartSessionResponseLibrary::Make(FString Result, FOptio
 
 void UStartSessionResponseLibrary::Break(const UStartSessionResponse* Serializable, FString& Result, FOptionalGamerTag& Gamer)
 {
-	Result = Serializable->Result;
-	Gamer = Serializable->Gamer;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Result = Serializable->Result;
+		Gamer = Serializable->Gamer;
+	}
 		
 }
 

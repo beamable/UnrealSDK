@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/ManifestViewLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UManifestViewLibrary::ManifestViewToJsonString(const UManifestView* Serializable, const bool Pretty)
@@ -38,13 +39,16 @@ UManifestView* UManifestViewLibrary::Make(FString Id, FString Checksum, int64 Cr
 
 void UManifestViewLibrary::Break(const UManifestView* Serializable, FString& Id, FString& Checksum, int64& Created, TArray<UServiceReference*>& Manifest, FOptionalInt64& CreatedByAccountId, FOptionalString& Comments, FOptionalArrayOfServiceStorageReference& StorageReference)
 {
-	Id = Serializable->Id;
-	Checksum = Serializable->Checksum;
-	Created = Serializable->Created;
-	Manifest = Serializable->Manifest;
-	CreatedByAccountId = Serializable->CreatedByAccountId;
-	Comments = Serializable->Comments;
-	StorageReference = Serializable->StorageReference;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Id = Serializable->Id;
+		Checksum = Serializable->Checksum;
+		Created = Serializable->Created;
+		Manifest = Serializable->Manifest;
+		CreatedByAccountId = Serializable->CreatedByAccountId;
+		Comments = Serializable->Comments;
+		StorageReference = Serializable->StorageReference;
+	}
 		
 }
 

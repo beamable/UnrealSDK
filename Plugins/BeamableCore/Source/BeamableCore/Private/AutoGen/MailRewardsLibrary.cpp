@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/MailRewardsLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UMailRewardsLibrary::MailRewardsToJsonString(const UMailRewards* Serializable, const bool Pretty)
@@ -34,9 +35,12 @@ UMailRewards* UMailRewardsLibrary::Make(TArray<UCurrencyChange*> Currencies, TAr
 
 void UMailRewardsLibrary::Break(const UMailRewards* Serializable, TArray<UCurrencyChange*>& Currencies, TArray<UItemCreateRequestBody*>& Items, FOptionalBool& bApplyVipBonus)
 {
-	Currencies = Serializable->Currencies;
-	Items = Serializable->Items;
-	bApplyVipBonus = Serializable->bApplyVipBonus;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Currencies = Serializable->Currencies;
+		Items = Serializable->Items;
+		bApplyVipBonus = Serializable->bApplyVipBonus;
+	}
 		
 }
 

@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/SetPresenceStatusRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString USetPresenceStatusRequestBodyLibrary::SetPresenceStatusRequestBodyToJsonString(const USetPresenceStatusRequestBody* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ USetPresenceStatusRequestBody* USetPresenceStatusRequestBodyLibrary::Make(FOptio
 
 void USetPresenceStatusRequestBodyLibrary::Break(const USetPresenceStatusRequestBody* Serializable, FOptionalPresenceStatus& Status, FOptionalString& Description)
 {
-	Status = Serializable->Status;
-	Description = Serializable->Description;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Status = Serializable->Status;
+		Description = Serializable->Description;
+	}
 		
 }
 

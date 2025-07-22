@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/PasswordUpdateConfirmationLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UPasswordUpdateConfirmationLibrary::PasswordUpdateConfirmationToJsonString(const UPasswordUpdateConfirmation* Serializable, const bool Pretty)
@@ -34,9 +35,12 @@ UPasswordUpdateConfirmation* UPasswordUpdateConfirmationLibrary::Make(FString Co
 
 void UPasswordUpdateConfirmationLibrary::Break(const UPasswordUpdateConfirmation* Serializable, FString& Code, FString& NewPassword, FOptionalString& Email)
 {
-	Code = Serializable->Code;
-	NewPassword = Serializable->NewPassword;
-	Email = Serializable->Email;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Code = Serializable->Code;
+		NewPassword = Serializable->NewPassword;
+		Email = Serializable->Email;
+	}
 		
 }
 

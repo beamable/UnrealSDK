@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/BeamoV2ServiceRegistrationResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UBeamoV2ServiceRegistrationResponseLibrary::BeamoV2ServiceRegistrationResponseToJsonString(const UBeamoV2ServiceRegistrationResponse* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UBeamoV2ServiceRegistrationResponse* UBeamoV2ServiceRegistrationResponseLibrary:
 
 void UBeamoV2ServiceRegistrationResponseLibrary::Break(const UBeamoV2ServiceRegistrationResponse* Serializable, FOptionalArrayOfBeamoV2ServiceRegistration& Registrations)
 {
-	Registrations = Serializable->Registrations;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Registrations = Serializable->Registrations;
+	}
 		
 }
 

@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/ClientManifestResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UClientManifestResponseLibrary::ClientManifestResponseToJsonString(const UClientManifestResponse* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UClientManifestResponse* UClientManifestResponseLibrary::Make(TArray<UClientCont
 
 void UClientManifestResponseLibrary::Break(const UClientManifestResponse* Serializable, TArray<UClientContentInfo*>& Items)
 {
-	Items = Serializable->Items;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Items = Serializable->Items;
+	}
 		
 }
 

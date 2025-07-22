@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/ServiceStatusLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UServiceStatusLibrary::ServiceStatusToJsonString(const UServiceStatus* Serializable, const bool Pretty)
@@ -36,11 +37,14 @@ UServiceStatus* UServiceStatusLibrary::Make(bool bIsCurrent, bool bRunning, FStr
 
 void UServiceStatusLibrary::Break(const UServiceStatus* Serializable, bool& bIsCurrent, bool& bRunning, FString& ServiceName, FString& ImageId, FOptionalArrayOfServiceDependencyReference& ServiceDependencyReferences)
 {
-	bIsCurrent = Serializable->bIsCurrent;
-	bRunning = Serializable->bRunning;
-	ServiceName = Serializable->ServiceName;
-	ImageId = Serializable->ImageId;
-	ServiceDependencyReferences = Serializable->ServiceDependencyReferences;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		bIsCurrent = Serializable->bIsCurrent;
+		bRunning = Serializable->bRunning;
+		ServiceName = Serializable->ServiceName;
+		ImageId = Serializable->ImageId;
+		ServiceDependencyReferences = Serializable->ServiceDependencyReferences;
+	}
 		
 }
 

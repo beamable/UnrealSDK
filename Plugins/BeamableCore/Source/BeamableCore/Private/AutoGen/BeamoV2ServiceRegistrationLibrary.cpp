@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/BeamoV2ServiceRegistrationLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UBeamoV2ServiceRegistrationLibrary::BeamoV2ServiceRegistrationToJsonString(const UBeamoV2ServiceRegistration* Serializable, const bool Pretty)
@@ -40,15 +41,18 @@ UBeamoV2ServiceRegistration* UBeamoV2ServiceRegistrationLibrary::Make(FOptionalB
 
 void UBeamoV2ServiceRegistrationLibrary::Break(const UBeamoV2ServiceRegistration* Serializable, FOptionalBool& bTrafficFilterEnabled, FOptionalInt32& InstanceCount, FOptionalString& ServiceName, FOptionalString& Cid, FOptionalString& Pid, FOptionalString& BeamoName, FOptionalString& RoutingKey, FOptionalInt64& StartedById, FOptionalArrayOfBeamoV2SupportedFederation& Federation)
 {
-	bTrafficFilterEnabled = Serializable->bTrafficFilterEnabled;
-	InstanceCount = Serializable->InstanceCount;
-	ServiceName = Serializable->ServiceName;
-	Cid = Serializable->Cid;
-	Pid = Serializable->Pid;
-	BeamoName = Serializable->BeamoName;
-	RoutingKey = Serializable->RoutingKey;
-	StartedById = Serializable->StartedById;
-	Federation = Serializable->Federation;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		bTrafficFilterEnabled = Serializable->bTrafficFilterEnabled;
+		InstanceCount = Serializable->InstanceCount;
+		ServiceName = Serializable->ServiceName;
+		Cid = Serializable->Cid;
+		Pid = Serializable->Pid;
+		BeamoName = Serializable->BeamoName;
+		RoutingKey = Serializable->RoutingKey;
+		StartedById = Serializable->StartedById;
+		Federation = Serializable->Federation;
+	}
 		
 }
 

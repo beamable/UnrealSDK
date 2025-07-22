@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/CreatePlanRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UCreatePlanRequestBodyLibrary::CreatePlanRequestBodyToJsonString(const UCreatePlanRequestBody* Serializable, const bool Pretty)
@@ -41,16 +42,19 @@ UCreatePlanRequestBody* UCreatePlanRequestBodyLibrary::Make(bool bMongoSSL, bool
 
 void UCreatePlanRequestBodyLibrary::Break(const UCreatePlanRequestBody* Serializable, bool& bMongoSSL, bool& bSharded, FString& Name, FString& MemcachedHosts, FString& PlatformJBDC, FString& MongoHosts, TArray<URedisShardRequestBody*>& RedisShards, FOptionalString& MongoSrvAddress, FOptionalArrayOfString& MessageBusAnalytics, FOptionalArrayOfString& MessageBusCommon)
 {
-	bMongoSSL = Serializable->bMongoSSL;
-	bSharded = Serializable->bSharded;
-	Name = Serializable->Name;
-	MemcachedHosts = Serializable->MemcachedHosts;
-	PlatformJBDC = Serializable->PlatformJBDC;
-	MongoHosts = Serializable->MongoHosts;
-	RedisShards = Serializable->RedisShards;
-	MongoSrvAddress = Serializable->MongoSrvAddress;
-	MessageBusAnalytics = Serializable->MessageBusAnalytics;
-	MessageBusCommon = Serializable->MessageBusCommon;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		bMongoSSL = Serializable->bMongoSSL;
+		bSharded = Serializable->bSharded;
+		Name = Serializable->Name;
+		MemcachedHosts = Serializable->MemcachedHosts;
+		PlatformJBDC = Serializable->PlatformJBDC;
+		MongoHosts = Serializable->MongoHosts;
+		RedisShards = Serializable->RedisShards;
+		MongoSrvAddress = Serializable->MongoSrvAddress;
+		MessageBusAnalytics = Serializable->MessageBusAnalytics;
+		MessageBusCommon = Serializable->MessageBusCommon;
+	}
 		
 }
 

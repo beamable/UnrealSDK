@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/MatchLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UMatchLibrary::MatchToJsonString(const UMatch* Serializable, const bool Pretty)
@@ -37,12 +38,15 @@ UMatch* UMatchLibrary::Make(FOptionalString MatchId, FOptionalString Status, FOp
 
 void UMatchLibrary::Break(const UMatch* Serializable, FOptionalString& MatchId, FOptionalString& Status, FOptionalDateTime& Created, FOptionalMatchType& MatchType, FOptionalArrayOfTeam& Teams, FOptionalArrayOfTicket& Tickets)
 {
-	MatchId = Serializable->MatchId;
-	Status = Serializable->Status;
-	Created = Serializable->Created;
-	MatchType = Serializable->MatchType;
-	Teams = Serializable->Teams;
-	Tickets = Serializable->Tickets;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		MatchId = Serializable->MatchId;
+		Status = Serializable->Status;
+		Created = Serializable->Created;
+		MatchType = Serializable->MatchType;
+		Teams = Serializable->Teams;
+		Tickets = Serializable->Tickets;
+	}
 		
 }
 

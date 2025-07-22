@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/BeamoV2QueryResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UBeamoV2QueryResponseLibrary::BeamoV2QueryResponseToJsonString(const UBeamoV2QueryResponse* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UBeamoV2QueryResponse* UBeamoV2QueryResponseLibrary::Make(FOptionalString QueryI
 
 void UBeamoV2QueryResponseLibrary::Break(const UBeamoV2QueryResponse* Serializable, FOptionalString& QueryId)
 {
-	QueryId = Serializable->QueryId;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		QueryId = Serializable->QueryId;
+	}
 		
 }
 

@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/PlayerStoreViewLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UPlayerStoreViewLibrary::PlayerStoreViewToJsonString(const UPlayerStoreView* Serializable, const bool Pretty)
@@ -36,11 +37,14 @@ UPlayerStoreView* UPlayerStoreViewLibrary::Make(FString Symbol, TArray<UPlayerLi
 
 void UPlayerStoreViewLibrary::Break(const UPlayerStoreView* Serializable, FString& Symbol, TArray<UPlayerListingView*>& Listings, FOptionalInt64& NextDeltaSeconds, FOptionalString& Title, FOptionalInt64& SecondsRemain)
 {
-	Symbol = Serializable->Symbol;
-	Listings = Serializable->Listings;
-	NextDeltaSeconds = Serializable->NextDeltaSeconds;
-	Title = Serializable->Title;
-	SecondsRemain = Serializable->SecondsRemain;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Symbol = Serializable->Symbol;
+		Listings = Serializable->Listings;
+		NextDeltaSeconds = Serializable->NextDeltaSeconds;
+		Title = Serializable->Title;
+		SecondsRemain = Serializable->SecondsRemain;
+	}
 		
 }
 

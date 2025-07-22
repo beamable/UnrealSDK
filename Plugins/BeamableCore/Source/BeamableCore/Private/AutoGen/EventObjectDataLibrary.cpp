@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/EventObjectDataLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UEventObjectDataLibrary::EventObjectDataToJsonString(const UEventObjectData* Serializable, const bool Pretty)
@@ -48,23 +49,26 @@ UEventObjectData* UEventObjectDataLibrary::Make(bool bDone, bool bRunning, EBeam
 
 void UEventObjectDataLibrary::Break(const UEventObjectData* Serializable, bool& bDone, bool& bRunning, EBeamEventState& State, FString& LeaderboardId, FString& Id, UEvent*& Content, FOptionalString& LastChildEventId, FOptionalInt64& StartTime, FOptionalString& RootEventId, FOptionalString& OriginType, FOptionalEventPhaseRuntime& Phase, FOptionalBeamClientPermission& Permissions, FOptionalInt64& EndTime, FOptionalString& Origin, FOptionalInt64& CreatedAt, FOptionalArrayOfInFlightMessage& InFlight, FOptionalArrayOfEventPhaseTime& PhaseTimes)
 {
-	bDone = Serializable->bDone;
-	bRunning = Serializable->bRunning;
-	State = Serializable->State;
-	LeaderboardId = Serializable->LeaderboardId;
-	Id = Serializable->Id;
-	Content = Serializable->Content;
-	LastChildEventId = Serializable->LastChildEventId;
-	StartTime = Serializable->StartTime;
-	RootEventId = Serializable->RootEventId;
-	OriginType = Serializable->OriginType;
-	Phase = Serializable->Phase;
-	Permissions = Serializable->Permissions;
-	EndTime = Serializable->EndTime;
-	Origin = Serializable->Origin;
-	CreatedAt = Serializable->CreatedAt;
-	InFlight = Serializable->InFlight;
-	PhaseTimes = Serializable->PhaseTimes;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		bDone = Serializable->bDone;
+		bRunning = Serializable->bRunning;
+		State = Serializable->State;
+		LeaderboardId = Serializable->LeaderboardId;
+		Id = Serializable->Id;
+		Content = Serializable->Content;
+		LastChildEventId = Serializable->LastChildEventId;
+		StartTime = Serializable->StartTime;
+		RootEventId = Serializable->RootEventId;
+		OriginType = Serializable->OriginType;
+		Phase = Serializable->Phase;
+		Permissions = Serializable->Permissions;
+		EndTime = Serializable->EndTime;
+		Origin = Serializable->Origin;
+		CreatedAt = Serializable->CreatedAt;
+		InFlight = Serializable->InFlight;
+		PhaseTimes = Serializable->PhaseTimes;
+	}
 		
 }
 

@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/StatsResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UStatsResponseLibrary::StatsResponseToJsonString(const UStatsResponse* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ UStatsResponse* UStatsResponseLibrary::Make(FBeamGamerTag Id, TMap<FString, FStr
 
 void UStatsResponseLibrary::Break(const UStatsResponse* Serializable, FBeamGamerTag& Id, TMap<FString, FString>& Stats)
 {
-	Id = Serializable->Id;
-	Stats = Serializable->Stats;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Id = Serializable->Id;
+		Stats = Serializable->Stats;
+	}
 		
 }
 

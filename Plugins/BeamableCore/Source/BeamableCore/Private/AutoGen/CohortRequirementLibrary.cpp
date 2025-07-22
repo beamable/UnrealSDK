@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/CohortRequirementLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UCohortRequirementLibrary::CohortRequirementToJsonString(const UCohortRequirement* Serializable, const bool Pretty)
@@ -34,9 +35,12 @@ UCohortRequirement* UCohortRequirementLibrary::Make(FString Trial, FString Cohor
 
 void UCohortRequirementLibrary::Break(const UCohortRequirement* Serializable, FString& Trial, FString& Cohort, FString& Constraint)
 {
-	Trial = Serializable->Trial;
-	Cohort = Serializable->Cohort;
-	Constraint = Serializable->Constraint;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Trial = Serializable->Trial;
+		Cohort = Serializable->Cohort;
+		Constraint = Serializable->Constraint;
+	}
 		
 }
 

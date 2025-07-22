@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/GetLogsUrlRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UGetLogsUrlRequestBodyLibrary::GetLogsUrlRequestBodyToJsonString(const UGetLogsUrlRequestBody* Serializable, const bool Pretty)
@@ -37,12 +38,15 @@ UGetLogsUrlRequestBody* UGetLogsUrlRequestBodyLibrary::Make(FString ServiceName,
 
 void UGetLogsUrlRequestBodyLibrary::Break(const UGetLogsUrlRequestBody* Serializable, FString& ServiceName, FOptionalInt64& StartTime, FOptionalString& NextToken, FOptionalString& Filter, FOptionalInt64& EndTime, FOptionalInt32& Limit)
 {
-	ServiceName = Serializable->ServiceName;
-	StartTime = Serializable->StartTime;
-	NextToken = Serializable->NextToken;
-	Filter = Serializable->Filter;
-	EndTime = Serializable->EndTime;
-	Limit = Serializable->Limit;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		ServiceName = Serializable->ServiceName;
+		StartTime = Serializable->StartTime;
+		NextToken = Serializable->NextToken;
+		Filter = Serializable->Filter;
+		EndTime = Serializable->EndTime;
+		Limit = Serializable->Limit;
+	}
 		
 }
 

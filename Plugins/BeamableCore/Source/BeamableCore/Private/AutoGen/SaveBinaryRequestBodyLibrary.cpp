@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/SaveBinaryRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString USaveBinaryRequestBodyLibrary::SaveBinaryRequestBodyToJsonString(const USaveBinaryRequestBody* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ USaveBinaryRequestBody* USaveBinaryRequestBodyLibrary::Make(TArray<UBinaryDefini
 
 void USaveBinaryRequestBodyLibrary::Break(const USaveBinaryRequestBody* Serializable, TArray<UBinaryDefinition*>& Binary)
 {
-	Binary = Serializable->Binary;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Binary = Serializable->Binary;
+	}
 		
 }
 

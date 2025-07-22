@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/LeaderboardMembershipResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString ULeaderboardMembershipResponseLibrary::LeaderboardMembershipResponseToJsonString(const ULeaderboardMembershipResponse* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ ULeaderboardMembershipResponse* ULeaderboardMembershipResponseLibrary::Make(bool
 
 void ULeaderboardMembershipResponseLibrary::Break(const ULeaderboardMembershipResponse* Serializable, bool& bResult)
 {
-	bResult = Serializable->bResult;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		bResult = Serializable->bResult;
+	}
 		
 }
 

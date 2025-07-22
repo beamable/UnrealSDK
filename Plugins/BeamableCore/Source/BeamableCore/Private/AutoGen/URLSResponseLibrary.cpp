@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/URLSResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UURLSResponseLibrary::URLSResponseToJsonString(const UURLSResponse* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UURLSResponse* UURLSResponseLibrary::Make(TArray<UCloudsavingBasicURLResponse*> 
 
 void UURLSResponseLibrary::Break(const UURLSResponse* Serializable, TArray<UCloudsavingBasicURLResponse*>& Response)
 {
-	Response = Serializable->Response;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Response = Serializable->Response;
+	}
 		
 }
 

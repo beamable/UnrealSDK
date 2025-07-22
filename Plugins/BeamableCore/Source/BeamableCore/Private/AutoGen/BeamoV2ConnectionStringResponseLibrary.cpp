@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/BeamoV2ConnectionStringResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UBeamoV2ConnectionStringResponseLibrary::BeamoV2ConnectionStringResponseToJsonString(const UBeamoV2ConnectionStringResponse* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UBeamoV2ConnectionStringResponse* UBeamoV2ConnectionStringResponseLibrary::Make(
 
 void UBeamoV2ConnectionStringResponseLibrary::Break(const UBeamoV2ConnectionStringResponse* Serializable, FOptionalString& ConnectionString)
 {
-	ConnectionString = Serializable->ConnectionString;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		ConnectionString = Serializable->ConnectionString;
+	}
 		
 }
 

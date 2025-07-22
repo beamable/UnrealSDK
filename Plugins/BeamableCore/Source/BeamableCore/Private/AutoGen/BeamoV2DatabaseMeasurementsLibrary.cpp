@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/BeamoV2DatabaseMeasurementsLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UBeamoV2DatabaseMeasurementsLibrary::BeamoV2DatabaseMeasurementsToJsonString(const UBeamoV2DatabaseMeasurements* Serializable, const bool Pretty)
@@ -40,15 +41,18 @@ UBeamoV2DatabaseMeasurements* UBeamoV2DatabaseMeasurementsLibrary::Make(FString 
 
 void UBeamoV2DatabaseMeasurementsLibrary::Break(const UBeamoV2DatabaseMeasurements* Serializable, FString& DatabaseName, FOptionalString& Granularity, FOptionalString& GroupId, FOptionalString& HostId, FOptionalString& ProcessId, FOptionalDateTime& Start, FOptionalDateTime& End, FOptionalArrayOfBeamoV2Link& Links, FOptionalArrayOfBeamoV2DatabaseMeasurement& Measurements)
 {
-	DatabaseName = Serializable->DatabaseName;
-	Granularity = Serializable->Granularity;
-	GroupId = Serializable->GroupId;
-	HostId = Serializable->HostId;
-	ProcessId = Serializable->ProcessId;
-	Start = Serializable->Start;
-	End = Serializable->End;
-	Links = Serializable->Links;
-	Measurements = Serializable->Measurements;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		DatabaseName = Serializable->DatabaseName;
+		Granularity = Serializable->Granularity;
+		GroupId = Serializable->GroupId;
+		HostId = Serializable->HostId;
+		ProcessId = Serializable->ProcessId;
+		Start = Serializable->Start;
+		End = Serializable->End;
+		Links = Serializable->Links;
+		Measurements = Serializable->Measurements;
+	}
 		
 }
 

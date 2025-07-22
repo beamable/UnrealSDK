@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/BeamoV2PANamespaceLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UBeamoV2PANamespaceLibrary::BeamoV2PANamespaceToJsonString(const UBeamoV2PANamespace* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ UBeamoV2PANamespace* UBeamoV2PANamespaceLibrary::Make(FString Namespace, FString
 
 void UBeamoV2PANamespaceLibrary::Break(const UBeamoV2PANamespace* Serializable, FString& Namespace, FString& Type)
 {
-	Namespace = Serializable->Namespace;
-	Type = Serializable->Type;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Namespace = Serializable->Namespace;
+		Type = Serializable->Type;
+	}
 		
 }
 

@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/NewCustomerResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UNewCustomerResponseLibrary::NewCustomerResponseToJsonString(const UNewCustomerResponse* Serializable, const bool Pretty)
@@ -38,13 +39,16 @@ UNewCustomerResponse* UNewCustomerResponseLibrary::Make(bool bActivationPending,
 
 void UNewCustomerResponseLibrary::Break(const UNewCustomerResponse* Serializable, bool& bActivationPending, FString& Name, FString& ProjectName, FBeamCid& Cid, FBeamPid& Pid, UTokenResponse*& Token, FOptionalString& Alias)
 {
-	bActivationPending = Serializable->bActivationPending;
-	Name = Serializable->Name;
-	ProjectName = Serializable->ProjectName;
-	Cid = Serializable->Cid;
-	Pid = Serializable->Pid;
-	Token = Serializable->Token;
-	Alias = Serializable->Alias;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		bActivationPending = Serializable->bActivationPending;
+		Name = Serializable->Name;
+		ProjectName = Serializable->ProjectName;
+		Cid = Serializable->Cid;
+		Pid = Serializable->Pid;
+		Token = Serializable->Token;
+		Alias = Serializable->Alias;
+	}
 		
 }
 

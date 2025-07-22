@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/SteamOrderInfoItemLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString USteamOrderInfoItemLibrary::SteamOrderInfoItemToJsonString(const USteamOrderInfoItem* Serializable, const bool Pretty)
@@ -36,11 +37,14 @@ USteamOrderInfoItem* USteamOrderInfoItemLibrary::Make(int64 Vat, int64 Amount, i
 
 void USteamOrderInfoItemLibrary::Break(const USteamOrderInfoItem* Serializable, int64& Vat, int64& Amount, int64& Itemid, int64& Qty, FString& Itemstatus)
 {
-	Vat = Serializable->Vat;
-	Amount = Serializable->Amount;
-	Itemid = Serializable->Itemid;
-	Qty = Serializable->Qty;
-	Itemstatus = Serializable->Itemstatus;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Vat = Serializable->Vat;
+		Amount = Serializable->Amount;
+		Itemid = Serializable->Itemid;
+		Qty = Serializable->Qty;
+		Itemstatus = Serializable->Itemstatus;
+	}
 		
 }
 

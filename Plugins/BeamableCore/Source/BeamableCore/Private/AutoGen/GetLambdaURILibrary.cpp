@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/GetLambdaURILibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UGetLambdaURILibrary::GetLambdaURIToJsonString(const UGetLambdaURI* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UGetLambdaURI* UGetLambdaURILibrary::Make(FString Uri, UObject* Outer)
 
 void UGetLambdaURILibrary::Break(const UGetLambdaURI* Serializable, FString& Uri)
 {
-	Uri = Serializable->Uri;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Uri = Serializable->Uri;
+	}
 		
 }
 

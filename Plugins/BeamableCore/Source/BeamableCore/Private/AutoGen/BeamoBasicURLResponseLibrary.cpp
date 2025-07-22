@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/BeamoBasicURLResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UBeamoBasicURLResponseLibrary::BeamoBasicURLResponseToJsonString(const UBeamoBasicURLResponse* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ UBeamoBasicURLResponse* UBeamoBasicURLResponseLibrary::Make(FString ServiceName,
 
 void UBeamoBasicURLResponseLibrary::Break(const UBeamoBasicURLResponse* Serializable, FString& ServiceName, TArray<UUploadURL*>& S3URLs)
 {
-	ServiceName = Serializable->ServiceName;
-	S3URLs = Serializable->S3URLs;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		ServiceName = Serializable->ServiceName;
+		S3URLs = Serializable->S3URLs;
+	}
 		
 }
 

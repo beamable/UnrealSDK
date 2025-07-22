@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/PromoteNewLeaderLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UPromoteNewLeaderLibrary::PromoteNewLeaderToJsonString(const UPromoteNewLeader* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UPromoteNewLeader* UPromoteNewLeaderLibrary::Make(FOptionalBeamGamerTag PlayerId
 
 void UPromoteNewLeaderLibrary::Break(const UPromoteNewLeader* Serializable, FOptionalBeamGamerTag& PlayerId)
 {
-	PlayerId = Serializable->PlayerId;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		PlayerId = Serializable->PlayerId;
+	}
 		
 }
 

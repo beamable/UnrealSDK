@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/ProjectViewLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UProjectViewLibrary::ProjectViewToJsonString(const UProjectView* Serializable, const bool Pretty)
@@ -39,14 +40,17 @@ UProjectView* UProjectViewLibrary::Make(FString ProjectName, FBeamPid Pid, FOpti
 
 void UProjectViewLibrary::Break(const UProjectView* Serializable, FString& ProjectName, FBeamPid& Pid, FOptionalBool& bArchived, FOptionalBool& bSharded, FOptionalString& Secret, FOptionalBeamPid& Parent, FOptionalBeamCid& Cid, FOptionalArrayOfBeamPid& Children)
 {
-	ProjectName = Serializable->ProjectName;
-	Pid = Serializable->Pid;
-	bArchived = Serializable->bArchived;
-	bSharded = Serializable->bSharded;
-	Secret = Serializable->Secret;
-	Parent = Serializable->Parent;
-	Cid = Serializable->Cid;
-	Children = Serializable->Children;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		ProjectName = Serializable->ProjectName;
+		Pid = Serializable->Pid;
+		bArchived = Serializable->bArchived;
+		bSharded = Serializable->bSharded;
+		Secret = Serializable->Secret;
+		Parent = Serializable->Parent;
+		Cid = Serializable->Cid;
+		Children = Serializable->Children;
+	}
 		
 }
 

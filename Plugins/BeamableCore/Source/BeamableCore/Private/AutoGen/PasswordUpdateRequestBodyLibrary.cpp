@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/PasswordUpdateRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UPasswordUpdateRequestBodyLibrary::PasswordUpdateRequestBodyToJsonString(const UPasswordUpdateRequestBody* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ UPasswordUpdateRequestBody* UPasswordUpdateRequestBodyLibrary::Make(FString Emai
 
 void UPasswordUpdateRequestBodyLibrary::Break(const UPasswordUpdateRequestBody* Serializable, FString& Email, FOptionalString& CodeType)
 {
-	Email = Serializable->Email;
-	CodeType = Serializable->CodeType;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Email = Serializable->Email;
+		CodeType = Serializable->CodeType;
+	}
 		
 }
 

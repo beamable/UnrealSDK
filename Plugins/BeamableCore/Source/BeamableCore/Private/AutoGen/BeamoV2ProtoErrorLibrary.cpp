@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/BeamoV2ProtoErrorLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UBeamoV2ProtoErrorLibrary::BeamoV2ProtoErrorToJsonString(const UBeamoV2ProtoError* Serializable, const bool Pretty)
@@ -34,9 +35,12 @@ UBeamoV2ProtoError* UBeamoV2ProtoErrorLibrary::Make(FOptionalInt32 Status, FOpti
 
 void UBeamoV2ProtoErrorLibrary::Break(const UBeamoV2ProtoError* Serializable, FOptionalInt32& Status, FOptionalString& Error, FOptionalString& Description)
 {
-	Status = Serializable->Status;
-	Error = Serializable->Error;
-	Description = Serializable->Description;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Status = Serializable->Status;
+		Error = Serializable->Error;
+		Description = Serializable->Description;
+	}
 		
 }
 

@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/StatsUnsubscribeRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UStatsUnsubscribeRequestBodyLibrary::StatsUnsubscribeRequestBodyToJsonString(const UStatsUnsubscribeRequestBody* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ UStatsUnsubscribeRequestBody* UStatsUnsubscribeRequestBodyLibrary::Make(FString 
 
 void UStatsUnsubscribeRequestBodyLibrary::Break(const UStatsUnsubscribeRequestBody* Serializable, FString& Service, FOptionalArrayOfString& Subscriptions)
 {
-	Service = Serializable->Service;
-	Subscriptions = Serializable->Subscriptions;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Service = Serializable->Service;
+		Subscriptions = Serializable->Subscriptions;
+	}
 		
 }
 

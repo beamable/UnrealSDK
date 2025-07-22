@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/AccountRegistrationLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UAccountRegistrationLibrary::AccountRegistrationToJsonString(const UAccountRegistration* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ UAccountRegistration* UAccountRegistrationLibrary::Make(FString Email, FString P
 
 void UAccountRegistrationLibrary::Break(const UAccountRegistration* Serializable, FString& Email, FString& Password)
 {
-	Email = Serializable->Email;
-	Password = Serializable->Password;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Email = Serializable->Email;
+		Password = Serializable->Password;
+	}
 		
 }
 

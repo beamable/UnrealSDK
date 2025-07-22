@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/ContentBasicGetManifestRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UContentBasicGetManifestRequestBodyLibrary::ContentBasicGetManifestRequestBodyToJsonString(const UContentBasicGetManifestRequestBody* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ UContentBasicGetManifestRequestBody* UContentBasicGetManifestRequestBodyLibrary:
 
 void UContentBasicGetManifestRequestBodyLibrary::Break(const UContentBasicGetManifestRequestBody* Serializable, FOptionalBeamContentManifestId& Id, FOptionalString& Uid)
 {
-	Id = Serializable->Id;
-	Uid = Serializable->Uid;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Id = Serializable->Id;
+		Uid = Serializable->Uid;
+	}
 		
 }
 

@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/UnarchiveProjectRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UUnarchiveProjectRequestBodyLibrary::UnarchiveProjectRequestBodyToJsonString(const UUnarchiveProjectRequestBody* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UUnarchiveProjectRequestBody* UUnarchiveProjectRequestBodyLibrary::Make(FBeamPid
 
 void UUnarchiveProjectRequestBodyLibrary::Break(const UUnarchiveProjectRequestBody* Serializable, FBeamPid& ProjectId)
 {
-	ProjectId = Serializable->ProjectId;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		ProjectId = Serializable->ProjectId;
+	}
 		
 }
 

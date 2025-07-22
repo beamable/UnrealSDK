@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/LocalizationQueryLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString ULocalizationQueryLibrary::LocalizationQueryToJsonString(const ULocalizationQuery* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ ULocalizationQuery* ULocalizationQueryLibrary::Make(FString Id, FOptionalArrayOf
 
 void ULocalizationQueryLibrary::Break(const ULocalizationQuery* Serializable, FString& Id, FOptionalArrayOfString& Languages)
 {
-	Id = Serializable->Id;
-	Languages = Serializable->Languages;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Id = Serializable->Id;
+		Languages = Serializable->Languages;
+	}
 		
 }
 

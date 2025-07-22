@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/ThirdPartyAssociationLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UThirdPartyAssociationLibrary::ThirdPartyAssociationToJsonString(const UThirdPartyAssociation* Serializable, const bool Pretty)
@@ -37,12 +38,15 @@ UThirdPartyAssociation* UThirdPartyAssociationLibrary::Make(FString Name, FStrin
 
 void UThirdPartyAssociationLibrary::Break(const UThirdPartyAssociation* Serializable, FString& Name, FString& UserAppId, FString& AppId, TMap<FString, FString>& Meta, FOptionalString& Email, FOptionalString& UserBusinessId)
 {
-	Name = Serializable->Name;
-	UserAppId = Serializable->UserAppId;
-	AppId = Serializable->AppId;
-	Meta = Serializable->Meta;
-	Email = Serializable->Email;
-	UserBusinessId = Serializable->UserBusinessId;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Name = Serializable->Name;
+		UserAppId = Serializable->UserAppId;
+		AppId = Serializable->AppId;
+		Meta = Serializable->Meta;
+		Email = Serializable->Email;
+		UserBusinessId = Serializable->UserBusinessId;
+	}
 		
 }
 

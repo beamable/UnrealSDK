@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/DeleteAnnouncementRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UDeleteAnnouncementRequestBodyLibrary::DeleteAnnouncementRequestBodyToJsonString(const UDeleteAnnouncementRequestBody* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UDeleteAnnouncementRequestBody* UDeleteAnnouncementRequestBodyLibrary::Make(FStr
 
 void UDeleteAnnouncementRequestBodyLibrary::Break(const UDeleteAnnouncementRequestBody* Serializable, FString& Symbol)
 {
-	Symbol = Serializable->Symbol;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Symbol = Serializable->Symbol;
+	}
 		
 }
 

@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/StatsSearchCriteriaLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UStatsSearchCriteriaLibrary::StatsSearchCriteriaToJsonString(const UStatsSearchCriteria* Serializable, const bool Pretty)
@@ -34,9 +35,12 @@ UStatsSearchCriteria* UStatsSearchCriteriaLibrary::Make(FString Stat, FString Re
 
 void UStatsSearchCriteriaLibrary::Break(const UStatsSearchCriteria* Serializable, FString& Stat, FString& Rel, FOptionalString& Value)
 {
-	Stat = Serializable->Stat;
-	Rel = Serializable->Rel;
-	Value = Serializable->Value;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Stat = Serializable->Stat;
+		Rel = Serializable->Rel;
+		Value = Serializable->Value;
+	}
 		
 }
 

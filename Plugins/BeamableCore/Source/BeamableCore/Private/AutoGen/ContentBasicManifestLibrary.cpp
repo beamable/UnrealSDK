@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/ContentBasicManifestLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UContentBasicManifestLibrary::ContentBasicManifestToJsonString(const UContentBasicManifest* Serializable, const bool Pretty)
@@ -38,13 +39,16 @@ UContentBasicManifest* UContentBasicManifestLibrary::Make(FBeamContentManifestId
 
 void UContentBasicManifestLibrary::Break(const UContentBasicManifest* Serializable, FBeamContentManifestId& Id, FString& Checksum, int64& Created, TArray<UBaseContentReference*>& References, FOptionalBool& bArchived, FOptionalInt64& PublisherAccountId, FOptionalString& Uid)
 {
-	Id = Serializable->Id;
-	Checksum = Serializable->Checksum;
-	Created = Serializable->Created;
-	References = Serializable->References;
-	bArchived = Serializable->bArchived;
-	PublisherAccountId = Serializable->PublisherAccountId;
-	Uid = Serializable->Uid;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Id = Serializable->Id;
+		Checksum = Serializable->Checksum;
+		Created = Serializable->Created;
+		References = Serializable->References;
+		bArchived = Serializable->bArchived;
+		PublisherAccountId = Serializable->PublisherAccountId;
+		Uid = Serializable->Uid;
+	}
 		
 }
 

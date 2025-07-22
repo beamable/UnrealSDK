@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/DeleteRoleRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UDeleteRoleRequestBodyLibrary::DeleteRoleRequestBodyToJsonString(const UDeleteRoleRequestBody* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ UDeleteRoleRequestBody* UDeleteRoleRequestBodyLibrary::Make(FOptionalBeamPid Rea
 
 void UDeleteRoleRequestBodyLibrary::Break(const UDeleteRoleRequestBody* Serializable, FOptionalBeamPid& Realm, FOptionalString& Role)
 {
-	Realm = Serializable->Realm;
-	Role = Serializable->Role;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Realm = Serializable->Realm;
+		Role = Serializable->Role;
+	}
 		
 }
 

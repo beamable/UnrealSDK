@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/SubscriberDetailsResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString USubscriberDetailsResponseLibrary::SubscriberDetailsResponseToJsonString(const USubscriberDetailsResponse* Serializable, const bool Pretty)
@@ -39,14 +40,17 @@ USubscriberDetailsResponse* USubscriberDetailsResponseLibrary::Make(FString Cust
 
 void USubscriberDetailsResponseLibrary::Break(const USubscriberDetailsResponse* Serializable, FString& CustomChannelPrefix, FString& PlayerForRealmChannel, FString& AuthenticationKey, FString& GameNotificationChannel, FString& SubscribeKey, FString& PlayerChannel, TArray<FString>& PlayerChannels, FOptionalString& GameGlobalNotificationChannel)
 {
-	CustomChannelPrefix = Serializable->CustomChannelPrefix;
-	PlayerForRealmChannel = Serializable->PlayerForRealmChannel;
-	AuthenticationKey = Serializable->AuthenticationKey;
-	GameNotificationChannel = Serializable->GameNotificationChannel;
-	SubscribeKey = Serializable->SubscribeKey;
-	PlayerChannel = Serializable->PlayerChannel;
-	PlayerChannels = Serializable->PlayerChannels;
-	GameGlobalNotificationChannel = Serializable->GameGlobalNotificationChannel;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		CustomChannelPrefix = Serializable->CustomChannelPrefix;
+		PlayerForRealmChannel = Serializable->PlayerForRealmChannel;
+		AuthenticationKey = Serializable->AuthenticationKey;
+		GameNotificationChannel = Serializable->GameNotificationChannel;
+		SubscribeKey = Serializable->SubscribeKey;
+		PlayerChannel = Serializable->PlayerChannel;
+		PlayerChannels = Serializable->PlayerChannels;
+		GameGlobalNotificationChannel = Serializable->GameGlobalNotificationChannel;
+	}
 		
 }
 

@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/StartSessionRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UStartSessionRequestBodyLibrary::StartSessionRequestBodyToJsonString(const UStartSessionRequestBody* Serializable, const bool Pretty)
@@ -41,16 +42,19 @@ UStartSessionRequestBody* UStartSessionRequestBodyLibrary::Make(FOptionalString 
 
 void UStartSessionRequestBodyLibrary::Break(const UStartSessionRequestBody* Serializable, FOptionalString& Source, FOptionalString& Shard, FOptionalString& Locale, FOptionalSessionLanguageContext& Language, FOptionalInt64& Time, FOptionalString& Platform, FOptionalInt64& Gamer, FOptionalString& Device, FOptionalMapOfString& CustomParams, FOptionalMapOfString& DeviceParams)
 {
-	Source = Serializable->Source;
-	Shard = Serializable->Shard;
-	Locale = Serializable->Locale;
-	Language = Serializable->Language;
-	Time = Serializable->Time;
-	Platform = Serializable->Platform;
-	Gamer = Serializable->Gamer;
-	Device = Serializable->Device;
-	CustomParams = Serializable->CustomParams;
-	DeviceParams = Serializable->DeviceParams;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Source = Serializable->Source;
+		Shard = Serializable->Shard;
+		Locale = Serializable->Locale;
+		Language = Serializable->Language;
+		Time = Serializable->Time;
+		Platform = Serializable->Platform;
+		Gamer = Serializable->Gamer;
+		Device = Serializable->Device;
+		CustomParams = Serializable->CustomParams;
+		DeviceParams = Serializable->DeviceParams;
+	}
 		
 }
 

@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/GetElasticContainerRegistryURILibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UGetElasticContainerRegistryURILibrary::GetElasticContainerRegistryURIToJsonString(const UGetElasticContainerRegistryURI* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UGetElasticContainerRegistryURI* UGetElasticContainerRegistryURILibrary::Make(FS
 
 void UGetElasticContainerRegistryURILibrary::Break(const UGetElasticContainerRegistryURI* Serializable, FString& Uri)
 {
-	Uri = Serializable->Uri;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Uri = Serializable->Uri;
+	}
 		
 }
 

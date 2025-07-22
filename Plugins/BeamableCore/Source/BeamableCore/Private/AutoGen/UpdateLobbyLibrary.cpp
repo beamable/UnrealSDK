@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/UpdateLobbyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UUpdateLobbyLibrary::UpdateLobbyToJsonString(const UUpdateLobby* Serializable, const bool Pretty)
@@ -38,13 +39,16 @@ UUpdateLobby* UUpdateLobbyLibrary::Make(FOptionalString Name, FOptionalString De
 
 void UUpdateLobbyLibrary::Break(const UUpdateLobby* Serializable, FOptionalString& Name, FOptionalString& Description, FOptionalLobbyRestriction& Restriction, FOptionalBeamContentId& MatchType, FOptionalInt32& MaxPlayers, FOptionalString& NewHost, FOptionalUpdateData& Data)
 {
-	Name = Serializable->Name;
-	Description = Serializable->Description;
-	Restriction = Serializable->Restriction;
-	MatchType = Serializable->MatchType;
-	MaxPlayers = Serializable->MaxPlayers;
-	NewHost = Serializable->NewHost;
-	Data = Serializable->Data;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Name = Serializable->Name;
+		Description = Serializable->Description;
+		Restriction = Serializable->Restriction;
+		MatchType = Serializable->MatchType;
+		MaxPlayers = Serializable->MaxPlayers;
+		NewHost = Serializable->NewHost;
+		Data = Serializable->Data;
+	}
 		
 }
 

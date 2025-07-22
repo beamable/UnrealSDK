@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/GroupCreateResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UGroupCreateResponseLibrary::GroupCreateResponseToJsonString(const UGroupCreateResponse* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UGroupCreateResponse* UGroupCreateResponseLibrary::Make(UGroupMetaData* Group, U
 
 void UGroupCreateResponseLibrary::Break(const UGroupCreateResponse* Serializable, UGroupMetaData*& Group)
 {
-	Group = Serializable->Group;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Group = Serializable->Group;
+	}
 		
 }
 

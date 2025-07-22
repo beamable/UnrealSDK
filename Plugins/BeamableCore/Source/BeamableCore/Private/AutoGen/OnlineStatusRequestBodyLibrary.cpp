@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/OnlineStatusRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UOnlineStatusRequestBodyLibrary::OnlineStatusRequestBodyToJsonString(const UOnlineStatusRequestBody* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ UOnlineStatusRequestBody* UOnlineStatusRequestBodyLibrary::Make(FString PlayerId
 
 void UOnlineStatusRequestBodyLibrary::Break(const UOnlineStatusRequestBody* Serializable, FString& PlayerIds, int64& IntervalSecs)
 {
-	PlayerIds = Serializable->PlayerIds;
-	IntervalSecs = Serializable->IntervalSecs;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		PlayerIds = Serializable->PlayerIds;
+		IntervalSecs = Serializable->IntervalSecs;
+	}
 		
 }
 

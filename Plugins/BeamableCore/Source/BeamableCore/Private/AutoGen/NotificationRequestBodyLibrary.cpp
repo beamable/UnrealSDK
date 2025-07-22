@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/NotificationRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UNotificationRequestBodyLibrary::NotificationRequestBodyToJsonString(const UNotificationRequestBody* Serializable, const bool Pretty)
@@ -36,11 +37,14 @@ UNotificationRequestBody* UNotificationRequestBodyLibrary::Make(UNotificationReq
 
 void UNotificationRequestBodyLibrary::Break(const UNotificationRequestBody* Serializable, UNotificationRequestData*& Payload, FOptionalBool& bUseSignalWhenPossible, FOptionalString& CustomChannelSuffix, FOptionalInt64& Dbid, FOptionalArrayOfInt64& Dbids)
 {
-	Payload = Serializable->Payload;
-	bUseSignalWhenPossible = Serializable->bUseSignalWhenPossible;
-	CustomChannelSuffix = Serializable->CustomChannelSuffix;
-	Dbid = Serializable->Dbid;
-	Dbids = Serializable->Dbids;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Payload = Serializable->Payload;
+		bUseSignalWhenPossible = Serializable->bUseSignalWhenPossible;
+		CustomChannelSuffix = Serializable->CustomChannelSuffix;
+		Dbid = Serializable->Dbid;
+		Dbids = Serializable->Dbids;
+	}
 		
 }
 

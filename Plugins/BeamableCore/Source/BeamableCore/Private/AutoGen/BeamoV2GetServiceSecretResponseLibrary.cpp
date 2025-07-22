@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/BeamoV2GetServiceSecretResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UBeamoV2GetServiceSecretResponseLibrary::BeamoV2GetServiceSecretResponseToJsonString(const UBeamoV2GetServiceSecretResponse* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UBeamoV2GetServiceSecretResponse* UBeamoV2GetServiceSecretResponseLibrary::Make(
 
 void UBeamoV2GetServiceSecretResponseLibrary::Break(const UBeamoV2GetServiceSecretResponse* Serializable, FOptionalString& Secret)
 {
-	Secret = Serializable->Secret;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Secret = Serializable->Secret;
+	}
 		
 }
 

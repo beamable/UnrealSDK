@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/GetStandingsRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UGetStandingsRequestBodyLibrary::GetStandingsRequestBodyToJsonString(const UGetStandingsRequestBody* Serializable, const bool Pretty)
@@ -37,12 +38,15 @@ UGetStandingsRequestBody* UGetStandingsRequestBodyLibrary::Make(FString Tourname
 
 void UGetStandingsRequestBodyLibrary::Break(const UGetStandingsRequestBody* Serializable, FString& TournamentId, FOptionalInt32& Max, FOptionalInt64& Focus, FOptionalInt32& Cycle, FOptionalInt32& From, FOptionalString& ContentId)
 {
-	TournamentId = Serializable->TournamentId;
-	Max = Serializable->Max;
-	Focus = Serializable->Focus;
-	Cycle = Serializable->Cycle;
-	From = Serializable->From;
-	ContentId = Serializable->ContentId;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		TournamentId = Serializable->TournamentId;
+		Max = Serializable->Max;
+		Focus = Serializable->Focus;
+		Cycle = Serializable->Cycle;
+		From = Serializable->From;
+		ContentId = Serializable->ContentId;
+	}
 		
 }
 

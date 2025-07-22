@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/InFlightMessageLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UInFlightMessageLibrary::InFlightMessageToJsonString(const UInFlightMessage* Serializable, const bool Pretty)
@@ -39,14 +40,17 @@ UInFlightMessage* UInFlightMessageLibrary::Make(FString Method, FString Body, FS
 
 void UInFlightMessageLibrary::Break(const UInFlightMessage* Serializable, FString& Method, FString& Body, FString& Path, FString& Service, FString& Id, FOptionalBool& bLimitFailureRetries, FOptionalInt64& GamerTag, FOptionalString& Shard)
 {
-	Method = Serializable->Method;
-	Body = Serializable->Body;
-	Path = Serializable->Path;
-	Service = Serializable->Service;
-	Id = Serializable->Id;
-	bLimitFailureRetries = Serializable->bLimitFailureRetries;
-	GamerTag = Serializable->GamerTag;
-	Shard = Serializable->Shard;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Method = Serializable->Method;
+		Body = Serializable->Body;
+		Path = Serializable->Path;
+		Service = Serializable->Service;
+		Id = Serializable->Id;
+		bLimitFailureRetries = Serializable->bLimitFailureRetries;
+		GamerTag = Serializable->GamerTag;
+		Shard = Serializable->Shard;
+	}
 		
 }
 

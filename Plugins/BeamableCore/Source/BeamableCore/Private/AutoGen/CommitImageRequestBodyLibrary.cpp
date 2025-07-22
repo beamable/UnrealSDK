@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/CommitImageRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UCommitImageRequestBodyLibrary::CommitImageRequestBodyToJsonString(const UCommitImageRequestBody* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UCommitImageRequestBody* UCommitImageRequestBodyLibrary::Make(UBeamoBasicReferen
 
 void UCommitImageRequestBodyLibrary::Break(const UCommitImageRequestBody* Serializable, UBeamoBasicReference*& Service)
 {
-	Service = Serializable->Service;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Service = Serializable->Service;
+	}
 		
 }
 

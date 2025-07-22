@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/ChampionScoreLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UChampionScoreLibrary::ChampionScoreToJsonString(const UChampionScore* Serializable, const bool Pretty)
@@ -36,11 +37,14 @@ UChampionScore* UChampionScoreLibrary::Make(int64 EndTimeMs, int64 StartTimeMs, 
 
 void UChampionScoreLibrary::Break(const UChampionScore* Serializable, int64& EndTimeMs, int64& StartTimeMs, double& Score, int32& Cycle, int64& PlayerId)
 {
-	EndTimeMs = Serializable->EndTimeMs;
-	StartTimeMs = Serializable->StartTimeMs;
-	Score = Serializable->Score;
-	Cycle = Serializable->Cycle;
-	PlayerId = Serializable->PlayerId;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		EndTimeMs = Serializable->EndTimeMs;
+		StartTimeMs = Serializable->StartTimeMs;
+		Score = Serializable->Score;
+		Cycle = Serializable->Cycle;
+		PlayerId = Serializable->PlayerId;
+	}
 		
 }
 

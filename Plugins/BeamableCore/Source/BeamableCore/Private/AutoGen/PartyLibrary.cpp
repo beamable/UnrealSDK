@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/PartyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UPartyLibrary::PartyToJsonString(const UParty* Serializable, const bool Pretty)
@@ -37,12 +38,15 @@ UParty* UPartyLibrary::Make(FOptionalString Id, FOptionalString Restriction, FOp
 
 void UPartyLibrary::Break(const UParty* Serializable, FOptionalString& Id, FOptionalString& Restriction, FOptionalBeamGamerTag& Leader, FOptionalInt32& MaxSize, FOptionalArrayOfBeamGamerTag& Members, FOptionalArrayOfString& PendingInvites)
 {
-	Id = Serializable->Id;
-	Restriction = Serializable->Restriction;
-	Leader = Serializable->Leader;
-	MaxSize = Serializable->MaxSize;
-	Members = Serializable->Members;
-	PendingInvites = Serializable->PendingInvites;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Id = Serializable->Id;
+		Restriction = Serializable->Restriction;
+		Leader = Serializable->Leader;
+		MaxSize = Serializable->MaxSize;
+		Members = Serializable->Members;
+		PendingInvites = Serializable->PendingInvites;
+	}
 		
 }
 

@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/BeamoV2GetMetricsRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UBeamoV2GetMetricsRequestBodyLibrary::BeamoV2GetMetricsRequestBodyToJsonString(const UBeamoV2GetMetricsRequestBody* Serializable, const bool Pretty)
@@ -35,10 +36,13 @@ UBeamoV2GetMetricsRequestBody* UBeamoV2GetMetricsRequestBodyLibrary::Make(FOptio
 
 void UBeamoV2GetMetricsRequestBodyLibrary::Break(const UBeamoV2GetMetricsRequestBody* Serializable, FOptionalString& MetricName, FOptionalDateTime& StartTime, FOptionalDateTime& EndTime, FOptionalInt32& Period)
 {
-	MetricName = Serializable->MetricName;
-	StartTime = Serializable->StartTime;
-	EndTime = Serializable->EndTime;
-	Period = Serializable->Period;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		MetricName = Serializable->MetricName;
+		StartTime = Serializable->StartTime;
+		EndTime = Serializable->EndTime;
+		Period = Serializable->Period;
+	}
 		
 }
 

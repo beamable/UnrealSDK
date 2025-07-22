@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/StatsSubscribeRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UStatsSubscribeRequestBodyLibrary::StatsSubscribeRequestBodyToJsonString(const UStatsSubscribeRequestBody* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ UStatsSubscribeRequestBody* UStatsSubscribeRequestBodyLibrary::Make(FString Serv
 
 void UStatsSubscribeRequestBodyLibrary::Break(const UStatsSubscribeRequestBody* Serializable, FString& Service, TArray<FString>& Subscriptions)
 {
-	Service = Serializable->Service;
-	Subscriptions = Serializable->Subscriptions;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Service = Serializable->Service;
+		Subscriptions = Serializable->Subscriptions;
+	}
 		
 }
 

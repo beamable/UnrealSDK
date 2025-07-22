@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/AdminGetPlayerStatusResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UAdminGetPlayerStatusResponseLibrary::AdminGetPlayerStatusResponseToJsonString(const UAdminGetPlayerStatusResponse* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UAdminGetPlayerStatusResponse* UAdminGetPlayerStatusResponseLibrary::Make(TArray
 
 void UAdminGetPlayerStatusResponseLibrary::Break(const UAdminGetPlayerStatusResponse* Serializable, TArray<UAdminPlayerStatus*>& Statuses)
 {
-	Statuses = Serializable->Statuses;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Statuses = Serializable->Statuses;
+	}
 		
 }
 

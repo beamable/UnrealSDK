@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/GroupScoreBindingLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UGroupScoreBindingLibrary::GroupScoreBindingToJsonString(const UGroupScoreBinding* Serializable, const bool Pretty)
@@ -34,9 +35,12 @@ UGroupScoreBinding* UGroupScoreBindingLibrary::Make(FString Board, int64 Score, 
 
 void UGroupScoreBindingLibrary::Break(const UGroupScoreBinding* Serializable, FString& Board, int64& Score, TArray<FString>& Derivatives)
 {
-	Board = Serializable->Board;
-	Score = Serializable->Score;
-	Derivatives = Serializable->Derivatives;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Board = Serializable->Board;
+		Score = Serializable->Score;
+		Derivatives = Serializable->Derivatives;
+	}
 		
 }
 

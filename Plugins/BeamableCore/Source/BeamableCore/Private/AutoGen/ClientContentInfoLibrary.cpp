@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/ClientContentInfoLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UClientContentInfoLibrary::ClientContentInfoToJsonString(const UClientContentInfo* Serializable, const bool Pretty)
@@ -37,12 +38,15 @@ UClientContentInfo* UClientContentInfoLibrary::Make(FString Uri, FString Version
 
 void UClientContentInfoLibrary::Break(const UClientContentInfo* Serializable, FString& Uri, FString& Version, FBeamContentId& ContentId, EBeamContentType& Type, TArray<FString>& Tags, FOptionalString& Checksum)
 {
-	Uri = Serializable->Uri;
-	Version = Serializable->Version;
-	ContentId = Serializable->ContentId;
-	Type = Serializable->Type;
-	Tags = Serializable->Tags;
-	Checksum = Serializable->Checksum;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Uri = Serializable->Uri;
+		Version = Serializable->Version;
+		ContentId = Serializable->ContentId;
+		Type = Serializable->Type;
+		Tags = Serializable->Tags;
+		Checksum = Serializable->Checksum;
+	}
 		
 }
 

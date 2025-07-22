@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/GetManifestHistoryResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UGetManifestHistoryResponseLibrary::GetManifestHistoryResponseToJsonString(const UGetManifestHistoryResponse* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UGetManifestHistoryResponse* UGetManifestHistoryResponseLibrary::Make(TArray<UMa
 
 void UGetManifestHistoryResponseLibrary::Break(const UGetManifestHistoryResponse* Serializable, TArray<UManifestSummary*>& Manifests)
 {
-	Manifests = Serializable->Manifests;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Manifests = Serializable->Manifests;
+	}
 		
 }
 

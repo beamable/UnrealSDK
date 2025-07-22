@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/TeamContentProtoLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UTeamContentProtoLibrary::TeamContentProtoToJsonString(const UTeamContentProto* Serializable, const bool Pretty)
@@ -34,9 +35,12 @@ UTeamContentProto* UTeamContentProtoLibrary::Make(FOptionalString Name, FOptiona
 
 void UTeamContentProtoLibrary::Break(const UTeamContentProto* Serializable, FOptionalString& Name, FOptionalInt32& MaxPlayers, FOptionalInt32& MinPlayers)
 {
-	Name = Serializable->Name;
-	MaxPlayers = Serializable->MaxPlayers;
-	MinPlayers = Serializable->MinPlayers;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Name = Serializable->Name;
+		MaxPlayers = Serializable->MaxPlayers;
+		MinPlayers = Serializable->MinPlayers;
+	}
 		
 }
 

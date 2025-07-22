@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/BeamoV2DataPointLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UBeamoV2DataPointLibrary::BeamoV2DataPointToJsonString(const UBeamoV2DataPoint* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ UBeamoV2DataPoint* UBeamoV2DataPointLibrary::Make(double Value, FOptionalDateTim
 
 void UBeamoV2DataPointLibrary::Break(const UBeamoV2DataPoint* Serializable, double& Value, FOptionalDateTime& TimeStamp)
 {
-	Value = Serializable->Value;
-	TimeStamp = Serializable->TimeStamp;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Value = Serializable->Value;
+		TimeStamp = Serializable->TimeStamp;
+	}
 		
 }
 

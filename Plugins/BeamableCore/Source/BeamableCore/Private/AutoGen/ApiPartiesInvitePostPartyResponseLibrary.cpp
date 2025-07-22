@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/ApiPartiesInvitePostPartyResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UApiPartiesInvitePostPartyResponseLibrary::ApiPartiesInvitePostPartyResponseToJsonString(const UApiPartiesInvitePostPartyResponse* Serializable, const bool Pretty)

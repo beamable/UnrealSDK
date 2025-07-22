@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/GamerTagLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UGamerTagLibrary::GamerTagToJsonString(const UGamerTag* Serializable, const bool Pretty)
@@ -37,12 +38,15 @@ UGamerTag* UGamerTagLibrary::Make(int64 Tag, FString Platform, FOptionalString A
 
 void UGamerTagLibrary::Break(const UGamerTag* Serializable, int64& Tag, FString& Platform, FOptionalString& Alias, FOptionalInt64& Added, FOptionalSessionUser& User, FOptionalArrayOfCohortEntry& Trials)
 {
-	Tag = Serializable->Tag;
-	Platform = Serializable->Platform;
-	Alias = Serializable->Alias;
-	Added = Serializable->Added;
-	User = Serializable->User;
-	Trials = Serializable->Trials;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Tag = Serializable->Tag;
+		Platform = Serializable->Platform;
+		Alias = Serializable->Alias;
+		Added = Serializable->Added;
+		User = Serializable->User;
+		Trials = Serializable->Trials;
+	}
 		
 }
 

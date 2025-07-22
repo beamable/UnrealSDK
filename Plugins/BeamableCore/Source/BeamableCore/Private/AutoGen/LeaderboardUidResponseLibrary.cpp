@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/LeaderboardUidResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString ULeaderboardUidResponseLibrary::LeaderboardUidResponseToJsonString(const ULeaderboardUidResponse* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ ULeaderboardUidResponse* ULeaderboardUidResponseLibrary::Make(int64 Id, UObject*
 
 void ULeaderboardUidResponseLibrary::Break(const ULeaderboardUidResponse* Serializable, int64& Id)
 {
-	Id = Serializable->Id;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Id = Serializable->Id;
+	}
 		
 }
 

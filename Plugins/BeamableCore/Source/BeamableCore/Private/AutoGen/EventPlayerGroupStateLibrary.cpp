@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/EventPlayerGroupStateLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UEventPlayerGroupStateLibrary::EventPlayerGroupStateToJsonString(const UEventPlayerGroupState* Serializable, const bool Pretty)
@@ -36,11 +37,14 @@ UEventPlayerGroupState* UEventPlayerGroupStateLibrary::Make(double GroupScore, i
 
 void UEventPlayerGroupStateLibrary::Break(const UEventPlayerGroupState* Serializable, double& GroupScore, int64& GroupRank, TArray<UEventRewardState*>& RankRewards, TArray<UEventRewardState*>& ScoreRewards, FOptionalString& GroupId)
 {
-	GroupScore = Serializable->GroupScore;
-	GroupRank = Serializable->GroupRank;
-	RankRewards = Serializable->RankRewards;
-	ScoreRewards = Serializable->ScoreRewards;
-	GroupId = Serializable->GroupId;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		GroupScore = Serializable->GroupScore;
+		GroupRank = Serializable->GroupRank;
+		RankRewards = Serializable->RankRewards;
+		ScoreRewards = Serializable->ScoreRewards;
+		GroupId = Serializable->GroupId;
+	}
 		
 }
 

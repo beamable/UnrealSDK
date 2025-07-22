@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/LeaderboardAssignmentInfoLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString ULeaderboardAssignmentInfoLibrary::LeaderboardAssignmentInfoToJsonString(const ULeaderboardAssignmentInfo* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ ULeaderboardAssignmentInfo* ULeaderboardAssignmentInfoLibrary::Make(int64 Player
 
 void ULeaderboardAssignmentInfoLibrary::Break(const ULeaderboardAssignmentInfo* Serializable, int64& PlayerId, FString& LeaderboardId)
 {
-	PlayerId = Serializable->PlayerId;
-	LeaderboardId = Serializable->LeaderboardId;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		PlayerId = Serializable->PlayerId;
+		LeaderboardId = Serializable->LeaderboardId;
+	}
 		
 }
 

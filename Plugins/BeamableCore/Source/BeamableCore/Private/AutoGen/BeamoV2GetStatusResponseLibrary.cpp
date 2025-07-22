@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/BeamoV2GetStatusResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UBeamoV2GetStatusResponseLibrary::BeamoV2GetStatusResponseToJsonString(const UBeamoV2GetStatusResponse* Serializable, const bool Pretty)
@@ -34,9 +35,12 @@ UBeamoV2GetStatusResponse* UBeamoV2GetStatusResponseLibrary::Make(FOptionalBool 
 
 void UBeamoV2GetStatusResponseLibrary::Break(const UBeamoV2GetStatusResponse* Serializable, FOptionalBool& bIsCurrent, FOptionalArrayOfBeamoV2ServiceStatus& Services, FOptionalArrayOfBeamoV2ServiceStorageStatus& StorageStatuses)
 {
-	bIsCurrent = Serializable->bIsCurrent;
-	Services = Serializable->Services;
-	StorageStatuses = Serializable->StorageStatuses;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		bIsCurrent = Serializable->bIsCurrent;
+		Services = Serializable->Services;
+		StorageStatuses = Serializable->StorageStatuses;
+	}
 		
 }
 

@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/GetTemplatesResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UGetTemplatesResponseLibrary::GetTemplatesResponseToJsonString(const UGetTemplatesResponse* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UGetTemplatesResponse* UGetTemplatesResponseLibrary::Make(TArray<UServiceTemplat
 
 void UGetTemplatesResponseLibrary::Break(const UGetTemplatesResponse* Serializable, TArray<UServiceTemplate*>& Templates)
 {
-	Templates = Serializable->Templates;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Templates = Serializable->Templates;
+	}
 		
 }
 

@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/MailSuccessResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UMailSuccessResponseLibrary::MailSuccessResponseToJsonString(const UMailSuccessResponse* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UMailSuccessResponse* UMailSuccessResponseLibrary::Make(bool bResult, UObject* O
 
 void UMailSuccessResponseLibrary::Break(const UMailSuccessResponse* Serializable, bool& bResult)
 {
-	bResult = Serializable->bResult;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		bResult = Serializable->bResult;
+	}
 		
 }
 

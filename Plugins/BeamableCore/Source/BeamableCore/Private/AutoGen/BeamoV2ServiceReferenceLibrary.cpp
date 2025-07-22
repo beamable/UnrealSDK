@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/BeamoV2ServiceReferenceLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UBeamoV2ServiceReferenceLibrary::BeamoV2ServiceReferenceToJsonString(const UBeamoV2ServiceReference* Serializable, const bool Pretty)
@@ -42,17 +43,20 @@ UBeamoV2ServiceReference* UBeamoV2ServiceReferenceLibrary::Make(FOptionalBool bA
 
 void UBeamoV2ServiceReferenceLibrary::Break(const UBeamoV2ServiceReference* Serializable, FOptionalBool& bArchived, FOptionalBool& bEnabled, FOptionalString& ServiceName, FOptionalString& ImageId, FOptionalString& TemplateId, FOptionalString& Comments, FOptionalInt32& ContainerHealthCheckPort, FOptionalString& ImageCpuArch, FOptionalString& Checksum, FOptionalArrayOfBeamoV2ServiceDependencyReference& Dependencies, FOptionalArrayOfBeamoV2ServiceComponent& Components)
 {
-	bArchived = Serializable->bArchived;
-	bEnabled = Serializable->bEnabled;
-	ServiceName = Serializable->ServiceName;
-	ImageId = Serializable->ImageId;
-	TemplateId = Serializable->TemplateId;
-	Comments = Serializable->Comments;
-	ContainerHealthCheckPort = Serializable->ContainerHealthCheckPort;
-	ImageCpuArch = Serializable->ImageCpuArch;
-	Checksum = Serializable->Checksum;
-	Dependencies = Serializable->Dependencies;
-	Components = Serializable->Components;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		bArchived = Serializable->bArchived;
+		bEnabled = Serializable->bEnabled;
+		ServiceName = Serializable->ServiceName;
+		ImageId = Serializable->ImageId;
+		TemplateId = Serializable->TemplateId;
+		Comments = Serializable->Comments;
+		ContainerHealthCheckPort = Serializable->ContainerHealthCheckPort;
+		ImageCpuArch = Serializable->ImageCpuArch;
+		Checksum = Serializable->Checksum;
+		Dependencies = Serializable->Dependencies;
+		Components = Serializable->Components;
+	}
 		
 }
 

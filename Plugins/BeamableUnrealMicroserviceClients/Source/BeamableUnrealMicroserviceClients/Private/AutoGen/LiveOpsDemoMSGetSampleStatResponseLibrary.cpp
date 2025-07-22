@@ -2,6 +2,7 @@
 #include "BeamableUnrealMicroserviceClients/Public/AutoGen/LiveOpsDemoMSGetSampleStatResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString ULiveOpsDemoMSGetSampleStatResponseLibrary::LiveOpsDemoMSGetSampleStatResponseToJsonString(const ULiveOpsDemoMSGetSampleStatResponse* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ ULiveOpsDemoMSGetSampleStatResponse* ULiveOpsDemoMSGetSampleStatResponseLibrary:
 
 void ULiveOpsDemoMSGetSampleStatResponseLibrary::Break(const ULiveOpsDemoMSGetSampleStatResponse* Serializable, int32& Value)
 {
-	Value = Serializable->Value;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Value = Serializable->Value;
+	}
 		
 }
 

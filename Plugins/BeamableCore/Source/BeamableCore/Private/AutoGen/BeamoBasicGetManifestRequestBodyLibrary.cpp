@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/BeamoBasicGetManifestRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UBeamoBasicGetManifestRequestBodyLibrary::BeamoBasicGetManifestRequestBodyToJsonString(const UBeamoBasicGetManifestRequestBody* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ UBeamoBasicGetManifestRequestBody* UBeamoBasicGetManifestRequestBodyLibrary::Mak
 
 void UBeamoBasicGetManifestRequestBodyLibrary::Break(const UBeamoBasicGetManifestRequestBody* Serializable, FString& Id, FOptionalBool& bArchived)
 {
-	Id = Serializable->Id;
-	bArchived = Serializable->bArchived;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Id = Serializable->Id;
+		bArchived = Serializable->bArchived;
+	}
 		
 }
 

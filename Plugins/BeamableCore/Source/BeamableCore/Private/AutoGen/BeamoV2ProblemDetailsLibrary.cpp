@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/BeamoV2ProblemDetailsLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UBeamoV2ProblemDetailsLibrary::BeamoV2ProblemDetailsToJsonString(const UBeamoV2ProblemDetails* Serializable, const bool Pretty)
@@ -36,11 +37,14 @@ UBeamoV2ProblemDetails* UBeamoV2ProblemDetailsLibrary::Make(FOptionalString Type
 
 void UBeamoV2ProblemDetailsLibrary::Break(const UBeamoV2ProblemDetails* Serializable, FOptionalString& Type, FOptionalString& Title, FOptionalInt32& Status, FOptionalString& Detail, FOptionalString& Instance)
 {
-	Type = Serializable->Type;
-	Title = Serializable->Title;
-	Status = Serializable->Status;
-	Detail = Serializable->Detail;
-	Instance = Serializable->Instance;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Type = Serializable->Type;
+		Title = Serializable->Title;
+		Status = Serializable->Status;
+		Detail = Serializable->Detail;
+		Instance = Serializable->Instance;
+	}
 		
 }
 

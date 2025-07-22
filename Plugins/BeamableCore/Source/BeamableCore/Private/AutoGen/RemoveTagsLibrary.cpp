@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/RemoveTagsLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString URemoveTagsLibrary::RemoveTagsToJsonString(const URemoveTags* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ URemoveTags* URemoveTagsLibrary::Make(FOptionalBeamGamerTag PlayerId, FOptionalA
 
 void URemoveTagsLibrary::Break(const URemoveTags* Serializable, FOptionalBeamGamerTag& PlayerId, FOptionalArrayOfString& Tags)
 {
-	PlayerId = Serializable->PlayerId;
-	Tags = Serializable->Tags;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		PlayerId = Serializable->PlayerId;
+		Tags = Serializable->Tags;
+	}
 		
 }
 

@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/BeamoV2StartServiceLogsRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UBeamoV2StartServiceLogsRequestBodyLibrary::BeamoV2StartServiceLogsRequestBodyToJsonString(const UBeamoV2StartServiceLogsRequestBody* Serializable, const bool Pretty)
@@ -37,12 +38,15 @@ UBeamoV2StartServiceLogsRequestBody* UBeamoV2StartServiceLogsRequestBodyLibrary:
 
 void UBeamoV2StartServiceLogsRequestBodyLibrary::Break(const UBeamoV2StartServiceLogsRequestBody* Serializable, FOptionalString& ServiceName, FOptionalDateTime& StartTime, FOptionalDateTime& EndTime, FOptionalBeamoV2OrderDirection& Order, FOptionalInt32& Limit, FOptionalArrayOfString& Filters)
 {
-	ServiceName = Serializable->ServiceName;
-	StartTime = Serializable->StartTime;
-	EndTime = Serializable->EndTime;
-	Order = Serializable->Order;
-	Limit = Serializable->Limit;
-	Filters = Serializable->Filters;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		ServiceName = Serializable->ServiceName;
+		StartTime = Serializable->StartTime;
+		EndTime = Serializable->EndTime;
+		Order = Serializable->Order;
+		Limit = Serializable->Limit;
+		Filters = Serializable->Filters;
+	}
 		
 }
 

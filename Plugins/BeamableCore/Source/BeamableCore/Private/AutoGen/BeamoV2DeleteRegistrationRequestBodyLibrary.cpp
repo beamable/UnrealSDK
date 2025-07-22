@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/BeamoV2DeleteRegistrationRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UBeamoV2DeleteRegistrationRequestBodyLibrary::BeamoV2DeleteRegistrationRequestBodyToJsonString(const UBeamoV2DeleteRegistrationRequestBody* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UBeamoV2DeleteRegistrationRequestBody* UBeamoV2DeleteRegistrationRequestBodyLibr
 
 void UBeamoV2DeleteRegistrationRequestBodyLibrary::Break(const UBeamoV2DeleteRegistrationRequestBody* Serializable, FOptionalString& RoutingKey)
 {
-	RoutingKey = Serializable->RoutingKey;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		RoutingKey = Serializable->RoutingKey;
+	}
 		
 }
 

@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/ServiceStorageReferenceLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UServiceStorageReferenceLibrary::ServiceStorageReferenceToJsonString(const UServiceStorageReference* Serializable, const bool Pretty)
@@ -37,12 +38,15 @@ UServiceStorageReference* UServiceStorageReferenceLibrary::Make(bool bArchived, 
 
 void UServiceStorageReferenceLibrary::Break(const UServiceStorageReference* Serializable, bool& bArchived, bool& bEnabled, FString& StorageType, FString& Id, FString& Checksum, FOptionalString& TemplateId)
 {
-	bArchived = Serializable->bArchived;
-	bEnabled = Serializable->bEnabled;
-	StorageType = Serializable->StorageType;
-	Id = Serializable->Id;
-	Checksum = Serializable->Checksum;
-	TemplateId = Serializable->TemplateId;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		bArchived = Serializable->bArchived;
+		bEnabled = Serializable->bEnabled;
+		StorageType = Serializable->StorageType;
+		Id = Serializable->Id;
+		Checksum = Serializable->Checksum;
+		TemplateId = Serializable->TemplateId;
+	}
 		
 }
 

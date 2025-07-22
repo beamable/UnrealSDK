@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/PasswordAuthRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UPasswordAuthRequestBodyLibrary::PasswordAuthRequestBodyToJsonString(const UPasswordAuthRequestBody* Serializable, const bool Pretty)
@@ -37,12 +38,15 @@ UPasswordAuthRequestBody* UPasswordAuthRequestBodyLibrary::Make(FOptionalString 
 
 void UPasswordAuthRequestBodyLibrary::Break(const UPasswordAuthRequestBody* Serializable, FOptionalString& Email, FOptionalString& Password, FOptionalString& Scope, FOptionalBeamCid& CustomerId, FOptionalBeamPid& RealmId, FOptionalContextInfo& Context)
 {
-	Email = Serializable->Email;
-	Password = Serializable->Password;
-	Scope = Serializable->Scope;
-	CustomerId = Serializable->CustomerId;
-	RealmId = Serializable->RealmId;
-	Context = Serializable->Context;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Email = Serializable->Email;
+		Password = Serializable->Password;
+		Scope = Serializable->Scope;
+		CustomerId = Serializable->CustomerId;
+		RealmId = Serializable->RealmId;
+		Context = Serializable->Context;
+	}
 		
 }
 

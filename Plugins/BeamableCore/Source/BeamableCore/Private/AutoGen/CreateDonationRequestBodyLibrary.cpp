@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/CreateDonationRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UCreateDonationRequestBodyLibrary::CreateDonationRequestBodyToJsonString(const UCreateDonationRequestBody* Serializable, const bool Pretty)
@@ -34,9 +35,12 @@ UCreateDonationRequestBody* UCreateDonationRequestBodyLibrary::Make(FString Curr
 
 void UCreateDonationRequestBodyLibrary::Break(const UCreateDonationRequestBody* Serializable, FString& CurrencyId, int64& Amount, FOptionalString& Config)
 {
-	CurrencyId = Serializable->CurrencyId;
-	Amount = Serializable->Amount;
-	Config = Serializable->Config;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		CurrencyId = Serializable->CurrencyId;
+		Amount = Serializable->Amount;
+		Config = Serializable->Config;
+	}
 		
 }
 

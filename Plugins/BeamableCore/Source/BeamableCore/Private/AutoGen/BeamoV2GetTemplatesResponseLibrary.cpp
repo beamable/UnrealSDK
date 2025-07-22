@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/BeamoV2GetTemplatesResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UBeamoV2GetTemplatesResponseLibrary::BeamoV2GetTemplatesResponseToJsonString(const UBeamoV2GetTemplatesResponse* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UBeamoV2GetTemplatesResponse* UBeamoV2GetTemplatesResponseLibrary::Make(FOptiona
 
 void UBeamoV2GetTemplatesResponseLibrary::Break(const UBeamoV2GetTemplatesResponse* Serializable, FOptionalArrayOfBeamoV2ServiceTemplateView& Templates)
 {
-	Templates = Serializable->Templates;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Templates = Serializable->Templates;
+	}
 		
 }
 

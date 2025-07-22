@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/GetAdminsResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UGetAdminsResponseLibrary::GetAdminsResponseToJsonString(const UGetAdminsResponse* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UGetAdminsResponse* UGetAdminsResponseLibrary::Make(TArray<UAccountPortalView*> 
 
 void UGetAdminsResponseLibrary::Break(const UGetAdminsResponse* Serializable, TArray<UAccountPortalView*>& Accounts)
 {
-	Accounts = Serializable->Accounts;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Accounts = Serializable->Accounts;
+	}
 		
 }
 

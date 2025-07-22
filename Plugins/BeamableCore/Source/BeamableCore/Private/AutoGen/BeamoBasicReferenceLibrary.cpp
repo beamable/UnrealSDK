@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/BeamoBasicReferenceLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UBeamoBasicReferenceLibrary::BeamoBasicReferenceToJsonString(const UBeamoBasicReference* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ UBeamoBasicReference* UBeamoBasicReferenceLibrary::Make(bool bArchived, bool bAr
 
 void UBeamoBasicReferenceLibrary::Break(const UBeamoBasicReference* Serializable, bool& bArchived, bool& bArm)
 {
-	bArchived = Serializable->bArchived;
-	bArm = Serializable->bArm;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		bArchived = Serializable->bArchived;
+		bArm = Serializable->bArm;
+	}
 		
 }
 

@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/BeamoV2PromoteBeamoManifestRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UBeamoV2PromoteBeamoManifestRequestBodyLibrary::BeamoV2PromoteBeamoManifestRequestBodyToJsonString(const UBeamoV2PromoteBeamoManifestRequestBody* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UBeamoV2PromoteBeamoManifestRequestBody* UBeamoV2PromoteBeamoManifestRequestBody
 
 void UBeamoV2PromoteBeamoManifestRequestBodyLibrary::Break(const UBeamoV2PromoteBeamoManifestRequestBody* Serializable, FString& SourceRealmId)
 {
-	SourceRealmId = Serializable->SourceRealmId;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		SourceRealmId = Serializable->SourceRealmId;
+	}
 		
 }
 

@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/BeamoV2ServiceRegistrationRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UBeamoV2ServiceRegistrationRequestBodyLibrary::BeamoV2ServiceRegistrationRequestBodyToJsonString(const UBeamoV2ServiceRegistrationRequestBody* Serializable, const bool Pretty)
@@ -34,9 +35,12 @@ UBeamoV2ServiceRegistrationRequestBody* UBeamoV2ServiceRegistrationRequestBodyLi
 
 void UBeamoV2ServiceRegistrationRequestBodyLibrary::Break(const UBeamoV2ServiceRegistrationRequestBody* Serializable, FOptionalString& RoutingKey, FOptionalBool& bTrafficFilterEnabled, FOptionalArrayOfBeamoV2SupportedFederation& Federation)
 {
-	RoutingKey = Serializable->RoutingKey;
-	bTrafficFilterEnabled = Serializable->bTrafficFilterEnabled;
-	Federation = Serializable->Federation;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		RoutingKey = Serializable->RoutingKey;
+		bTrafficFilterEnabled = Serializable->bTrafficFilterEnabled;
+		Federation = Serializable->Federation;
+	}
 		
 }
 

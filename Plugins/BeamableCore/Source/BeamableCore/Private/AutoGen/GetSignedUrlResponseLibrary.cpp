@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/GetSignedUrlResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UGetSignedUrlResponseLibrary::GetSignedUrlResponseToJsonString(const UGetSignedUrlResponse* Serializable, const bool Pretty)
@@ -35,10 +36,13 @@ UGetSignedUrlResponse* UGetSignedUrlResponseLibrary::Make(FString Url, FString B
 
 void UGetSignedUrlResponseLibrary::Break(const UGetSignedUrlResponse* Serializable, FString& Url, FString& Body, FString& Method, TArray<UGetLogsUrlHeader*>& Headers)
 {
-	Url = Serializable->Url;
-	Body = Serializable->Body;
-	Method = Serializable->Method;
-	Headers = Serializable->Headers;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Url = Serializable->Url;
+		Body = Serializable->Body;
+		Method = Serializable->Method;
+		Headers = Serializable->Headers;
+	}
 		
 }
 

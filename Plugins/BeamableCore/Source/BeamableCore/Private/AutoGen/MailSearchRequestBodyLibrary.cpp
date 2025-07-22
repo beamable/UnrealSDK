@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/MailSearchRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UMailSearchRequestBodyLibrary::MailSearchRequestBodyToJsonString(const UMailSearchRequestBody* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UMailSearchRequestBody* UMailSearchRequestBodyLibrary::Make(TArray<UMailSearchCl
 
 void UMailSearchRequestBodyLibrary::Break(const UMailSearchRequestBody* Serializable, TArray<UMailSearchClause*>& Clauses)
 {
-	Clauses = Serializable->Clauses;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Clauses = Serializable->Clauses;
+	}
 		
 }
 

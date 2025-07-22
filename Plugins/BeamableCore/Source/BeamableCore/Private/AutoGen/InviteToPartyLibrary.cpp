@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/InviteToPartyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UInviteToPartyLibrary::InviteToPartyToJsonString(const UInviteToParty* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UInviteToParty* UInviteToPartyLibrary::Make(FOptionalBeamGamerTag PlayerId, UObj
 
 void UInviteToPartyLibrary::Break(const UInviteToParty* Serializable, FOptionalBeamGamerTag& PlayerId)
 {
-	PlayerId = Serializable->PlayerId;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		PlayerId = Serializable->PlayerId;
+	}
 		
 }
 

@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/RealmPromotionLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString URealmPromotionLibrary::RealmPromotionToJsonString(const URealmPromotion* Serializable, const bool Pretty)
@@ -34,9 +35,12 @@ URealmPromotion* URealmPromotionLibrary::Make(FString Name, UPromotable* Source,
 
 void URealmPromotionLibrary::Break(const URealmPromotion* Serializable, FString& Name, UPromotable*& Source, UPromotable*& Destination)
 {
-	Name = Serializable->Name;
-	Source = Serializable->Source;
-	Destination = Serializable->Destination;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Name = Serializable->Name;
+		Source = Serializable->Source;
+		Destination = Serializable->Destination;
+	}
 		
 }
 

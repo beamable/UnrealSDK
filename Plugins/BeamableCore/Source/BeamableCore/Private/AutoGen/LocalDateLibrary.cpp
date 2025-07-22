@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/LocalDateLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString ULocalDateLibrary::LocalDateToJsonString(const ULocalDate* Serializable, const bool Pretty)
@@ -40,15 +41,18 @@ ULocalDate* ULocalDateLibrary::Make(bool bLeapYear, int32 DayOfYear, UIsoChronol
 
 void ULocalDateLibrary::Break(const ULocalDate* Serializable, bool& bLeapYear, int32& DayOfYear, UIsoChronology*& Chronology, FString& DayOfWeek, int32& MonthValue, int32& DayOfMonth, int32& Year, UEra*& Era, FString& Month)
 {
-	bLeapYear = Serializable->bLeapYear;
-	DayOfYear = Serializable->DayOfYear;
-	Chronology = Serializable->Chronology;
-	DayOfWeek = Serializable->DayOfWeek;
-	MonthValue = Serializable->MonthValue;
-	DayOfMonth = Serializable->DayOfMonth;
-	Year = Serializable->Year;
-	Era = Serializable->Era;
-	Month = Serializable->Month;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		bLeapYear = Serializable->bLeapYear;
+		DayOfYear = Serializable->DayOfYear;
+		Chronology = Serializable->Chronology;
+		DayOfWeek = Serializable->DayOfWeek;
+		MonthValue = Serializable->MonthValue;
+		DayOfMonth = Serializable->DayOfMonth;
+		Year = Serializable->Year;
+		Era = Serializable->Era;
+		Month = Serializable->Month;
+	}
 		
 }
 

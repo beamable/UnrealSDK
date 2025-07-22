@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/LinkLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString ULinkLibrary::LinkToJsonString(const ULink* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ ULink* ULinkLibrary::Make(FString Href, FString Rel, UObject* Outer)
 
 void ULinkLibrary::Break(const ULink* Serializable, FString& Href, FString& Rel)
 {
-	Href = Serializable->Href;
-	Rel = Serializable->Rel;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Href = Serializable->Href;
+		Rel = Serializable->Rel;
+	}
 		
 }
 

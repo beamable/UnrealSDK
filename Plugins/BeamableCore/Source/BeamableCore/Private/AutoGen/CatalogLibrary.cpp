@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/CatalogLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UCatalogLibrary::CatalogToJsonString(const UCatalog* Serializable, const bool Pretty)
@@ -35,10 +36,13 @@ UCatalog* UCatalogLibrary::Make(int64 Version, int64 Created, TArray<UStore*> St
 
 void UCatalogLibrary::Break(const UCatalog* Serializable, int64& Version, int64& Created, TArray<UStore*>& Stores, TArray<UOfferDefinition*>& OfferDefinitions)
 {
-	Version = Serializable->Version;
-	Created = Serializable->Created;
-	Stores = Serializable->Stores;
-	OfferDefinitions = Serializable->OfferDefinitions;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Version = Serializable->Version;
+		Created = Serializable->Created;
+		Stores = Serializable->Stores;
+		OfferDefinitions = Serializable->OfferDefinitions;
+	}
 		
 }
 

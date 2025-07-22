@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/BeamoV2ServiceComponentLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UBeamoV2ServiceComponentLibrary::BeamoV2ServiceComponentToJsonString(const UBeamoV2ServiceComponent* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UBeamoV2ServiceComponent* UBeamoV2ServiceComponentLibrary::Make(FOptionalString 
 
 void UBeamoV2ServiceComponentLibrary::Break(const UBeamoV2ServiceComponent* Serializable, FOptionalString& Name)
 {
-	Name = Serializable->Name;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Name = Serializable->Name;
+	}
 		
 }
 

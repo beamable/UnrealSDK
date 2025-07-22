@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/UploadRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UUploadRequestBodyLibrary::UploadRequestBodyToJsonString(const UUploadRequestBody* Serializable, const bool Pretty)
@@ -37,12 +38,15 @@ UUploadRequestBody* UUploadRequestBodyLibrary::Make(FString ObjectKey, int64 Siz
 
 void UUploadRequestBodyLibrary::Break(const UUploadRequestBody* Serializable, FString& ObjectKey, int64& SizeInBytes, FOptionalBool& bDeleted, FOptionalInt64& LastModified, FOptionalString& Checksum, FOptionalArrayOfMetadataPair& Metadata)
 {
-	ObjectKey = Serializable->ObjectKey;
-	SizeInBytes = Serializable->SizeInBytes;
-	bDeleted = Serializable->bDeleted;
-	LastModified = Serializable->LastModified;
-	Checksum = Serializable->Checksum;
-	Metadata = Serializable->Metadata;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		ObjectKey = Serializable->ObjectKey;
+		SizeInBytes = Serializable->SizeInBytes;
+		bDeleted = Serializable->bDeleted;
+		LastModified = Serializable->LastModified;
+		Checksum = Serializable->Checksum;
+		Metadata = Serializable->Metadata;
+	}
 		
 }
 

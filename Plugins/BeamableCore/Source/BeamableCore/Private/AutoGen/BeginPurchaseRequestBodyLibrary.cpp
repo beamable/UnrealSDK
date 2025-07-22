@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/BeginPurchaseRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UBeginPurchaseRequestBodyLibrary::BeginPurchaseRequestBodyToJsonString(const UBeginPurchaseRequestBody* Serializable, const bool Pretty)
@@ -34,9 +35,12 @@ UBeginPurchaseRequestBody* UBeginPurchaseRequestBodyLibrary::Make(FString Purcha
 
 void UBeginPurchaseRequestBodyLibrary::Break(const UBeginPurchaseRequestBody* Serializable, FString& PurchaseId, FOptionalString& Language, FOptionalString& Time)
 {
-	PurchaseId = Serializable->PurchaseId;
-	Language = Serializable->Language;
-	Time = Serializable->Time;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		PurchaseId = Serializable->PurchaseId;
+		Language = Serializable->Language;
+		Time = Serializable->Time;
+	}
 		
 }
 

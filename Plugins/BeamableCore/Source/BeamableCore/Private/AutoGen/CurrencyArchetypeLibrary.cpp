@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/CurrencyArchetypeLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UCurrencyArchetypeLibrary::CurrencyArchetypeToJsonString(const UCurrencyArchetype* Serializable, const bool Pretty)
@@ -35,10 +36,13 @@ UCurrencyArchetype* UCurrencyArchetypeLibrary::Make(FString Symbol, FOptionalFed
 
 void UCurrencyArchetypeLibrary::Break(const UCurrencyArchetype* Serializable, FString& Symbol, FOptionalFederationInfo& External, FOptionalBeamClientPermission& ClientPermission, FOptionalInt64& StartingAmount)
 {
-	Symbol = Serializable->Symbol;
-	External = Serializable->External;
-	ClientPermission = Serializable->ClientPermission;
-	StartingAmount = Serializable->StartingAmount;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Symbol = Serializable->Symbol;
+		External = Serializable->External;
+		ClientPermission = Serializable->ClientPermission;
+		StartingAmount = Serializable->StartingAmount;
+	}
 		
 }
 

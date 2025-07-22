@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/EventGroupRewardsLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UEventGroupRewardsLibrary::EventGroupRewardsToJsonString(const UEventGroupRewards* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UEventGroupRewards* UEventGroupRewardsLibrary::Make(FOptionalArrayOfEventRewardC
 
 void UEventGroupRewardsLibrary::Break(const UEventGroupRewards* Serializable, FOptionalArrayOfEventRewardContent& ScoreRewards)
 {
-	ScoreRewards = Serializable->ScoreRewards;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		ScoreRewards = Serializable->ScoreRewards;
+	}
 		
 }
 

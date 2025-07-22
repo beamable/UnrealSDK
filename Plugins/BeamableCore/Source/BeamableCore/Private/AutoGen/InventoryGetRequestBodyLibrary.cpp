@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/InventoryGetRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UInventoryGetRequestBodyLibrary::InventoryGetRequestBodyToJsonString(const UInventoryGetRequestBody* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UInventoryGetRequestBody* UInventoryGetRequestBodyLibrary::Make(FOptionalString 
 
 void UInventoryGetRequestBodyLibrary::Break(const UInventoryGetRequestBody* Serializable, FOptionalString& Scope)
 {
-	Scope = Serializable->Scope;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Scope = Serializable->Scope;
+	}
 		
 }
 

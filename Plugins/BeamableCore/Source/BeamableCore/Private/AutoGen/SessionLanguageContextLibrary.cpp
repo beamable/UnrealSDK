@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/SessionLanguageContextLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString USessionLanguageContextLibrary::SessionLanguageContextToJsonString(const USessionLanguageContext* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ USessionLanguageContext* USessionLanguageContextLibrary::Make(FString Code, FStr
 
 void USessionLanguageContextLibrary::Break(const USessionLanguageContext* Serializable, FString& Code, FString& Ctx)
 {
-	Code = Serializable->Code;
-	Ctx = Serializable->Ctx;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Code = Serializable->Code;
+		Ctx = Serializable->Ctx;
+	}
 		
 }
 

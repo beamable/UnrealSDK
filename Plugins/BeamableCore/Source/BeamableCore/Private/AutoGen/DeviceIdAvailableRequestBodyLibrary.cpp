@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/DeviceIdAvailableRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UDeviceIdAvailableRequestBodyLibrary::DeviceIdAvailableRequestBodyToJsonString(const UDeviceIdAvailableRequestBody* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UDeviceIdAvailableRequestBody* UDeviceIdAvailableRequestBodyLibrary::Make(FStrin
 
 void UDeviceIdAvailableRequestBodyLibrary::Break(const UDeviceIdAvailableRequestBody* Serializable, FString& DeviceId)
 {
-	DeviceId = Serializable->DeviceId;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		DeviceId = Serializable->DeviceId;
+	}
 		
 }
 

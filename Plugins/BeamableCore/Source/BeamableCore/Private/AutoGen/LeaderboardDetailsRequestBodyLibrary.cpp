@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/LeaderboardDetailsRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString ULeaderboardDetailsRequestBodyLibrary::LeaderboardDetailsRequestBodyToJsonString(const ULeaderboardDetailsRequestBody* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ ULeaderboardDetailsRequestBody* ULeaderboardDetailsRequestBodyLibrary::Make(FOpt
 
 void ULeaderboardDetailsRequestBodyLibrary::Break(const ULeaderboardDetailsRequestBody* Serializable, FOptionalInt32& From, FOptionalInt32& Max)
 {
-	From = Serializable->From;
-	Max = Serializable->Max;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		From = Serializable->From;
+		Max = Serializable->Max;
+	}
 		
 }
 

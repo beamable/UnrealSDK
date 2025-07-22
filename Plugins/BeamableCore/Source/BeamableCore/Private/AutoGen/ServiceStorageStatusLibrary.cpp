@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/ServiceStorageStatusLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UServiceStorageStatusLibrary::ServiceStorageStatusToJsonString(const UServiceStorageStatus* Serializable, const bool Pretty)
@@ -35,10 +36,13 @@ UServiceStorageStatus* UServiceStorageStatusLibrary::Make(bool bIsCurrent, bool 
 
 void UServiceStorageStatusLibrary::Break(const UServiceStorageStatus* Serializable, bool& bIsCurrent, bool& bIsRunning, FString& Id, FString& StorageType)
 {
-	bIsCurrent = Serializable->bIsCurrent;
-	bIsRunning = Serializable->bIsRunning;
-	Id = Serializable->Id;
-	StorageType = Serializable->StorageType;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		bIsCurrent = Serializable->bIsCurrent;
+		bIsRunning = Serializable->bIsRunning;
+		Id = Serializable->Id;
+		StorageType = Serializable->StorageType;
+	}
 		
 }
 

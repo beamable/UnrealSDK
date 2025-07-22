@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/SKULibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString USKULibrary::SKUToJsonString(const USKU* Serializable, const bool Pretty)
@@ -35,10 +36,13 @@ USKU* USKULibrary::Make(FString Name, FString Description, int32 RealPrice, TMap
 
 void USKULibrary::Break(const USKU* Serializable, FString& Name, FString& Description, int32& RealPrice, TMap<FString, FString>& ProductIds)
 {
-	Name = Serializable->Name;
-	Description = Serializable->Description;
-	RealPrice = Serializable->RealPrice;
-	ProductIds = Serializable->ProductIds;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Name = Serializable->Name;
+		Description = Serializable->Description;
+		RealPrice = Serializable->RealPrice;
+		ProductIds = Serializable->ProductIds;
+	}
 		
 }
 

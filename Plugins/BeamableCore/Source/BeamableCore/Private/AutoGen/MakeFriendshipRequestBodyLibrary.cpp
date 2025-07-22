@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/MakeFriendshipRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UMakeFriendshipRequestBodyLibrary::MakeFriendshipRequestBodyToJsonString(const UMakeFriendshipRequestBody* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UMakeFriendshipRequestBody* UMakeFriendshipRequestBodyLibrary::Make(FBeamGamerTa
 
 void UMakeFriendshipRequestBodyLibrary::Break(const UMakeFriendshipRequestBody* Serializable, FBeamGamerTag& GamerTag)
 {
-	GamerTag = Serializable->GamerTag;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		GamerTag = Serializable->GamerTag;
+	}
 		
 }
 

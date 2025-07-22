@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/BeamoV2LinkLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UBeamoV2LinkLibrary::BeamoV2LinkToJsonString(const UBeamoV2Link* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ UBeamoV2Link* UBeamoV2LinkLibrary::Make(FOptionalString Href, FOptionalString Re
 
 void UBeamoV2LinkLibrary::Break(const UBeamoV2Link* Serializable, FOptionalString& Href, FOptionalString& Rel)
 {
-	Href = Serializable->Href;
-	Rel = Serializable->Rel;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Href = Serializable->Href;
+		Rel = Serializable->Rel;
+	}
 		
 }
 

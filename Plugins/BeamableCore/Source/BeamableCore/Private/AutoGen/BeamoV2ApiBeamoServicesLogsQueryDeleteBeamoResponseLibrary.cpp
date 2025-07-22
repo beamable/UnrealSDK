@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/BeamoV2ApiBeamoServicesLogsQueryDeleteBeamoResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UBeamoV2ApiBeamoServicesLogsQueryDeleteBeamoResponseLibrary::BeamoV2ApiBeamoServicesLogsQueryDeleteBeamoResponseToJsonString(const UBeamoV2ApiBeamoServicesLogsQueryDeleteBeamoResponse* Serializable, const bool Pretty)

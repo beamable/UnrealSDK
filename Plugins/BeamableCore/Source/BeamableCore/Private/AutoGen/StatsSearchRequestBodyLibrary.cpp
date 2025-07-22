@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/StatsSearchRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UStatsSearchRequestBodyLibrary::StatsSearchRequestBodyToJsonString(const UStatsSearchRequestBody* Serializable, const bool Pretty)
@@ -35,10 +36,13 @@ UStatsSearchRequestBody* UStatsSearchRequestBodyLibrary::Make(FString Domain, FS
 
 void UStatsSearchRequestBodyLibrary::Break(const UStatsSearchRequestBody* Serializable, FString& Domain, FString& Access, FString& ObjectType, TArray<UStatsSearchCriteria*>& Criteria)
 {
-	Domain = Serializable->Domain;
-	Access = Serializable->Access;
-	ObjectType = Serializable->ObjectType;
-	Criteria = Serializable->Criteria;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Domain = Serializable->Domain;
+		Access = Serializable->Access;
+		ObjectType = Serializable->ObjectType;
+		Criteria = Serializable->Criteria;
+	}
 		
 }
 

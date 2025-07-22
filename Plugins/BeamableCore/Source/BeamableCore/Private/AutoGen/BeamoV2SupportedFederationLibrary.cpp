@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/BeamoV2SupportedFederationLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UBeamoV2SupportedFederationLibrary::BeamoV2SupportedFederationToJsonString(const UBeamoV2SupportedFederation* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ UBeamoV2SupportedFederation* UBeamoV2SupportedFederationLibrary::Make(FOptionalB
 
 void UBeamoV2SupportedFederationLibrary::Break(const UBeamoV2SupportedFederation* Serializable, FOptionalBeamoV2FederationType& Type, FOptionalString& NameSpace)
 {
-	Type = Serializable->Type;
-	NameSpace = Serializable->NameSpace;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Type = Serializable->Type;
+		NameSpace = Serializable->NameSpace;
+	}
 		
 }
 

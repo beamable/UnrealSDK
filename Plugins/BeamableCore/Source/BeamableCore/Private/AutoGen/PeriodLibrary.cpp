@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/PeriodLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UPeriodLibrary::PeriodToJsonString(const UPeriod* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ UPeriod* UPeriodLibrary::Make(FString Start, FOptionalString End, UObject* Outer
 
 void UPeriodLibrary::Break(const UPeriod* Serializable, FString& Start, FOptionalString& End)
 {
-	Start = Serializable->Start;
-	End = Serializable->End;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Start = Serializable->Start;
+		End = Serializable->End;
+	}
 		
 }
 

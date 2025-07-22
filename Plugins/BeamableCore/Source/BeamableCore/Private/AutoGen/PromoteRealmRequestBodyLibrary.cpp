@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/PromoteRealmRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UPromoteRealmRequestBodyLibrary::PromoteRealmRequestBodyToJsonString(const UPromoteRealmRequestBody* Serializable, const bool Pretty)
@@ -34,9 +35,12 @@ UPromoteRealmRequestBody* UPromoteRealmRequestBodyLibrary::Make(FBeamPid SourceP
 
 void UPromoteRealmRequestBodyLibrary::Break(const UPromoteRealmRequestBody* Serializable, FBeamPid& SourcePid, FOptionalArrayOfString& Promotions, FOptionalArrayOfString& ContentManifestIds)
 {
-	SourcePid = Serializable->SourcePid;
-	Promotions = Serializable->Promotions;
-	ContentManifestIds = Serializable->ContentManifestIds;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		SourcePid = Serializable->SourcePid;
+		Promotions = Serializable->Promotions;
+		ContentManifestIds = Serializable->ContentManifestIds;
+	}
 		
 }
 

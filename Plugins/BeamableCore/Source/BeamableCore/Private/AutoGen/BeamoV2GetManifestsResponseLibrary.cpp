@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/BeamoV2GetManifestsResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UBeamoV2GetManifestsResponseLibrary::BeamoV2GetManifestsResponseToJsonString(const UBeamoV2GetManifestsResponse* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UBeamoV2GetManifestsResponse* UBeamoV2GetManifestsResponseLibrary::Make(FOptiona
 
 void UBeamoV2GetManifestsResponseLibrary::Break(const UBeamoV2GetManifestsResponse* Serializable, FOptionalArrayOfBeamoV2Manifest& Manifests)
 {
-	Manifests = Serializable->Manifests;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Manifests = Serializable->Manifests;
+	}
 		
 }
 

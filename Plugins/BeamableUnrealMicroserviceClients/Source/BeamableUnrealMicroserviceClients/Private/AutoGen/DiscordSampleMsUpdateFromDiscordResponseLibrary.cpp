@@ -2,6 +2,7 @@
 #include "BeamableUnrealMicroserviceClients/Public/AutoGen/DiscordSampleMsUpdateFromDiscordResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UDiscordSampleMsUpdateFromDiscordResponseLibrary::DiscordSampleMsUpdateFromDiscordResponseToJsonString(const UDiscordSampleMsUpdateFromDiscordResponse* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UDiscordSampleMsUpdateFromDiscordResponse* UDiscordSampleMsUpdateFromDiscordResp
 
 void UDiscordSampleMsUpdateFromDiscordResponseLibrary::Break(const UDiscordSampleMsUpdateFromDiscordResponse* Serializable, bool& bValue)
 {
-	bValue = Serializable->bValue;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		bValue = Serializable->bValue;
+	}
 		
 }
 
