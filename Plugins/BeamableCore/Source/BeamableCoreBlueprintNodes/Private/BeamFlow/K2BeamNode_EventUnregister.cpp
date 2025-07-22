@@ -38,7 +38,17 @@ void UK2BeamNode_EventUnregister::AllocateDefaultPins()
 	const auto ThenPin = CreatePin(EGPD_Output, UEdGraphSchema_K2::PC_Exec, UEdGraphSchema_K2::PN_Then);
 	ThenPin->PinFriendlyName = FText::FromName(UEdGraphSchema_K2::PN_Then);
 
-	const auto ReferenceClass = GetRuntimeSubsystemClass();
+	UClass* ReferenceClass = GetRuntimeSubsystemClass();
+	if (ShouldUsesObject())
+	{
+		const auto ObjectPin = CreatePin(EGPD_Input, UEdGraphSchema_K2::PC_Object, UObject::StaticClass(), UEdGraphSchema_K2::PN_ObjectToCast);
+
+		auto ObjectClass = GetClassFromObject();
+		if (ObjectClass)
+		{
+			ReferenceClass = ObjectClass;
+		}
+	}
 
 	// Iterate over all FMulticastDelegateProperty (bluprintassingnable delegates) and create the pin
 	for (TFieldIterator<FMulticastDelegateProperty> It(ReferenceClass); It; ++It)
@@ -73,6 +83,12 @@ void UK2BeamNode_EventUnregister::PostEditChangeProperty(FPropertyChangedEvent& 
 	{
 		ReconstructNode();
 	}
+
+	const auto ObjectPropName = GET_MEMBER_NAME_CHECKED(UK2BeamNode_EventUnregister, ShouldUsesObject());
+	if (PropertyChangedEvent.Property && PropertyChangedEvent.Property->GetNameCPP().Equals(ObjectPropName.ToString()))
+	{
+		ReconstructNode();
+	}
 }
 
 void UK2BeamNode_EventUnregister::ExpandNode(FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph)
@@ -80,11 +96,23 @@ void UK2BeamNode_EventUnregister::ExpandNode(FKismetCompilerContext& CompilerCon
 	UK2Node::ExpandNode(CompilerContext, SourceGraph);
 
 	const UEdGraphSchema_K2* K2Schema = GetDefault<UEdGraphSchema_K2>();
+	
+	UK2Node_CallFunction* CallGetSubsystem = nullptr;
+	
+	UClass* ReferenceClass = GetRuntimeSubsystemClass();
 
-	// Create the GetSelfCallFunction to get subsystem reference into the delegate target
-	auto CallGetSubsystem = BeamK2::CreateCallFunctionNode(this, CompilerContext, SourceGraph, GetSubsystemSelfFunctionName(), GetRuntimeSubsystemClass());
-
-	const auto ReferenceClass = GetRuntimeSubsystemClass();
+	if (ShouldUsesObject())
+	{
+		auto ObjectLinks = FindPin(UEdGraphSchema_K2::PN_ObjectToCast)->LinkedTo;
+		if (ObjectLinks.Num() > 0)
+		{
+			ReferenceClass = ObjectLinks[0]->PinType.PinSubCategoryObject->GetClass();
+		}
+	}else
+	{
+		// Create the GetSelfCallFunction to get subsystem reference into the delegate target
+		CallGetSubsystem = BeamK2::CreateCallFunctionNode(this, CompilerContext, SourceGraph, GetSubsystemSelfFunctionName(), GetRuntimeSubsystemClass());
+	}
 
 	// The OutputPin will be used to create a chain of RemoveDelegateNode, so it will get the then pin from each RemoveDelegateNode and connect to the next ExecPin
 	// After do for every FMulticastDelegateProperty it will connect the remaining reference to the MainNode ThenPin.
@@ -116,9 +144,20 @@ void UK2BeamNode_EventUnregister::ExpandNode(FKismetCompilerContext& CompilerCon
 			auto RemoveDelegate_ThenPin = RemoveDelegateNode->GetThenPin();
 
 
-			// Connect the node with the target subsystem
-			const auto SubsystemReturnPin = CallGetSubsystem->GetReturnValuePin();
-			const auto _ = K2Schema->TryCreateConnection(SubsystemReturnPin, RemoveDelegate_Self);
+			if (ShouldUsesObject())
+			{
+				auto ObjectPin = FindPin(UEdGraphSchema_K2::PN_ObjectToCast);
+				if (ObjectPin->LinkedTo.Num() > 0 && K2Schema->TryCreateConnection(ObjectPin->LinkedTo[0], RemoveDelegate_Self))
+				{
+					ObjectPin->LinkedTo[0]->MakeLinkTo(RemoveDelegate_Self);
+				}
+			}
+			else
+			{
+				// Connect the node with the target subsystem
+				const auto SubsystemReturnPin = CallGetSubsystem->GetReturnValuePin();
+				const auto _ = K2Schema->TryCreateConnection(SubsystemReturnPin, RemoveDelegate_Self);
+			}
 
 			// Connect the DelegateProperty Pin to the RemoveDelegateNode Delegate Pin
 			CompilerContext.MovePinLinksToIntermediate(*DelegatePropPin, *RemoveDelegate_Delegate);
@@ -168,9 +207,35 @@ FName UK2BeamNode_EventUnregister::GetSubsystemSelfFunctionName() const
 	return FName("K2BeamNode_GetState");
 }
 
+void UK2BeamNode_EventUnregister::NodeConnectionListChanged()
+{
+	Super::NodeConnectionListChanged();
+
+	if (ShouldUsesObject())
+	{
+		auto Pin = FindPin(UEdGraphSchema_K2::PN_ObjectToCast);
+		if (Pin->LinkedTo.Num() > 0)
+		{
+			UClass* StaticClassType = Cast<UClass>(Pin->LinkedTo[0]->PinType.PinSubCategoryObject.Get());
+			ClassStr = FSoftClassPath{StaticClassType}.GetAssetPath().ToString();
+		}
+	}
+
+	ReconstructNode();
+}
+
 UClass* UK2BeamNode_EventUnregister::GetRuntimeSubsystemClass() const
 {
-	return UClass::StaticClass();
+	return GetClassFromObject();
+}
+
+UClass* UK2BeamNode_EventUnregister::GetClassFromObject() const
+{
+	if (!ClassStr.IsEmpty())
+	{
+		return FSoftClassPath{ClassStr}.ResolveClass();
+	}
+	return UObject::StaticClass();
 }
 
 
