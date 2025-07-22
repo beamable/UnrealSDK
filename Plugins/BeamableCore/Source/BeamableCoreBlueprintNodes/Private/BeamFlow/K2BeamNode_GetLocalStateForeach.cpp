@@ -391,11 +391,10 @@ void UK2BeamNode_GetLocalStateForeach::PinDefaultValueChanged(UEdGraphPin* Pin)
 		Super::PinDefaultValueChanged(Pin);
 		if (Pin->LinkedTo.Num() == 0)
 		{
-			FString ClassName;
-			FString _;
-			Pin->GetDefaultAsString().Split(TEXT("."), &_, &ClassName);
-			NodeMetaData.Add(BeamK2::MD_BeamCastTypeName, *ClassName);
-			UE_LOG(LogTemp, Display, TEXT("UPDATE DEFAULT %s"), *ClassName);
+			UClass* StaticClassType = Cast<UClass>(Pin->DefaultObject.Get());
+
+			FString ClassPath = FSoftClassPath{StaticClassType}.GetAssetPath().ToString();
+			NodeMetaData.Add(BeamK2::MD_BeamCastTypeName, *ClassPath);
 			ReconstructNode();
 		}
 	}

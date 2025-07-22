@@ -317,12 +317,16 @@ void UBeamInventorySubsystem::OnPostUserSignedOut_Implementation(const FUserSlot
 		Inventory.CachedScopes.Reset();
 		Inventory.CurrencyProperties.Reset();
 	}
-
+	ContentSubsystem->ContentManifestsUpdated.RemoveDynamic(this, UBeamInventorySubsystem::OnManifestRefreshed);
+	
 	Super::OnPostUserSignedOut_Implementation(UserSlot, Reason, BeamRealmUser, ResultOp);
 }
 
 void UBeamInventorySubsystem::OnUserSignedIn_Implementation(const FUserSlot& UserSlot, const FBeamRealmUser& BeamRealmUser, const bool bIsFirstAuth, FBeamOperationHandle& ResultOp)
 {
+	ContentSubsystem->ContentManifestsUpdated.AddDynamic(this, UBeamInventorySubsystem::OnManifestRefreshed);
+
+	
 	Inventories.Add(BeamRealmUser.GamerTag, FBeamInventoryState{BeamRealmUser.GamerTag, UserSlot, {}, {}, {}, {}});
 
 	// Fetch the inventory
@@ -435,26 +439,82 @@ bool UBeamInventorySubsystem::TryGetCurrencyAmount(FUserSlot Player, FBeamConten
 	return TryGetCurrencyAmountByGamerTag(RealmUser.GamerTag, CurrencyId, Amount);
 }
 
-bool UBeamInventorySubsystem::TryGetAllCurrencies(FUserSlot Player, TArray<FBeamPlayerCurrency>& Currencies)
+bool UBeamInventorySubsystem::TryGetAllCurrencies(FUserSlot Player, TSubclassOf<UBeamCurrencyContent> Filter, TArray<FBeamPlayerCurrency>& CurrencyStates, TArray<UBeamCurrencyContent*>& Contents)
 {
-	Currencies = {};
+	CurrencyStates = {};
+	Contents = {};
 
 	FBeamRealmUser RealmUser;
 	if (!GEngine->GetEngineSubsystem<UBeamUserSlots>()->GetUserDataAtSlot(Player, RealmUser, this))
 		return false;
 
-	return TryGetAllCurrenciesByGamerTag(RealmUser.GamerTag, Currencies);
+	if (FilterCurrencyCache.Contains(Filter))
+	{
+		CurrencyStates = FilterCurrencyCache[Filter].States;
+		Contents = FilterCurrencyCache[Filter].Contents;
+		return true;
+	}
+	
+	TArray<FBeamPlayerCurrency> Currencies;
+	
+	bool Result = TryGetAllCurrenciesByGamerTag(RealmUser.GamerTag, Currencies);
+
+	for (auto Item : Currencies)
+	{
+		UBeamContentObject* Content;
+		Result &= ContentSubsystem->TryGetContent(Item.ContentId, Content);
+		if (!Filter || Content->IsA(Filter))
+		{
+			CurrencyStates.Add(Item);
+			Contents.Add(static_cast<UBeamCurrencyContent*>(Content));
+		}
+	}
+
+	if (Result)
+	{
+		FilterCurrencyCache.Add(Filter, FilterInventoryCache{Contents, CurrencyStates});
+	}
+	
+	return Result;
 }
 
-bool UBeamInventorySubsystem::TryGetAllItems(FUserSlot Player, TArray<FBeamItemState>& ItemStates)
+bool UBeamInventorySubsystem::TryGetAllItems(FUserSlot Player, TSubclassOf<UBeamItemContent> Filter, TArray<FBeamItemState>& ItemStates, TArray<UBeamItemContent*>& Contents)
 {
 	ItemStates = {};
-
+	Contents = {};
+	
 	FBeamRealmUser RealmUser;
 	if (!GEngine->GetEngineSubsystem<UBeamUserSlots>()->GetUserDataAtSlot(Player, RealmUser, this))
 		return false;
 
-	return TryGetAllItemsByGamerTag(RealmUser.GamerTag, ItemStates);
+	if (FilterItemCache.Contains(Filter))
+	{
+		ItemStates = FilterItemCache[Filter].States;
+		Contents = FilterItemCache[Filter].Contents;
+		return true;
+	}
+
+	TArray<FBeamItemState> Items;
+	
+	bool Result = TryGetAllItemsByGamerTag(RealmUser.GamerTag, Items);
+	
+	for (auto Item : Items)
+	{
+		UBeamContentObject* Content;
+		Result &= ContentSubsystem->TryGetContent(Item.ContentId, Content);
+		if (!Filter || Content->IsA(Filter))
+		{
+			ItemStates.Add(Item);
+			Contents.Add(static_cast<UBeamItemContent*>(Content));
+		}
+	}
+
+	if (Result)
+	{
+		FilterItemCache.Add(Filter, FilterInventoryCache{Contents, ItemStates});
+	}
+	
+	return Result;
 }
 
 bool UBeamInventorySubsystem::TryGetCurrencyAmountByGamerTag(const FBeamGamerTag& GamerTag, FBeamContentId CurrencyId, int64& Amount)
@@ -876,4 +936,13 @@ void UBeamInventorySubsystem::InvokeOnInventoryRefreshed(const FBeamGamerTag& Ga
 	// Invoke the updated inventory callback
 	OnInventoryRefreshedCode.Broadcast(GamerTag, OwnerPlayer);
 	OnInventoryRefreshed.Broadcast(GamerTag, OwnerPlayer);
+}
+
+void UBeamInventorySubsystem::OnManifestRefreshed(TArray<FBeamContentManifestId> ManifestIds)
+{
+	// Once we receive an update manifest notification we clean up all the cache
+	// We could have optimized way to clean up the cache, but it will increase the complexity.
+	// For the Common case of just use multiple times the get by filter it will be enough
+	FilterCurrencyCache.Reset();
+	FilterItemCache.Reset();
 }

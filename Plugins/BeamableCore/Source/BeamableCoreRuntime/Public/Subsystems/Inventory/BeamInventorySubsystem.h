@@ -4,10 +4,12 @@
 
 #include "CoreMinimal.h"
 #include "AutoGen/InventoryView.h"
+#include "Content/BeamContentTypes/BeamCurrencyContent.h"
 #include "Runtime/BeamRuntimeSubsystem.h"
 #include "Subsystems/Content/BeamContentSubsystem.h"
 #include "BeamInventorySubsystem.generated.h"
 
+class UBeamItemContent;
 struct FOptionalMapOfInt64;
 struct FOptionalArrayOfItemUpdateRequestBody;
 struct FOptionalArrayOfItemDeleteRequestBody;
@@ -144,6 +146,17 @@ struct BEAMABLECORERUNTIME_API FBeamInventoryUpdateCommand
 	void GetAllCreatedItems(FOptionalArrayOfItemCreateRequestBody& NewItems, UObject* Owner = GetTransientPackage()) const;
 };
 
+template <typename TContent, typename TState>
+struct FilterInventoryCache
+{
+	static_assert(std::is_base_of<UBeamContentObject, TContent>::value, "T must inherit from UBeamContentObject");
+
+	UPROPERTY()
+	TArray<TContent*> Contents;
+
+	TArray<TState> States;
+};
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnInventoryRefreshed, FBeamGamerTag, GamerTag, FUserSlot, UserSlot);
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnInventoryRefreshedCode, FBeamGamerTag, FUserSlot);
 
@@ -167,6 +180,12 @@ class BEAMABLECORERUNTIME_API UBeamInventorySubsystem : public UBeamRuntimeSubsy
 
 	UPROPERTY()
 	UBeamContentSubsystem* ContentSubsystem;
+
+	UPROPERTY()
+	TMap<UClass*, FilterInventoryCache<UBeamItemContent, FBeamItemState>> FilterItemCache;
+
+	UPROPERTY()
+	TMap<UClass*, FilterInventoryCache<UBeamCurrencyContent, FBeamPlayerCurrency>> FilterCurrencyCache;
 
 
 	virtual void InitializeWhenUnrealReady_Implementation(FBeamOperationHandle& ResultOp) override;
@@ -251,13 +270,13 @@ public:
 	 * @brief Gets the list of all currencies the given player has. Returns false if no player is signed into th given slot.
 	 */
 	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
-	bool TryGetAllCurrencies(FUserSlot Player, TArray<FBeamPlayerCurrency>& Currencies);
+	bool TryGetAllCurrencies(FUserSlot Player, UPARAM(meta=(BeamCastType))TSubclassOf<UBeamCurrencyContent> Filter, TArray<FBeamPlayerCurrency>& CurrencyStates, UPARAM(meta=(BeamCastTarget))TArray<UBeamCurrencyContent*>& Contents);
 
 	/**
 	 * @brief Gets all items for the given player. 
 	 */
 	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue", AutoCreateRefTerm="ItemStates"))
-	bool TryGetAllItems(FUserSlot Player, TArray<FBeamItemState>& ItemStates);
+	bool TryGetAllItems(FUserSlot Player, UPARAM(meta=(BeamCastType))TSubclassOf<UBeamItemContent> Filter, TArray<FBeamItemState>& ItemStates, UPARAM(meta=(BeamCastTarget))TArray<UBeamItemContent*>& Contents);
 
 	/**
 	 * @brief Given a currency FBeamContentId, gets the amount the player has. Returns false if no player is signed into th given slot.
@@ -351,4 +370,7 @@ private:
 	
 	UFUNCTION()
 	void InvokeOnInventoryRefreshed(const FBeamGamerTag& GamerTag, const FUserSlot OwnerPlayer);
+
+	UFUNCTION()
+	void OnManifestRefreshed(TArray<FBeamContentManifestId> ManifestIds);
 };
