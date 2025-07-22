@@ -16,6 +16,7 @@ class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_GetLocalState : public UK2Node
 {
 	GENERATED_BODY()
 
+
 	UPROPERTY()
 	TArray<FString> WrappedOperationFunctionInputPinNames;
 
@@ -23,6 +24,9 @@ class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_GetLocalState : public UK2Node
 	TArray<FString> WrappedOperationFunctionOutputPinNames;
 
 public:
+	UPROPERTY()
+	TMap<FString, FString> NodeMetaData;
+
 	virtual void GetMenuActions(FBlueprintActionDatabaseRegistrar& ActionRegistrar) const override;
 
 	/**
@@ -65,6 +69,9 @@ public:
 	virtual void JumpToDefinition() const override;
 	virtual FSlateIcon GetIconAndTint(FLinearColor& OutColor) const override;
 	virtual FLinearColor GetNodeTitleColor() const override;
+	virtual FString GetPinMetaData(FName InPinName, FName InKey) override;
+	virtual void PinDefaultValueChanged(UEdGraphPin* Pin) override;
+	virtual void NodeConnectionListChanged() override;
 	//BeamFlowNode impl
 
 protected:

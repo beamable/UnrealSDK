@@ -105,7 +105,9 @@ void UK2BeamNode_GetLocalStateForeach::ExpandNode(FKismetCompilerContext& Compil
 	// Connect the input pins from the custom node to the intermediate call functions
 	for (const auto& InputPinName : WrappedOperationFunctionInputPinNames)
 	{
-		CompilerContext.MovePinLinksToIntermediate(*FindPin(FName(*InputPinName)), *CallFunction->FindPin(FName(*InputPinName)));
+		auto SourcePin = FindPin(FName(*InputPinName));
+		auto IntermediatePin = CallFunction->FindPin(FName(*InputPinName));
+		CompilerContext.MovePinLinksToIntermediate(*SourcePin, *IntermediatePin);
 	}
 
 	// Connect the output pins from the custom node to the intermediate call functions
@@ -296,8 +298,40 @@ void UK2BeamNode_GetLocalStateForeach::ExpandNode(FKismetCompilerContext& Compil
 
 		// The element pin have the same name as the array +Element 
 		auto ElementPin = FindPinChecked(OutputPinArrayName + "Element");
-		GetElement_Return->PinType = ElementPin->PinType;
-		CompilerContext.MovePinLinksToIntermediate(*ElementPin, *GetElement_Return);
+
+
+		// Get the Array property to convert a pin type to the array element type
+		FArrayProperty* InnerArrayProperty = CastField<FArrayProperty>(Function->FindPropertyByName(FName(OutputPinArrayName)));
+		FEdGraphPinType PinType;
+		// Converting the pin type to the array element type
+		K2Schema->ConvertPropertyToPinType(InnerArrayProperty->Inner, PinType);
+
+		// Getting the UClass* from the array element to use in the cast node
+		UClass* StaticClassType = Cast<UClass>(ElementPin->PinType.PinSubCategoryObject.Get());
+		// If there's no static class type that means that is not an UClass (could be a struct or something else)
+		if (StaticClassType && PinType != ElementPin->PinType)
+		{
+			// Creating the dynamic cast node
+			auto CastNode = BeamK2::CreateDynamicCastNode(this, CompilerContext, SourceGraph, StaticClassType, true);
+
+			// Change the return of the array node to the pin type
+			GetElement_Return->PinType = PinType;
+
+			// Connecting the source of the cast node to the array element return
+			const auto SuccessConnectSource = K2Schema->TryCreateConnection(CastNode->GetCastSourcePin(), GetElement_Return);
+			check(SuccessConnectSource);
+
+			// Connecting the output pin with the cast output
+			const auto SuccessFlowCastObject = CompilerContext.MovePinLinksToIntermediate(*ElementPin, *CastNode->GetCastResultPin());
+			check(!SuccessFlowCastObject.IsFatal());
+		}
+		else
+		{
+			GetElement_Return->PinType = PinType;
+			const auto SuccessFlowCastObject = CompilerContext.MovePinLinksToIntermediate(*ElementPin, *GetElement_Return);
+			check(!SuccessFlowCastObject.IsFatal());
+		}
+
 
 		GetElement_Index->MakeLinkTo(Min_ReturnValue);
 
@@ -334,6 +368,67 @@ void UK2BeamNode_GetLocalStateForeach::PostEditChangeProperty(FPropertyChangedEv
 	{
 		ReconstructNode();
 	}
+}
+
+FString UK2BeamNode_GetLocalStateForeach::GetPinMetaData(FName InPinName, FName InKey)
+{
+	FString MetaData = Super::GetPinMetaData(InPinName, InKey);
+
+	// If there's no metadata directly on the pin then check for metadata on the function
+	if (MetaData.IsEmpty())
+	{
+		return BeamK2::GetPinMetaData(InPinName, InKey, GetRuntimeSubsystemClass()->FindFunctionByName(GetFunctionName()));
+	}
+
+	return MetaData;
+}
+
+void UK2BeamNode_GetLocalStateForeach::PinDefaultValueChanged(UEdGraphPin* Pin)
+{
+	FString PinMetaData = GetPinMetaData(Pin->PinName, FName(BeamK2::MD_BeamCastTypeName));
+	if (!PinMetaData.IsEmpty())
+	{
+		Super::PinDefaultValueChanged(Pin);
+		if (Pin->LinkedTo.Num() == 0)
+		{
+			FString ClassName;
+			FString _;
+			Pin->GetDefaultAsString().Split(TEXT("."), &_, &ClassName);
+			NodeMetaData.Add(BeamK2::MD_BeamCastTypeName, *ClassName);
+			UE_LOG(LogTemp, Display, TEXT("UPDATE DEFAULT %s"), *ClassName);
+			ReconstructNode();
+		}
+	}
+	else
+	{
+		Super::PinDefaultValueChanged(Pin);
+	}
+}
+
+void UK2BeamNode_GetLocalStateForeach::NodeConnectionListChanged()
+{
+	bool ShouldReconstructNode = false;
+	for (auto Pin : Pins)
+	{
+		FString PinMetaData = GetPinMetaData(Pin->PinName, FName(BeamK2::MD_BeamCastTypeName));
+		if (!PinMetaData.IsEmpty())
+		{
+			if (Pin->LinkedTo.Num() > 0)
+			{
+				if (NodeMetaData.Contains(BeamK2::MD_BeamCastTypeName))
+				{
+					NodeMetaData.Remove(BeamK2::MD_BeamCastTypeName);
+					ShouldReconstructNode = true;
+				}
+			}
+		}
+	}
+	if (ShouldReconstructNode)
+	{
+		ReconstructNode();
+	}
+	
+	Super::NodeConnectionListChanged();
 }
 
 

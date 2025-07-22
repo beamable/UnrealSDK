@@ -117,7 +117,7 @@ public:
 	 * Tries to get a UBeamContentObject with the given Id from the 'global' (default) manifest.
 	 */
 	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
-	bool TryGetContent(FBeamContentId ContentId, UBeamContentObject*& OutContent);
+	bool TryGetContent(FBeamContentId ContentId, UPARAM(meta=(DynamicCastParam))UBeamContentObject*& OutContent);
 
 	/**
 	 * Tries to get a UBeamContentObject with the given Id from the manifest with the given Id.

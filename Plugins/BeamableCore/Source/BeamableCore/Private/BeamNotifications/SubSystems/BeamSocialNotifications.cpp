@@ -25,9 +25,9 @@ void FSocialRefreshNotificationMessage::BeamDeserializeProperties(const TSharedP
 {
 	int64 PlayerIdLong;
 	int64 FriendIdLong;
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("player")), PlayerIdLong, OuterOwner);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("friend")), FriendIdLong, OuterOwner);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("etype")), EventType, OuterOwner);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("player"), Bag, PlayerIdLong, OuterOwner);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("friend"), Bag, FriendIdLong, OuterOwner);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("etype"),Bag, EventType, OuterOwner);
 
 	PlayerGamerTag = FBeamGamerTag(PlayerIdLong);
 	FriendGamerTag = FBeamGamerTag(FriendIdLong);
@@ -57,11 +57,11 @@ void FSocialPresenceRefreshNotificationMessage::BeamDeserializeProperties(const 
 	int64 PlayerIdLong;
 	FString OnlineStatus;
 
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("lastOnline")), LastOnline, OuterOwner);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("friendId")), PlayerIdLong, OuterOwner);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("onlineStatus")), OnlineStatus, OuterOwner);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("lastOnline"), Bag, LastOnline, OuterOwner);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("friendId"), Bag, PlayerIdLong, OuterOwner);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("onlineStatus"), Bag, OnlineStatus, OuterOwner);
 	// UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("eventType")), Status, OuterOwner);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("description")), Description, OuterOwner);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("description"), Bag, Description, OuterOwner);
 
 	PlayerGamerTag = FBeamGamerTag(PlayerIdLong);
 

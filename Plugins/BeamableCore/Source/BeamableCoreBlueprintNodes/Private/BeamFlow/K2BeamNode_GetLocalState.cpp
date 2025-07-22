@@ -66,11 +66,72 @@ FLinearColor UK2BeamNode_GetLocalState::GetNodeTitleColor() const
 	return FLinearColor::FromSRGBColor(FColor::FromHex("#674CC5"));
 }
 
+FString UK2BeamNode_GetLocalState::GetPinMetaData(FName InPinName, FName InKey)
+{
+	FString MetaData = Super::GetPinMetaData(InPinName, InKey);
+
+	// If there's no metadata directly on the pin then check for metadata on the function
+	if (MetaData.IsEmpty())
+	{
+		return BeamK2::GetPinMetaData(InPinName, InKey, GetRuntimeSubsystemClass()->FindFunctionByName(GetFunctionName()));
+	}
+
+	return MetaData;
+}
+
+void UK2BeamNode_GetLocalState::PinDefaultValueChanged(UEdGraphPin* Pin)
+{
+	FString PinMetaData = GetPinMetaData(Pin->PinName, FName(BeamK2::MD_BeamCastTypeName));
+	if (!PinMetaData.IsEmpty())
+	{
+		Super::PinDefaultValueChanged(Pin);
+		if (Pin->LinkedTo.Num() == 0)
+		{
+			FString ClassName;
+			FString _;
+			Pin->GetDefaultAsString().Split(TEXT("."), &_, &ClassName);
+			NodeMetaData.Add(BeamK2::MD_BeamCastTypeName, *ClassName);
+			UE_LOG(LogTemp, Display, TEXT("UPDATE DEFAULT %s"), *ClassName);
+			ReconstructNode();
+		}
+	}
+	else
+	{
+		Super::PinDefaultValueChanged(Pin);
+	}
+}
+
+void UK2BeamNode_GetLocalState::NodeConnectionListChanged()
+{
+	bool ShouldReconstructNode = false;
+	for (auto Pin : Pins)
+	{
+		FString PinMetaData = GetPinMetaData(Pin->PinName, FName(BeamK2::MD_BeamCastTypeName));
+		if (!PinMetaData.IsEmpty())
+		{
+			if (Pin->LinkedTo.Num() > 0)
+			{
+				if (NodeMetaData.Contains(BeamK2::MD_BeamCastTypeName))
+				{
+					NodeMetaData.Remove(BeamK2::MD_BeamCastTypeName);
+					ShouldReconstructNode = true;
+				}
+			}
+		}
+	}
+	if (ShouldReconstructNode)
+	{
+		ReconstructNode();
+	}
+	
+	Super::NodeConnectionListChanged();
+}
 void UK2BeamNode_GetLocalState::ExpandNode(FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph)
 {
 	UK2Node::ExpandNode(CompilerContext, SourceGraph);
 
 	const UEdGraphSchema_K2* K2Schema = GetDefault<UEdGraphSchema_K2>();
+
 
 	// Get the UFunction reference to extract the parameters
 	const auto Function = GetRuntimeSubsystemClass()->FindFunctionByName(GetFunctionName());
@@ -93,6 +154,7 @@ void UK2BeamNode_GetLocalState::ExpandNode(FKismetCompilerContext& CompilerConte
 		return;
 	}
 
+	UEdGraphPin* ExecutePin = nullptr;
 	// If the return type is a boolean we create the connections required to have a valid/invalid path
 	auto ReturnProperty = Function->GetReturnProperty();
 	if (ReturnProperty != nullptr && ReturnProperty->IsA(FBoolProperty::StaticClass()))
@@ -130,7 +192,31 @@ void UK2BeamNode_GetLocalState::ExpandNode(FKismetCompilerContext& CompilerConte
 	// Connect the output pins from the custom node to the intermediate call functions
 	for (auto OutputPinName : WrappedOperationFunctionOutputPinNames)
 	{
-		CompilerContext.MovePinLinksToIntermediate(*FindPin(FName(*OutputPinName)), *CallFunction->FindPin(FName(*OutputPinName)));
+		UEdGraphPin* OutputPin = FindPin(FName(*OutputPinName));
+		UEdGraphPin* CallFunctionOutputPin = CallFunction->FindPin(FName(*OutputPinName));
+
+		if (OutputPin->PinType != CallFunctionOutputPin->PinType)
+		{
+			// Create the cast node 
+			UClass* StaticClassType = Cast<UClass>(OutputPin->PinType.PinSubCategoryObject.Get());
+			if (StaticClassType)
+			{
+				auto CastNode = BeamK2::CreateDynamicCastNode(this, CompilerContext, SourceGraph, StaticClassType, true);
+
+				K2Schema->TryCreateConnection(CastNode->GetCastSourcePin(), CallFunctionOutputPin);
+
+				const auto SuccessFlowCastObject = CompilerContext.MovePinLinksToIntermediate(*OutputPin, *CastNode->GetCastResultPin());
+				check(!SuccessFlowCastObject.IsFatal());
+			}
+			else
+			{
+				CompilerContext.MovePinLinksToIntermediate(*OutputPin, *CallFunctionOutputPin);
+			}
+		}
+		else
+		{
+			CompilerContext.MovePinLinksToIntermediate(*OutputPin, *CallFunctionOutputPin);
+		}
 	}
 
 
