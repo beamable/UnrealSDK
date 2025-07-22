@@ -688,8 +688,8 @@ public:
 							{
 								const auto& Handle = KVP.Key;
 								const auto& GamerTag = KVP.Value;
-								const auto bHasPlayerSettings = FakeLobbySettings.PerPlayerSettings.Contains(Handle);
-								const auto& Tags = bHasPlayerSettings ? FakeLobbySettings.PerPlayerSettings[Handle].Tags : TArray<FBeamTag>();
+								const auto bHasPlayerSettings = Setting->AssignedUsers.Contains(Handle);
+								const auto& Tags = bHasPlayerSettings ? Setting->AssignedUsers[Handle].Tags : TArray<FBeamTag>();
 
 								// Set the properties we forward
 								const auto LobbyPlayer = NewObject<ULobbyPlayer>();
