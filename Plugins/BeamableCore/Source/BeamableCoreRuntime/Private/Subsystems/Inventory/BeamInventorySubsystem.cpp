@@ -3,6 +3,7 @@
 
 #include "Subsystems/Inventory/BeamInventorySubsystem.h"
 
+#include "IDetailTreeNode.h"
 #include "AutoGen/ItemDeleteRequestBody.h"
 #include "AutoGen/ItemUpdateRequestBody.h"
 #include "AutoGen/Optionals/OptionalArrayOfItemDeleteRequestBody.h"
@@ -16,6 +17,7 @@
 #include "BeamNotifications/SubSystems/BeamInventoryNotifications.h"
 #include "Subsystems/Content/BeamContentSubsystem.h"
 #include "Subsystems/LiveOps/BeamAnnouncementsSubsystem.h"
+#include "VerseVM/VVMPackageTypes.h"
 
 bool FBeamInventoryState::TryGetPlayerCurrencyProperties(const FBeamContentId& CurrencyId, FBeamPlayerCurrency& Currency)
 {
@@ -317,14 +319,14 @@ void UBeamInventorySubsystem::OnPostUserSignedOut_Implementation(const FUserSlot
 		Inventory.CachedScopes.Reset();
 		Inventory.CurrencyProperties.Reset();
 	}
-	ContentSubsystem->ContentManifestsUpdated.RemoveDynamic(this, UBeamInventorySubsystem::OnManifestRefreshed);
+	ContentSubsystem->ContentManifestsUpdated.RemoveDynamic(this, &UBeamInventorySubsystem::OnManifestRefreshed);
 	
 	Super::OnPostUserSignedOut_Implementation(UserSlot, Reason, BeamRealmUser, ResultOp);
 }
 
 void UBeamInventorySubsystem::OnUserSignedIn_Implementation(const FUserSlot& UserSlot, const FBeamRealmUser& BeamRealmUser, const bool bIsFirstAuth, FBeamOperationHandle& ResultOp)
 {
-	ContentSubsystem->ContentManifestsUpdated.AddDynamic(this, UBeamInventorySubsystem::OnManifestRefreshed);
+	ContentSubsystem->ContentManifestsUpdated.AddDynamic(this, &UBeamInventorySubsystem::OnManifestRefreshed);
 
 	
 	Inventories.Add(BeamRealmUser.GamerTag, FBeamInventoryState{BeamRealmUser.GamerTag, UserSlot, {}, {}, {}, {}});
@@ -439,7 +441,29 @@ bool UBeamInventorySubsystem::TryGetCurrencyAmount(FUserSlot Player, FBeamConten
 	return TryGetCurrencyAmountByGamerTag(RealmUser.GamerTag, CurrencyId, Amount);
 }
 
-bool UBeamInventorySubsystem::TryGetAllCurrencies(FUserSlot Player, TSubclassOf<UBeamCurrencyContent> Filter, TArray<FBeamPlayerCurrency>& CurrencyStates, TArray<UBeamCurrencyContent*>& Contents)
+bool UBeamInventorySubsystem::TryGetAllCurrencies(FUserSlot Player, TArray<FBeamPlayerCurrency>& Currencies)
+{
+	Currencies = {};
+
+	FBeamRealmUser RealmUser;
+	if (!GEngine->GetEngineSubsystem<UBeamUserSlots>()->GetUserDataAtSlot(Player, RealmUser, this))
+		return false;
+
+	return TryGetAllCurrenciesByGamerTag(RealmUser.GamerTag, Currencies);
+}
+
+bool UBeamInventorySubsystem::TryGetAllItems(FUserSlot Player, TArray<FBeamItemState>& ItemStates)
+{
+	ItemStates = {};
+
+	FBeamRealmUser RealmUser;
+	if (!GEngine->GetEngineSubsystem<UBeamUserSlots>()->GetUserDataAtSlot(Player, RealmUser, this))
+		return false;
+
+	return TryGetAllItemsByGamerTag(RealmUser.GamerTag, ItemStates);
+}
+
+bool UBeamInventorySubsystem::TryGetAllCurrenciesFilter(FUserSlot Player, EBeamFilterType FilterType, TSubclassOf<UBeamCurrencyContent> Filter, TArray<FBeamPlayerCurrency>& CurrencyStates, TArray<UBeamCurrencyContent*>& Contents)
 {
 	CurrencyStates = {};
 	Contents = {};
@@ -448,10 +472,12 @@ bool UBeamInventorySubsystem::TryGetAllCurrencies(FUserSlot Player, TSubclassOf<
 	if (!GEngine->GetEngineSubsystem<UBeamUserSlots>()->GetUserDataAtSlot(Player, RealmUser, this))
 		return false;
 
-	if (FilterCurrencyCache.Contains(Filter))
+	FFilterInventoryCacheHandler FilterHandler{ Filter, RealmUser.GamerTag};
+	
+	if (FilterCurrencyCache.Contains(FilterHandler))
 	{
-		CurrencyStates = FilterCurrencyCache[Filter].States;
-		Contents = FilterCurrencyCache[Filter].Contents;
+		CurrencyStates = FilterCurrencyCache[FilterHandler].States;
+		Contents = FilterCurrencyCache[FilterHandler].Contents;
 		return true;
 	}
 	
@@ -463,7 +489,17 @@ bool UBeamInventorySubsystem::TryGetAllCurrencies(FUserSlot Player, TSubclassOf<
 	{
 		UBeamContentObject* Content;
 		Result &= ContentSubsystem->TryGetContent(Item.ContentId, Content);
-		if (!Filter || Content->IsA(Filter))
+
+		bool ValidFilter = true;
+		if (FilterType == EBeamFilterType::BEAM_EXACTLY_TYPE)
+		{
+			ValidFilter = Content->GetClass() == Filter;
+		}else if (FilterType == EBeamFilterType::BEAM_INCLUDE_SUBTYPES)
+		{
+			ValidFilter = Content->GetClass() == Filter || Content->GetClass()->IsChildOf(Filter);
+		}
+		
+		if (!Filter || ValidFilter)
 		{
 			CurrencyStates.Add(Item);
 			Contents.Add(static_cast<UBeamCurrencyContent*>(Content));
@@ -472,13 +508,13 @@ bool UBeamInventorySubsystem::TryGetAllCurrencies(FUserSlot Player, TSubclassOf<
 
 	if (Result)
 	{
-		FilterCurrencyCache.Add(Filter, FilterInventoryCache{Contents, CurrencyStates});
+		FilterCurrencyCache.Add(FilterHandler, FFilterInventoryCache{Contents, CurrencyStates});
 	}
 	
 	return Result;
 }
 
-bool UBeamInventorySubsystem::TryGetAllItems(FUserSlot Player, TSubclassOf<UBeamItemContent> Filter, TArray<FBeamItemState>& ItemStates, TArray<UBeamItemContent*>& Contents)
+bool UBeamInventorySubsystem::TryGetAllItemsFilter(FUserSlot Player, EBeamFilterType FilterType, TSubclassOf<UBeamItemContent> Filter, TArray<FBeamItemState>& ItemStates, TArray<UBeamItemContent*>& Contents)
 {
 	ItemStates = {};
 	Contents = {};
@@ -486,11 +522,13 @@ bool UBeamInventorySubsystem::TryGetAllItems(FUserSlot Player, TSubclassOf<UBeam
 	FBeamRealmUser RealmUser;
 	if (!GEngine->GetEngineSubsystem<UBeamUserSlots>()->GetUserDataAtSlot(Player, RealmUser, this))
 		return false;
-
-	if (FilterItemCache.Contains(Filter))
+	
+	FFilterInventoryCacheHandler FilterHandler{ Filter, RealmUser.GamerTag};
+	
+	if (FilterItemCache.Contains(FilterHandler))
 	{
-		ItemStates = FilterItemCache[Filter].States;
-		Contents = FilterItemCache[Filter].Contents;
+		ItemStates = FilterItemCache[FilterHandler].States;
+		Contents = FilterItemCache[FilterHandler].Contents;
 		return true;
 	}
 
@@ -502,7 +540,17 @@ bool UBeamInventorySubsystem::TryGetAllItems(FUserSlot Player, TSubclassOf<UBeam
 	{
 		UBeamContentObject* Content;
 		Result &= ContentSubsystem->TryGetContent(Item.ContentId, Content);
-		if (!Filter || Content->IsA(Filter))
+		
+		bool ValidFilter = true;
+		if (FilterType == EBeamFilterType::BEAM_EXACTLY_TYPE)
+		{
+			ValidFilter = Content->GetClass() == Filter;
+		}else if (FilterType == EBeamFilterType::BEAM_INCLUDE_SUBTYPES)
+		{
+			ValidFilter = Content->GetClass() == Filter || Content->GetClass()->IsChildOf(Filter);
+		}
+		
+		if (!Filter || ValidFilter)
 		{
 			ItemStates.Add(Item);
 			Contents.Add(static_cast<UBeamItemContent*>(Content));
@@ -511,9 +559,46 @@ bool UBeamInventorySubsystem::TryGetAllItems(FUserSlot Player, TSubclassOf<UBeam
 
 	if (Result)
 	{
-		FilterItemCache.Add(Filter, FilterInventoryCache{Contents, ItemStates});
+		FilterItemCache.Add(FilterHandler, FFilterInventoryCache{Contents, ItemStates});
 	}
 	
+	return Result;
+}
+
+bool UBeamInventorySubsystem::TryGetAllCurrenciesRegex(FUserSlot Player, EBeamFilterType FilterType, TSubclassOf<UBeamCurrencyContent> Filter, TArray<FBeamPlayerCurrency>& CurrencyStates, TArray<UBeamCurrencyContent*>& Contents, FString Regex)
+{
+	bool Result = TryGetAllCurrenciesFilter(Player, FilterType, Filter, CurrencyStates, Contents);
+	for (auto index = Contents.Num() - 1; index >= 0; index--)
+	{
+		FRegexPattern RegexPattern(Regex);
+		FRegexMatcher Matcher(RegexPattern, Contents[index]->Id);
+		// If the regex has any match
+		if (!Matcher.FindNext())
+		{
+			Contents.RemoveAt(index);
+			CurrencyStates.RemoveAt(index);
+		}
+	}
+
+	return Result;
+}
+
+bool UBeamInventorySubsystem::TryGetAllItemsRegex(FUserSlot Player, EBeamFilterType FilterType, TSubclassOf<UBeamItemContent> Filter, TArray<FBeamItemState>& ItemStates, TArray<UBeamItemContent*>& Contents,  FString Regex)
+{
+	bool Result = TryGetAllItemsFilter(Player, FilterType, Filter, ItemStates, Contents);
+	
+	for (auto index = Contents.Num() - 1; index >= 0; index--)
+	{
+		FRegexPattern RegexPattern(Regex);
+		FRegexMatcher Matcher(RegexPattern, Contents[index]->Id);
+		// If the regex has any match
+		if (!Matcher.FindNext())
+		{
+			Contents.RemoveAt(index);
+			ItemStates.RemoveAt(index);
+		}
+	}
+
 	return Result;
 }
 
@@ -651,6 +736,7 @@ void UBeamInventorySubsystem::PrepareModifyItemById(FUserSlot Player, FBeamConte
 		Command->UpdateItem(ContentId, InstanceId, Properties);
 	}
 }
+
 
 bool UBeamInventorySubsystem::FetchInventoryForSlot(FUserSlot Player, FBeamOperationHandle Op)
 {
@@ -929,6 +1015,10 @@ void UBeamInventorySubsystem::MergeInventoryViewIntoState(const UInventoryView* 
 		ItemsState.Remove(State);
 		ItemsState.Add(State);
 	}
+
+	// Invalidate the filter cache for any state changes in the items
+	FilterCurrencyCache.Reset();
+	FilterItemCache.Reset();
 }
 
 void UBeamInventorySubsystem::InvokeOnInventoryRefreshed(const FBeamGamerTag& GamerTag, const FUserSlot OwnerPlayer)

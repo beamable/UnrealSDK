@@ -5,11 +5,11 @@
 #include "CoreMinimal.h"
 #include "AutoGen/InventoryView.h"
 #include "Content/BeamContentTypes/BeamCurrencyContent.h"
+#include "Content/BeamContentTypes/BeamItemContent.h"
 #include "Runtime/BeamRuntimeSubsystem.h"
 #include "Subsystems/Content/BeamContentSubsystem.h"
 #include "BeamInventorySubsystem.generated.h"
 
-class UBeamItemContent;
 struct FOptionalMapOfInt64;
 struct FOptionalArrayOfItemUpdateRequestBody;
 struct FOptionalArrayOfItemDeleteRequestBody;
@@ -147,15 +147,45 @@ struct BEAMABLECORERUNTIME_API FBeamInventoryUpdateCommand
 };
 
 template <typename TContent, typename TState>
-struct FilterInventoryCache
+struct FFilterInventoryCache
 {
-	static_assert(std::is_base_of<UBeamContentObject, TContent>::value, "T must inherit from UBeamContentObject");
-
-	UPROPERTY()
+	static_assert(std::is_base_of_v<UBeamContentObject, TContent>, "T must inherit from UBeamContentObject");
+	
 	TArray<TContent*> Contents;
 
 	TArray<TState> States;
 };
+
+USTRUCT()
+struct FFilterInventoryCacheHandler
+{
+	UClass* Class;
+	FBeamGamerTag GamerTag;
+	
+	GENERATED_BODY()
+	
+	friend bool operator==(const FFilterInventoryCacheHandler& Lhs, const FFilterInventoryCacheHandler& RHS)
+	{
+		return Lhs.Class == RHS.Class && Lhs.GamerTag == RHS.GamerTag;
+	}
+
+	friend bool operator!=(const FFilterInventoryCacheHandler& Lhs, const FFilterInventoryCacheHandler& RHS)
+	{
+		return !(Lhs == RHS);
+	}
+};
+
+FORCEINLINE uint32 GetTypeHash(const FFilterInventoryCacheHandler& Context) { return HashCombine(GetTypeHash(Context.Class), GetTypeHash(Context.GamerTag)); }
+
+
+UENUM(BlueprintType)
+enum EBeamFilterType
+{
+	BEAM_INCLUDE_SUBTYPES,
+	BEAM_EXACTLY_TYPE,
+};
+
+
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnInventoryRefreshed, FBeamGamerTag, GamerTag, FUserSlot, UserSlot);
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnInventoryRefreshedCode, FBeamGamerTag, FUserSlot);
@@ -180,12 +210,10 @@ class BEAMABLECORERUNTIME_API UBeamInventorySubsystem : public UBeamRuntimeSubsy
 
 	UPROPERTY()
 	UBeamContentSubsystem* ContentSubsystem;
-
-	UPROPERTY()
-	TMap<UClass*, FilterInventoryCache<UBeamItemContent, FBeamItemState>> FilterItemCache;
-
-	UPROPERTY()
-	TMap<UClass*, FilterInventoryCache<UBeamCurrencyContent, FBeamPlayerCurrency>> FilterCurrencyCache;
+	
+	TMap<FFilterInventoryCacheHandler, FFilterInventoryCache<UBeamItemContent, FBeamItemState>> FilterItemCache;
+	
+	TMap<FFilterInventoryCacheHandler, FFilterInventoryCache<UBeamCurrencyContent, FBeamPlayerCurrency>> FilterCurrencyCache;
 
 
 	virtual void InitializeWhenUnrealReady_Implementation(FBeamOperationHandle& ResultOp) override;
@@ -267,17 +295,44 @@ public:
 	bool TryGetCurrencyAmount(FUserSlot Player, FBeamContentId CurrencyId, int64& Amount);
 
 	/**
-	 * @brief Gets the list of all currencies the given player has. Returns false if no player is signed into th given slot.
-	 */
+ * @brief Gets the list of all currencies the given player has. Returns false if no player is signed into th given slot.
+ */
 	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
-	bool TryGetAllCurrencies(FUserSlot Player, UPARAM(meta=(BeamCastType))TSubclassOf<UBeamCurrencyContent> Filter, TArray<FBeamPlayerCurrency>& CurrencyStates, UPARAM(meta=(BeamCastTarget))TArray<UBeamCurrencyContent*>& Contents);
+	bool TryGetAllCurrencies(FUserSlot Player, TArray<FBeamPlayerCurrency>& Currencies);
 
 	/**
 	 * @brief Gets all items for the given player. 
 	 */
 	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue", AutoCreateRefTerm="ItemStates"))
-	bool TryGetAllItems(FUserSlot Player, UPARAM(meta=(BeamCastType))TSubclassOf<UBeamItemContent> Filter, TArray<FBeamItemState>& ItemStates, UPARAM(meta=(BeamCastTarget))TArray<UBeamItemContent*>& Contents);
+	bool TryGetAllItems(FUserSlot Player, TArray<FBeamItemState>& ItemStates);
+	
+	/**
+	 * @brief Gets the list of all currencies the given player has. Returns false if no player is signed into th given slot.
+	 */
+	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
+	bool TryGetAllCurrenciesFilter(FUserSlot Player, EBeamFilterType FilterType, UPARAM(meta=(BeamCastType))TSubclassOf<UBeamCurrencyContent> Filter, TArray<FBeamPlayerCurrency>& CurrencyStates, UPARAM(meta=(BeamCastTarget))TArray<UBeamCurrencyContent*>& Contents);
 
+	/**
+	 * @brief Gets all items for the given player. 
+	 */
+	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue", AutoCreateRefTerm="ItemStates"))
+	bool TryGetAllItemsFilter(FUserSlot Player, EBeamFilterType FilterType, UPARAM(meta=(BeamCastType))TSubclassOf<UBeamItemContent> Filter, TArray<FBeamItemState>& ItemStates, UPARAM(meta=(BeamCastTarget))TArray<UBeamItemContent*>& Contents);
+
+	/**
+	 * @brief Gets the list of all currencies the given player has. Returns false if no player is signed into th given slot.
+	 * @param Regex: The regex param will be used to filter in the id using a regex expression after the filter been applied.
+	 */
+	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
+	bool TryGetAllCurrenciesRegex(FUserSlot Player, EBeamFilterType FilterType, UPARAM(meta=(BeamCastType))TSubclassOf<UBeamCurrencyContent> Filter, TArray<FBeamPlayerCurrency>& CurrencyStates, UPARAM(meta=(BeamCastTarget))TArray<UBeamCurrencyContent*>& Contents, FString Regex = "*");
+
+	/**
+	 * @brief Gets all items for the given player.
+	 * @param Regex: The regex param will be used to filter in the id using a regex expression after the filter been applied.
+	 */
+	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue", AutoCreateRefTerm="ItemStates"))
+	bool TryGetAllItemsRegex(FUserSlot Player, EBeamFilterType FilterType, UPARAM(meta=(BeamCastType))TSubclassOf<UBeamItemContent> Filter, TArray<FBeamItemState>& ItemStates, UPARAM(meta=(BeamCastTarget))TArray<UBeamItemContent*>& Contents, FString Regex = "*");
+
+	
 	/**
 	 * @brief Given a currency FBeamContentId, gets the amount the player has. Returns false if no player is signed into th given slot.
 	 */
@@ -356,6 +411,7 @@ public:
 	void PrepareModifyItemById(FUserSlot Player, FBeamContentId ContentId, int64 InstanceId, TMap<FString, FString> Properties);
 
 private:
+
 	UFUNCTION()
 	bool FetchInventoryForSlot(FUserSlot Player, FBeamOperationHandle Op);
 

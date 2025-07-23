@@ -34,10 +34,15 @@ void UK2BeamNode_CastNode::AllocateDefaultPins()
 		OutputWildcardPin->PinFriendlyName = FText::FromName(FriendlyPassThroughOutput);
 	}
 
+	UClass* Class = UObject::StaticClass();
+	if (!InputPinClass.IsEmpty())
+	{
+		Class = FSoftClassPath{InputPinClass}.ResolveClass();
+	}
 
 	for (auto index = 0; index < ClassInputPins.Num(); ++index)
 	{
-		auto Pin = CreatePin(EGPD_Input, UEdGraphSchema_K2::PC_Class, UObject::StaticClass(), FName(ClassInputPins[index].Guid.ToString()));
+		auto Pin = CreatePin(EGPD_Input, UEdGraphSchema_K2::PC_Class, Class, FName(ClassInputPins[index].Guid.ToString()));
 		Pin->PinFriendlyName = FText::FromString(FString::Printf(TEXT("Cast Class %d"), (index + 1)));
 		Pin->bNotConnectable = true;
 	}
@@ -369,9 +374,70 @@ void UK2BeamNode_CastNode::NotifyPinConnectionListChanged(UEdGraphPin* Pin)
 	}
 }
 
+void UK2BeamNode_CastNode::NodeConnectionListChanged()
+{
+	Super::NodeConnectionListChanged();
+
+	if (GetInputPin()->LinkedTo.Num() > 0)
+	{
+		InputPinClass = FSoftClassPath{GetInputPin()->LinkedTo[0]->PinType.PinSubCategoryObject->GetPathName()}.GetAssetPath().ToString();
+	}
+	else
+	{
+		InputPinClass.Empty();
+	}
+
+	// If the input class is not empty so we need to remove the not match classes and reset the pins to the default
+	if (!InputPinClass.IsEmpty())
+	{
+		UClass* InputClass = FSoftClassPath{InputPinClass}.ResolveClass();
+		for (int32 Index = ClassInputPins.Num() - 1; Index >= 0; --Index)
+		{
+			UClass* Class = FSoftClassPath{ClassInputPins[Index].DefaultValue}.ResolveClass();
+
+			if (!Class || !(Class->IsChildOf(InputClass) || Class == InputClass))
+			{
+				auto Pin = FindPin(ClassInputPins[Index].Guid.ToString());
+				if (Pin)
+				{
+					Pin->ResetDefaultValue();
+				}
+				ClassInputPins.RemoveAt(Index);
+			}
+		}
+	}
+
+	ReconstructNode();
+}
+
 void UK2BeamNode_CastNode::PostReconstructNode()
 {
+	for (auto Pin : Pins)
+	{
+		if (Pin->bOrphanedPin)
+		{
+			for (auto Class : ClassInputPins)
+			{
+				if (Class.Guid == FGuid(Pin->PinName.ToString()))
+				{
+					auto PinType = Pin->PinType;
+					auto DefaultValue = Pin->DefaultValue;
+					auto DefaultObject = Pin->DefaultObject;
+					auto DefaultTextValue = Pin->DefaultTextValue;
+					RemovePin(Pin);
+
+					auto NewPin = FindPin(Class.Guid.ToString());
+
+					NewPin->DefaultValue = Pin->DefaultValue;
+					NewPin->DefaultObject = Pin->DefaultObject;
+					NewPin->DefaultTextValue = Pin->DefaultTextValue;
+				}
+			}
+		}
+	}
+
 	UpdateWildcardPinsType();
+
 	Super::PostReconstructNode();
 }
 
@@ -427,6 +493,7 @@ void UK2BeamNode_CastNode::UpdateWildcardPinsType() const
 	{
 		return;
 	}
+
 
 	if (InputPin->LinkedTo.Num() > 0 && !InputPin->LinkedTo[0]->PinType.PinSubCategoryObject->IsA(UClass::StaticClass()))
 	{
