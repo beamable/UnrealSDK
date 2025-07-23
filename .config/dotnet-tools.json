@@ -3,7 +3,7 @@
   "isRoot": true,
   "tools": {
     "beamable.tools": {
-      "version": "5.1.0-PREVIEW.RC1",
+      "version": "5.1.0-PREVIEW.RC2",
       "commands": [
         "beam"
       ],
