@@ -753,10 +753,6 @@ void UBeamUserSlots::SaveSlot(FUserSlot SlotId, int32 PIEInstance, int64 GamerTa
 
 	const auto NamespacedSlotId = GetNamespacedSlotId(SlotId, PIEInstance);
 
-#if !WITH_EDITOR
-		ensureAlwaysMsgf(!User.RealmHandle.Pid.AsString.IsEmpty(), TEXT("Customer-Scoped Tokens are not allowed in builds! If should never be seeing this!"));
-#endif
-
 	// Save the User's Auth data to the slot.
 	const auto SavedUserAuthDataPath = GetSavedSlotAuthFilePath(NamespacedSlotId);
 	const auto AuthDataForSlot = FUserSlotAuthData{

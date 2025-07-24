@@ -798,13 +798,17 @@ void UBeamEditor::ApplyCurrentSettingsToBuild()
 
 	const auto ConfigSetCmd = NewObject<UBeamCliConfigCommand>();
 
-	ConfigSetCmd->OnCompleted = [this](const int& ResCode, const FBeamOperationHandle& CmdOp)
+	ConfigSetCmd->OnCompleted = [this, RealmData](const int& ResCode, const FBeamOperationHandle& CmdOp)
 	{
 		if (ResCode == 0)
 		{
 			// auto set = UEditorDialogLibrary::ShowMessage("Apply realm to build", "It will apply realm to build", EAppMsgType::YesNoCancel, "", EAppMsgCategory::Info);
 			auto Settings = GetMutableDefault<UBeamCoreSettings>();
-			Settings->SaveConfig(CPF_Config, *Settings->GetDefaultConfigFilename());
+			Settings->TargetRealm = FBeamRealmHandle{
+				RealmData.CID,
+				RealmData.PID
+			};
+			Settings->TryUpdateDefaultConfigFile(*Settings->GetDefaultConfigFilename());
 
 			// Notify other systems that
 			if (OnAppliedSettingsToBuild.IsBound()) OnAppliedSettingsToBuild.Broadcast();
