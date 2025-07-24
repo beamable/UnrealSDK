@@ -286,6 +286,14 @@ public:
 	bool TryGetLobbyPlayerData(ULobby* Lobby, FBeamGamerTag PlayerGamerTag, FString DataKey, FString DefaultValue, FString& PlayerData);
 
 	/**
+	 *  Try a player data property for a specific player and cast it to selected type.
+	 *  The default value is what will be return in case of it fail to get the value.
+	 */
+	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
+	bool TryGetLobbyPlayerDataCasted(ULobby* Lobby, FBeamGamerTag PlayerGamerTag,  UPARAM(meta=(MustImplement = "BeamJsonSerializableUObject", BeamCastType))TSubclassOf<UObject> CastTarget, FString DataKey,
+									 UPARAM(meta=(MustImplement = "BeamJsonSerializableUObject"))UObject* DefaultValue, UPARAM(meta=(BeamCastTarget))UObject*& PlayerData);
+	
+	/**
 	 *  It will return the a specific player data from a ULobby* Object as parallel lists of keys and values.
 	 */
 	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))

@@ -278,6 +278,49 @@ bool UBeamLobbySubsystem::TryGetLobbyPlayerData(ULobby* Lobby, FBeamGamerTag Pla
 	return false;
 }
 
+bool UBeamLobbySubsystem::TryGetLobbyPlayerDataCasted(ULobby* Lobby, FBeamGamerTag PlayerGamerTag, TSubclassOf<UObject> CastTarget, FString DataKey, UObject* DefaultValue, UObject*& PlayerData)
+{
+	PlayerData = DefaultValue;
+
+	if (!Lobby)
+	{
+		return false;
+	}
+
+	if (Lobby->Players.IsSet)
+	{
+		for (auto PlayerLobby : Lobby->Players.Val)
+		{
+			if (PlayerLobby->PlayerId.Val == PlayerGamerTag)
+			{
+				if (PlayerLobby->Tags.IsSet)
+				{
+					for (auto BeamTag : PlayerLobby->Tags.Val)
+					{
+						if (BeamTag.Name.Val == DataKey)
+						{
+							FString Json = BeamTag.Value.Val;
+
+							FJsonDataBag JsonBag = FJsonDataBag();
+							JsonBag.FromJson(Json);
+
+							PlayerData = NewObject<UObject>(GetTransientPackage(), CastTarget);
+	
+							TScriptInterface<IBeamJsonSerializableUObject> GlobalDataObject{PlayerData};
+
+							GlobalDataObject->BeamDeserializeProperties(JsonBag.JsonObject);
+							return true;
+						}
+					}
+				}
+				// If the tag is not set then return false
+				return false;
+			}
+		}
+	}
+	return false;
+}
+
 bool UBeamLobbySubsystem::TryGetAllLobbyPlayerData(ULobby* Lobby, FBeamGamerTag PlayerGamerTag, TArray<FString>& Keys, TArray<FString>& Values)
 {
 	Keys.Reset();
