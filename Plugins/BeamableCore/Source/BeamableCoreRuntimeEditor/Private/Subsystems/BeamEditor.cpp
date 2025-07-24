@@ -108,7 +108,7 @@ void UBeamEditor::Initialize(FSubsystemCollectionBase& Collection)
 void UBeamEditor::Deinitialize()
 {
 	UserSlots->GlobalUserSlotAuthenticatedCodeHandler.Remove(UserSlotAuthenticatedHandler);
-	UserSlots->GlobalUserSlotClearedCodeHandler.Remove(UserSlotClearedHandler);	
+	UserSlots->GlobalUserSlotClearedCodeHandler.Remove(UserSlotClearedHandler);
 	FEditorDelegates::BeginPIE.Remove(BeginPIEHandler);
 	FEditorDelegates::EndPIE.Remove(EndPIEHandler);
 	FEditorDelegates::OnEditorInitialized.Remove(EditorInitializedHandle);
@@ -171,22 +171,21 @@ void UBeamEditorBootstrapper::Run_DelayedInitialize()
 	// Ensure a DefaultBeamPIE.ini exists (otherwise the one in saved will not work)
 	auto PIESettings = GetMutableDefault<UBeamPIEConfig>();
 	const auto PIESettingsPath = PIESettings->GetDefaultConfigFilename();
-	if (!IFileManager::Get().FileExists(*PIESettingsPath))
-	{
-		// We have to create an empty "DefaultBeamPIE.ini" with the section for the BeamableCore.BeamPIEConfig object.
-		// If we don't have the "Default____.ini" file, UE's config system will not correctly apply the diffs stored in the Saved/Config directory.
-		// So we make sure one of these exist.		
-		const auto bResult = FFileHelper::SaveStringToFile(FString(TEXT("[/Script/BeamableCore.BeamPIEConfig]")), *PIESettingsPath);
-		UE_LOG(LogBeamEditor, Display, TEXT("Created default BeamPIE config at %s. RES=%d"), *PIESettingsPath, bResult);
-		
-		// Then, we get the path to the `BeamPIE.ini` file in the Saved directory and load it, if it already exists. 
-		FString SavedConfigPath = FPaths::ConvertRelativePathToFull(FPaths::Combine(FPaths::ProjectSavedDir(), TEXT("Config"), FPlatformProperties::PlatformName(), TEXT("BeamPIE.ini")));
-		GConfig->LoadFile(SavedConfigPath);
-
-		// Finally, we reload the config.
-		PIESettings->LoadConfig();		
-	}
 	
+	// We have to create an empty "DefaultBeamPIE.ini" with the section for the BeamableCore.BeamPIEConfig object.
+	// If we don't have the "Default____.ini" file, UE's config system will not correctly apply the diffs stored in the Saved/Config directory.
+	// So we make sure one of these exist.		
+	const auto bResult = SetDefaultBeamPIEConfig();
+	UE_LOG(LogBeamEditor, Display, TEXT("Created default BeamPIE config at %s. RES=%d"), *PIESettingsPath, bResult);
+
+	
+	// Then, we get the path to the `BeamPIE.ini` file in the Saved directory and load it, if it already exists. 
+	FString SavedConfigPath = FPaths::ConvertRelativePathToFull(FPaths::Combine(FPaths::ProjectSavedDir(), TEXT("Config"), FPlatformProperties::PlatformName(), TEXT("BeamPIE.ini")));
+	GConfig->LoadFile(SavedConfigPath);
+
+	// Finally, we reload the config.
+	PIESettings->ReloadConfig();
+
 	const auto Subsystems = GEditor->GetEditorSubsystemArrayCopy<UBeamEditorSubsystem>();
 	BeamEditor->InitializeAfterEditorReadyOps.Reset(Subsystems.Num());
 	for (auto& Subsystem : Subsystems)
@@ -243,6 +242,72 @@ void UBeamEditorBootstrapper::Run_TrySignIntoMainEditorSlot(FBeamWaitCompleteEve
 		BeamEditor->bEditorReady = true;
 	}));
 	BeamEditor->SignInWithCliInfo(Op);
+}
+
+bool UBeamEditorBootstrapper::SetDefaultBeamPIEConfig() const
+{
+	
+	FString FilePathDefaultConfig = FPaths::ProjectConfigDir() / TEXT("DefaultBeamPIE.ini");
+
+	FString FilePathSavedConfig = FPaths::ConvertRelativePathToFull(FPaths::Combine(FPaths::ProjectSavedDir(), TEXT("Config"), FPlatformProperties::PlatformName(), TEXT("BeamPIE.ini")));
+
+	if (!FPaths::FileExists(FilePathSavedConfig))
+	{
+		FFileHelper::SaveStringToFile(TEXT(""), *FilePathSavedConfig);
+	}
+	
+	// We have to create the ini file if it don't exists
+	if (!FPaths::FileExists(FilePathDefaultConfig))
+	{
+		// This flags guarantee that the file will save all properties when we called the SaveConfig 
+		FString IniContent = TEXT("[SectionsToSave]\n");
+		IniContent += TEXT("bCanSaveAllSections=true\n\n");
+		IniContent += TEXT("[/Script/BeamableCore.BeamPIEConfig]\n");
+
+		if (!FFileHelper::SaveStringToFile(IniContent, *FilePathDefaultConfig))
+		{
+			UE_LOG(LogTemp, Error, TEXT("Failed BeamPIE to save the .ini file."));
+			return false;
+		}
+		
+		GConfig->LoadFile(FilePathDefaultConfig);
+	}
+	else
+	{
+		FString IniContent;
+		// If the file exists we try to find the reference for the sections that should have and if don't
+		if (FFileHelper::LoadFileToString(IniContent, *FilePathDefaultConfig))
+		{
+			FString FileContent = "";
+			if (!IniContent.Contains("[SectionsToSave]"))
+			{
+				FileContent += TEXT("[SectionsToSave]\n");
+				FileContent += TEXT("bCanSaveAllSections=true\n\n");
+			}
+			if (!IniContent.Contains("[/Script/BeamableCore.BeamPIEConfig]"))
+			{
+				FileContent += TEXT("[/Script/BeamableCore.BeamPIEConfig]\n");
+			}
+
+			FileContent.Append(IniContent);
+
+			if (!FFileHelper::SaveStringToFile(FileContent, *FilePathDefaultConfig))
+			{
+				UE_LOG(LogTemp, Error, TEXT("Failed BeamPIE to save the .ini file."));
+				return false;
+			}
+		
+			GConfig->LoadFile(FilePathDefaultConfig);
+		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("Failed BeamPIE to load the .ini file."));
+			return false;
+		}
+	}
+
+	return true;
+	
 }
 
 
@@ -620,10 +685,10 @@ void UBeamEditor::SelectRealm_OnReadyForChange(FBeamWaitCompleteEvent, FBeamReal
 			// Sets the realm secret
 			FBeamCustomerProjectData _;
 			FBeamProjectRealmData RealmData;
-			if (GetActiveProjectAndRealmData(_,RealmData))
+			if (GetActiveProjectAndRealmData(_, RealmData))
 			{
 				GEngine->GetEngineSubsystem<UBeamBackend>()->RealmSecret = RealmData.RealmSecret;
-			} 
+			}
 
 			// Using the new Post endpoint that allows for Upsert to ensure that all Unreal games are using our custom notification pipeline instead of our legacy PubNub stuff.
 			const auto UpdateConfigReq = UPostConfigRequest::Make(FOptionalArrayOfString{}, FOptionalMapOfString{{{TEXT("notification|publisher"), TEXT("beamable")}}}, GetTransientPackage(), {});
@@ -797,3 +862,4 @@ void UBeamEditor::ApplyCurrentSettingsToBuild()
 	const auto Params = TArray<FString>{TEXT("--cid"), RealmData.CID.AsString, TEXT("--pid"), RealmData.PID.AsString, TEXT("--set"), TEXT("--no-overrides")};
 	Cli->RunCommandServer(ConfigSetCmd, Params, {});
 }
+

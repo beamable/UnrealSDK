@@ -298,6 +298,7 @@ public:
 					uint16 port;
 					PlaySettings->GetServerPort(port);
 					Config->CurrLocalServerPort = FString::FromInt(port);
+
 					Config->Save();
 
 					UE_LOG(LogBeamEditor, Log, TEXT("Beam Editor - Pre-Begin PIE - Configuring Settings Object from UE Settings - RUNNING_GAME_SERVER=%d, PORT=%u!"),
@@ -343,7 +344,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SaveMutableBeamConfig(UBeamPIEConfig* BeamConfig)
 	{
-		BeamConfig->SaveConfig(CPF_Config);
+		BeamConfig->Save();
 	}
 
 	/**
@@ -711,7 +712,7 @@ public:
 						}
 
 						UE_LOG(LogBeamEditor, Log, TEXT("%s Server - Trying to Create the Fake Lobby"), *GetLogArgs(TEXT("Beam PIE Prepare"), WorldContext));
-						auto Req = NewObject<UPutLobbiesRequest>();						
+						auto Req = NewObject<UPutLobbiesRequest>();
 						Req->Body = FakeLobby;
 
 						const auto CreateLobbyHandler = FOnPutLobbiesFullResponse::CreateUObject(this, &UBeamPIE::PIEServerCreateLobbyHandler, WorldContext, Req, PossibleSlotHandles, Op);
