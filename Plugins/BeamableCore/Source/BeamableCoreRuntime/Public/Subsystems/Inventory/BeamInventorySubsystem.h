@@ -320,17 +320,17 @@ public:
 
 	/**
 	 * @brief Gets the list of all currencies the given player has. Returns false if no player is signed into th given slot.
-	 * @param Regex: The regex param will be used to filter in the id using a regex expression after the filter been applied.
+	 * @param RegexContentName: The regex param will be used to filter in the id using a regex expression after the filter been applied.
 	 */
 	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
-	bool TryGetAllCurrenciesRegex(FUserSlot Player, EBeamFilterType FilterType, UPARAM(meta=(BeamCastType))TSubclassOf<UBeamCurrencyContent> Filter, TArray<FBeamPlayerCurrency>& CurrencyStates, UPARAM(meta=(BeamCastTarget))TArray<UBeamCurrencyContent*>& Contents, FString Regex = "*");
+	bool TryGetAllCurrenciesRegex(FUserSlot Player, EBeamFilterType FilterType, UPARAM(meta=(BeamCastType))TSubclassOf<UBeamCurrencyContent> Filter, TArray<FBeamPlayerCurrency>& CurrencyStates, UPARAM(meta=(BeamCastTarget))TArray<UBeamCurrencyContent*>& Contents, FString RegexContentName = "*");
 
 	/**
 	 * @brief Gets all items for the given player.
-	 * @param Regex: The regex param will be used to filter in the id using a regex expression after the filter been applied.
+	 * @param RegexContentName: The regex param will be used to filter in the id using a regex expression after the filter been applied.
 	 */
 	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue", AutoCreateRefTerm="ItemStates"))
-	bool TryGetAllItemsRegex(FUserSlot Player, EBeamFilterType FilterType, UPARAM(meta=(BeamCastType))TSubclassOf<UBeamItemContent> Filter, TArray<FBeamItemState>& ItemStates, UPARAM(meta=(BeamCastTarget))TArray<UBeamItemContent*>& Contents, FString Regex = "*");
+	bool TryGetAllItemsRegex(FUserSlot Player, EBeamFilterType FilterType, UPARAM(meta=(BeamCastType))TSubclassOf<UBeamItemContent> Filter, TArray<FBeamItemState>& ItemStates, UPARAM(meta=(BeamCastTarget))TArray<UBeamItemContent*>& Contents, FString RegexContentName = "*");
 
 	
 	/**

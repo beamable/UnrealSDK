@@ -130,6 +130,23 @@ public:
 	}
 };
 
+USTRUCT(BlueprintType)
+struct FBeamLobbyKeyPair
+{
+	UPROPERTY(BlueprintReadWrite, VisibleAnywhere)
+	TMap<FString, FString> Map;
+
+	GENERATED_BODY()
+	;
+
+	explicit FBeamLobbyKeyPair(TMap<FString, FString> Map)
+		: Map(Map)
+	{
+	}
+
+	FBeamLobbyKeyPair() = default;
+};
+
 /**
  * 
  */
@@ -211,6 +228,24 @@ public:
 	UBeamLobbyState* GetCurrentSlotLobbyState(FUserSlot Slot);
 
 	/**
+	 * Iterate over all players for a specific lobby object, it also returns a parallel list for the player properties
+	 */
+	void GetAllLobbyPlayers(ULobby* Lobby, TArray<ULobbyPlayer*>& Players, TArray<TMap<FString, FString>>& PlayerProperties);
+
+	/**
+	 * Iterate over all players for a specific lobby object, it also returns a parallel list for the player properties
+	 * Returns false if the lobby don't exists
+	 */
+	bool GetAllLobbyPlayersById(FGuid LobbyId, TArray<ULobbyPlayer*>& Players, TArray<TMap<FString, FString>>& PlayerProperties);
+
+	/*
+	 * Tries to get the current lobby passcode for a user slot
+	 * returns false if the user is not in a lobby or if it doesn't have a pass code.
+	 */
+	UFUNCTION(Blueprintable)
+	bool TryGetCurrentSlotPasscode(FUserSlot Slot, FString& Passcode);
+
+	/**
 	 * Tries to get whatever the current local data for the given lobby id is. If you want a guarantee that this data is up-to-date call, [CPP_]RefreshLobbyOperation first.
 	 */
 	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
@@ -230,17 +265,31 @@ public:
 	bool TryGetGlobalLobbyData(ULobby* Lobby, FString DataKey, FString DefaultValue, FString& GlobalData);
 
 	/**
+	 *  Try to get a specific json data from a ULobby* Object and cast it to selected type.
+	 *  The default value is what will be return in case of it fail to get the value.
+	 */
+	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
+	bool TryGetGlobalLobbyDataCasted(ULobby* Lobby, FString DataKey, UPARAM(meta=(MustImplement = "BeamJsonSerializableUObject", BeamCastType))TSubclassOf<UObject> CastTarget,
+	                                 UPARAM(meta=(MustImplement = "BeamJsonSerializableUObject"))UObject* DefaultValue, UPARAM(meta=(BeamCastTarget))UObject*& GlobalData);
+
+	/**
 	 *  It will return the global data from a ULobby* Object as parallel lists of keys and values.
 	 */
 	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
-	bool GetAllLobbyGlobalData(ULobby* Lobby, TArray<FString>& Keys, TArray<FString>& Values);
+	bool TryGetAllLobbyGlobalData(ULobby* Lobby, TArray<FString>& Keys, TArray<FString>& Values);
 
-
+	/*
+	 * Get a player data property for a specific player
+	 * Returns false if this property don't exists
+	 */
 	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
 	bool TryGetLobbyPlayerData(ULobby* Lobby, FBeamGamerTag PlayerGamerTag, FString DataKey, FString DefaultValue, FString& PlayerData);
 
+	/**
+	 *  It will return the a specific player data from a ULobby* Object as parallel lists of keys and values.
+	 */
 	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
-	bool GetAllLobbyPlayerData(ULobby* Lobby, FBeamGamerTag PlayerGamerTag, TArray<FString>& Keys, TArray<FString>& Values);
+	bool TryGetAllLobbyPlayerData(ULobby* Lobby, FBeamGamerTag PlayerGamerTag, TArray<FString>& Keys, TArray<FString>& Values);
 
 	/**
 	 *  Try to get a specific data from a ULobby* Object using the lobby id.
@@ -255,11 +304,24 @@ public:
 	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
 	bool GetAllLobbyGlobalDataById(FGuid LobbyId, TArray<FString>& Keys, TArray<FString>& Values);
 
+	/*
+	 * Get a player data property for a specific player
+	 * Returns false if this property don't exists
+	*/
 	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
 	bool TryGetLobbyPlayerDataById(FGuid LobbyId, FBeamGamerTag PlayerGamerTag, FString DataKey, FString DefaultValue, FString& PlayerData);
 
+	/**
+	 *  It will return the a specific player data from a ULobby* Object as parallel lists of keys and values.
+	 */
 	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
 	bool GetAllLobbyPlayerDataById(FGuid LobbyId, FBeamGamerTag PlayerGamerTag, TArray<FString>& Keys, TArray<FString>& Values);
+
+	/*
+	 * Return a list with all lobbies and a parallel list with the lobby global data.
+	 */
+	UFUNCTION(BlueprintCallable)
+	void GetAllLobbies(TArray<ULobby*>& Lobbies, TArray<FBeamLobbyKeyPair>& GlobalData);
 
 	/**
 	 * Tries to get whatever the current local data for the given user slot's current lobby state. If you want a guarantee that this data is up-to-date call, [CPP_]RefreshLobbyOperation first.

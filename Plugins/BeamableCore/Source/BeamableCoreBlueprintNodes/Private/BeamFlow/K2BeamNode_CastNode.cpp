@@ -6,6 +6,7 @@
 #include "BlueprintNodeSpawner.h"
 #include "K2Node_CallFunction.h"
 #include "KismetCompiler.h"
+#include "MVVM/ViewModels/OutlinerColumns/OutlinerColumnTypes.h"
 
 void UK2BeamNode_CastNode::AllocateDefaultPins()
 {
@@ -412,15 +413,15 @@ void UK2BeamNode_CastNode::NodeConnectionListChanged()
 
 void UK2BeamNode_CastNode::PostReconstructNode()
 {
-	for (auto Pin : Pins)
+	for (int index = Pins.Num() - 1; index >= 0; --index)
 	{
+		auto Pin = Pins[index];
 		if (Pin->bOrphanedPin)
 		{
 			for (auto Class : ClassInputPins)
 			{
 				if (Class.Guid == FGuid(Pin->PinName.ToString()))
 				{
-					auto PinType = Pin->PinType;
 					auto DefaultValue = Pin->DefaultValue;
 					auto DefaultObject = Pin->DefaultObject;
 					auto DefaultTextValue = Pin->DefaultTextValue;
@@ -428,9 +429,9 @@ void UK2BeamNode_CastNode::PostReconstructNode()
 
 					auto NewPin = FindPin(Class.Guid.ToString());
 
-					NewPin->DefaultValue = Pin->DefaultValue;
-					NewPin->DefaultObject = Pin->DefaultObject;
-					NewPin->DefaultTextValue = Pin->DefaultTextValue;
+					NewPin->DefaultValue = DefaultValue;
+					NewPin->DefaultObject = DefaultObject;
+					NewPin->DefaultTextValue = DefaultTextValue;
 				}
 			}
 		}

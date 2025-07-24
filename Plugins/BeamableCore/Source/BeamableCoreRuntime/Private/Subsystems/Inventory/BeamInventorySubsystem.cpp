@@ -565,13 +565,13 @@ bool UBeamInventorySubsystem::TryGetAllItemsFilter(FUserSlot Player, EBeamFilter
 	return Result;
 }
 
-bool UBeamInventorySubsystem::TryGetAllCurrenciesRegex(FUserSlot Player, EBeamFilterType FilterType, TSubclassOf<UBeamCurrencyContent> Filter, TArray<FBeamPlayerCurrency>& CurrencyStates, TArray<UBeamCurrencyContent*>& Contents, FString Regex)
+bool UBeamInventorySubsystem::TryGetAllCurrenciesRegex(FUserSlot Player, EBeamFilterType FilterType, TSubclassOf<UBeamCurrencyContent> Filter, TArray<FBeamPlayerCurrency>& CurrencyStates, TArray<UBeamCurrencyContent*>& Contents, FString RegexContentName)
 {
 	bool Result = TryGetAllCurrenciesFilter(Player, FilterType, Filter, CurrencyStates, Contents);
 	for (auto index = Contents.Num() - 1; index >= 0; index--)
 	{
-		FRegexPattern RegexPattern(Regex);
-		FRegexMatcher Matcher(RegexPattern, Contents[index]->Id);
+		FRegexPattern RegexPattern(RegexContentName);
+		FRegexMatcher Matcher(RegexPattern, Contents[index]->GetContentName());
 		// If the regex has any match
 		if (!Matcher.FindNext())
 		{
@@ -583,14 +583,14 @@ bool UBeamInventorySubsystem::TryGetAllCurrenciesRegex(FUserSlot Player, EBeamFi
 	return Result;
 }
 
-bool UBeamInventorySubsystem::TryGetAllItemsRegex(FUserSlot Player, EBeamFilterType FilterType, TSubclassOf<UBeamItemContent> Filter, TArray<FBeamItemState>& ItemStates, TArray<UBeamItemContent*>& Contents,  FString Regex)
+bool UBeamInventorySubsystem::TryGetAllItemsRegex(FUserSlot Player, EBeamFilterType FilterType, TSubclassOf<UBeamItemContent> Filter, TArray<FBeamItemState>& ItemStates, TArray<UBeamItemContent*>& Contents,  FString RegexContentName)
 {
 	bool Result = TryGetAllItemsFilter(Player, FilterType, Filter, ItemStates, Contents);
 	
 	for (auto index = Contents.Num() - 1; index >= 0; index--)
 	{
-		FRegexPattern RegexPattern(Regex);
-		FRegexMatcher Matcher(RegexPattern, Contents[index]->Id);
+		FRegexPattern RegexPattern(RegexContentName);
+		FRegexMatcher Matcher(RegexPattern, Contents[index]->GetContentName());
 		// If the regex has any match
 		if (!Matcher.FindNext())
 		{
