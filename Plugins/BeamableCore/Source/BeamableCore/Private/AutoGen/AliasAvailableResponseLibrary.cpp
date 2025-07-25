@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/AliasAvailableResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UAliasAvailableResponseLibrary::AliasAvailableResponseToJsonString(const UAliasAvailableResponse* Serializable, const bool Pretty)
@@ -34,9 +35,12 @@ UAliasAvailableResponse* UAliasAvailableResponseLibrary::Make(FString Alias, boo
 
 void UAliasAvailableResponseLibrary::Break(const UAliasAvailableResponse* Serializable, FString& Alias, bool& bAvailable, FBeamCid& Cid)
 {
-	Alias = Serializable->Alias;
-	bAvailable = Serializable->bAvailable;
-	Cid = Serializable->Cid;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Alias = Serializable->Alias;
+		bAvailable = Serializable->bAvailable;
+		Cid = Serializable->Cid;
+	}
 		
 }
 

@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/TournamentCurrencyRewardLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UTournamentCurrencyRewardLibrary::TournamentCurrencyRewardToJsonString(const UTournamentCurrencyReward* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ UTournamentCurrencyReward* UTournamentCurrencyRewardLibrary::Make(FString Symbol
 
 void UTournamentCurrencyRewardLibrary::Break(const UTournamentCurrencyReward* Serializable, FString& Symbol, int64& Amount)
 {
-	Symbol = Serializable->Symbol;
-	Amount = Serializable->Amount;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Symbol = Serializable->Symbol;
+		Amount = Serializable->Amount;
+	}
 		
 }
 

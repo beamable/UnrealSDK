@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/DeleteLocalizationRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UDeleteLocalizationRequestBodyLibrary::DeleteLocalizationRequestBodyToJsonString(const UDeleteLocalizationRequestBody* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UDeleteLocalizationRequestBody* UDeleteLocalizationRequestBodyLibrary::Make(TArr
 
 void UDeleteLocalizationRequestBodyLibrary::Break(const UDeleteLocalizationRequestBody* Serializable, TArray<ULocalizationQuery*>& Localizations)
 {
-	Localizations = Serializable->Localizations;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Localizations = Serializable->Localizations;
+	}
 		
 }
 

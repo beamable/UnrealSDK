@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/ServerTokenAuthRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UServerTokenAuthRequestBodyLibrary::ServerTokenAuthRequestBodyToJsonString(const UServerTokenAuthRequestBody* Serializable, const bool Pretty)
@@ -35,10 +36,13 @@ UServerTokenAuthRequestBody* UServerTokenAuthRequestBodyLibrary::Make(FOptionalS
 
 void UServerTokenAuthRequestBodyLibrary::Break(const UServerTokenAuthRequestBody* Serializable, FOptionalString& ClientId, FOptionalString& ClientSecret, FOptionalBeamCid& CustomerId, FOptionalBeamPid& RealmId)
 {
-	ClientId = Serializable->ClientId;
-	ClientSecret = Serializable->ClientSecret;
-	CustomerId = Serializable->CustomerId;
-	RealmId = Serializable->RealmId;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		ClientId = Serializable->ClientId;
+		ClientSecret = Serializable->ClientSecret;
+		CustomerId = Serializable->CustomerId;
+		RealmId = Serializable->RealmId;
+	}
 		
 }
 

@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/ListTagsResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UListTagsResponseLibrary::ListTagsResponseToJsonString(const UListTagsResponse* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UListTagsResponse* UListTagsResponseLibrary::Make(TArray<FString> Tags, UObject*
 
 void UListTagsResponseLibrary::Break(const UListTagsResponse* Serializable, TArray<FString>& Tags)
 {
-	Tags = Serializable->Tags;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Tags = Serializable->Tags;
+	}
 		
 }
 

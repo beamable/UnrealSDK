@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/EndTransactionRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UEndTransactionRequestBodyLibrary::EndTransactionRequestBodyToJsonString(const UEndTransactionRequestBody* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UEndTransactionRequestBody* UEndTransactionRequestBodyLibrary::Make(FString Tran
 
 void UEndTransactionRequestBodyLibrary::Break(const UEndTransactionRequestBody* Serializable, FString& Transaction)
 {
-	Transaction = Serializable->Transaction;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Transaction = Serializable->Transaction;
+	}
 		
 }
 

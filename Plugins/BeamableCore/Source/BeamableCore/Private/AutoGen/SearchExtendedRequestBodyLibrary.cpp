@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/SearchExtendedRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString USearchExtendedRequestBodyLibrary::SearchExtendedRequestBodyToJsonString(const USearchExtendedRequestBody* Serializable, const bool Pretty)
@@ -36,11 +37,14 @@ USearchExtendedRequestBody* USearchExtendedRequestBodyLibrary::Make(FString Doma
 
 void USearchExtendedRequestBodyLibrary::Break(const USearchExtendedRequestBody* Serializable, FString& Domain, FString& ObjectType, FString& Access, TArray<UStatsSearchCriteria*>& Criteria, TArray<FString>& StatKeys)
 {
-	Domain = Serializable->Domain;
-	ObjectType = Serializable->ObjectType;
-	Access = Serializable->Access;
-	Criteria = Serializable->Criteria;
-	StatKeys = Serializable->StatKeys;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Domain = Serializable->Domain;
+		ObjectType = Serializable->ObjectType;
+		Access = Serializable->Access;
+		Criteria = Serializable->Criteria;
+		StatKeys = Serializable->StatKeys;
+	}
 		
 }
 

@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/SaveManifestRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString USaveManifestRequestBodyLibrary::SaveManifestRequestBodyToJsonString(const USaveManifestRequestBody* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ USaveManifestRequestBody* USaveManifestRequestBodyLibrary::Make(FBeamContentMani
 
 void USaveManifestRequestBodyLibrary::Break(const USaveManifestRequestBody* Serializable, FBeamContentManifestId& Id, TArray<UReferenceSuperset*>& References)
 {
-	Id = Serializable->Id;
-	References = Serializable->References;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Id = Serializable->Id;
+		References = Serializable->References;
+	}
 		
 }
 

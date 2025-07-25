@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/ListMailCategoriesResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UListMailCategoriesResponseLibrary::ListMailCategoriesResponseToJsonString(const UListMailCategoriesResponse* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UListMailCategoriesResponse* UListMailCategoriesResponseLibrary::Make(TArray<FSt
 
 void UListMailCategoriesResponseLibrary::Break(const UListMailCategoriesResponse* Serializable, TArray<FString>& Result)
 {
-	Result = Serializable->Result;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Result = Serializable->Result;
+	}
 		
 }
 

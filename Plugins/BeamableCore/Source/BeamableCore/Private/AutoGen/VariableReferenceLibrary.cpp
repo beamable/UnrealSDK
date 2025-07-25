@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/VariableReferenceLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UVariableReferenceLibrary::VariableReferenceToJsonString(const UVariableReference* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UVariableReference* UVariableReferenceLibrary::Make(FString Name, UObject* Outer
 
 void UVariableReferenceLibrary::Break(const UVariableReference* Serializable, FString& Name)
 {
-	Name = Serializable->Name;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Name = Serializable->Name;
+	}
 		
 }
 

@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/ContentOrTextLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UContentOrTextLibrary::ContentOrTextToJsonString(const UContentOrText* Serializable, const bool Pretty)
@@ -34,9 +35,12 @@ UContentOrText* UContentOrTextLibrary::Make(FBeamContentId Id, FString Version, 
 
 void UContentOrTextLibrary::Break(const UContentOrText* Serializable, FBeamContentId& Id, FString& Version, TMap<FString, FString>& Properties)
 {
-	Id = Serializable->Id;
-	Version = Serializable->Version;
-	Properties = Serializable->Properties;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Id = Serializable->Id;
+		Version = Serializable->Version;
+		Properties = Serializable->Properties;
+	}
 		
 }
 

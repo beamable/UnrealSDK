@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/AnnouncementRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UAnnouncementRequestBodyLibrary::AnnouncementRequestBodyToJsonString(const UAnnouncementRequestBody* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ UAnnouncementRequestBody* UAnnouncementRequestBodyLibrary::Make(FOptionalString 
 
 void UAnnouncementRequestBodyLibrary::Break(const UAnnouncementRequestBody* Serializable, FOptionalString& Announcement, FOptionalArrayOfString& Announcements)
 {
-	Announcement = Serializable->Announcement;
-	Announcements = Serializable->Announcements;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Announcement = Serializable->Announcement;
+		Announcements = Serializable->Announcements;
+	}
 		
 }
 

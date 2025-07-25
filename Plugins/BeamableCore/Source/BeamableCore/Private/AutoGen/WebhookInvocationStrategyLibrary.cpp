@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/WebhookInvocationStrategyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UWebhookInvocationStrategyLibrary::WebhookInvocationStrategyToJsonString(const UWebhookInvocationStrategy* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ UWebhookInvocationStrategy* UWebhookInvocationStrategyLibrary::Make(EBeamWebhook
 
 void UWebhookInvocationStrategyLibrary::Break(const UWebhookInvocationStrategy* Serializable, EBeamWebhookInvocationType& InvocationType, EBeamWebhookRetryType& RetryType)
 {
-	InvocationType = Serializable->InvocationType;
-	RetryType = Serializable->RetryType;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		InvocationType = Serializable->InvocationType;
+		RetryType = Serializable->RetryType;
+	}
 		
 }
 

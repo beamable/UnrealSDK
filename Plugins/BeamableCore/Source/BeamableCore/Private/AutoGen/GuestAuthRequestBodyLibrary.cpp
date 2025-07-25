@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/GuestAuthRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UGuestAuthRequestBodyLibrary::GuestAuthRequestBodyToJsonString(const UGuestAuthRequestBody* Serializable, const bool Pretty)
@@ -36,11 +37,14 @@ UGuestAuthRequestBody* UGuestAuthRequestBodyLibrary::Make(FOptionalString Scope,
 
 void UGuestAuthRequestBodyLibrary::Break(const UGuestAuthRequestBody* Serializable, FOptionalString& Scope, FOptionalBeamCid& CustomerId, FOptionalBeamPid& RealmId, FOptionalContextInfo& Context, FOptionalMapOfString& InitProperties)
 {
-	Scope = Serializable->Scope;
-	CustomerId = Serializable->CustomerId;
-	RealmId = Serializable->RealmId;
-	Context = Serializable->Context;
-	InitProperties = Serializable->InitProperties;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Scope = Serializable->Scope;
+		CustomerId = Serializable->CustomerId;
+		RealmId = Serializable->RealmId;
+		Context = Serializable->Context;
+		InitProperties = Serializable->InitProperties;
+	}
 		
 }
 

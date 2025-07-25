@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/AttachmentLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UAttachmentLibrary::AttachmentToJsonString(const UAttachment* Serializable, const bool Pretty)
@@ -35,10 +36,13 @@ UAttachment* UAttachmentLibrary::Make(int64 Id, UEntitlementGenerator* Wrapped, 
 
 void UAttachmentLibrary::Break(const UAttachment* Serializable, int64& Id, UEntitlementGenerator*& Wrapped, FString& State, FOptionalInt64& Target)
 {
-	Id = Serializable->Id;
-	Wrapped = Serializable->Wrapped;
-	State = Serializable->State;
-	Target = Serializable->Target;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Id = Serializable->Id;
+		Wrapped = Serializable->Wrapped;
+		State = Serializable->State;
+		Target = Serializable->Target;
+	}
 		
 }
 

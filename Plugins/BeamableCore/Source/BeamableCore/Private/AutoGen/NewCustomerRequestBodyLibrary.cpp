@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/NewCustomerRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UNewCustomerRequestBodyLibrary::NewCustomerRequestBodyToJsonString(const UNewCustomerRequestBody* Serializable, const bool Pretty)
@@ -37,12 +38,15 @@ UNewCustomerRequestBody* UNewCustomerRequestBodyLibrary::Make(FString ProjectNam
 
 void UNewCustomerRequestBodyLibrary::Break(const UNewCustomerRequestBody* Serializable, FString& ProjectName, FString& Email, FString& Password, FOptionalBool& bHierarchy, FOptionalString& CustomerName, FOptionalString& Alias)
 {
-	ProjectName = Serializable->ProjectName;
-	Email = Serializable->Email;
-	Password = Serializable->Password;
-	bHierarchy = Serializable->bHierarchy;
-	CustomerName = Serializable->CustomerName;
-	Alias = Serializable->Alias;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		ProjectName = Serializable->ProjectName;
+		Email = Serializable->Email;
+		Password = Serializable->Password;
+		bHierarchy = Serializable->bHierarchy;
+		CustomerName = Serializable->CustomerName;
+		Alias = Serializable->Alias;
+	}
 		
 }
 

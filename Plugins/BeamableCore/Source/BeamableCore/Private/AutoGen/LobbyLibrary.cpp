@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/LobbyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString ULobbyLibrary::LobbyToJsonString(const ULobby* Serializable, const bool Pretty)
@@ -42,17 +43,20 @@ ULobby* ULobbyLibrary::Make(FOptionalString LobbyId, FOptionalMatchType MatchTyp
 
 void ULobbyLibrary::Break(const ULobby* Serializable, FOptionalString& LobbyId, FOptionalMatchType& MatchType, FOptionalDateTime& Created, FOptionalString& Name, FOptionalString& Description, FOptionalBeamGamerTag& Host, FOptionalString& Passcode, FOptionalLobbyRestriction& Restriction, FOptionalInt32& MaxPlayers, FOptionalArrayOfLobbyPlayer& Players, FOptionalMapOfString& Data)
 {
-	LobbyId = Serializable->LobbyId;
-	MatchType = Serializable->MatchType;
-	Created = Serializable->Created;
-	Name = Serializable->Name;
-	Description = Serializable->Description;
-	Host = Serializable->Host;
-	Passcode = Serializable->Passcode;
-	Restriction = Serializable->Restriction;
-	MaxPlayers = Serializable->MaxPlayers;
-	Players = Serializable->Players;
-	Data = Serializable->Data;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		LobbyId = Serializable->LobbyId;
+		MatchType = Serializable->MatchType;
+		Created = Serializable->Created;
+		Name = Serializable->Name;
+		Description = Serializable->Description;
+		Host = Serializable->Host;
+		Passcode = Serializable->Passcode;
+		Restriction = Serializable->Restriction;
+		MaxPlayers = Serializable->MaxPlayers;
+		Players = Serializable->Players;
+		Data = Serializable->Data;
+	}
 		
 }
 

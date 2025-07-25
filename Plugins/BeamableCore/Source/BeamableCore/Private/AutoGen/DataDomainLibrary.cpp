@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/DataDomainLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UDataDomainLibrary::DataDomainToJsonString(const UDataDomain* Serializable, const bool Pretty)
@@ -40,15 +41,18 @@ UDataDomain* UDataDomainLibrary::Make(bool bMongoSSLEnabled, bool bMongoSharded,
 
 void UDataDomainLibrary::Break(const UDataDomain* Serializable, bool& bMongoSSLEnabled, bool& bMongoSharded, TArray<FString>& MemcachedHosts, TArray<FString>& MongoHosts, FOptionalBool& bMongoSSL, FOptionalString& MongoSrvAddress, FOptionalArrayOfString& MessageBusAnalytics, FOptionalArrayOfString& MessageBusCommon, FOptionalArrayOfRedisShard& RedisShards)
 {
-	bMongoSSLEnabled = Serializable->bMongoSSLEnabled;
-	bMongoSharded = Serializable->bMongoSharded;
-	MemcachedHosts = Serializable->MemcachedHosts;
-	MongoHosts = Serializable->MongoHosts;
-	bMongoSSL = Serializable->bMongoSSL;
-	MongoSrvAddress = Serializable->MongoSrvAddress;
-	MessageBusAnalytics = Serializable->MessageBusAnalytics;
-	MessageBusCommon = Serializable->MessageBusCommon;
-	RedisShards = Serializable->RedisShards;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		bMongoSSLEnabled = Serializable->bMongoSSLEnabled;
+		bMongoSharded = Serializable->bMongoSharded;
+		MemcachedHosts = Serializable->MemcachedHosts;
+		MongoHosts = Serializable->MongoHosts;
+		bMongoSSL = Serializable->bMongoSSL;
+		MongoSrvAddress = Serializable->MongoSrvAddress;
+		MessageBusAnalytics = Serializable->MessageBusAnalytics;
+		MessageBusCommon = Serializable->MessageBusCommon;
+		RedisShards = Serializable->RedisShards;
+	}
 		
 }
 

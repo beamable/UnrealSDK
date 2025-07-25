@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/OtelAuthConfigLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UOtelAuthConfigLibrary::OtelAuthConfigToJsonString(const UOtelAuthConfig* Serializable, const bool Pretty)
@@ -35,10 +36,13 @@ UOtelAuthConfig* UOtelAuthConfigLibrary::Make(FString Endpoint, FString Username
 
 void UOtelAuthConfigLibrary::Break(const UOtelAuthConfig* Serializable, FString& Endpoint, FString& Username, FString& Password, FOptionalDateTime& ExpiresAt)
 {
-	Endpoint = Serializable->Endpoint;
-	Username = Serializable->Username;
-	Password = Serializable->Password;
-	ExpiresAt = Serializable->ExpiresAt;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Endpoint = Serializable->Endpoint;
+		Username = Serializable->Username;
+		Password = Serializable->Password;
+		ExpiresAt = Serializable->ExpiresAt;
+	}
 		
 }
 

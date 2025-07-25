@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/EventScoreRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UEventScoreRequestBodyLibrary::EventScoreRequestBodyToJsonString(const UEventScoreRequestBody* Serializable, const bool Pretty)
@@ -35,10 +36,13 @@ UEventScoreRequestBody* UEventScoreRequestBodyLibrary::Make(FString EventId, dou
 
 void UEventScoreRequestBodyLibrary::Break(const UEventScoreRequestBody* Serializable, FString& EventId, double& Score, FOptionalBool& bIncrement, FOptionalMapOfString& Stats)
 {
-	EventId = Serializable->EventId;
-	Score = Serializable->Score;
-	bIncrement = Serializable->bIncrement;
-	Stats = Serializable->Stats;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		EventId = Serializable->EventId;
+		Score = Serializable->Score;
+		bIncrement = Serializable->bIncrement;
+		Stats = Serializable->Stats;
+	}
 		
 }
 

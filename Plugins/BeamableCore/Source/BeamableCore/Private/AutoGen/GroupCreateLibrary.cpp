@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/GroupCreateLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UGroupCreateLibrary::GroupCreateToJsonString(const UGroupCreate* Serializable, const bool Pretty)
@@ -41,16 +42,19 @@ UGroupCreate* UGroupCreateLibrary::Make(FString Name, FString EnrollmentType, in
 
 void UGroupCreateLibrary::Break(const UGroupCreate* Serializable, FString& Name, FString& EnrollmentType, int64& Requirement, EBeamGroupType& Type, int32& MaxSize, FOptionalString& Tag, FOptionalString& ClientData, FOptionalInt64& Time, FOptionalInt64& Group, FOptionalArrayOfGroupScoreBinding& Scores)
 {
-	Name = Serializable->Name;
-	EnrollmentType = Serializable->EnrollmentType;
-	Requirement = Serializable->Requirement;
-	Type = Serializable->Type;
-	MaxSize = Serializable->MaxSize;
-	Tag = Serializable->Tag;
-	ClientData = Serializable->ClientData;
-	Time = Serializable->Time;
-	Group = Serializable->Group;
-	Scores = Serializable->Scores;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Name = Serializable->Name;
+		EnrollmentType = Serializable->EnrollmentType;
+		Requirement = Serializable->Requirement;
+		Type = Serializable->Type;
+		MaxSize = Serializable->MaxSize;
+		Tag = Serializable->Tag;
+		ClientData = Serializable->ClientData;
+		Time = Serializable->Time;
+		Group = Serializable->Group;
+		Scores = Serializable->Scores;
+	}
 		
 }
 

@@ -2,6 +2,7 @@
 #include "BeamableUnrealMicroserviceClients/Public/AutoGen/CreateMatchResultRequestArgsLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UCreateMatchResultRequestArgsLibrary::CreateMatchResultRequestArgsToJsonString(const UCreateMatchResultRequestArgs* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ UCreateMatchResultRequestArgs* UCreateMatchResultRequestArgsLibrary::Make(int64 
 
 void UCreateMatchResultRequestArgsLibrary::Break(const UCreateMatchResultRequestArgs* Serializable, int64& UserId, FString& LobbyId)
 {
-	UserId = Serializable->UserId;
-	LobbyId = Serializable->LobbyId;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		UserId = Serializable->UserId;
+		LobbyId = Serializable->LobbyId;
+	}
 		
 }
 

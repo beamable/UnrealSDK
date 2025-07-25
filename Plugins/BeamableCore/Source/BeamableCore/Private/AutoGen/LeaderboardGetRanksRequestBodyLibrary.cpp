@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/LeaderboardGetRanksRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString ULeaderboardGetRanksRequestBodyLibrary::LeaderboardGetRanksRequestBodyToJsonString(const ULeaderboardGetRanksRequestBody* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ ULeaderboardGetRanksRequestBody* ULeaderboardGetRanksRequestBodyLibrary::Make(FS
 
 void ULeaderboardGetRanksRequestBodyLibrary::Break(const ULeaderboardGetRanksRequestBody* Serializable, FString& Ids)
 {
-	Ids = Serializable->Ids;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Ids = Serializable->Ids;
+	}
 		
 }
 

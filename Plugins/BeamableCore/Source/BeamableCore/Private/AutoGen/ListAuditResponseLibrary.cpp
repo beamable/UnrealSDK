@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/ListAuditResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UListAuditResponseLibrary::ListAuditResponseToJsonString(const UListAuditResponse* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UListAuditResponse* UListAuditResponseLibrary::Make(TArray<UPaymentAuditEntryVie
 
 void UListAuditResponseLibrary::Break(const UListAuditResponse* Serializable, TArray<UPaymentAuditEntryViewModel*>& Audits)
 {
-	Audits = Serializable->Audits;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Audits = Serializable->Audits;
+	}
 		
 }
 

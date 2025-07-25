@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/GamerTagAssociationLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UGamerTagAssociationLibrary::GamerTagAssociationToJsonString(const UGamerTagAssociation* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ UGamerTagAssociation* UGamerTagAssociationLibrary::Make(FBeamPid ProjectId, FBea
 
 void UGamerTagAssociationLibrary::Break(const UGamerTagAssociation* Serializable, FBeamPid& ProjectId, FBeamGamerTag& GamerTag)
 {
-	ProjectId = Serializable->ProjectId;
-	GamerTag = Serializable->GamerTag;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		ProjectId = Serializable->ProjectId;
+		GamerTag = Serializable->GamerTag;
+	}
 		
 }
 

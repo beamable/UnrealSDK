@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/CreateElevatedAccountRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UCreateElevatedAccountRequestBodyLibrary::CreateElevatedAccountRequestBodyToJsonString(const UCreateElevatedAccountRequestBody* Serializable, const bool Pretty)
@@ -34,9 +35,12 @@ UCreateElevatedAccountRequestBody* UCreateElevatedAccountRequestBodyLibrary::Mak
 
 void UCreateElevatedAccountRequestBodyLibrary::Break(const UCreateElevatedAccountRequestBody* Serializable, FString& Email, FOptionalString& Role, FOptionalMapOfString& InitProperties)
 {
-	Email = Serializable->Email;
-	Role = Serializable->Role;
-	InitProperties = Serializable->InitProperties;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Email = Serializable->Email;
+		Role = Serializable->Role;
+		InitProperties = Serializable->InitProperties;
+	}
 		
 }
 

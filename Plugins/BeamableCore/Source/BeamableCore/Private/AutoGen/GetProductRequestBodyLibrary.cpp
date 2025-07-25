@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/GetProductRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UGetProductRequestBodyLibrary::GetProductRequestBodyToJsonString(const UGetProductRequestBody* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UGetProductRequestBody* UGetProductRequestBodyLibrary::Make(FString Sku, UObject
 
 void UGetProductRequestBodyLibrary::Break(const UGetProductRequestBody* Serializable, FString& Sku)
 {
-	Sku = Serializable->Sku;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Sku = Serializable->Sku;
+	}
 		
 }
 

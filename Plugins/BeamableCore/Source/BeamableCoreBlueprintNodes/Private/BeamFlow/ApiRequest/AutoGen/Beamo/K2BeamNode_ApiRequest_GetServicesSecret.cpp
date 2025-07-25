@@ -6,7 +6,7 @@
 
 #include "BeamableCore/Public/AutoGen/SubSystems/BeamBeamoApi.h"
 #include "BeamableCore/Public/AutoGen/SubSystems/Beamo/GetServicesSecretRequest.h"
-#include "BeamableCore/Public/AutoGen/GetServiceSecretResponse.h"
+#include "BeamableCore/Public/AutoGen/BeamoV2GetServiceSecretResponse.h"
 
 #define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_GetServicesSecret"
 
@@ -49,7 +49,7 @@ UClass* UK2BeamNode_ApiRequest_GetServicesSecret::GetRequestClass() const
 
 UClass* UK2BeamNode_ApiRequest_GetServicesSecret::GetResponseClass() const
 {
-	return UGetServiceSecretResponse::StaticClass();
+	return UBeamoV2GetServiceSecretResponse::StaticClass();
 }
 
 FString UK2BeamNode_ApiRequest_GetServicesSecret::GetRequestSuccessDelegateName() const

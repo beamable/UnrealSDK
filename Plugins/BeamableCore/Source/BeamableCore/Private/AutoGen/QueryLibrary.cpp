@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/QueryLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UQueryLibrary::QueryToJsonString(const UQuery* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UQuery* UQueryLibrary::Make(FString QueryId, UObject* Outer)
 
 void UQueryLibrary::Break(const UQuery* Serializable, FString& QueryId)
 {
-	QueryId = Serializable->QueryId;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		QueryId = Serializable->QueryId;
+	}
 		
 }
 

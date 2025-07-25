@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/PaymentAuditEntryViewModelLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UPaymentAuditEntryViewModelLibrary::PaymentAuditEntryViewModelToJsonString(const UPaymentAuditEntryViewModel* Serializable, const bool Pretty)
@@ -45,20 +46,23 @@ UPaymentAuditEntryViewModel* UPaymentAuditEntryViewModelLibrary::Make(FString Pr
 
 void UPaymentAuditEntryViewModelLibrary::Break(const UPaymentAuditEntryViewModel* Serializable, FString& Providerid, int64& Txid, FString& Providername, FString& Txstate, UPaymentDetailsEntryViewModel*& Details, int64& Gt, TArray<UPaymentHistoryEntryViewModel*>& History, TArray<UEntitlementGenerator*>& Entitlements, FOptionalString& Version, FOptionalInt64& Updated, FOptionalString& ReplayGuardValue, FOptionalInt64& Created, FOptionalArrayOfItemCreateRequestBody& ObtainItems, FOptionalArrayOfCurrencyChange& ObtainCurrency)
 {
-	Providerid = Serializable->Providerid;
-	Txid = Serializable->Txid;
-	Providername = Serializable->Providername;
-	Txstate = Serializable->Txstate;
-	Details = Serializable->Details;
-	Gt = Serializable->Gt;
-	History = Serializable->History;
-	Entitlements = Serializable->Entitlements;
-	Version = Serializable->Version;
-	Updated = Serializable->Updated;
-	ReplayGuardValue = Serializable->ReplayGuardValue;
-	Created = Serializable->Created;
-	ObtainItems = Serializable->ObtainItems;
-	ObtainCurrency = Serializable->ObtainCurrency;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Providerid = Serializable->Providerid;
+		Txid = Serializable->Txid;
+		Providername = Serializable->Providername;
+		Txstate = Serializable->Txstate;
+		Details = Serializable->Details;
+		Gt = Serializable->Gt;
+		History = Serializable->History;
+		Entitlements = Serializable->Entitlements;
+		Version = Serializable->Version;
+		Updated = Serializable->Updated;
+		ReplayGuardValue = Serializable->ReplayGuardValue;
+		Created = Serializable->Created;
+		ObtainItems = Serializable->ObtainItems;
+		ObtainCurrency = Serializable->ObtainCurrency;
+	}
 		
 }
 

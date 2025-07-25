@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/CustomerViewLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UCustomerViewLibrary::CustomerViewToJsonString(const UCustomerView* Serializable, const bool Pretty)
@@ -35,10 +36,13 @@ UCustomerView* UCustomerViewLibrary::Make(FBeamCid Cid, FString Name, TArray<UPr
 
 void UCustomerViewLibrary::Break(const UCustomerView* Serializable, FBeamCid& Cid, FString& Name, TArray<UProjectView*>& Projects, FOptionalString& Alias)
 {
-	Cid = Serializable->Cid;
-	Name = Serializable->Name;
-	Projects = Serializable->Projects;
-	Alias = Serializable->Alias;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Cid = Serializable->Cid;
+		Name = Serializable->Name;
+		Projects = Serializable->Projects;
+		Alias = Serializable->Alias;
+	}
 		
 }
 

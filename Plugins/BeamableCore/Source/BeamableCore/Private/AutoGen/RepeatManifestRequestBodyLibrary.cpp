@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/RepeatManifestRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString URepeatManifestRequestBodyLibrary::RepeatManifestRequestBodyToJsonString(const URepeatManifestRequestBody* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ URepeatManifestRequestBody* URepeatManifestRequestBodyLibrary::Make(FString Uid,
 
 void URepeatManifestRequestBodyLibrary::Break(const URepeatManifestRequestBody* Serializable, FString& Uid)
 {
-	Uid = Serializable->Uid;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Uid = Serializable->Uid;
+	}
 		
 }
 

@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/ContextInfoLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UContextInfoLibrary::ContextInfoToJsonString(const UContextInfo* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ UContextInfo* UContextInfoLibrary::Make(FOptionalString Platform, FOptionalStrin
 
 void UContextInfoLibrary::Break(const UContextInfo* Serializable, FOptionalString& Platform, FOptionalString& Device)
 {
-	Platform = Serializable->Platform;
-	Device = Serializable->Device;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Platform = Serializable->Platform;
+		Device = Serializable->Device;
+	}
 		
 }
 

@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/GroupRoleLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UGroupRoleLibrary::GroupRoleToJsonString(const UGroupRole* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ UGroupRole* UGroupRoleLibrary::Make(FString Name, TArray<FString> Permissions, U
 
 void UGroupRoleLibrary::Break(const UGroupRole* Serializable, FString& Name, TArray<FString>& Permissions)
 {
-	Name = Serializable->Name;
-	Permissions = Serializable->Permissions;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Name = Serializable->Name;
+		Permissions = Serializable->Permissions;
+	}
 		
 }
 

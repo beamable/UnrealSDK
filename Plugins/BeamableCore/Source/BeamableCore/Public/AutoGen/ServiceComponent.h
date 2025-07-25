@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
-#include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
+#include "Serialization/BeamJsonUtils.h"
 
 #include "ServiceComponent.generated.h"
 
@@ -14,7 +14,7 @@ class BEAMABLECORE_API UServiceComponent : public UObject, public IBeamJsonSeria
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Name", Category="Beam")
-	FOptionalString Name = {};
+	FString Name = {};
 
 	
 

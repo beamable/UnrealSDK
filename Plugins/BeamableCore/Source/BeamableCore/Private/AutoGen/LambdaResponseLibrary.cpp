@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/LambdaResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString ULambdaResponseLibrary::LambdaResponseToJsonString(const ULambdaResponse* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ ULambdaResponse* ULambdaResponseLibrary::Make(int32 StatusCode, FOptionalString 
 
 void ULambdaResponseLibrary::Break(const ULambdaResponse* Serializable, int32& StatusCode, FOptionalString& Body)
 {
-	StatusCode = Serializable->StatusCode;
-	Body = Serializable->Body;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		StatusCode = Serializable->StatusCode;
+		Body = Serializable->Body;
+	}
 		
 }
 

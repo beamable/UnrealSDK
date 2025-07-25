@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/OnlineStatusQueryLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UOnlineStatusQueryLibrary::OnlineStatusQueryToJsonString(const UOnlineStatusQuery* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UOnlineStatusQuery* UOnlineStatusQueryLibrary::Make(FOptionalArrayOfString Playe
 
 void UOnlineStatusQueryLibrary::Break(const UOnlineStatusQuery* Serializable, FOptionalArrayOfString& PlayerIds)
 {
-	PlayerIds = Serializable->PlayerIds;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		PlayerIds = Serializable->PlayerIds;
+	}
 		
 }
 

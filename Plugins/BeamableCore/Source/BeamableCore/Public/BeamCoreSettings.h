@@ -156,4 +156,25 @@ public:
 	
 	UFUNCTION(BlueprintCallable)
 	FUserSlot GetOwnerPlayerSlot() const { return FUserSlot{RuntimeUserSlots[0]}; }
+
+	/**
+	 * When this is false, our code-generated Break nodes for IBeamJsonSerializableUObject implementations will assume that the object is NEVER null.
+	 * If this is true, it'll silently be a no-op.
+	 */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Json Serialization")
+	bool bSilenceBreakGuardEnsures = false;
+
+	/**
+	 * Called in all IBeamJsonSerializableUObject.  
+	 */
+	bool BreakGuard(const IBeamJsonSerializableUObject* Serializable) const
+	{
+		if (bSilenceBreakGuardEnsures)
+		{
+			return Serializable != nullptr;		
+		}
+		
+		return ensureAlwaysMsgf(Serializable, 
+			TEXT("Trying to break a null Beam Json Serializable object. If you don't care and just want to skip nulls, you can disable this ensure globally at Project Settings -> Beamable Core -> bSilenceBreakGuardEnsures."));	
+	}
 };

@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/EventRewardContentLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UEventRewardContentLibrary::EventRewardContentToJsonString(const UEventRewardContent* Serializable, const bool Pretty)
@@ -36,11 +37,14 @@ UEventRewardContent* UEventRewardContentLibrary::Make(double Min, FOptionalDoubl
 
 void UEventRewardContentLibrary::Break(const UEventRewardContent* Serializable, double& Min, FOptionalDouble& Max, FOptionalArrayOfEventInventoryRewardCurrency& Currencies, FOptionalArrayOfEventInventoryRewardItem& Items, FOptionalArrayOfEventRewardObtain& Obtain)
 {
-	Min = Serializable->Min;
-	Max = Serializable->Max;
-	Currencies = Serializable->Currencies;
-	Items = Serializable->Items;
-	Obtain = Serializable->Obtain;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Min = Serializable->Min;
+		Max = Serializable->Max;
+		Currencies = Serializable->Currencies;
+		Items = Serializable->Items;
+		Obtain = Serializable->Obtain;
+	}
 		
 }
 

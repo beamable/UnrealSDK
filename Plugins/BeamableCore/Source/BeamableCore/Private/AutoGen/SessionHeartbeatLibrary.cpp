@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/SessionHeartbeatLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString USessionHeartbeatLibrary::SessionHeartbeatToJsonString(const USessionHeartbeat* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ USessionHeartbeat* USessionHeartbeatLibrary::Make(int64 Gt, FOptionalInt64 Heart
 
 void USessionHeartbeatLibrary::Break(const USessionHeartbeat* Serializable, int64& Gt, FOptionalInt64& Heartbeat)
 {
-	Gt = Serializable->Gt;
-	Heartbeat = Serializable->Heartbeat;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Gt = Serializable->Gt;
+		Heartbeat = Serializable->Heartbeat;
+	}
 		
 }
 

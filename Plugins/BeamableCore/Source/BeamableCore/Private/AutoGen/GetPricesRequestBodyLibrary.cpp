@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/GetPricesRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UGetPricesRequestBodyLibrary::GetPricesRequestBodyToJsonString(const UGetPricesRequestBody* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UGetPricesRequestBody* UGetPricesRequestBodyLibrary::Make(int64 SteamId, UObject
 
 void UGetPricesRequestBodyLibrary::Break(const UGetPricesRequestBody* Serializable, int64& SteamId)
 {
-	SteamId = Serializable->SteamId;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		SteamId = Serializable->SteamId;
+	}
 		
 }
 

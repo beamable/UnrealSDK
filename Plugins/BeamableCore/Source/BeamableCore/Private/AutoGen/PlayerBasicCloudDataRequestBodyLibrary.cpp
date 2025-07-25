@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/PlayerBasicCloudDataRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UPlayerBasicCloudDataRequestBodyLibrary::PlayerBasicCloudDataRequestBodyToJsonString(const UPlayerBasicCloudDataRequestBody* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UPlayerBasicCloudDataRequestBody* UPlayerBasicCloudDataRequestBodyLibrary::Make(
 
 void UPlayerBasicCloudDataRequestBodyLibrary::Break(const UPlayerBasicCloudDataRequestBody* Serializable, FOptionalInt64& PlayerId)
 {
-	PlayerId = Serializable->PlayerId;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		PlayerId = Serializable->PlayerId;
+	}
 		
 }
 

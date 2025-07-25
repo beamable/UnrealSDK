@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/ServiceStatusLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UServiceStatusLibrary::ServiceStatusToJsonString(const UServiceStatus* Serializable, const bool Pretty)
@@ -22,7 +23,7 @@ FString UServiceStatusLibrary::ServiceStatusToJsonString(const UServiceStatus* S
 	return Result;
 }	
 
-UServiceStatus* UServiceStatusLibrary::Make(FOptionalBool bIsCurrent, FOptionalBool bRunning, FOptionalString ServiceName, FOptionalString ImageId, FOptionalArrayOfServiceDependencyReference ServiceDependencyReferences, UObject* Outer)
+UServiceStatus* UServiceStatusLibrary::Make(bool bIsCurrent, bool bRunning, FString ServiceName, FString ImageId, FOptionalArrayOfServiceDependencyReference ServiceDependencyReferences, UObject* Outer)
 {
 	auto Serializable = NewObject<UServiceStatus>(Outer);
 	Serializable->bIsCurrent = bIsCurrent;
@@ -34,13 +35,16 @@ UServiceStatus* UServiceStatusLibrary::Make(FOptionalBool bIsCurrent, FOptionalB
 	return Serializable;
 }
 
-void UServiceStatusLibrary::Break(const UServiceStatus* Serializable, FOptionalBool& bIsCurrent, FOptionalBool& bRunning, FOptionalString& ServiceName, FOptionalString& ImageId, FOptionalArrayOfServiceDependencyReference& ServiceDependencyReferences)
+void UServiceStatusLibrary::Break(const UServiceStatus* Serializable, bool& bIsCurrent, bool& bRunning, FString& ServiceName, FString& ImageId, FOptionalArrayOfServiceDependencyReference& ServiceDependencyReferences)
 {
-	bIsCurrent = Serializable->bIsCurrent;
-	bRunning = Serializable->bRunning;
-	ServiceName = Serializable->ServiceName;
-	ImageId = Serializable->ImageId;
-	ServiceDependencyReferences = Serializable->ServiceDependencyReferences;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		bIsCurrent = Serializable->bIsCurrent;
+		bRunning = Serializable->bRunning;
+		ServiceName = Serializable->ServiceName;
+		ImageId = Serializable->ImageId;
+		ServiceDependencyReferences = Serializable->ServiceDependencyReferences;
+	}
 		
 }
 

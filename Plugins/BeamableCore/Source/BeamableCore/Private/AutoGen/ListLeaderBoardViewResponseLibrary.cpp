@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/ListLeaderBoardViewResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UListLeaderBoardViewResponseLibrary::ListLeaderBoardViewResponseToJsonString(const UListLeaderBoardViewResponse* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ UListLeaderBoardViewResponse* UListLeaderBoardViewResponseLibrary::Make(FString 
 
 void UListLeaderBoardViewResponseLibrary::Break(const UListLeaderBoardViewResponse* Serializable, FString& Result, TArray<ULeaderBoardView*>& Lbs)
 {
-	Result = Serializable->Result;
-	Lbs = Serializable->Lbs;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Result = Serializable->Result;
+		Lbs = Serializable->Lbs;
+	}
 		
 }
 

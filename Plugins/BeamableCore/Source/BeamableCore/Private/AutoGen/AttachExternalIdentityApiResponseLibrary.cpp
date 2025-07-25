@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/AttachExternalIdentityApiResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UAttachExternalIdentityApiResponseLibrary::AttachExternalIdentityApiResponseToJsonString(const UAttachExternalIdentityApiResponse* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ UAttachExternalIdentityApiResponse* UAttachExternalIdentityApiResponseLibrary::M
 
 void UAttachExternalIdentityApiResponseLibrary::Break(const UAttachExternalIdentityApiResponse* Serializable, FString& Result, FOptionalString& ChallengeToken)
 {
-	Result = Serializable->Result;
-	ChallengeToken = Serializable->ChallengeToken;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Result = Serializable->Result;
+		ChallengeToken = Serializable->ChallengeToken;
+	}
 		
 }
 

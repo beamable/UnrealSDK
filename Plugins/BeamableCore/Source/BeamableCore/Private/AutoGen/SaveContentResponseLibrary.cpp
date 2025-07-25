@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/SaveContentResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString USaveContentResponseLibrary::SaveContentResponseToJsonString(const USaveContentResponse* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ USaveContentResponse* USaveContentResponseLibrary::Make(TArray<UContentReference
 
 void USaveContentResponseLibrary::Break(const USaveContentResponse* Serializable, TArray<UContentReference*>& Content)
 {
-	Content = Serializable->Content;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Content = Serializable->Content;
+	}
 		
 }
 

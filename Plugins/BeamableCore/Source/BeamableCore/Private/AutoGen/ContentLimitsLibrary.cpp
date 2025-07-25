@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/ContentLimitsLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UContentLimitsLibrary::ContentLimitsToJsonString(const UContentLimits* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UContentLimits* UContentLimitsLibrary::Make(FOptionalInt32 MaxDistinctContentIds
 
 void UContentLimitsLibrary::Break(const UContentLimits* Serializable, FOptionalInt32& MaxDistinctContentIds)
 {
-	MaxDistinctContentIds = Serializable->MaxDistinctContentIds;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		MaxDistinctContentIds = Serializable->MaxDistinctContentIds;
+	}
 		
 }
 

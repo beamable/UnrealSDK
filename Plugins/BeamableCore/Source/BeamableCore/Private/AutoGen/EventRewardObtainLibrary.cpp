@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/EventRewardObtainLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UEventRewardObtainLibrary::EventRewardObtainToJsonString(const UEventRewardObtain* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ UEventRewardObtain* UEventRewardObtainLibrary::Make(FString Symbol, int32 Count,
 
 void UEventRewardObtainLibrary::Break(const UEventRewardObtain* Serializable, FString& Symbol, int32& Count)
 {
-	Symbol = Serializable->Symbol;
-	Count = Serializable->Count;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Symbol = Serializable->Symbol;
+		Count = Serializable->Count;
+	}
 		
 }
 

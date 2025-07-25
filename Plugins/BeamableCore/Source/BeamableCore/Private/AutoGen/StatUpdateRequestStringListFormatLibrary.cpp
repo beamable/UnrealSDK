@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/StatUpdateRequestStringListFormatLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UStatUpdateRequestStringListFormatLibrary::StatUpdateRequestStringListFormatToJsonString(const UStatUpdateRequestStringListFormat* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UStatUpdateRequestStringListFormat* UStatUpdateRequestStringListFormatLibrary::M
 
 void UStatUpdateRequestStringListFormatLibrary::Break(const UStatUpdateRequestStringListFormat* Serializable, FOptionalArrayOfStatStringListEntry& Set)
 {
-	Set = Serializable->Set;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Set = Serializable->Set;
+	}
 		
 }
 

@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/EventRuleLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UEventRuleLibrary::EventRuleToJsonString(const UEventRule* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ UEventRule* UEventRuleLibrary::Make(FString Rule, FString Value, UObject* Outer)
 
 void UEventRuleLibrary::Break(const UEventRule* Serializable, FString& Rule, FString& Value)
 {
-	Rule = Serializable->Rule;
-	Value = Serializable->Value;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Rule = Serializable->Rule;
+		Value = Serializable->Value;
+	}
 		
 }
 

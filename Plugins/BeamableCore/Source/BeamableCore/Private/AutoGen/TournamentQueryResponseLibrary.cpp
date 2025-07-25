@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/TournamentQueryResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UTournamentQueryResponseLibrary::TournamentQueryResponseToJsonString(const UTournamentQueryResponse* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UTournamentQueryResponse* UTournamentQueryResponseLibrary::Make(TArray<UTourname
 
 void UTournamentQueryResponseLibrary::Break(const UTournamentQueryResponse* Serializable, TArray<UTournamentClientView*>& Tournaments)
 {
-	Tournaments = Serializable->Tournaments;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Tournaments = Serializable->Tournaments;
+	}
 		
 }
 

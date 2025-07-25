@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/MicroserviceRegistrationRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UMicroserviceRegistrationRequestBodyLibrary::MicroserviceRegistrationRequestBodyToJsonString(const UMicroserviceRegistrationRequestBody* Serializable, const bool Pretty)
@@ -35,10 +36,13 @@ UMicroserviceRegistrationRequestBody* UMicroserviceRegistrationRequestBodyLibrar
 
 void UMicroserviceRegistrationRequestBodyLibrary::Break(const UMicroserviceRegistrationRequestBody* Serializable, FString& ServiceName, FOptionalBool& bTrafficFilterEnabled, FOptionalString& RoutingKey, FOptionalArrayOfSupportedFederation& Federation)
 {
-	ServiceName = Serializable->ServiceName;
-	bTrafficFilterEnabled = Serializable->bTrafficFilterEnabled;
-	RoutingKey = Serializable->RoutingKey;
-	Federation = Serializable->Federation;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		ServiceName = Serializable->ServiceName;
+		bTrafficFilterEnabled = Serializable->bTrafficFilterEnabled;
+		RoutingKey = Serializable->RoutingKey;
+		Federation = Serializable->Federation;
+	}
 		
 }
 

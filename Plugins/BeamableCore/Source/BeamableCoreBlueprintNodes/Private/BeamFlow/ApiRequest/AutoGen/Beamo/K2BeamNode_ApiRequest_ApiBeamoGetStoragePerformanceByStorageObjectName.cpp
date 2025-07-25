@@ -6,7 +6,7 @@
 
 #include "BeamableCore/Public/AutoGen/SubSystems/BeamBeamoApi.h"
 #include "BeamableCore/Public/AutoGen/SubSystems/Beamo/ApiBeamoGetStoragePerformanceByStorageObjectNameRequest.h"
-#include "BeamableCore/Public/AutoGen/StoragePerformance.h"
+#include "BeamableCore/Public/AutoGen/BeamoV2StoragePerformance.h"
 
 #define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_ApiBeamoGetStoragePerformanceByStorageObjectName"
 
@@ -49,7 +49,7 @@ UClass* UK2BeamNode_ApiRequest_ApiBeamoGetStoragePerformanceByStorageObjectName:
 
 UClass* UK2BeamNode_ApiRequest_ApiBeamoGetStoragePerformanceByStorageObjectName::GetResponseClass() const
 {
-	return UStoragePerformance::StaticClass();
+	return UBeamoV2StoragePerformance::StaticClass();
 }
 
 FString UK2BeamNode_ApiRequest_ApiBeamoGetStoragePerformanceByStorageObjectName::GetRequestSuccessDelegateName() const

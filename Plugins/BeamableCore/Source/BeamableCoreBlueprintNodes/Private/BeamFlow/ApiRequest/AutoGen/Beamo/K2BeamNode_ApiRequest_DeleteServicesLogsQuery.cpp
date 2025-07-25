@@ -6,7 +6,7 @@
 
 #include "BeamableCore/Public/AutoGen/SubSystems/BeamBeamoApi.h"
 #include "BeamableCore/Public/AutoGen/SubSystems/Beamo/DeleteServicesLogsQueryRequest.h"
-#include "BeamableCore/Public/AutoGen/ApiBeamoServicesLogsQueryDeleteBeamoResponse.h"
+#include "BeamableCore/Public/AutoGen/BeamoV2ApiBeamoServicesLogsQueryDeleteBeamoResponse.h"
 
 #define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_DeleteServicesLogsQuery"
 
@@ -49,7 +49,7 @@ UClass* UK2BeamNode_ApiRequest_DeleteServicesLogsQuery::GetRequestClass() const
 
 UClass* UK2BeamNode_ApiRequest_DeleteServicesLogsQuery::GetResponseClass() const
 {
-	return UApiBeamoServicesLogsQueryDeleteBeamoResponse::StaticClass();
+	return UBeamoV2ApiBeamoServicesLogsQueryDeleteBeamoResponse::StaticClass();
 }
 
 FString UK2BeamNode_ApiRequest_DeleteServicesLogsQuery::GetRequestSuccessDelegateName() const

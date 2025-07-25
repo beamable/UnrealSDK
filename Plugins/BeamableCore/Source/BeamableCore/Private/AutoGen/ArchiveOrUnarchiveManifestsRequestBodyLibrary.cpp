@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/ArchiveOrUnarchiveManifestsRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UArchiveOrUnarchiveManifestsRequestBodyLibrary::ArchiveOrUnarchiveManifestsRequestBodyToJsonString(const UArchiveOrUnarchiveManifestsRequestBody* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UArchiveOrUnarchiveManifestsRequestBody* UArchiveOrUnarchiveManifestsRequestBody
 
 void UArchiveOrUnarchiveManifestsRequestBodyLibrary::Break(const UArchiveOrUnarchiveManifestsRequestBody* Serializable, TArray<FBeamContentManifestId>& ManifestIds)
 {
-	ManifestIds = Serializable->ManifestIds;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		ManifestIds = Serializable->ManifestIds;
+	}
 		
 }
 

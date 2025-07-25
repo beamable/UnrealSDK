@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/EventClaimResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UEventClaimResponseLibrary::EventClaimResponseToJsonString(const UEventClaimResponse* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ UEventClaimResponse* UEventClaimResponseLibrary::Make(UEventPlayerStateView* Vie
 
 void UEventClaimResponseLibrary::Break(const UEventClaimResponse* Serializable, UEventPlayerStateView*& View, FString& GameRspJson)
 {
-	View = Serializable->View;
-	GameRspJson = Serializable->GameRspJson;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		View = Serializable->View;
+		GameRspJson = Serializable->GameRspJson;
+	}
 		
 }
 

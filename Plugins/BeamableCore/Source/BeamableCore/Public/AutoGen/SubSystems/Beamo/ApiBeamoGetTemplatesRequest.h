@@ -7,7 +7,7 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-#include "BeamableCore/Public/AutoGen/GetTemplatesResponse.h"
+#include "BeamableCore/Public/AutoGen/BeamoV2GetTemplatesResponse.h"
 
 #include "ApiBeamoGetTemplatesRequest.generated.h"
 
@@ -39,7 +39,7 @@ public:
 };
 
 UDELEGATE(BlueprintAuthorityOnly)
-DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnApiBeamoGetTemplatesSuccess, FBeamRequestContext, Context, UApiBeamoGetTemplatesRequest*, Request, UGetTemplatesResponse*, Response);
+DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnApiBeamoGetTemplatesSuccess, FBeamRequestContext, Context, UApiBeamoGetTemplatesRequest*, Request, UBeamoV2GetTemplatesResponse*, Response);
 
 UDELEGATE(BlueprintAuthorityOnly)
 DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnApiBeamoGetTemplatesError, FBeamRequestContext, Context, UApiBeamoGetTemplatesRequest*, Request, FBeamErrorResponse, Error);
@@ -47,5 +47,5 @@ DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnApiBeamoGetTemplatesError, FBeamRequestC
 UDELEGATE(BlueprintAuthorityOnly)
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FOnApiBeamoGetTemplatesComplete, FBeamRequestContext, Context, UApiBeamoGetTemplatesRequest*, Request);
 
-using FApiBeamoGetTemplatesFullResponse = FBeamFullResponse<UApiBeamoGetTemplatesRequest*, UGetTemplatesResponse*>;
+using FApiBeamoGetTemplatesFullResponse = FBeamFullResponse<UApiBeamoGetTemplatesRequest*, UBeamoV2GetTemplatesResponse*>;
 DECLARE_DELEGATE_OneParam(FOnApiBeamoGetTemplatesFullResponse, FApiBeamoGetTemplatesFullResponse);

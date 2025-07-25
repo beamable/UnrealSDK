@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/InviteLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UInviteLibrary::InviteToJsonString(const UInvite* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ UInvite* UInviteLibrary::Make(FBeamGamerTag PlayerId, EBeamInvitationDirection D
 
 void UInviteLibrary::Break(const UInvite* Serializable, FBeamGamerTag& PlayerId, EBeamInvitationDirection& Direction)
 {
-	PlayerId = Serializable->PlayerId;
-	Direction = Serializable->Direction;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		PlayerId = Serializable->PlayerId;
+		Direction = Serializable->Direction;
+	}
 		
 }
 

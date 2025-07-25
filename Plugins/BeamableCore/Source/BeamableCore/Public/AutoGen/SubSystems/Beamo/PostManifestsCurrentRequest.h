@@ -7,7 +7,7 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-#include "BeamableCore/Public/AutoGen/EmptyMessage.h"
+#include "BeamableCore/Public/AutoGen/BeamoV2EmptyMessage.h"
 
 #include "PostManifestsCurrentRequest.generated.h"
 
@@ -39,7 +39,7 @@ public:
 };
 
 UDELEGATE(BlueprintAuthorityOnly)
-DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnPostManifestsCurrentSuccess, FBeamRequestContext, Context, UPostManifestsCurrentRequest*, Request, UEmptyMessage*, Response);
+DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnPostManifestsCurrentSuccess, FBeamRequestContext, Context, UPostManifestsCurrentRequest*, Request, UBeamoV2EmptyMessage*, Response);
 
 UDELEGATE(BlueprintAuthorityOnly)
 DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnPostManifestsCurrentError, FBeamRequestContext, Context, UPostManifestsCurrentRequest*, Request, FBeamErrorResponse, Error);
@@ -47,5 +47,5 @@ DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnPostManifestsCurrentError, FBeamRequestC
 UDELEGATE(BlueprintAuthorityOnly)
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FOnPostManifestsCurrentComplete, FBeamRequestContext, Context, UPostManifestsCurrentRequest*, Request);
 
-using FPostManifestsCurrentFullResponse = FBeamFullResponse<UPostManifestsCurrentRequest*, UEmptyMessage*>;
+using FPostManifestsCurrentFullResponse = FBeamFullResponse<UPostManifestsCurrentRequest*, UBeamoV2EmptyMessage*>;
 DECLARE_DELEGATE_OneParam(FOnPostManifestsCurrentFullResponse, FPostManifestsCurrentFullResponse);

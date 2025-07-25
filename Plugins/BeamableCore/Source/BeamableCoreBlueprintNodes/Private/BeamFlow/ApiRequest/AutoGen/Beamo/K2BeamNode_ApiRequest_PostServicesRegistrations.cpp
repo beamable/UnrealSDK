@@ -6,7 +6,7 @@
 
 #include "BeamableCore/Public/AutoGen/SubSystems/BeamBeamoApi.h"
 #include "BeamableCore/Public/AutoGen/SubSystems/Beamo/PostServicesRegistrationsRequest.h"
-#include "BeamableCore/Public/AutoGen/ServiceRegistrationResponse.h"
+#include "BeamableCore/Public/AutoGen/BeamoV2ServiceRegistrationResponse.h"
 
 #define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_PostServicesRegistrations"
 
@@ -49,7 +49,7 @@ UClass* UK2BeamNode_ApiRequest_PostServicesRegistrations::GetRequestClass() cons
 
 UClass* UK2BeamNode_ApiRequest_PostServicesRegistrations::GetResponseClass() const
 {
-	return UServiceRegistrationResponse::StaticClass();
+	return UBeamoV2ServiceRegistrationResponse::StaticClass();
 }
 
 FString UK2BeamNode_ApiRequest_PostServicesRegistrations::GetRequestSuccessDelegateName() const

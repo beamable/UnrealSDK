@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/GetManifestsResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UGetManifestsResponseLibrary::GetManifestsResponseToJsonString(const UGetManifestsResponse* Serializable, const bool Pretty)
@@ -22,7 +23,7 @@ FString UGetManifestsResponseLibrary::GetManifestsResponseToJsonString(const UGe
 	return Result;
 }	
 
-UGetManifestsResponse* UGetManifestsResponseLibrary::Make(FOptionalArrayOfBeamoActorManifest Manifests, UObject* Outer)
+UGetManifestsResponse* UGetManifestsResponseLibrary::Make(TArray<UContentBasicManifest*> Manifests, UObject* Outer)
 {
 	auto Serializable = NewObject<UGetManifestsResponse>(Outer);
 	Serializable->Manifests = Manifests;
@@ -30,9 +31,12 @@ UGetManifestsResponse* UGetManifestsResponseLibrary::Make(FOptionalArrayOfBeamoA
 	return Serializable;
 }
 
-void UGetManifestsResponseLibrary::Break(const UGetManifestsResponse* Serializable, FOptionalArrayOfBeamoActorManifest& Manifests)
+void UGetManifestsResponseLibrary::Break(const UGetManifestsResponse* Serializable, TArray<UContentBasicManifest*>& Manifests)
 {
-	Manifests = Serializable->Manifests;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Manifests = Serializable->Manifests;
+	}
 		
 }
 

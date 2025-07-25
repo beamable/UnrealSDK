@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/ItemDeleteRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UItemDeleteRequestBodyLibrary::ItemDeleteRequestBodyToJsonString(const UItemDeleteRequestBody* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ UItemDeleteRequestBody* UItemDeleteRequestBodyLibrary::Make(FString ContentId, i
 
 void UItemDeleteRequestBodyLibrary::Break(const UItemDeleteRequestBody* Serializable, FString& ContentId, int64& Id)
 {
-	ContentId = Serializable->ContentId;
-	Id = Serializable->Id;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		ContentId = Serializable->ContentId;
+		Id = Serializable->Id;
+	}
 		
 }
 

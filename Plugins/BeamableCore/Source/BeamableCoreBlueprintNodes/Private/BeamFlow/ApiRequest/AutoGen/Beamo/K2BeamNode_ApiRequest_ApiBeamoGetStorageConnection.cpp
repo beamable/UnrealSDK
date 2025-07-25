@@ -6,7 +6,7 @@
 
 #include "BeamableCore/Public/AutoGen/SubSystems/BeamBeamoApi.h"
 #include "BeamableCore/Public/AutoGen/SubSystems/Beamo/ApiBeamoGetStorageConnectionRequest.h"
-#include "BeamableCore/Public/AutoGen/ConnectionStringResponse.h"
+#include "BeamableCore/Public/AutoGen/BeamoV2ConnectionStringResponse.h"
 
 #define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_ApiBeamoGetStorageConnection"
 
@@ -49,7 +49,7 @@ UClass* UK2BeamNode_ApiRequest_ApiBeamoGetStorageConnection::GetRequestClass() c
 
 UClass* UK2BeamNode_ApiRequest_ApiBeamoGetStorageConnection::GetResponseClass() const
 {
-	return UConnectionStringResponse::StaticClass();
+	return UBeamoV2ConnectionStringResponse::StaticClass();
 }
 
 FString UK2BeamNode_ApiRequest_ApiBeamoGetStorageConnection::GetRequestSuccessDelegateName() const

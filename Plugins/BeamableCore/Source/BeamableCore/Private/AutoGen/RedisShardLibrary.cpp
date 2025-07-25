@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/RedisShardLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString URedisShardLibrary::RedisShardToJsonString(const URedisShard* Serializable, const bool Pretty)
@@ -34,9 +35,12 @@ URedisShard* URedisShardLibrary::Make(int32 ShardId, FString MasterHost, TArray<
 
 void URedisShardLibrary::Break(const URedisShard* Serializable, int32& ShardId, FString& MasterHost, TArray<FString>& SlaveHosts)
 {
-	ShardId = Serializable->ShardId;
-	MasterHost = Serializable->MasterHost;
-	SlaveHosts = Serializable->SlaveHosts;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		ShardId = Serializable->ShardId;
+		MasterHost = Serializable->MasterHost;
+		SlaveHosts = Serializable->SlaveHosts;
+	}
 		
 }
 

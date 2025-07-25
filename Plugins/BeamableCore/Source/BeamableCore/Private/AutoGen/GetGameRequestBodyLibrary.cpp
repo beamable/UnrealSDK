@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/GetGameRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UGetGameRequestBodyLibrary::GetGameRequestBodyToJsonString(const UGetGameRequestBody* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UGetGameRequestBody* UGetGameRequestBodyLibrary::Make(FBeamPid RootPID, UObject*
 
 void UGetGameRequestBodyLibrary::Break(const UGetGameRequestBody* Serializable, FBeamPid& RootPID)
 {
-	RootPID = Serializable->RootPID;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		RootPID = Serializable->RootPID;
+	}
 		
 }
 

@@ -27,7 +27,7 @@ void UPostManifestsRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostManifestsRequest* UPostManifestsRequest::Make(FOptionalBool _bAutoDeploy, FOptionalString _Comments, FOptionalArrayOfBeamoActorServiceReference _Manifest, FOptionalArrayOfServiceStorageReference _StorageReferences, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
+UPostManifestsRequest* UPostManifestsRequest::Make(FOptionalBool _bAutoDeploy, FOptionalString _Comments, FOptionalArrayOfBeamoV2ServiceReference _Manifest, FOptionalArrayOfBeamoV2ServiceStorageReference _StorageReferences, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPostManifestsRequest* Req = NewObject<UPostManifestsRequest>(RequestOwner);
 	Req->CustomHeaders = TMap{CustomHeaders};
@@ -36,7 +36,7 @@ UPostManifestsRequest* UPostManifestsRequest::Make(FOptionalBool _bAutoDeploy, F
 	
 	
 	// Makes a body and fill up with parameters (Blank if no body parameters exist)
-	Req->Body = NewObject<UPostManifestRequestBody>(Req);
+	Req->Body = NewObject<UBeamoV2PostManifestRequestBody>(Req);
 	Req->Body->bAutoDeploy = _bAutoDeploy;
 	Req->Body->Comments = _Comments;
 	Req->Body->Manifest = _Manifest;

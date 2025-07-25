@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/RevokeTokenRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString URevokeTokenRequestBodyLibrary::RevokeTokenRequestBodyToJsonString(const URevokeTokenRequestBody* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ URevokeTokenRequestBody* URevokeTokenRequestBodyLibrary::Make(FString Token, UOb
 
 void URevokeTokenRequestBodyLibrary::Break(const URevokeTokenRequestBody* Serializable, FString& Token)
 {
-	Token = Serializable->Token;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Token = Serializable->Token;
+	}
 		
 }
 

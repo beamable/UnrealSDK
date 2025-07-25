@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/ReportPurchaseRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UReportPurchaseRequestBodyLibrary::ReportPurchaseRequestBodyToJsonString(const UReportPurchaseRequestBody* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ UReportPurchaseRequestBody* UReportPurchaseRequestBodyLibrary::Make(FString List
 
 void UReportPurchaseRequestBodyLibrary::Break(const UReportPurchaseRequestBody* Serializable, FString& ListingId, FOptionalBool& bFree)
 {
-	ListingId = Serializable->ListingId;
-	bFree = Serializable->bFree;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		ListingId = Serializable->ListingId;
+		bFree = Serializable->bFree;
+	}
 		
 }
 

@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/RemoveLaunchMessageRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString URemoveLaunchMessageRequestBodyLibrary::RemoveLaunchMessageRequestBodyToJsonString(const URemoveLaunchMessageRequestBody* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ URemoveLaunchMessageRequestBody* URemoveLaunchMessageRequestBodyLibrary::Make(FS
 
 void URemoveLaunchMessageRequestBodyLibrary::Break(const URemoveLaunchMessageRequestBody* Serializable, FString& File)
 {
-	File = Serializable->File;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		File = Serializable->File;
+	}
 		
 }
 

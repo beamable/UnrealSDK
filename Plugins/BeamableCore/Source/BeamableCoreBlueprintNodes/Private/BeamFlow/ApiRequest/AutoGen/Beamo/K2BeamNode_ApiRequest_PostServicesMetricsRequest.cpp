@@ -6,7 +6,7 @@
 
 #include "BeamableCore/Public/AutoGen/SubSystems/BeamBeamoApi.h"
 #include "BeamableCore/Public/AutoGen/SubSystems/Beamo/PostServicesMetricsRequestRequest.h"
-#include "BeamableCore/Public/AutoGen/SignedRequestBody.h"
+#include "BeamableCore/Public/AutoGen/BeamoV2SignedRequestBody.h"
 
 #define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_PostServicesMetricsRequest"
 
@@ -49,7 +49,7 @@ UClass* UK2BeamNode_ApiRequest_PostServicesMetricsRequest::GetRequestClass() con
 
 UClass* UK2BeamNode_ApiRequest_PostServicesMetricsRequest::GetResponseClass() const
 {
-	return USignedRequestBody::StaticClass();
+	return UBeamoV2SignedRequestBody::StaticClass();
 }
 
 FString UK2BeamNode_ApiRequest_PostServicesMetricsRequest::GetRequestSuccessDelegateName() const

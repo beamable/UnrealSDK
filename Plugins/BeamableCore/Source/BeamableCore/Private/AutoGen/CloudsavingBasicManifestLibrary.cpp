@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/CloudsavingBasicManifestLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UCloudsavingBasicManifestLibrary::CloudsavingBasicManifestToJsonString(const UCloudsavingBasicManifest* Serializable, const bool Pretty)
@@ -35,10 +36,13 @@ UCloudsavingBasicManifest* UCloudsavingBasicManifestLibrary::Make(bool bReplacem
 
 void UCloudsavingBasicManifestLibrary::Break(const UCloudsavingBasicManifest* Serializable, bool& bReplacement, FString& Id, int64& Created, TArray<UCloudsavingBasicReference*>& Manifest)
 {
-	bReplacement = Serializable->bReplacement;
-	Id = Serializable->Id;
-	Created = Serializable->Created;
-	Manifest = Serializable->Manifest;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		bReplacement = Serializable->bReplacement;
+		Id = Serializable->Id;
+		Created = Serializable->Created;
+		Manifest = Serializable->Manifest;
+	}
 		
 }
 

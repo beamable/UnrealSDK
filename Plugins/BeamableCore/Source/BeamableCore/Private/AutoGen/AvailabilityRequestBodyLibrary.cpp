@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/AvailabilityRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UAvailabilityRequestBodyLibrary::AvailabilityRequestBodyToJsonString(const UAvailabilityRequestBody* Serializable, const bool Pretty)
@@ -35,10 +36,13 @@ UAvailabilityRequestBody* UAvailabilityRequestBodyLibrary::Make(EBeamGroupType T
 
 void UAvailabilityRequestBodyLibrary::Break(const UAvailabilityRequestBody* Serializable, EBeamGroupType& Type, FOptionalBool& bSubGroup, FOptionalString& Name, FOptionalString& Tag)
 {
-	Type = Serializable->Type;
-	bSubGroup = Serializable->bSubGroup;
-	Name = Serializable->Name;
-	Tag = Serializable->Tag;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Type = Serializable->Type;
+		bSubGroup = Serializable->bSubGroup;
+		Name = Serializable->Name;
+		Tag = Serializable->Tag;
+	}
 		
 }
 

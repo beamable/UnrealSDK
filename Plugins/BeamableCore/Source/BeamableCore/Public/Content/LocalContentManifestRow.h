@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "AutoGen/Rows/ClientContentInfoTableRow.h"
+
 #include "BeamBackend/SemanticTypes/BeamContentManifestId.h"
 #include "Serialization/BeamJsonUtils.h"
 #include "AutoGen/ContentDefinition.h"

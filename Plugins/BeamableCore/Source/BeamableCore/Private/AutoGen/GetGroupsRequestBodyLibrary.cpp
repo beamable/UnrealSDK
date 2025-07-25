@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/GetGroupsRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UGetGroupsRequestBodyLibrary::GetGroupsRequestBodyToJsonString(const UGetGroupsRequestBody* Serializable, const bool Pretty)
@@ -37,12 +38,15 @@ UGetGroupsRequestBody* UGetGroupsRequestBodyLibrary::Make(FString TournamentId, 
 
 void UGetGroupsRequestBodyLibrary::Break(const UGetGroupsRequestBody* Serializable, FString& TournamentId, FOptionalInt32& Max, FOptionalInt64& Focus, FOptionalInt32& Cycle, FOptionalInt32& From, FOptionalString& ContentId)
 {
-	TournamentId = Serializable->TournamentId;
-	Max = Serializable->Max;
-	Focus = Serializable->Focus;
-	Cycle = Serializable->Cycle;
-	From = Serializable->From;
-	ContentId = Serializable->ContentId;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		TournamentId = Serializable->TournamentId;
+		Max = Serializable->Max;
+		Focus = Serializable->Focus;
+		Cycle = Serializable->Cycle;
+		From = Serializable->From;
+		ContentId = Serializable->ContentId;
+	}
 		
 }
 

@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/OfferRequirementLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UOfferRequirementLibrary::OfferRequirementToJsonString(const UOfferRequirement* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ UOfferRequirement* UOfferRequirementLibrary::Make(FString OfferSymbol, UOfferCon
 
 void UOfferRequirementLibrary::Break(const UOfferRequirement* Serializable, FString& OfferSymbol, UOfferConstraint*& Purchases)
 {
-	OfferSymbol = Serializable->OfferSymbol;
-	Purchases = Serializable->Purchases;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		OfferSymbol = Serializable->OfferSymbol;
+		Purchases = Serializable->Purchases;
+	}
 		
 }
 

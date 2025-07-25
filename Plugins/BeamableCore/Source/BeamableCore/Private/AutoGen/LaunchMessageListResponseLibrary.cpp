@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/LaunchMessageListResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString ULaunchMessageListResponseLibrary::LaunchMessageListResponseToJsonString(const ULaunchMessageListResponse* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ ULaunchMessageListResponse* ULaunchMessageListResponseLibrary::Make(TArray<FStri
 
 void ULaunchMessageListResponseLibrary::Break(const ULaunchMessageListResponse* Serializable, TArray<FString>& Files)
 {
-	Files = Serializable->Files;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Files = Serializable->Files;
+	}
 		
 }
 

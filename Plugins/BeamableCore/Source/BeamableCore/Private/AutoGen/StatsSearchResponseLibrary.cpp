@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/StatsSearchResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UStatsSearchResponseLibrary::StatsSearchResponseToJsonString(const UStatsSearchResponse* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UStatsSearchResponse* UStatsSearchResponseLibrary::Make(TArray<FBeamGamerTag> Id
 
 void UStatsSearchResponseLibrary::Break(const UStatsSearchResponse* Serializable, TArray<FBeamGamerTag>& Ids)
 {
-	Ids = Serializable->Ids;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Ids = Serializable->Ids;
+	}
 		
 }
 

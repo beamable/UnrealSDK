@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/GetCatalogReqLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UGetCatalogReqLibrary::GetCatalogReqToJsonString(const UGetCatalogReq* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UGetCatalogReq* UGetCatalogReqLibrary::Make(FOptionalInt64 Version, UObject* Out
 
 void UGetCatalogReqLibrary::Break(const UGetCatalogReq* Serializable, FOptionalInt64& Version)
 {
-	Version = Serializable->Version;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Version = Serializable->Version;
+	}
 		
 }
 

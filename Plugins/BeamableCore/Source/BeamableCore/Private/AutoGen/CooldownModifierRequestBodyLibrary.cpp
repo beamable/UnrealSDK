@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/CooldownModifierRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UCooldownModifierRequestBodyLibrary::CooldownModifierRequestBodyToJsonString(const UCooldownModifierRequestBody* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ UCooldownModifierRequestBody* UCooldownModifierRequestBodyLibrary::Make(int64 Ga
 
 void UCooldownModifierRequestBodyLibrary::Break(const UCooldownModifierRequestBody* Serializable, int64& GamerTag, TArray<UUpdateListingCooldownRequestBody*>& UpdateListingCooldownRequests)
 {
-	GamerTag = Serializable->GamerTag;
-	UpdateListingCooldownRequests = Serializable->UpdateListingCooldownRequests;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		GamerTag = Serializable->GamerTag;
+		UpdateListingCooldownRequests = Serializable->UpdateListingCooldownRequests;
+	}
 		
 }
 

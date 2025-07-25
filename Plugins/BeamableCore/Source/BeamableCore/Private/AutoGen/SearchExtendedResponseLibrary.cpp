@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/SearchExtendedResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString USearchExtendedResponseLibrary::SearchExtendedResponseToJsonString(const USearchExtendedResponse* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ USearchExtendedResponse* USearchExtendedResponseLibrary::Make(TMap<FString, FMap
 
 void USearchExtendedResponseLibrary::Break(const USearchExtendedResponse* Serializable, TMap<FString, FMapOfString>& GamerStats)
 {
-	GamerStats = Serializable->GamerStats;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		GamerStats = Serializable->GamerStats;
+	}
 		
 }
 

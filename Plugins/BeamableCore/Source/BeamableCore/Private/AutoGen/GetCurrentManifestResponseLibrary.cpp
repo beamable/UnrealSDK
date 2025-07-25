@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/GetCurrentManifestResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UGetCurrentManifestResponseLibrary::GetCurrentManifestResponseToJsonString(const UGetCurrentManifestResponse* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UGetCurrentManifestResponse* UGetCurrentManifestResponseLibrary::Make(UManifestV
 
 void UGetCurrentManifestResponseLibrary::Break(const UGetCurrentManifestResponse* Serializable, UManifestView*& Manifest)
 {
-	Manifest = Serializable->Manifest;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Manifest = Serializable->Manifest;
+	}
 		
 }
 

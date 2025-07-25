@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/SubscriptionVerificationRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString USubscriptionVerificationRequestBodyLibrary::SubscriptionVerificationRequestBodyToJsonString(const USubscriptionVerificationRequestBody* Serializable, const bool Pretty)
@@ -34,9 +35,12 @@ USubscriptionVerificationRequestBody* USubscriptionVerificationRequestBodyLibrar
 
 void USubscriptionVerificationRequestBodyLibrary::Break(const USubscriptionVerificationRequestBody* Serializable, FString& HubMode, FString& HubChallenge, FString& HubVerifyToken)
 {
-	HubMode = Serializable->HubMode;
-	HubChallenge = Serializable->HubChallenge;
-	HubVerifyToken = Serializable->HubVerifyToken;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		HubMode = Serializable->HubMode;
+		HubChallenge = Serializable->HubChallenge;
+		HubVerifyToken = Serializable->HubVerifyToken;
+	}
 		
 }
 

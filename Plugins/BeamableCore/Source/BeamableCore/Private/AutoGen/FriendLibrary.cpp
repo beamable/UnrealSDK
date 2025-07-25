@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/FriendLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UFriendLibrary::FriendToJsonString(const UFriend* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ UFriend* UFriendLibrary::Make(FBeamGamerTag PlayerId, EBeamFriendSource Source, 
 
 void UFriendLibrary::Break(const UFriend* Serializable, FBeamGamerTag& PlayerId, EBeamFriendSource& Source)
 {
-	PlayerId = Serializable->PlayerId;
-	Source = Serializable->Source;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		PlayerId = Serializable->PlayerId;
+		Source = Serializable->Source;
+	}
 		
 }
 

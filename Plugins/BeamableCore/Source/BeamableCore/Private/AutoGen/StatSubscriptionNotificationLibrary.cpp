@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/StatSubscriptionNotificationLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UStatSubscriptionNotificationLibrary::StatSubscriptionNotificationToJsonString(const UStatSubscriptionNotification* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ UStatSubscriptionNotification* UStatSubscriptionNotificationLibrary::Make(TMap<F
 
 void UStatSubscriptionNotificationLibrary::Break(const UStatSubscriptionNotification* Serializable, TMap<FString, FString>& StatsBefore, TMap<FString, FString>& StatsAfter)
 {
-	StatsBefore = Serializable->StatsBefore;
-	StatsAfter = Serializable->StatsAfter;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		StatsBefore = Serializable->StatsBefore;
+		StatsAfter = Serializable->StatsAfter;
+	}
 		
 }
 

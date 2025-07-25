@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/PullManifestRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UPullManifestRequestBodyLibrary::PullManifestRequestBodyToJsonString(const UPullManifestRequestBody* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ UPullManifestRequestBody* UPullManifestRequestBodyLibrary::Make(FBeamPid SourceR
 
 void UPullManifestRequestBodyLibrary::Break(const UPullManifestRequestBody* Serializable, FBeamPid& SourceRealmPid, FOptionalBeamContentManifestId& Id)
 {
-	SourceRealmPid = Serializable->SourceRealmPid;
-	Id = Serializable->Id;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		SourceRealmPid = Serializable->SourceRealmPid;
+		Id = Serializable->Id;
+	}
 		
 }
 

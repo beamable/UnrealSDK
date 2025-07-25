@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/GetTokenRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UGetTokenRequestBodyLibrary::GetTokenRequestBodyToJsonString(const UGetTokenRequestBody* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UGetTokenRequestBody* UGetTokenRequestBodyLibrary::Make(FString Token, UObject* 
 
 void UGetTokenRequestBodyLibrary::Break(const UGetTokenRequestBody* Serializable, FString& Token)
 {
-	Token = Serializable->Token;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Token = Serializable->Token;
+	}
 		
 }
 

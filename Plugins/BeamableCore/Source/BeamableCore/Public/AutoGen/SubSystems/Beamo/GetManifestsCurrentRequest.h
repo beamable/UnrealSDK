@@ -8,7 +8,7 @@
 #include "BeamBackend/BeamFullResponse.h"
 
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalBool.h"
-#include "BeamableCore/Public/AutoGen/BeamoActorManifest.h"
+#include "BeamableCore/Public/AutoGen/BeamoV2Manifest.h"
 
 #include "GetManifestsCurrentRequest.generated.h"
 
@@ -41,7 +41,7 @@ public:
 };
 
 UDELEGATE(BlueprintAuthorityOnly)
-DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnGetManifestsCurrentSuccess, FBeamRequestContext, Context, UGetManifestsCurrentRequest*, Request, UBeamoActorManifest*, Response);
+DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnGetManifestsCurrentSuccess, FBeamRequestContext, Context, UGetManifestsCurrentRequest*, Request, UBeamoV2Manifest*, Response);
 
 UDELEGATE(BlueprintAuthorityOnly)
 DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnGetManifestsCurrentError, FBeamRequestContext, Context, UGetManifestsCurrentRequest*, Request, FBeamErrorResponse, Error);
@@ -49,5 +49,5 @@ DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnGetManifestsCurrentError, FBeamRequestCo
 UDELEGATE(BlueprintAuthorityOnly)
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FOnGetManifestsCurrentComplete, FBeamRequestContext, Context, UGetManifestsCurrentRequest*, Request);
 
-using FGetManifestsCurrentFullResponse = FBeamFullResponse<UGetManifestsCurrentRequest*, UBeamoActorManifest*>;
+using FGetManifestsCurrentFullResponse = FBeamFullResponse<UGetManifestsCurrentRequest*, UBeamoV2Manifest*>;
 DECLARE_DELEGATE_OneParam(FOnGetManifestsCurrentFullResponse, FGetManifestsCurrentFullResponse);

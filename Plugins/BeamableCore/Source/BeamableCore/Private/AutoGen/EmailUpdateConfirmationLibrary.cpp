@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/EmailUpdateConfirmationLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UEmailUpdateConfirmationLibrary::EmailUpdateConfirmationToJsonString(const UEmailUpdateConfirmation* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ UEmailUpdateConfirmation* UEmailUpdateConfirmationLibrary::Make(FString Code, FS
 
 void UEmailUpdateConfirmationLibrary::Break(const UEmailUpdateConfirmation* Serializable, FString& Code, FString& Password)
 {
-	Code = Serializable->Code;
-	Password = Serializable->Password;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Code = Serializable->Code;
+		Password = Serializable->Password;
+	}
 		
 }
 

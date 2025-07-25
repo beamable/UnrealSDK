@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/PaymentDetailsEntryViewModelLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UPaymentDetailsEntryViewModelLibrary::PaymentDetailsEntryViewModelToJsonString(const UPaymentDetailsEntryViewModel* Serializable, const bool Pretty)
@@ -42,17 +43,20 @@ UPaymentDetailsEntryViewModel* UPaymentDetailsEntryViewModelLibrary::Make(FStrin
 
 void UPaymentDetailsEntryViewModelLibrary::Break(const UPaymentDetailsEntryViewModel* Serializable, FString& Reference, FString& Name, int32& Quantity, FString& Sku, int32& Price, FString& Gameplace, FString& ProviderProductId, FOptionalString& Subcategory, FOptionalString& LocalPrice, FOptionalString& Category, FOptionalString& LocalCurrency)
 {
-	Reference = Serializable->Reference;
-	Name = Serializable->Name;
-	Quantity = Serializable->Quantity;
-	Sku = Serializable->Sku;
-	Price = Serializable->Price;
-	Gameplace = Serializable->Gameplace;
-	ProviderProductId = Serializable->ProviderProductId;
-	Subcategory = Serializable->Subcategory;
-	LocalPrice = Serializable->LocalPrice;
-	Category = Serializable->Category;
-	LocalCurrency = Serializable->LocalCurrency;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Reference = Serializable->Reference;
+		Name = Serializable->Name;
+		Quantity = Serializable->Quantity;
+		Sku = Serializable->Sku;
+		Price = Serializable->Price;
+		Gameplace = Serializable->Gameplace;
+		ProviderProductId = Serializable->ProviderProductId;
+		Subcategory = Serializable->Subcategory;
+		LocalPrice = Serializable->LocalPrice;
+		Category = Serializable->Category;
+		LocalCurrency = Serializable->LocalCurrency;
+	}
 		
 }
 

@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/SteamAuthRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString USteamAuthRequestBodyLibrary::SteamAuthRequestBodyToJsonString(const USteamAuthRequestBody* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ USteamAuthRequestBody* USteamAuthRequestBodyLibrary::Make(FString Ticket, UObjec
 
 void USteamAuthRequestBodyLibrary::Break(const USteamAuthRequestBody* Serializable, FString& Ticket)
 {
-	Ticket = Serializable->Ticket;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Ticket = Serializable->Ticket;
+	}
 		
 }
 

@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/ListAuditRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UListAuditRequestBodyLibrary::ListAuditRequestBodyToJsonString(const UListAuditRequestBody* Serializable, const bool Pretty)
@@ -38,13 +39,16 @@ UListAuditRequestBody* UListAuditRequestBodyLibrary::Make(FOptionalString Provid
 
 void UListAuditRequestBodyLibrary::Break(const UListAuditRequestBody* Serializable, FOptionalString& Providerid, FOptionalString& Provider, FOptionalString& State, FOptionalInt64& Txid, FOptionalInt64& Player, FOptionalInt32& Start, FOptionalInt32& Limit)
 {
-	Providerid = Serializable->Providerid;
-	Provider = Serializable->Provider;
-	State = Serializable->State;
-	Txid = Serializable->Txid;
-	Player = Serializable->Player;
-	Start = Serializable->Start;
-	Limit = Serializable->Limit;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Providerid = Serializable->Providerid;
+		Provider = Serializable->Provider;
+		State = Serializable->State;
+		Txid = Serializable->Txid;
+		Player = Serializable->Player;
+		Start = Serializable->Start;
+		Limit = Serializable->Limit;
+	}
 		
 }
 

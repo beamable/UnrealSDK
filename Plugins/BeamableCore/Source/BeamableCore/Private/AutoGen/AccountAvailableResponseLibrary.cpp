@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/AccountAvailableResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UAccountAvailableResponseLibrary::AccountAvailableResponseToJsonString(const UAccountAvailableResponse* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UAccountAvailableResponse* UAccountAvailableResponseLibrary::Make(bool bAvailabl
 
 void UAccountAvailableResponseLibrary::Break(const UAccountAvailableResponse* Serializable, bool& bAvailable)
 {
-	bAvailable = Serializable->bAvailable;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		bAvailable = Serializable->bAvailable;
+	}
 		
 }
 

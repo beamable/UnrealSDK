@@ -8,8 +8,8 @@
 #include "BeamBackend/BeamFullResponse.h"
 
 #include "Serialization/BeamJsonUtils.h"
-#include "BeamableCore/Public/AutoGen/DeleteRegistrationRequestBody.h"
-#include "BeamableCore/Public/AutoGen/EmptyMessage.h"
+#include "BeamableCore/Public/AutoGen/BeamoV2DeleteRegistrationRequestBody.h"
+#include "BeamableCore/Public/AutoGen/BeamoV2EmptyMessage.h"
 
 #include "DeleteServicesFederationTrafficRequest.generated.h"
 
@@ -29,7 +29,7 @@ public:
 
 	// Body Params
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="", Category="Beam")
-	UDeleteRegistrationRequestBody* Body = {};
+	UBeamoV2DeleteRegistrationRequestBody* Body = {};
 
 	// Beam Base Request Declaration
 	UDeleteServicesFederationTrafficRequest() = default;
@@ -43,7 +43,7 @@ public:
 };
 
 UDELEGATE(BlueprintAuthorityOnly)
-DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnDeleteServicesFederationTrafficSuccess, FBeamRequestContext, Context, UDeleteServicesFederationTrafficRequest*, Request, UEmptyMessage*, Response);
+DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnDeleteServicesFederationTrafficSuccess, FBeamRequestContext, Context, UDeleteServicesFederationTrafficRequest*, Request, UBeamoV2EmptyMessage*, Response);
 
 UDELEGATE(BlueprintAuthorityOnly)
 DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnDeleteServicesFederationTrafficError, FBeamRequestContext, Context, UDeleteServicesFederationTrafficRequest*, Request, FBeamErrorResponse, Error);
@@ -51,5 +51,5 @@ DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnDeleteServicesFederationTrafficError, FB
 UDELEGATE(BlueprintAuthorityOnly)
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FOnDeleteServicesFederationTrafficComplete, FBeamRequestContext, Context, UDeleteServicesFederationTrafficRequest*, Request);
 
-using FDeleteServicesFederationTrafficFullResponse = FBeamFullResponse<UDeleteServicesFederationTrafficRequest*, UEmptyMessage*>;
+using FDeleteServicesFederationTrafficFullResponse = FBeamFullResponse<UDeleteServicesFederationTrafficRequest*, UBeamoV2EmptyMessage*>;
 DECLARE_DELEGATE_OneParam(FOnDeleteServicesFederationTrafficFullResponse, FDeleteServicesFederationTrafficFullResponse);

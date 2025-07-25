@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/FacebookPaymentUpdateRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UFacebookPaymentUpdateRequestBodyLibrary::FacebookPaymentUpdateRequestBodyToJsonString(const UFacebookPaymentUpdateRequestBody* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ UFacebookPaymentUpdateRequestBody* UFacebookPaymentUpdateRequestBodyLibrary::Mak
 
 void UFacebookPaymentUpdateRequestBodyLibrary::Break(const UFacebookPaymentUpdateRequestBody* Serializable, FString& Object, TArray<UFacebookUpdatedEntry*>& Entry)
 {
-	Object = Serializable->Object;
-	Entry = Serializable->Entry;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Object = Serializable->Object;
+		Entry = Serializable->Entry;
+	}
 		
 }
 

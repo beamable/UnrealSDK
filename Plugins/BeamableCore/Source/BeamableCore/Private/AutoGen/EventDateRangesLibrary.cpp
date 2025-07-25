@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/EventDateRangesLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UEventDateRangesLibrary::EventDateRangesToJsonString(const UEventDateRanges* Serializable, const bool Pretty)
@@ -36,11 +37,14 @@ UEventDateRanges* UEventDateRangesLibrary::Make(FString Name, FString State, FSt
 
 void UEventDateRangesLibrary::Break(const UEventDateRanges* Serializable, FString& Name, FString& State, FString& Id, TArray<UDateRange*>& Dates, FOptionalInt64& CreatedAt)
 {
-	Name = Serializable->Name;
-	State = Serializable->State;
-	Id = Serializable->Id;
-	Dates = Serializable->Dates;
-	CreatedAt = Serializable->CreatedAt;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Name = Serializable->Name;
+		State = Serializable->State;
+		Id = Serializable->Id;
+		Dates = Serializable->Dates;
+		CreatedAt = Serializable->CreatedAt;
+	}
 		
 }
 

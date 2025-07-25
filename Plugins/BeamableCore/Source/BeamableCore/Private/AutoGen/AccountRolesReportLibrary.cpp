@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/AccountRolesReportLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UAccountRolesReportLibrary::AccountRolesReportToJsonString(const UAccountRolesReport* Serializable, const bool Pretty)
@@ -34,9 +35,12 @@ UAccountRolesReport* UAccountRolesReportLibrary::Make(int64 AccountId, FString E
 
 void UAccountRolesReportLibrary::Break(const UAccountRolesReport* Serializable, int64& AccountId, FString& Email, TArray<URealmRolesReport*>& Realms)
 {
-	AccountId = Serializable->AccountId;
-	Email = Serializable->Email;
-	Realms = Serializable->Realms;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		AccountId = Serializable->AccountId;
+		Email = Serializable->Email;
+		Realms = Serializable->Realms;
+	}
 		
 }
 

@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/PromotionScopeLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UPromotionScopeLibrary::PromotionScopeToJsonString(const UPromotionScope* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ UPromotionScope* UPromotionScopeLibrary::Make(FString Name, TArray<UPromotion*> 
 
 void UPromotionScopeLibrary::Break(const UPromotionScope* Serializable, FString& Name, TArray<UPromotion*>& Promotions)
 {
-	Name = Serializable->Name;
-	Promotions = Serializable->Promotions;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Name = Serializable->Name;
+		Promotions = Serializable->Promotions;
+	}
 		
 }
 

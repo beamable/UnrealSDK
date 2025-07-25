@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/ConnectionStringLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UConnectionStringLibrary::ConnectionStringToJsonString(const UConnectionString* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UConnectionString* UConnectionStringLibrary::Make(FString ConnectionString, UObj
 
 void UConnectionStringLibrary::Break(const UConnectionString* Serializable, FString& ConnectionString)
 {
-	ConnectionString = Serializable->ConnectionString;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		ConnectionString = Serializable->ConnectionString;
+	}
 		
 }
 

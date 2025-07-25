@@ -8,7 +8,7 @@
 #include "BeamBackend/BeamFullResponse.h"
 
 #include "Serialization/BeamJsonUtils.h"
-#include "BeamableCore/Public/AutoGen/ApiBeamoServicesLogsQueryDeleteBeamoResponse.h"
+#include "BeamableCore/Public/AutoGen/BeamoV2ApiBeamoServicesLogsQueryDeleteBeamoResponse.h"
 
 #include "DeleteServicesLogsQueryRequest.generated.h"
 
@@ -41,7 +41,7 @@ public:
 };
 
 UDELEGATE(BlueprintAuthorityOnly)
-DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnDeleteServicesLogsQuerySuccess, FBeamRequestContext, Context, UDeleteServicesLogsQueryRequest*, Request, UApiBeamoServicesLogsQueryDeleteBeamoResponse*, Response);
+DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnDeleteServicesLogsQuerySuccess, FBeamRequestContext, Context, UDeleteServicesLogsQueryRequest*, Request, UBeamoV2ApiBeamoServicesLogsQueryDeleteBeamoResponse*, Response);
 
 UDELEGATE(BlueprintAuthorityOnly)
 DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnDeleteServicesLogsQueryError, FBeamRequestContext, Context, UDeleteServicesLogsQueryRequest*, Request, FBeamErrorResponse, Error);
@@ -49,5 +49,5 @@ DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnDeleteServicesLogsQueryError, FBeamReque
 UDELEGATE(BlueprintAuthorityOnly)
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FOnDeleteServicesLogsQueryComplete, FBeamRequestContext, Context, UDeleteServicesLogsQueryRequest*, Request);
 
-using FDeleteServicesLogsQueryFullResponse = FBeamFullResponse<UDeleteServicesLogsQueryRequest*, UApiBeamoServicesLogsQueryDeleteBeamoResponse*>;
+using FDeleteServicesLogsQueryFullResponse = FBeamFullResponse<UDeleteServicesLogsQueryRequest*, UBeamoV2ApiBeamoServicesLogsQueryDeleteBeamoResponse*>;
 DECLARE_DELEGATE_OneParam(FOnDeleteServicesLogsQueryFullResponse, FDeleteServicesLogsQueryFullResponse);

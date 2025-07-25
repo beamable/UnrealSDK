@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/LeaderboardMembershipRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString ULeaderboardMembershipRequestBodyLibrary::LeaderboardMembershipRequestBodyToJsonString(const ULeaderboardMembershipRequestBody* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ ULeaderboardMembershipRequestBody* ULeaderboardMembershipRequestBodyLibrary::Mak
 
 void ULeaderboardMembershipRequestBodyLibrary::Break(const ULeaderboardMembershipRequestBody* Serializable, int64& PlayerId)
 {
-	PlayerId = Serializable->PlayerId;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		PlayerId = Serializable->PlayerId;
+	}
 		
 }
 

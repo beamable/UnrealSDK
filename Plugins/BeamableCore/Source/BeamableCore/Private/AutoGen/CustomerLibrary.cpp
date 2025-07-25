@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/CustomerLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UCustomerLibrary::CustomerToJsonString(const UCustomer* Serializable, const bool Pretty)
@@ -43,18 +44,21 @@ UCustomer* UCustomerLibrary::Make(FString Name, FBeamCid Cid, TArray<UProject*> 
 
 void UCustomerLibrary::Break(const UCustomer* Serializable, FString& Name, FBeamCid& Cid, TArray<UProject*>& Projects, TArray<URealmsBasicAccount*>& Accounts, FOptionalString& ActivationStatus, FOptionalString& PaymentStatus, FOptionalString& Image, FOptionalString& Contact, FOptionalString& Alias, FOptionalInt64& Updated, FOptionalString& CrmLink, FOptionalInt64& Created)
 {
-	Name = Serializable->Name;
-	Cid = Serializable->Cid;
-	Projects = Serializable->Projects;
-	Accounts = Serializable->Accounts;
-	ActivationStatus = Serializable->ActivationStatus;
-	PaymentStatus = Serializable->PaymentStatus;
-	Image = Serializable->Image;
-	Contact = Serializable->Contact;
-	Alias = Serializable->Alias;
-	Updated = Serializable->Updated;
-	CrmLink = Serializable->CrmLink;
-	Created = Serializable->Created;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Name = Serializable->Name;
+		Cid = Serializable->Cid;
+		Projects = Serializable->Projects;
+		Accounts = Serializable->Accounts;
+		ActivationStatus = Serializable->ActivationStatus;
+		PaymentStatus = Serializable->PaymentStatus;
+		Image = Serializable->Image;
+		Contact = Serializable->Contact;
+		Alias = Serializable->Alias;
+		Updated = Serializable->Updated;
+		CrmLink = Serializable->CrmLink;
+		Created = Serializable->Created;
+	}
 		
 }
 

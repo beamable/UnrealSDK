@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/HtmlResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UHtmlResponseLibrary::HtmlResponseToJsonString(const UHtmlResponse* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UHtmlResponse* UHtmlResponseLibrary::Make(FString Html, UObject* Outer)
 
 void UHtmlResponseLibrary::Break(const UHtmlResponse* Serializable, FString& Html)
 {
-	Html = Serializable->Html;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Html = Serializable->Html;
+	}
 		
 }
 

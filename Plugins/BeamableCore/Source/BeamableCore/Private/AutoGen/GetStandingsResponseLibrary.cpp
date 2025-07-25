@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/GetStandingsResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UGetStandingsResponseLibrary::GetStandingsResponseToJsonString(const UGetStandingsResponse* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ UGetStandingsResponse* UGetStandingsResponseLibrary::Make(TArray<UTournamentEntr
 
 void UGetStandingsResponseLibrary::Break(const UGetStandingsResponse* Serializable, TArray<UTournamentEntry*>& Entries, FOptionalTournamentEntry& Me)
 {
-	Entries = Serializable->Entries;
-	Me = Serializable->Me;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Entries = Serializable->Entries;
+		Me = Serializable->Me;
+	}
 		
 }
 

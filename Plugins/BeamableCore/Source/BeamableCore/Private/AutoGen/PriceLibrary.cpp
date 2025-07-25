@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/PriceLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UPriceLibrary::PriceToJsonString(const UPrice* Serializable, const bool Pretty)
@@ -35,10 +36,13 @@ UPrice* UPriceLibrary::Make(FString Type, FString Symbol, FOptionalInt32 Amount,
 
 void UPriceLibrary::Break(const UPrice* Serializable, FString& Type, FString& Symbol, FOptionalInt32& Amount, FOptionalArrayOfInt32& Schedule)
 {
-	Type = Serializable->Type;
-	Symbol = Serializable->Symbol;
-	Amount = Serializable->Amount;
-	Schedule = Serializable->Schedule;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Type = Serializable->Type;
+		Symbol = Serializable->Symbol;
+		Amount = Serializable->Amount;
+		Schedule = Serializable->Schedule;
+	}
 		
 }
 

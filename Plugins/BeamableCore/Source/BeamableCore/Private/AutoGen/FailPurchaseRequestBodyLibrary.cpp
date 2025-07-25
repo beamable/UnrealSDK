@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/FailPurchaseRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UFailPurchaseRequestBodyLibrary::FailPurchaseRequestBodyToJsonString(const UFailPurchaseRequestBody* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ UFailPurchaseRequestBody* UFailPurchaseRequestBodyLibrary::Make(int64 Txid, FStr
 
 void UFailPurchaseRequestBodyLibrary::Break(const UFailPurchaseRequestBody* Serializable, int64& Txid, FString& Reason)
 {
-	Txid = Serializable->Txid;
-	Reason = Serializable->Reason;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Txid = Serializable->Txid;
+		Reason = Serializable->Reason;
+	}
 		
 }
 

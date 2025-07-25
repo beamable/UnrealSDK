@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/GetSkusReqLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UGetSkusReqLibrary::GetSkusReqToJsonString(const UGetSkusReq* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UGetSkusReq* UGetSkusReqLibrary::Make(FOptionalInt64 Version, UObject* Outer)
 
 void UGetSkusReqLibrary::Break(const UGetSkusReq* Serializable, FOptionalInt64& Version)
 {
-	Version = Serializable->Version;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Version = Serializable->Version;
+	}
 		
 }
 

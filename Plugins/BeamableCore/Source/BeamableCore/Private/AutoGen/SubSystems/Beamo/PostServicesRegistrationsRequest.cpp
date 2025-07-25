@@ -27,7 +27,7 @@ void UPostServicesRegistrationsRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostServicesRegistrationsRequest* UPostServicesRegistrationsRequest::Make(FOptionalBool _bLocalOnly, FOptionalString _ServiceName, FOptionalString _RoutingKey, FOptionalSupportedFederation _Federation, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
+UPostServicesRegistrationsRequest* UPostServicesRegistrationsRequest::Make(FOptionalBool _bLocalOnly, FOptionalString _ServiceName, FOptionalString _RoutingKey, FOptionalBeamoV2SupportedFederation _Federation, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPostServicesRegistrationsRequest* Req = NewObject<UPostServicesRegistrationsRequest>(RequestOwner);
 	Req->CustomHeaders = TMap{CustomHeaders};
@@ -36,7 +36,7 @@ UPostServicesRegistrationsRequest* UPostServicesRegistrationsRequest::Make(FOpti
 	
 	
 	// Makes a body and fill up with parameters (Blank if no body parameters exist)
-	Req->Body = NewObject<UServiceRegistrationQuery>(Req);
+	Req->Body = NewObject<UBeamoV2ServiceRegistrationQuery>(Req);
 	Req->Body->bLocalOnly = _bLocalOnly;
 	Req->Body->ServiceName = _ServiceName;
 	Req->Body->RoutingKey = _RoutingKey;

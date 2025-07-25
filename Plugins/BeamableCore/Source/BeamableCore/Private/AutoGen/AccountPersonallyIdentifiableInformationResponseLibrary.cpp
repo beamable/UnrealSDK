@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/AccountPersonallyIdentifiableInformationResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UAccountPersonallyIdentifiableInformationResponseLibrary::AccountPersonallyIdentifiableInformationResponseToJsonString(const UAccountPersonallyIdentifiableInformationResponse* Serializable, const bool Pretty)
@@ -34,9 +35,12 @@ UAccountPersonallyIdentifiableInformationResponse* UAccountPersonallyIdentifiabl
 
 void UAccountPersonallyIdentifiableInformationResponseLibrary::Break(const UAccountPersonallyIdentifiableInformationResponse* Serializable, UAccountsBasicAccount*& Account, UListAuditResponse*& PaymentAudits, TArray<UStatsResponse*>& Stats)
 {
-	Account = Serializable->Account;
-	PaymentAudits = Serializable->PaymentAudits;
-	Stats = Serializable->Stats;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Account = Serializable->Account;
+		PaymentAudits = Serializable->PaymentAudits;
+		Stats = Serializable->Stats;
+	}
 		
 }
 

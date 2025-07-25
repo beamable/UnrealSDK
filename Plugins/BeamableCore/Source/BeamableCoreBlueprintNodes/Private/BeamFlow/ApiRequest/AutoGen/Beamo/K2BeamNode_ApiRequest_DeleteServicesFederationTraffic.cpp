@@ -6,7 +6,7 @@
 
 #include "BeamableCore/Public/AutoGen/SubSystems/BeamBeamoApi.h"
 #include "BeamableCore/Public/AutoGen/SubSystems/Beamo/DeleteServicesFederationTrafficRequest.h"
-#include "BeamableCore/Public/AutoGen/EmptyMessage.h"
+#include "BeamableCore/Public/AutoGen/BeamoV2EmptyMessage.h"
 
 #define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_DeleteServicesFederationTraffic"
 
@@ -49,7 +49,7 @@ UClass* UK2BeamNode_ApiRequest_DeleteServicesFederationTraffic::GetRequestClass(
 
 UClass* UK2BeamNode_ApiRequest_DeleteServicesFederationTraffic::GetResponseClass() const
 {
-	return UEmptyMessage::StaticClass();
+	return UBeamoV2EmptyMessage::StaticClass();
 }
 
 FString UK2BeamNode_ApiRequest_DeleteServicesFederationTraffic::GetRequestSuccessDelegateName() const

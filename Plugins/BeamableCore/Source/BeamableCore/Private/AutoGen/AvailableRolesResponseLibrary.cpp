@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/AvailableRolesResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UAvailableRolesResponseLibrary::AvailableRolesResponseToJsonString(const UAvailableRolesResponse* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UAvailableRolesResponse* UAvailableRolesResponseLibrary::Make(TArray<FString> Ro
 
 void UAvailableRolesResponseLibrary::Break(const UAvailableRolesResponse* Serializable, TArray<FString>& Roles)
 {
-	Roles = Serializable->Roles;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Roles = Serializable->Roles;
+	}
 		
 }
 

@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/CurrencyContentResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UCurrencyContentResponseLibrary::CurrencyContentResponseToJsonString(const UCurrencyContentResponse* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UCurrencyContentResponse* UCurrencyContentResponseLibrary::Make(TArray<UCurrency
 
 void UCurrencyContentResponseLibrary::Break(const UCurrencyContentResponse* Serializable, TArray<UCurrencyArchetype*>& Content)
 {
-	Content = Serializable->Content;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Content = Serializable->Content;
+	}
 		
 }
 

@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/CreateFederatedGameServerLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UCreateFederatedGameServerLibrary::CreateFederatedGameServerToJsonString(const UCreateFederatedGameServer* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UCreateFederatedGameServer* UCreateFederatedGameServerLibrary::Make(FOptionalBea
 
 void UCreateFederatedGameServerLibrary::Break(const UCreateFederatedGameServer* Serializable, FOptionalBeamContentId& MatchType)
 {
-	MatchType = Serializable->MatchType;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		MatchType = Serializable->MatchType;
+	}
 		
 }
 

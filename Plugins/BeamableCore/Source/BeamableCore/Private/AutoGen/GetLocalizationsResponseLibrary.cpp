@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/GetLocalizationsResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UGetLocalizationsResponseLibrary::GetLocalizationsResponseToJsonString(const UGetLocalizationsResponse* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UGetLocalizationsResponse* UGetLocalizationsResponseLibrary::Make(TMap<FString, 
 
 void UGetLocalizationsResponseLibrary::Break(const UGetLocalizationsResponse* Serializable, TMap<FString, FArrayOfLocalizedValue>& Localizations)
 {
-	Localizations = Serializable->Localizations;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Localizations = Serializable->Localizations;
+	}
 		
 }
 

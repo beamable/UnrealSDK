@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/ThirdPartyAvailableRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UThirdPartyAvailableRequestBodyLibrary::ThirdPartyAvailableRequestBodyToJsonString(const UThirdPartyAvailableRequestBody* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ UThirdPartyAvailableRequestBody* UThirdPartyAvailableRequestBodyLibrary::Make(FS
 
 void UThirdPartyAvailableRequestBodyLibrary::Break(const UThirdPartyAvailableRequestBody* Serializable, FString& ThirdParty, FString& Token)
 {
-	ThirdParty = Serializable->ThirdParty;
-	Token = Serializable->Token;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		ThirdParty = Serializable->ThirdParty;
+		Token = Serializable->Token;
+	}
 		
 }
 

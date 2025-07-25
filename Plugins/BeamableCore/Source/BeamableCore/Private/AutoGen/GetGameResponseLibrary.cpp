@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/GetGameResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UGetGameResponseLibrary::GetGameResponseToJsonString(const UGetGameResponse* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UGetGameResponse* UGetGameResponseLibrary::Make(TArray<UProjectView*> Projects, 
 
 void UGetGameResponseLibrary::Break(const UGetGameResponse* Serializable, TArray<UProjectView*>& Projects)
 {
-	Projects = Serializable->Projects;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Projects = Serializable->Projects;
+	}
 		
 }
 

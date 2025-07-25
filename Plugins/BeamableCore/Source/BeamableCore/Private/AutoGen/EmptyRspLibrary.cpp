@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/EmptyRspLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UEmptyRspLibrary::EmptyRspToJsonString(const UEmptyRsp* Serializable, const bool Pretty)

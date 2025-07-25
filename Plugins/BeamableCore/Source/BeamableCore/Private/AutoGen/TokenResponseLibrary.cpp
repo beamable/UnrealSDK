@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/TokenResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UTokenResponseLibrary::TokenResponseToJsonString(const UTokenResponse* Serializable, const bool Pretty)
@@ -37,12 +38,15 @@ UTokenResponse* UTokenResponseLibrary::Make(int64 ExpiresIn, FString TokenType, 
 
 void UTokenResponseLibrary::Break(const UTokenResponse* Serializable, int64& ExpiresIn, FString& TokenType, FOptionalString& AccessToken, FOptionalString& RefreshToken, FOptionalString& ChallengeToken, FOptionalArrayOfString& Scopes)
 {
-	ExpiresIn = Serializable->ExpiresIn;
-	TokenType = Serializable->TokenType;
-	AccessToken = Serializable->AccessToken;
-	RefreshToken = Serializable->RefreshToken;
-	ChallengeToken = Serializable->ChallengeToken;
-	Scopes = Serializable->Scopes;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		ExpiresIn = Serializable->ExpiresIn;
+		TokenType = Serializable->TokenType;
+		AccessToken = Serializable->AccessToken;
+		RefreshToken = Serializable->RefreshToken;
+		ChallengeToken = Serializable->ChallengeToken;
+		Scopes = Serializable->Scopes;
+	}
 		
 }
 

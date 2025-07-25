@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/LeaderboardSwapRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString ULeaderboardSwapRequestBodyLibrary::LeaderboardSwapRequestBodyToJsonString(const ULeaderboardSwapRequestBody* Serializable, const bool Pretty)
@@ -35,10 +36,13 @@ ULeaderboardSwapRequestBody* ULeaderboardSwapRequestBodyLibrary::Make(int64 Swap
 
 void ULeaderboardSwapRequestBodyLibrary::Break(const ULeaderboardSwapRequestBody* Serializable, int64& SwapBase, int64& Delta, FOptionalInt64& WinnerId, FOptionalInt64& LoserId)
 {
-	SwapBase = Serializable->SwapBase;
-	Delta = Serializable->Delta;
-	WinnerId = Serializable->WinnerId;
-	LoserId = Serializable->LoserId;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		SwapBase = Serializable->SwapBase;
+		Delta = Serializable->Delta;
+		WinnerId = Serializable->WinnerId;
+		LoserId = Serializable->LoserId;
+	}
 		
 }
 

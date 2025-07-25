@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/DonationRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UDonationRequestBodyLibrary::DonationRequestBodyToJsonString(const UDonationRequestBody* Serializable, const bool Pretty)
@@ -36,11 +37,14 @@ UDonationRequestBody* UDonationRequestBodyLibrary::Make(bool bSatisfied, int64 T
 
 void UDonationRequestBodyLibrary::Break(const UDonationRequestBody* Serializable, bool& bSatisfied, int64& TimeRequested, int64& PlayerId, UCurrency*& Currency, TArray<UDonationEntry*>& Progress)
 {
-	bSatisfied = Serializable->bSatisfied;
-	TimeRequested = Serializable->TimeRequested;
-	PlayerId = Serializable->PlayerId;
-	Currency = Serializable->Currency;
-	Progress = Serializable->Progress;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		bSatisfied = Serializable->bSatisfied;
+		TimeRequested = Serializable->TimeRequested;
+		PlayerId = Serializable->PlayerId;
+		Currency = Serializable->Currency;
+		Progress = Serializable->Progress;
+	}
 		
 }
 

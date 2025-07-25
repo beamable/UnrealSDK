@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/TournamentClientViewLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UTournamentClientViewLibrary::TournamentClientViewToJsonString(const UTournamentClientView* Serializable, const bool Pretty)
@@ -37,12 +38,15 @@ UTournamentClientView* UTournamentClientViewLibrary::Make(FString TournamentId, 
 
 void UTournamentClientViewLibrary::Break(const UTournamentClientView* Serializable, FString& TournamentId, FString& StartTimeUtc, int64& SecondsRemaining, int32& Cycle, FString& EndTimeUtc, FString& ContentId)
 {
-	TournamentId = Serializable->TournamentId;
-	StartTimeUtc = Serializable->StartTimeUtc;
-	SecondsRemaining = Serializable->SecondsRemaining;
-	Cycle = Serializable->Cycle;
-	EndTimeUtc = Serializable->EndTimeUtc;
-	ContentId = Serializable->ContentId;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		TournamentId = Serializable->TournamentId;
+		StartTimeUtc = Serializable->StartTimeUtc;
+		SecondsRemaining = Serializable->SecondsRemaining;
+		Cycle = Serializable->Cycle;
+		EndTimeUtc = Serializable->EndTimeUtc;
+		ContentId = Serializable->ContentId;
+	}
 		
 }
 

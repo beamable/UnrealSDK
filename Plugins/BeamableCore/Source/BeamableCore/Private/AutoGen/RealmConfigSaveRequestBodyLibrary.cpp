@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/RealmConfigSaveRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString URealmConfigSaveRequestBodyLibrary::RealmConfigSaveRequestBodyToJsonString(const URealmConfigSaveRequestBody* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ URealmConfigSaveRequestBody* URealmConfigSaveRequestBodyLibrary::Make(TMap<FStri
 
 void URealmConfigSaveRequestBodyLibrary::Break(const URealmConfigSaveRequestBody* Serializable, TMap<FString, FString>& Config)
 {
-	Config = Serializable->Config;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Config = Serializable->Config;
+	}
 		
 }
 

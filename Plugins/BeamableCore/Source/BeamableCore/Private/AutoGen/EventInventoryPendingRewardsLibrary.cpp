@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/EventInventoryPendingRewardsLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UEventInventoryPendingRewardsLibrary::EventInventoryPendingRewardsToJsonString(const UEventInventoryPendingRewards* Serializable, const bool Pretty)
@@ -34,9 +35,12 @@ UEventInventoryPendingRewards* UEventInventoryPendingRewardsLibrary::Make(bool b
 
 void UEventInventoryPendingRewardsLibrary::Break(const UEventInventoryPendingRewards* Serializable, bool& bEmpty, FOptionalArrayOfItemCreateRequestBody& Items, FOptionalMapOfString& Currencies)
 {
-	bEmpty = Serializable->bEmpty;
-	Items = Serializable->Items;
-	Currencies = Serializable->Currencies;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		bEmpty = Serializable->bEmpty;
+		Items = Serializable->Items;
+		Currencies = Serializable->Currencies;
+	}
 		
 }
 

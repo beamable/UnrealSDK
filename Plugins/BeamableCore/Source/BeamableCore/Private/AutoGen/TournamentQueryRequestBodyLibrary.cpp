@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/TournamentQueryRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UTournamentQueryRequestBodyLibrary::TournamentQueryRequestBodyToJsonString(const UTournamentQueryRequestBody* Serializable, const bool Pretty)
@@ -34,9 +35,12 @@ UTournamentQueryRequestBody* UTournamentQueryRequestBodyLibrary::Make(FOptionalB
 
 void UTournamentQueryRequestBodyLibrary::Break(const UTournamentQueryRequestBody* Serializable, FOptionalBool& bIsRunning, FOptionalString& ContentId, FOptionalInt32& Cycle)
 {
-	bIsRunning = Serializable->bIsRunning;
-	ContentId = Serializable->ContentId;
-	Cycle = Serializable->Cycle;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		bIsRunning = Serializable->bIsRunning;
+		ContentId = Serializable->ContentId;
+		Cycle = Serializable->Cycle;
+	}
 		
 }
 

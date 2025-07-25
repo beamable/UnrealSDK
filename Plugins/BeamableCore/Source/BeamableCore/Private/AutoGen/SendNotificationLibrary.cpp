@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/SendNotificationLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString USendNotificationLibrary::SendNotificationToJsonString(const USendNotification* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ USendNotification* USendNotificationLibrary::Make(FOptionalString Title, FOption
 
 void USendNotificationLibrary::Break(const USendNotification* Serializable, FOptionalString& Title, FOptionalString& Body)
 {
-	Title = Serializable->Title;
-	Body = Serializable->Body;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Title = Serializable->Title;
+		Body = Serializable->Body;
+	}
 		
 }
 

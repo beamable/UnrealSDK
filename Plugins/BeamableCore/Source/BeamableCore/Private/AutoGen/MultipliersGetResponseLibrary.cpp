@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/MultipliersGetResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UMultipliersGetResponseLibrary::MultipliersGetResponseToJsonString(const UMultipliersGetResponse* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UMultipliersGetResponse* UMultipliersGetResponseLibrary::Make(TArray<UVipBonus*>
 
 void UMultipliersGetResponseLibrary::Break(const UMultipliersGetResponse* Serializable, TArray<UVipBonus*>& Multipliers)
 {
-	Multipliers = Serializable->Multipliers;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Multipliers = Serializable->Multipliers;
+	}
 		
 }
 

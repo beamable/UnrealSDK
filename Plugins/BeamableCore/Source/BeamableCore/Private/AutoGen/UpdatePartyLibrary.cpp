@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/UpdatePartyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UUpdatePartyLibrary::UpdatePartyToJsonString(const UUpdateParty* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ UUpdateParty* UUpdatePartyLibrary::Make(FOptionalString Restriction, FOptionalIn
 
 void UUpdatePartyLibrary::Break(const UUpdateParty* Serializable, FOptionalString& Restriction, FOptionalInt32& MaxSize)
 {
-	Restriction = Serializable->Restriction;
-	MaxSize = Serializable->MaxSize;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Restriction = Serializable->Restriction;
+		MaxSize = Serializable->MaxSize;
+	}
 		
 }
 

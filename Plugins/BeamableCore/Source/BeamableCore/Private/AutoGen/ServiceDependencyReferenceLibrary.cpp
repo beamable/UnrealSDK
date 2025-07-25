@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/ServiceDependencyReferenceLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UServiceDependencyReferenceLibrary::ServiceDependencyReferenceToJsonString(const UServiceDependencyReference* Serializable, const bool Pretty)
@@ -22,7 +23,7 @@ FString UServiceDependencyReferenceLibrary::ServiceDependencyReferenceToJsonStri
 	return Result;
 }	
 
-UServiceDependencyReference* UServiceDependencyReferenceLibrary::Make(FOptionalString Id, FOptionalString StorageType, UObject* Outer)
+UServiceDependencyReference* UServiceDependencyReferenceLibrary::Make(FString Id, FString StorageType, UObject* Outer)
 {
 	auto Serializable = NewObject<UServiceDependencyReference>(Outer);
 	Serializable->Id = Id;
@@ -31,10 +32,13 @@ UServiceDependencyReference* UServiceDependencyReferenceLibrary::Make(FOptionalS
 	return Serializable;
 }
 
-void UServiceDependencyReferenceLibrary::Break(const UServiceDependencyReference* Serializable, FOptionalString& Id, FOptionalString& StorageType)
+void UServiceDependencyReferenceLibrary::Break(const UServiceDependencyReference* Serializable, FString& Id, FString& StorageType)
 {
-	Id = Serializable->Id;
-	StorageType = Serializable->StorageType;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Id = Serializable->Id;
+		StorageType = Serializable->StorageType;
+	}
 		
 }
 

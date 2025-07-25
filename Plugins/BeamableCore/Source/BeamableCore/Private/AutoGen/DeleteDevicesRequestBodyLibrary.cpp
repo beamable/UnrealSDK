@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/DeleteDevicesRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UDeleteDevicesRequestBodyLibrary::DeleteDevicesRequestBodyToJsonString(const UDeleteDevicesRequestBody* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UDeleteDevicesRequestBody* UDeleteDevicesRequestBodyLibrary::Make(FOptionalArray
 
 void UDeleteDevicesRequestBodyLibrary::Break(const UDeleteDevicesRequestBody* Serializable, FOptionalArrayOfString& DeviceIds)
 {
-	DeviceIds = Serializable->DeviceIds;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		DeviceIds = Serializable->DeviceIds;
+	}
 		
 }
 

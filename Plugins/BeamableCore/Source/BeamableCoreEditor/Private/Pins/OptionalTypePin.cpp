@@ -132,7 +132,7 @@ void SOptionalTypePin::OnTextDefaultChanged(const FText& Text)
 		OptionalDefaultValue = Text.ToString();
 		const auto NewDefault = BuildDefaultValueString();
 		GraphPinObj->GetSchema()->TrySetDefaultText(*GraphPinObj, FText::FromString(NewDefault));
-		UE_LOG(LogTemp, Warning, TEXT("Changing Default text of optional string %s"), *Text.ToString(), *GraphPinObj->GetDefaultAsString());
+		UE_LOG(LogTemp, Warning, TEXT("Changing Default text of optional string %s"), *Text.ToString());
 	}
 }
 

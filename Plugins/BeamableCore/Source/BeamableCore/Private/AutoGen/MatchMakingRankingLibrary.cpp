@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/MatchMakingRankingLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UMatchMakingRankingLibrary::MatchMakingRankingToJsonString(const UMatchMakingRanking* Serializable, const bool Pretty)
@@ -35,10 +36,13 @@ UMatchMakingRanking* UMatchMakingRankingLibrary::Make(bool bIsUnranked, int64 Gt
 
 void UMatchMakingRankingLibrary::Break(const UMatchMakingRanking* Serializable, bool& bIsUnranked, int64& Gt, int32& Rank, TMap<FString, FString>& Variables)
 {
-	bIsUnranked = Serializable->bIsUnranked;
-	Gt = Serializable->Gt;
-	Rank = Serializable->Rank;
-	Variables = Serializable->Variables;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		bIsUnranked = Serializable->bIsUnranked;
+		Gt = Serializable->Gt;
+		Rank = Serializable->Rank;
+		Variables = Serializable->Variables;
+	}
 		
 }
 

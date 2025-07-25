@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/ApiPlayersPresencePutPlayerPresenceResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UApiPlayersPresencePutPlayerPresenceResponseLibrary::ApiPlayersPresencePutPlayerPresenceResponseToJsonString(const UApiPlayersPresencePutPlayerPresenceResponse* Serializable, const bool Pretty)

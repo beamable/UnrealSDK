@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/EntitlementClaimWindowLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UEntitlementClaimWindowLibrary::EntitlementClaimWindowToJsonString(const UEntitlementClaimWindow* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ UEntitlementClaimWindow* UEntitlementClaimWindowLibrary::Make(int64 Open, int64 
 
 void UEntitlementClaimWindowLibrary::Break(const UEntitlementClaimWindow* Serializable, int64& Open, int64& Close)
 {
-	Open = Serializable->Open;
-	Close = Serializable->Close;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Open = Serializable->Open;
+		Close = Serializable->Close;
+	}
 		
 }
 

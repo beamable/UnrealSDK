@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/ProductViewLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UProductViewLibrary::ProductViewToJsonString(const UProductView* Serializable, const bool Pretty)
@@ -36,11 +37,14 @@ UProductView* UProductViewLibrary::Make(double LocalizedPrice, FString Sku, FStr
 
 void UProductViewLibrary::Break(const UProductView* Serializable, double& LocalizedPrice, FString& Sku, FString& Description, FString& IsoCurrencyCode, FString& LocalizedPriceString)
 {
-	LocalizedPrice = Serializable->LocalizedPrice;
-	Sku = Serializable->Sku;
-	Description = Serializable->Description;
-	IsoCurrencyCode = Serializable->IsoCurrencyCode;
-	LocalizedPriceString = Serializable->LocalizedPriceString;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		LocalizedPrice = Serializable->LocalizedPrice;
+		Sku = Serializable->Sku;
+		Description = Serializable->Description;
+		IsoCurrencyCode = Serializable->IsoCurrencyCode;
+		LocalizedPriceString = Serializable->LocalizedPriceString;
+	}
 		
 }
 

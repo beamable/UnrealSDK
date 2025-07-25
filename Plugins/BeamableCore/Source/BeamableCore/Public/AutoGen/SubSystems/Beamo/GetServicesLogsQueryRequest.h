@@ -8,7 +8,7 @@
 #include "BeamBackend/BeamFullResponse.h"
 
 #include "Serialization/BeamJsonUtils.h"
-#include "BeamableCore/Public/AutoGen/SignedRequestBody.h"
+#include "BeamableCore/Public/AutoGen/BeamoV2SignedRequestBody.h"
 
 #include "GetServicesLogsQueryRequest.generated.h"
 
@@ -41,7 +41,7 @@ public:
 };
 
 UDELEGATE(BlueprintAuthorityOnly)
-DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnGetServicesLogsQuerySuccess, FBeamRequestContext, Context, UGetServicesLogsQueryRequest*, Request, USignedRequestBody*, Response);
+DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnGetServicesLogsQuerySuccess, FBeamRequestContext, Context, UGetServicesLogsQueryRequest*, Request, UBeamoV2SignedRequestBody*, Response);
 
 UDELEGATE(BlueprintAuthorityOnly)
 DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnGetServicesLogsQueryError, FBeamRequestContext, Context, UGetServicesLogsQueryRequest*, Request, FBeamErrorResponse, Error);
@@ -49,5 +49,5 @@ DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnGetServicesLogsQueryError, FBeamRequestC
 UDELEGATE(BlueprintAuthorityOnly)
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FOnGetServicesLogsQueryComplete, FBeamRequestContext, Context, UGetServicesLogsQueryRequest*, Request);
 
-using FGetServicesLogsQueryFullResponse = FBeamFullResponse<UGetServicesLogsQueryRequest*, USignedRequestBody*>;
+using FGetServicesLogsQueryFullResponse = FBeamFullResponse<UGetServicesLogsQueryRequest*, UBeamoV2SignedRequestBody*>;
 DECLARE_DELEGATE_OneParam(FOnGetServicesLogsQueryFullResponse, FGetServicesLogsQueryFullResponse);

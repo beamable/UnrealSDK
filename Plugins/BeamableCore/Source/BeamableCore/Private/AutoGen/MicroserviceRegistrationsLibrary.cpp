@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/MicroserviceRegistrationsLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UMicroserviceRegistrationsLibrary::MicroserviceRegistrationsToJsonString(const UMicroserviceRegistrations* Serializable, const bool Pretty)
@@ -40,15 +41,18 @@ UMicroserviceRegistrations* UMicroserviceRegistrationsLibrary::Make(FString Serv
 
 void UMicroserviceRegistrationsLibrary::Break(const UMicroserviceRegistrations* Serializable, FString& ServiceName, FString& Cid, FString& Pid, int32& InstanceCount, FOptionalBool& bTrafficFilterEnabled, FOptionalString& RoutingKey, FOptionalInt64& StartedById, FOptionalString& BeamoName, FOptionalArrayOfSupportedFederation& Federation)
 {
-	ServiceName = Serializable->ServiceName;
-	Cid = Serializable->Cid;
-	Pid = Serializable->Pid;
-	InstanceCount = Serializable->InstanceCount;
-	bTrafficFilterEnabled = Serializable->bTrafficFilterEnabled;
-	RoutingKey = Serializable->RoutingKey;
-	StartedById = Serializable->StartedById;
-	BeamoName = Serializable->BeamoName;
-	Federation = Serializable->Federation;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		ServiceName = Serializable->ServiceName;
+		Cid = Serializable->Cid;
+		Pid = Serializable->Pid;
+		InstanceCount = Serializable->InstanceCount;
+		bTrafficFilterEnabled = Serializable->bTrafficFilterEnabled;
+		RoutingKey = Serializable->RoutingKey;
+		StartedById = Serializable->StartedById;
+		BeamoName = Serializable->BeamoName;
+		Federation = Serializable->Federation;
+	}
 		
 }
 

@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/GroupMembershipRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UGroupMembershipRequestBodyLibrary::GroupMembershipRequestBodyToJsonString(const UGroupMembershipRequestBody* Serializable, const bool Pretty)
@@ -36,11 +37,14 @@ UGroupMembershipRequestBody* UGroupMembershipRequestBodyLibrary::Make(EBeamGroup
 
 void UGroupMembershipRequestBodyLibrary::Break(const UGroupMembershipRequestBody* Serializable, EBeamGroupType& Type, int64& Group, FOptionalInt64& Successor, FOptionalInt64& Score, FOptionalInt64& SubGroup)
 {
-	Type = Serializable->Type;
-	Group = Serializable->Group;
-	Successor = Serializable->Successor;
-	Score = Serializable->Score;
-	SubGroup = Serializable->SubGroup;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Type = Serializable->Type;
+		Group = Serializable->Group;
+		Successor = Serializable->Successor;
+		Score = Serializable->Score;
+		SubGroup = Serializable->SubGroup;
+	}
 		
 }
 

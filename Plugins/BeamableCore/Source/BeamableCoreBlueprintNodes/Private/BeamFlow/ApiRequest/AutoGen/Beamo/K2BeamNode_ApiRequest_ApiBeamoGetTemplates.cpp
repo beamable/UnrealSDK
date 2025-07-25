@@ -6,7 +6,7 @@
 
 #include "BeamableCore/Public/AutoGen/SubSystems/BeamBeamoApi.h"
 #include "BeamableCore/Public/AutoGen/SubSystems/Beamo/ApiBeamoGetTemplatesRequest.h"
-#include "BeamableCore/Public/AutoGen/GetTemplatesResponse.h"
+#include "BeamableCore/Public/AutoGen/BeamoV2GetTemplatesResponse.h"
 
 #define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_ApiBeamoGetTemplates"
 
@@ -49,7 +49,7 @@ UClass* UK2BeamNode_ApiRequest_ApiBeamoGetTemplates::GetRequestClass() const
 
 UClass* UK2BeamNode_ApiRequest_ApiBeamoGetTemplates::GetResponseClass() const
 {
-	return UGetTemplatesResponse::StaticClass();
+	return UBeamoV2GetTemplatesResponse::StaticClass();
 }
 
 FString UK2BeamNode_ApiRequest_ApiBeamoGetTemplates::GetRequestSuccessDelegateName() const

@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/ApiMailboxPublishPostMailboxResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UApiMailboxPublishPostMailboxResponseLibrary::ApiMailboxPublishPostMailboxResponseToJsonString(const UApiMailboxPublishPostMailboxResponse* Serializable, const bool Pretty)

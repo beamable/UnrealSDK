@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/WebhookCometLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UWebhookCometLibrary::WebhookCometToJsonString(const UWebhookComet* Serializable, const bool Pretty)
@@ -37,12 +38,15 @@ UWebhookComet* UWebhookCometLibrary::Make(FString Method, URouteVariables* Varia
 
 void UWebhookCometLibrary::Break(const UWebhookComet* Serializable, FString& Method, URouteVariables*& Variables, FString& Symbol, UServiceRoute*& Route, URouteParameters*& Parameters, FOptionalString& Description)
 {
-	Method = Serializable->Method;
-	Variables = Serializable->Variables;
-	Symbol = Serializable->Symbol;
-	Route = Serializable->Route;
-	Parameters = Serializable->Parameters;
-	Description = Serializable->Description;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Method = Serializable->Method;
+		Variables = Serializable->Variables;
+		Symbol = Serializable->Symbol;
+		Route = Serializable->Route;
+		Parameters = Serializable->Parameters;
+		Description = Serializable->Description;
+	}
 		
 }
 

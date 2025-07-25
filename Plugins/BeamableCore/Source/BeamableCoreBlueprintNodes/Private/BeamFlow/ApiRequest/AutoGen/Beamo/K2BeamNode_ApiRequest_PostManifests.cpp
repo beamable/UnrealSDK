@@ -6,7 +6,7 @@
 
 #include "BeamableCore/Public/AutoGen/SubSystems/BeamBeamoApi.h"
 #include "BeamableCore/Public/AutoGen/SubSystems/Beamo/PostManifestsRequest.h"
-#include "BeamableCore/Public/AutoGen/BeamoActorManifestChecksum.h"
+#include "BeamableCore/Public/AutoGen/BeamoV2ManifestChecksum.h"
 
 #define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_PostManifests"
 
@@ -49,7 +49,7 @@ UClass* UK2BeamNode_ApiRequest_PostManifests::GetRequestClass() const
 
 UClass* UK2BeamNode_ApiRequest_PostManifests::GetResponseClass() const
 {
-	return UBeamoActorManifestChecksum::StaticClass();
+	return UBeamoV2ManifestChecksum::StaticClass();
 }
 
 FString UK2BeamNode_ApiRequest_PostManifests::GetRequestSuccessDelegateName() const

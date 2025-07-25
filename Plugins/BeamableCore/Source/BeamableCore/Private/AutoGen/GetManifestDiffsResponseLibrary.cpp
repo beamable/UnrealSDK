@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/GetManifestDiffsResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UGetManifestDiffsResponseLibrary::GetManifestDiffsResponseToJsonString(const UGetManifestDiffsResponse* Serializable, const bool Pretty)
@@ -35,10 +36,13 @@ UGetManifestDiffsResponse* UGetManifestDiffsResponseLibrary::Make(bool bHasMore,
 
 void UGetManifestDiffsResponseLibrary::Break(const UGetManifestDiffsResponse* Serializable, bool& bHasMore, FString& ManifestId, int32& TotalCount, TArray<UManifestDiffSummary*>& Diffs)
 {
-	bHasMore = Serializable->bHasMore;
-	ManifestId = Serializable->ManifestId;
-	TotalCount = Serializable->TotalCount;
-	Diffs = Serializable->Diffs;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		bHasMore = Serializable->bHasMore;
+		ManifestId = Serializable->ManifestId;
+		TotalCount = Serializable->TotalCount;
+		Diffs = Serializable->Diffs;
+	}
 		
 }
 

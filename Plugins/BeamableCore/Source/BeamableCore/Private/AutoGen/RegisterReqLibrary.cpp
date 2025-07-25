@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/RegisterReqLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString URegisterReqLibrary::RegisterReqToJsonString(const URegisterReq* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ URegisterReq* URegisterReqLibrary::Make(FString Provider, FString Token, UObject
 
 void URegisterReqLibrary::Break(const URegisterReq* Serializable, FString& Provider, FString& Token)
 {
-	Provider = Serializable->Provider;
-	Token = Serializable->Token;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Provider = Serializable->Provider;
+		Token = Serializable->Token;
+	}
 		
 }
 

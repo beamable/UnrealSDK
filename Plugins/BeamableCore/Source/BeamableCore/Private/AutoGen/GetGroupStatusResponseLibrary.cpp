@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/GetGroupStatusResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UGetGroupStatusResponseLibrary::GetGroupStatusResponseToJsonString(const UGetGroupStatusResponse* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UGetGroupStatusResponse* UGetGroupStatusResponseLibrary::Make(TArray<UGroupStatu
 
 void UGetGroupStatusResponseLibrary::Break(const UGetGroupStatusResponse* Serializable, TArray<UGroupStatus*>& Statuses)
 {
-	Statuses = Serializable->Statuses;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Statuses = Serializable->Statuses;
+	}
 		
 }
 

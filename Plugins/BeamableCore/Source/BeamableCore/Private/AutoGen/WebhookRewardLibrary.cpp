@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/WebhookRewardLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UWebhookRewardLibrary::WebhookRewardToJsonString(const UWebhookReward* Serializable, const bool Pretty)
@@ -34,9 +35,12 @@ UWebhookReward* UWebhookRewardLibrary::Make(UWebhookInvocationStrategy* Strategy
 
 void UWebhookRewardLibrary::Break(const UWebhookReward* Serializable, UWebhookInvocationStrategy*& Strategy, FOptionalString& WebhookSymbol, FOptionalWebhookComet& WebHookComet)
 {
-	Strategy = Serializable->Strategy;
-	WebhookSymbol = Serializable->WebhookSymbol;
-	WebHookComet = Serializable->WebHookComet;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Strategy = Serializable->Strategy;
+		WebhookSymbol = Serializable->WebhookSymbol;
+		WebHookComet = Serializable->WebHookComet;
+	}
 		
 }
 

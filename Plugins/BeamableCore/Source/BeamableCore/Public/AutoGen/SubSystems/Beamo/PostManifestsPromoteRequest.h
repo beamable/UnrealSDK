@@ -7,8 +7,8 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-#include "BeamableCore/Public/AutoGen/PromoteBeamoManifestRequestBody.h"
-#include "BeamableCore/Public/AutoGen/EmptyMessage.h"
+#include "BeamableCore/Public/AutoGen/BeamoV2PromoteBeamoManifestRequestBody.h"
+#include "BeamableCore/Public/AutoGen/BeamoV2EmptyMessage.h"
 
 #include "PostManifestsPromoteRequest.generated.h"
 
@@ -27,7 +27,7 @@ public:
 
 	// Body Params
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="", Category="Beam")
-	UPromoteBeamoManifestRequestBody* Body = {};
+	UBeamoV2PromoteBeamoManifestRequestBody* Body = {};
 
 	// Beam Base Request Declaration
 	UPostManifestsPromoteRequest() = default;
@@ -41,7 +41,7 @@ public:
 };
 
 UDELEGATE(BlueprintAuthorityOnly)
-DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnPostManifestsPromoteSuccess, FBeamRequestContext, Context, UPostManifestsPromoteRequest*, Request, UEmptyMessage*, Response);
+DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnPostManifestsPromoteSuccess, FBeamRequestContext, Context, UPostManifestsPromoteRequest*, Request, UBeamoV2EmptyMessage*, Response);
 
 UDELEGATE(BlueprintAuthorityOnly)
 DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnPostManifestsPromoteError, FBeamRequestContext, Context, UPostManifestsPromoteRequest*, Request, FBeamErrorResponse, Error);
@@ -49,5 +49,5 @@ DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnPostManifestsPromoteError, FBeamRequestC
 UDELEGATE(BlueprintAuthorityOnly)
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FOnPostManifestsPromoteComplete, FBeamRequestContext, Context, UPostManifestsPromoteRequest*, Request);
 
-using FPostManifestsPromoteFullResponse = FBeamFullResponse<UPostManifestsPromoteRequest*, UEmptyMessage*>;
+using FPostManifestsPromoteFullResponse = FBeamFullResponse<UPostManifestsPromoteRequest*, UBeamoV2EmptyMessage*>;
 DECLARE_DELEGATE_OneParam(FOnPostManifestsPromoteFullResponse, FPostManifestsPromoteFullResponse);

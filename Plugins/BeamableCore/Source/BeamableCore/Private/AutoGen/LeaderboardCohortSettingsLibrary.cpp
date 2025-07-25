@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/LeaderboardCohortSettingsLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString ULeaderboardCohortSettingsLibrary::LeaderboardCohortSettingsToJsonString(const ULeaderboardCohortSettings* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ ULeaderboardCohortSettings* ULeaderboardCohortSettingsLibrary::Make(TArray<ULead
 
 void ULeaderboardCohortSettingsLibrary::Break(const ULeaderboardCohortSettings* Serializable, TArray<ULeaderboardCohort*>& Cohorts)
 {
-	Cohorts = Serializable->Cohorts;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Cohorts = Serializable->Cohorts;
+	}
 		
 }
 

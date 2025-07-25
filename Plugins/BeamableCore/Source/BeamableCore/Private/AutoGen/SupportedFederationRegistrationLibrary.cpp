@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/SupportedFederationRegistrationLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString USupportedFederationRegistrationLibrary::SupportedFederationRegistrationToJsonString(const USupportedFederationRegistration* Serializable, const bool Pretty)
@@ -35,10 +36,13 @@ USupportedFederationRegistration* USupportedFederationRegistrationLibrary::Make(
 
 void USupportedFederationRegistrationLibrary::Break(const USupportedFederationRegistration* Serializable, bool& bTrafficFilterEnabled, FString& ServiceName, FOptionalString& RoutingKey, FOptionalArrayOfSupportedFederation& Federation)
 {
-	bTrafficFilterEnabled = Serializable->bTrafficFilterEnabled;
-	ServiceName = Serializable->ServiceName;
-	RoutingKey = Serializable->RoutingKey;
-	Federation = Serializable->Federation;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		bTrafficFilterEnabled = Serializable->bTrafficFilterEnabled;
+		ServiceName = Serializable->ServiceName;
+		RoutingKey = Serializable->RoutingKey;
+		Federation = Serializable->Federation;
+	}
 		
 }
 

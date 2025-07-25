@@ -37,7 +37,7 @@ UDeleteServicesFederationTrafficRequest* UDeleteServicesFederationTrafficRequest
 	
 	
 	// Makes a body and fill up with parameters (Blank if no body parameters exist)
-	Req->Body = NewObject<UDeleteRegistrationRequestBody>(Req);
+	Req->Body = NewObject<UBeamoV2DeleteRegistrationRequestBody>(Req);
 	Req->Body->RoutingKey = _RoutingKey;
 	
 

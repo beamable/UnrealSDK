@@ -6,7 +6,7 @@
 
 #include "BeamableCore/Public/AutoGen/SubSystems/BeamBeamoApi.h"
 #include "BeamableCore/Public/AutoGen/SubSystems/Beamo/PostServicesLogsQueryRequest.h"
-#include "BeamableCore/Public/AutoGen/QueryResponse.h"
+#include "BeamableCore/Public/AutoGen/BeamoV2QueryResponse.h"
 
 #define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_PostServicesLogsQuery"
 
@@ -49,7 +49,7 @@ UClass* UK2BeamNode_ApiRequest_PostServicesLogsQuery::GetRequestClass() const
 
 UClass* UK2BeamNode_ApiRequest_PostServicesLogsQuery::GetResponseClass() const
 {
-	return UQueryResponse::StaticClass();
+	return UBeamoV2QueryResponse::StaticClass();
 }
 
 FString UK2BeamNode_ApiRequest_PostServicesLogsQuery::GetRequestSuccessDelegateName() const

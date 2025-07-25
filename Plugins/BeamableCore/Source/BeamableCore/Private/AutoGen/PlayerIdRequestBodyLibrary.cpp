@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/PlayerIdRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UPlayerIdRequestBodyLibrary::PlayerIdRequestBodyToJsonString(const UPlayerIdRequestBody* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UPlayerIdRequestBody* UPlayerIdRequestBodyLibrary::Make(FBeamGamerTag PlayerId, 
 
 void UPlayerIdRequestBodyLibrary::Break(const UPlayerIdRequestBody* Serializable, FBeamGamerTag& PlayerId)
 {
-	PlayerId = Serializable->PlayerId;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		PlayerId = Serializable->PlayerId;
+	}
 		
 }
 

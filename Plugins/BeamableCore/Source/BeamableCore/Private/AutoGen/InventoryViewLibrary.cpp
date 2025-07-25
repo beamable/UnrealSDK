@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/InventoryViewLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UInventoryViewLibrary::InventoryViewToJsonString(const UInventoryView* Serializable, const bool Pretty)
@@ -34,9 +35,12 @@ UInventoryView* UInventoryViewLibrary::Make(TArray<UCurrencyView*> Currencies, T
 
 void UInventoryViewLibrary::Break(const UInventoryView* Serializable, TArray<UCurrencyView*>& Currencies, TArray<UItemGroup*>& Items, FOptionalString& Scope)
 {
-	Currencies = Serializable->Currencies;
-	Items = Serializable->Items;
-	Scope = Serializable->Scope;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Currencies = Serializable->Currencies;
+		Items = Serializable->Items;
+		Scope = Serializable->Scope;
+	}
 		
 }
 

@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/GetStatusForGroupsRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UGetStatusForGroupsRequestBodyLibrary::GetStatusForGroupsRequestBodyToJsonString(const UGetStatusForGroupsRequestBody* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ UGetStatusForGroupsRequestBody* UGetStatusForGroupsRequestBodyLibrary::Make(FStr
 
 void UGetStatusForGroupsRequestBodyLibrary::Break(const UGetStatusForGroupsRequestBody* Serializable, FString& ContentId, TArray<int64>& GroupIds)
 {
-	ContentId = Serializable->ContentId;
-	GroupIds = Serializable->GroupIds;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		ContentId = Serializable->ContentId;
+		GroupIds = Serializable->GroupIds;
+	}
 		
 }
 

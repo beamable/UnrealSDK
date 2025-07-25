@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/ServiceComponentLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UServiceComponentLibrary::ServiceComponentToJsonString(const UServiceComponent* Serializable, const bool Pretty)
@@ -22,7 +23,7 @@ FString UServiceComponentLibrary::ServiceComponentToJsonString(const UServiceCom
 	return Result;
 }	
 
-UServiceComponent* UServiceComponentLibrary::Make(FOptionalString Name, UObject* Outer)
+UServiceComponent* UServiceComponentLibrary::Make(FString Name, UObject* Outer)
 {
 	auto Serializable = NewObject<UServiceComponent>(Outer);
 	Serializable->Name = Name;
@@ -30,9 +31,12 @@ UServiceComponent* UServiceComponentLibrary::Make(FOptionalString Name, UObject*
 	return Serializable;
 }
 
-void UServiceComponentLibrary::Break(const UServiceComponent* Serializable, FOptionalString& Name)
+void UServiceComponentLibrary::Break(const UServiceComponent* Serializable, FString& Name)
 {
-	Name = Serializable->Name;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Name = Serializable->Name;
+	}
 		
 }
 

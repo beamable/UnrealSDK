@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/MatchTypeLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UMatchTypeLibrary::MatchTypeToJsonString(const UMatchType* Serializable, const bool Pretty)
@@ -37,12 +38,15 @@ UMatchType* UMatchTypeLibrary::Make(FOptionalBeamContentId Id, FOptionalInt32 Wa
 
 void UMatchTypeLibrary::Break(const UMatchType* Serializable, FOptionalBeamContentId& Id, FOptionalInt32& WaitAfterMinReachedSecs, FOptionalInt32& MaxWaitDurationSecs, FOptionalInt32& MatchingIntervalSecs, FOptionalString& FederatedGameServerNamespace, FOptionalArrayOfTeamContentProto& Teams)
 {
-	Id = Serializable->Id;
-	WaitAfterMinReachedSecs = Serializable->WaitAfterMinReachedSecs;
-	MaxWaitDurationSecs = Serializable->MaxWaitDurationSecs;
-	MatchingIntervalSecs = Serializable->MatchingIntervalSecs;
-	FederatedGameServerNamespace = Serializable->FederatedGameServerNamespace;
-	Teams = Serializable->Teams;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Id = Serializable->Id;
+		WaitAfterMinReachedSecs = Serializable->WaitAfterMinReachedSecs;
+		MaxWaitDurationSecs = Serializable->MaxWaitDurationSecs;
+		MatchingIntervalSecs = Serializable->MatchingIntervalSecs;
+		FederatedGameServerNamespace = Serializable->FederatedGameServerNamespace;
+		Teams = Serializable->Teams;
+	}
 		
 }
 

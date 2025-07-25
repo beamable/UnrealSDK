@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/SaveCatalogRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString USaveCatalogRequestBodyLibrary::SaveCatalogRequestBodyToJsonString(const USaveCatalogRequestBody* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ USaveCatalogRequestBody* USaveCatalogRequestBodyLibrary::Make(TArray<UStore*> St
 
 void USaveCatalogRequestBodyLibrary::Break(const USaveCatalogRequestBody* Serializable, TArray<UStore*>& Stores, TArray<UOfferDefinition*>& OfferDefinitions)
 {
-	Stores = Serializable->Stores;
-	OfferDefinitions = Serializable->OfferDefinitions;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Stores = Serializable->Stores;
+		OfferDefinitions = Serializable->OfferDefinitions;
+	}
 		
 }
 

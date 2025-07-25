@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/PreSignedUrlsResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UPreSignedUrlsResponseLibrary::PreSignedUrlsResponseToJsonString(const UPreSignedUrlsResponse* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UPreSignedUrlsResponse* UPreSignedUrlsResponseLibrary::Make(TArray<UBeamoBasicUR
 
 void UPreSignedUrlsResponseLibrary::Break(const UPreSignedUrlsResponse* Serializable, TArray<UBeamoBasicURLResponse*>& Response)
 {
-	Response = Serializable->Response;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Response = Serializable->Response;
+	}
 		
 }
 

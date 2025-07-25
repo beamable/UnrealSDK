@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/ListTokenResponseItemLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UListTokenResponseItemLibrary::ListTokenResponseItemToJsonString(const UListTokenResponseItem* Serializable, const bool Pretty)
@@ -35,10 +36,13 @@ UListTokenResponseItem* UListTokenResponseItemLibrary::Make(FString Token, FStri
 
 void UListTokenResponseItemLibrary::Break(const UListTokenResponseItem* Serializable, FString& Token, FString& Platform, FString& Device, FString& Created)
 {
-	Token = Serializable->Token;
-	Platform = Serializable->Platform;
-	Device = Serializable->Device;
-	Created = Serializable->Created;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Token = Serializable->Token;
+		Platform = Serializable->Platform;
+		Device = Serializable->Device;
+		Created = Serializable->Created;
+	}
 		
 }
 

@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/FederationInfoLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UFederationInfoLibrary::FederationInfoToJsonString(const UFederationInfo* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ UFederationInfo* UFederationInfoLibrary::Make(FString Service, FString Namespace
 
 void UFederationInfoLibrary::Break(const UFederationInfo* Serializable, FString& Service, FString& Namespace)
 {
-	Service = Serializable->Service;
-	Namespace = Serializable->Namespace;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Service = Serializable->Service;
+		Namespace = Serializable->Namespace;
+	}
 		
 }
 

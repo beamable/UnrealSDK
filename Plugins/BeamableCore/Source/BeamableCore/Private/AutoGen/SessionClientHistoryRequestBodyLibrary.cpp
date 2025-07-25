@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/SessionClientHistoryRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString USessionClientHistoryRequestBodyLibrary::SessionClientHistoryRequestBodyToJsonString(const USessionClientHistoryRequestBody* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ USessionClientHistoryRequestBody* USessionClientHistoryRequestBodyLibrary::Make(
 
 void USessionClientHistoryRequestBodyLibrary::Break(const USessionClientHistoryRequestBody* Serializable, FOptionalInt32& Month, FOptionalInt32& Year)
 {
-	Month = Serializable->Month;
-	Year = Serializable->Year;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Month = Serializable->Month;
+		Year = Serializable->Year;
+	}
 		
 }
 

@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/CalendarQueryResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UCalendarQueryResponseLibrary::CalendarQueryResponseToJsonString(const UCalendarQueryResponse* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UCalendarQueryResponse* UCalendarQueryResponseLibrary::Make(TArray<UCalendarView
 
 void UCalendarQueryResponseLibrary::Break(const UCalendarQueryResponse* Serializable, TArray<UCalendarView*>& Calendars)
 {
-	Calendars = Serializable->Calendars;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Calendars = Serializable->Calendars;
+	}
 		
 }
 

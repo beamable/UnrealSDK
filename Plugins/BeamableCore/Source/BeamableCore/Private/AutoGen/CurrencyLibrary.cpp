@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/CurrencyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UCurrencyLibrary::CurrencyToJsonString(const UCurrency* Serializable, const bool Pretty)
@@ -36,11 +37,14 @@ UCurrency* UCurrencyLibrary::Make(int64 Amount, FString Id, FOptionalInt64 Updat
 
 void UCurrencyLibrary::Break(const UCurrency* Serializable, int64& Amount, FString& Id, FOptionalInt64& UpdatedAt, FOptionalFederationInfo& Proxy, FOptionalArrayOfCurrencyProperty& Properties)
 {
-	Amount = Serializable->Amount;
-	Id = Serializable->Id;
-	UpdatedAt = Serializable->UpdatedAt;
-	Proxy = Serializable->Proxy;
-	Properties = Serializable->Properties;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Amount = Serializable->Amount;
+		Id = Serializable->Id;
+		UpdatedAt = Serializable->UpdatedAt;
+		Proxy = Serializable->Proxy;
+		Properties = Serializable->Properties;
+	}
 		
 }
 

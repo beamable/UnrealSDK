@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/DatabaseMeasurementsLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UDatabaseMeasurementsLibrary::DatabaseMeasurementsToJsonString(const UDatabaseMeasurements* Serializable, const bool Pretty)
@@ -22,33 +23,36 @@ FString UDatabaseMeasurementsLibrary::DatabaseMeasurementsToJsonString(const UDa
 	return Result;
 }	
 
-UDatabaseMeasurements* UDatabaseMeasurementsLibrary::Make(FString DatabaseName, FOptionalString Granularity, FOptionalString GroupId, FOptionalString HostId, FOptionalString ProcessId, FOptionalDateTime Start, FOptionalDateTime End, FOptionalArrayOfLink Links, FOptionalArrayOfDatabaseMeasurement Measurements, UObject* Outer)
+UDatabaseMeasurements* UDatabaseMeasurementsLibrary::Make(FString DatabaseName, TArray<ULink*> Links, FOptionalString GroupId, FOptionalString HostId, FOptionalString Granularity, FOptionalString End, FOptionalString Start, FOptionalString ProcessId, FOptionalArrayOfDatabaseMeasurement Measurements, UObject* Outer)
 {
 	auto Serializable = NewObject<UDatabaseMeasurements>(Outer);
 	Serializable->DatabaseName = DatabaseName;
-	Serializable->Granularity = Granularity;
+	Serializable->Links = Links;
 	Serializable->GroupId = GroupId;
 	Serializable->HostId = HostId;
-	Serializable->ProcessId = ProcessId;
-	Serializable->Start = Start;
+	Serializable->Granularity = Granularity;
 	Serializable->End = End;
-	Serializable->Links = Links;
+	Serializable->Start = Start;
+	Serializable->ProcessId = ProcessId;
 	Serializable->Measurements = Measurements;
 	
 	return Serializable;
 }
 
-void UDatabaseMeasurementsLibrary::Break(const UDatabaseMeasurements* Serializable, FString& DatabaseName, FOptionalString& Granularity, FOptionalString& GroupId, FOptionalString& HostId, FOptionalString& ProcessId, FOptionalDateTime& Start, FOptionalDateTime& End, FOptionalArrayOfLink& Links, FOptionalArrayOfDatabaseMeasurement& Measurements)
+void UDatabaseMeasurementsLibrary::Break(const UDatabaseMeasurements* Serializable, FString& DatabaseName, TArray<ULink*>& Links, FOptionalString& GroupId, FOptionalString& HostId, FOptionalString& Granularity, FOptionalString& End, FOptionalString& Start, FOptionalString& ProcessId, FOptionalArrayOfDatabaseMeasurement& Measurements)
 {
-	DatabaseName = Serializable->DatabaseName;
-	Granularity = Serializable->Granularity;
-	GroupId = Serializable->GroupId;
-	HostId = Serializable->HostId;
-	ProcessId = Serializable->ProcessId;
-	Start = Serializable->Start;
-	End = Serializable->End;
-	Links = Serializable->Links;
-	Measurements = Serializable->Measurements;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		DatabaseName = Serializable->DatabaseName;
+		Links = Serializable->Links;
+		GroupId = Serializable->GroupId;
+		HostId = Serializable->HostId;
+		Granularity = Serializable->Granularity;
+		End = Serializable->End;
+		Start = Serializable->Start;
+		ProcessId = Serializable->ProcessId;
+		Measurements = Serializable->Measurements;
+	}
 		
 }
 

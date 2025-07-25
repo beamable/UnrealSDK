@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/TeamLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UTeamLibrary::TeamToJsonString(const UTeam* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ UTeam* UTeamLibrary::Make(FOptionalString Name, FOptionalArrayOfBeamGamerTag Pla
 
 void UTeamLibrary::Break(const UTeam* Serializable, FOptionalString& Name, FOptionalArrayOfBeamGamerTag& Players)
 {
-	Name = Serializable->Name;
-	Players = Serializable->Players;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Name = Serializable->Name;
+		Players = Serializable->Players;
+	}
 		
 }
 

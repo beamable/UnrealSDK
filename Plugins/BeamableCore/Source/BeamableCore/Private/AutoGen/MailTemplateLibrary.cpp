@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/MailTemplateLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UMailTemplateLibrary::MailTemplateToJsonString(const UMailTemplate* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ UMailTemplate* UMailTemplateLibrary::Make(FString Subject, FString Body, UObject
 
 void UMailTemplateLibrary::Break(const UMailTemplate* Serializable, FString& Subject, FString& Body)
 {
-	Subject = Serializable->Subject;
-	Body = Serializable->Body;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Subject = Serializable->Subject;
+		Body = Serializable->Body;
+	}
 		
 }
 

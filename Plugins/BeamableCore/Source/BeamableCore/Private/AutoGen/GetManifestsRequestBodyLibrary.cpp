@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/GetManifestsRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UGetManifestsRequestBodyLibrary::GetManifestsRequestBodyToJsonString(const UGetManifestsRequestBody* Serializable, const bool Pretty)
@@ -34,9 +35,12 @@ UGetManifestsRequestBody* UGetManifestsRequestBodyLibrary::Make(FOptionalBool bA
 
 void UGetManifestsRequestBodyLibrary::Break(const UGetManifestsRequestBody* Serializable, FOptionalBool& bArchived, FOptionalInt32& Limit, FOptionalInt32& Offset)
 {
-	bArchived = Serializable->bArchived;
-	Limit = Serializable->Limit;
-	Offset = Serializable->Offset;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		bArchived = Serializable->bArchived;
+		Limit = Serializable->Limit;
+		Offset = Serializable->Offset;
+	}
 		
 }
 

@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
-#include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
+#include "Serialization/BeamJsonUtils.h"
 
 #include "ServiceDependencyReference.generated.h"
 
@@ -14,9 +14,9 @@ class BEAMABLECORE_API UServiceDependencyReference : public UObject, public IBea
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Id", Category="Beam")
-	FOptionalString Id = {};
+	FString Id = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Storage Type", Category="Beam")
-	FOptionalString StorageType = {};
+	FString StorageType = {};
 
 	
 
