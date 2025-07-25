@@ -17,7 +17,7 @@ void UArchiveOrUnarchiveManifestsRequestBody::BeamSerializeProperties(TUnrealPre
 
 void UArchiveOrUnarchiveManifestsRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeArray<FBeamContentManifestId, FString>(Bag->GetArrayField(TEXT("manifestIds")), ManifestIds, OuterOwner);
+	UBeamJsonUtils::DeserializeArray<FBeamContentManifestId, FString>(TEXT("manifestIds"), Bag, ManifestIds, OuterOwner);
 }
 
 

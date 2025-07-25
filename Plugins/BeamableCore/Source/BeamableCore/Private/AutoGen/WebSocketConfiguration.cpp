@@ -19,7 +19,7 @@ void UWebSocketConfiguration::BeamSerializeProperties(TUnrealPrettyJsonSerialize
 
 void UWebSocketConfiguration::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("provider")), Provider);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("provider"), Bag, Provider);
 	UBeamJsonUtils::DeserializeOptional<FString>("uri", Bag, Uri, OuterOwner);
 }
 

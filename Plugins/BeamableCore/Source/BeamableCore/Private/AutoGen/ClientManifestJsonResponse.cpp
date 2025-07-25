@@ -30,7 +30,7 @@ void UClientManifestJsonResponse::BeamSerializeProperties(TUnrealPrettyJsonSeria
 
 void UClientManifestJsonResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeArray<FBeamRemoteContentManifestEntry>(Bag->GetArrayField(TEXT("entries")), Entries, OuterOwner);
+	UBeamJsonUtils::DeserializeArray<FBeamRemoteContentManifestEntry>(TEXT("entries"), Bag, Entries, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<int64>("latestUpdate", Bag, LatestUpdate, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<int64>("publisherAccountId", Bag, PublisherAccountId, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<int64>("createdAt", Bag, CreatedAt, OuterOwner);

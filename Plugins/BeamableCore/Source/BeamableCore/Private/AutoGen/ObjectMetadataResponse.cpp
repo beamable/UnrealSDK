@@ -19,8 +19,8 @@ void UObjectMetadataResponse::BeamSerializeProperties(TUnrealPrettyJsonSerialize
 
 void UObjectMetadataResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("objectKey")), ObjectKey);
-	UBeamJsonUtils::DeserializeMap<FString>(Bag->GetObjectField(TEXT("metadata")), Metadata, OuterOwner);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("objectKey"), Bag, ObjectKey);
+	UBeamJsonUtils::DeserializeMap<FString>(TEXT("metadata"), Bag, Metadata, OuterOwner);
 }
 
 

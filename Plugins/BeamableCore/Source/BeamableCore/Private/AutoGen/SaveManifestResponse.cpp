@@ -30,10 +30,10 @@ void USaveManifestResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer&
 
 void USaveManifestResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("id")), Id);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("checksum")), Checksum);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("uid")), Uid);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("created")), Created);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("id"), Bag, Id);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("checksum"), Bag, Checksum);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("uid"), Bag, Uid);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("created"), Bag, Created);
 	UBeamJsonUtils::DeserializeOptional<FString>("diffUrl", Bag, DiffUrl, OuterOwner);
 }
 

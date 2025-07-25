@@ -17,7 +17,7 @@ void URealmConfigSaveRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSeria
 
 void URealmConfigSaveRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeMap<FString>(Bag->GetObjectField(TEXT("config")), Config, OuterOwner);
+	UBeamJsonUtils::DeserializeMap<FString>(TEXT("config"), Bag, Config, OuterOwner);
 }
 
 

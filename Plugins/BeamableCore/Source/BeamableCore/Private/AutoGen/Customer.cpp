@@ -39,10 +39,10 @@ void UCustomer::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer)
 
 void UCustomer::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("name")), Name);
-	UBeamJsonUtils::DeserializeSemanticType<int64>(Bag->TryGetField(TEXT("cid")), Cid, OuterOwner);
-	UBeamJsonUtils::DeserializeArray<UProject*>(Bag->GetArrayField(TEXT("projects")), Projects, OuterOwner);
-	UBeamJsonUtils::DeserializeArray<URealmsBasicAccount*>(Bag->GetArrayField(TEXT("accounts")), Accounts, OuterOwner);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("name"), Bag, Name);
+	UBeamJsonUtils::DeserializeSemanticType<int64>(TEXT("cid"), Bag, Cid, OuterOwner);
+	UBeamJsonUtils::DeserializeArray<UProject*>(TEXT("projects"), Bag, Projects, OuterOwner);
+	UBeamJsonUtils::DeserializeArray<URealmsBasicAccount*>(TEXT("accounts"), Bag, Accounts, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("activationStatus", Bag, ActivationStatus, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("paymentStatus", Bag, PaymentStatus, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("image", Bag, Image, OuterOwner);

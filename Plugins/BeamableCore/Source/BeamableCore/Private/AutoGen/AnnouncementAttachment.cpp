@@ -23,8 +23,8 @@ void UAnnouncementAttachment::BeamSerializeProperties(TUnrealPrettyJsonSerialize
 
 void UAnnouncementAttachment::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("symbol")), Symbol);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("count")), Count);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("symbol"), Bag, Symbol);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("count"), Bag, Count);
 	UBeamJsonUtils::DeserializeOptional<FString>("type", Bag, Type, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<TArray<UAttachmentProperty*>, UAttachmentProperty*>("properties", Bag, Properties, OuterOwner);
 }

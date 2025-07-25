@@ -17,7 +17,7 @@ void UHtmlResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Seriali
 
 void UHtmlResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("html")), Html);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("html"), Bag, Html);
 }
 
 

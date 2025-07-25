@@ -17,7 +17,7 @@ void UEra::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) cons
 
 void UEra::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("value")), Value);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("value"), Bag, Value);
 }
 
 

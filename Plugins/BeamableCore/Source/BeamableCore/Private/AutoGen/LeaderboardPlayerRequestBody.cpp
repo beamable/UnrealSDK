@@ -17,7 +17,7 @@ void ULeaderboardPlayerRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSer
 
 void ULeaderboardPlayerRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("dbid")), Dbid);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("dbid"), Bag, Dbid);
 }
 
 

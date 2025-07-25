@@ -26,9 +26,9 @@ void UAccountRolesReport::BeamSerializeProperties(TUnrealPrettyJsonSerializer& S
 
 void UAccountRolesReport::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("accountId")), AccountId);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("email")), Email);
-	UBeamJsonUtils::DeserializeArray<URealmRolesReport*>(Bag->GetArrayField(TEXT("realms")), Realms, OuterOwner);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("accountId"), Bag, AccountId);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("email"), Bag, Email);
+	UBeamJsonUtils::DeserializeArray<URealmRolesReport*>(TEXT("realms"), Bag, Realms, OuterOwner);
 }
 
 

@@ -17,7 +17,7 @@ void UFacebookPaymentUpdateResponse::BeamSerializeProperties(TUnrealPrettyJsonSe
 
 void UFacebookPaymentUpdateResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("result")), Result);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("result"), Bag, Result);
 }
 
 

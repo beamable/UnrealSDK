@@ -32,9 +32,9 @@ void UOtelView::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer)
 
 void UOtelView::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("playerId")), PlayerId);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("name")), Name);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("query")), Query);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("playerId"), Bag, PlayerId);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("name"), Bag, Name);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("query"), Bag, Query);
 	UBeamJsonUtils::DeserializeOptional<bool>("isFavorite", Bag, bIsFavorite, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<bool>("isPublic", Bag, bIsPublic, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<UObjectId*>("id", Bag, Id, OuterOwner);

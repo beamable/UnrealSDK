@@ -21,7 +21,7 @@ void UPromoteRealmRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializ
 
 void UPromoteRealmRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeSemanticType<FString>(Bag->TryGetField(TEXT("sourcePid")), SourcePid, OuterOwner);
+	UBeamJsonUtils::DeserializeSemanticType<FString>(TEXT("sourcePid"), Bag, SourcePid, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<TArray<FString>, FString>("promotions", Bag, Promotions, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<TArray<FString>, FString>("contentManifestIds", Bag, ContentManifestIds, OuterOwner);
 }

@@ -17,7 +17,7 @@ void ULeaderboardMembershipRequestBody::BeamSerializeProperties(TUnrealPrettyJso
 
 void ULeaderboardMembershipRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("playerId")), PlayerId);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("playerId"), Bag, PlayerId);
 }
 
 

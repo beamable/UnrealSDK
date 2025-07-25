@@ -9,6 +9,7 @@
 #include "Subsystems/CLI/Autogen/StreamData/FederationInstanceStreamData.h"
 #include "Subsystems/CLI/Autogen/StreamData/HostServiceDescriptorStreamData.h"
 #include "Subsystems/CLI/Autogen/StreamData/RemoteServiceDescriptorStreamData.h"
+#include "Subsystems/CLI/Autogen/StreamData/RemoteStorageDescriptorStreamData.h"
 #include "BeamCliProjectPsCommand.generated.h"
 
 

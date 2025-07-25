@@ -33,15 +33,15 @@ void ULocalDate::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer
 
 void ULocalDate::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("leapYear")), bLeapYear);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("dayOfYear")), DayOfYear);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("leapYear"), Bag, bLeapYear);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("dayOfYear"), Bag, DayOfYear);
 	UBeamJsonUtils::DeserializeUObject<UIsoChronology*>("chronology", Bag, Chronology, OuterOwner);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("dayOfWeek")), DayOfWeek);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("monthValue")), MonthValue);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("dayOfMonth")), DayOfMonth);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("year")), Year);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("dayOfWeek"), Bag, DayOfWeek);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("monthValue"), Bag, MonthValue);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("dayOfMonth"), Bag, DayOfMonth);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("year"), Bag, Year);
 	UBeamJsonUtils::DeserializeUObject<UEra*>("era", Bag, Era, OuterOwner);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("month")), Month);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("month"), Bag, Month);
 }
 
 

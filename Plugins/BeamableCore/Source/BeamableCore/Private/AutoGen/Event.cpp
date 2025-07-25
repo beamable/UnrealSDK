@@ -39,10 +39,10 @@ void UEvent::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) co
 
 void UEvent::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("name")), Name);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("start_date")), StartDate);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("symbol")), Symbol);
-	UBeamJsonUtils::DeserializeArray<UEventPhase*>(Bag->GetArrayField(TEXT("phases")), Phases, OuterOwner);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("name"), Bag, Name);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("start_date"), Bag, StartDate);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("symbol"), Bag, Symbol);
+	UBeamJsonUtils::DeserializeArray<UEventPhase*>(TEXT("phases"), Bag, Phases, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<int32>("partition_size", Bag, PartitionSize, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<UEventGroupRewards*>("group_rewards", Bag, GroupRewards, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<ULeaderboardCohortSettings*>("cohortSettings", Bag, CohortSettings, OuterOwner);

@@ -21,8 +21,8 @@ void UGetChampionsRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializ
 
 void UGetChampionsRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("tournamentId")), TournamentId);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("cycles")), Cycles);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("tournamentId"), Bag, TournamentId);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("cycles"), Bag, Cycles);
 	UBeamJsonUtils::DeserializeOptional<FString>("contentId", Bag, ContentId, OuterOwner);
 }
 

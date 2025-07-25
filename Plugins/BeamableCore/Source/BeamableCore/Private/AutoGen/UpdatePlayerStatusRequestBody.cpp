@@ -21,8 +21,8 @@ void UUpdatePlayerStatusRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSe
 
 void UUpdatePlayerStatusRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("playerId")), PlayerId);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("tournamentId")), TournamentId);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("playerId"), Bag, PlayerId);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("tournamentId"), Bag, TournamentId);
 	UBeamJsonUtils::DeserializeUObject<UPlayerStatusUpdate*>("update", Bag, Update, OuterOwner);
 }
 

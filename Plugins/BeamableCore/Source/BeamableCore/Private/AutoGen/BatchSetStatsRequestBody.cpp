@@ -17,7 +17,7 @@ void UBatchSetStatsRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSeriali
 
 void UBatchSetStatsRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeArray<UStatUpdateRequestBody*>(Bag->GetArrayField(TEXT("updates")), Updates, OuterOwner);
+	UBeamJsonUtils::DeserializeArray<UStatUpdateRequestBody*>(TEXT("updates"), Bag, Updates, OuterOwner);
 }
 
 

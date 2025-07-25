@@ -19,8 +19,8 @@ void UStatSubscriptionNotification::BeamSerializeProperties(TUnrealPrettyJsonSer
 
 void UStatSubscriptionNotification::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeMap<FString>(Bag->GetObjectField(TEXT("statsBefore")), StatsBefore, OuterOwner);
-	UBeamJsonUtils::DeserializeMap<FString>(Bag->GetObjectField(TEXT("statsAfter")), StatsAfter, OuterOwner);
+	UBeamJsonUtils::DeserializeMap<FString>(TEXT("statsBefore"), Bag, StatsBefore, OuterOwner);
+	UBeamJsonUtils::DeserializeMap<FString>(TEXT("statsAfter"), Bag, StatsAfter, OuterOwner);
 }
 
 

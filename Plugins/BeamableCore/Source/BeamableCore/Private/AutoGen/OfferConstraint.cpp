@@ -19,8 +19,8 @@ void UOfferConstraint::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Seri
 
 void UOfferConstraint::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("constraint")), Constraint);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("value")), Value);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("constraint"), Bag, Constraint);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("value"), Bag, Value);
 }
 
 

@@ -22,7 +22,7 @@ void UAnnouncementRawResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializ
 
 void UAnnouncementRawResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeMap<UAnnouncementState*>(Bag->GetObjectField(TEXT("announcements")), Announcements, OuterOwner);
+	UBeamJsonUtils::DeserializeMap<UAnnouncementState*>(TEXT("announcements"), Bag, Announcements, OuterOwner);
 }
 
 

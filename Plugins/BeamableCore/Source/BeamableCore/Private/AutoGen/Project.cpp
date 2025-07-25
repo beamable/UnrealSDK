@@ -43,12 +43,12 @@ void UProject::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) 
 
 void UProject::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("archived")), bArchived);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("root")), bRoot);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("secret")), Secret);
-	UBeamJsonUtils::DeserializeSemanticType<FString>(Bag->TryGetField(TEXT("name")), Name, OuterOwner);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("plan")), Plan);
-	UBeamJsonUtils::DeserializeMap<FString>(Bag->GetObjectField(TEXT("customCharts")), CustomCharts, OuterOwner);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("archived"), Bag, bArchived);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("root"), Bag, bRoot);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("secret"), Bag, Secret);
+	UBeamJsonUtils::DeserializeSemanticType<FString>(TEXT("name"), Bag, Name, OuterOwner);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("plan"), Bag, Plan);
+	UBeamJsonUtils::DeserializeMap<FString>(TEXT("customCharts"), Bag, CustomCharts, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<bool>("sharded", Bag, bSharded, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<bool>("sigval", Bag, bSigval, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("displayName", Bag, DisplayName, OuterOwner);

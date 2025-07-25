@@ -35,8 +35,8 @@ void USendMailObjectRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerial
 
 void USendMailObjectRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("senderGamerTag")), SenderGamerTag);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("category")), Category);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("senderGamerTag"), Bag, SenderGamerTag);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("category"), Bag, Category);
 	UBeamJsonUtils::DeserializeOptional<FString>("body", Bag, Body, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("expires", Bag, Expires, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<UPlayerReward*>("playerRewards", Bag, PlayerRewards, OuterOwner);

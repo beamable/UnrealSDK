@@ -17,7 +17,7 @@ void UDeleteLocalizationRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSe
 
 void UDeleteLocalizationRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeArray<ULocalizationQuery*>(Bag->GetArrayField(TEXT("localizations")), Localizations, OuterOwner);
+	UBeamJsonUtils::DeserializeArray<ULocalizationQuery*>(TEXT("localizations"), Bag, Localizations, OuterOwner);
 }
 
 

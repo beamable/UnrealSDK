@@ -43,13 +43,13 @@ void UMessage::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) 
 
 void UMessage::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("receiverGamerTag")), ReceiverGamerTag);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("state")), State);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("id")), Id);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("senderGamerTag")), SenderGamerTag);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("sent")), Sent);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("category")), Category);
-	UBeamJsonUtils::DeserializeArray<UAttachment*>(Bag->GetArrayField(TEXT("attachments")), Attachments, OuterOwner);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("receiverGamerTag"), Bag, ReceiverGamerTag);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("state"), Bag, State);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("id"), Bag, Id);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("senderGamerTag"), Bag, SenderGamerTag);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("sent"), Bag, Sent);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("category"), Bag, Category);
+	UBeamJsonUtils::DeserializeArray<UAttachment*>(TEXT("attachments"), Bag, Attachments, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("body", Bag, Body, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<int64>("expires", Bag, Expires, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<UPlayerReward*>("playerRewards", Bag, PlayerRewards, OuterOwner);

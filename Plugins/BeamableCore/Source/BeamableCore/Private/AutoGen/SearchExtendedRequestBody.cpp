@@ -25,11 +25,11 @@ void USearchExtendedRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerial
 
 void USearchExtendedRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("domain")), Domain);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("objectType")), ObjectType);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("access")), Access);
-	UBeamJsonUtils::DeserializeArray<UStatsSearchCriteria*>(Bag->GetArrayField(TEXT("criteria")), Criteria, OuterOwner);
-	UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("statKeys")), StatKeys, OuterOwner);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("domain"), Bag, Domain);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("objectType"), Bag, ObjectType);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("access"), Bag, Access);
+	UBeamJsonUtils::DeserializeArray<UStatsSearchCriteria*>(TEXT("criteria"), Bag, Criteria, OuterOwner);
+	UBeamJsonUtils::DeserializeArray<FString>(TEXT("statKeys"), Bag, StatKeys, OuterOwner);
 }
 
 

@@ -22,7 +22,7 @@ void UURLSResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Seriali
 
 void UURLSResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeArray<UCloudsavingBasicURLResponse*>(Bag->GetArrayField(TEXT("response")), Response, OuterOwner);
+	UBeamJsonUtils::DeserializeArray<UCloudsavingBasicURLResponse*>(TEXT("response"), Bag, Response, OuterOwner);
 }
 
 

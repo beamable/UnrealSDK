@@ -23,9 +23,9 @@ void UDonationEntry::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serial
 
 void UDonationEntry::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("playerId")), PlayerId);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("amount")), Amount);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("time")), Time);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("playerId"), Bag, PlayerId);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("amount"), Bag, Amount);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("time"), Bag, Time);
 	UBeamJsonUtils::DeserializeOptional<bool>("claimed", Bag, bClaimed, OuterOwner);
 }
 

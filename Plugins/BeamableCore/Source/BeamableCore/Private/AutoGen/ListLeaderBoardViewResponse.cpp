@@ -24,8 +24,8 @@ void UListLeaderBoardViewResponse::BeamSerializeProperties(TUnrealPrettyJsonSeri
 
 void UListLeaderBoardViewResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("result")), Result);
-	UBeamJsonUtils::DeserializeArray<ULeaderBoardView*>(Bag->GetArrayField(TEXT("lbs")), Lbs, OuterOwner);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("result"), Bag, Result);
+	UBeamJsonUtils::DeserializeArray<ULeaderBoardView*>(TEXT("lbs"), Bag, Lbs, OuterOwner);
 }
 
 

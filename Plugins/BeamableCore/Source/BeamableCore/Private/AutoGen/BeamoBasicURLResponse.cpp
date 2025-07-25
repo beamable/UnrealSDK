@@ -19,8 +19,8 @@ void UBeamoBasicURLResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer
 
 void UBeamoBasicURLResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("serviceName")), ServiceName);
-	UBeamJsonUtils::DeserializeArray<UUploadURL*>(Bag->GetArrayField(TEXT("s3URLs")), S3URLs, OuterOwner);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("serviceName"), Bag, ServiceName);
+	UBeamJsonUtils::DeserializeArray<UUploadURL*>(TEXT("s3URLs"), Bag, S3URLs, OuterOwner);
 }
 
 

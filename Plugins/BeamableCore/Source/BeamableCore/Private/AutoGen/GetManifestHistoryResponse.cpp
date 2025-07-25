@@ -22,7 +22,7 @@ void UGetManifestHistoryResponse::BeamSerializeProperties(TUnrealPrettyJsonSeria
 
 void UGetManifestHistoryResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeArray<UManifestSummary*>(Bag->GetArrayField(TEXT("manifests")), Manifests, OuterOwner);
+	UBeamJsonUtils::DeserializeArray<UManifestSummary*>(TEXT("manifests"), Bag, Manifests, OuterOwner);
 }
 
 

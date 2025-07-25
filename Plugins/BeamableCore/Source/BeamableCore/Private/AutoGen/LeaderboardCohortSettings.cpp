@@ -17,7 +17,7 @@ void ULeaderboardCohortSettings::BeamSerializeProperties(TUnrealPrettyJsonSerial
 
 void ULeaderboardCohortSettings::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeArray<ULeaderboardCohort*>(Bag->GetArrayField(TEXT("cohorts")), Cohorts, OuterOwner);
+	UBeamJsonUtils::DeserializeArray<ULeaderboardCohort*>(TEXT("cohorts"), Bag, Cohorts, OuterOwner);
 }
 
 

@@ -19,7 +19,7 @@ void UBeamoV2DataPoint::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Ser
 
 void UBeamoV2DataPoint::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("value")), Value);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("value"), Bag, Value);
 	UBeamJsonUtils::DeserializeOptional<FDateTime>("timeStamp", Bag, TimeStamp, OuterOwner);
 }
 

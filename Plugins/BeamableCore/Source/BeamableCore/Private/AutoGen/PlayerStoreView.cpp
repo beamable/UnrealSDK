@@ -25,8 +25,8 @@ void UPlayerStoreView::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Seri
 
 void UPlayerStoreView::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("symbol")), Symbol);
-	UBeamJsonUtils::DeserializeArray<UPlayerListingView*>(Bag->GetArrayField(TEXT("listings")), Listings, OuterOwner);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("symbol"), Bag, Symbol);
+	UBeamJsonUtils::DeserializeArray<UPlayerListingView*>(TEXT("listings"), Bag, Listings, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<int64>("nextDeltaSeconds", Bag, NextDeltaSeconds, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("title", Bag, Title, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<int64>("secondsRemain", Bag, SecondsRemain, OuterOwner);

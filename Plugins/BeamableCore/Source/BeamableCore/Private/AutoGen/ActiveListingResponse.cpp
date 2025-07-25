@@ -24,7 +24,7 @@ void UActiveListingResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer
 
 void UActiveListingResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("storeSymbol")), StoreSymbol);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("storeSymbol"), Bag, StoreSymbol);
 	UBeamJsonUtils::DeserializeUObject<UPlayerListingView*>("listing", Bag, Listing, OuterOwner);
 }
 

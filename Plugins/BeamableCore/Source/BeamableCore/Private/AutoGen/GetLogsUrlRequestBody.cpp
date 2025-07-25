@@ -27,7 +27,7 @@ void UGetLogsUrlRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer
 
 void UGetLogsUrlRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("serviceName")), ServiceName);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("serviceName"), Bag, ServiceName);
 	UBeamJsonUtils::DeserializeOptional<int64>("startTime", Bag, StartTime, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("nextToken", Bag, NextToken, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("filter", Bag, Filter, OuterOwner);

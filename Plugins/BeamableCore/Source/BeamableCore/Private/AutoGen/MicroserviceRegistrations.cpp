@@ -33,10 +33,10 @@ void UMicroserviceRegistrations::BeamSerializeProperties(TUnrealPrettyJsonSerial
 
 void UMicroserviceRegistrations::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("serviceName")), ServiceName);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("cid")), Cid);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("pid")), Pid);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("instanceCount")), InstanceCount);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("serviceName"), Bag, ServiceName);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("cid"), Bag, Cid);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("pid"), Bag, Pid);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("instanceCount"), Bag, InstanceCount);
 	UBeamJsonUtils::DeserializeOptional<bool>("trafficFilterEnabled", Bag, bTrafficFilterEnabled, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("routingKey", Bag, RoutingKey, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<int64>("startedById", Bag, StartedById, OuterOwner);

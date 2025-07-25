@@ -26,8 +26,8 @@ void UInventoryView::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serial
 
 void UInventoryView::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeArray<UCurrencyView*>(Bag->GetArrayField(TEXT("currencies")), Currencies, OuterOwner);
-	UBeamJsonUtils::DeserializeArray<UItemGroup*>(Bag->GetArrayField(TEXT("items")), Items, OuterOwner);
+	UBeamJsonUtils::DeserializeArray<UCurrencyView*>(TEXT("currencies"), Bag, Currencies, OuterOwner);
+	UBeamJsonUtils::DeserializeArray<UItemGroup*>(TEXT("items"), Bag, Items, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("scope", Bag, Scope, OuterOwner);
 }
 

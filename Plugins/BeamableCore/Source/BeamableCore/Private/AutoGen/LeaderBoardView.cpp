@@ -23,9 +23,9 @@ void ULeaderBoardView::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Seri
 
 void ULeaderBoardView::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("lbId")), LbId);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("boardSize")), BoardSize);
-	UBeamJsonUtils::DeserializeArray<URankEntry*>(Bag->GetArrayField(TEXT("rankings")), Rankings, OuterOwner);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("lbId"), Bag, LbId);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("boardSize"), Bag, BoardSize);
+	UBeamJsonUtils::DeserializeArray<URankEntry*>(TEXT("rankings"), Bag, Rankings, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<URankEntry*>("rankgt", Bag, Rankgt, OuterOwner);
 }
 

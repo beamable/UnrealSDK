@@ -19,8 +19,8 @@ void UFailPurchaseRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializ
 
 void UFailPurchaseRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("txid")), Txid);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("reason")), Reason);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("txid"), Bag, Txid);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("reason"), Bag, Reason);
 }
 
 

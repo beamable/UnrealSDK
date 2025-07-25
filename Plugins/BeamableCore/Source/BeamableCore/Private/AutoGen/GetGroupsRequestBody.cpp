@@ -27,7 +27,7 @@ void UGetGroupsRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer&
 
 void UGetGroupsRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("tournamentId")), TournamentId);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("tournamentId"), Bag, TournamentId);
 	UBeamJsonUtils::DeserializeOptional<int32>("max", Bag, Max, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<int64>("focus", Bag, Focus, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<int32>("cycle", Bag, Cycle, OuterOwner);

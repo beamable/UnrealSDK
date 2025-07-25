@@ -25,11 +25,11 @@ void UChampionScore::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serial
 
 void UChampionScore::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("endTimeMs")), EndTimeMs);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("startTimeMs")), StartTimeMs);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("score")), Score);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("cycle")), Cycle);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("playerId")), PlayerId);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("endTimeMs"), Bag, EndTimeMs);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("startTimeMs"), Bag, StartTimeMs);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("score"), Bag, Score);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("cycle"), Bag, Cycle);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("playerId"), Bag, PlayerId);
 }
 
 

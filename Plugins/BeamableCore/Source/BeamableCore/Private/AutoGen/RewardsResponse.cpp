@@ -22,7 +22,7 @@ void URewardsResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Seri
 
 void URewardsResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeArray<UTournamentCurrencyReward*>(Bag->GetArrayField(TEXT("rewardCurrencies")), RewardCurrencies, OuterOwner);
+	UBeamJsonUtils::DeserializeArray<UTournamentCurrencyReward*>(TEXT("rewardCurrencies"), Bag, RewardCurrencies, OuterOwner);
 }
 
 

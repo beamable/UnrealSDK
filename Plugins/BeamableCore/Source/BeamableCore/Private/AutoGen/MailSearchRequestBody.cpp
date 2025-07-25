@@ -17,7 +17,7 @@ void UMailSearchRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer
 
 void UMailSearchRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeArray<UMailSearchClause*>(Bag->GetArrayField(TEXT("clauses")), Clauses, OuterOwner);
+	UBeamJsonUtils::DeserializeArray<UMailSearchClause*>(TEXT("clauses"), Bag, Clauses, OuterOwner);
 }
 
 

@@ -19,7 +19,7 @@ void UCommerceLootRoll::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Ser
 
 void UCommerceLootRoll::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("preroll")), bPreroll);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("preroll"), Bag, bPreroll);
 	UBeamJsonUtils::DeserializeOptional<TArray<FString>, FString>("externalTables", Bag, ExternalTables, OuterOwner);
 }
 

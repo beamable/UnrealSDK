@@ -28,10 +28,10 @@ void UGetProductResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer& S
 
 void UGetProductResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("id")), Id);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("name")), Name);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("description")), Description);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("price")), Price);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("id"), Bag, Id);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("name"), Bag, Name);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("description"), Bag, Description);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("price"), Bag, Price);
 }
 
 

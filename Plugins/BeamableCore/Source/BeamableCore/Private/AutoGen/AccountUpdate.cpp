@@ -33,7 +33,7 @@ void UAccountUpdate::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serial
 
 void UAccountUpdate::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("hasThirdPartyToken")), bHasThirdPartyToken);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("hasThirdPartyToken"), Bag, bHasThirdPartyToken);
 	UBeamJsonUtils::DeserializeOptional<FString>("thirdParty", Bag, ThirdParty, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("country", Bag, Country, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("language", Bag, Language, OuterOwner);

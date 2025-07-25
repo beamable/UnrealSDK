@@ -19,7 +19,7 @@ void UOfferRequirement::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Ser
 
 void UOfferRequirement::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("offerSymbol")), OfferSymbol);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("offerSymbol"), Bag, OfferSymbol);
 	UBeamJsonUtils::DeserializeUObject<UOfferConstraint*>("purchases", Bag, Purchases, OuterOwner);
 }
 

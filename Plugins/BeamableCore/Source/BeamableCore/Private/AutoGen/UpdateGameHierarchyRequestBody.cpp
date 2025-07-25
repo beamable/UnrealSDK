@@ -19,8 +19,8 @@ void UUpdateGameHierarchyRequestBody::BeamSerializeProperties(TUnrealPrettyJsonS
 
 void UUpdateGameHierarchyRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeSemanticType<FString>(Bag->TryGetField(TEXT("rootPID")), RootPID, OuterOwner);
-	UBeamJsonUtils::DeserializeArray<UProjectView*>(Bag->GetArrayField(TEXT("projects")), Projects, OuterOwner);
+	UBeamJsonUtils::DeserializeSemanticType<FString>(TEXT("rootPID"), Bag, RootPID, OuterOwner);
+	UBeamJsonUtils::DeserializeArray<UProjectView*>(TEXT("projects"), Bag, Projects, OuterOwner);
 }
 
 

@@ -22,7 +22,7 @@ void UInFlightFailureResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializ
 
 void UInFlightFailureResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeArray<UInFlightFailure*>(Bag->GetArrayField(TEXT("failures")), Failures, OuterOwner);
+	UBeamJsonUtils::DeserializeArray<UInFlightFailure*>(TEXT("failures"), Bag, Failures, OuterOwner);
 }
 
 

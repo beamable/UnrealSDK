@@ -19,8 +19,8 @@ void UUploadURL::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer
 
 void UUploadURL::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("key")), Key);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("url")), Url);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("key"), Bag, Key);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("url"), Bag, Url);
 }
 
 

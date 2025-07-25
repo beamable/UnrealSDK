@@ -19,7 +19,7 @@ void UPullManifestRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializ
 
 void UPullManifestRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeSemanticType<FString>(Bag->TryGetField(TEXT("sourceRealmPid")), SourceRealmPid, OuterOwner);
+	UBeamJsonUtils::DeserializeSemanticType<FString>(TEXT("sourceRealmPid"), Bag, SourceRealmPid, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FBeamContentManifestId, FString>("id", Bag, Id, OuterOwner);
 }
 

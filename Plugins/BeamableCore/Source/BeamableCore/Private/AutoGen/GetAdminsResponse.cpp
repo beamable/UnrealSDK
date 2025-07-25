@@ -22,7 +22,7 @@ void UGetAdminsResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Se
 
 void UGetAdminsResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeArray<UAccountPortalView*>(Bag->GetArrayField(TEXT("accounts")), Accounts, OuterOwner);
+	UBeamJsonUtils::DeserializeArray<UAccountPortalView*>(TEXT("accounts"), Bag, Accounts, OuterOwner);
 }
 
 

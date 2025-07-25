@@ -33,7 +33,7 @@ void UBeamoV2DatabaseMeasurements::BeamSerializeProperties(TUnrealPrettyJsonSeri
 
 void UBeamoV2DatabaseMeasurements::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("databaseName")), DatabaseName);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("databaseName"), Bag, DatabaseName);
 	UBeamJsonUtils::DeserializeOptional<FString>("granularity", Bag, Granularity, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("groupId", Bag, GroupId, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("hostId", Bag, HostId, OuterOwner);

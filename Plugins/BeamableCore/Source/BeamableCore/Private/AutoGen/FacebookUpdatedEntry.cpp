@@ -21,9 +21,9 @@ void UFacebookUpdatedEntry::BeamSerializeProperties(TUnrealPrettyJsonSerializer&
 
 void UFacebookUpdatedEntry::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("id")), Id);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("time")), Time);
-	UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("changed_fields")), ChangedFields, OuterOwner);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("id"), Bag, Id);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("time"), Bag, Time);
+	UBeamJsonUtils::DeserializeArray<FString>(TEXT("changed_fields"), Bag, ChangedFields, OuterOwner);
 }
 
 

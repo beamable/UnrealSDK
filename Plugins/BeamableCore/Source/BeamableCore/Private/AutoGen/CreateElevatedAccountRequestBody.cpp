@@ -21,7 +21,7 @@ void UCreateElevatedAccountRequestBody::BeamSerializeProperties(TUnrealPrettyJso
 
 void UCreateElevatedAccountRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("email")), Email);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("email"), Bag, Email);
 	UBeamJsonUtils::DeserializeOptional<FString>("role", Bag, Role, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<TMap<FString, FString>, FString>("initProperties", Bag, InitProperties, OuterOwner);
 }

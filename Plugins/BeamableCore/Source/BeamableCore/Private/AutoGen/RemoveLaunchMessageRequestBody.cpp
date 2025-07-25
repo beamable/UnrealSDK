@@ -17,7 +17,7 @@ void URemoveLaunchMessageRequestBody::BeamSerializeProperties(TUnrealPrettyJsonS
 
 void URemoveLaunchMessageRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("file")), File);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("file"), Bag, File);
 }
 
 

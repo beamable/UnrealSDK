@@ -24,7 +24,7 @@ void UBeginPurchaseResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer
 
 void UBeginPurchaseResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("txid")), Txid);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("txid"), Bag, Txid);
 	UBeamJsonUtils::DeserializeOptional<FString>("access_token", Bag, AccessToken, OuterOwner);
 }
 

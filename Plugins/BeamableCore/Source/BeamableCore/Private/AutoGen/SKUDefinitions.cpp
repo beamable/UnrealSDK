@@ -21,9 +21,9 @@ void USKUDefinitions::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Seria
 
 void USKUDefinitions::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("version")), Version);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("created")), Created);
-	UBeamJsonUtils::DeserializeArray<USKU*>(Bag->GetArrayField(TEXT("definitions")), Definitions, OuterOwner);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("version"), Bag, Version);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("created"), Bag, Created);
+	UBeamJsonUtils::DeserializeArray<USKU*>(TEXT("definitions"), Bag, Definitions, OuterOwner);
 }
 
 

@@ -22,7 +22,7 @@ void UStatsSearchResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer& 
 
 void UStatsSearchResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeArray<FBeamGamerTag, int64>(Bag->GetArrayField(TEXT("ids")), Ids, OuterOwner);
+	UBeamJsonUtils::DeserializeArray<FBeamGamerTag, int64>(TEXT("ids"), Bag, Ids, OuterOwner);
 }
 
 

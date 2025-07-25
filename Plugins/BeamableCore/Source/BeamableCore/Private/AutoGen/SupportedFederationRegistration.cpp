@@ -23,8 +23,8 @@ void USupportedFederationRegistration::BeamSerializeProperties(TUnrealPrettyJson
 
 void USupportedFederationRegistration::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("trafficFilterEnabled")), bTrafficFilterEnabled);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("serviceName")), ServiceName);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("trafficFilterEnabled"), Bag, bTrafficFilterEnabled);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("serviceName"), Bag, ServiceName);
 	UBeamJsonUtils::DeserializeOptional<FString>("routingKey", Bag, RoutingKey, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<TArray<USupportedFederation*>, USupportedFederation*>("federation", Bag, Federation, OuterOwner);
 }

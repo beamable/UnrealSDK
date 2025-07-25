@@ -22,7 +22,7 @@ void USearchExtendedResponse::BeamSerializeProperties(TUnrealPrettyJsonSerialize
 
 void USearchExtendedResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeMap<FMapOfString>(Bag->GetObjectField(TEXT("gamerStats")), GamerStats, OuterOwner);
+	UBeamJsonUtils::DeserializeMap<FMapOfString>(TEXT("gamerStats"), Bag, GamerStats, OuterOwner);
 }
 
 

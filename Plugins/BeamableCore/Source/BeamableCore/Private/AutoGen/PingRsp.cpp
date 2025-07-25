@@ -22,7 +22,7 @@ void UPingRsp::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) 
 
 void UPingRsp::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("keepAlive")), bKeepAlive);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("keepAlive"), Bag, bKeepAlive);
 }
 
 

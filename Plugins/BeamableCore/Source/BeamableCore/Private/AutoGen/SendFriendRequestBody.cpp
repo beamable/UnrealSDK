@@ -17,7 +17,7 @@ void USendFriendRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer
 
 void USendFriendRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeSemanticType<int64>(Bag->TryGetField(TEXT("gamerTag")), GamerTag, OuterOwner);
+	UBeamJsonUtils::DeserializeSemanticType<int64>(TEXT("gamerTag"), Bag, GamerTag, OuterOwner);
 }
 
 

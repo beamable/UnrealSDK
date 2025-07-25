@@ -24,7 +24,7 @@ void UAttachExternalIdentityApiResponse::BeamSerializeProperties(TUnrealPrettyJs
 
 void UAttachExternalIdentityApiResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("result")), Result);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("result"), Bag, Result);
 	UBeamJsonUtils::DeserializeOptional<FString>("challenge_token", Bag, ChallengeToken, OuterOwner);
 }
 

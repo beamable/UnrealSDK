@@ -19,7 +19,7 @@ void UTransferThirdPartyAssociation::BeamSerializeProperties(TUnrealPrettyJsonSe
 
 void UTransferThirdPartyAssociation::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("fromAccountId")), FromAccountId);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("fromAccountId"), Bag, FromAccountId);
 	UBeamJsonUtils::DeserializeUObject<UThirdPartyAssociation*>("thirdParty", Bag, ThirdParty, OuterOwner);
 }
 

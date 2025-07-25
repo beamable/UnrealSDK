@@ -33,7 +33,7 @@ void ULeaderboardCreateRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSer
 
 void ULeaderboardCreateRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("sharded")), bSharded);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("sharded"), Bag, bSharded);
 	UBeamJsonUtils::DeserializeOptional<bool>("partitioned", Bag, bPartitioned, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<int64>("freezeTime", Bag, FreezeTime, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("scoreName", Bag, ScoreName, OuterOwner);

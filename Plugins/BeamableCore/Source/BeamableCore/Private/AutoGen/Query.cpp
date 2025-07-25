@@ -22,7 +22,7 @@ void UQuery::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) co
 
 void UQuery::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("queryId")), QueryId);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("queryId"), Bag, QueryId);
 }
 
 

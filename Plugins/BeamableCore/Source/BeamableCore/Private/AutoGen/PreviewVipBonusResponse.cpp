@@ -22,7 +22,7 @@ void UPreviewVipBonusResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializ
 
 void UPreviewVipBonusResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeArray<UCurrencyPreview*>(Bag->GetArrayField(TEXT("currencies")), Currencies, OuterOwner);
+	UBeamJsonUtils::DeserializeArray<UCurrencyPreview*>(TEXT("currencies"), Bag, Currencies, OuterOwner);
 }
 
 

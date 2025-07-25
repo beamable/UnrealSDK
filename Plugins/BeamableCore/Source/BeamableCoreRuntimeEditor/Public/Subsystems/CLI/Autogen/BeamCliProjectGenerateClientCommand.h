@@ -54,7 +54,7 @@ Options:
   --with-group, --with-groups <with-group>             A set of BeamServiceGroup tags that will include the associated services
   --output-dir <output-dir>                            Directory to write the output client at
   --output-links                                       When true, generate the source client files to all associated projects [default: True]
-  --output-unity-projects <output-unity-projects>      Paths to unity projects to generate clients in
+  --output-unity-projects <output-unity-projects>      Paths to unity projects to generate clients in []
   --existing-fed-ids <existing-fed-ids>                A set of existing federation ids
   --existing-fed-type-names <existing-fed-type-names>  A set of existing class names for federations (Obsolete)
   --output-path-hints <output-path-hints>              A special format, BEAMOID=PATH, that tells the generator where to place the client. The path should be relative to the linked project root (Obsolete)

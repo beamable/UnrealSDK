@@ -17,7 +17,7 @@ void UObjectsMetadataResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializ
 
 void UObjectsMetadataResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeArray<UObjectMetadataResponse*>(Bag->GetArrayField(TEXT("response")), Response, OuterOwner);
+	UBeamJsonUtils::DeserializeArray<UObjectMetadataResponse*>(TEXT("response"), Bag, Response, OuterOwner);
 }
 
 

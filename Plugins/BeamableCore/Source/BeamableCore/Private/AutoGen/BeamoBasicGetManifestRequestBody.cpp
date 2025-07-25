@@ -19,7 +19,7 @@ void UBeamoBasicGetManifestRequestBody::BeamSerializeProperties(TUnrealPrettyJso
 
 void UBeamoBasicGetManifestRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("id")), Id);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("id"), Bag, Id);
 	UBeamJsonUtils::DeserializeOptional<bool>("archived", Bag, bArchived, OuterOwner);
 }
 

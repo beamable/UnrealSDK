@@ -21,9 +21,9 @@ void USearchAccountsRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerial
 
 void USearchAccountsRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("query")), Query);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("page")), Page);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("pagesize")), Pagesize);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("query"), Bag, Query);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("page"), Bag, Page);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("pagesize"), Bag, Pagesize);
 }
 
 

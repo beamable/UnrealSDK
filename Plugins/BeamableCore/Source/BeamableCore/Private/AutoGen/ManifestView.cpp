@@ -29,10 +29,10 @@ void UManifestView::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Seriali
 
 void UManifestView::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("id")), Id);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("checksum")), Checksum);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("created")), Created);
-	UBeamJsonUtils::DeserializeArray<UServiceReference*>(Bag->GetArrayField(TEXT("manifest")), Manifest, OuterOwner);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("id"), Bag, Id);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("checksum"), Bag, Checksum);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("created"), Bag, Created);
+	UBeamJsonUtils::DeserializeArray<UServiceReference*>(TEXT("manifest"), Bag, Manifest, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<int64>("createdByAccountId", Bag, CreatedByAccountId, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("comments", Bag, Comments, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<TArray<UServiceStorageReference*>, UServiceStorageReference*>("storageReference", Bag, StorageReference, OuterOwner);

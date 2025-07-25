@@ -21,9 +21,9 @@ void UManifestDiffSummary::BeamSerializeProperties(TUnrealPrettyJsonSerializer& 
 
 void UManifestDiffSummary::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("manifestUid")), ManifestUid);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("diffUrl")), DiffUrl);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("createdDate")), CreatedDate);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("manifestUid"), Bag, ManifestUid);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("diffUrl"), Bag, DiffUrl);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("createdDate"), Bag, CreatedDate);
 }
 
 

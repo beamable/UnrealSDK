@@ -26,7 +26,7 @@ void UContentMeta::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializ
 void UContentMeta::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	UBeamJsonUtils::DeserializeJsonObject(TEXT("data"), Bag, Data, OuterOwner);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("visibility")), Visibility);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("visibility"), Bag, Visibility);
 	UBeamJsonUtils::DeserializeOptional<FString>("text", Bag, Text, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FBeamContentId, FString>("$link", Bag, link, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<TArray<FBeamContentId>, FBeamContentId, FString>("$links", Bag, links, OuterOwner);

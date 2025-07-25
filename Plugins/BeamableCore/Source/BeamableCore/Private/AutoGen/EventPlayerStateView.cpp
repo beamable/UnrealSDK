@@ -39,16 +39,16 @@ void UEventPlayerStateView::BeamSerializeProperties(TUnrealPrettyJsonSerializer&
 
 void UEventPlayerStateView::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("running")), bRunning);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("name")), Name);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("rank")), Rank);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("score")), Score);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("secondsRemaining")), SecondsRemaining);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("id")), Id);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("leaderboardId")), LeaderboardId);
-	UBeamJsonUtils::DeserializeArray<UEventPlayerPhaseView*>(Bag->GetArrayField(TEXT("allPhases")), AllPhases, OuterOwner);
-	UBeamJsonUtils::DeserializeArray<UEventRewardState*>(Bag->GetArrayField(TEXT("rankRewards")), RankRewards, OuterOwner);
-	UBeamJsonUtils::DeserializeArray<UEventRewardState*>(Bag->GetArrayField(TEXT("scoreRewards")), ScoreRewards, OuterOwner);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("running"), Bag, bRunning);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("name"), Bag, Name);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("rank"), Bag, Rank);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("score"), Bag, Score);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("secondsRemaining"), Bag, SecondsRemaining);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("id"), Bag, Id);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("leaderboardId"), Bag, LeaderboardId);
+	UBeamJsonUtils::DeserializeArray<UEventPlayerPhaseView*>(TEXT("allPhases"), Bag, AllPhases, OuterOwner);
+	UBeamJsonUtils::DeserializeArray<UEventRewardState*>(TEXT("rankRewards"), Bag, RankRewards, OuterOwner);
+	UBeamJsonUtils::DeserializeArray<UEventRewardState*>(TEXT("scoreRewards"), Bag, ScoreRewards, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<UEventPlayerPhaseView*>("currentPhase", Bag, CurrentPhase, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<UEventPlayerGroupState*>("groupRewards", Bag, GroupRewards, OuterOwner);
 }

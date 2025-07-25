@@ -23,9 +23,9 @@ void URouteParameter::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Seria
 
 void URouteParameter::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("name")), Name);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("body")), Body);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("typeName")), TypeName);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("name"), Bag, Name);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("body"), Bag, Body);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("typeName"), Bag, TypeName);
 	UBeamJsonUtils::DeserializeOptional<UVariableReference*>("variableRef", Bag, VariableRef, OuterOwner);
 }
 

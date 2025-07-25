@@ -21,7 +21,7 @@ void USupportedFederation::BeamSerializeProperties(TUnrealPrettyJsonSerializer& 
 
 void USupportedFederation::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("type")), Type);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("type"), Bag, Type);
 	UBeamJsonUtils::DeserializeJsonObject(TEXT("settings"), Bag, Settings, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("nameSpace", Bag, NameSpace, OuterOwner);
 }

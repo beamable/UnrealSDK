@@ -19,7 +19,7 @@ void UReportPurchaseRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerial
 
 void UReportPurchaseRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("listingId")), ListingId);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("listingId"), Bag, ListingId);
 	UBeamJsonUtils::DeserializeOptional<bool>("free", Bag, bFree, OuterOwner);
 }
 

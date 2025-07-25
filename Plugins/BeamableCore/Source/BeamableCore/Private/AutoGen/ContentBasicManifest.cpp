@@ -38,10 +38,10 @@ void UContentBasicManifest::BeamSerializeProperties(TUnrealPrettyJsonSerializer&
 
 void UContentBasicManifest::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeSemanticType<FString>(Bag->TryGetField(TEXT("id")), Id, OuterOwner);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("checksum")), Checksum);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("created")), Created);
-	UBeamJsonUtils::DeserializeArray<UBaseContentReference*>(Bag->GetArrayField(TEXT("references")), References, OuterOwner);
+	UBeamJsonUtils::DeserializeSemanticType<FString>(TEXT("id"), Bag, Id, OuterOwner);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("checksum"), Bag, Checksum);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("created"), Bag, Created);
+	UBeamJsonUtils::DeserializeArray<UBaseContentReference*>(TEXT("references"), Bag, References, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<bool>("archived", Bag, bArchived, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("diffObjectKey", Bag, DiffObjectKey, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<int64>("publisherAccountId", Bag, PublisherAccountId, OuterOwner);

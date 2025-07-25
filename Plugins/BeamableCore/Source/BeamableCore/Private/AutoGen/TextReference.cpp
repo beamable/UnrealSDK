@@ -33,12 +33,12 @@ void UTextReference::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serial
 
 void UTextReference::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("uri")), Uri);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("version")), Version);
-	UBeamJsonUtils::DeserializeSemanticType<FString>(Bag->TryGetField(TEXT("id")), Id, OuterOwner);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("type")), Type);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("visibility")), Visibility);
-	UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("tags")), Tags, OuterOwner);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("uri"), Bag, Uri);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("version"), Bag, Version);
+	UBeamJsonUtils::DeserializeSemanticType<FString>(TEXT("id"), Bag, Id, OuterOwner);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("type"), Bag, Type);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("visibility"), Bag, Visibility);
+	UBeamJsonUtils::DeserializeArray<FString>(TEXT("tags"), Bag, Tags, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("checksum", Bag, Checksum, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<int64>("lastChanged", Bag, LastChanged, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<int64>("created", Bag, Created, OuterOwner);

@@ -26,9 +26,9 @@ void UFriendshipStatus::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Ser
 
 void UFriendshipStatus::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("isBlocked")), bIsBlocked);
-	UBeamJsonUtils::DeserializeSemanticType<FString>(Bag->TryGetField(TEXT("friendId")), FriendId, OuterOwner);
-	UBeamJsonUtils::DeserializeSemanticType<FString>(Bag->TryGetField(TEXT("playerId")), PlayerId, OuterOwner);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("isBlocked"), Bag, bIsBlocked);
+	UBeamJsonUtils::DeserializeSemanticType<FString>(TEXT("friendId"), Bag, FriendId, OuterOwner);
+	UBeamJsonUtils::DeserializeSemanticType<FString>(TEXT("playerId"), Bag, PlayerId, OuterOwner);
 }
 
 

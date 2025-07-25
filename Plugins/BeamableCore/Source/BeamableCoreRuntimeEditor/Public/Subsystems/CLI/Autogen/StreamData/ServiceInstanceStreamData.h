@@ -5,6 +5,7 @@
 #include "Subsystems/CLI/Autogen/StreamData/FederationInstanceStreamData.h"
 #include "Subsystems/CLI/Autogen/StreamData/HostServiceDescriptorStreamData.h"
 #include "Subsystems/CLI/Autogen/StreamData/RemoteServiceDescriptorStreamData.h"
+#include "Subsystems/CLI/Autogen/StreamData/RemoteStorageDescriptorStreamData.h"
 #include "Serialization/BeamJsonUtils.h"
 #include "ServiceInstanceStreamData.generated.h"
 
@@ -28,6 +29,8 @@ public:
 	UHostServiceDescriptorStreamData* LatestHostEvent = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	URemoteServiceDescriptorStreamData* LatestRemoteEvent = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	URemoteStorageDescriptorStreamData* LatestRemoteStorageEvent = {};
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
 	{
@@ -36,7 +39,8 @@ public:
 		UBeamJsonUtils::SerializeRawPrimitive(TEXT("primaryKey"), PrimaryKey, Serializer);
 		UBeamJsonUtils::SerializeUObject<UDockerServiceDescriptorStreamData*>("latestDockerEvent", LatestDockerEvent, Serializer);
 		UBeamJsonUtils::SerializeUObject<UHostServiceDescriptorStreamData*>("latestHostEvent", LatestHostEvent, Serializer);
-		UBeamJsonUtils::SerializeUObject<URemoteServiceDescriptorStreamData*>("latestRemoteEvent", LatestRemoteEvent, Serializer);	
+		UBeamJsonUtils::SerializeUObject<URemoteServiceDescriptorStreamData*>("latestRemoteEvent", LatestRemoteEvent, Serializer);
+		UBeamJsonUtils::SerializeUObject<URemoteStorageDescriptorStreamData*>("latestRemoteStorageEvent", LatestRemoteStorageEvent, Serializer);	
 	}
 
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
@@ -46,7 +50,8 @@ public:
 		UBeamJsonUtils::SerializeRawPrimitive(TEXT("primaryKey"), PrimaryKey, Serializer);
 		UBeamJsonUtils::SerializeUObject<UDockerServiceDescriptorStreamData*>("latestDockerEvent", LatestDockerEvent, Serializer);
 		UBeamJsonUtils::SerializeUObject<UHostServiceDescriptorStreamData*>("latestHostEvent", LatestHostEvent, Serializer);
-		UBeamJsonUtils::SerializeUObject<URemoteServiceDescriptorStreamData*>("latestRemoteEvent", LatestRemoteEvent, Serializer);	
+		UBeamJsonUtils::SerializeUObject<URemoteServiceDescriptorStreamData*>("latestRemoteEvent", LatestRemoteEvent, Serializer);
+		UBeamJsonUtils::SerializeUObject<URemoteStorageDescriptorStreamData*>("latestRemoteStorageEvent", LatestRemoteStorageEvent, Serializer);	
 	}
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
@@ -56,7 +61,8 @@ public:
 		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("primaryKey"), Bag, PrimaryKey);
 		UBeamJsonUtils::DeserializeUObject<UDockerServiceDescriptorStreamData*>("latestDockerEvent", Bag, LatestDockerEvent, OuterOwner);
 		UBeamJsonUtils::DeserializeUObject<UHostServiceDescriptorStreamData*>("latestHostEvent", Bag, LatestHostEvent, OuterOwner);
-		UBeamJsonUtils::DeserializeUObject<URemoteServiceDescriptorStreamData*>("latestRemoteEvent", Bag, LatestRemoteEvent, OuterOwner);	
+		UBeamJsonUtils::DeserializeUObject<URemoteServiceDescriptorStreamData*>("latestRemoteEvent", Bag, LatestRemoteEvent, OuterOwner);
+		UBeamJsonUtils::DeserializeUObject<URemoteStorageDescriptorStreamData*>("latestRemoteStorageEvent", Bag, LatestRemoteStorageEvent, OuterOwner);	
 	}
 };
 

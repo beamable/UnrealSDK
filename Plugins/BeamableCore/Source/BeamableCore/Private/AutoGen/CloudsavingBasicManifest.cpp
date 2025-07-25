@@ -28,10 +28,10 @@ void UCloudsavingBasicManifest::BeamSerializeProperties(TUnrealPrettyJsonSeriali
 
 void UCloudsavingBasicManifest::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("replacement")), bReplacement);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("id")), Id);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("created")), Created);
-	UBeamJsonUtils::DeserializeArray<UCloudsavingBasicReference*>(Bag->GetArrayField(TEXT("manifest")), Manifest, OuterOwner);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("replacement"), Bag, bReplacement);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("id"), Bag, Id);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("created"), Bag, Created);
+	UBeamJsonUtils::DeserializeArray<UCloudsavingBasicReference*>(TEXT("manifest"), Bag, Manifest, OuterOwner);
 }
 
 
