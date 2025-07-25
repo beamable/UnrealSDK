@@ -32,8 +32,8 @@ public:
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("name")), Name);
-		UBeamJsonUtils::DeserializeArray<UDependencyDataStreamData*>(Bag->GetArrayField(TEXT("dependencies")), Dependencies, OuterOwner);	
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("name"), Bag, Name);
+		UBeamJsonUtils::DeserializeArray<UDependencyDataStreamData*>(TEXT("dependencies"), Bag, Dependencies, OuterOwner);	
 	}
 };
 

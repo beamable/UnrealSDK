@@ -28,7 +28,7 @@ public:
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("connectionString")), ConnectionString);	
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("connectionString"), Bag, ConnectionString);	
 	}
 };
 

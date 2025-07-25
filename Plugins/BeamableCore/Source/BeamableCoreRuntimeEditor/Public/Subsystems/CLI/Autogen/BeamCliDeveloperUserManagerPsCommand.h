@@ -33,7 +33,7 @@ public:
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("EventType")), EventType);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("EventType"), Bag, EventType);
 		UBeamJsonUtils::DeserializeUObject<UDeveloperUserResultStreamData*>("DeveloperUserReport", Bag, DeveloperUserReport, OuterOwner);	
 	}
 };
@@ -41,6 +41,7 @@ public:
 
 /**
  Description:
+  The ps commands manage the files for the developer users folders, it can keep watching changes in the file system and emit events to the engine
 
 Usage:
   Beamable.Tools developer-user-manager ps [options]

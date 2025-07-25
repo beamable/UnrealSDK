@@ -19,8 +19,8 @@ void UUpgradeItemRequestArgs::BeamSerializeProperties(TUnrealPrettyJsonSerialize
 
 void UUpgradeItemRequestArgs::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("gamerTag")), GamerTag);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("itemInstaceID")), ItemInstaceID);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("gamerTag"), Bag, GamerTag);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("itemInstaceID"), Bag, ItemInstaceID);
 }
 
 

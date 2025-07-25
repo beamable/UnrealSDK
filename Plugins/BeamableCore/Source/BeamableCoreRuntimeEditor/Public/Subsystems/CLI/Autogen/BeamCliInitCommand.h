@@ -36,9 +36,113 @@ public:
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("host")), Host);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("cid")), Cid);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("pid")), Pid);	
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("host"), Bag, Host);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("cid"), Bag, Cid);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("pid"), Bag, Pid);	
+	}
+};
+
+
+UCLASS(BlueprintType)
+class UBeamCliInitErrorLoginFailedErrorStreamData : public UObject, public IBeamJsonSerializableUObject
+{
+	GENERATED_BODY()
+
+public:	
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString Message = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString Invocation = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 ExitCode = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString TypeName = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString FullTypeName = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString StackTrace = {};
+
+	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
+	{
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("message"), Message, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("invocation"), Invocation, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("exitCode"), ExitCode, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("typeName"), TypeName, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("fullTypeName"), FullTypeName, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("stackTrace"), StackTrace, Serializer);	
+	}
+
+	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
+	{
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("message"), Message, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("invocation"), Invocation, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("exitCode"), ExitCode, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("typeName"), TypeName, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("fullTypeName"), FullTypeName, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("stackTrace"), StackTrace, Serializer);	
+	}
+
+	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
+	{
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("message"), Bag, Message);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("invocation"), Bag, Invocation);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("exitCode"), Bag, ExitCode);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("typeName"), Bag, TypeName);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("fullTypeName"), Bag, FullTypeName);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("stackTrace"), Bag, StackTrace);	
+	}
+};
+
+
+UCLASS(BlueprintType)
+class UBeamCliInitErrorInvalidCidErrorStreamData : public UObject, public IBeamJsonSerializableUObject
+{
+	GENERATED_BODY()
+
+public:	
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString Message = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString Invocation = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 ExitCode = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString TypeName = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString FullTypeName = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString StackTrace = {};
+
+	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
+	{
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("message"), Message, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("invocation"), Invocation, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("exitCode"), ExitCode, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("typeName"), TypeName, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("fullTypeName"), FullTypeName, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("stackTrace"), StackTrace, Serializer);	
+	}
+
+	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
+	{
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("message"), Message, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("invocation"), Invocation, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("exitCode"), ExitCode, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("typeName"), TypeName, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("fullTypeName"), FullTypeName, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("stackTrace"), StackTrace, Serializer);	
+	}
+
+	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
+	{
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("message"), Bag, Message);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("invocation"), Bag, Invocation);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("exitCode"), Bag, ExitCode);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("typeName"), Bag, TypeName);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("fullTypeName"), Bag, FullTypeName);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("stackTrace"), Bag, StackTrace);	
 	}
 };
 
@@ -58,6 +162,7 @@ Options:
   --password <password>                  User password
   --host <host>                          This option defines the target Beamable environment. Needed for private cloud customers to target their exclusive Beamable environment. Ignorable by everyone else. Stored in '.beamable/connection-configuration.json'
   --refresh-token <refresh-token>        A Refresh Token to use for the requests. It overwrites the logged in user stored in connection-auth.json for THIS INVOCATION ONLY
+  --ignore-pid                           Ignore the existing pid while initializing
   --save-extra-paths <save-extra-paths>  Overwrite the stored extra paths for where to find projects []
   --paths-to-ignore <paths-to-ignore>    Paths to ignore when searching for services []
   --save-to-environment                  Save login refresh token to environment variable
@@ -99,7 +204,17 @@ public:
 	inline static FString StreamType = FString(TEXT("stream"));
 	UPROPERTY() TArray<UBeamCliInitStreamData*> Stream;
 	UPROPERTY() TArray<int64> Timestamps;
-	TFunction<void (TArray<UBeamCliInitStreamData*>& StreamData, TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnStreamOutput;	
+	TFunction<void (TArray<UBeamCliInitStreamData*>& StreamData, TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnStreamOutput;
+
+	inline static FString StreamTypeErrorLoginFailedError = FString(TEXT("errorLoginFailedError"));
+	UPROPERTY() TArray<UBeamCliInitErrorLoginFailedErrorStreamData*> ErrorLoginFailedErrorStream;
+	UPROPERTY() TArray<int64> ErrorLoginFailedErrorTimestamps;
+	TFunction<void (TArray<UBeamCliInitErrorLoginFailedErrorStreamData*>& StreamData, TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnErrorLoginFailedErrorStreamOutput;
+
+	inline static FString StreamTypeErrorInvalidCidError = FString(TEXT("errorInvalidCidError"));
+	UPROPERTY() TArray<UBeamCliInitErrorInvalidCidErrorStreamData*> ErrorInvalidCidErrorStream;
+	UPROPERTY() TArray<int64> ErrorInvalidCidErrorTimestamps;
+	TFunction<void (TArray<UBeamCliInitErrorInvalidCidErrorStreamData*>& StreamData, TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnErrorInvalidCidErrorStreamOutput;	
 
 	TFunction<void (const int& ResCode, const FBeamOperationHandle& Op)> OnCompleted;
 	virtual bool HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer) override;

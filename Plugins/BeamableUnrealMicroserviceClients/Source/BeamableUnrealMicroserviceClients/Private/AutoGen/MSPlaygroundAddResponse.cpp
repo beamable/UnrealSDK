@@ -22,7 +22,7 @@ void UMSPlaygroundAddResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializ
 
 void UMSPlaygroundAddResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("Value")), Value);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("Value"), Bag, Value);
 }
 
 

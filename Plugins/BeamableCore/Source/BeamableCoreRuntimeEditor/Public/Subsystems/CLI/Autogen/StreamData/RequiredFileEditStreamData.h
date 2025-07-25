@@ -68,17 +68,17 @@ public:
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("code")), Code);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("beamoId")), BeamoId);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("title")), Title);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("description")), Description);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("filePath")), FilePath);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("replacementText")), ReplacementText);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("originalText")), OriginalText);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("startIndex")), StartIndex);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("endIndex")), EndIndex);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("line")), Line);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("column")), Column);	
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("code"), Bag, Code);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("beamoId"), Bag, BeamoId);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("title"), Bag, Title);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("description"), Bag, Description);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("filePath"), Bag, FilePath);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("replacementText"), Bag, ReplacementText);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("originalText"), Bag, OriginalText);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("startIndex"), Bag, StartIndex);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("endIndex"), Bag, EndIndex);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("line"), Bag, Line);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("column"), Bag, Column);	
 	}
 };
 

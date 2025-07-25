@@ -27,6 +27,23 @@ bool UBeamCliContentSyncCommand::HandleStreamReceived(FBeamOperationHandle Op, F
 		
 		return true;				
 	}
+
+	if(ReceivedStreamType.Equals(StreamTypeProgressStream) && OnProgressStreamStreamOutput)
+	{
+		UBeamCliContentSyncProgressStreamStreamData* Data = NewObject<UBeamCliContentSyncProgressStreamStreamData>(this);
+		Data->OuterOwner = this;
+		Data->BeamDeserializeProperties(DataJson);
+
+		ProgressStreamStream.Add(Data);
+		ProgressStreamTimestamps.Add(Timestamp);
+		
+		AsyncTask(ENamedThreads::GameThread, [this, Op]
+		{
+			OnProgressStreamStreamOutput(ProgressStreamStream, ProgressStreamTimestamps, Op);
+		});
+		
+		return true;				
+	}
 	
 	return false;
 }

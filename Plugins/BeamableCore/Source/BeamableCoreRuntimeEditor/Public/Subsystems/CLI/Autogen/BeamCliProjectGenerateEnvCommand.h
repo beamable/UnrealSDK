@@ -28,7 +28,7 @@ public:
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		UBeamJsonUtils::DeserializeArray<UEnvVarOutputStreamData*>(Bag->GetArrayField(TEXT("envVars")), EnvVars, OuterOwner);	
+		UBeamJsonUtils::DeserializeArray<UEnvVarOutputStreamData*>(TEXT("envVars"), Bag, EnvVars, OuterOwner);	
 	}
 };
 

@@ -40,10 +40,10 @@ public:
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("host")), Host);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("cid")), Cid);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("pid")), Pid);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("configPath")), ConfigPath);	
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("host"), Bag, Host);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("cid"), Bag, Cid);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("pid"), Bag, Pid);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("configPath"), Bag, ConfigPath);	
 	}
 };
 
@@ -82,6 +82,7 @@ Options:
 
 Commands:
   realm               Get current realm config values
+  routes              List the various service routes for your Beamable host
   secret              Get the realm secret
   set <name> <value>  Set a config value
 

@@ -28,7 +28,7 @@ public:
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		UBeamJsonUtils::DeserializeArray<UManifestChecksumStreamData*>(Bag->GetArrayField(TEXT("manifests")), Manifests, OuterOwner);	
+		UBeamJsonUtils::DeserializeArray<UManifestChecksumStreamData*>(TEXT("manifests"), Bag, Manifests, OuterOwner);	
 	}
 };
 

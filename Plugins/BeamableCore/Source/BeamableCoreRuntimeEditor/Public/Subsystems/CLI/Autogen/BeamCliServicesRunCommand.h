@@ -32,8 +32,8 @@ public:
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("Success")), Success);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("FailureReason")), FailureReason);	
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("Success"), Bag, Success);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("FailureReason"), Bag, FailureReason);	
 	}
 };
 
@@ -64,8 +64,8 @@ public:
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("BeamoId")), BeamoId);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("LocalDeployProgress")), LocalDeployProgress);	
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("BeamoId"), Bag, BeamoId);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("LocalDeployProgress"), Bag, LocalDeployProgress);	
 	}
 };
 
@@ -78,8 +78,9 @@ Usage:
   Beamable.Tools services run [options]
 
 Options:
+  -fcpu, --force-amd-cpu-arch            [DEPRECATED] Force the services to run with amd64 CPU architecture, useful when deploying from computers with ARM architecture [default: False]
   --ids <ids>                            The ids for the services you wish to deploy. Ignoring this option deploys all services
-  -fcpu, --force-amd-cpu-arch            Force the services to run with amd64 CPU architecture, useful when deploying from computers with ARM architecture [default: False]
+  -flcpu, --force-local-cpu              By default, this command forces the services to run with amd64 CPU architecture, which is the architecture used in Docker [default: False]
   -k, --keep-containers                  Automatically remove service containers after they exit [default: False]
   --dryrun                               [DEPRECATED] Run as much of the command as possible without making any network calls
   --cid <cid>                            CID (CustomerId) to use (found in Portal->Account); defaults to whatever is in '.beamable/connection-configuration.json'

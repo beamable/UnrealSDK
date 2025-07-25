@@ -60,15 +60,15 @@ public:
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("Cid")), Cid);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("Pid")), Pid);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("ParentPid")), ParentPid);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("ProjectName")), ProjectName);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("RealmName")), RealmName);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("RealmSecret")), RealmSecret);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("IsDev")), IsDev);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("IsStaging")), IsStaging);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("IsProduction")), IsProduction);	
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("Cid"), Bag, Cid);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("Pid"), Bag, Pid);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("ParentPid"), Bag, ParentPid);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("ProjectName"), Bag, ProjectName);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("RealmName"), Bag, RealmName);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("RealmSecret"), Bag, RealmSecret);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("IsDev"), Bag, IsDev);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("IsStaging"), Bag, IsStaging);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("IsProduction"), Bag, IsProduction);	
 	}
 };
 

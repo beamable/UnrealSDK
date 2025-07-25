@@ -19,8 +19,8 @@ void UAddRequestArgs::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Seria
 
 void UAddRequestArgs::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("a")), A);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("b")), B);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("a"), Bag, A);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("b"), Bag, B);
 }
 
 

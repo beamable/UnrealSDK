@@ -51,9 +51,9 @@ public:
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("startedByAccountId")), StartedByAccountId);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("startedByAccountEmail")), StartedByAccountEmail);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("primaryKey")), PrimaryKey);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("startedByAccountId"), Bag, StartedByAccountId);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("startedByAccountEmail"), Bag, StartedByAccountEmail);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("primaryKey"), Bag, PrimaryKey);
 		UBeamJsonUtils::DeserializeUObject<UDockerServiceDescriptorStreamData*>("latestDockerEvent", Bag, LatestDockerEvent, OuterOwner);
 		UBeamJsonUtils::DeserializeUObject<UHostServiceDescriptorStreamData*>("latestHostEvent", Bag, LatestHostEvent, OuterOwner);
 		UBeamJsonUtils::DeserializeUObject<URemoteServiceDescriptorStreamData*>("latestRemoteEvent", Bag, LatestRemoteEvent, OuterOwner);	

@@ -22,7 +22,7 @@ void ULiveOpsDemoMSIncrementStatResponse::BeamSerializeProperties(TUnrealPrettyJ
 
 void ULiveOpsDemoMSIncrementStatResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("Value")), bValue);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("Value"), Bag, bValue);
 }
 
 

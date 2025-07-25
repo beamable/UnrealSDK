@@ -36,9 +36,9 @@ public:
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("beamableNugetVersion")), BeamableNugetVersion);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("sdkVersion")), SdkVersion);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("packageFolder")), PackageFolder);	
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("beamableNugetVersion"), Bag, BeamableNugetVersion);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("sdkVersion"), Bag, SdkVersion);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("packageFolder"), Bag, PackageFolder);	
 	}
 };
 

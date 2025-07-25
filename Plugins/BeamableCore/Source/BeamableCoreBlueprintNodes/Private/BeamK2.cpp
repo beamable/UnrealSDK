@@ -880,7 +880,7 @@ void BeamK2::ParseFunctionForNodePins(UEdGraphNode* CustomNode, const UFunction*
 			{
 				auto CastType = GetMetaData(CustomNode, MD_BeamCastTypeName);
 
-				if (!CastType.IsEmpty())
+				if (CastType.IsEmpty())
 				{
 					UE_LOG(LogTemp, Error, TEXT("Empty Metadata. The case of meta data of cast type existing for a node and be empty should be impossible."))
 				}

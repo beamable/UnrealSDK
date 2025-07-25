@@ -52,13 +52,13 @@ public:
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("service")), Service);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("processId")), ProcessId);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("healthPort")), HealthPort);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("routingKey")), RoutingKey);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("startedByAccountId")), StartedByAccountId);
-		UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("groups")), Groups, OuterOwner);
-		UBeamJsonUtils::DeserializeArray<UFederationInstanceStreamData*>(Bag->GetArrayField(TEXT("federations")), Federations, OuterOwner);	
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("service"), Bag, Service);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("processId"), Bag, ProcessId);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("healthPort"), Bag, HealthPort);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("routingKey"), Bag, RoutingKey);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("startedByAccountId"), Bag, StartedByAccountId);
+		UBeamJsonUtils::DeserializeArray<FString>(TEXT("groups"), Bag, Groups, OuterOwner);
+		UBeamJsonUtils::DeserializeArray<UFederationInstanceStreamData*>(TEXT("federations"), Bag, Federations, OuterOwner);	
 	}
 };
 

@@ -51,12 +51,12 @@ public:
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("id")), Id);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("created")), Created);
-		UBeamJsonUtils::DeserializeArray<UCliServiceReferenceStreamData*>(Bag->GetArrayField(TEXT("manifest")), Manifest, OuterOwner);
-		UBeamJsonUtils::DeserializeArray<UCliServiceStorageReferenceStreamData*>(Bag->GetArrayField(TEXT("storageReference")), StorageReference, OuterOwner);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("createdByAccountId")), CreatedByAccountId);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("comments")), Comments);	
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("id"), Bag, Id);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("created"), Bag, Created);
+		UBeamJsonUtils::DeserializeArray<UCliServiceReferenceStreamData*>(TEXT("manifest"), Bag, Manifest, OuterOwner);
+		UBeamJsonUtils::DeserializeArray<UCliServiceStorageReferenceStreamData*>(TEXT("storageReference"), Bag, StorageReference, OuterOwner);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("createdByAccountId"), Bag, CreatedByAccountId);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("comments"), Bag, Comments);	
 	}
 };
 

@@ -32,8 +32,8 @@ public:
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("isSuccess")), IsSuccess);
-		UBeamJsonUtils::DeserializeArray<UProjectErrorResultBuildErrorsStreamData*>(Bag->GetArrayField(TEXT("errors")), Errors, OuterOwner);	
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("isSuccess"), Bag, IsSuccess);
+		UBeamJsonUtils::DeserializeArray<UProjectErrorResultBuildErrorsStreamData*>(TEXT("errors"), Bag, Errors, OuterOwner);	
 	}
 };
 

@@ -29,7 +29,7 @@ public:
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		UBeamJsonUtils::DeserializeArray<UServiceDependenciesPairStreamData*>(Bag->GetArrayField(TEXT("Services")), Services, OuterOwner);	
+		UBeamJsonUtils::DeserializeArray<UServiceDependenciesPairStreamData*>(TEXT("Services"), Bag, Services, OuterOwner);	
 	}
 };
 
