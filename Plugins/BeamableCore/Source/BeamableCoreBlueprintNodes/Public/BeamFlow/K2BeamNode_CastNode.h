@@ -49,15 +49,17 @@ class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_CastNode : public UK2Node, publ
 	UPROPERTY()
 	TArray<FCastClassInputPin> ClassInputPins;
 
+	UPROPERTY()
+	FString InputPinClass;
+
 	const FName InputPinName = FName("Object");
 	const FName OutputPinName = FName("Cast Failed - Object");
 	const FName FriendlyPassThrough = FName("PassThrough");
 	const FName FriendlyPassThroughOutput = FName("PassThrough - Output");
 
 public:
-
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return FText::FromString("Beam Cast Node"); }
-	
+
 	/**
 	 *  Get the menu category that will appears on the search node
 	 */
@@ -90,6 +92,7 @@ public:
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
 	virtual void PinDefaultValueChanged(UEdGraphPin* Pin) override;
 	virtual void NotifyPinConnectionListChanged(UEdGraphPin* Pin) override;
+	virtual void NodeConnectionListChanged() override;
 	virtual void PostReconstructNode() override;
 	virtual FNodeHandlingFunctor* CreateNodeHandler(FKismetCompilerContext& CompilerContext) const override;
 	//BeamFlowNode impl

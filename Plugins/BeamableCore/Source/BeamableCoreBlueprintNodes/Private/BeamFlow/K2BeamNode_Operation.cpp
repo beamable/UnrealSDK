@@ -205,6 +205,19 @@ void UK2BeamNode_Operation::JumpToDefinition() const
 	FSourceCodeNavigation::NavigateToFunction(Function);
 }
 
+FString UK2BeamNode_Operation::GetPinMetaData(FName InPinName, FName InKey)
+{
+	FString MetaData = Super::GetPinMetaData(InPinName, InKey);
+
+	// If there's no metadata directly on the pin then check for metadata on the function
+	if (MetaData.IsEmpty())
+	{
+		return BeamK2::GetPinMetaData(InPinName, InKey, GetRuntimeSubsystemClass()->FindFunctionByName(GetOperationFunctionName()));
+	}
+
+	return MetaData;
+}
+
 FName UK2BeamNode_Operation::GetCornerIcon() const
 {
 	return FName("BeamIcon_Operations");

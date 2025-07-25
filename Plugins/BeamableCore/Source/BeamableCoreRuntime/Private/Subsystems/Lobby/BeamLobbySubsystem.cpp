@@ -106,6 +106,52 @@ UBeamLobbyState* UBeamLobbySubsystem::GetCurrentSlotLobbyState(FUserSlot Slot)
 	return Lobby;
 }
 
+void UBeamLobbySubsystem::GetAllLobbyPlayers(ULobby* Lobby, TArray<ULobbyPlayer*>& Players, TArray<TMap<FString, FString>>& PlayerProperties)
+{
+	for (ULobbyPlayer* Player : Lobby->Players.Val)
+	{
+		Players.Add(Player);
+		TMap<FString, FString> Properties;
+		for (auto Tag : Player->Tags.Val)
+		{
+			Properties.Add(Tag.Name.Val, Tag.Value.Val);
+		}
+		PlayerProperties.Add(Properties);
+	}
+}
+
+bool UBeamLobbySubsystem::GetAllLobbyPlayersById(FGuid LobbyId, TArray<ULobbyPlayer*>& Players, TArray<TMap<FString, FString>>& PlayerProperties)
+{
+	Players = {};
+	PlayerProperties = {};
+	for (auto Lobby : KnownLobbies)
+	{
+		if (Lobby->LobbyId.Val == LobbyId.ToString())
+		{
+			GetAllLobbyPlayers(Lobby, Players, PlayerProperties);
+			return true;
+		}
+	}
+	return false;
+}
+
+bool UBeamLobbySubsystem::TryGetCurrentSlotPasscode(FUserSlot Slot, FString& Passcode)
+{
+	ULobby* Lobby;
+	if (!TryGetCurrentLobby(Slot, Lobby))
+	{
+		return false;
+	}
+	if (!Lobby->Passcode.IsSet)
+	{
+		return false;
+	}
+
+
+	Passcode = Lobby->Passcode.Val;
+	return true;
+}
+
 bool UBeamLobbySubsystem::TryGetLobbyById(FGuid LobbyId, ULobby*& Lobby)
 {
 	if (const auto ExistingLobbyIdx = KnownLobbies.IndexOfByPredicate([LobbyId](const ULobby* Lob) { return Lob->LobbyId.Val == LobbyId.ToString(EGuidFormats::DigitsWithHyphensLower); });
@@ -151,7 +197,35 @@ bool UBeamLobbySubsystem::TryGetGlobalLobbyData(ULobby* Lobby, FString DataKey, 
 	return true;
 }
 
-bool UBeamLobbySubsystem::GetAllLobbyGlobalData(ULobby* Lobby, TArray<FString>& Keys, TArray<FString>& Values)
+
+bool UBeamLobbySubsystem::TryGetGlobalLobbyDataCasted(ULobby* Lobby, FString DataKey, TSubclassOf<UObject> CastTarget, UObject* DefaultValue, UObject*& GlobalData)
+{
+	GlobalData = DefaultValue;
+
+	if (!Lobby || !Lobby->Data.IsSet)
+	{
+		return false;
+	}
+	
+	if (!Lobby->Data.Val.Contains(DataKey))
+	{
+		return false;
+	}
+	FString Json = Lobby->Data.Val[DataKey];
+
+	FJsonDataBag JsonBag = FJsonDataBag();
+	JsonBag.FromJson(Json);
+
+	GlobalData = NewObject<UObject>(GetTransientPackage(), CastTarget);
+	
+	TScriptInterface<IBeamJsonSerializableUObject> GlobalDataObject{GlobalData};
+
+	GlobalDataObject->BeamDeserializeProperties(JsonBag.JsonObject);
+
+	return true;
+}
+
+bool UBeamLobbySubsystem::TryGetAllLobbyGlobalData(ULobby* Lobby, TArray<FString>& Keys, TArray<FString>& Values)
 {
 	Keys.Reset();
 	Values.Reset();
@@ -204,7 +278,50 @@ bool UBeamLobbySubsystem::TryGetLobbyPlayerData(ULobby* Lobby, FBeamGamerTag Pla
 	return false;
 }
 
-bool UBeamLobbySubsystem::GetAllLobbyPlayerData(ULobby* Lobby, FBeamGamerTag PlayerGamerTag, TArray<FString>& Keys, TArray<FString>& Values)
+bool UBeamLobbySubsystem::TryGetLobbyPlayerDataCasted(ULobby* Lobby, FBeamGamerTag PlayerGamerTag, TSubclassOf<UObject> CastTarget, FString DataKey, UObject* DefaultValue, UObject*& PlayerData)
+{
+	PlayerData = DefaultValue;
+
+	if (!Lobby)
+	{
+		return false;
+	}
+
+	if (Lobby->Players.IsSet)
+	{
+		for (auto PlayerLobby : Lobby->Players.Val)
+		{
+			if (PlayerLobby->PlayerId.Val == PlayerGamerTag)
+			{
+				if (PlayerLobby->Tags.IsSet)
+				{
+					for (auto BeamTag : PlayerLobby->Tags.Val)
+					{
+						if (BeamTag.Name.Val == DataKey)
+						{
+							FString Json = BeamTag.Value.Val;
+
+							FJsonDataBag JsonBag = FJsonDataBag();
+							JsonBag.FromJson(Json);
+
+							PlayerData = NewObject<UObject>(GetTransientPackage(), CastTarget);
+	
+							TScriptInterface<IBeamJsonSerializableUObject> GlobalDataObject{PlayerData};
+
+							GlobalDataObject->BeamDeserializeProperties(JsonBag.JsonObject);
+							return true;
+						}
+					}
+				}
+				// If the tag is not set then return false
+				return false;
+			}
+		}
+	}
+	return false;
+}
+
+bool UBeamLobbySubsystem::TryGetAllLobbyPlayerData(ULobby* Lobby, FBeamGamerTag PlayerGamerTag, TArray<FString>& Keys, TArray<FString>& Values)
 {
 	Keys.Reset();
 	Values.Reset();
@@ -250,7 +367,7 @@ bool UBeamLobbySubsystem::GetAllLobbyGlobalDataById(FGuid LobbyId, TArray<FStrin
 	ULobby* Lobby;
 	TryGetLobbyById(LobbyId, Lobby);
 
-	return GetAllLobbyGlobalData(Lobby, Keys, Values);
+	return TryGetAllLobbyGlobalData(Lobby, Keys, Values);
 }
 
 bool UBeamLobbySubsystem::TryGetLobbyPlayerDataById(FGuid LobbyId, FBeamGamerTag PlayerGamerTag, FString DataKey, FString DefaultValue, FString& PlayerData)
@@ -266,7 +383,20 @@ bool UBeamLobbySubsystem::GetAllLobbyPlayerDataById(FGuid LobbyId, FBeamGamerTag
 	ULobby* Lobby;
 	TryGetLobbyById(LobbyId, Lobby);
 
-	return GetAllLobbyPlayerData(Lobby, PlayerGamerTag, Keys, Values);
+	return TryGetAllLobbyPlayerData(Lobby, PlayerGamerTag, Keys, Values);
+}
+
+void UBeamLobbySubsystem::GetAllLobbies(TArray<ULobby*>& Lobbies, TArray<FBeamLobbyKeyPair>& GlobalData)
+{
+	Lobbies = {};
+	GlobalData = {};
+
+	Lobbies = TArray<ULobby*>(KnownLobbies);
+	for (auto Lobby : Lobbies)
+	{
+		auto Data = Lobby->Data.Val;
+		GlobalData.Add(FBeamLobbyKeyPair(Data));
+	}
 }
 
 bool UBeamLobbySubsystem::TryGetCurrentLobbyState(FUserSlot Slot, UBeamLobbyState*& Lobby)

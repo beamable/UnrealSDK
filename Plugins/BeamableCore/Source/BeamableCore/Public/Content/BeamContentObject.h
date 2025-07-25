@@ -61,6 +61,9 @@ public:
 	 */
 	virtual void BuildContentDefinitionJsonObject(FJsonDomBuilder::FObject& OutContentDefinition);
 
+	UFUNCTION(BlueprintPure)
+	virtual FString GetContentName();
+	
 	/**
 	 * @brief Generates an SHA-1 Hash of the ContentObject's subclass properties (serialized in a condensed way and with fields sorted by name).
 	 */
