@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/PlayerRewardLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UPlayerRewardLibrary::PlayerRewardToJsonString(const UPlayerReward* Serializable, const bool Pretty)
@@ -38,13 +39,16 @@ UPlayerReward* UPlayerRewardLibrary::Make(TArray<UItemCreateRequestBody*> AddIte
 
 void UPlayerRewardLibrary::Break(const UPlayerReward* Serializable, TArray<UItemCreateRequestBody*>& AddItemRequests, TMap<FString, FString>& AddCurrencyMap, FOptionalBool& bApplyVipBonus, FOptionalString& Description, FOptionalArrayOfCurrencyChangeReward& ChangeCurrencies, FOptionalArrayOfWebhookReward& CallWebhooks, FOptionalArrayOfNewItemReward& AddItems)
 {
-	AddItemRequests = Serializable->AddItemRequests;
-	AddCurrencyMap = Serializable->AddCurrencyMap;
-	bApplyVipBonus = Serializable->bApplyVipBonus;
-	Description = Serializable->Description;
-	ChangeCurrencies = Serializable->ChangeCurrencies;
-	CallWebhooks = Serializable->CallWebhooks;
-	AddItems = Serializable->AddItems;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		AddItemRequests = Serializable->AddItemRequests;
+		AddCurrencyMap = Serializable->AddCurrencyMap;
+		bApplyVipBonus = Serializable->bApplyVipBonus;
+		Description = Serializable->Description;
+		ChangeCurrencies = Serializable->ChangeCurrencies;
+		CallWebhooks = Serializable->CallWebhooks;
+		AddItems = Serializable->AddItems;
+	}
 		
 }
 

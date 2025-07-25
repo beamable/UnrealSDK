@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/DatabasePerformanceRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UDatabasePerformanceRequestBodyLibrary::DatabasePerformanceRequestBodyToJsonString(const UDatabasePerformanceRequestBody* Serializable, const bool Pretty)
@@ -36,11 +37,14 @@ UDatabasePerformanceRequestBody* UDatabasePerformanceRequestBodyLibrary::Make(FS
 
 void UDatabasePerformanceRequestBodyLibrary::Break(const UDatabasePerformanceRequestBody* Serializable, FString& StorageObjectName, FString& Granularity, FOptionalString& EndDate, FOptionalString& StartDate, FOptionalString& Period)
 {
-	StorageObjectName = Serializable->StorageObjectName;
-	Granularity = Serializable->Granularity;
-	EndDate = Serializable->EndDate;
-	StartDate = Serializable->StartDate;
-	Period = Serializable->Period;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		StorageObjectName = Serializable->StorageObjectName;
+		Granularity = Serializable->Granularity;
+		EndDate = Serializable->EndDate;
+		StartDate = Serializable->StartDate;
+		Period = Serializable->Period;
+	}
 		
 }
 

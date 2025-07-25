@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/BatchDeleteInFlightRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UBatchDeleteInFlightRequestBodyLibrary::BatchDeleteInFlightRequestBodyToJsonString(const UBatchDeleteInFlightRequestBody* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UBatchDeleteInFlightRequestBody* UBatchDeleteInFlightRequestBodyLibrary::Make(TA
 
 void UBatchDeleteInFlightRequestBodyLibrary::Break(const UBatchDeleteInFlightRequestBody* Serializable, TArray<FString>& InFlightFailureIds)
 {
-	InFlightFailureIds = Serializable->InFlightFailureIds;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		InFlightFailureIds = Serializable->InFlightFailureIds;
+	}
 		
 }
 

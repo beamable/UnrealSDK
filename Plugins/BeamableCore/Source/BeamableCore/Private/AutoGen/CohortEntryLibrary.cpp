@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/CohortEntryLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UCohortEntryLibrary::CohortEntryToJsonString(const UCohortEntry* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ UCohortEntry* UCohortEntryLibrary::Make(FString Trial, FString Cohort, UObject* 
 
 void UCohortEntryLibrary::Break(const UCohortEntry* Serializable, FString& Trial, FString& Cohort)
 {
-	Trial = Serializable->Trial;
-	Cohort = Serializable->Cohort;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Trial = Serializable->Trial;
+		Cohort = Serializable->Cohort;
+	}
 		
 }
 

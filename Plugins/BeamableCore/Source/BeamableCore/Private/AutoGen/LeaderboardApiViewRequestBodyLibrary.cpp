@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/LeaderboardApiViewRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString ULeaderboardApiViewRequestBodyLibrary::LeaderboardApiViewRequestBodyToJsonString(const ULeaderboardApiViewRequestBody* Serializable, const bool Pretty)
@@ -37,12 +38,15 @@ ULeaderboardApiViewRequestBody* ULeaderboardApiViewRequestBodyLibrary::Make(FOpt
 
 void ULeaderboardApiViewRequestBodyLibrary::Break(const ULeaderboardApiViewRequestBody* Serializable, FOptionalBool& bFriends, FOptionalBool& bGuild, FOptionalInt32& Max, FOptionalInt64& Focus, FOptionalInt32& From, FOptionalInt64& Outlier)
 {
-	bFriends = Serializable->bFriends;
-	bGuild = Serializable->bGuild;
-	Max = Serializable->Max;
-	Focus = Serializable->Focus;
-	From = Serializable->From;
-	Outlier = Serializable->Outlier;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		bFriends = Serializable->bFriends;
+		bGuild = Serializable->bGuild;
+		Max = Serializable->Max;
+		Focus = Serializable->Focus;
+		From = Serializable->From;
+		Outlier = Serializable->Outlier;
+	}
 		
 }
 

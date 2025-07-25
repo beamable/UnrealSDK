@@ -2,6 +2,7 @@
 #include "BeamableUnrealMicroserviceClients/Public/AutoGen/UpgradeItemRequestArgsLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UUpgradeItemRequestArgsLibrary::UpgradeItemRequestArgsToJsonString(const UUpgradeItemRequestArgs* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ UUpgradeItemRequestArgs* UUpgradeItemRequestArgsLibrary::Make(int64 GamerTag, in
 
 void UUpgradeItemRequestArgsLibrary::Break(const UUpgradeItemRequestArgs* Serializable, int64& GamerTag, int64& ItemInstaceID)
 {
-	GamerTag = Serializable->GamerTag;
-	ItemInstaceID = Serializable->ItemInstaceID;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		GamerTag = Serializable->GamerTag;
+		ItemInstaceID = Serializable->ItemInstaceID;
+	}
 		
 }
 

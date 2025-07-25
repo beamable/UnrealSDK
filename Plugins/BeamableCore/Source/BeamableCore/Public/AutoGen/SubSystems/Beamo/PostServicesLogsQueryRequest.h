@@ -8,8 +8,8 @@
 #include "BeamBackend/BeamFullResponse.h"
 
 #include "Serialization/BeamJsonUtils.h"
-#include "BeamableCore/Public/AutoGen/StartServiceLogsRequestBody.h"
-#include "BeamableCore/Public/AutoGen/QueryResponse.h"
+#include "BeamableCore/Public/AutoGen/BeamoV2StartServiceLogsRequestBody.h"
+#include "BeamableCore/Public/AutoGen/BeamoV2QueryResponse.h"
 
 #include "PostServicesLogsQueryRequest.generated.h"
 
@@ -29,7 +29,7 @@ public:
 
 	// Body Params
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="", Category="Beam")
-	UStartServiceLogsRequestBody* Body = {};
+	UBeamoV2StartServiceLogsRequestBody* Body = {};
 
 	// Beam Base Request Declaration
 	UPostServicesLogsQueryRequest() = default;
@@ -39,11 +39,11 @@ public:
 	virtual void BuildBody(FString& BodyString) const override;
 
 	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Beamo|Utils|Make/Break", DisplayName="Make PostServicesLogsQuery",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="Body_ServiceName,_StartTime,_EndTime,_Order,_Limit,_Filters,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
-	static UPostServicesLogsQueryRequest* Make(FString _ServiceName, FOptionalString Body_ServiceName, FOptionalDateTime _StartTime, FOptionalDateTime _EndTime, FOptionalOrderDirection _Order, FOptionalInt32 _Limit, FOptionalArrayOfString _Filters, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
+	static UPostServicesLogsQueryRequest* Make(FString _ServiceName, FOptionalString Body_ServiceName, FOptionalDateTime _StartTime, FOptionalDateTime _EndTime, FOptionalBeamoV2OrderDirection _Order, FOptionalInt32 _Limit, FOptionalArrayOfString _Filters, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)
-DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnPostServicesLogsQuerySuccess, FBeamRequestContext, Context, UPostServicesLogsQueryRequest*, Request, UQueryResponse*, Response);
+DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnPostServicesLogsQuerySuccess, FBeamRequestContext, Context, UPostServicesLogsQueryRequest*, Request, UBeamoV2QueryResponse*, Response);
 
 UDELEGATE(BlueprintAuthorityOnly)
 DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnPostServicesLogsQueryError, FBeamRequestContext, Context, UPostServicesLogsQueryRequest*, Request, FBeamErrorResponse, Error);
@@ -51,5 +51,5 @@ DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnPostServicesLogsQueryError, FBeamRequest
 UDELEGATE(BlueprintAuthorityOnly)
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FOnPostServicesLogsQueryComplete, FBeamRequestContext, Context, UPostServicesLogsQueryRequest*, Request);
 
-using FPostServicesLogsQueryFullResponse = FBeamFullResponse<UPostServicesLogsQueryRequest*, UQueryResponse*>;
+using FPostServicesLogsQueryFullResponse = FBeamFullResponse<UPostServicesLogsQueryRequest*, UBeamoV2QueryResponse*>;
 DECLARE_DELEGATE_OneParam(FOnPostServicesLogsQueryFullResponse, FPostServicesLogsQueryFullResponse);

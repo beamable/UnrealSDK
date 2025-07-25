@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/LocalizedValueLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString ULocalizedValueLibrary::LocalizedValueToJsonString(const ULocalizedValue* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ ULocalizedValue* ULocalizedValueLibrary::Make(FString Language, FString Value, U
 
 void ULocalizedValueLibrary::Break(const ULocalizedValue* Serializable, FString& Language, FString& Value)
 {
-	Language = Serializable->Language;
-	Value = Serializable->Value;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Language = Serializable->Language;
+		Value = Serializable->Value;
+	}
 		
 }
 

@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/GetOrderInfoRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UGetOrderInfoRequestBodyLibrary::GetOrderInfoRequestBodyToJsonString(const UGetOrderInfoRequestBody* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UGetOrderInfoRequestBody* UGetOrderInfoRequestBodyLibrary::Make(FString OrderId,
 
 void UGetOrderInfoRequestBodyLibrary::Break(const UGetOrderInfoRequestBody* Serializable, FString& OrderId)
 {
-	OrderId = Serializable->OrderId;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		OrderId = Serializable->OrderId;
+	}
 		
 }
 

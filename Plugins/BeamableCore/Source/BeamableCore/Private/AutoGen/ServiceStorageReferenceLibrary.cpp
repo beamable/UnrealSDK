@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/ServiceStorageReferenceLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UServiceStorageReferenceLibrary::ServiceStorageReferenceToJsonString(const UServiceStorageReference* Serializable, const bool Pretty)
@@ -22,27 +23,30 @@ FString UServiceStorageReferenceLibrary::ServiceStorageReferenceToJsonString(con
 	return Result;
 }	
 
-UServiceStorageReference* UServiceStorageReferenceLibrary::Make(FOptionalBool bArchived, FOptionalBool bEnabled, FOptionalString Id, FOptionalString StorageType, FOptionalString TemplateId, FOptionalString Checksum, UObject* Outer)
+UServiceStorageReference* UServiceStorageReferenceLibrary::Make(bool bArchived, bool bEnabled, FString StorageType, FString Id, FString Checksum, FOptionalString TemplateId, UObject* Outer)
 {
 	auto Serializable = NewObject<UServiceStorageReference>(Outer);
 	Serializable->bArchived = bArchived;
 	Serializable->bEnabled = bEnabled;
-	Serializable->Id = Id;
 	Serializable->StorageType = StorageType;
-	Serializable->TemplateId = TemplateId;
+	Serializable->Id = Id;
 	Serializable->Checksum = Checksum;
+	Serializable->TemplateId = TemplateId;
 	
 	return Serializable;
 }
 
-void UServiceStorageReferenceLibrary::Break(const UServiceStorageReference* Serializable, FOptionalBool& bArchived, FOptionalBool& bEnabled, FOptionalString& Id, FOptionalString& StorageType, FOptionalString& TemplateId, FOptionalString& Checksum)
+void UServiceStorageReferenceLibrary::Break(const UServiceStorageReference* Serializable, bool& bArchived, bool& bEnabled, FString& StorageType, FString& Id, FString& Checksum, FOptionalString& TemplateId)
 {
-	bArchived = Serializable->bArchived;
-	bEnabled = Serializable->bEnabled;
-	Id = Serializable->Id;
-	StorageType = Serializable->StorageType;
-	TemplateId = Serializable->TemplateId;
-	Checksum = Serializable->Checksum;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		bArchived = Serializable->bArchived;
+		bEnabled = Serializable->bEnabled;
+		StorageType = Serializable->StorageType;
+		Id = Serializable->Id;
+		Checksum = Serializable->Checksum;
+		TemplateId = Serializable->TemplateId;
+	}
 		
 }
 

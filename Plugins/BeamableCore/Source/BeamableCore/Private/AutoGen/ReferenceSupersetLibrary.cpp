@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/ReferenceSupersetLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UReferenceSupersetLibrary::ReferenceSupersetToJsonString(const UReferenceSuperset* Serializable, const bool Pretty)
@@ -38,13 +39,16 @@ UReferenceSuperset* UReferenceSupersetLibrary::Make(FString Uri, FString Version
 
 void UReferenceSupersetLibrary::Break(const UReferenceSuperset* Serializable, FString& Uri, FString& Version, FBeamContentId& Id, FString& Type, FOptionalString& Checksum, FOptionalString& Visibility, FOptionalArrayOfString& Tags)
 {
-	Uri = Serializable->Uri;
-	Version = Serializable->Version;
-	Id = Serializable->Id;
-	Type = Serializable->Type;
-	Checksum = Serializable->Checksum;
-	Visibility = Serializable->Visibility;
-	Tags = Serializable->Tags;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Uri = Serializable->Uri;
+		Version = Serializable->Version;
+		Id = Serializable->Id;
+		Type = Serializable->Type;
+		Checksum = Serializable->Checksum;
+		Visibility = Serializable->Visibility;
+		Tags = Serializable->Tags;
+	}
 		
 }
 

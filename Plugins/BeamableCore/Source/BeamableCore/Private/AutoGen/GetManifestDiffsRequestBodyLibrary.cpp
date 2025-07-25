@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/GetManifestDiffsRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UGetManifestDiffsRequestBodyLibrary::GetManifestDiffsRequestBodyToJsonString(const UGetManifestDiffsRequestBody* Serializable, const bool Pretty)
@@ -38,13 +39,16 @@ UGetManifestDiffsRequestBody* UGetManifestDiffsRequestBodyLibrary::Make(FBeamCon
 
 void UGetManifestDiffsRequestBodyLibrary::Break(const UGetManifestDiffsRequestBody* Serializable, FBeamContentManifestId& ManifestId, FOptionalString& FromUid, FOptionalString& ToUid, FOptionalInt32& Offset, FOptionalInt64& FromDate, FOptionalInt64& ToDate, FOptionalInt32& Limit)
 {
-	ManifestId = Serializable->ManifestId;
-	FromUid = Serializable->FromUid;
-	ToUid = Serializable->ToUid;
-	Offset = Serializable->Offset;
-	FromDate = Serializable->FromDate;
-	ToDate = Serializable->ToDate;
-	Limit = Serializable->Limit;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		ManifestId = Serializable->ManifestId;
+		FromUid = Serializable->FromUid;
+		ToUid = Serializable->ToUid;
+		Offset = Serializable->Offset;
+		FromDate = Serializable->FromDate;
+		ToDate = Serializable->ToDate;
+		Limit = Serializable->Limit;
+	}
 		
 }
 

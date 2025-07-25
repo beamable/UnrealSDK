@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/PromoteRealmResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UPromoteRealmResponseLibrary::PromoteRealmResponseToJsonString(const UPromoteRealmResponse* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ UPromoteRealmResponse* UPromoteRealmResponseLibrary::Make(FBeamPid SourcePid, TA
 
 void UPromoteRealmResponseLibrary::Break(const UPromoteRealmResponse* Serializable, FBeamPid& SourcePid, TArray<UPromotionScope*>& Scopes)
 {
-	SourcePid = Serializable->SourcePid;
-	Scopes = Serializable->Scopes;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		SourcePid = Serializable->SourcePid;
+		Scopes = Serializable->Scopes;
+	}
 		
 }
 

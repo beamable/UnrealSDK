@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/EventPlayerStateViewLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UEventPlayerStateViewLibrary::EventPlayerStateViewToJsonString(const UEventPlayerStateView* Serializable, const bool Pretty)
@@ -43,18 +44,21 @@ UEventPlayerStateView* UEventPlayerStateViewLibrary::Make(bool bRunning, FString
 
 void UEventPlayerStateViewLibrary::Break(const UEventPlayerStateView* Serializable, bool& bRunning, FString& Name, int64& Rank, double& Score, int64& SecondsRemaining, FString& Id, FString& LeaderboardId, TArray<UEventPlayerPhaseView*>& AllPhases, TArray<UEventRewardState*>& RankRewards, TArray<UEventRewardState*>& ScoreRewards, FOptionalEventPlayerPhaseView& CurrentPhase, FOptionalEventPlayerGroupState& GroupRewards)
 {
-	bRunning = Serializable->bRunning;
-	Name = Serializable->Name;
-	Rank = Serializable->Rank;
-	Score = Serializable->Score;
-	SecondsRemaining = Serializable->SecondsRemaining;
-	Id = Serializable->Id;
-	LeaderboardId = Serializable->LeaderboardId;
-	AllPhases = Serializable->AllPhases;
-	RankRewards = Serializable->RankRewards;
-	ScoreRewards = Serializable->ScoreRewards;
-	CurrentPhase = Serializable->CurrentPhase;
-	GroupRewards = Serializable->GroupRewards;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		bRunning = Serializable->bRunning;
+		Name = Serializable->Name;
+		Rank = Serializable->Rank;
+		Score = Serializable->Score;
+		SecondsRemaining = Serializable->SecondsRemaining;
+		Id = Serializable->Id;
+		LeaderboardId = Serializable->LeaderboardId;
+		AllPhases = Serializable->AllPhases;
+		RankRewards = Serializable->RankRewards;
+		ScoreRewards = Serializable->ScoreRewards;
+		CurrentPhase = Serializable->CurrentPhase;
+		GroupRewards = Serializable->GroupRewards;
+	}
 		
 }
 

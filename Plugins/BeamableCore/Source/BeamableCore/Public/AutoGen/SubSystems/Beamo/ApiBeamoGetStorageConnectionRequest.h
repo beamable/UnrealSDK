@@ -7,7 +7,7 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-#include "BeamableCore/Public/AutoGen/ConnectionStringResponse.h"
+#include "BeamableCore/Public/AutoGen/BeamoV2ConnectionStringResponse.h"
 
 #include "ApiBeamoGetStorageConnectionRequest.generated.h"
 
@@ -39,7 +39,7 @@ public:
 };
 
 UDELEGATE(BlueprintAuthorityOnly)
-DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnApiBeamoGetStorageConnectionSuccess, FBeamRequestContext, Context, UApiBeamoGetStorageConnectionRequest*, Request, UConnectionStringResponse*, Response);
+DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnApiBeamoGetStorageConnectionSuccess, FBeamRequestContext, Context, UApiBeamoGetStorageConnectionRequest*, Request, UBeamoV2ConnectionStringResponse*, Response);
 
 UDELEGATE(BlueprintAuthorityOnly)
 DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnApiBeamoGetStorageConnectionError, FBeamRequestContext, Context, UApiBeamoGetStorageConnectionRequest*, Request, FBeamErrorResponse, Error);
@@ -47,5 +47,5 @@ DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnApiBeamoGetStorageConnectionError, FBeam
 UDELEGATE(BlueprintAuthorityOnly)
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FOnApiBeamoGetStorageConnectionComplete, FBeamRequestContext, Context, UApiBeamoGetStorageConnectionRequest*, Request);
 
-using FApiBeamoGetStorageConnectionFullResponse = FBeamFullResponse<UApiBeamoGetStorageConnectionRequest*, UConnectionStringResponse*>;
+using FApiBeamoGetStorageConnectionFullResponse = FBeamFullResponse<UApiBeamoGetStorageConnectionRequest*, UBeamoV2ConnectionStringResponse*>;
 DECLARE_DELEGATE_OneParam(FOnApiBeamoGetStorageConnectionFullResponse, FApiBeamoGetStorageConnectionFullResponse);

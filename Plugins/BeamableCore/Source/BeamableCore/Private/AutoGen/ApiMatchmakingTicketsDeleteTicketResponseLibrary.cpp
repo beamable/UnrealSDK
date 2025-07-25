@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/ApiMatchmakingTicketsDeleteTicketResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UApiMatchmakingTicketsDeleteTicketResponseLibrary::ApiMatchmakingTicketsDeleteTicketResponseToJsonString(const UApiMatchmakingTicketsDeleteTicketResponse* Serializable, const bool Pretty)

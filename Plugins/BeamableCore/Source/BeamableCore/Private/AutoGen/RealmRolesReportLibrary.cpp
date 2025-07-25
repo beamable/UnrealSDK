@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/RealmRolesReportLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString URealmRolesReportLibrary::RealmRolesReportToJsonString(const URealmRolesReport* Serializable, const bool Pretty)
@@ -34,9 +35,12 @@ URealmRolesReport* URealmRolesReportLibrary::Make(FString RealmName, FString Rea
 
 void URealmRolesReportLibrary::Break(const URealmRolesReport* Serializable, FString& RealmName, FString& RealmDisplayName, TArray<FString>& Roles)
 {
-	RealmName = Serializable->RealmName;
-	RealmDisplayName = Serializable->RealmDisplayName;
-	Roles = Serializable->Roles;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		RealmName = Serializable->RealmName;
+		RealmDisplayName = Serializable->RealmDisplayName;
+		Roles = Serializable->Roles;
+	}
 		
 }
 

@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/SendMailObjectRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString USendMailObjectRequestBodyLibrary::SendMailObjectRequestBodyToJsonString(const USendMailObjectRequestBody* Serializable, const bool Pretty)
@@ -41,16 +42,19 @@ USendMailObjectRequestBody* USendMailObjectRequestBodyLibrary::Make(int64 Sender
 
 void USendMailObjectRequestBodyLibrary::Break(const USendMailObjectRequestBody* Serializable, int64& SenderGamerTag, FString& Category, FOptionalString& Body, FOptionalString& Expires, FOptionalPlayerReward& PlayerRewards, FOptionalString& Subject, FOptionalMailRewards& Rewards, FOptionalInt64& Id, FOptionalInt64& BodyRef, FOptionalArrayOfAttachmentRequestBody& Attachments)
 {
-	SenderGamerTag = Serializable->SenderGamerTag;
-	Category = Serializable->Category;
-	Body = Serializable->Body;
-	Expires = Serializable->Expires;
-	PlayerRewards = Serializable->PlayerRewards;
-	Subject = Serializable->Subject;
-	Rewards = Serializable->Rewards;
-	Id = Serializable->Id;
-	BodyRef = Serializable->BodyRef;
-	Attachments = Serializable->Attachments;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		SenderGamerTag = Serializable->SenderGamerTag;
+		Category = Serializable->Category;
+		Body = Serializable->Body;
+		Expires = Serializable->Expires;
+		PlayerRewards = Serializable->PlayerRewards;
+		Subject = Serializable->Subject;
+		Rewards = Serializable->Rewards;
+		Id = Serializable->Id;
+		BodyRef = Serializable->BodyRef;
+		Attachments = Serializable->Attachments;
+	}
 		
 }
 

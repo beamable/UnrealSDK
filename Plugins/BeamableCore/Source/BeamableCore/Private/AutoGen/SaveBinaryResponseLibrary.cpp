@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/SaveBinaryResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString USaveBinaryResponseLibrary::SaveBinaryResponseToJsonString(const USaveBinaryResponse* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ USaveBinaryResponse* USaveBinaryResponseLibrary::Make(TArray<UBinaryReference*> 
 
 void USaveBinaryResponseLibrary::Break(const USaveBinaryResponse* Serializable, TArray<UBinaryReference*>& Binary)
 {
-	Binary = Serializable->Binary;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Binary = Serializable->Binary;
+	}
 		
 }
 

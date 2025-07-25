@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/BulkUpdateMailObjectRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UBulkUpdateMailObjectRequestBodyLibrary::BulkUpdateMailObjectRequestBodyToJsonString(const UBulkUpdateMailObjectRequestBody* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UBulkUpdateMailObjectRequestBody* UBulkUpdateMailObjectRequestBodyLibrary::Make(
 
 void UBulkUpdateMailObjectRequestBodyLibrary::Break(const UBulkUpdateMailObjectRequestBody* Serializable, TArray<UMyMailUpdate*>& UpdateMailRequests)
 {
-	UpdateMailRequests = Serializable->UpdateMailRequests;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		UpdateMailRequests = Serializable->UpdateMailRequests;
+	}
 		
 }
 

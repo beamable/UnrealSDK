@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/ApiPartiesMembersDeletePartyResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UApiPartiesMembersDeletePartyResponseLibrary::ApiPartiesMembersDeletePartyResponseToJsonString(const UApiPartiesMembersDeletePartyResponse* Serializable, const bool Pretty)

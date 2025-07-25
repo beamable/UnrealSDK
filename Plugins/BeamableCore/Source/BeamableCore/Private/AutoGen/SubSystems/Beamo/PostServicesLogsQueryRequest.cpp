@@ -27,7 +27,7 @@ void UPostServicesLogsQueryRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostServicesLogsQueryRequest* UPostServicesLogsQueryRequest::Make(FString _ServiceName, FOptionalString Body_ServiceName, FOptionalDateTime _StartTime, FOptionalDateTime _EndTime, FOptionalOrderDirection _Order, FOptionalInt32 _Limit, FOptionalArrayOfString _Filters, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
+UPostServicesLogsQueryRequest* UPostServicesLogsQueryRequest::Make(FString _ServiceName, FOptionalString Body_ServiceName, FOptionalDateTime _StartTime, FOptionalDateTime _EndTime, FOptionalBeamoV2OrderDirection _Order, FOptionalInt32 _Limit, FOptionalArrayOfString _Filters, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPostServicesLogsQueryRequest* Req = NewObject<UPostServicesLogsQueryRequest>(RequestOwner);
 	Req->CustomHeaders = TMap{CustomHeaders};
@@ -37,7 +37,7 @@ UPostServicesLogsQueryRequest* UPostServicesLogsQueryRequest::Make(FString _Serv
 	
 	
 	// Makes a body and fill up with parameters (Blank if no body parameters exist)
-	Req->Body = NewObject<UStartServiceLogsRequestBody>(Req);
+	Req->Body = NewObject<UBeamoV2StartServiceLogsRequestBody>(Req);
 	Req->Body->ServiceName = Body_ServiceName;
 	Req->Body->StartTime = _StartTime;
 	Req->Body->EndTime = _EndTime;

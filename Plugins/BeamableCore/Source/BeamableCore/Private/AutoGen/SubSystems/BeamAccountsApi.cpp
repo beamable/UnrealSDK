@@ -258,6 +258,66 @@ void UBeamAccountsApi::CPP_PostPasswordUpdateInitImpl(const FBeamRealmHandle& Ta
 }
 
 		
+void UBeamAccountsApi::BP_PostSignupImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, UPostSignupRequest* RequestData,
+                                                  const FOnPostSignupSuccess& OnSuccess, const FOnPostSignupError& OnError, const FOnPostSignupComplete& OnComplete,
+                                                  int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
+{
+	// AUTO-GENERATED...	
+	const auto Request = Backend->CreateRequest(OutRequestId, TargetRealm, RetryConfig, RequestData);
+
+	// If we are making this request as part of an operation, we add it to it.
+	if(OpHandle.OperationId >= 0)
+		RequestTracker->AddRequestToOperation(OpHandle, OutRequestId);
+
+	// If cached...
+	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
+	{
+		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
+		Backend->RunBlueprintRequestProcessor<UPostSignupRequest, UCreateAccountWithCredsApiResponse, FOnPostSignupSuccess, FOnPostSignupError, FOnPostSignupComplete>
+			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, RequestData, OnSuccess, OnError, OnComplete);		
+	}
+	// If not cached...
+	else
+	{			
+		// Binds the handler to the static response handler (pre-generated)
+		const auto BeamRequestProcessor = Backend->MakeBlueprintRequestProcessor<UPostSignupRequest, UCreateAccountWithCredsApiResponse, FOnPostSignupSuccess, FOnPostSignupError, FOnPostSignupComplete>
+			(OutRequestId, RequestData, OnSuccess, OnError, OnComplete);
+		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
+		Backend->SendPreparedRequest(OutRequestId, CallingContext);		
+	}	
+}
+
+void UBeamAccountsApi::CPP_PostSignupImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, 
+                                               UPostSignupRequest* RequestData, const FOnPostSignupFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
+{
+	// AUTO-GENERATED...	
+	const auto Request = Backend->CreateRequest(OutRequestId, TargetRealm, RetryConfig, RequestData);
+
+	// If we are making this request as part of an operation, we add it to it.
+	if(OpHandle.OperationId >= 0)
+		RequestTracker->AddRequestToOperation(OpHandle, OutRequestId);
+
+	// If cached...
+	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
+	{
+		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
+		Backend->RunCodeRequestProcessor<UPostSignupRequest, UCreateAccountWithCredsApiResponse>
+			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, RequestData, Handler);			
+	}
+	// If not cached...
+	else
+	{
+		// Binds the handler to the static response handler (pre-generated)	
+		auto ResponseProcessor = Backend->MakeCodeRequestProcessor<UPostSignupRequest, UCreateAccountWithCredsApiResponse>
+			(OutRequestId, RequestData, Handler);
+		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
+
+		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
+		Backend->SendPreparedRequest(OutRequestId, CallingContext);	
+	}
+}
+
+		
 void UBeamAccountsApi::BP_GetAvailableDeviceIdImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, UGetAvailableDeviceIdRequest* RequestData,
                                                   const FOnGetAvailableDeviceIdSuccess& OnSuccess, const FOnGetAvailableDeviceIdError& OnError, const FOnGetAvailableDeviceIdComplete& OnComplete,
                                                   int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
@@ -2035,6 +2095,17 @@ void UBeamAccountsApi::CPP_PostPasswordUpdateInit(UPostPasswordUpdateInitRequest
 }
 
 		
+void UBeamAccountsApi::CPP_PostSignup(UPostSignupRequest* Request, const FOnPostSignupFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
+{
+	FBeamRetryConfig RetryConfig;
+	Backend->GetRetryConfigForRequestType(UPostSignupRequest::StaticClass()->GetName(), RetryConfig);
+	
+    int64 OutRequestId;
+	CPP_PostSignupImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Request, Handler, OutRequestId, OpHandle, CallingContext);
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), AS_None};
+}
+
+		
 void UBeamAccountsApi::CPP_GetAvailableDeviceId(UGetAvailableDeviceIdRequest* Request, const FOnGetAvailableDeviceIdFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
 	FBeamRetryConfig RetryConfig;
@@ -2490,6 +2561,18 @@ void UBeamAccountsApi::PostPasswordUpdateInit(UPostPasswordUpdateInitRequest* Re
 	
 	int64 OutRequestId = 0;
 	BP_PostPasswordUpdateInitImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), AS_None};
+}
+
+		
+void UBeamAccountsApi::PostSignup(UPostSignupRequest* Request, const FOnPostSignupSuccess& OnSuccess, const FOnPostSignupError& OnError, const FOnPostSignupComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext)
+{
+	// AUTO-GENERATED...	
+	FBeamRetryConfig RetryConfig;
+	Backend->GetRetryConfigForRequestType(UPostSignupRequest::StaticClass()->GetName(), RetryConfig);	
+	
+	int64 OutRequestId = 0;
+	BP_PostSignupImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);
 	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), AS_None};
 }
 

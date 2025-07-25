@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/AnnouncementContentLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UAnnouncementContentLibrary::AnnouncementContentToJsonString(const UAnnouncementContent* Serializable, const bool Pretty)
@@ -43,18 +44,21 @@ UAnnouncementContent* UAnnouncementContentLibrary::Make(FString Body, FString Ch
 
 void UAnnouncementContentLibrary::Break(const UAnnouncementContent* Serializable, FString& Body, FString& Channel, FString& Symbol, FString& Title, FString& Summary, FOptionalString& StartDate, FOptionalPlayerReward& Gift, FOptionalString& EndDate, FOptionalArrayOfString& Tags, FOptionalArrayOfPlayerStatRequirement& StatRequirements, FOptionalArrayOfAnnouncementAttachment& Attachments, FOptionalMapOfString& ClientData)
 {
-	Body = Serializable->Body;
-	Channel = Serializable->Channel;
-	Symbol = Serializable->Symbol;
-	Title = Serializable->Title;
-	Summary = Serializable->Summary;
-	StartDate = Serializable->StartDate;
-	Gift = Serializable->Gift;
-	EndDate = Serializable->EndDate;
-	Tags = Serializable->Tags;
-	StatRequirements = Serializable->StatRequirements;
-	Attachments = Serializable->Attachments;
-	ClientData = Serializable->ClientData;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Body = Serializable->Body;
+		Channel = Serializable->Channel;
+		Symbol = Serializable->Symbol;
+		Title = Serializable->Title;
+		Summary = Serializable->Summary;
+		StartDate = Serializable->StartDate;
+		Gift = Serializable->Gift;
+		EndDate = Serializable->EndDate;
+		Tags = Serializable->Tags;
+		StatRequirements = Serializable->StatRequirements;
+		Attachments = Serializable->Attachments;
+		ClientData = Serializable->ClientData;
+	}
 		
 }
 

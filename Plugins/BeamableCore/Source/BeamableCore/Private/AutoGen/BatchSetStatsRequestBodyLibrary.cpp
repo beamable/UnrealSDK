@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/BatchSetStatsRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UBatchSetStatsRequestBodyLibrary::BatchSetStatsRequestBodyToJsonString(const UBatchSetStatsRequestBody* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UBatchSetStatsRequestBody* UBatchSetStatsRequestBodyLibrary::Make(TArray<UStatUp
 
 void UBatchSetStatsRequestBodyLibrary::Break(const UBatchSetStatsRequestBody* Serializable, TArray<UStatUpdateRequestBody*>& Updates)
 {
-	Updates = Serializable->Updates;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Updates = Serializable->Updates;
+	}
 		
 }
 

@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/TicketReservationRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UTicketReservationRequestBodyLibrary::TicketReservationRequestBodyToJsonString(const UTicketReservationRequestBody* Serializable, const bool Pretty)
@@ -37,12 +38,15 @@ UTicketReservationRequestBody* UTicketReservationRequestBodyLibrary::Make(FOptio
 
 void UTicketReservationRequestBodyLibrary::Break(const UTicketReservationRequestBody* Serializable, FOptionalBool& bWatchOnlineStatus, FOptionalInt32& MaxWaitDurationSecs, FOptionalString& Team, FOptionalArrayOfBeamGamerTag& Players, FOptionalArrayOfBeamContentId& MatchTypes, FOptionalArrayOfBeamTag& Tags)
 {
-	bWatchOnlineStatus = Serializable->bWatchOnlineStatus;
-	MaxWaitDurationSecs = Serializable->MaxWaitDurationSecs;
-	Team = Serializable->Team;
-	Players = Serializable->Players;
-	MatchTypes = Serializable->MatchTypes;
-	Tags = Serializable->Tags;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		bWatchOnlineStatus = Serializable->bWatchOnlineStatus;
+		MaxWaitDurationSecs = Serializable->MaxWaitDurationSecs;
+		Team = Serializable->Team;
+		Players = Serializable->Players;
+		MatchTypes = Serializable->MatchTypes;
+		Tags = Serializable->Tags;
+	}
 		
 }
 

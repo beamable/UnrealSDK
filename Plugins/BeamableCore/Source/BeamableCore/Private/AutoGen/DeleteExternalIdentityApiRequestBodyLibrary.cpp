@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/DeleteExternalIdentityApiRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UDeleteExternalIdentityApiRequestBodyLibrary::DeleteExternalIdentityApiRequestBodyToJsonString(const UDeleteExternalIdentityApiRequestBody* Serializable, const bool Pretty)
@@ -34,9 +35,12 @@ UDeleteExternalIdentityApiRequestBody* UDeleteExternalIdentityApiRequestBodyLibr
 
 void UDeleteExternalIdentityApiRequestBodyLibrary::Break(const UDeleteExternalIdentityApiRequestBody* Serializable, FString& ProviderService, FString& UserId, FOptionalString& ProviderNamespace)
 {
-	ProviderService = Serializable->ProviderService;
-	UserId = Serializable->UserId;
-	ProviderNamespace = Serializable->ProviderNamespace;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		ProviderService = Serializable->ProviderService;
+		UserId = Serializable->UserId;
+		ProviderNamespace = Serializable->ProviderNamespace;
+	}
 		
 }
 

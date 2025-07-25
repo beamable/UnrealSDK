@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/GetActiveOffersResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UGetActiveOffersResponseLibrary::GetActiveOffersResponseToJsonString(const UGetActiveOffersResponse* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UGetActiveOffersResponse* UGetActiveOffersResponseLibrary::Make(TArray<UPlayerSt
 
 void UGetActiveOffersResponseLibrary::Break(const UGetActiveOffersResponse* Serializable, TArray<UPlayerStoreView*>& Stores)
 {
-	Stores = Serializable->Stores;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Stores = Serializable->Stores;
+	}
 		
 }
 

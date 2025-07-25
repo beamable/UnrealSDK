@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/MailSearchResponseClauseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UMailSearchResponseClauseLibrary::MailSearchResponseClauseToJsonString(const UMailSearchResponseClause* Serializable, const bool Pretty)
@@ -34,9 +35,12 @@ UMailSearchResponseClause* UMailSearchResponseClauseLibrary::Make(FString Name, 
 
 void UMailSearchResponseClauseLibrary::Break(const UMailSearchResponseClause* Serializable, FString& Name, int64& Count, FOptionalArrayOfMessage& Content)
 {
-	Name = Serializable->Name;
-	Count = Serializable->Count;
-	Content = Serializable->Content;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Name = Serializable->Name;
+		Count = Serializable->Count;
+		Content = Serializable->Content;
+	}
 		
 }
 

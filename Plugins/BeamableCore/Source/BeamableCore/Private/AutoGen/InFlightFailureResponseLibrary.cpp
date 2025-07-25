@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/InFlightFailureResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UInFlightFailureResponseLibrary::InFlightFailureResponseToJsonString(const UInFlightFailureResponse* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UInFlightFailureResponse* UInFlightFailureResponseLibrary::Make(TArray<UInFlight
 
 void UInFlightFailureResponseLibrary::Break(const UInFlightFailureResponse* Serializable, TArray<UInFlightFailure*>& Failures)
 {
-	Failures = Serializable->Failures;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Failures = Serializable->Failures;
+	}
 		
 }
 

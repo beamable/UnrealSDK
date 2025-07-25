@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/AnnouncementRawResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UAnnouncementRawResponseLibrary::AnnouncementRawResponseToJsonString(const UAnnouncementRawResponse* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UAnnouncementRawResponse* UAnnouncementRawResponseLibrary::Make(TMap<FString, UA
 
 void UAnnouncementRawResponseLibrary::Break(const UAnnouncementRawResponse* Serializable, TMap<FString, UAnnouncementState*>& Announcements)
 {
-	Announcements = Serializable->Announcements;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Announcements = Serializable->Announcements;
+	}
 		
 }
 

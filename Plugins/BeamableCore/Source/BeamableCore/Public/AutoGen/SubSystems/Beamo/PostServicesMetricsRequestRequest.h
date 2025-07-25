@@ -8,8 +8,8 @@
 #include "BeamBackend/BeamFullResponse.h"
 
 #include "Serialization/BeamJsonUtils.h"
-#include "BeamableCore/Public/AutoGen/GetMetricsRequestBody.h"
-#include "BeamableCore/Public/AutoGen/SignedRequestBody.h"
+#include "BeamableCore/Public/AutoGen/BeamoV2GetMetricsRequestBody.h"
+#include "BeamableCore/Public/AutoGen/BeamoV2SignedRequestBody.h"
 
 #include "PostServicesMetricsRequestRequest.generated.h"
 
@@ -29,7 +29,7 @@ public:
 
 	// Body Params
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="", Category="Beam")
-	UGetMetricsRequestBody* Body = {};
+	UBeamoV2GetMetricsRequestBody* Body = {};
 
 	// Beam Base Request Declaration
 	UPostServicesMetricsRequestRequest() = default;
@@ -43,7 +43,7 @@ public:
 };
 
 UDELEGATE(BlueprintAuthorityOnly)
-DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnPostServicesMetricsRequestSuccess, FBeamRequestContext, Context, UPostServicesMetricsRequestRequest*, Request, USignedRequestBody*, Response);
+DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnPostServicesMetricsRequestSuccess, FBeamRequestContext, Context, UPostServicesMetricsRequestRequest*, Request, UBeamoV2SignedRequestBody*, Response);
 
 UDELEGATE(BlueprintAuthorityOnly)
 DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnPostServicesMetricsRequestError, FBeamRequestContext, Context, UPostServicesMetricsRequestRequest*, Request, FBeamErrorResponse, Error);
@@ -51,5 +51,5 @@ DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnPostServicesMetricsRequestError, FBeamRe
 UDELEGATE(BlueprintAuthorityOnly)
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FOnPostServicesMetricsRequestComplete, FBeamRequestContext, Context, UPostServicesMetricsRequestRequest*, Request);
 
-using FPostServicesMetricsRequestFullResponse = FBeamFullResponse<UPostServicesMetricsRequestRequest*, USignedRequestBody*>;
+using FPostServicesMetricsRequestFullResponse = FBeamFullResponse<UPostServicesMetricsRequestRequest*, UBeamoV2SignedRequestBody*>;
 DECLARE_DELEGATE_OneParam(FOnPostServicesMetricsRequestFullResponse, FPostServicesMetricsRequestFullResponse);

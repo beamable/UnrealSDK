@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/LeaderboardPlayerAssignmentRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString ULeaderboardPlayerAssignmentRequestBodyLibrary::LeaderboardPlayerAssignmentRequestBodyToJsonString(const ULeaderboardPlayerAssignmentRequestBody* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ ULeaderboardPlayerAssignmentRequestBody* ULeaderboardPlayerAssignmentRequestBody
 
 void ULeaderboardPlayerAssignmentRequestBodyLibrary::Break(const ULeaderboardPlayerAssignmentRequestBody* Serializable, FString& BoardId, FOptionalBool& bJoinBoard)
 {
-	BoardId = Serializable->BoardId;
-	bJoinBoard = Serializable->bJoinBoard;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		BoardId = Serializable->BoardId;
+		bJoinBoard = Serializable->bJoinBoard;
+	}
 		
 }
 

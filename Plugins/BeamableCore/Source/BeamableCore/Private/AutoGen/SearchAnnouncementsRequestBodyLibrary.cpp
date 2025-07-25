@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/SearchAnnouncementsRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString USearchAnnouncementsRequestBodyLibrary::SearchAnnouncementsRequestBodyToJsonString(const USearchAnnouncementsRequestBody* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ USearchAnnouncementsRequestBody* USearchAnnouncementsRequestBodyLibrary::Make(FO
 
 void USearchAnnouncementsRequestBodyLibrary::Break(const USearchAnnouncementsRequestBody* Serializable, FOptionalString& Date)
 {
-	Date = Serializable->Date;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Date = Serializable->Date;
+	}
 		
 }
 

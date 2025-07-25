@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/TokenRequestWrapperLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UTokenRequestWrapperLibrary::TokenRequestWrapperToJsonString(const UTokenRequestWrapper* Serializable, const bool Pretty)
@@ -49,24 +50,27 @@ UTokenRequestWrapper* UTokenRequestWrapperLibrary::Make(FString GrantType, FOpti
 
 void UTokenRequestWrapperLibrary::Break(const UTokenRequestWrapper* Serializable, FString& GrantType, FOptionalBool& bCustomerScoped, FOptionalString& DeviceId, FOptionalString& ProviderService, FOptionalString& Token, FOptionalString& Code, FOptionalString& ExternalToken, FOptionalChallengeSolution& ChallengeSolution, FOptionalString& ProviderNamespace, FOptionalString& RedirectUri, FOptionalString& ThirdParty, FOptionalContextInfo& Context, FOptionalString& RefreshToken, FOptionalString& Username, FOptionalString& ClientId, FOptionalString& Password, FOptionalArrayOfString& Scope, FOptionalMapOfString& InitProperties)
 {
-	GrantType = Serializable->GrantType;
-	bCustomerScoped = Serializable->bCustomerScoped;
-	DeviceId = Serializable->DeviceId;
-	ProviderService = Serializable->ProviderService;
-	Token = Serializable->Token;
-	Code = Serializable->Code;
-	ExternalToken = Serializable->ExternalToken;
-	ChallengeSolution = Serializable->ChallengeSolution;
-	ProviderNamespace = Serializable->ProviderNamespace;
-	RedirectUri = Serializable->RedirectUri;
-	ThirdParty = Serializable->ThirdParty;
-	Context = Serializable->Context;
-	RefreshToken = Serializable->RefreshToken;
-	Username = Serializable->Username;
-	ClientId = Serializable->ClientId;
-	Password = Serializable->Password;
-	Scope = Serializable->Scope;
-	InitProperties = Serializable->InitProperties;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		GrantType = Serializable->GrantType;
+		bCustomerScoped = Serializable->bCustomerScoped;
+		DeviceId = Serializable->DeviceId;
+		ProviderService = Serializable->ProviderService;
+		Token = Serializable->Token;
+		Code = Serializable->Code;
+		ExternalToken = Serializable->ExternalToken;
+		ChallengeSolution = Serializable->ChallengeSolution;
+		ProviderNamespace = Serializable->ProviderNamespace;
+		RedirectUri = Serializable->RedirectUri;
+		ThirdParty = Serializable->ThirdParty;
+		Context = Serializable->Context;
+		RefreshToken = Serializable->RefreshToken;
+		Username = Serializable->Username;
+		ClientId = Serializable->ClientId;
+		Password = Serializable->Password;
+		Scope = Serializable->Scope;
+		InitProperties = Serializable->InitProperties;
+	}
 		
 }
 

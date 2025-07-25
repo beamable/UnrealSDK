@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/EmailUpdateRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UEmailUpdateRequestBodyLibrary::EmailUpdateRequestBodyToJsonString(const UEmailUpdateRequestBody* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ UEmailUpdateRequestBody* UEmailUpdateRequestBodyLibrary::Make(FString NewEmail, 
 
 void UEmailUpdateRequestBodyLibrary::Break(const UEmailUpdateRequestBody* Serializable, FString& NewEmail, FOptionalString& CodeType)
 {
-	NewEmail = Serializable->NewEmail;
-	CodeType = Serializable->CodeType;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		NewEmail = Serializable->NewEmail;
+		CodeType = Serializable->CodeType;
+	}
 		
 }
 

@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/LeaderboardDetailsLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString ULeaderboardDetailsLibrary::LeaderboardDetailsToJsonString(const ULeaderboardDetails* Serializable, const bool Pretty)
@@ -37,12 +38,15 @@ ULeaderboardDetails* ULeaderboardDetailsLibrary::Make(FString Lbid, int32 Number
 
 void ULeaderboardDetailsLibrary::Break(const ULeaderboardDetails* Serializable, FString& Lbid, int32& NumberOfEntries, FString& FullName, ULeaderBoardView*& View, FOptionalOrderRules& Orules, FOptionalMetadataView& MetaData)
 {
-	Lbid = Serializable->Lbid;
-	NumberOfEntries = Serializable->NumberOfEntries;
-	FullName = Serializable->FullName;
-	View = Serializable->View;
-	Orules = Serializable->Orules;
-	MetaData = Serializable->MetaData;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Lbid = Serializable->Lbid;
+		NumberOfEntries = Serializable->NumberOfEntries;
+		FullName = Serializable->FullName;
+		View = Serializable->View;
+		Orules = Serializable->Orules;
+		MetaData = Serializable->MetaData;
+	}
 		
 }
 

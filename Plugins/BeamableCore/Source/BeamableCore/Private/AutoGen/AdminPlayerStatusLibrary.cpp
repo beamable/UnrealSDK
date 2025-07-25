@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/AdminPlayerStatusLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UAdminPlayerStatusLibrary::AdminPlayerStatusToJsonString(const UAdminPlayerStatus* Serializable, const bool Pretty)
@@ -40,15 +41,18 @@ UAdminPlayerStatus* UAdminPlayerStatusLibrary::Make(FString TournamentId, int32 
 
 void UAdminPlayerStatusLibrary::Break(const UAdminPlayerStatus* Serializable, FString& TournamentId, int32& Stage, int32& Tier, int32& Rank, double& Score, int64& PlayerId, FString& ContentId, int64& NextCycleStartMs, TArray<UTournamentCurrencyReward*>& UnclaimedRewards)
 {
-	TournamentId = Serializable->TournamentId;
-	Stage = Serializable->Stage;
-	Tier = Serializable->Tier;
-	Rank = Serializable->Rank;
-	Score = Serializable->Score;
-	PlayerId = Serializable->PlayerId;
-	ContentId = Serializable->ContentId;
-	NextCycleStartMs = Serializable->NextCycleStartMs;
-	UnclaimedRewards = Serializable->UnclaimedRewards;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		TournamentId = Serializable->TournamentId;
+		Stage = Serializable->Stage;
+		Tier = Serializable->Tier;
+		Rank = Serializable->Rank;
+		Score = Serializable->Score;
+		PlayerId = Serializable->PlayerId;
+		ContentId = Serializable->ContentId;
+		NextCycleStartMs = Serializable->NextCycleStartMs;
+		UnclaimedRewards = Serializable->UnclaimedRewards;
+	}
 		
 }
 

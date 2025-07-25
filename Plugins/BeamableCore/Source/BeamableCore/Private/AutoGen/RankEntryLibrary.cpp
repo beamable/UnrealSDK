@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/RankEntryLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString URankEntryLibrary::RankEntryToJsonString(const URankEntry* Serializable, const bool Pretty)
@@ -36,11 +37,14 @@ URankEntry* URankEntryLibrary::Make(int64 Rank, int64 Gt, TMap<FString, int64> C
 
 void URankEntryLibrary::Break(const URankEntry* Serializable, int64& Rank, int64& Gt, TMap<FString, int64>& Columns, FOptionalDouble& Score, FOptionalArrayOfRankEntryStat& Stats)
 {
-	Rank = Serializable->Rank;
-	Gt = Serializable->Gt;
-	Columns = Serializable->Columns;
-	Score = Serializable->Score;
-	Stats = Serializable->Stats;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Rank = Serializable->Rank;
+		Gt = Serializable->Gt;
+		Columns = Serializable->Columns;
+		Score = Serializable->Score;
+		Stats = Serializable->Stats;
+	}
 		
 }
 

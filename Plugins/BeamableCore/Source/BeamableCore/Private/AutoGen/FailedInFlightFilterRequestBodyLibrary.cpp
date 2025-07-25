@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/FailedInFlightFilterRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UFailedInFlightFilterRequestBodyLibrary::FailedInFlightFilterRequestBodyToJsonString(const UFailedInFlightFilterRequestBody* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ UFailedInFlightFilterRequestBody* UFailedInFlightFilterRequestBodyLibrary::Make(
 
 void UFailedInFlightFilterRequestBodyLibrary::Break(const UFailedInFlightFilterRequestBody* Serializable, FString& ServiceName, FOptionalString& ServiceObjectId)
 {
-	ServiceName = Serializable->ServiceName;
-	ServiceObjectId = Serializable->ServiceObjectId;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		ServiceName = Serializable->ServiceName;
+		ServiceObjectId = Serializable->ServiceObjectId;
+	}
 		
 }
 

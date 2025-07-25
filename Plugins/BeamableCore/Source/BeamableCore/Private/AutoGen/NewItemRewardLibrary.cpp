@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/NewItemRewardLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UNewItemRewardLibrary::NewItemRewardToJsonString(const UNewItemReward* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ UNewItemReward* UNewItemRewardLibrary::Make(FString Symbol, FOptionalMapOfString
 
 void UNewItemRewardLibrary::Break(const UNewItemReward* Serializable, FString& Symbol, FOptionalMapOfString& Properties)
 {
-	Symbol = Serializable->Symbol;
-	Properties = Serializable->Properties;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Symbol = Serializable->Symbol;
+		Properties = Serializable->Properties;
+	}
 		
 }
 

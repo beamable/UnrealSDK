@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/InFlightFailureLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UInFlightFailureLibrary::InFlightFailureToJsonString(const UInFlightFailure* Serializable, const bool Pretty)
@@ -37,12 +38,15 @@ UInFlightFailure* UInFlightFailureLibrary::Make(FString ServiceObjectId, int64 T
 
 void UInFlightFailureLibrary::Break(const UInFlightFailure* Serializable, FString& ServiceObjectId, int64& Timestamp, FString& ServiceName, UInFlightMessage*& InFlightMessage, FString& LastError, FString& Id)
 {
-	ServiceObjectId = Serializable->ServiceObjectId;
-	Timestamp = Serializable->Timestamp;
-	ServiceName = Serializable->ServiceName;
-	InFlightMessage = Serializable->InFlightMessage;
-	LastError = Serializable->LastError;
-	Id = Serializable->Id;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		ServiceObjectId = Serializable->ServiceObjectId;
+		Timestamp = Serializable->Timestamp;
+		ServiceName = Serializable->ServiceName;
+		InFlightMessage = Serializable->InFlightMessage;
+		LastError = Serializable->LastError;
+		Id = Serializable->Id;
+	}
 		
 }
 

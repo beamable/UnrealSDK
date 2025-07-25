@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/PlayerOfferViewLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UPlayerOfferViewLibrary::PlayerOfferViewToJsonString(const UPlayerOfferView* Serializable, const bool Pretty)
@@ -41,16 +42,19 @@ UPlayerOfferView* UPlayerOfferViewLibrary::Make(int32 Coupons, UPrice* Price, FS
 
 void UPlayerOfferViewLibrary::Break(const UPlayerOfferView* Serializable, int32& Coupons, UPrice*& Price, FString& Symbol, TArray<FString>& Titles, TArray<UItemCreateRequestBody*>& ObtainItems, TArray<UCurrencyChange*>& ObtainCurrency, TArray<FString>& Images, TArray<FString>& Descriptions, TArray<FString>& Obtain, FOptionalString& ButtonText)
 {
-	Coupons = Serializable->Coupons;
-	Price = Serializable->Price;
-	Symbol = Serializable->Symbol;
-	Titles = Serializable->Titles;
-	ObtainItems = Serializable->ObtainItems;
-	ObtainCurrency = Serializable->ObtainCurrency;
-	Images = Serializable->Images;
-	Descriptions = Serializable->Descriptions;
-	Obtain = Serializable->Obtain;
-	ButtonText = Serializable->ButtonText;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Coupons = Serializable->Coupons;
+		Price = Serializable->Price;
+		Symbol = Serializable->Symbol;
+		Titles = Serializable->Titles;
+		ObtainItems = Serializable->ObtainItems;
+		ObtainCurrency = Serializable->ObtainCurrency;
+		Images = Serializable->Images;
+		Descriptions = Serializable->Descriptions;
+		Obtain = Serializable->Obtain;
+		ButtonText = Serializable->ButtonText;
+	}
 		
 }
 

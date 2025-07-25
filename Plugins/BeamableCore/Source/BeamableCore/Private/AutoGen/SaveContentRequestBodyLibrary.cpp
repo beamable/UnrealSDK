@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/SaveContentRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString USaveContentRequestBodyLibrary::SaveContentRequestBodyToJsonString(const USaveContentRequestBody* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ USaveContentRequestBody* USaveContentRequestBodyLibrary::Make(TArray<UContentDef
 
 void USaveContentRequestBodyLibrary::Break(const USaveContentRequestBody* Serializable, TArray<UContentDefinition*>& Content)
 {
-	Content = Serializable->Content;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Content = Serializable->Content;
+	}
 		
 }
 

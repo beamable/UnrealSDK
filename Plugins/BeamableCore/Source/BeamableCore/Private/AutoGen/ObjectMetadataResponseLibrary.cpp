@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/ObjectMetadataResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UObjectMetadataResponseLibrary::ObjectMetadataResponseToJsonString(const UObjectMetadataResponse* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ UObjectMetadataResponse* UObjectMetadataResponseLibrary::Make(FString ObjectKey,
 
 void UObjectMetadataResponseLibrary::Break(const UObjectMetadataResponse* Serializable, FString& ObjectKey, TMap<FString, FString>& Metadata)
 {
-	ObjectKey = Serializable->ObjectKey;
-	Metadata = Serializable->Metadata;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		ObjectKey = Serializable->ObjectKey;
+		Metadata = Serializable->Metadata;
+	}
 		
 }
 

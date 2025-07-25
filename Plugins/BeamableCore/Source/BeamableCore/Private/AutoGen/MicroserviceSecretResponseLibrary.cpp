@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/MicroserviceSecretResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UMicroserviceSecretResponseLibrary::MicroserviceSecretResponseToJsonString(const UMicroserviceSecretResponse* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UMicroserviceSecretResponse* UMicroserviceSecretResponseLibrary::Make(FString Se
 
 void UMicroserviceSecretResponseLibrary::Break(const UMicroserviceSecretResponse* Serializable, FString& Secret)
 {
-	Secret = Serializable->Secret;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Secret = Serializable->Secret;
+	}
 		
 }
 

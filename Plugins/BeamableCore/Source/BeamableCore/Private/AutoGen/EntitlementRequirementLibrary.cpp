@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/EntitlementRequirementLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UEntitlementRequirementLibrary::EntitlementRequirementToJsonString(const UEntitlementRequirement* Serializable, const bool Pretty)
@@ -35,10 +36,13 @@ UEntitlementRequirement* UEntitlementRequirementLibrary::Make(FString Symbol, FS
 
 void UEntitlementRequirementLibrary::Break(const UEntitlementRequirement* Serializable, FString& Symbol, FString& Constraint, FString& State, FOptionalString& Specialization)
 {
-	Symbol = Serializable->Symbol;
-	Constraint = Serializable->Constraint;
-	State = Serializable->State;
-	Specialization = Serializable->Specialization;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Symbol = Serializable->Symbol;
+		Constraint = Serializable->Constraint;
+		State = Serializable->State;
+		Specialization = Serializable->Specialization;
+	}
 		
 }
 

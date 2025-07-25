@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/ContentMetaLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UContentMetaLibrary::ContentMetaToJsonString(const UContentMeta* Serializable, const bool Pretty)
@@ -35,10 +36,13 @@ UContentMeta* UContentMetaLibrary::Make(EBeamContentVisibility Visibility, FOpti
 
 void UContentMetaLibrary::Break(const UContentMeta* Serializable, EBeamContentVisibility& Visibility, FOptionalString& Text, FOptionalBeamContentId& link, FOptionalArrayOfBeamContentId& links)
 {
-	Visibility = Serializable->Visibility;
-	Text = Serializable->Text;
-	link = Serializable->link;
-	links = Serializable->links;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Visibility = Serializable->Visibility;
+		Text = Serializable->Text;
+		link = Serializable->link;
+		links = Serializable->links;
+	}
 		
 }
 

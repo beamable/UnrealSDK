@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/LeaderboardCreateRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString ULeaderboardCreateRequestBodyLibrary::LeaderboardCreateRequestBodyToJsonString(const ULeaderboardCreateRequestBody* Serializable, const bool Pretty)
@@ -40,15 +41,18 @@ ULeaderboardCreateRequestBody* ULeaderboardCreateRequestBodyLibrary::Make(bool b
 
 void ULeaderboardCreateRequestBodyLibrary::Break(const ULeaderboardCreateRequestBody* Serializable, bool& bSharded, FOptionalBool& bPartitioned, FOptionalInt64& FreezeTime, FOptionalString& ScoreName, FOptionalLeaderboardCohortSettings& CohortSettings, FOptionalBeamClientPermission& Permissions, FOptionalInt32& MaxEntries, FOptionalInt64& Ttl, FOptionalArrayOfString& Derivatives)
 {
-	bSharded = Serializable->bSharded;
-	bPartitioned = Serializable->bPartitioned;
-	FreezeTime = Serializable->FreezeTime;
-	ScoreName = Serializable->ScoreName;
-	CohortSettings = Serializable->CohortSettings;
-	Permissions = Serializable->Permissions;
-	MaxEntries = Serializable->MaxEntries;
-	Ttl = Serializable->Ttl;
-	Derivatives = Serializable->Derivatives;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		bSharded = Serializable->bSharded;
+		bPartitioned = Serializable->bPartitioned;
+		FreezeTime = Serializable->FreezeTime;
+		ScoreName = Serializable->ScoreName;
+		CohortSettings = Serializable->CohortSettings;
+		Permissions = Serializable->Permissions;
+		MaxEntries = Serializable->MaxEntries;
+		Ttl = Serializable->Ttl;
+		Derivatives = Serializable->Derivatives;
+	}
 		
 }
 

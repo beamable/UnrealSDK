@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/UpdateGameHierarchyRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UUpdateGameHierarchyRequestBodyLibrary::UpdateGameHierarchyRequestBodyToJsonString(const UUpdateGameHierarchyRequestBody* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ UUpdateGameHierarchyRequestBody* UUpdateGameHierarchyRequestBodyLibrary::Make(FB
 
 void UUpdateGameHierarchyRequestBodyLibrary::Break(const UUpdateGameHierarchyRequestBody* Serializable, FBeamPid& RootPID, TArray<UProjectView*>& Projects)
 {
-	RootPID = Serializable->RootPID;
-	Projects = Serializable->Projects;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		RootPID = Serializable->RootPID;
+		Projects = Serializable->Projects;
+	}
 		
 }
 

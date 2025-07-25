@@ -9,21 +9,21 @@ void UDatabaseMeasurement::BeamSerializeProperties(TUnrealJsonSerializer& Serial
 {
 	UBeamJsonUtils::SerializeRawPrimitive(TEXT("name"), Name, Serializer);
 	UBeamJsonUtils::SerializeRawPrimitive(TEXT("units"), Units, Serializer);
-	UBeamJsonUtils::SerializeOptional<TArray<UBeamoActorDataPoint*>, UBeamoActorDataPoint*>(TEXT("dataPoints"), &DataPoints, Serializer);
+	UBeamJsonUtils::SerializeArray<UDataPoint*>(TEXT("dataPoints"), DataPoints, Serializer);
 }
 
 void UDatabaseMeasurement::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeRawPrimitive(TEXT("name"), Name, Serializer);
 	UBeamJsonUtils::SerializeRawPrimitive(TEXT("units"), Units, Serializer);
-	UBeamJsonUtils::SerializeOptional<TArray<UBeamoActorDataPoint*>, UBeamoActorDataPoint*>(TEXT("dataPoints"), &DataPoints, Serializer);		
+	UBeamJsonUtils::SerializeArray<UDataPoint*>(TEXT("dataPoints"), DataPoints, Serializer);		
 }
 
 void UDatabaseMeasurement::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("name")), Name);
 	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("units")), Units);
-	UBeamJsonUtils::DeserializeOptional<TArray<UBeamoActorDataPoint*>, UBeamoActorDataPoint*>("dataPoints", Bag, DataPoints, OuterOwner);
+	UBeamJsonUtils::DeserializeArray<UDataPoint*>(Bag->GetArrayField(TEXT("dataPoints")), DataPoints, OuterOwner);
 }
 
 

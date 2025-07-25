@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/SetLobbyResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString USetLobbyResponseLibrary::SetLobbyResponseToJsonString(const USetLobbyResponse* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ USetLobbyResponse* USetLobbyResponseLibrary::Make(FOptionalString LobbyId, UObje
 
 void USetLobbyResponseLibrary::Break(const USetLobbyResponse* Serializable, FOptionalString& LobbyId)
 {
-	LobbyId = Serializable->LobbyId;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		LobbyId = Serializable->LobbyId;
+	}
 		
 }
 

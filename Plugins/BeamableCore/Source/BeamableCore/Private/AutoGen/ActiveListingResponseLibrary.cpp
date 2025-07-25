@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/ActiveListingResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UActiveListingResponseLibrary::ActiveListingResponseToJsonString(const UActiveListingResponse* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ UActiveListingResponse* UActiveListingResponseLibrary::Make(FString StoreSymbol,
 
 void UActiveListingResponseLibrary::Break(const UActiveListingResponse* Serializable, FString& StoreSymbol, UPlayerListingView*& Listing)
 {
-	StoreSymbol = Serializable->StoreSymbol;
-	Listing = Serializable->Listing;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		StoreSymbol = Serializable->StoreSymbol;
+		Listing = Serializable->Listing;
+	}
 		
 }
 

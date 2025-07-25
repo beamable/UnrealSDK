@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/ScheduleDefinitionLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UScheduleDefinitionLibrary::ScheduleDefinitionToJsonString(const UScheduleDefinition* Serializable, const bool Pretty)
@@ -38,13 +39,16 @@ UScheduleDefinition* UScheduleDefinitionLibrary::Make(TArray<FString> DayOfWeek,
 
 void UScheduleDefinitionLibrary::Break(const UScheduleDefinition* Serializable, TArray<FString>& DayOfWeek, TArray<FString>& Minute, TArray<FString>& DayOfMonth, TArray<FString>& Year, TArray<FString>& Hour, TArray<FString>& Second, TArray<FString>& Month)
 {
-	DayOfWeek = Serializable->DayOfWeek;
-	Minute = Serializable->Minute;
-	DayOfMonth = Serializable->DayOfMonth;
-	Year = Serializable->Year;
-	Hour = Serializable->Hour;
-	Second = Serializable->Second;
-	Month = Serializable->Month;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		DayOfWeek = Serializable->DayOfWeek;
+		Minute = Serializable->Minute;
+		DayOfMonth = Serializable->DayOfMonth;
+		Year = Serializable->Year;
+		Hour = Serializable->Hour;
+		Second = Serializable->Second;
+		Month = Serializable->Month;
+	}
 		
 }
 

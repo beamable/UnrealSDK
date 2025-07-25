@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/GetPlayerStatusRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UGetPlayerStatusRequestBodyLibrary::GetPlayerStatusRequestBodyToJsonString(const UGetPlayerStatusRequestBody* Serializable, const bool Pretty)
@@ -34,9 +35,12 @@ UGetPlayerStatusRequestBody* UGetPlayerStatusRequestBodyLibrary::Make(FOptionalB
 
 void UGetPlayerStatusRequestBodyLibrary::Break(const UGetPlayerStatusRequestBody* Serializable, FOptionalBool& bHasUnclaimedRewards, FOptionalString& ContentId, FOptionalString& TournamentId)
 {
-	bHasUnclaimedRewards = Serializable->bHasUnclaimedRewards;
-	ContentId = Serializable->ContentId;
-	TournamentId = Serializable->TournamentId;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		bHasUnclaimedRewards = Serializable->bHasUnclaimedRewards;
+		ContentId = Serializable->ContentId;
+		TournamentId = Serializable->TournamentId;
+	}
 		
 }
 

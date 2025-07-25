@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/GetCatalogResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UGetCatalogResponseLibrary::GetCatalogResponseToJsonString(const UGetCatalogResponse* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UGetCatalogResponse* UGetCatalogResponseLibrary::Make(FOptionalCatalog Catalog, 
 
 void UGetCatalogResponseLibrary::Break(const UGetCatalogResponse* Serializable, FOptionalCatalog& Catalog)
 {
-	Catalog = Serializable->Catalog;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Catalog = Serializable->Catalog;
+	}
 		
 }
 

@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/OfferDefinitionLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UOfferDefinitionLibrary::OfferDefinitionToJsonString(const UOfferDefinition* Serializable, const bool Pretty)
@@ -40,15 +41,18 @@ UOfferDefinition* UOfferDefinitionLibrary::Make(FString Symbol, TArray<FString> 
 
 void UOfferDefinitionLibrary::Break(const UOfferDefinition* Serializable, FString& Symbol, TArray<FString>& Titles, TArray<FString>& Images, TArray<FString>& Descriptions, TArray<FString>& Obtain, FOptionalCommerceLootRoll& LootRoll, FOptionalString& Metadata, FOptionalArrayOfItemCreateRequestBody& ObtainItems, FOptionalArrayOfCurrencyChange& ObtainCurrency)
 {
-	Symbol = Serializable->Symbol;
-	Titles = Serializable->Titles;
-	Images = Serializable->Images;
-	Descriptions = Serializable->Descriptions;
-	Obtain = Serializable->Obtain;
-	LootRoll = Serializable->LootRoll;
-	Metadata = Serializable->Metadata;
-	ObtainItems = Serializable->ObtainItems;
-	ObtainCurrency = Serializable->ObtainCurrency;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Symbol = Serializable->Symbol;
+		Titles = Serializable->Titles;
+		Images = Serializable->Images;
+		Descriptions = Serializable->Descriptions;
+		Obtain = Serializable->Obtain;
+		LootRoll = Serializable->LootRoll;
+		Metadata = Serializable->Metadata;
+		ObtainItems = Serializable->ObtainItems;
+		ObtainCurrency = Serializable->ObtainCurrency;
+	}
 		
 }
 

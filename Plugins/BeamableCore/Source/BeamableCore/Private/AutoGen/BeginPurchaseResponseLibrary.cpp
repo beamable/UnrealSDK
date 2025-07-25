@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/BeginPurchaseResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UBeginPurchaseResponseLibrary::BeginPurchaseResponseToJsonString(const UBeginPurchaseResponse* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ UBeginPurchaseResponse* UBeginPurchaseResponseLibrary::Make(int64 Txid, FOptiona
 
 void UBeginPurchaseResponseLibrary::Break(const UBeginPurchaseResponse* Serializable, int64& Txid, FOptionalString& AccessToken)
 {
-	Txid = Serializable->Txid;
-	AccessToken = Serializable->AccessToken;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Txid = Serializable->Txid;
+		AccessToken = Serializable->AccessToken;
+	}
 		
 }
 

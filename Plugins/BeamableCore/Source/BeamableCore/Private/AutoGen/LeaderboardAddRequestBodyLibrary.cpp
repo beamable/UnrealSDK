@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/LeaderboardAddRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString ULeaderboardAddRequestBodyLibrary::LeaderboardAddRequestBodyToJsonString(const ULeaderboardAddRequestBody* Serializable, const bool Pretty)
@@ -37,12 +38,15 @@ ULeaderboardAddRequestBody* ULeaderboardAddRequestBodyLibrary::Make(double Score
 
 void ULeaderboardAddRequestBodyLibrary::Break(const ULeaderboardAddRequestBody* Serializable, double& Score, int64& Id, FOptionalBool& bIncrement, FOptionalDouble& MaxScore, FOptionalDouble& MinScore, FOptionalMapOfString& Stats)
 {
-	Score = Serializable->Score;
-	Id = Serializable->Id;
-	bIncrement = Serializable->bIncrement;
-	MaxScore = Serializable->MaxScore;
-	MinScore = Serializable->MinScore;
-	Stats = Serializable->Stats;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Score = Serializable->Score;
+		Id = Serializable->Id;
+		bIncrement = Serializable->bIncrement;
+		MaxScore = Serializable->MaxScore;
+		MinScore = Serializable->MinScore;
+		Stats = Serializable->Stats;
+	}
 		
 }
 

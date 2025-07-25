@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/FriendshipStatusLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UFriendshipStatusLibrary::FriendshipStatusToJsonString(const UFriendshipStatus* Serializable, const bool Pretty)
@@ -34,9 +35,12 @@ UFriendshipStatus* UFriendshipStatusLibrary::Make(bool bIsBlocked, FBeamGamerTag
 
 void UFriendshipStatusLibrary::Break(const UFriendshipStatus* Serializable, bool& bIsBlocked, FBeamGamerTag& FriendId, FBeamGamerTag& PlayerId)
 {
-	bIsBlocked = Serializable->bIsBlocked;
-	FriendId = Serializable->FriendId;
-	PlayerId = Serializable->PlayerId;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		bIsBlocked = Serializable->bIsBlocked;
+		FriendId = Serializable->FriendId;
+		PlayerId = Serializable->PlayerId;
+	}
 		
 }
 

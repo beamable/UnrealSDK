@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/GetStatusResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UGetStatusResponseLibrary::GetStatusResponseToJsonString(const UGetStatusResponse* Serializable, const bool Pretty)
@@ -22,7 +23,7 @@ FString UGetStatusResponseLibrary::GetStatusResponseToJsonString(const UGetStatu
 	return Result;
 }	
 
-UGetStatusResponse* UGetStatusResponseLibrary::Make(FOptionalBool bIsCurrent, FOptionalArrayOfServiceStatus Services, FOptionalArrayOfServiceStorageStatus StorageStatuses, UObject* Outer)
+UGetStatusResponse* UGetStatusResponseLibrary::Make(bool bIsCurrent, TArray<UServiceStatus*> Services, FOptionalArrayOfServiceStorageStatus StorageStatuses, UObject* Outer)
 {
 	auto Serializable = NewObject<UGetStatusResponse>(Outer);
 	Serializable->bIsCurrent = bIsCurrent;
@@ -32,11 +33,14 @@ UGetStatusResponse* UGetStatusResponseLibrary::Make(FOptionalBool bIsCurrent, FO
 	return Serializable;
 }
 
-void UGetStatusResponseLibrary::Break(const UGetStatusResponse* Serializable, FOptionalBool& bIsCurrent, FOptionalArrayOfServiceStatus& Services, FOptionalArrayOfServiceStorageStatus& StorageStatuses)
+void UGetStatusResponseLibrary::Break(const UGetStatusResponse* Serializable, bool& bIsCurrent, TArray<UServiceStatus*>& Services, FOptionalArrayOfServiceStorageStatus& StorageStatuses)
 {
-	bIsCurrent = Serializable->bIsCurrent;
-	Services = Serializable->Services;
-	StorageStatuses = Serializable->StorageStatuses;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		bIsCurrent = Serializable->bIsCurrent;
+		Services = Serializable->Services;
+		StorageStatuses = Serializable->StorageStatuses;
+	}
 		
 }
 

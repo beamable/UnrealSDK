@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/ItemContentResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UItemContentResponseLibrary::ItemContentResponseToJsonString(const UItemContentResponse* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UItemContentResponse* UItemContentResponseLibrary::Make(TArray<UItemArchetype*> 
 
 void UItemContentResponseLibrary::Break(const UItemContentResponse* Serializable, TArray<UItemArchetype*>& Content)
 {
-	Content = Serializable->Content;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Content = Serializable->Content;
+	}
 		
 }
 

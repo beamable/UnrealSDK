@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/ListTagsRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UListTagsRequestBodyLibrary::ListTagsRequestBodyToJsonString(const UListTagsRequestBody* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UListTagsRequestBody* UListTagsRequestBodyLibrary::Make(FOptionalString TagNameF
 
 void UListTagsRequestBodyLibrary::Break(const UListTagsRequestBody* Serializable, FOptionalString& TagNameFilter)
 {
-	TagNameFilter = Serializable->TagNameFilter;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		TagNameFilter = Serializable->TagNameFilter;
+	}
 		
 }
 

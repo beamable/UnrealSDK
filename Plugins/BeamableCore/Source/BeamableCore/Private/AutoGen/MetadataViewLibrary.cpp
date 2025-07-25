@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/MetadataViewLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UMetadataViewLibrary::MetadataViewToJsonString(const UMetadataView* Serializable, const bool Pretty)
@@ -41,16 +42,19 @@ UMetadataView* UMetadataViewLibrary::Make(bool bCohorted, bool bFrozen, bool bPa
 
 void UMetadataViewLibrary::Break(const UMetadataView* Serializable, bool& bCohorted, bool& bFrozen, bool& bPartitioned, FString& ParentLeaderboard, FOptionalInt64& FreezeTime, FOptionalLeaderboardCohortSettings& CohortSettings, FOptionalBeamClientPermission& Permissions, FOptionalInt32& MaxEntries, FOptionalInt64& Expiration, FOptionalArrayOfString& Derivatives)
 {
-	bCohorted = Serializable->bCohorted;
-	bFrozen = Serializable->bFrozen;
-	bPartitioned = Serializable->bPartitioned;
-	ParentLeaderboard = Serializable->ParentLeaderboard;
-	FreezeTime = Serializable->FreezeTime;
-	CohortSettings = Serializable->CohortSettings;
-	Permissions = Serializable->Permissions;
-	MaxEntries = Serializable->MaxEntries;
-	Expiration = Serializable->Expiration;
-	Derivatives = Serializable->Derivatives;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		bCohorted = Serializable->bCohorted;
+		bFrozen = Serializable->bFrozen;
+		bPartitioned = Serializable->bPartitioned;
+		ParentLeaderboard = Serializable->ParentLeaderboard;
+		FreezeTime = Serializable->FreezeTime;
+		CohortSettings = Serializable->CohortSettings;
+		Permissions = Serializable->Permissions;
+		MaxEntries = Serializable->MaxEntries;
+		Expiration = Serializable->Expiration;
+		Derivatives = Serializable->Derivatives;
+	}
 		
 }
 

@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/CalendarViewLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UCalendarViewLibrary::CalendarViewToJsonString(const UCalendarView* Serializable, const bool Pretty)
@@ -36,11 +37,14 @@ UCalendarView* UCalendarViewLibrary::Make(int32 NextIndex, int64 NextClaimSecond
 
 void UCalendarViewLibrary::Break(const UCalendarView* Serializable, int32& NextIndex, int64& NextClaimSeconds, FString& Id, int64& RemainingSeconds, TArray<URewardCalendarDay*>& Days)
 {
-	NextIndex = Serializable->NextIndex;
-	NextClaimSeconds = Serializable->NextClaimSeconds;
-	Id = Serializable->Id;
-	RemainingSeconds = Serializable->RemainingSeconds;
-	Days = Serializable->Days;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		NextIndex = Serializable->NextIndex;
+		NextClaimSeconds = Serializable->NextClaimSeconds;
+		Id = Serializable->Id;
+		RemainingSeconds = Serializable->RemainingSeconds;
+		Days = Serializable->Days;
+	}
 		
 }
 

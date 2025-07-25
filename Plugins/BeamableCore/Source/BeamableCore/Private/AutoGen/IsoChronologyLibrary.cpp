@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/IsoChronologyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UIsoChronologyLibrary::IsoChronologyToJsonString(const UIsoChronology* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ UIsoChronology* UIsoChronologyLibrary::Make(FString CalendarType, FString Id, UO
 
 void UIsoChronologyLibrary::Break(const UIsoChronology* Serializable, FString& CalendarType, FString& Id)
 {
-	CalendarType = Serializable->CalendarType;
-	Id = Serializable->Id;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		CalendarType = Serializable->CalendarType;
+		Id = Serializable->Id;
+	}
 		
 }
 

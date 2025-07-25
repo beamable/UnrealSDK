@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/PartyInvitesForPlayerResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UPartyInvitesForPlayerResponseLibrary::PartyInvitesForPlayerResponseToJsonString(const UPartyInvitesForPlayerResponse* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UPartyInvitesForPlayerResponse* UPartyInvitesForPlayerResponseLibrary::Make(FOpt
 
 void UPartyInvitesForPlayerResponseLibrary::Break(const UPartyInvitesForPlayerResponse* Serializable, FOptionalArrayOfPartyInvitation& Invitations)
 {
-	Invitations = Serializable->Invitations;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Invitations = Serializable->Invitations;
+	}
 		
 }
 

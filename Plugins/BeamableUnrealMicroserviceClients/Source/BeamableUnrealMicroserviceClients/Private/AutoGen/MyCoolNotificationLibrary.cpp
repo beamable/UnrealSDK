@@ -2,6 +2,7 @@
 #include "BeamableUnrealMicroserviceClients/Public/AutoGen/MyCoolNotificationLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UMyCoolNotificationLibrary::MyCoolNotificationToJsonString(const UMyCoolNotification* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ UMyCoolNotification* UMyCoolNotificationLibrary::Make(FString FieldA, FString Fi
 
 void UMyCoolNotificationLibrary::Break(const UMyCoolNotification* Serializable, FString& FieldA, FString& FieldB)
 {
-	FieldA = Serializable->FieldA;
-	FieldB = Serializable->FieldB;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		FieldA = Serializable->FieldA;
+		FieldB = Serializable->FieldB;
+	}
 		
 }
 

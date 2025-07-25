@@ -7,7 +7,7 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-#include "BeamableCore/Public/AutoGen/GetStatusResponse.h"
+#include "BeamableCore/Public/AutoGen/BeamoV2GetStatusResponse.h"
 
 #include "ApiBeamoGetStatusRequest.generated.h"
 
@@ -39,7 +39,7 @@ public:
 };
 
 UDELEGATE(BlueprintAuthorityOnly)
-DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnApiBeamoGetStatusSuccess, FBeamRequestContext, Context, UApiBeamoGetStatusRequest*, Request, UGetStatusResponse*, Response);
+DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnApiBeamoGetStatusSuccess, FBeamRequestContext, Context, UApiBeamoGetStatusRequest*, Request, UBeamoV2GetStatusResponse*, Response);
 
 UDELEGATE(BlueprintAuthorityOnly)
 DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnApiBeamoGetStatusError, FBeamRequestContext, Context, UApiBeamoGetStatusRequest*, Request, FBeamErrorResponse, Error);
@@ -47,5 +47,5 @@ DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnApiBeamoGetStatusError, FBeamRequestCont
 UDELEGATE(BlueprintAuthorityOnly)
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FOnApiBeamoGetStatusComplete, FBeamRequestContext, Context, UApiBeamoGetStatusRequest*, Request);
 
-using FApiBeamoGetStatusFullResponse = FBeamFullResponse<UApiBeamoGetStatusRequest*, UGetStatusResponse*>;
+using FApiBeamoGetStatusFullResponse = FBeamFullResponse<UApiBeamoGetStatusRequest*, UBeamoV2GetStatusResponse*>;
 DECLARE_DELEGATE_OneParam(FOnApiBeamoGetStatusFullResponse, FApiBeamoGetStatusFullResponse);

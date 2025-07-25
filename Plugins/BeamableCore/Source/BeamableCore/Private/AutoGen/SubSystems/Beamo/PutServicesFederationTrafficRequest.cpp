@@ -27,7 +27,7 @@ void UPutServicesFederationTrafficRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPutServicesFederationTrafficRequest* UPutServicesFederationTrafficRequest::Make(FString _ServiceName, FOptionalString _RoutingKey, FOptionalBool _bTrafficFilterEnabled, FOptionalArrayOfSupportedFederation _Federation, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
+UPutServicesFederationTrafficRequest* UPutServicesFederationTrafficRequest::Make(FString _ServiceName, FOptionalString _RoutingKey, FOptionalBool _bTrafficFilterEnabled, FOptionalArrayOfBeamoV2SupportedFederation _Federation, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPutServicesFederationTrafficRequest* Req = NewObject<UPutServicesFederationTrafficRequest>(RequestOwner);
 	Req->CustomHeaders = TMap{CustomHeaders};
@@ -37,7 +37,7 @@ UPutServicesFederationTrafficRequest* UPutServicesFederationTrafficRequest::Make
 	
 	
 	// Makes a body and fill up with parameters (Blank if no body parameters exist)
-	Req->Body = NewObject<UServiceRegistrationRequestBody>(Req);
+	Req->Body = NewObject<UBeamoV2ServiceRegistrationRequestBody>(Req);
 	Req->Body->RoutingKey = _RoutingKey;
 	Req->Body->bTrafficFilterEnabled = _bTrafficFilterEnabled;
 	Req->Body->Federation = _Federation;

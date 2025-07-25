@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/NewGameRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UNewGameRequestBodyLibrary::NewGameRequestBodyToJsonString(const UNewGameRequestBody* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UNewGameRequestBody* UNewGameRequestBodyLibrary::Make(FString GameName, UObject*
 
 void UNewGameRequestBodyLibrary::Break(const UNewGameRequestBody* Serializable, FString& GameName)
 {
-	GameName = Serializable->GameName;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		GameName = Serializable->GameName;
+	}
 		
 }
 

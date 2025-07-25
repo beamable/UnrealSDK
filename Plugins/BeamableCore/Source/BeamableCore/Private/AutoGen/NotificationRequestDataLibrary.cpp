@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/NotificationRequestDataLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UNotificationRequestDataLibrary::NotificationRequestDataToJsonString(const UNotificationRequestData* Serializable, const bool Pretty)
@@ -38,13 +39,16 @@ UNotificationRequestData* UNotificationRequestDataLibrary::Make(FOptionalString 
 
 void UNotificationRequestDataLibrary::Break(const UNotificationRequestData* Serializable, FOptionalString& Channel, FOptionalString& MessageKey, FOptionalString& Context, FOptionalString& Shard, FOptionalString& MessageFull, FOptionalArrayOfString& MessageParams, FOptionalMapOfString& Meta)
 {
-	Channel = Serializable->Channel;
-	MessageKey = Serializable->MessageKey;
-	Context = Serializable->Context;
-	Shard = Serializable->Shard;
-	MessageFull = Serializable->MessageFull;
-	MessageParams = Serializable->MessageParams;
-	Meta = Serializable->Meta;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Channel = Serializable->Channel;
+		MessageKey = Serializable->MessageKey;
+		Context = Serializable->Context;
+		Shard = Serializable->Shard;
+		MessageFull = Serializable->MessageFull;
+		MessageParams = Serializable->MessageParams;
+		Meta = Serializable->Meta;
+	}
 		
 }
 

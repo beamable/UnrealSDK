@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/PaymentHistoryEntryViewModelLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UPaymentHistoryEntryViewModelLibrary::PaymentHistoryEntryViewModelToJsonString(const UPaymentHistoryEntryViewModel* Serializable, const bool Pretty)
@@ -34,9 +35,12 @@ UPaymentHistoryEntryViewModel* UPaymentHistoryEntryViewModelLibrary::Make(FStrin
 
 void UPaymentHistoryEntryViewModelLibrary::Break(const UPaymentHistoryEntryViewModel* Serializable, FString& Change, FOptionalString& Data, FOptionalString& Timestamp)
 {
-	Change = Serializable->Change;
-	Data = Serializable->Data;
-	Timestamp = Serializable->Timestamp;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Change = Serializable->Change;
+		Data = Serializable->Data;
+		Timestamp = Serializable->Timestamp;
+	}
 		
 }
 

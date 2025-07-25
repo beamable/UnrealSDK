@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/CustomerResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UCustomerResponseLibrary::CustomerResponseToJsonString(const UCustomerResponse* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UCustomerResponse* UCustomerResponseLibrary::Make(UCustomer* Customer, UObject* 
 
 void UCustomerResponseLibrary::Break(const UCustomerResponse* Serializable, UCustomer*& Customer)
 {
-	Customer = Serializable->Customer;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Customer = Serializable->Customer;
+	}
 		
 }
 

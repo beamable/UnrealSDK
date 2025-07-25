@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/SteamOrderInfoResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString USteamOrderInfoResponseLibrary::SteamOrderInfoResponseToJsonString(const USteamOrderInfoResponse* Serializable, const bool Pretty)
@@ -41,16 +42,19 @@ USteamOrderInfoResponse* USteamOrderInfoResponseLibrary::Make(FString Usstate, F
 
 void USteamOrderInfoResponseLibrary::Break(const USteamOrderInfoResponse* Serializable, FString& Usstate, FString& Country, FString& Timecreated, int64& Transid, FString& Status, int64& Orderid, int64& Steamid, FString& Currency, FString& Time, TArray<USteamOrderInfoItem*>& Items)
 {
-	Usstate = Serializable->Usstate;
-	Country = Serializable->Country;
-	Timecreated = Serializable->Timecreated;
-	Transid = Serializable->Transid;
-	Status = Serializable->Status;
-	Orderid = Serializable->Orderid;
-	Steamid = Serializable->Steamid;
-	Currency = Serializable->Currency;
-	Time = Serializable->Time;
-	Items = Serializable->Items;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Usstate = Serializable->Usstate;
+		Country = Serializable->Country;
+		Timecreated = Serializable->Timecreated;
+		Transid = Serializable->Transid;
+		Status = Serializable->Status;
+		Orderid = Serializable->Orderid;
+		Steamid = Serializable->Steamid;
+		Currency = Serializable->Currency;
+		Time = Serializable->Time;
+		Items = Serializable->Items;
+	}
 		
 }
 

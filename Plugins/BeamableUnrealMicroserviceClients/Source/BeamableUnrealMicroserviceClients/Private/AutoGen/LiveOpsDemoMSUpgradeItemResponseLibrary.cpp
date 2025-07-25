@@ -2,6 +2,7 @@
 #include "BeamableUnrealMicroserviceClients/Public/AutoGen/LiveOpsDemoMSUpgradeItemResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString ULiveOpsDemoMSUpgradeItemResponseLibrary::LiveOpsDemoMSUpgradeItemResponseToJsonString(const ULiveOpsDemoMSUpgradeItemResponse* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ ULiveOpsDemoMSUpgradeItemResponse* ULiveOpsDemoMSUpgradeItemResponseLibrary::Mak
 
 void ULiveOpsDemoMSUpgradeItemResponseLibrary::Break(const ULiveOpsDemoMSUpgradeItemResponse* Serializable, bool& bValue)
 {
-	bValue = Serializable->bValue;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		bValue = Serializable->bValue;
+	}
 		
 }
 

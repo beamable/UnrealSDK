@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/NetworkSerializableLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UNetworkSerializableLibrary::NetworkSerializableToJsonString(const UNetworkSerializable* Serializable, const bool Pretty)

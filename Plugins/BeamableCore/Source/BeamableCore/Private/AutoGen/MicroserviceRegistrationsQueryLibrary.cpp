@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/MicroserviceRegistrationsQueryLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UMicroserviceRegistrationsQueryLibrary::MicroserviceRegistrationsQueryToJsonString(const UMicroserviceRegistrationsQuery* Serializable, const bool Pretty)
@@ -35,10 +36,13 @@ UMicroserviceRegistrationsQuery* UMicroserviceRegistrationsQueryLibrary::Make(FO
 
 void UMicroserviceRegistrationsQueryLibrary::Break(const UMicroserviceRegistrationsQuery* Serializable, FOptionalBool& bLocalOnly, FOptionalString& ServiceName, FOptionalString& RoutingKey, FOptionalSupportedFederation& Federation)
 {
-	bLocalOnly = Serializable->bLocalOnly;
-	ServiceName = Serializable->ServiceName;
-	RoutingKey = Serializable->RoutingKey;
-	Federation = Serializable->Federation;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		bLocalOnly = Serializable->bLocalOnly;
+		ServiceName = Serializable->ServiceName;
+		RoutingKey = Serializable->RoutingKey;
+		Federation = Serializable->Federation;
+	}
 		
 }
 

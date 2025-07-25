@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/UpdateMailRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UUpdateMailRequestBodyLibrary::UpdateMailRequestBodyToJsonString(const UUpdateMailRequestBody* Serializable, const bool Pretty)
@@ -38,13 +39,16 @@ UUpdateMailRequestBody* UUpdateMailRequestBodyLibrary::Make(int64 MailId, FOptio
 
 void UUpdateMailRequestBodyLibrary::Break(const UUpdateMailRequestBody* Serializable, int64& MailId, FOptionalBool& bAcceptAttachments, FOptionalString& Body, FOptionalString& Expires, FOptionalString& Subject, FOptionalString& State, FOptionalString& Category)
 {
-	MailId = Serializable->MailId;
-	bAcceptAttachments = Serializable->bAcceptAttachments;
-	Body = Serializable->Body;
-	Expires = Serializable->Expires;
-	Subject = Serializable->Subject;
-	State = Serializable->State;
-	Category = Serializable->Category;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		MailId = Serializable->MailId;
+		bAcceptAttachments = Serializable->bAcceptAttachments;
+		Body = Serializable->Body;
+		Expires = Serializable->Expires;
+		Subject = Serializable->Subject;
+		State = Serializable->State;
+		Category = Serializable->Category;
+	}
 		
 }
 

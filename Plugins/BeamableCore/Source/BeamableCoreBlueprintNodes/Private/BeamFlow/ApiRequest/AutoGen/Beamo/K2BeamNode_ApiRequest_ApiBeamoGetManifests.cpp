@@ -6,7 +6,7 @@
 
 #include "BeamableCore/Public/AutoGen/SubSystems/BeamBeamoApi.h"
 #include "BeamableCore/Public/AutoGen/SubSystems/Beamo/ApiBeamoGetManifestsRequest.h"
-#include "BeamableCore/Public/AutoGen/GetManifestsResponse.h"
+#include "BeamableCore/Public/AutoGen/BeamoV2GetManifestsResponse.h"
 
 #define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_ApiBeamoGetManifests"
 
@@ -49,7 +49,7 @@ UClass* UK2BeamNode_ApiRequest_ApiBeamoGetManifests::GetRequestClass() const
 
 UClass* UK2BeamNode_ApiRequest_ApiBeamoGetManifests::GetResponseClass() const
 {
-	return UGetManifestsResponse::StaticClass();
+	return UBeamoV2GetManifestsResponse::StaticClass();
 }
 
 FString UK2BeamNode_ApiRequest_ApiBeamoGetManifests::GetRequestSuccessDelegateName() const

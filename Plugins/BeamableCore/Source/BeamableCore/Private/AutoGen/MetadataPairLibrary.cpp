@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/MetadataPairLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UMetadataPairLibrary::MetadataPairToJsonString(const UMetadataPair* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ UMetadataPair* UMetadataPairLibrary::Make(FString Key, FString Value, UObject* O
 
 void UMetadataPairLibrary::Break(const UMetadataPair* Serializable, FString& Key, FString& Value)
 {
-	Key = Serializable->Key;
-	Value = Serializable->Value;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Key = Serializable->Key;
+		Value = Serializable->Value;
+	}
 		
 }
 

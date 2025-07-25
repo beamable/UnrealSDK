@@ -10,7 +10,7 @@ void UManifestView::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) c
 	UBeamJsonUtils::SerializeRawPrimitive(TEXT("id"), Id, Serializer);
 	UBeamJsonUtils::SerializeRawPrimitive(TEXT("checksum"), Checksum, Serializer);
 	UBeamJsonUtils::SerializeRawPrimitive(TEXT("created"), Created, Serializer);
-	UBeamJsonUtils::SerializeArray<UBeamoBasicServiceReference*>(TEXT("manifest"), Manifest, Serializer);
+	UBeamJsonUtils::SerializeArray<UServiceReference*>(TEXT("manifest"), Manifest, Serializer);
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("createdByAccountId"), &CreatedByAccountId, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("comments"), &Comments, Serializer);
 	UBeamJsonUtils::SerializeOptional<TArray<UServiceStorageReference*>, UServiceStorageReference*>(TEXT("storageReference"), &StorageReference, Serializer);
@@ -21,7 +21,7 @@ void UManifestView::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Seriali
 	UBeamJsonUtils::SerializeRawPrimitive(TEXT("id"), Id, Serializer);
 	UBeamJsonUtils::SerializeRawPrimitive(TEXT("checksum"), Checksum, Serializer);
 	UBeamJsonUtils::SerializeRawPrimitive(TEXT("created"), Created, Serializer);
-	UBeamJsonUtils::SerializeArray<UBeamoBasicServiceReference*>(TEXT("manifest"), Manifest, Serializer);
+	UBeamJsonUtils::SerializeArray<UServiceReference*>(TEXT("manifest"), Manifest, Serializer);
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("createdByAccountId"), &CreatedByAccountId, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("comments"), &Comments, Serializer);
 	UBeamJsonUtils::SerializeOptional<TArray<UServiceStorageReference*>, UServiceStorageReference*>(TEXT("storageReference"), &StorageReference, Serializer);		
@@ -32,7 +32,7 @@ void UManifestView::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag
 	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("id")), Id);
 	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("checksum")), Checksum);
 	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("created")), Created);
-	UBeamJsonUtils::DeserializeArray<UBeamoBasicServiceReference*>(Bag->GetArrayField(TEXT("manifest")), Manifest, OuterOwner);
+	UBeamJsonUtils::DeserializeArray<UServiceReference*>(Bag->GetArrayField(TEXT("manifest")), Manifest, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<int64>("createdByAccountId", Bag, CreatedByAccountId, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("comments", Bag, Comments, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<TArray<UServiceStorageReference*>, UServiceStorageReference*>("storageReference", Bag, StorageReference, OuterOwner);

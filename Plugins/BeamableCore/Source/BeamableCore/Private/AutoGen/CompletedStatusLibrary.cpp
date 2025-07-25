@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/CompletedStatusLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UCompletedStatusLibrary::CompletedStatusToJsonString(const UCompletedStatus* Serializable, const bool Pretty)
@@ -35,10 +36,13 @@ UCompletedStatus* UCompletedStatusLibrary::Make(int32 Cycle, int32 Tier, int32 S
 
 void UCompletedStatusLibrary::Break(const UCompletedStatus* Serializable, int32& Cycle, int32& Tier, int32& Stage, int32& Delta)
 {
-	Cycle = Serializable->Cycle;
-	Tier = Serializable->Tier;
-	Stage = Serializable->Stage;
-	Delta = Serializable->Delta;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Cycle = Serializable->Cycle;
+		Tier = Serializable->Tier;
+		Stage = Serializable->Stage;
+		Delta = Serializable->Delta;
+	}
 		
 }
 

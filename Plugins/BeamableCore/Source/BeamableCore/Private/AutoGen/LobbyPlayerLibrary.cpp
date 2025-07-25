@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/LobbyPlayerLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString ULobbyPlayerLibrary::LobbyPlayerToJsonString(const ULobbyPlayer* Serializable, const bool Pretty)
@@ -34,9 +35,12 @@ ULobbyPlayer* ULobbyPlayerLibrary::Make(FOptionalBeamGamerTag PlayerId, FOptiona
 
 void ULobbyPlayerLibrary::Break(const ULobbyPlayer* Serializable, FOptionalBeamGamerTag& PlayerId, FOptionalDateTime& Joined, FOptionalArrayOfBeamTag& Tags)
 {
-	PlayerId = Serializable->PlayerId;
-	Joined = Serializable->Joined;
-	Tags = Serializable->Tags;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		PlayerId = Serializable->PlayerId;
+		Joined = Serializable->Joined;
+		Tags = Serializable->Tags;
+	}
 		
 }
 

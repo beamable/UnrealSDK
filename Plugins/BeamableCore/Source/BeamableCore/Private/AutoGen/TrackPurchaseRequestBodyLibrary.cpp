@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/TrackPurchaseRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UTrackPurchaseRequestBodyLibrary::TrackPurchaseRequestBodyToJsonString(const UTrackPurchaseRequestBody* Serializable, const bool Pretty)
@@ -39,14 +40,17 @@ UTrackPurchaseRequestBody* UTrackPurchaseRequestBodyLibrary::Make(double PriceIn
 
 void UTrackPurchaseRequestBodyLibrary::Break(const UTrackPurchaseRequestBody* Serializable, double& PriceInLocalCurrency, FString& SkuName, FString& SkuProductId, FString& Store, FString& PurchaseId, FString& IsoCurrencySymbol, TArray<UItemCreateRequestBody*>& ObtainItems, TArray<UCurrencyChange*>& ObtainCurrency)
 {
-	PriceInLocalCurrency = Serializable->PriceInLocalCurrency;
-	SkuName = Serializable->SkuName;
-	SkuProductId = Serializable->SkuProductId;
-	Store = Serializable->Store;
-	PurchaseId = Serializable->PurchaseId;
-	IsoCurrencySymbol = Serializable->IsoCurrencySymbol;
-	ObtainItems = Serializable->ObtainItems;
-	ObtainCurrency = Serializable->ObtainCurrency;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		PriceInLocalCurrency = Serializable->PriceInLocalCurrency;
+		SkuName = Serializable->SkuName;
+		SkuProductId = Serializable->SkuProductId;
+		Store = Serializable->Store;
+		PurchaseId = Serializable->PurchaseId;
+		IsoCurrencySymbol = Serializable->IsoCurrencySymbol;
+		ObtainItems = Serializable->ObtainItems;
+		ObtainCurrency = Serializable->ObtainCurrency;
+	}
 		
 }
 

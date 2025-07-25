@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/EventPlayerPhaseViewLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UEventPlayerPhaseViewLibrary::EventPlayerPhaseViewToJsonString(const UEventPlayerPhaseView* Serializable, const bool Pretty)
@@ -34,9 +35,12 @@ UEventPlayerPhaseView* UEventPlayerPhaseViewLibrary::Make(FString Name, int64 Du
 
 void UEventPlayerPhaseViewLibrary::Break(const UEventPlayerPhaseView* Serializable, FString& Name, int64& DurationSeconds, TArray<UEventRule*>& Rules)
 {
-	Name = Serializable->Name;
-	DurationSeconds = Serializable->DurationSeconds;
-	Rules = Serializable->Rules;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Name = Serializable->Name;
+		DurationSeconds = Serializable->DurationSeconds;
+		Rules = Serializable->Rules;
+	}
 		
 }
 

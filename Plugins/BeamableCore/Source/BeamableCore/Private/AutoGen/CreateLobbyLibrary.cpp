@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/CreateLobbyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UCreateLobbyLibrary::CreateLobbyToJsonString(const UCreateLobby* Serializable, const bool Pretty)
@@ -39,14 +40,17 @@ UCreateLobby* UCreateLobbyLibrary::Make(FOptionalString Name, FOptionalString De
 
 void UCreateLobbyLibrary::Break(const UCreateLobby* Serializable, FOptionalString& Name, FOptionalString& Description, FOptionalLobbyRestriction& Restriction, FOptionalBeamContentId& MatchType, FOptionalInt32& PasscodeLength, FOptionalInt32& MaxPlayers, FOptionalArrayOfBeamTag& PlayerTags, FOptionalMapOfString& Data)
 {
-	Name = Serializable->Name;
-	Description = Serializable->Description;
-	Restriction = Serializable->Restriction;
-	MatchType = Serializable->MatchType;
-	PasscodeLength = Serializable->PasscodeLength;
-	MaxPlayers = Serializable->MaxPlayers;
-	PlayerTags = Serializable->PlayerTags;
-	Data = Serializable->Data;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Name = Serializable->Name;
+		Description = Serializable->Description;
+		Restriction = Serializable->Restriction;
+		MatchType = Serializable->MatchType;
+		PasscodeLength = Serializable->PasscodeLength;
+		MaxPlayers = Serializable->MaxPlayers;
+		PlayerTags = Serializable->PlayerTags;
+		Data = Serializable->Data;
+	}
 		
 }
 

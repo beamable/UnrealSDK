@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/ItemGroupLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UItemGroupLibrary::ItemGroupToJsonString(const UItemGroup* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ UItemGroup* UItemGroupLibrary::Make(FString Id, TArray<UItem*> Items, UObject* O
 
 void UItemGroupLibrary::Break(const UItemGroup* Serializable, FString& Id, TArray<UItem*>& Items)
 {
-	Id = Serializable->Id;
-	Items = Serializable->Items;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Id = Serializable->Id;
+		Items = Serializable->Items;
+	}
 		
 }
 

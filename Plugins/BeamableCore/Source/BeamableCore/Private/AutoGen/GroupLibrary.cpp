@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/GroupLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UGroupLibrary::GroupToJsonString(const UGroup* Serializable, const bool Pretty)
@@ -57,32 +58,35 @@ UGroup* UGroupLibrary::Make(int64 Requirement, int32 MaxSize, EBeamGroupType Typ
 
 void UGroupLibrary::Break(const UGroup* Serializable, int64& Requirement, int32& MaxSize, EBeamGroupType& Type, int64& Id, FString& Motd, FString& Slogan, int64& Leader, int64& Created, FString& Name, FString& EnrollmentType, int32& FreeSlots, TArray<UGroup*>& SubGroups, TArray<UMember*>& Members, TMap<FString, FString>& Scores, FOptionalBool& bCanDisband, FOptionalBool& bCanUpdateEnrollment, FOptionalBool& bCanUpdateMOTD, FOptionalBool& bCanUpdateSlogan, FOptionalString& Shard, FOptionalString& ClientData, FOptionalInt32& Version, FOptionalString& Tag, FOptionalArrayOfDonationRequestBody& Donations, FOptionalArrayOfGroupRole& Roles, FOptionalArrayOfInFlightMessage& InFlight, FOptionalMapOfDonationRequestBody& MaybeDonations)
 {
-	Requirement = Serializable->Requirement;
-	MaxSize = Serializable->MaxSize;
-	Type = Serializable->Type;
-	Id = Serializable->Id;
-	Motd = Serializable->Motd;
-	Slogan = Serializable->Slogan;
-	Leader = Serializable->Leader;
-	Created = Serializable->Created;
-	Name = Serializable->Name;
-	EnrollmentType = Serializable->EnrollmentType;
-	FreeSlots = Serializable->FreeSlots;
-	SubGroups = Serializable->SubGroups;
-	Members = Serializable->Members;
-	Scores = Serializable->Scores;
-	bCanDisband = Serializable->bCanDisband;
-	bCanUpdateEnrollment = Serializable->bCanUpdateEnrollment;
-	bCanUpdateMOTD = Serializable->bCanUpdateMOTD;
-	bCanUpdateSlogan = Serializable->bCanUpdateSlogan;
-	Shard = Serializable->Shard;
-	ClientData = Serializable->ClientData;
-	Version = Serializable->Version;
-	Tag = Serializable->Tag;
-	Donations = Serializable->Donations;
-	Roles = Serializable->Roles;
-	InFlight = Serializable->InFlight;
-	MaybeDonations = Serializable->MaybeDonations;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Requirement = Serializable->Requirement;
+		MaxSize = Serializable->MaxSize;
+		Type = Serializable->Type;
+		Id = Serializable->Id;
+		Motd = Serializable->Motd;
+		Slogan = Serializable->Slogan;
+		Leader = Serializable->Leader;
+		Created = Serializable->Created;
+		Name = Serializable->Name;
+		EnrollmentType = Serializable->EnrollmentType;
+		FreeSlots = Serializable->FreeSlots;
+		SubGroups = Serializable->SubGroups;
+		Members = Serializable->Members;
+		Scores = Serializable->Scores;
+		bCanDisband = Serializable->bCanDisband;
+		bCanUpdateEnrollment = Serializable->bCanUpdateEnrollment;
+		bCanUpdateMOTD = Serializable->bCanUpdateMOTD;
+		bCanUpdateSlogan = Serializable->bCanUpdateSlogan;
+		Shard = Serializable->Shard;
+		ClientData = Serializable->ClientData;
+		Version = Serializable->Version;
+		Tag = Serializable->Tag;
+		Donations = Serializable->Donations;
+		Roles = Serializable->Roles;
+		InFlight = Serializable->InFlight;
+		MaybeDonations = Serializable->MaybeDonations;
+	}
 		
 }
 

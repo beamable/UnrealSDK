@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/GroupMembershipResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UGroupMembershipResponseLibrary::GroupMembershipResponseToJsonString(const UGroupMembershipResponse* Serializable, const bool Pretty)
@@ -36,11 +37,14 @@ UGroupMembershipResponse* UGroupMembershipResponseLibrary::Make(bool bMember, EB
 
 void UGroupMembershipResponseLibrary::Break(const UGroupMembershipResponse* Serializable, bool& bMember, EBeamGroupType& Type, UGroupMetaData*& Group, TArray<int64>& SubGroups, FOptionalInt64& GamerTag)
 {
-	bMember = Serializable->bMember;
-	Type = Serializable->Type;
-	Group = Serializable->Group;
-	SubGroups = Serializable->SubGroups;
-	GamerTag = Serializable->GamerTag;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		bMember = Serializable->bMember;
+		Type = Serializable->Type;
+		Group = Serializable->Group;
+		SubGroups = Serializable->SubGroups;
+		GamerTag = Serializable->GamerTag;
+	}
 		
 }
 

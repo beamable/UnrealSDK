@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/MemberLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UMemberLibrary::MemberToJsonString(const UMember* Serializable, const bool Pretty)
@@ -37,12 +38,15 @@ UMember* UMemberLibrary::Make(FString Role, int64 GamerTag, FOptionalBool bCanDe
 
 void UMemberLibrary::Break(const UMember* Serializable, FString& Role, int64& GamerTag, FOptionalBool& bCanDemote, FOptionalBool& bCanKick, FOptionalBool& bCanPromote, FOptionalArrayOfGroupScoreBinding& Scores)
 {
-	Role = Serializable->Role;
-	GamerTag = Serializable->GamerTag;
-	bCanDemote = Serializable->bCanDemote;
-	bCanKick = Serializable->bCanKick;
-	bCanPromote = Serializable->bCanPromote;
-	Scores = Serializable->Scores;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Role = Serializable->Role;
+		GamerTag = Serializable->GamerTag;
+		bCanDemote = Serializable->bCanDemote;
+		bCanKick = Serializable->bCanKick;
+		bCanPromote = Serializable->bCanPromote;
+		Scores = Serializable->Scores;
+	}
 		
 }
 

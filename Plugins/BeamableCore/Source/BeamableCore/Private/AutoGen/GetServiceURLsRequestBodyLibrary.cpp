@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/GetServiceURLsRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UGetServiceURLsRequestBodyLibrary::GetServiceURLsRequestBodyToJsonString(const UGetServiceURLsRequestBody* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UGetServiceURLsRequestBody* UGetServiceURLsRequestBodyLibrary::Make(TArray<UServ
 
 void UGetServiceURLsRequestBodyLibrary::Break(const UGetServiceURLsRequestBody* Serializable, TArray<UServiceImageLayers*>& Requests)
 {
-	Requests = Serializable->Requests;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Requests = Serializable->Requests;
+	}
 		
 }
 

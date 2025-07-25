@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/ItemPropertyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UItemPropertyLibrary::ItemPropertyToJsonString(const UItemProperty* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ UItemProperty* UItemPropertyLibrary::Make(FString Name, FString Value, UObject* 
 
 void UItemPropertyLibrary::Break(const UItemProperty* Serializable, FString& Name, FString& Value)
 {
-	Name = Serializable->Name;
-	Value = Serializable->Value;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Name = Serializable->Name;
+		Value = Serializable->Value;
+	}
 		
 }
 

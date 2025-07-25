@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/SessionHistoryResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString USessionHistoryResponseLibrary::SessionHistoryResponseToJsonString(const USessionHistoryResponse* Serializable, const bool Pretty)
@@ -37,12 +38,15 @@ USessionHistoryResponse* USessionHistoryResponseLibrary::Make(ULocalDate* Date, 
 
 void USessionHistoryResponseLibrary::Break(const USessionHistoryResponse* Serializable, ULocalDate*& Date, int32& DaysPlayed, TArray<FString>& Payments, TArray<UPaymentTotal*>& TotalPaid, TArray<FString>& Sessions, FOptionalString& InstallDate)
 {
-	Date = Serializable->Date;
-	DaysPlayed = Serializable->DaysPlayed;
-	Payments = Serializable->Payments;
-	TotalPaid = Serializable->TotalPaid;
-	Sessions = Serializable->Sessions;
-	InstallDate = Serializable->InstallDate;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Date = Serializable->Date;
+		DaysPlayed = Serializable->DaysPlayed;
+		Payments = Serializable->Payments;
+		TotalPaid = Serializable->TotalPaid;
+		Sessions = Serializable->Sessions;
+		InstallDate = Serializable->InstallDate;
+	}
 		
 }
 

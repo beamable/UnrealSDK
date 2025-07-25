@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/RoleMappingLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString URoleMappingLibrary::RoleMappingToJsonString(const URoleMapping* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ URoleMapping* URoleMappingLibrary::Make(FString ProjectId, FString Role, UObject
 
 void URoleMappingLibrary::Break(const URoleMapping* Serializable, FString& ProjectId, FString& Role)
 {
-	ProjectId = Serializable->ProjectId;
-	Role = Serializable->Role;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		ProjectId = Serializable->ProjectId;
+		Role = Serializable->Role;
+	}
 		
 }
 

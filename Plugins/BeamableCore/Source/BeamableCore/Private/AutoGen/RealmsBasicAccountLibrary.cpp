@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/RealmsBasicAccountLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString URealmsBasicAccountLibrary::RealmsBasicAccountToJsonString(const URealmsBasicAccount* Serializable, const bool Pretty)
@@ -35,10 +36,13 @@ URealmsBasicAccount* URealmsBasicAccountLibrary::Make(FString User, FString Pass
 
 void URealmsBasicAccountLibrary::Break(const URealmsBasicAccount* Serializable, FString& User, FString& Password, TArray<FString>& Projects, FOptionalInt64& Created)
 {
-	User = Serializable->User;
-	Password = Serializable->Password;
-	Projects = Serializable->Projects;
-	Created = Serializable->Created;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		User = Serializable->User;
+		Password = Serializable->Password;
+		Projects = Serializable->Projects;
+		Created = Serializable->Created;
+	}
 		
 }
 

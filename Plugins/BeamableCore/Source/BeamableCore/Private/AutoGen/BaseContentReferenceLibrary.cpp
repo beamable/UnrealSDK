@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/BaseContentReferenceLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UBaseContentReferenceLibrary::BaseContentReferenceToJsonString(const UBaseContentReference* Serializable, const bool Pretty)
@@ -34,9 +35,12 @@ UBaseContentReference* UBaseContentReferenceLibrary::Make(UContentReference* Con
 
 void UBaseContentReferenceLibrary::Break(const UBaseContentReference* Serializable, UContentReference*& Content, UTextReference*& Text, UBinaryReference*& Binary)
 {
-	Content = Serializable->Content;
-	Text = Serializable->Text;
-	Binary = Serializable->Binary;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Content = Serializable->Content;
+		Text = Serializable->Text;
+		Binary = Serializable->Binary;
+	}
 		
 }
 

@@ -7,8 +7,8 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-#include "BeamableCore/Public/AutoGen/PostManifestRequestBody.h"
-#include "BeamableCore/Public/AutoGen/BeamoActorManifestChecksum.h"
+#include "BeamableCore/Public/AutoGen/BeamoV2PostManifestRequestBody.h"
+#include "BeamableCore/Public/AutoGen/BeamoV2ManifestChecksum.h"
 
 #include "PostManifestsRequest.generated.h"
 
@@ -27,7 +27,7 @@ public:
 
 	// Body Params
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="", Category="Beam")
-	UPostManifestRequestBody* Body = {};
+	UBeamoV2PostManifestRequestBody* Body = {};
 
 	// Beam Base Request Declaration
 	UPostManifestsRequest() = default;
@@ -37,11 +37,11 @@ public:
 	virtual void BuildBody(FString& BodyString) const override;
 
 	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Beamo|Utils|Make/Break", DisplayName="Make PostManifests",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_bAutoDeploy,_Comments,_Manifest,_StorageReferences,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
-	static UPostManifestsRequest* Make(FOptionalBool _bAutoDeploy, FOptionalString _Comments, FOptionalArrayOfBeamoActorServiceReference _Manifest, FOptionalArrayOfServiceStorageReference _StorageReferences, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
+	static UPostManifestsRequest* Make(FOptionalBool _bAutoDeploy, FOptionalString _Comments, FOptionalArrayOfBeamoV2ServiceReference _Manifest, FOptionalArrayOfBeamoV2ServiceStorageReference _StorageReferences, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)
-DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnPostManifestsSuccess, FBeamRequestContext, Context, UPostManifestsRequest*, Request, UBeamoActorManifestChecksum*, Response);
+DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnPostManifestsSuccess, FBeamRequestContext, Context, UPostManifestsRequest*, Request, UBeamoV2ManifestChecksum*, Response);
 
 UDELEGATE(BlueprintAuthorityOnly)
 DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnPostManifestsError, FBeamRequestContext, Context, UPostManifestsRequest*, Request, FBeamErrorResponse, Error);
@@ -49,5 +49,5 @@ DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnPostManifestsError, FBeamRequestContext,
 UDELEGATE(BlueprintAuthorityOnly)
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FOnPostManifestsComplete, FBeamRequestContext, Context, UPostManifestsRequest*, Request);
 
-using FPostManifestsFullResponse = FBeamFullResponse<UPostManifestsRequest*, UBeamoActorManifestChecksum*>;
+using FPostManifestsFullResponse = FBeamFullResponse<UPostManifestsRequest*, UBeamoV2ManifestChecksum*>;
 DECLARE_DELEGATE_OneParam(FOnPostManifestsFullResponse, FPostManifestsFullResponse);

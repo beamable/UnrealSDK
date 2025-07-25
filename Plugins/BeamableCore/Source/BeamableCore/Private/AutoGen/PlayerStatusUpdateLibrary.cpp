@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/PlayerStatusUpdateLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UPlayerStatusUpdateLibrary::PlayerStatusUpdateToJsonString(const UPlayerStatusUpdate* Serializable, const bool Pretty)
@@ -34,9 +35,12 @@ UPlayerStatusUpdate* UPlayerStatusUpdateLibrary::Make(FOptionalInt32 Tier, FOpti
 
 void UPlayerStatusUpdateLibrary::Break(const UPlayerStatusUpdate* Serializable, FOptionalInt32& Tier, FOptionalInt32& Stage, FOptionalDouble& Score)
 {
-	Tier = Serializable->Tier;
-	Stage = Serializable->Stage;
-	Score = Serializable->Score;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Tier = Serializable->Tier;
+		Stage = Serializable->Stage;
+		Score = Serializable->Score;
+	}
 		
 }
 

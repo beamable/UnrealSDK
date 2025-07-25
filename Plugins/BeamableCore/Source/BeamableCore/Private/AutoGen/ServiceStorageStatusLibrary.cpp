@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/ServiceStorageStatusLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UServiceStorageStatusLibrary::ServiceStorageStatusToJsonString(const UServiceStorageStatus* Serializable, const bool Pretty)
@@ -22,7 +23,7 @@ FString UServiceStorageStatusLibrary::ServiceStorageStatusToJsonString(const USe
 	return Result;
 }	
 
-UServiceStorageStatus* UServiceStorageStatusLibrary::Make(FOptionalBool bIsCurrent, FOptionalBool bIsRunning, FOptionalString Id, FOptionalString StorageType, UObject* Outer)
+UServiceStorageStatus* UServiceStorageStatusLibrary::Make(bool bIsCurrent, bool bIsRunning, FString Id, FString StorageType, UObject* Outer)
 {
 	auto Serializable = NewObject<UServiceStorageStatus>(Outer);
 	Serializable->bIsCurrent = bIsCurrent;
@@ -33,12 +34,15 @@ UServiceStorageStatus* UServiceStorageStatusLibrary::Make(FOptionalBool bIsCurre
 	return Serializable;
 }
 
-void UServiceStorageStatusLibrary::Break(const UServiceStorageStatus* Serializable, FOptionalBool& bIsCurrent, FOptionalBool& bIsRunning, FOptionalString& Id, FOptionalString& StorageType)
+void UServiceStorageStatusLibrary::Break(const UServiceStorageStatus* Serializable, bool& bIsCurrent, bool& bIsRunning, FString& Id, FString& StorageType)
 {
-	bIsCurrent = Serializable->bIsCurrent;
-	bIsRunning = Serializable->bIsRunning;
-	Id = Serializable->Id;
-	StorageType = Serializable->StorageType;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		bIsCurrent = Serializable->bIsCurrent;
+		bIsRunning = Serializable->bIsRunning;
+		Id = Serializable->Id;
+		StorageType = Serializable->StorageType;
+	}
 		
 }
 

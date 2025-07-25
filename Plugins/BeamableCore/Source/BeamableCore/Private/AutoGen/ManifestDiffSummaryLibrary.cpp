@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/ManifestDiffSummaryLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UManifestDiffSummaryLibrary::ManifestDiffSummaryToJsonString(const UManifestDiffSummary* Serializable, const bool Pretty)
@@ -34,9 +35,12 @@ UManifestDiffSummary* UManifestDiffSummaryLibrary::Make(FString ManifestUid, FSt
 
 void UManifestDiffSummaryLibrary::Break(const UManifestDiffSummary* Serializable, FString& ManifestUid, FString& DiffUrl, int64& CreatedDate)
 {
-	ManifestUid = Serializable->ManifestUid;
-	DiffUrl = Serializable->DiffUrl;
-	CreatedDate = Serializable->CreatedDate;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		ManifestUid = Serializable->ManifestUid;
+		DiffUrl = Serializable->DiffUrl;
+		CreatedDate = Serializable->CreatedDate;
+	}
 		
 }
 

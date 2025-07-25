@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/PlayerStatRequirementLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UPlayerStatRequirementLibrary::PlayerStatRequirementToJsonString(const UPlayerStatRequirement* Serializable, const bool Pretty)
@@ -36,11 +37,14 @@ UPlayerStatRequirement* UPlayerStatRequirementLibrary::Make(FString Stat, FStrin
 
 void UPlayerStatRequirementLibrary::Break(const UPlayerStatRequirement* Serializable, FString& Stat, FString& Constraint, FString& Value, FOptionalString& Domain, FOptionalString& Access)
 {
-	Stat = Serializable->Stat;
-	Constraint = Serializable->Constraint;
-	Value = Serializable->Value;
-	Domain = Serializable->Domain;
-	Access = Serializable->Access;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Stat = Serializable->Stat;
+		Constraint = Serializable->Constraint;
+		Value = Serializable->Value;
+		Domain = Serializable->Domain;
+		Access = Serializable->Access;
+	}
 		
 }
 

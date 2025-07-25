@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/TournamentEntryLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UTournamentEntryLibrary::TournamentEntryToJsonString(const UTournamentEntry* Serializable, const bool Pretty)
@@ -40,15 +41,18 @@ UTournamentEntry* UTournamentEntryLibrary::Make(int32 Stage, int32 Tier, int64 R
 
 void UTournamentEntryLibrary::Break(const UTournamentEntry* Serializable, int32& Stage, int32& Tier, int64& Rank, double& Score, int64& PlayerId, int32& StageChange, TArray<UTournamentCurrencyReward*>& CurrencyRewards, FOptionalInt32& PreviousStageChange, FOptionalInt32& NextStageChange)
 {
-	Stage = Serializable->Stage;
-	Tier = Serializable->Tier;
-	Rank = Serializable->Rank;
-	Score = Serializable->Score;
-	PlayerId = Serializable->PlayerId;
-	StageChange = Serializable->StageChange;
-	CurrencyRewards = Serializable->CurrencyRewards;
-	PreviousStageChange = Serializable->PreviousStageChange;
-	NextStageChange = Serializable->NextStageChange;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Stage = Serializable->Stage;
+		Tier = Serializable->Tier;
+		Rank = Serializable->Rank;
+		Score = Serializable->Score;
+		PlayerId = Serializable->PlayerId;
+		StageChange = Serializable->StageChange;
+		CurrencyRewards = Serializable->CurrencyRewards;
+		PreviousStageChange = Serializable->PreviousStageChange;
+		NextStageChange = Serializable->NextStageChange;
+	}
 		
 }
 

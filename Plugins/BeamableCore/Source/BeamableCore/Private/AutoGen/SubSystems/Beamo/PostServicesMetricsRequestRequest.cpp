@@ -37,7 +37,7 @@ UPostServicesMetricsRequestRequest* UPostServicesMetricsRequestRequest::Make(FSt
 	
 	
 	// Makes a body and fill up with parameters (Blank if no body parameters exist)
-	Req->Body = NewObject<UGetMetricsRequestBody>(Req);
+	Req->Body = NewObject<UBeamoV2GetMetricsRequestBody>(Req);
 	Req->Body->MetricName = _MetricName;
 	Req->Body->StartTime = _StartTime;
 	Req->Body->EndTime = _EndTime;

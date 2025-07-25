@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/VipBonusLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UVipBonusLibrary::VipBonusToJsonString(const UVipBonus* Serializable, const bool Pretty)
@@ -34,9 +35,12 @@ UVipBonus* UVipBonusLibrary::Make(FString Currency, double Multiplier, int32 Rou
 
 void UVipBonusLibrary::Break(const UVipBonus* Serializable, FString& Currency, double& Multiplier, int32& RoundToNearest)
 {
-	Currency = Serializable->Currency;
-	Multiplier = Serializable->Multiplier;
-	RoundToNearest = Serializable->RoundToNearest;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Currency = Serializable->Currency;
+		Multiplier = Serializable->Multiplier;
+		RoundToNearest = Serializable->RoundToNearest;
+	}
 		
 }
 

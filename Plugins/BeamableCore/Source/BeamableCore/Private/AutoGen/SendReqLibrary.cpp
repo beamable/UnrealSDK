@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/SendReqLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString USendReqLibrary::SendReqToJsonString(const USendReq* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ USendReq* USendReqLibrary::Make(TArray<USendMsg*> Msgs, UObject* Outer)
 
 void USendReqLibrary::Break(const USendReq* Serializable, TArray<USendMsg*>& Msgs)
 {
-	Msgs = Serializable->Msgs;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Msgs = Serializable->Msgs;
+	}
 		
 }
 

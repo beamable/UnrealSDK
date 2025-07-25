@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/GetActiveListingRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UGetActiveListingRequestBodyLibrary::GetActiveListingRequestBodyToJsonString(const UGetActiveListingRequestBody* Serializable, const bool Pretty)
@@ -34,9 +35,12 @@ UGetActiveListingRequestBody* UGetActiveListingRequestBodyLibrary::Make(FString 
 
 void UGetActiveListingRequestBodyLibrary::Break(const UGetActiveListingRequestBody* Serializable, FString& Listing, FOptionalString& Store, FOptionalString& Time)
 {
-	Listing = Serializable->Listing;
-	Store = Serializable->Store;
-	Time = Serializable->Time;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Listing = Serializable->Listing;
+		Store = Serializable->Store;
+		Time = Serializable->Time;
+	}
 		
 }
 

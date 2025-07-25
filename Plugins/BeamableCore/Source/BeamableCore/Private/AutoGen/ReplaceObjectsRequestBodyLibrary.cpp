@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/ReplaceObjectsRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UReplaceObjectsRequestBodyLibrary::ReplaceObjectsRequestBodyToJsonString(const UReplaceObjectsRequestBody* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ UReplaceObjectsRequestBody* UReplaceObjectsRequestBodyLibrary::Make(int64 Source
 
 void UReplaceObjectsRequestBodyLibrary::Break(const UReplaceObjectsRequestBody* Serializable, int64& SourcePlayerId, int64& TargetPlayerId)
 {
-	SourcePlayerId = Serializable->SourcePlayerId;
-	TargetPlayerId = Serializable->TargetPlayerId;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		SourcePlayerId = Serializable->SourcePlayerId;
+		TargetPlayerId = Serializable->TargetPlayerId;
+	}
 		
 }
 

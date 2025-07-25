@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/ChallengeSolutionLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UChallengeSolutionLibrary::ChallengeSolutionToJsonString(const UChallengeSolution* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ UChallengeSolution* UChallengeSolutionLibrary::Make(FString ChallengeToken, FStr
 
 void UChallengeSolutionLibrary::Break(const UChallengeSolution* Serializable, FString& ChallengeToken, FString& Solution)
 {
-	ChallengeToken = Serializable->ChallengeToken;
-	Solution = Serializable->Solution;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		ChallengeToken = Serializable->ChallengeToken;
+		Solution = Serializable->Solution;
+	}
 		
 }
 

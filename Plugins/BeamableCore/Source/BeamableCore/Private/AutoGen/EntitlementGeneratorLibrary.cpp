@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/EntitlementGeneratorLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UEntitlementGeneratorLibrary::EntitlementGeneratorToJsonString(const UEntitlementGenerator* Serializable, const bool Pretty)
@@ -37,12 +38,15 @@ UEntitlementGenerator* UEntitlementGeneratorLibrary::Make(FString Symbol, FStrin
 
 void UEntitlementGeneratorLibrary::Break(const UEntitlementGenerator* Serializable, FString& Symbol, FString& Action, FOptionalInt32& Quantity, FOptionalEntitlementClaimWindow& ClaimWindow, FOptionalString& Specialization, FOptionalMapOfString& Params)
 {
-	Symbol = Serializable->Symbol;
-	Action = Serializable->Action;
-	Quantity = Serializable->Quantity;
-	ClaimWindow = Serializable->ClaimWindow;
-	Specialization = Serializable->Specialization;
-	Params = Serializable->Params;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Symbol = Serializable->Symbol;
+		Action = Serializable->Action;
+		Quantity = Serializable->Quantity;
+		ClaimWindow = Serializable->ClaimWindow;
+		Specialization = Serializable->Specialization;
+		Params = Serializable->Params;
+	}
 		
 }
 

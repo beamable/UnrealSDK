@@ -9,7 +9,7 @@
 
 #include "Serialization/BeamJsonUtils.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalBool.h"
-#include "BeamableCore/Public/AutoGen/BeamoActorManifest.h"
+#include "BeamableCore/Public/AutoGen/BeamoV2Manifest.h"
 
 #include "ApiBeamoGetManifestsByManifestIdRequest.generated.h"
 
@@ -43,7 +43,7 @@ public:
 };
 
 UDELEGATE(BlueprintAuthorityOnly)
-DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnApiBeamoGetManifestsByManifestIdSuccess, FBeamRequestContext, Context, UApiBeamoGetManifestsByManifestIdRequest*, Request, UBeamoActorManifest*, Response);
+DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnApiBeamoGetManifestsByManifestIdSuccess, FBeamRequestContext, Context, UApiBeamoGetManifestsByManifestIdRequest*, Request, UBeamoV2Manifest*, Response);
 
 UDELEGATE(BlueprintAuthorityOnly)
 DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnApiBeamoGetManifestsByManifestIdError, FBeamRequestContext, Context, UApiBeamoGetManifestsByManifestIdRequest*, Request, FBeamErrorResponse, Error);
@@ -51,5 +51,5 @@ DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnApiBeamoGetManifestsByManifestIdError, F
 UDELEGATE(BlueprintAuthorityOnly)
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FOnApiBeamoGetManifestsByManifestIdComplete, FBeamRequestContext, Context, UApiBeamoGetManifestsByManifestIdRequest*, Request);
 
-using FApiBeamoGetManifestsByManifestIdFullResponse = FBeamFullResponse<UApiBeamoGetManifestsByManifestIdRequest*, UBeamoActorManifest*>;
+using FApiBeamoGetManifestsByManifestIdFullResponse = FBeamFullResponse<UApiBeamoGetManifestsByManifestIdRequest*, UBeamoV2Manifest*>;
 DECLARE_DELEGATE_OneParam(FOnApiBeamoGetManifestsByManifestIdFullResponse, FApiBeamoGetManifestsByManifestIdFullResponse);

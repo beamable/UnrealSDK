@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/ContentReferenceLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UContentReferenceLibrary::ContentReferenceToJsonString(const UContentReference* Serializable, const bool Pretty)
@@ -41,16 +42,19 @@ UContentReference* UContentReferenceLibrary::Make(FString Tag, FString Uri, FStr
 
 void UContentReferenceLibrary::Break(const UContentReference* Serializable, FString& Tag, FString& Uri, FString& Version, FBeamContentId& Id, FString& Type, EBeamContentVisibility& Visibility, TArray<FString>& Tags, FOptionalString& Checksum, FOptionalInt64& LastChanged, FOptionalInt64& Created)
 {
-	Tag = Serializable->Tag;
-	Uri = Serializable->Uri;
-	Version = Serializable->Version;
-	Id = Serializable->Id;
-	Type = Serializable->Type;
-	Visibility = Serializable->Visibility;
-	Tags = Serializable->Tags;
-	Checksum = Serializable->Checksum;
-	LastChanged = Serializable->LastChanged;
-	Created = Serializable->Created;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Tag = Serializable->Tag;
+		Uri = Serializable->Uri;
+		Version = Serializable->Version;
+		Id = Serializable->Id;
+		Type = Serializable->Type;
+		Visibility = Serializable->Visibility;
+		Tags = Serializable->Tags;
+		Checksum = Serializable->Checksum;
+		LastChanged = Serializable->LastChanged;
+		Created = Serializable->Created;
+	}
 		
 }
 

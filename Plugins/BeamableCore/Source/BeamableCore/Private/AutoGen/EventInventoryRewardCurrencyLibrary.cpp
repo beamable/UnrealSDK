@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/EventInventoryRewardCurrencyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UEventInventoryRewardCurrencyLibrary::EventInventoryRewardCurrencyToJsonString(const UEventInventoryRewardCurrency* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ UEventInventoryRewardCurrency* UEventInventoryRewardCurrencyLibrary::Make(FStrin
 
 void UEventInventoryRewardCurrencyLibrary::Break(const UEventInventoryRewardCurrency* Serializable, FString& Id, int64& Amount)
 {
-	Id = Serializable->Id;
-	Amount = Serializable->Amount;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Id = Serializable->Id;
+		Amount = Serializable->Amount;
+	}
 		
 }
 

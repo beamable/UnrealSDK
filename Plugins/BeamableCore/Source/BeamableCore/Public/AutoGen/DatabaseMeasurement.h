@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
-#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfBeamoActorDataPoint.h"
+#include "BeamableCore/Public/AutoGen/DataPoint.h"
 #include "Serialization/BeamJsonUtils.h"
 
 #include "DatabaseMeasurement.generated.h"
@@ -19,7 +19,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Units", Category="Beam")
 	FString Units = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Data Points", Category="Beam")
-	FOptionalArrayOfBeamoActorDataPoint DataPoints = {};
+	TArray<UDataPoint*> DataPoints = {};
 
 	
 

@@ -6,7 +6,7 @@
 
 #include "BeamableCore/Public/AutoGen/SubSystems/BeamBeamoApi.h"
 #include "BeamableCore/Public/AutoGen/SubSystems/Beamo/GetRegistryUriRequest.h"
-#include "BeamableCore/Public/AutoGen/UriResponse.h"
+#include "BeamableCore/Public/AutoGen/BeamoV2UriResponse.h"
 
 #define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_GetRegistryUri"
 
@@ -49,7 +49,7 @@ UClass* UK2BeamNode_ApiRequest_GetRegistryUri::GetRequestClass() const
 
 UClass* UK2BeamNode_ApiRequest_GetRegistryUri::GetResponseClass() const
 {
-	return UUriResponse::StaticClass();
+	return UBeamoV2UriResponse::StaticClass();
 }
 
 FString UK2BeamNode_ApiRequest_GetRegistryUri::GetRequestSuccessDelegateName() const

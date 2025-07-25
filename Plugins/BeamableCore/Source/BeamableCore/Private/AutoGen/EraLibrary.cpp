@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/EraLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UEraLibrary::EraToJsonString(const UEra* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UEra* UEraLibrary::Make(int32 Value, UObject* Outer)
 
 void UEraLibrary::Break(const UEra* Serializable, int32& Value)
 {
-	Value = Serializable->Value;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Value = Serializable->Value;
+	}
 		
 }
 

@@ -35,14 +35,14 @@ void UBeamBeamoApi::BP_PostManifestsImpl(const FBeamRealmHandle& TargetRealm, co
 	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
 	{
 		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
-		Backend->RunAuthenticatedBlueprintRequestProcessor<UPostManifestsRequest, UBeamoActorManifestChecksum, FOnPostManifestsSuccess, FOnPostManifestsError, FOnPostManifestsComplete>
+		Backend->RunAuthenticatedBlueprintRequestProcessor<UPostManifestsRequest, UBeamoV2ManifestChecksum, FOnPostManifestsSuccess, FOnPostManifestsError, FOnPostManifestsComplete>
 			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);		
 	}
 	// If not cached...
 	else
 	{
 		// Binds the handler to the static response handler (pre-generated)
-		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UPostManifestsRequest, UBeamoActorManifestChecksum, FOnPostManifestsSuccess, FOnPostManifestsError, FOnPostManifestsComplete>
+		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UPostManifestsRequest, UBeamoV2ManifestChecksum, FOnPostManifestsSuccess, FOnPostManifestsError, FOnPostManifestsComplete>
 			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 	    
@@ -65,14 +65,14 @@ void UBeamBeamoApi::CPP_PostManifestsImpl(const FBeamRealmHandle& TargetRealm, c
 	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
 	{
 		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
-		Backend->RunAuthenticatedCodeRequestProcessor<UPostManifestsRequest, UBeamoActorManifestChecksum>
+		Backend->RunAuthenticatedCodeRequestProcessor<UPostManifestsRequest, UBeamoV2ManifestChecksum>
 			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, TargetRealm, AuthToken, RequestData, Handler);		
 	}
 	// If not cached...
 	else
 	{
 		// Binds the handler to the static response handler (pre-generated)	
-		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UPostManifestsRequest, UBeamoActorManifestChecksum>
+		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UPostManifestsRequest, UBeamoV2ManifestChecksum>
 			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler);
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
@@ -97,14 +97,14 @@ void UBeamBeamoApi::BP_ApiBeamoGetManifestsImpl(const FBeamRealmHandle& TargetRe
 	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
 	{
 		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
-		Backend->RunAuthenticatedBlueprintRequestProcessor<UApiBeamoGetManifestsRequest, UGetManifestsResponse, FOnApiBeamoGetManifestsSuccess, FOnApiBeamoGetManifestsError, FOnApiBeamoGetManifestsComplete>
+		Backend->RunAuthenticatedBlueprintRequestProcessor<UApiBeamoGetManifestsRequest, UBeamoV2GetManifestsResponse, FOnApiBeamoGetManifestsSuccess, FOnApiBeamoGetManifestsError, FOnApiBeamoGetManifestsComplete>
 			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);		
 	}
 	// If not cached...
 	else
 	{
 		// Binds the handler to the static response handler (pre-generated)
-		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UApiBeamoGetManifestsRequest, UGetManifestsResponse, FOnApiBeamoGetManifestsSuccess, FOnApiBeamoGetManifestsError, FOnApiBeamoGetManifestsComplete>
+		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UApiBeamoGetManifestsRequest, UBeamoV2GetManifestsResponse, FOnApiBeamoGetManifestsSuccess, FOnApiBeamoGetManifestsError, FOnApiBeamoGetManifestsComplete>
 			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 	    
@@ -127,14 +127,14 @@ void UBeamBeamoApi::CPP_ApiBeamoGetManifestsImpl(const FBeamRealmHandle& TargetR
 	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
 	{
 		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
-		Backend->RunAuthenticatedCodeRequestProcessor<UApiBeamoGetManifestsRequest, UGetManifestsResponse>
+		Backend->RunAuthenticatedCodeRequestProcessor<UApiBeamoGetManifestsRequest, UBeamoV2GetManifestsResponse>
 			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, TargetRealm, AuthToken, RequestData, Handler);		
 	}
 	// If not cached...
 	else
 	{
 		// Binds the handler to the static response handler (pre-generated)	
-		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UApiBeamoGetManifestsRequest, UGetManifestsResponse>
+		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UApiBeamoGetManifestsRequest, UBeamoV2GetManifestsResponse>
 			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler);
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
@@ -159,14 +159,14 @@ void UBeamBeamoApi::BP_ApiBeamoGetManifestsByManifestIdImpl(const FBeamRealmHand
 	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
 	{
 		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
-		Backend->RunAuthenticatedBlueprintRequestProcessor<UApiBeamoGetManifestsByManifestIdRequest, UBeamoActorManifest, FOnApiBeamoGetManifestsByManifestIdSuccess, FOnApiBeamoGetManifestsByManifestIdError, FOnApiBeamoGetManifestsByManifestIdComplete>
+		Backend->RunAuthenticatedBlueprintRequestProcessor<UApiBeamoGetManifestsByManifestIdRequest, UBeamoV2Manifest, FOnApiBeamoGetManifestsByManifestIdSuccess, FOnApiBeamoGetManifestsByManifestIdError, FOnApiBeamoGetManifestsByManifestIdComplete>
 			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);		
 	}
 	// If not cached...
 	else
 	{
 		// Binds the handler to the static response handler (pre-generated)
-		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UApiBeamoGetManifestsByManifestIdRequest, UBeamoActorManifest, FOnApiBeamoGetManifestsByManifestIdSuccess, FOnApiBeamoGetManifestsByManifestIdError, FOnApiBeamoGetManifestsByManifestIdComplete>
+		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UApiBeamoGetManifestsByManifestIdRequest, UBeamoV2Manifest, FOnApiBeamoGetManifestsByManifestIdSuccess, FOnApiBeamoGetManifestsByManifestIdError, FOnApiBeamoGetManifestsByManifestIdComplete>
 			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 	    
@@ -189,14 +189,14 @@ void UBeamBeamoApi::CPP_ApiBeamoGetManifestsByManifestIdImpl(const FBeamRealmHan
 	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
 	{
 		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
-		Backend->RunAuthenticatedCodeRequestProcessor<UApiBeamoGetManifestsByManifestIdRequest, UBeamoActorManifest>
+		Backend->RunAuthenticatedCodeRequestProcessor<UApiBeamoGetManifestsByManifestIdRequest, UBeamoV2Manifest>
 			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, TargetRealm, AuthToken, RequestData, Handler);		
 	}
 	// If not cached...
 	else
 	{
 		// Binds the handler to the static response handler (pre-generated)	
-		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UApiBeamoGetManifestsByManifestIdRequest, UBeamoActorManifest>
+		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UApiBeamoGetManifestsByManifestIdRequest, UBeamoV2Manifest>
 			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler);
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
@@ -221,14 +221,14 @@ void UBeamBeamoApi::BP_GetManifestsCurrentImpl(const FBeamRealmHandle& TargetRea
 	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
 	{
 		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
-		Backend->RunAuthenticatedBlueprintRequestProcessor<UGetManifestsCurrentRequest, UBeamoActorManifest, FOnGetManifestsCurrentSuccess, FOnGetManifestsCurrentError, FOnGetManifestsCurrentComplete>
+		Backend->RunAuthenticatedBlueprintRequestProcessor<UGetManifestsCurrentRequest, UBeamoV2Manifest, FOnGetManifestsCurrentSuccess, FOnGetManifestsCurrentError, FOnGetManifestsCurrentComplete>
 			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);		
 	}
 	// If not cached...
 	else
 	{
 		// Binds the handler to the static response handler (pre-generated)
-		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UGetManifestsCurrentRequest, UBeamoActorManifest, FOnGetManifestsCurrentSuccess, FOnGetManifestsCurrentError, FOnGetManifestsCurrentComplete>
+		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UGetManifestsCurrentRequest, UBeamoV2Manifest, FOnGetManifestsCurrentSuccess, FOnGetManifestsCurrentError, FOnGetManifestsCurrentComplete>
 			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 	    
@@ -251,14 +251,14 @@ void UBeamBeamoApi::CPP_GetManifestsCurrentImpl(const FBeamRealmHandle& TargetRe
 	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
 	{
 		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
-		Backend->RunAuthenticatedCodeRequestProcessor<UGetManifestsCurrentRequest, UBeamoActorManifest>
+		Backend->RunAuthenticatedCodeRequestProcessor<UGetManifestsCurrentRequest, UBeamoV2Manifest>
 			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, TargetRealm, AuthToken, RequestData, Handler);		
 	}
 	// If not cached...
 	else
 	{
 		// Binds the handler to the static response handler (pre-generated)	
-		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UGetManifestsCurrentRequest, UBeamoActorManifest>
+		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UGetManifestsCurrentRequest, UBeamoV2Manifest>
 			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler);
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
@@ -283,14 +283,14 @@ void UBeamBeamoApi::BP_PostManifestsCurrentImpl(const FBeamRealmHandle& TargetRe
 	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
 	{
 		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
-		Backend->RunAuthenticatedBlueprintRequestProcessor<UPostManifestsCurrentRequest, UEmptyMessage, FOnPostManifestsCurrentSuccess, FOnPostManifestsCurrentError, FOnPostManifestsCurrentComplete>
+		Backend->RunAuthenticatedBlueprintRequestProcessor<UPostManifestsCurrentRequest, UBeamoV2EmptyMessage, FOnPostManifestsCurrentSuccess, FOnPostManifestsCurrentError, FOnPostManifestsCurrentComplete>
 			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);		
 	}
 	// If not cached...
 	else
 	{
 		// Binds the handler to the static response handler (pre-generated)
-		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UPostManifestsCurrentRequest, UEmptyMessage, FOnPostManifestsCurrentSuccess, FOnPostManifestsCurrentError, FOnPostManifestsCurrentComplete>
+		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UPostManifestsCurrentRequest, UBeamoV2EmptyMessage, FOnPostManifestsCurrentSuccess, FOnPostManifestsCurrentError, FOnPostManifestsCurrentComplete>
 			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 	    
@@ -313,14 +313,14 @@ void UBeamBeamoApi::CPP_PostManifestsCurrentImpl(const FBeamRealmHandle& TargetR
 	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
 	{
 		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
-		Backend->RunAuthenticatedCodeRequestProcessor<UPostManifestsCurrentRequest, UEmptyMessage>
+		Backend->RunAuthenticatedCodeRequestProcessor<UPostManifestsCurrentRequest, UBeamoV2EmptyMessage>
 			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, TargetRealm, AuthToken, RequestData, Handler);		
 	}
 	// If not cached...
 	else
 	{
 		// Binds the handler to the static response handler (pre-generated)	
-		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UPostManifestsCurrentRequest, UEmptyMessage>
+		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UPostManifestsCurrentRequest, UBeamoV2EmptyMessage>
 			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler);
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
@@ -345,14 +345,14 @@ void UBeamBeamoApi::BP_PostManifestsPromoteImpl(const FBeamRealmHandle& TargetRe
 	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
 	{
 		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
-		Backend->RunAuthenticatedBlueprintRequestProcessor<UPostManifestsPromoteRequest, UEmptyMessage, FOnPostManifestsPromoteSuccess, FOnPostManifestsPromoteError, FOnPostManifestsPromoteComplete>
+		Backend->RunAuthenticatedBlueprintRequestProcessor<UPostManifestsPromoteRequest, UBeamoV2EmptyMessage, FOnPostManifestsPromoteSuccess, FOnPostManifestsPromoteError, FOnPostManifestsPromoteComplete>
 			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);		
 	}
 	// If not cached...
 	else
 	{
 		// Binds the handler to the static response handler (pre-generated)
-		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UPostManifestsPromoteRequest, UEmptyMessage, FOnPostManifestsPromoteSuccess, FOnPostManifestsPromoteError, FOnPostManifestsPromoteComplete>
+		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UPostManifestsPromoteRequest, UBeamoV2EmptyMessage, FOnPostManifestsPromoteSuccess, FOnPostManifestsPromoteError, FOnPostManifestsPromoteComplete>
 			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 	    
@@ -375,14 +375,14 @@ void UBeamBeamoApi::CPP_PostManifestsPromoteImpl(const FBeamRealmHandle& TargetR
 	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
 	{
 		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
-		Backend->RunAuthenticatedCodeRequestProcessor<UPostManifestsPromoteRequest, UEmptyMessage>
+		Backend->RunAuthenticatedCodeRequestProcessor<UPostManifestsPromoteRequest, UBeamoV2EmptyMessage>
 			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, TargetRealm, AuthToken, RequestData, Handler);		
 	}
 	// If not cached...
 	else
 	{
 		// Binds the handler to the static response handler (pre-generated)	
-		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UPostManifestsPromoteRequest, UEmptyMessage>
+		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UPostManifestsPromoteRequest, UBeamoV2EmptyMessage>
 			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler);
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
@@ -407,14 +407,14 @@ void UBeamBeamoApi::BP_ApiBeamoGetTemplatesImpl(const FBeamRealmHandle& TargetRe
 	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
 	{
 		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
-		Backend->RunAuthenticatedBlueprintRequestProcessor<UApiBeamoGetTemplatesRequest, UGetTemplatesResponse, FOnApiBeamoGetTemplatesSuccess, FOnApiBeamoGetTemplatesError, FOnApiBeamoGetTemplatesComplete>
+		Backend->RunAuthenticatedBlueprintRequestProcessor<UApiBeamoGetTemplatesRequest, UBeamoV2GetTemplatesResponse, FOnApiBeamoGetTemplatesSuccess, FOnApiBeamoGetTemplatesError, FOnApiBeamoGetTemplatesComplete>
 			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);		
 	}
 	// If not cached...
 	else
 	{
 		// Binds the handler to the static response handler (pre-generated)
-		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UApiBeamoGetTemplatesRequest, UGetTemplatesResponse, FOnApiBeamoGetTemplatesSuccess, FOnApiBeamoGetTemplatesError, FOnApiBeamoGetTemplatesComplete>
+		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UApiBeamoGetTemplatesRequest, UBeamoV2GetTemplatesResponse, FOnApiBeamoGetTemplatesSuccess, FOnApiBeamoGetTemplatesError, FOnApiBeamoGetTemplatesComplete>
 			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 	    
@@ -437,14 +437,14 @@ void UBeamBeamoApi::CPP_ApiBeamoGetTemplatesImpl(const FBeamRealmHandle& TargetR
 	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
 	{
 		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
-		Backend->RunAuthenticatedCodeRequestProcessor<UApiBeamoGetTemplatesRequest, UGetTemplatesResponse>
+		Backend->RunAuthenticatedCodeRequestProcessor<UApiBeamoGetTemplatesRequest, UBeamoV2GetTemplatesResponse>
 			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, TargetRealm, AuthToken, RequestData, Handler);		
 	}
 	// If not cached...
 	else
 	{
 		// Binds the handler to the static response handler (pre-generated)	
-		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UApiBeamoGetTemplatesRequest, UGetTemplatesResponse>
+		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UApiBeamoGetTemplatesRequest, UBeamoV2GetTemplatesResponse>
 			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler);
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
@@ -469,14 +469,14 @@ void UBeamBeamoApi::BP_ApiBeamoGetStatusImpl(const FBeamRealmHandle& TargetRealm
 	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
 	{
 		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
-		Backend->RunAuthenticatedBlueprintRequestProcessor<UApiBeamoGetStatusRequest, UGetStatusResponse, FOnApiBeamoGetStatusSuccess, FOnApiBeamoGetStatusError, FOnApiBeamoGetStatusComplete>
+		Backend->RunAuthenticatedBlueprintRequestProcessor<UApiBeamoGetStatusRequest, UBeamoV2GetStatusResponse, FOnApiBeamoGetStatusSuccess, FOnApiBeamoGetStatusError, FOnApiBeamoGetStatusComplete>
 			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);		
 	}
 	// If not cached...
 	else
 	{
 		// Binds the handler to the static response handler (pre-generated)
-		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UApiBeamoGetStatusRequest, UGetStatusResponse, FOnApiBeamoGetStatusSuccess, FOnApiBeamoGetStatusError, FOnApiBeamoGetStatusComplete>
+		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UApiBeamoGetStatusRequest, UBeamoV2GetStatusResponse, FOnApiBeamoGetStatusSuccess, FOnApiBeamoGetStatusError, FOnApiBeamoGetStatusComplete>
 			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 	    
@@ -499,14 +499,14 @@ void UBeamBeamoApi::CPP_ApiBeamoGetStatusImpl(const FBeamRealmHandle& TargetReal
 	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
 	{
 		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
-		Backend->RunAuthenticatedCodeRequestProcessor<UApiBeamoGetStatusRequest, UGetStatusResponse>
+		Backend->RunAuthenticatedCodeRequestProcessor<UApiBeamoGetStatusRequest, UBeamoV2GetStatusResponse>
 			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, TargetRealm, AuthToken, RequestData, Handler);		
 	}
 	// If not cached...
 	else
 	{
 		// Binds the handler to the static response handler (pre-generated)	
-		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UApiBeamoGetStatusRequest, UGetStatusResponse>
+		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UApiBeamoGetStatusRequest, UBeamoV2GetStatusResponse>
 			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler);
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
@@ -531,14 +531,14 @@ void UBeamBeamoApi::BP_GetRegistryUriImpl(const FBeamRealmHandle& TargetRealm, c
 	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
 	{
 		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
-		Backend->RunAuthenticatedBlueprintRequestProcessor<UGetRegistryUriRequest, UUriResponse, FOnGetRegistryUriSuccess, FOnGetRegistryUriError, FOnGetRegistryUriComplete>
+		Backend->RunAuthenticatedBlueprintRequestProcessor<UGetRegistryUriRequest, UBeamoV2UriResponse, FOnGetRegistryUriSuccess, FOnGetRegistryUriError, FOnGetRegistryUriComplete>
 			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);		
 	}
 	// If not cached...
 	else
 	{
 		// Binds the handler to the static response handler (pre-generated)
-		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UGetRegistryUriRequest, UUriResponse, FOnGetRegistryUriSuccess, FOnGetRegistryUriError, FOnGetRegistryUriComplete>
+		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UGetRegistryUriRequest, UBeamoV2UriResponse, FOnGetRegistryUriSuccess, FOnGetRegistryUriError, FOnGetRegistryUriComplete>
 			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 	    
@@ -561,14 +561,14 @@ void UBeamBeamoApi::CPP_GetRegistryUriImpl(const FBeamRealmHandle& TargetRealm, 
 	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
 	{
 		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
-		Backend->RunAuthenticatedCodeRequestProcessor<UGetRegistryUriRequest, UUriResponse>
+		Backend->RunAuthenticatedCodeRequestProcessor<UGetRegistryUriRequest, UBeamoV2UriResponse>
 			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, TargetRealm, AuthToken, RequestData, Handler);		
 	}
 	// If not cached...
 	else
 	{
 		// Binds the handler to the static response handler (pre-generated)	
-		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UGetRegistryUriRequest, UUriResponse>
+		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UGetRegistryUriRequest, UBeamoV2UriResponse>
 			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler);
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
@@ -593,14 +593,14 @@ void UBeamBeamoApi::BP_PostServicesRegistrationsImpl(const FBeamRealmHandle& Tar
 	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
 	{
 		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
-		Backend->RunAuthenticatedBlueprintRequestProcessor<UPostServicesRegistrationsRequest, UServiceRegistrationResponse, FOnPostServicesRegistrationsSuccess, FOnPostServicesRegistrationsError, FOnPostServicesRegistrationsComplete>
+		Backend->RunAuthenticatedBlueprintRequestProcessor<UPostServicesRegistrationsRequest, UBeamoV2ServiceRegistrationResponse, FOnPostServicesRegistrationsSuccess, FOnPostServicesRegistrationsError, FOnPostServicesRegistrationsComplete>
 			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);		
 	}
 	// If not cached...
 	else
 	{
 		// Binds the handler to the static response handler (pre-generated)
-		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UPostServicesRegistrationsRequest, UServiceRegistrationResponse, FOnPostServicesRegistrationsSuccess, FOnPostServicesRegistrationsError, FOnPostServicesRegistrationsComplete>
+		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UPostServicesRegistrationsRequest, UBeamoV2ServiceRegistrationResponse, FOnPostServicesRegistrationsSuccess, FOnPostServicesRegistrationsError, FOnPostServicesRegistrationsComplete>
 			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 	    
@@ -623,14 +623,14 @@ void UBeamBeamoApi::CPP_PostServicesRegistrationsImpl(const FBeamRealmHandle& Ta
 	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
 	{
 		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
-		Backend->RunAuthenticatedCodeRequestProcessor<UPostServicesRegistrationsRequest, UServiceRegistrationResponse>
+		Backend->RunAuthenticatedCodeRequestProcessor<UPostServicesRegistrationsRequest, UBeamoV2ServiceRegistrationResponse>
 			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, TargetRealm, AuthToken, RequestData, Handler);		
 	}
 	// If not cached...
 	else
 	{
 		// Binds the handler to the static response handler (pre-generated)	
-		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UPostServicesRegistrationsRequest, UServiceRegistrationResponse>
+		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UPostServicesRegistrationsRequest, UBeamoV2ServiceRegistrationResponse>
 			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler);
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
@@ -655,14 +655,14 @@ void UBeamBeamoApi::BP_PostServicesFederationImpl(const FBeamRealmHandle& Target
 	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
 	{
 		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
-		Backend->RunAuthenticatedBlueprintRequestProcessor<UPostServicesFederationRequest, UFederationRegistrationResponse, FOnPostServicesFederationSuccess, FOnPostServicesFederationError, FOnPostServicesFederationComplete>
+		Backend->RunAuthenticatedBlueprintRequestProcessor<UPostServicesFederationRequest, UBeamoV2FederationRegistrationResponse, FOnPostServicesFederationSuccess, FOnPostServicesFederationError, FOnPostServicesFederationComplete>
 			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);		
 	}
 	// If not cached...
 	else
 	{
 		// Binds the handler to the static response handler (pre-generated)
-		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UPostServicesFederationRequest, UFederationRegistrationResponse, FOnPostServicesFederationSuccess, FOnPostServicesFederationError, FOnPostServicesFederationComplete>
+		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UPostServicesFederationRequest, UBeamoV2FederationRegistrationResponse, FOnPostServicesFederationSuccess, FOnPostServicesFederationError, FOnPostServicesFederationComplete>
 			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 	    
@@ -685,14 +685,14 @@ void UBeamBeamoApi::CPP_PostServicesFederationImpl(const FBeamRealmHandle& Targe
 	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
 	{
 		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
-		Backend->RunAuthenticatedCodeRequestProcessor<UPostServicesFederationRequest, UFederationRegistrationResponse>
+		Backend->RunAuthenticatedCodeRequestProcessor<UPostServicesFederationRequest, UBeamoV2FederationRegistrationResponse>
 			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, TargetRealm, AuthToken, RequestData, Handler);		
 	}
 	// If not cached...
 	else
 	{
 		// Binds the handler to the static response handler (pre-generated)	
-		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UPostServicesFederationRequest, UFederationRegistrationResponse>
+		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UPostServicesFederationRequest, UBeamoV2FederationRegistrationResponse>
 			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler);
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
@@ -717,14 +717,14 @@ void UBeamBeamoApi::BP_PutServicesFederationTrafficImpl(const FBeamRealmHandle& 
 	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
 	{
 		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
-		Backend->RunAuthenticatedBlueprintRequestProcessor<UPutServicesFederationTrafficRequest, UEmptyMessage, FOnPutServicesFederationTrafficSuccess, FOnPutServicesFederationTrafficError, FOnPutServicesFederationTrafficComplete>
+		Backend->RunAuthenticatedBlueprintRequestProcessor<UPutServicesFederationTrafficRequest, UBeamoV2EmptyMessage, FOnPutServicesFederationTrafficSuccess, FOnPutServicesFederationTrafficError, FOnPutServicesFederationTrafficComplete>
 			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);		
 	}
 	// If not cached...
 	else
 	{
 		// Binds the handler to the static response handler (pre-generated)
-		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UPutServicesFederationTrafficRequest, UEmptyMessage, FOnPutServicesFederationTrafficSuccess, FOnPutServicesFederationTrafficError, FOnPutServicesFederationTrafficComplete>
+		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UPutServicesFederationTrafficRequest, UBeamoV2EmptyMessage, FOnPutServicesFederationTrafficSuccess, FOnPutServicesFederationTrafficError, FOnPutServicesFederationTrafficComplete>
 			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 	    
@@ -747,14 +747,14 @@ void UBeamBeamoApi::CPP_PutServicesFederationTrafficImpl(const FBeamRealmHandle&
 	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
 	{
 		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
-		Backend->RunAuthenticatedCodeRequestProcessor<UPutServicesFederationTrafficRequest, UEmptyMessage>
+		Backend->RunAuthenticatedCodeRequestProcessor<UPutServicesFederationTrafficRequest, UBeamoV2EmptyMessage>
 			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, TargetRealm, AuthToken, RequestData, Handler);		
 	}
 	// If not cached...
 	else
 	{
 		// Binds the handler to the static response handler (pre-generated)	
-		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UPutServicesFederationTrafficRequest, UEmptyMessage>
+		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UPutServicesFederationTrafficRequest, UBeamoV2EmptyMessage>
 			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler);
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
@@ -779,14 +779,14 @@ void UBeamBeamoApi::BP_DeleteServicesFederationTrafficImpl(const FBeamRealmHandl
 	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
 	{
 		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
-		Backend->RunAuthenticatedBlueprintRequestProcessor<UDeleteServicesFederationTrafficRequest, UEmptyMessage, FOnDeleteServicesFederationTrafficSuccess, FOnDeleteServicesFederationTrafficError, FOnDeleteServicesFederationTrafficComplete>
+		Backend->RunAuthenticatedBlueprintRequestProcessor<UDeleteServicesFederationTrafficRequest, UBeamoV2EmptyMessage, FOnDeleteServicesFederationTrafficSuccess, FOnDeleteServicesFederationTrafficError, FOnDeleteServicesFederationTrafficComplete>
 			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);		
 	}
 	// If not cached...
 	else
 	{
 		// Binds the handler to the static response handler (pre-generated)
-		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UDeleteServicesFederationTrafficRequest, UEmptyMessage, FOnDeleteServicesFederationTrafficSuccess, FOnDeleteServicesFederationTrafficError, FOnDeleteServicesFederationTrafficComplete>
+		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UDeleteServicesFederationTrafficRequest, UBeamoV2EmptyMessage, FOnDeleteServicesFederationTrafficSuccess, FOnDeleteServicesFederationTrafficError, FOnDeleteServicesFederationTrafficComplete>
 			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 	    
@@ -809,14 +809,14 @@ void UBeamBeamoApi::CPP_DeleteServicesFederationTrafficImpl(const FBeamRealmHand
 	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
 	{
 		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
-		Backend->RunAuthenticatedCodeRequestProcessor<UDeleteServicesFederationTrafficRequest, UEmptyMessage>
+		Backend->RunAuthenticatedCodeRequestProcessor<UDeleteServicesFederationTrafficRequest, UBeamoV2EmptyMessage>
 			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, TargetRealm, AuthToken, RequestData, Handler);		
 	}
 	// If not cached...
 	else
 	{
 		// Binds the handler to the static response handler (pre-generated)	
-		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UDeleteServicesFederationTrafficRequest, UEmptyMessage>
+		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UDeleteServicesFederationTrafficRequest, UBeamoV2EmptyMessage>
 			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler);
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
@@ -841,14 +841,14 @@ void UBeamBeamoApi::BP_PostServicesMetricsRequestImpl(const FBeamRealmHandle& Ta
 	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
 	{
 		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
-		Backend->RunAuthenticatedBlueprintRequestProcessor<UPostServicesMetricsRequestRequest, USignedRequestBody, FOnPostServicesMetricsRequestSuccess, FOnPostServicesMetricsRequestError, FOnPostServicesMetricsRequestComplete>
+		Backend->RunAuthenticatedBlueprintRequestProcessor<UPostServicesMetricsRequestRequest, UBeamoV2SignedRequestBody, FOnPostServicesMetricsRequestSuccess, FOnPostServicesMetricsRequestError, FOnPostServicesMetricsRequestComplete>
 			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);		
 	}
 	// If not cached...
 	else
 	{
 		// Binds the handler to the static response handler (pre-generated)
-		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UPostServicesMetricsRequestRequest, USignedRequestBody, FOnPostServicesMetricsRequestSuccess, FOnPostServicesMetricsRequestError, FOnPostServicesMetricsRequestComplete>
+		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UPostServicesMetricsRequestRequest, UBeamoV2SignedRequestBody, FOnPostServicesMetricsRequestSuccess, FOnPostServicesMetricsRequestError, FOnPostServicesMetricsRequestComplete>
 			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 	    
@@ -871,14 +871,14 @@ void UBeamBeamoApi::CPP_PostServicesMetricsRequestImpl(const FBeamRealmHandle& T
 	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
 	{
 		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
-		Backend->RunAuthenticatedCodeRequestProcessor<UPostServicesMetricsRequestRequest, USignedRequestBody>
+		Backend->RunAuthenticatedCodeRequestProcessor<UPostServicesMetricsRequestRequest, UBeamoV2SignedRequestBody>
 			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, TargetRealm, AuthToken, RequestData, Handler);		
 	}
 	// If not cached...
 	else
 	{
 		// Binds the handler to the static response handler (pre-generated)	
-		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UPostServicesMetricsRequestRequest, USignedRequestBody>
+		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UPostServicesMetricsRequestRequest, UBeamoV2SignedRequestBody>
 			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler);
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
@@ -903,14 +903,14 @@ void UBeamBeamoApi::BP_PostServicesLogsQueryImpl(const FBeamRealmHandle& TargetR
 	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
 	{
 		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
-		Backend->RunAuthenticatedBlueprintRequestProcessor<UPostServicesLogsQueryRequest, UQueryResponse, FOnPostServicesLogsQuerySuccess, FOnPostServicesLogsQueryError, FOnPostServicesLogsQueryComplete>
+		Backend->RunAuthenticatedBlueprintRequestProcessor<UPostServicesLogsQueryRequest, UBeamoV2QueryResponse, FOnPostServicesLogsQuerySuccess, FOnPostServicesLogsQueryError, FOnPostServicesLogsQueryComplete>
 			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);		
 	}
 	// If not cached...
 	else
 	{
 		// Binds the handler to the static response handler (pre-generated)
-		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UPostServicesLogsQueryRequest, UQueryResponse, FOnPostServicesLogsQuerySuccess, FOnPostServicesLogsQueryError, FOnPostServicesLogsQueryComplete>
+		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UPostServicesLogsQueryRequest, UBeamoV2QueryResponse, FOnPostServicesLogsQuerySuccess, FOnPostServicesLogsQueryError, FOnPostServicesLogsQueryComplete>
 			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 	    
@@ -933,14 +933,14 @@ void UBeamBeamoApi::CPP_PostServicesLogsQueryImpl(const FBeamRealmHandle& Target
 	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
 	{
 		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
-		Backend->RunAuthenticatedCodeRequestProcessor<UPostServicesLogsQueryRequest, UQueryResponse>
+		Backend->RunAuthenticatedCodeRequestProcessor<UPostServicesLogsQueryRequest, UBeamoV2QueryResponse>
 			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, TargetRealm, AuthToken, RequestData, Handler);		
 	}
 	// If not cached...
 	else
 	{
 		// Binds the handler to the static response handler (pre-generated)	
-		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UPostServicesLogsQueryRequest, UQueryResponse>
+		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UPostServicesLogsQueryRequest, UBeamoV2QueryResponse>
 			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler);
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
@@ -965,14 +965,14 @@ void UBeamBeamoApi::BP_DeleteServicesLogsQueryImpl(const FBeamRealmHandle& Targe
 	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
 	{
 		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
-		Backend->RunAuthenticatedBlueprintRequestProcessor<UDeleteServicesLogsQueryRequest, UApiBeamoServicesLogsQueryDeleteBeamoResponse, FOnDeleteServicesLogsQuerySuccess, FOnDeleteServicesLogsQueryError, FOnDeleteServicesLogsQueryComplete>
+		Backend->RunAuthenticatedBlueprintRequestProcessor<UDeleteServicesLogsQueryRequest, UBeamoV2ApiBeamoServicesLogsQueryDeleteBeamoResponse, FOnDeleteServicesLogsQuerySuccess, FOnDeleteServicesLogsQueryError, FOnDeleteServicesLogsQueryComplete>
 			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);		
 	}
 	// If not cached...
 	else
 	{
 		// Binds the handler to the static response handler (pre-generated)
-		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UDeleteServicesLogsQueryRequest, UApiBeamoServicesLogsQueryDeleteBeamoResponse, FOnDeleteServicesLogsQuerySuccess, FOnDeleteServicesLogsQueryError, FOnDeleteServicesLogsQueryComplete>
+		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UDeleteServicesLogsQueryRequest, UBeamoV2ApiBeamoServicesLogsQueryDeleteBeamoResponse, FOnDeleteServicesLogsQuerySuccess, FOnDeleteServicesLogsQueryError, FOnDeleteServicesLogsQueryComplete>
 			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 	    
@@ -995,14 +995,14 @@ void UBeamBeamoApi::CPP_DeleteServicesLogsQueryImpl(const FBeamRealmHandle& Targ
 	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
 	{
 		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
-		Backend->RunAuthenticatedCodeRequestProcessor<UDeleteServicesLogsQueryRequest, UApiBeamoServicesLogsQueryDeleteBeamoResponse>
+		Backend->RunAuthenticatedCodeRequestProcessor<UDeleteServicesLogsQueryRequest, UBeamoV2ApiBeamoServicesLogsQueryDeleteBeamoResponse>
 			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, TargetRealm, AuthToken, RequestData, Handler);		
 	}
 	// If not cached...
 	else
 	{
 		// Binds the handler to the static response handler (pre-generated)	
-		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UDeleteServicesLogsQueryRequest, UApiBeamoServicesLogsQueryDeleteBeamoResponse>
+		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UDeleteServicesLogsQueryRequest, UBeamoV2ApiBeamoServicesLogsQueryDeleteBeamoResponse>
 			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler);
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
@@ -1027,14 +1027,14 @@ void UBeamBeamoApi::BP_GetServicesLogsQueryImpl(const FBeamRealmHandle& TargetRe
 	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
 	{
 		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
-		Backend->RunAuthenticatedBlueprintRequestProcessor<UGetServicesLogsQueryRequest, USignedRequestBody, FOnGetServicesLogsQuerySuccess, FOnGetServicesLogsQueryError, FOnGetServicesLogsQueryComplete>
+		Backend->RunAuthenticatedBlueprintRequestProcessor<UGetServicesLogsQueryRequest, UBeamoV2SignedRequestBody, FOnGetServicesLogsQuerySuccess, FOnGetServicesLogsQueryError, FOnGetServicesLogsQueryComplete>
 			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);		
 	}
 	// If not cached...
 	else
 	{
 		// Binds the handler to the static response handler (pre-generated)
-		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UGetServicesLogsQueryRequest, USignedRequestBody, FOnGetServicesLogsQuerySuccess, FOnGetServicesLogsQueryError, FOnGetServicesLogsQueryComplete>
+		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UGetServicesLogsQueryRequest, UBeamoV2SignedRequestBody, FOnGetServicesLogsQuerySuccess, FOnGetServicesLogsQueryError, FOnGetServicesLogsQueryComplete>
 			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 	    
@@ -1057,14 +1057,14 @@ void UBeamBeamoApi::CPP_GetServicesLogsQueryImpl(const FBeamRealmHandle& TargetR
 	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
 	{
 		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
-		Backend->RunAuthenticatedCodeRequestProcessor<UGetServicesLogsQueryRequest, USignedRequestBody>
+		Backend->RunAuthenticatedCodeRequestProcessor<UGetServicesLogsQueryRequest, UBeamoV2SignedRequestBody>
 			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, TargetRealm, AuthToken, RequestData, Handler);		
 	}
 	// If not cached...
 	else
 	{
 		// Binds the handler to the static response handler (pre-generated)	
-		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UGetServicesLogsQueryRequest, USignedRequestBody>
+		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UGetServicesLogsQueryRequest, UBeamoV2SignedRequestBody>
 			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler);
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
@@ -1089,14 +1089,14 @@ void UBeamBeamoApi::BP_GetServicesSecretImpl(const FBeamRealmHandle& TargetRealm
 	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
 	{
 		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
-		Backend->RunAuthenticatedBlueprintRequestProcessor<UGetServicesSecretRequest, UGetServiceSecretResponse, FOnGetServicesSecretSuccess, FOnGetServicesSecretError, FOnGetServicesSecretComplete>
+		Backend->RunAuthenticatedBlueprintRequestProcessor<UGetServicesSecretRequest, UBeamoV2GetServiceSecretResponse, FOnGetServicesSecretSuccess, FOnGetServicesSecretError, FOnGetServicesSecretComplete>
 			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);		
 	}
 	// If not cached...
 	else
 	{
 		// Binds the handler to the static response handler (pre-generated)
-		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UGetServicesSecretRequest, UGetServiceSecretResponse, FOnGetServicesSecretSuccess, FOnGetServicesSecretError, FOnGetServicesSecretComplete>
+		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UGetServicesSecretRequest, UBeamoV2GetServiceSecretResponse, FOnGetServicesSecretSuccess, FOnGetServicesSecretError, FOnGetServicesSecretComplete>
 			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 	    
@@ -1119,14 +1119,14 @@ void UBeamBeamoApi::CPP_GetServicesSecretImpl(const FBeamRealmHandle& TargetReal
 	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
 	{
 		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
-		Backend->RunAuthenticatedCodeRequestProcessor<UGetServicesSecretRequest, UGetServiceSecretResponse>
+		Backend->RunAuthenticatedCodeRequestProcessor<UGetServicesSecretRequest, UBeamoV2GetServiceSecretResponse>
 			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, TargetRealm, AuthToken, RequestData, Handler);		
 	}
 	// If not cached...
 	else
 	{
 		// Binds the handler to the static response handler (pre-generated)	
-		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UGetServicesSecretRequest, UGetServiceSecretResponse>
+		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UGetServicesSecretRequest, UBeamoV2GetServiceSecretResponse>
 			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler);
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
@@ -1151,14 +1151,14 @@ void UBeamBeamoApi::BP_ApiBeamoGetStorageConnectionImpl(const FBeamRealmHandle& 
 	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
 	{
 		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
-		Backend->RunAuthenticatedBlueprintRequestProcessor<UApiBeamoGetStorageConnectionRequest, UConnectionStringResponse, FOnApiBeamoGetStorageConnectionSuccess, FOnApiBeamoGetStorageConnectionError, FOnApiBeamoGetStorageConnectionComplete>
+		Backend->RunAuthenticatedBlueprintRequestProcessor<UApiBeamoGetStorageConnectionRequest, UBeamoV2ConnectionStringResponse, FOnApiBeamoGetStorageConnectionSuccess, FOnApiBeamoGetStorageConnectionError, FOnApiBeamoGetStorageConnectionComplete>
 			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);		
 	}
 	// If not cached...
 	else
 	{
 		// Binds the handler to the static response handler (pre-generated)
-		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UApiBeamoGetStorageConnectionRequest, UConnectionStringResponse, FOnApiBeamoGetStorageConnectionSuccess, FOnApiBeamoGetStorageConnectionError, FOnApiBeamoGetStorageConnectionComplete>
+		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UApiBeamoGetStorageConnectionRequest, UBeamoV2ConnectionStringResponse, FOnApiBeamoGetStorageConnectionSuccess, FOnApiBeamoGetStorageConnectionError, FOnApiBeamoGetStorageConnectionComplete>
 			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 	    
@@ -1181,14 +1181,14 @@ void UBeamBeamoApi::CPP_ApiBeamoGetStorageConnectionImpl(const FBeamRealmHandle&
 	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
 	{
 		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
-		Backend->RunAuthenticatedCodeRequestProcessor<UApiBeamoGetStorageConnectionRequest, UConnectionStringResponse>
+		Backend->RunAuthenticatedCodeRequestProcessor<UApiBeamoGetStorageConnectionRequest, UBeamoV2ConnectionStringResponse>
 			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, TargetRealm, AuthToken, RequestData, Handler);		
 	}
 	// If not cached...
 	else
 	{
 		// Binds the handler to the static response handler (pre-generated)	
-		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UApiBeamoGetStorageConnectionRequest, UConnectionStringResponse>
+		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UApiBeamoGetStorageConnectionRequest, UBeamoV2ConnectionStringResponse>
 			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler);
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
@@ -1213,14 +1213,14 @@ void UBeamBeamoApi::BP_ApiBeamoGetStoragePerformanceByStorageObjectNameImpl(cons
 	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
 	{
 		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
-		Backend->RunAuthenticatedBlueprintRequestProcessor<UApiBeamoGetStoragePerformanceByStorageObjectNameRequest, UStoragePerformance, FOnApiBeamoGetStoragePerformanceByStorageObjectNameSuccess, FOnApiBeamoGetStoragePerformanceByStorageObjectNameError, FOnApiBeamoGetStoragePerformanceByStorageObjectNameComplete>
+		Backend->RunAuthenticatedBlueprintRequestProcessor<UApiBeamoGetStoragePerformanceByStorageObjectNameRequest, UBeamoV2StoragePerformance, FOnApiBeamoGetStoragePerformanceByStorageObjectNameSuccess, FOnApiBeamoGetStoragePerformanceByStorageObjectNameError, FOnApiBeamoGetStoragePerformanceByStorageObjectNameComplete>
 			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);		
 	}
 	// If not cached...
 	else
 	{
 		// Binds the handler to the static response handler (pre-generated)
-		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UApiBeamoGetStoragePerformanceByStorageObjectNameRequest, UStoragePerformance, FOnApiBeamoGetStoragePerformanceByStorageObjectNameSuccess, FOnApiBeamoGetStoragePerformanceByStorageObjectNameError, FOnApiBeamoGetStoragePerformanceByStorageObjectNameComplete>
+		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UApiBeamoGetStoragePerformanceByStorageObjectNameRequest, UBeamoV2StoragePerformance, FOnApiBeamoGetStoragePerformanceByStorageObjectNameSuccess, FOnApiBeamoGetStoragePerformanceByStorageObjectNameError, FOnApiBeamoGetStoragePerformanceByStorageObjectNameComplete>
 			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 	    
@@ -1243,14 +1243,14 @@ void UBeamBeamoApi::CPP_ApiBeamoGetStoragePerformanceByStorageObjectNameImpl(con
 	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
 	{
 		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
-		Backend->RunAuthenticatedCodeRequestProcessor<UApiBeamoGetStoragePerformanceByStorageObjectNameRequest, UStoragePerformance>
+		Backend->RunAuthenticatedCodeRequestProcessor<UApiBeamoGetStoragePerformanceByStorageObjectNameRequest, UBeamoV2StoragePerformance>
 			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, TargetRealm, AuthToken, RequestData, Handler);		
 	}
 	// If not cached...
 	else
 	{
 		// Binds the handler to the static response handler (pre-generated)	
-		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UApiBeamoGetStoragePerformanceByStorageObjectNameRequest, UStoragePerformance>
+		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UApiBeamoGetStoragePerformanceByStorageObjectNameRequest, UBeamoV2StoragePerformance>
 			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler);
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 

@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/UpdateRoleLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UUpdateRoleLibrary::UpdateRoleToJsonString(const UUpdateRole* Serializable, const bool Pretty)
@@ -34,9 +35,12 @@ UUpdateRole* UUpdateRoleLibrary::Make(FOptionalBeamCid Cid, FOptionalBeamPid Rea
 
 void UUpdateRoleLibrary::Break(const UUpdateRole* Serializable, FOptionalBeamCid& Cid, FOptionalBeamPid& Realm, FOptionalString& Role)
 {
-	Cid = Serializable->Cid;
-	Realm = Serializable->Realm;
-	Role = Serializable->Role;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Cid = Serializable->Cid;
+		Realm = Serializable->Realm;
+		Role = Serializable->Role;
+	}
 		
 }
 

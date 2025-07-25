@@ -36,7 +36,7 @@ UPostManifestsPromoteRequest* UPostManifestsPromoteRequest::Make(FString _Source
 	
 	
 	// Makes a body and fill up with parameters (Blank if no body parameters exist)
-	Req->Body = NewObject<UPromoteBeamoManifestRequestBody>(Req);
+	Req->Body = NewObject<UBeamoV2PromoteBeamoManifestRequestBody>(Req);
 	Req->Body->SourceRealmId = _SourceRealmId;
 	
 

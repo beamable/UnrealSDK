@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/SaveManifestResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString USaveManifestResponseLibrary::SaveManifestResponseToJsonString(const USaveManifestResponse* Serializable, const bool Pretty)
@@ -36,11 +37,14 @@ USaveManifestResponse* USaveManifestResponseLibrary::Make(FString Id, FString Ch
 
 void USaveManifestResponseLibrary::Break(const USaveManifestResponse* Serializable, FString& Id, FString& Checksum, FString& Uid, int64& Created, FOptionalString& DiffUrl)
 {
-	Id = Serializable->Id;
-	Checksum = Serializable->Checksum;
-	Uid = Serializable->Uid;
-	Created = Serializable->Created;
-	DiffUrl = Serializable->DiffUrl;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Id = Serializable->Id;
+		Checksum = Serializable->Checksum;
+		Uid = Serializable->Uid;
+		Created = Serializable->Created;
+		DiffUrl = Serializable->DiffUrl;
+	}
 		
 }
 

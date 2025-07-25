@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/CancelPurchaseRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UCancelPurchaseRequestBodyLibrary::CancelPurchaseRequestBodyToJsonString(const UCancelPurchaseRequestBody* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UCancelPurchaseRequestBody* UCancelPurchaseRequestBodyLibrary::Make(int64 Txid, 
 
 void UCancelPurchaseRequestBodyLibrary::Break(const UCancelPurchaseRequestBody* Serializable, int64& Txid)
 {
-	Txid = Serializable->Txid;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Txid = Serializable->Txid;
+	}
 		
 }
 

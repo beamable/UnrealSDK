@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/DisbandRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UDisbandRequestBodyLibrary::DisbandRequestBodyToJsonString(const UDisbandRequestBody* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UDisbandRequestBody* UDisbandRequestBodyLibrary::Make(FOptionalInt64 SubGroup, U
 
 void UDisbandRequestBodyLibrary::Break(const UDisbandRequestBody* Serializable, FOptionalInt64& SubGroup)
 {
-	SubGroup = Serializable->SubGroup;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		SubGroup = Serializable->SubGroup;
+	}
 		
 }
 

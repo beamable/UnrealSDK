@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/ServerTokenResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UServerTokenResponseLibrary::ServerTokenResponseToJsonString(const UServerTokenResponse* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UServerTokenResponse* UServerTokenResponseLibrary::Make(FOptionalString AccessTo
 
 void UServerTokenResponseLibrary::Break(const UServerTokenResponse* Serializable, FOptionalString& AccessToken)
 {
-	AccessToken = Serializable->AccessToken;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		AccessToken = Serializable->AccessToken;
+	}
 		
 }
 

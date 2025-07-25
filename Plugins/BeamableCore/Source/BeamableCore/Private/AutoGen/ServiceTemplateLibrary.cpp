@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/ServiceTemplateLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UServiceTemplateLibrary::ServiceTemplateToJsonString(const UServiceTemplate* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UServiceTemplate* UServiceTemplateLibrary::Make(FString Id, UObject* Outer)
 
 void UServiceTemplateLibrary::Break(const UServiceTemplate* Serializable, FString& Id)
 {
-	Id = Serializable->Id;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Id = Serializable->Id;
+	}
 		
 }
 

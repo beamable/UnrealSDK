@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/AnnouncementAttachmentLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UAnnouncementAttachmentLibrary::AnnouncementAttachmentToJsonString(const UAnnouncementAttachment* Serializable, const bool Pretty)
@@ -35,10 +36,13 @@ UAnnouncementAttachment* UAnnouncementAttachmentLibrary::Make(FString Symbol, in
 
 void UAnnouncementAttachmentLibrary::Break(const UAnnouncementAttachment* Serializable, FString& Symbol, int32& Count, FOptionalString& Type, FOptionalArrayOfAttachmentProperty& Properties)
 {
-	Symbol = Serializable->Symbol;
-	Count = Serializable->Count;
-	Type = Serializable->Type;
-	Properties = Serializable->Properties;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Symbol = Serializable->Symbol;
+		Count = Serializable->Count;
+		Type = Serializable->Type;
+		Properties = Serializable->Properties;
+	}
 		
 }
 

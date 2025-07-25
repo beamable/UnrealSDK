@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/TransferThirdPartyAssociationLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UTransferThirdPartyAssociationLibrary::TransferThirdPartyAssociationToJsonString(const UTransferThirdPartyAssociation* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ UTransferThirdPartyAssociation* UTransferThirdPartyAssociationLibrary::Make(int6
 
 void UTransferThirdPartyAssociationLibrary::Break(const UTransferThirdPartyAssociation* Serializable, int64& FromAccountId, UThirdPartyAssociation*& ThirdParty)
 {
-	FromAccountId = Serializable->FromAccountId;
-	ThirdParty = Serializable->ThirdParty;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		FromAccountId = Serializable->FromAccountId;
+		ThirdParty = Serializable->ThirdParty;
+	}
 		
 }
 

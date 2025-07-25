@@ -7,7 +7,7 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-#include "BeamableCore/Public/AutoGen/UriResponse.h"
+#include "BeamableCore/Public/AutoGen/BeamoV2UriResponse.h"
 
 #include "GetRegistryUriRequest.generated.h"
 
@@ -39,7 +39,7 @@ public:
 };
 
 UDELEGATE(BlueprintAuthorityOnly)
-DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnGetRegistryUriSuccess, FBeamRequestContext, Context, UGetRegistryUriRequest*, Request, UUriResponse*, Response);
+DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnGetRegistryUriSuccess, FBeamRequestContext, Context, UGetRegistryUriRequest*, Request, UBeamoV2UriResponse*, Response);
 
 UDELEGATE(BlueprintAuthorityOnly)
 DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnGetRegistryUriError, FBeamRequestContext, Context, UGetRegistryUriRequest*, Request, FBeamErrorResponse, Error);
@@ -47,5 +47,5 @@ DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnGetRegistryUriError, FBeamRequestContext
 UDELEGATE(BlueprintAuthorityOnly)
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FOnGetRegistryUriComplete, FBeamRequestContext, Context, UGetRegistryUriRequest*, Request);
 
-using FGetRegistryUriFullResponse = FBeamFullResponse<UGetRegistryUriRequest*, UUriResponse*>;
+using FGetRegistryUriFullResponse = FBeamFullResponse<UGetRegistryUriRequest*, UBeamoV2UriResponse*>;
 DECLARE_DELEGATE_OneParam(FOnGetRegistryUriFullResponse, FGetRegistryUriFullResponse);

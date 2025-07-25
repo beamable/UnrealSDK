@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/GetSocialStatusesResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UGetSocialStatusesResponseLibrary::GetSocialStatusesResponseToJsonString(const UGetSocialStatusesResponse* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UGetSocialStatusesResponse* UGetSocialStatusesResponseLibrary::Make(TArray<USoci
 
 void UGetSocialStatusesResponseLibrary::Break(const UGetSocialStatusesResponse* Serializable, TArray<USocial*>& Statuses)
 {
-	Statuses = Serializable->Statuses;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Statuses = Serializable->Statuses;
+	}
 		
 }
 

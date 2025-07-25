@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/EventQueryResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UEventQueryResponseLibrary::EventQueryResponseToJsonString(const UEventQueryResponse* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UEventQueryResponse* UEventQueryResponseLibrary::Make(TArray<UEventObjectData*> 
 
 void UEventQueryResponseLibrary::Break(const UEventQueryResponse* Serializable, TArray<UEventObjectData*>& Events)
 {
-	Events = Serializable->Events;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Events = Serializable->Events;
+	}
 		
 }
 

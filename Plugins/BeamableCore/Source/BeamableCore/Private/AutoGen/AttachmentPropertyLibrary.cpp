@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/AttachmentPropertyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UAttachmentPropertyLibrary::AttachmentPropertyToJsonString(const UAttachmentProperty* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ UAttachmentProperty* UAttachmentPropertyLibrary::Make(FString Name, FString Valu
 
 void UAttachmentPropertyLibrary::Break(const UAttachmentProperty* Serializable, FString& Name, FString& Value)
 {
-	Name = Serializable->Name;
-	Value = Serializable->Value;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Name = Serializable->Name;
+		Value = Serializable->Value;
+	}
 		
 }
 

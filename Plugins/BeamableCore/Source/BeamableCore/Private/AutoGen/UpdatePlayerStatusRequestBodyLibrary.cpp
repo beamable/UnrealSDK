@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/UpdatePlayerStatusRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UUpdatePlayerStatusRequestBodyLibrary::UpdatePlayerStatusRequestBodyToJsonString(const UUpdatePlayerStatusRequestBody* Serializable, const bool Pretty)
@@ -34,9 +35,12 @@ UUpdatePlayerStatusRequestBody* UUpdatePlayerStatusRequestBodyLibrary::Make(int6
 
 void UUpdatePlayerStatusRequestBodyLibrary::Break(const UUpdatePlayerStatusRequestBody* Serializable, int64& PlayerId, FString& TournamentId, UPlayerStatusUpdate*& Update)
 {
-	PlayerId = Serializable->PlayerId;
-	TournamentId = Serializable->TournamentId;
-	Update = Serializable->Update;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		PlayerId = Serializable->PlayerId;
+		TournamentId = Serializable->TournamentId;
+		Update = Serializable->Update;
+	}
 		
 }
 

@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/SendFriendRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString USendFriendRequestBodyLibrary::SendFriendRequestBodyToJsonString(const USendFriendRequestBody* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ USendFriendRequestBody* USendFriendRequestBodyLibrary::Make(FBeamGamerTag GamerT
 
 void USendFriendRequestBodyLibrary::Break(const USendFriendRequestBody* Serializable, FBeamGamerTag& GamerTag)
 {
-	GamerTag = Serializable->GamerTag;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		GamerTag = Serializable->GamerTag;
+	}
 		
 }
 

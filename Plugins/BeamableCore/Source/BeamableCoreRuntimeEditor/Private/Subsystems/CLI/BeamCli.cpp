@@ -15,6 +15,7 @@
 
 FBeamOperationHandle UBeamCli::InitializeWhenEditorReady()
 {
+	FPlatformMisc::SetEnvironmentVar(TEXT("DOTNET_CLI_UI_LANGUAGE"), TEXT("en"));
 	const auto Op = RequestTracker->CPP_BeginOperation({}, GetName(), {});
 
 	// Make sure we have the BeamCliVersion.txt file
@@ -61,7 +62,7 @@ FBeamOperationHandle UBeamCli::InitializeWhenEditorReady()
 
 
 	// Try to run the CLI once just to see if it is installed. If Launch returns "true", that means the CLI was found in this machine's PATH. 
-	IsInstalledProcess = MakeUnique<FMonitoredProcess>(UBeamCliCommand::PathToLocalCli, TEXT("beam version"), FPaths::ProjectDir(), true, true);
+	IsInstalledProcess = MakeUnique<FMonitoredProcess>(UBeamCliCommand::GetDotnetPath(), TEXT("beam version"), FPaths::ProjectDir(), true, true);
 	IsInstalledProcess->OnOutput().BindLambda([this, Op, ExpectedVersion](const FString& InstalledVersion)
 	{
 		// We dispatch to the GameThread as triggering operation events should always be done in the GameThread.
@@ -103,8 +104,18 @@ FBeamOperationHandle UBeamCli::InitializeWhenEditorReady()
 	// If we couldn't find a local CLI version --- set it as false.
 	if (!IsInstalledProcess->Launch())
 	{
-		UE_LOG(LogBeamCli, Verbose, TEXT("No local CLI version installed."));
-		bInstalled = FOptionalBool{false};
+		IsInstalledProcess = MakeUnique<FMonitoredProcess>(UBeamCliCommand::GetDotnetPath(), TEXT("--version"), FPaths::ProjectDir(), true, false);
+		const auto didLaunchDotnet = IsInstalledProcess->Launch();
+		if (!didLaunchDotnet)
+		{
+			const auto Err = FString::Printf(TEXT("Failed to run `dotnet` that is required for CLI integration to work. Try setting up value for dotnet to use manually in BeamEditorSettings and try again."));
+			RequestTracker->TriggerOperationError(Op, Err);
+		}
+		else
+		{
+			UE_LOG(LogBeamCli, Warning, TEXT("No local CLI version installed. The issue can be also due to not being able to find dotnet."));
+			bInstalled = FOptionalBool{false};
+		}
 	}
 
 	// If we couldn't find a local CLI version, we return a successful op instead, but... we set the target realm to be the one from `.beamable/connection-configuration.json`.
@@ -278,5 +289,5 @@ void UBeamCli::StopCommand(UBeamCliCommand* Command)
 
 FString UBeamCli::GetPathToCli() const
 {
-	return UBeamCliCommand::PathToLocalCli;
+	return UBeamCliCommand::GetDotnetPath();
 }

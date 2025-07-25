@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/ManifestChecksumsLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UManifestChecksumsLibrary::ManifestChecksumsToJsonString(const UManifestChecksums* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UManifestChecksums* UManifestChecksumsLibrary::Make(TArray<UContentBasicManifest
 
 void UManifestChecksumsLibrary::Break(const UManifestChecksums* Serializable, TArray<UContentBasicManifestChecksum*>& Manifests)
 {
-	Manifests = Serializable->Manifests;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Manifests = Serializable->Manifests;
+	}
 		
 }
 

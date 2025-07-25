@@ -18,66 +18,6 @@ void UBeamContentApi::Deinitialize()
 }
 
 
-void UBeamContentApi::BP_GetManifestPublicImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, UGetManifestPublicRequest* RequestData,
-                                                  const FOnGetManifestPublicSuccess& OnSuccess, const FOnGetManifestPublicError& OnError, const FOnGetManifestPublicComplete& OnComplete,
-                                                  int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
-{
-	// AUTO-GENERATED...	
-	const auto Request = Backend->CreateRequest(OutRequestId, TargetRealm, RetryConfig, RequestData);
-
-	// If we are making this request as part of an operation, we add it to it.
-	if(OpHandle.OperationId >= 0)
-		RequestTracker->AddRequestToOperation(OpHandle, OutRequestId);
-
-	// If cached...
-	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
-	{
-		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
-		Backend->RunBlueprintRequestProcessor<UGetManifestPublicRequest, UClientManifestResponse, FOnGetManifestPublicSuccess, FOnGetManifestPublicError, FOnGetManifestPublicComplete>
-			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, RequestData, OnSuccess, OnError, OnComplete);		
-	}
-	// If not cached...
-	else
-	{			
-		// Binds the handler to the static response handler (pre-generated)
-		const auto BeamRequestProcessor = Backend->MakeBlueprintRequestProcessor<UGetManifestPublicRequest, UClientManifestResponse, FOnGetManifestPublicSuccess, FOnGetManifestPublicError, FOnGetManifestPublicComplete>
-			(OutRequestId, RequestData, OnSuccess, OnError, OnComplete);
-		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
-		Backend->SendPreparedRequest(OutRequestId, CallingContext);		
-	}	
-}
-
-void UBeamContentApi::CPP_GetManifestPublicImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, 
-                                               UGetManifestPublicRequest* RequestData, const FOnGetManifestPublicFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
-{
-	// AUTO-GENERATED...	
-	const auto Request = Backend->CreateRequest(OutRequestId, TargetRealm, RetryConfig, RequestData);
-
-	// If we are making this request as part of an operation, we add it to it.
-	if(OpHandle.OperationId >= 0)
-		RequestTracker->AddRequestToOperation(OpHandle, OutRequestId);
-
-	// If cached...
-	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
-	{
-		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
-		Backend->RunCodeRequestProcessor<UGetManifestPublicRequest, UClientManifestResponse>
-			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, RequestData, Handler);			
-	}
-	// If not cached...
-	else
-	{
-		// Binds the handler to the static response handler (pre-generated)	
-		auto ResponseProcessor = Backend->MakeCodeRequestProcessor<UGetManifestPublicRequest, UClientManifestResponse>
-			(OutRequestId, RequestData, Handler);
-		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
-
-		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
-		Backend->SendPreparedRequest(OutRequestId, CallingContext);	
-	}
-}
-
-		
 void UBeamContentApi::BP_GetManifestPublicJsonImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, UGetManifestPublicJsonRequest* RequestData,
                                                   const FOnGetManifestPublicJsonSuccess& OnSuccess, const FOnGetManifestPublicJsonError& OnError, const FOnGetManifestPublicJsonComplete& OnComplete,
                                                   int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
@@ -1315,68 +1255,6 @@ void UBeamContentApi::CPP_GetManifestPrivateJsonImpl(const FBeamRealmHandle& Tar
 }
 
 		
-void UBeamContentApi::BP_GetManifestPrivateImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken,
-                                UGetManifestPrivateRequest* RequestData, const FOnGetManifestPrivateSuccess& OnSuccess, const FOnGetManifestPrivateError& OnError, const FOnGetManifestPrivateComplete& OnComplete, 
-								int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
-{
-	// AUTO-GENERATED...	
-	const auto Request = Backend->CreateAuthenticatedRequest(OutRequestId, TargetRealm, RetryConfig, AuthToken, RequestData);
-
-	// If we are making this request as part of an operation, we add it to it.
-	if(OpHandle.OperationId >= 0)
-		RequestTracker->AddRequestToOperation(OpHandle, OutRequestId);
-
-	// If cached...
-	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
-	{
-		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
-		Backend->RunAuthenticatedBlueprintRequestProcessor<UGetManifestPrivateRequest, UClientManifestResponse, FOnGetManifestPrivateSuccess, FOnGetManifestPrivateError, FOnGetManifestPrivateComplete>
-			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);		
-	}
-	// If not cached...
-	else
-	{
-		// Binds the handler to the static response handler (pre-generated)
-		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UGetManifestPrivateRequest, UClientManifestResponse, FOnGetManifestPrivateSuccess, FOnGetManifestPrivateError, FOnGetManifestPrivateComplete>
-			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);
-		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
-	    
-		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
-		Backend->SendPreparedRequest(OutRequestId, CallingContext);	
-	}
-}
-
-void UBeamContentApi::CPP_GetManifestPrivateImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, 
-                              UGetManifestPrivateRequest* RequestData, const FOnGetManifestPrivateFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
-{
-	// AUTO-GENERATED...
-	const auto Request = Backend->CreateAuthenticatedRequest(OutRequestId, TargetRealm, RetryConfig, AuthToken, RequestData);
-	
-	// If we are making this request as part of an operation, we add it to it.
-	if(OpHandle.OperationId >= 0)
-		RequestTracker->AddRequestToOperation(OpHandle, OutRequestId);
-
-	// If cached...
-	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
-	{
-		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
-		Backend->RunAuthenticatedCodeRequestProcessor<UGetManifestPrivateRequest, UClientManifestResponse>
-			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, TargetRealm, AuthToken, RequestData, Handler);		
-	}
-	// If not cached...
-	else
-	{
-		// Binds the handler to the static response handler (pre-generated)	
-		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UGetManifestPrivateRequest, UClientManifestResponse>
-			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler);
-		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
-
-		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
-		Backend->SendPreparedRequest(OutRequestId, CallingContext);	
-	}
-}
-
-		
 void UBeamContentApi::BP_GetManifestChecksumsImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken,
                                 UGetManifestChecksumsRequest* RequestData, const FOnGetManifestChecksumsSuccess& OnSuccess, const FOnGetManifestChecksumsError& OnError, const FOnGetManifestChecksumsComplete& OnComplete, 
 								int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
@@ -1503,17 +1381,6 @@ void UBeamContentApi::CPP_GetManifestsImpl(const FBeamRealmHandle& TargetRealm, 
 
 
 
-void UBeamContentApi::CPP_GetManifestPublic(UGetManifestPublicRequest* Request, const FOnGetManifestPublicFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
-{
-	FBeamRetryConfig RetryConfig;
-	Backend->GetRetryConfigForRequestType(UGetManifestPublicRequest::StaticClass()->GetName(), RetryConfig);
-	
-    int64 OutRequestId;
-	CPP_GetManifestPublicImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Request, Handler, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), AS_None};
-}
-
-		
 void UBeamContentApi::CPP_GetManifestPublicJson(UGetManifestPublicJsonRequest* Request, const FOnGetManifestPublicJsonFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
 	FBeamRetryConfig RetryConfig;
@@ -1807,21 +1674,6 @@ void UBeamContentApi::CPP_GetManifestPrivateJson(const FUserSlot& UserSlot, UGet
 }
 
 		
-void UBeamContentApi::CPP_GetManifestPrivate(const FUserSlot& UserSlot, UGetManifestPrivateRequest* Request, const FOnGetManifestPrivateFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
-{
-	// AUTO-GENERATED...
-	FBeamRealmUser AuthenticatedUser;
-	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser, CallingContext);
-
-	FBeamRetryConfig RetryConfig;
-	Backend->GetRetryConfigForUserSlotAndRequestType(UGetManifestPrivateRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
-
-    int64 OutRequestId;
-	CPP_GetManifestPrivateImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, AuthenticatedUser.AuthToken, Request, Handler, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, UserSlot, AS_None};
-}
-
-		
 void UBeamContentApi::CPP_GetManifestChecksums(const FUserSlot& UserSlot, UGetManifestChecksumsRequest* Request, const FOnGetManifestChecksumsFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
 	// AUTO-GENERATED...
@@ -1854,18 +1706,6 @@ void UBeamContentApi::CPP_GetManifests(const FUserSlot& UserSlot, UBasicContentG
 
 
 
-void UBeamContentApi::GetManifestPublic(UGetManifestPublicRequest* Request, const FOnGetManifestPublicSuccess& OnSuccess, const FOnGetManifestPublicError& OnError, const FOnGetManifestPublicComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext)
-{
-	// AUTO-GENERATED...	
-	FBeamRetryConfig RetryConfig;
-	Backend->GetRetryConfigForRequestType(UGetManifestPublicRequest::StaticClass()->GetName(), RetryConfig);	
-	
-	int64 OutRequestId = 0;
-	BP_GetManifestPublicImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), AS_None};
-}
-
-		
 void UBeamContentApi::GetManifestPublicJson(UGetManifestPublicJsonRequest* Request, const FOnGetManifestPublicJsonSuccess& OnSuccess, const FOnGetManifestPublicJsonError& OnError, const FOnGetManifestPublicJsonComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext)
 {
 	// AUTO-GENERATED...	
@@ -2157,21 +1997,6 @@ void UBeamContentApi::GetManifestPrivateJson(FUserSlot UserSlot, UGetManifestPri
 
 	int64 OutRequestId;
 	BP_GetManifestPrivateJsonImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, AuthenticatedUser.AuthToken, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, UserSlot, AS_None};
-}
-
-		
-void UBeamContentApi::GetManifestPrivate(FUserSlot UserSlot, UGetManifestPrivateRequest* Request, const FOnGetManifestPrivateSuccess& OnSuccess, const FOnGetManifestPrivateError& OnError, const FOnGetManifestPrivateComplete& OnComplete,  FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext)
-{
-	// AUTO-GENERATED...
-	FBeamRealmUser AuthenticatedUser;
-	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser, CallingContext);
-
-	FBeamRetryConfig RetryConfig;
-	Backend->GetRetryConfigForUserSlotAndRequestType(UGetManifestPrivateRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
-
-	int64 OutRequestId;
-	BP_GetManifestPrivateImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, AuthenticatedUser.AuthToken, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
 	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, UserSlot, AS_None};
 }
 

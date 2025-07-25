@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/TokenLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UTokenLibrary::TokenToJsonString(const UToken* Serializable, const bool Pretty)
@@ -43,18 +44,21 @@ UToken* UTokenLibrary::Make(FBeamCid Cid, FString Token, FString Type, int64 Cre
 
 void UTokenLibrary::Break(const UToken* Serializable, FBeamCid& Cid, FString& Token, FString& Type, int64& Created, FOptionalBeamGamerTag& GamerTag, FOptionalBeamAccountId& AccountId, FOptionalBeamPid& Pid, FOptionalInt64& ExpiresMs, FOptionalString& Platform, FOptionalString& Device, FOptionalBool& bRevoked, FOptionalArrayOfString& Scopes)
 {
-	Cid = Serializable->Cid;
-	Token = Serializable->Token;
-	Type = Serializable->Type;
-	Created = Serializable->Created;
-	GamerTag = Serializable->GamerTag;
-	AccountId = Serializable->AccountId;
-	Pid = Serializable->Pid;
-	ExpiresMs = Serializable->ExpiresMs;
-	Platform = Serializable->Platform;
-	Device = Serializable->Device;
-	bRevoked = Serializable->bRevoked;
-	Scopes = Serializable->Scopes;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Cid = Serializable->Cid;
+		Token = Serializable->Token;
+		Type = Serializable->Type;
+		Created = Serializable->Created;
+		GamerTag = Serializable->GamerTag;
+		AccountId = Serializable->AccountId;
+		Pid = Serializable->Pid;
+		ExpiresMs = Serializable->ExpiresMs;
+		Platform = Serializable->Platform;
+		Device = Serializable->Device;
+		bRevoked = Serializable->bRevoked;
+		Scopes = Serializable->Scopes;
+	}
 		
 }
 

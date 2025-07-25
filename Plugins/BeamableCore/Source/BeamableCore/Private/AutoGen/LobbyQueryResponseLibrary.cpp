@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/LobbyQueryResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString ULobbyQueryResponseLibrary::LobbyQueryResponseToJsonString(const ULobbyQueryResponse* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ ULobbyQueryResponse* ULobbyQueryResponseLibrary::Make(FOptionalArrayOfLobby Resu
 
 void ULobbyQueryResponseLibrary::Break(const ULobbyQueryResponse* Serializable, FOptionalArrayOfLobby& Results)
 {
-	Results = Serializable->Results;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Results = Serializable->Results;
+	}
 		
 }
 

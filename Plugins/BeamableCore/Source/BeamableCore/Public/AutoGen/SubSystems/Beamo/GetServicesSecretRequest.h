@@ -7,7 +7,7 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-#include "BeamableCore/Public/AutoGen/GetServiceSecretResponse.h"
+#include "BeamableCore/Public/AutoGen/BeamoV2GetServiceSecretResponse.h"
 
 #include "GetServicesSecretRequest.generated.h"
 
@@ -39,7 +39,7 @@ public:
 };
 
 UDELEGATE(BlueprintAuthorityOnly)
-DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnGetServicesSecretSuccess, FBeamRequestContext, Context, UGetServicesSecretRequest*, Request, UGetServiceSecretResponse*, Response);
+DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnGetServicesSecretSuccess, FBeamRequestContext, Context, UGetServicesSecretRequest*, Request, UBeamoV2GetServiceSecretResponse*, Response);
 
 UDELEGATE(BlueprintAuthorityOnly)
 DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnGetServicesSecretError, FBeamRequestContext, Context, UGetServicesSecretRequest*, Request, FBeamErrorResponse, Error);
@@ -47,5 +47,5 @@ DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnGetServicesSecretError, FBeamRequestCont
 UDELEGATE(BlueprintAuthorityOnly)
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FOnGetServicesSecretComplete, FBeamRequestContext, Context, UGetServicesSecretRequest*, Request);
 
-using FGetServicesSecretFullResponse = FBeamFullResponse<UGetServicesSecretRequest*, UGetServiceSecretResponse*>;
+using FGetServicesSecretFullResponse = FBeamFullResponse<UGetServicesSecretRequest*, UBeamoV2GetServiceSecretResponse*>;
 DECLARE_DELEGATE_OneParam(FOnGetServicesSecretFullResponse, FGetServicesSecretFullResponse);

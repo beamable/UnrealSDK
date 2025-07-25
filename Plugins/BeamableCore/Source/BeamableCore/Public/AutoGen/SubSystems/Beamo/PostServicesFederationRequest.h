@@ -7,8 +7,8 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-#include "BeamableCore/Public/AutoGen/ServiceRegistrationQuery.h"
-#include "BeamableCore/Public/AutoGen/FederationRegistrationResponse.h"
+#include "BeamableCore/Public/AutoGen/BeamoV2ServiceRegistrationQuery.h"
+#include "BeamableCore/Public/AutoGen/BeamoV2FederationRegistrationResponse.h"
 
 #include "PostServicesFederationRequest.generated.h"
 
@@ -27,7 +27,7 @@ public:
 
 	// Body Params
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="", Category="Beam")
-	UServiceRegistrationQuery* Body = {};
+	UBeamoV2ServiceRegistrationQuery* Body = {};
 
 	// Beam Base Request Declaration
 	UPostServicesFederationRequest() = default;
@@ -37,11 +37,11 @@ public:
 	virtual void BuildBody(FString& BodyString) const override;
 
 	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Beamo|Utils|Make/Break", DisplayName="Make PostServicesFederation",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_bLocalOnly,_ServiceName,_RoutingKey,_Federation,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
-	static UPostServicesFederationRequest* Make(FOptionalBool _bLocalOnly, FOptionalString _ServiceName, FOptionalString _RoutingKey, FOptionalSupportedFederation _Federation, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
+	static UPostServicesFederationRequest* Make(FOptionalBool _bLocalOnly, FOptionalString _ServiceName, FOptionalString _RoutingKey, FOptionalBeamoV2SupportedFederation _Federation, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)
-DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnPostServicesFederationSuccess, FBeamRequestContext, Context, UPostServicesFederationRequest*, Request, UFederationRegistrationResponse*, Response);
+DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnPostServicesFederationSuccess, FBeamRequestContext, Context, UPostServicesFederationRequest*, Request, UBeamoV2FederationRegistrationResponse*, Response);
 
 UDELEGATE(BlueprintAuthorityOnly)
 DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnPostServicesFederationError, FBeamRequestContext, Context, UPostServicesFederationRequest*, Request, FBeamErrorResponse, Error);
@@ -49,5 +49,5 @@ DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnPostServicesFederationError, FBeamReques
 UDELEGATE(BlueprintAuthorityOnly)
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FOnPostServicesFederationComplete, FBeamRequestContext, Context, UPostServicesFederationRequest*, Request);
 
-using FPostServicesFederationFullResponse = FBeamFullResponse<UPostServicesFederationRequest*, UFederationRegistrationResponse*>;
+using FPostServicesFederationFullResponse = FBeamFullResponse<UPostServicesFederationRequest*, UBeamoV2FederationRegistrationResponse*>;
 DECLARE_DELEGATE_OneParam(FOnPostServicesFederationFullResponse, FPostServicesFederationFullResponse);

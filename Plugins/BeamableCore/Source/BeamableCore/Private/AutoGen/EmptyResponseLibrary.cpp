@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/EmptyResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UEmptyResponseLibrary::EmptyResponseToJsonString(const UEmptyResponse* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UEmptyResponse* UEmptyResponseLibrary::Make(FString Result, UObject* Outer)
 
 void UEmptyResponseLibrary::Break(const UEmptyResponse* Serializable, FString& Result)
 {
-	Result = Serializable->Result;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Result = Serializable->Result;
+	}
 		
 }
 

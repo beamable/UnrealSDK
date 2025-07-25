@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/SearchAccountsRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString USearchAccountsRequestBodyLibrary::SearchAccountsRequestBodyToJsonString(const USearchAccountsRequestBody* Serializable, const bool Pretty)
@@ -34,9 +35,12 @@ USearchAccountsRequestBody* USearchAccountsRequestBodyLibrary::Make(FString Quer
 
 void USearchAccountsRequestBodyLibrary::Break(const USearchAccountsRequestBody* Serializable, FString& Query, int32& Page, int32& Pagesize)
 {
-	Query = Serializable->Query;
-	Page = Serializable->Page;
-	Pagesize = Serializable->Pagesize;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Query = Serializable->Query;
+		Page = Serializable->Page;
+		Pagesize = Serializable->Pagesize;
+	}
 		
 }
 

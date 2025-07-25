@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/SetContentRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString USetContentRequestBodyLibrary::SetContentRequestBodyToJsonString(const USetContentRequestBody* Serializable, const bool Pretty)
@@ -35,10 +36,13 @@ USetContentRequestBody* USetContentRequestBodyLibrary::Make(UEvent* Event, FStri
 
 void USetContentRequestBodyLibrary::Break(const USetContentRequestBody* Serializable, UEvent*& Event, FString& Origin, FOptionalString& RootEventId, FOptionalString& OriginType)
 {
-	Event = Serializable->Event;
-	Origin = Serializable->Origin;
-	RootEventId = Serializable->RootEventId;
-	OriginType = Serializable->OriginType;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Event = Serializable->Event;
+		Origin = Serializable->Origin;
+		RootEventId = Serializable->RootEventId;
+		OriginType = Serializable->OriginType;
+	}
 		
 }
 

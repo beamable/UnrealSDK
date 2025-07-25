@@ -10,7 +10,7 @@
 #include "Serialization/BeamJsonUtils.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalDateTime.h"
-#include "BeamableCore/Public/AutoGen/StoragePerformance.h"
+#include "BeamableCore/Public/AutoGen/BeamoV2StoragePerformance.h"
 
 #include "ApiBeamoGetStoragePerformanceByStorageObjectNameRequest.generated.h"
 
@@ -50,7 +50,7 @@ public:
 };
 
 UDELEGATE(BlueprintAuthorityOnly)
-DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnApiBeamoGetStoragePerformanceByStorageObjectNameSuccess, FBeamRequestContext, Context, UApiBeamoGetStoragePerformanceByStorageObjectNameRequest*, Request, UStoragePerformance*, Response);
+DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnApiBeamoGetStoragePerformanceByStorageObjectNameSuccess, FBeamRequestContext, Context, UApiBeamoGetStoragePerformanceByStorageObjectNameRequest*, Request, UBeamoV2StoragePerformance*, Response);
 
 UDELEGATE(BlueprintAuthorityOnly)
 DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnApiBeamoGetStoragePerformanceByStorageObjectNameError, FBeamRequestContext, Context, UApiBeamoGetStoragePerformanceByStorageObjectNameRequest*, Request, FBeamErrorResponse, Error);
@@ -58,5 +58,5 @@ DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnApiBeamoGetStoragePerformanceByStorageOb
 UDELEGATE(BlueprintAuthorityOnly)
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FOnApiBeamoGetStoragePerformanceByStorageObjectNameComplete, FBeamRequestContext, Context, UApiBeamoGetStoragePerformanceByStorageObjectNameRequest*, Request);
 
-using FApiBeamoGetStoragePerformanceByStorageObjectNameFullResponse = FBeamFullResponse<UApiBeamoGetStoragePerformanceByStorageObjectNameRequest*, UStoragePerformance*>;
+using FApiBeamoGetStoragePerformanceByStorageObjectNameFullResponse = FBeamFullResponse<UApiBeamoGetStoragePerformanceByStorageObjectNameRequest*, UBeamoV2StoragePerformance*>;
 DECLARE_DELEGATE_OneParam(FOnApiBeamoGetStoragePerformanceByStorageObjectNameFullResponse, FApiBeamoGetStoragePerformanceByStorageObjectNameFullResponse);

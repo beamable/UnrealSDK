@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/PlayerOnlineStatusResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UPlayerOnlineStatusResponseLibrary::PlayerOnlineStatusResponseToJsonString(const UPlayerOnlineStatusResponse* Serializable, const bool Pretty)
@@ -34,9 +35,12 @@ UPlayerOnlineStatusResponse* UPlayerOnlineStatusResponseLibrary::Make(bool bOnli
 
 void UPlayerOnlineStatusResponseLibrary::Break(const UPlayerOnlineStatusResponse* Serializable, bool& bOnline, int64& PlayerId, int64& LastSeen)
 {
-	bOnline = Serializable->bOnline;
-	PlayerId = Serializable->PlayerId;
-	LastSeen = Serializable->LastSeen;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		bOnline = Serializable->bOnline;
+		PlayerId = Serializable->PlayerId;
+		LastSeen = Serializable->LastSeen;
+	}
 		
 }
 

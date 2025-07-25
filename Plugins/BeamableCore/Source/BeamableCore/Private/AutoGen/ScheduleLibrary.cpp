@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/ScheduleLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UScheduleLibrary::ScheduleToJsonString(const USchedule* Serializable, const bool Pretty)
@@ -36,11 +37,14 @@ USchedule* UScheduleLibrary::Make(FString ActiveFrom, FOptionalString Descriptio
 
 void UScheduleLibrary::Break(const USchedule* Serializable, FString& ActiveFrom, FOptionalString& Description, FOptionalString& ActiveTo, FOptionalArrayOfString& Crons, FOptionalArrayOfScheduleDefinition& Definitions)
 {
-	ActiveFrom = Serializable->ActiveFrom;
-	Description = Serializable->Description;
-	ActiveTo = Serializable->ActiveTo;
-	Crons = Serializable->Crons;
-	Definitions = Serializable->Definitions;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		ActiveFrom = Serializable->ActiveFrom;
+		Description = Serializable->Description;
+		ActiveTo = Serializable->ActiveTo;
+		Crons = Serializable->Crons;
+		Definitions = Serializable->Definitions;
+	}
 		
 }
 

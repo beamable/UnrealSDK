@@ -2,6 +2,7 @@
 #include "BeamableUnrealMicroserviceClients/Public/AutoGen/GetSampleStatRequestArgsLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UGetSampleStatRequestArgsLibrary::GetSampleStatRequestArgsToJsonString(const UGetSampleStatRequestArgs* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UGetSampleStatRequestArgs* UGetSampleStatRequestArgsLibrary::Make(int64 GamerTag
 
 void UGetSampleStatRequestArgsLibrary::Break(const UGetSampleStatRequestArgs* Serializable, int64& GamerTag)
 {
-	GamerTag = Serializable->GamerTag;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		GamerTag = Serializable->GamerTag;
+	}
 		
 }
 

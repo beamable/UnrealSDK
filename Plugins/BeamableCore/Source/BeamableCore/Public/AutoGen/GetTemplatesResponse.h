@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 #include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
-#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfServiceTemplateView.h"
+#include "BeamableCore/Public/AutoGen/ServiceTemplate.h"
 
 #include "GetTemplatesResponse.generated.h"
 
@@ -14,7 +14,7 @@ class BEAMABLECORE_API UGetTemplatesResponse : public UObject, public IBeamJsonS
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Templates", Category="Beam")
-	FOptionalArrayOfServiceTemplateView Templates = {};
+	TArray<UServiceTemplate*> Templates = {};
 
 	virtual void DeserializeRequestResponse(UObject* RequestData, FString ResponseContent) override;
 

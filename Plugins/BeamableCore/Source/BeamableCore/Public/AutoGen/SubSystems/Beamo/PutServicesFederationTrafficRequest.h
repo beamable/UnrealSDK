@@ -8,8 +8,8 @@
 #include "BeamBackend/BeamFullResponse.h"
 
 #include "Serialization/BeamJsonUtils.h"
-#include "BeamableCore/Public/AutoGen/ServiceRegistrationRequestBody.h"
-#include "BeamableCore/Public/AutoGen/EmptyMessage.h"
+#include "BeamableCore/Public/AutoGen/BeamoV2ServiceRegistrationRequestBody.h"
+#include "BeamableCore/Public/AutoGen/BeamoV2EmptyMessage.h"
 
 #include "PutServicesFederationTrafficRequest.generated.h"
 
@@ -29,7 +29,7 @@ public:
 
 	// Body Params
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="", Category="Beam")
-	UServiceRegistrationRequestBody* Body = {};
+	UBeamoV2ServiceRegistrationRequestBody* Body = {};
 
 	// Beam Base Request Declaration
 	UPutServicesFederationTrafficRequest() = default;
@@ -39,11 +39,11 @@ public:
 	virtual void BuildBody(FString& BodyString) const override;
 
 	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Beamo|Utils|Make/Break", DisplayName="Make PutServicesFederationTraffic",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_RoutingKey,_bTrafficFilterEnabled,_Federation,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
-	static UPutServicesFederationTrafficRequest* Make(FString _ServiceName, FOptionalString _RoutingKey, FOptionalBool _bTrafficFilterEnabled, FOptionalArrayOfSupportedFederation _Federation, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
+	static UPutServicesFederationTrafficRequest* Make(FString _ServiceName, FOptionalString _RoutingKey, FOptionalBool _bTrafficFilterEnabled, FOptionalArrayOfBeamoV2SupportedFederation _Federation, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)
-DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnPutServicesFederationTrafficSuccess, FBeamRequestContext, Context, UPutServicesFederationTrafficRequest*, Request, UEmptyMessage*, Response);
+DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnPutServicesFederationTrafficSuccess, FBeamRequestContext, Context, UPutServicesFederationTrafficRequest*, Request, UBeamoV2EmptyMessage*, Response);
 
 UDELEGATE(BlueprintAuthorityOnly)
 DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnPutServicesFederationTrafficError, FBeamRequestContext, Context, UPutServicesFederationTrafficRequest*, Request, FBeamErrorResponse, Error);
@@ -51,5 +51,5 @@ DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnPutServicesFederationTrafficError, FBeam
 UDELEGATE(BlueprintAuthorityOnly)
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FOnPutServicesFederationTrafficComplete, FBeamRequestContext, Context, UPutServicesFederationTrafficRequest*, Request);
 
-using FPutServicesFederationTrafficFullResponse = FBeamFullResponse<UPutServicesFederationTrafficRequest*, UEmptyMessage*>;
+using FPutServicesFederationTrafficFullResponse = FBeamFullResponse<UPutServicesFederationTrafficRequest*, UBeamoV2EmptyMessage*>;
 DECLARE_DELEGATE_OneParam(FOnPutServicesFederationTrafficFullResponse, FPutServicesFederationTrafficFullResponse);

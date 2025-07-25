@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/CurrencyChangeRewardLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UCurrencyChangeRewardLibrary::CurrencyChangeRewardToJsonString(const UCurrencyChangeReward* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ UCurrencyChangeReward* UCurrencyChangeRewardLibrary::Make(FString Symbol, int64 
 
 void UCurrencyChangeRewardLibrary::Break(const UCurrencyChangeReward* Serializable, FString& Symbol, int64& Amount)
 {
-	Symbol = Serializable->Symbol;
-	Amount = Serializable->Amount;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Symbol = Serializable->Symbol;
+		Amount = Serializable->Amount;
+	}
 		
 }
 

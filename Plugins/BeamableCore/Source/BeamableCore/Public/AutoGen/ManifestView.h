@@ -6,7 +6,7 @@
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalInt64.h"
 #include "Serialization/BeamJsonUtils.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfServiceStorageReference.h"
-#include "BeamableCore/Public/AutoGen/BeamoBasicServiceReference.h"
+#include "BeamableCore/Public/AutoGen/ServiceReference.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
 
 #include "ManifestView.generated.h"
@@ -24,7 +24,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Created", Category="Beam")
 	int64 Created = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Manifest", Category="Beam")
-	TArray<UBeamoBasicServiceReference*> Manifest = {};
+	TArray<UServiceReference*> Manifest = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Created By Account Id", Category="Beam")
 	FOptionalInt64 CreatedByAccountId = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Comments", Category="Beam")

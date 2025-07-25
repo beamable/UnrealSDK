@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/MailQueryResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UMailQueryResponseLibrary::MailQueryResponseToJsonString(const UMailQueryResponse* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UMailQueryResponse* UMailQueryResponseLibrary::Make(int64 UnreadCount, UObject* 
 
 void UMailQueryResponseLibrary::Break(const UMailQueryResponse* Serializable, int64& UnreadCount)
 {
-	UnreadCount = Serializable->UnreadCount;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		UnreadCount = Serializable->UnreadCount;
+	}
 		
 }
 

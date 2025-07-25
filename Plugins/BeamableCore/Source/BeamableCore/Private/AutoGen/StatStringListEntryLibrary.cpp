@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/StatStringListEntryLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UStatStringListEntryLibrary::StatStringListEntryToJsonString(const UStatStringListEntry* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ UStatStringListEntry* UStatStringListEntryLibrary::Make(FString K, FString V, UO
 
 void UStatStringListEntryLibrary::Break(const UStatStringListEntry* Serializable, FString& K, FString& V)
 {
-	K = Serializable->K;
-	V = Serializable->V;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		K = Serializable->K;
+		V = Serializable->V;
+	}
 		
 }
 

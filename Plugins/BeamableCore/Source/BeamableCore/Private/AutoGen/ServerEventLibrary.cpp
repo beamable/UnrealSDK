@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/ServerEventLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UServerEventLibrary::ServerEventToJsonString(const UServerEvent* Serializable, const bool Pretty)
@@ -34,9 +35,12 @@ UServerEvent* UServerEventLibrary::Make(FString Event, bool bToAll, FOptionalStr
 
 void UServerEventLibrary::Break(const UServerEvent* Serializable, FString& Event, bool& bToAll, FOptionalString& Payload)
 {
-	Event = Serializable->Event;
-	bToAll = Serializable->bToAll;
-	Payload = Serializable->Payload;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Event = Serializable->Event;
+		bToAll = Serializable->bToAll;
+		Payload = Serializable->Payload;
+	}
 		
 }
 

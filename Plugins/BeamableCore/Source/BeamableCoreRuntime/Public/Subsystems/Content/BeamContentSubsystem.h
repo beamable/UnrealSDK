@@ -9,7 +9,6 @@
 #include "GameFramework/SaveGame.h"
 #include "Runtime/BeamRuntimeSubsystem.h"
 #include "UObject/Object.h"
-#include "AutoGen/Rows/ClientContentInfoTableRow.h"
 #include "BeamBackend/BeamGenericApi.h"
 #include "Content/DownloadContentState.h"
 

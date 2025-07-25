@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/WebSocketConfigurationLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UWebSocketConfigurationLibrary::WebSocketConfigurationToJsonString(const UWebSocketConfiguration* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ UWebSocketConfiguration* UWebSocketConfigurationLibrary::Make(FString Provider, 
 
 void UWebSocketConfigurationLibrary::Break(const UWebSocketConfiguration* Serializable, FString& Provider, FOptionalString& Uri)
 {
-	Provider = Serializable->Provider;
-	Uri = Serializable->Uri;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Provider = Serializable->Provider;
+		Uri = Serializable->Uri;
+	}
 		
 }
 

@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/StatUpdateRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UStatUpdateRequestBodyLibrary::StatUpdateRequestBodyToJsonString(const UStatUpdateRequestBody* Serializable, const bool Pretty)
@@ -35,10 +36,13 @@ UStatUpdateRequestBody* UStatUpdateRequestBodyLibrary::Make(FOptionalBool bEmitA
 
 void UStatUpdateRequestBodyLibrary::Break(const UStatUpdateRequestBody* Serializable, FOptionalBool& bEmitAnalytics, FOptionalBeamStatsType& ObjectId, FOptionalMapOfString& Set, FOptionalMapOfString& Add)
 {
-	bEmitAnalytics = Serializable->bEmitAnalytics;
-	ObjectId = Serializable->ObjectId;
-	Set = Serializable->Set;
-	Add = Serializable->Add;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		bEmitAnalytics = Serializable->bEmitAnalytics;
+		ObjectId = Serializable->ObjectId;
+		Set = Serializable->Set;
+		Add = Serializable->Add;
+	}
 		
 }
 

@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/GetStoresReqLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UGetStoresReqLibrary::GetStoresReqToJsonString(const UGetStoresReq* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UGetStoresReq* UGetStoresReqLibrary::Make(FOptionalString Scope, UObject* Outer)
 
 void UGetStoresReqLibrary::Break(const UGetStoresReq* Serializable, FOptionalString& Scope)
 {
-	Scope = Serializable->Scope;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Scope = Serializable->Scope;
+	}
 		
 }
 

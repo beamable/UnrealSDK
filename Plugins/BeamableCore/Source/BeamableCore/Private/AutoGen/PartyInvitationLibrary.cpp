@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/PartyInvitationLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UPartyInvitationLibrary::PartyInvitationToJsonString(const UPartyInvitation* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ UPartyInvitation* UPartyInvitationLibrary::Make(FOptionalString PartyId, FOption
 
 void UPartyInvitationLibrary::Break(const UPartyInvitation* Serializable, FOptionalString& PartyId, FOptionalString& InvitedBy)
 {
-	PartyId = Serializable->PartyId;
-	InvitedBy = Serializable->InvitedBy;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		PartyId = Serializable->PartyId;
+		InvitedBy = Serializable->InvitedBy;
+	}
 		
 }
 

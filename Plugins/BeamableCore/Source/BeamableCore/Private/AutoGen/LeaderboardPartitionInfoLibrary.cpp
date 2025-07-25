@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/LeaderboardPartitionInfoLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString ULeaderboardPartitionInfoLibrary::LeaderboardPartitionInfoToJsonString(const ULeaderboardPartitionInfo* Serializable, const bool Pretty)
@@ -35,10 +36,13 @@ ULeaderboardPartitionInfo* ULeaderboardPartitionInfoLibrary::Make(bool bIsEmpty,
 
 void ULeaderboardPartitionInfoLibrary::Break(const ULeaderboardPartitionInfo* Serializable, bool& bIsEmpty, int64& PlayerId, FString& LeaderboardId, FOptionalInt32& Partition)
 {
-	bIsEmpty = Serializable->bIsEmpty;
-	PlayerId = Serializable->PlayerId;
-	LeaderboardId = Serializable->LeaderboardId;
-	Partition = Serializable->Partition;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		bIsEmpty = Serializable->bIsEmpty;
+		PlayerId = Serializable->PlayerId;
+		LeaderboardId = Serializable->LeaderboardId;
+		Partition = Serializable->Partition;
+	}
 		
 }
 

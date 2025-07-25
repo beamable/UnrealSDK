@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/PANamespaceLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UPANamespaceLibrary::PANamespaceToJsonString(const UPANamespace* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ UPANamespace* UPANamespaceLibrary::Make(FString Namespace, FString Type, UObject
 
 void UPANamespaceLibrary::Break(const UPANamespace* Serializable, FString& Namespace, FString& Type)
 {
-	Namespace = Serializable->Namespace;
-	Type = Serializable->Type;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Namespace = Serializable->Namespace;
+		Type = Serializable->Type;
+	}
 		
 }
 

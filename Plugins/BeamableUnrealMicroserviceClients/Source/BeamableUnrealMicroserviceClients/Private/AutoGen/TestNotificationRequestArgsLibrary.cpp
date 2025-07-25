@@ -2,6 +2,7 @@
 #include "BeamableUnrealMicroserviceClients/Public/AutoGen/TestNotificationRequestArgsLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UTestNotificationRequestArgsLibrary::TestNotificationRequestArgsToJsonString(const UTestNotificationRequestArgs* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ UTestNotificationRequestArgs* UTestNotificationRequestArgsLibrary::Make(FString 
 
 void UTestNotificationRequestArgsLibrary::Break(const UTestNotificationRequestArgs* Serializable, FString& A, FString& B)
 {
-	A = Serializable->A;
-	B = Serializable->B;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		A = Serializable->A;
+		B = Serializable->B;
+	}
 		
 }
 

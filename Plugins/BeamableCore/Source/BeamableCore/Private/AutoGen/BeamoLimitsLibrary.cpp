@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/BeamoLimitsLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UBeamoLimitsLibrary::BeamoLimitsToJsonString(const UBeamoLimits* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ UBeamoLimits* UBeamoLimitsLibrary::Make(FString MaxContainerSize, int32 MaxRunni
 
 void UBeamoLimitsLibrary::Break(const UBeamoLimits* Serializable, FString& MaxContainerSize, int32& MaxRunningContainersPerService)
 {
-	MaxContainerSize = Serializable->MaxContainerSize;
-	MaxRunningContainersPerService = Serializable->MaxRunningContainersPerService;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		MaxContainerSize = Serializable->MaxContainerSize;
+		MaxRunningContainersPerService = Serializable->MaxRunningContainersPerService;
+	}
 		
 }
 

@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/GroupUserLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UGroupUserLibrary::GroupUserToJsonString(const UGroupUser* Serializable, const bool Pretty)
@@ -37,12 +38,15 @@ UGroupUser* UGroupUserLibrary::Make(int64 GamerTag, int64 Updated, UGroupMemberI
 
 void UGroupUserLibrary::Break(const UGroupUser* Serializable, int64& GamerTag, int64& Updated, UGroupMemberInfo*& Member, TArray<UGroupUserMember*>& AllGroups, FOptionalArrayOfInFlightMessage& InFlight, FOptionalArrayOfGroupScoreBinding& Scores)
 {
-	GamerTag = Serializable->GamerTag;
-	Updated = Serializable->Updated;
-	Member = Serializable->Member;
-	AllGroups = Serializable->AllGroups;
-	InFlight = Serializable->InFlight;
-	Scores = Serializable->Scores;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		GamerTag = Serializable->GamerTag;
+		Updated = Serializable->Updated;
+		Member = Serializable->Member;
+		AllGroups = Serializable->AllGroups;
+		InFlight = Serializable->InFlight;
+		Scores = Serializable->Scores;
+	}
 		
 }
 

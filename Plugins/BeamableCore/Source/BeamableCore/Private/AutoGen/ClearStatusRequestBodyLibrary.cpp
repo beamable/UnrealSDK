@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/ClearStatusRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UClearStatusRequestBodyLibrary::ClearStatusRequestBodyToJsonString(const UClearStatusRequestBody* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UClearStatusRequestBody* UClearStatusRequestBodyLibrary::Make(FString Store, UOb
 
 void UClearStatusRequestBodyLibrary::Break(const UClearStatusRequestBody* Serializable, FString& Store)
 {
-	Store = Serializable->Store;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Store = Serializable->Store;
+	}
 		
 }
 

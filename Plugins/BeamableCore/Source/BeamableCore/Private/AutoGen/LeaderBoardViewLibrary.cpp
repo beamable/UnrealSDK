@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/LeaderBoardViewLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString ULeaderBoardViewLibrary::LeaderBoardViewToJsonString(const ULeaderBoardView* Serializable, const bool Pretty)
@@ -35,10 +36,13 @@ ULeaderBoardView* ULeaderBoardViewLibrary::Make(FString LbId, int64 BoardSize, T
 
 void ULeaderBoardViewLibrary::Break(const ULeaderBoardView* Serializable, FString& LbId, int64& BoardSize, TArray<URankEntry*>& Rankings, FOptionalRankEntry& Rankgt)
 {
-	LbId = Serializable->LbId;
-	BoardSize = Serializable->BoardSize;
-	Rankings = Serializable->Rankings;
-	Rankgt = Serializable->Rankgt;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		LbId = Serializable->LbId;
+		BoardSize = Serializable->BoardSize;
+		Rankings = Serializable->Rankings;
+		Rankgt = Serializable->Rankgt;
+	}
 		
 }
 

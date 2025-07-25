@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/KickRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UKickRequestBodyLibrary::KickRequestBodyToJsonString(const UKickRequestBody* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ UKickRequestBody* UKickRequestBodyLibrary::Make(int64 GamerTag, FOptionalInt64 S
 
 void UKickRequestBodyLibrary::Break(const UKickRequestBody* Serializable, int64& GamerTag, FOptionalInt64& SubGroup)
 {
-	GamerTag = Serializable->GamerTag;
-	SubGroup = Serializable->SubGroup;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		GamerTag = Serializable->GamerTag;
+		SubGroup = Serializable->SubGroup;
+	}
 		
 }
 

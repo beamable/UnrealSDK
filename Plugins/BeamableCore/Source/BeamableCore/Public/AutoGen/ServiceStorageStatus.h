@@ -3,8 +3,7 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
-#include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
-#include "BeamableCore/Public/AutoGen/Optionals/OptionalBool.h"
+#include "Serialization/BeamJsonUtils.h"
 
 #include "ServiceStorageStatus.generated.h"
 
@@ -15,13 +14,13 @@ class BEAMABLECORE_API UServiceStorageStatus : public UObject, public IBeamJsonS
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Is Current", Category="Beam")
-	FOptionalBool bIsCurrent = {};
+	bool bIsCurrent = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Is Running", Category="Beam")
-	FOptionalBool bIsRunning = {};
+	bool bIsRunning = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Id", Category="Beam")
-	FOptionalString Id = {};
+	FString Id = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Storage Type", Category="Beam")
-	FOptionalString StorageType = {};
+	FString StorageType = {};
 
 	
 

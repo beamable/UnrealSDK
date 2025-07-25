@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/ServiceRouteLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UServiceRouteLibrary::ServiceRouteToJsonString(const UServiceRoute* Serializable, const bool Pretty)
@@ -34,9 +35,12 @@ UServiceRoute* UServiceRouteLibrary::Make(FString Service, FString Endpoint, EBe
 
 void UServiceRouteLibrary::Break(const UServiceRoute* Serializable, FString& Service, FString& Endpoint, EBeamWebhookServiceType& ServiceTypeStr)
 {
-	Service = Serializable->Service;
-	Endpoint = Serializable->Endpoint;
-	ServiceTypeStr = Serializable->ServiceTypeStr;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Service = Serializable->Service;
+		Endpoint = Serializable->Endpoint;
+		ServiceTypeStr = Serializable->ServiceTypeStr;
+	}
 		
 }
 

@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/RealmConfigChangeRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString URealmConfigChangeRequestBodyLibrary::RealmConfigChangeRequestBodyToJsonString(const URealmConfigChangeRequestBody* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ URealmConfigChangeRequestBody* URealmConfigChangeRequestBodyLibrary::Make(FOptio
 
 void URealmConfigChangeRequestBodyLibrary::Break(const URealmConfigChangeRequestBody* Serializable, FOptionalArrayOfString& Deletes, FOptionalMapOfString& Upserts)
 {
-	Deletes = Serializable->Deletes;
-	Upserts = Serializable->Upserts;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Deletes = Serializable->Deletes;
+		Upserts = Serializable->Upserts;
+	}
 		
 }
 

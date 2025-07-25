@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/GroupMetaDataLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UGroupMetaDataLibrary::GroupMetaDataToJsonString(const UGroupMetaData* Serializable, const bool Pretty)
@@ -34,9 +35,12 @@ UGroupMetaData* UGroupMetaDataLibrary::Make(int64 Id, FOptionalString Name, FOpt
 
 void UGroupMetaDataLibrary::Break(const UGroupMetaData* Serializable, int64& Id, FOptionalString& Name, FOptionalString& Tag)
 {
-	Id = Serializable->Id;
-	Name = Serializable->Name;
-	Tag = Serializable->Tag;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Id = Serializable->Id;
+		Name = Serializable->Name;
+		Tag = Serializable->Tag;
+	}
 		
 }
 
