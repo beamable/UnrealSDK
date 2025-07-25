@@ -14,7 +14,7 @@ public:
 
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite)
 	TArray<FBeamPIE_Settings> AllSettings;
-	
+
 	/**
 	 * Set by looking at whether PIE is configured to run under one process or not.
 	 */
@@ -24,15 +24,13 @@ public:
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite)
 	FString CurrLocalServerPort;
 
-	
-	
+
 	/**
 	 * Saves this as the configuration file.
 	 */
 	UFUNCTION(BlueprintCallable)
 	void Save()
 	{
-		this->SaveConfig(CPF_Config);		
-		UE_LOG(LogTemp, Warning, TEXT("Saved PIE Config - %d"), this->bIsRunningGameServerLocally)		
+		this->SaveConfig();
 	}
 };

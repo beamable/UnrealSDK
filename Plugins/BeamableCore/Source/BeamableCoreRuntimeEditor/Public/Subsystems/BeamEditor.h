@@ -155,6 +155,9 @@ public:
 	 */
 	UFUNCTION()
 	void Run_TrySignIntoMainEditorSlot(FBeamWaitCompleteEvent Evt);
+
+	
+	bool SetDefaultBeamPIEConfig() const;
 };
 
 /**
@@ -417,4 +420,5 @@ private:
 	 */
 	UFUNCTION(BlueprintCallable, Category="Beam")
 	void ApplyCurrentSettingsToBuild();
+
 };

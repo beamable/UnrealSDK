@@ -20,6 +20,9 @@ public:
 	UPROPERTY()
 	TMap<FName, bool> EventPins = TMap<FName, bool>();
 
+	UPROPERTY()
+	FString ClassStr;
+
 	virtual void GetMenuActions(FBlueprintActionDatabaseRegistrar& ActionRegistrar) const override;
 
 	/**
@@ -46,17 +49,21 @@ public:
 	//UK2Node impl
 	virtual void AllocateDefaultPins() override;
 	virtual void ExpandNode(FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph) override;
-	virtual UObject* GetJumpTargetForDoubleClick() const override;
+	virtual bool CanJumpToDefinition() const override { return false; };
+	virtual void JumpToDefinition() const override;
 	virtual FSlateIcon GetIconAndTint(FLinearColor& OutColor) const override;
 	virtual FLinearColor GetNodeTitleColor() const override;
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
 	virtual bool ShouldShowNodeProperties() const override { return true; }
+	virtual void NodeConnectionListChanged() override;
 	//BeamFlowNode impl
 
 	/**
 	 * @brief The UClass for a subsystem (GameInstanceSubsystem or BeamRuntimeSubsystem) that this function resides in. 
 	 */
 	virtual UClass* GetRuntimeSubsystemClass() const;
+
+	UClass* GetClassFromObject() const;
 
 protected:
 	/**
@@ -67,4 +74,31 @@ protected:
 
 
 	virtual bool IsValidProperty(FMulticastDelegateProperty* DelegateProp);
+
+	virtual bool ShouldUsesObject() { return false; }
 };
+
+/***
+ *      ______                          _         
+ *     |  ____|                        | |        
+ *     | |__    __   __   ___   _ __   | |_   ___ 
+ *     |  __|   \ \ / /  / _ \ | '_ \  | __| / __|
+ *     | |____   \ V /  |  __/ | | | | | |_  \__ \
+ *     |______|   \_/    \___| |_| |_|  \__| |___/
+ *                                                
+ *                                                
+ */
+
+#define LOCTEXT_NAMESPACE "K2BeamNode_EventUnregister_Object"
+
+UCLASS(meta=(BeamEventUnregister))
+class UK2BeamNode_EventUnregister_Object : public UK2BeamNode_EventUnregister
+{
+	GENERATED_BODY()
+
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return FText::FromString("Events - Object Unbind Events"); }
+
+protected:
+	virtual bool ShouldUsesObject() override { return true; };
+};
+#undef LOCTEXT_NAMESPACE

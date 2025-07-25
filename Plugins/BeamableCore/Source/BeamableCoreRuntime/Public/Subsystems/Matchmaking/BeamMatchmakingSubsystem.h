@@ -198,7 +198,7 @@ public:
 	 * If the queue type has a single team (FFA, for example), you can leave the team blank. Queue types with no teams are not valid.
 	 */
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Matchmaking", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
-	FBeamOperationHandle TryJoinQueueOperation(FUserSlot UserSlot, FBeamContentId GameTypeQueue, FOptionalString Team, FBeamOperationEventHandler OnOperationEvent);
+	FBeamOperationHandle TryJoinQueueOperation(FUserSlot UserSlot, UPARAM(meta=(BeamFilter="game_types"))FBeamContentId GameTypeQueue, FOptionalString Team, FBeamOperationEventHandler OnOperationEvent);
 
 	/**
 	 * @copydoc TryJoinQueueOperation 
@@ -217,7 +217,8 @@ public:
 	 * The array of tags here are added to ULobbyPlayer::Tags when the match gets made.
 	 */
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Matchmaking", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
-	FBeamOperationHandle TryJoinQueueWithTagsOperation(FUserSlot UserSlot, FBeamContentId GameTypeQueue, FOptionalString Team, TArray<FBeamTag> Tags, FBeamOperationEventHandler OnOperationEvent);
+	FBeamOperationHandle TryJoinQueueWithTagsOperation(FUserSlot UserSlot, UPARAM(meta=(BeamFilter="game_types"))FBeamContentId GameTypeQueue, FOptionalString Team, TArray<FBeamTag> Tags,
+	                                                   FBeamOperationEventHandler OnOperationEvent);
 
 	/**
 	 * @copydoc TryJoinQueueWithTagsOperation 

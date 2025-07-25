@@ -75,6 +75,12 @@ public:
 	void GetUsersWithFilter(FString NameFilter, FString TagFilter, TArray<UDeveloperUserDataStreamData*>& AllUsers);
 
 	/**
+	 * Get the First User of the List with the given GamerTag
+	 */
+	UFUNCTION(BlueprintCallable)
+	UDeveloperUserDataStreamData* GetUserWithGamerTag(FBeamGamerTag GamerTag);
+	
+	/**
 	 * Delete a user from the local files
 	 * OBS: It will NOT delete the user from the portal
 	 */
@@ -85,7 +91,7 @@ public:
 	 * Create a new user and copy the stats and inventory to the created user from a template gamer tag
 	 */
 	UFUNCTION(BlueprintCallable)
-	void CopyTemplateToNewUserOperation(FBeamGamerTag TemplateGamerTag, EBeamDeveloperUserType DeveloperUserType, FBeamOperationEventHandler OperationEventHandle);
+	void CopyTemplateToNewUserOperation(UDeveloperUserDataStreamData* UserData, EBeamDeveloperUserType DeveloperUserType, FBeamOperationEventHandler OperationEventHandle);
 
 	/**
 	 * Create a new user and copy the stats and inventory to the created user from a template gamer tag

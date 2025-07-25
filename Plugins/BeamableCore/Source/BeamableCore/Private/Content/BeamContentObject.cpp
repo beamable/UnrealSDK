@@ -30,6 +30,25 @@ void UBeamContentObject::BuildContentDefinitionJsonObject(FJsonDomBuilder::FObje
 	OutContentDefinition.Set("properties", PropertiesJson);
 }
 
+FString UBeamContentObject::GetContentName()
+{
+	if (Id.IsEmpty())
+	{
+		return "";
+	}
+
+	TArray<FString> SplitId;
+
+	Id.ParseIntoArray(SplitId, TEXT("."));
+
+	if (SplitId.Num() > 0)
+	{
+		return SplitId[SplitId.Num() - 1];
+	}
+
+	return "";
+}
+
 FString UBeamContentObject::CreatePropertiesHash()
 {
 	FJsonDomBuilder::FObject Json = FJsonDomBuilder::FObject{};

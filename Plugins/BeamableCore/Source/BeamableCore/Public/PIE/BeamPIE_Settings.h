@@ -1,6 +1,7 @@
 #pragma once
 #include "BeamPIE_LobbySettings.h"
 #include "BeamPIE_UserSlotHandle.h"
+#include "FBeamPIE_PerUserSetting.h"
 
 #include "BeamPIE_Settings.generated.h"
 
@@ -18,7 +19,7 @@ struct BEAMABLECORE_API FBeamPIE_Settings
 	FString Name;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TMap<FBeamPIE_UserSlotHandle, FBeamGamerTag> AssignedUsers;
+	TMap<FBeamPIE_UserSlotHandle, FBeamPIE_PerUserSetting> AssignedUsers;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString AllowedMapNamePattern = TEXT("*");
@@ -30,7 +31,9 @@ struct BEAMABLECORE_API FBeamPIE_Settings
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FBeamPIE_LobbySettings FakeLobby;
 	
+	
 	bool IsDefaultSettings() const { return SettingsId == DefaultPieSettingsGuid; }
 };
 
 FORCEINLINE uint32 GetTypeHash(const FBeamPIE_Settings& Context) { return GetTypeHash(Context.SettingsId); }
+

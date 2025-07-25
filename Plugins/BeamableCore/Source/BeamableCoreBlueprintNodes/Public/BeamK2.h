@@ -23,6 +23,10 @@ namespace BeamK2
 	const FName MD_BeamOptionalType = FName(TEXT("BeamOptionalType"));
 	const FName MD_BeamOperation_MultiUser = FName(TEXT("BeamOperationMultiUser"));
 
+	const FString MD_BeamCastTypeName = FString(TEXT("BeamCastType"));
+	const FName MD_BeamFilterParameterName = FName(TEXT("BeamFilter"));
+	const FName MD_NotConnectableParameterName = FName(TEXT("BeamNotConnectable"));
+	const FString MD_BeamCastParameterName = TEXT("BeamCastTarget");
 
 	/**
 	 * @brief For each of the custom node start pins, find all the execution flow nodes from the custom node's starting pin forward.
@@ -81,7 +85,7 @@ namespace BeamK2
 	 *
 	 * @param TargetClass: The UClass* result after the cast.
 	 */
-	UK2Node_DynamicCast* CreateDynamicCastNode(UEdGraphNode* CustomNode, FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph, UClass* TargetClass);
+	UK2Node_DynamicCast* CreateDynamicCastNode(UEdGraphNode* CustomNode, FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph, UClass* TargetClass, bool IsPure);
 
 	/**
 	 * @brief Utility that creates and configures an EnumEquality node of the given "EnumToCompareType" to compare "EnumToCompareAgainst" against "CompareAgainstPin".
@@ -179,6 +183,22 @@ namespace BeamK2
 	void ParseFunctionForNodeOutputPinsArrayElement(UEdGraphNode* CustomNode, const UFunction* Function, TArray<FString>& OutputWrappedPinNames);
 
 	/**
+	 * Get the metadata for a valid node
+	 */
+	FString GetMetaData(UEdGraphNode* CustomNode, FString Key);
+
+
+	/**
+	 * Set the metadata for a valid node
+	 */
+	void SetMetaData(UEdGraphNode* CustomNode, FString Key, FString Value);
+
+	/**
+	 * Has metadata for a valid node
+	 */
+	bool HasMetaData(UEdGraphNode* CustomNode, FString Key);
+
+	/**
 	* @brief  Given a custom node and a UFUNCTION, tries to create pins for all of the pins given.
 	 */
 	void ParseFunctionForNodeInputPins(UEdGraphNode* CustomNode, const UFunction* Function, const TArray<FName> PinsToAdd, bool bFailIfNotFound = false);
@@ -194,6 +214,8 @@ namespace BeamK2
 	 * @brief Checks if the given graph is a Macro or the default EventGraph.	  
 	 */
 	bool IsMacroOrEventGraph(const UEdGraph* Graph);
+
+	FString GetPinMetaData(FName InPinName, FName InKey, const UFunction* Function);
 
 	/**
 	 * @brief Removes all pins (breaking their links). 

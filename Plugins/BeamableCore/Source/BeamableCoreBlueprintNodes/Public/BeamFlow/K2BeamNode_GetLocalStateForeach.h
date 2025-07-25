@@ -29,6 +29,9 @@ class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_GetLocalStateForeach : public U
 	TArray<FString> WrappedOperationFunctionOutputPinArrayNames;
 
 public:
+	UPROPERTY()
+	TMap<FString, FString> NodeMetaData;
+
 	virtual FText GetMenuCategory() const override
 	{
 		FString Category = FString::Printf(TEXT("Beam|%s|LocalState"), *GetServiceName());
@@ -68,6 +71,10 @@ public:
 	virtual void JumpToDefinition() const override;
 	virtual void GetMenuActions(FBlueprintActionDatabaseRegistrar& ActionRegistrar) const override;
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
+	virtual FString GetPinMetaData(FName InPinName, FName InKey) override;
+	virtual void PinDefaultValueChanged(UEdGraphPin* Pin) override;
+	virtual void NodeConnectionListChanged() override;
+	
 	//BeamFlowNode impl
 
 protected:
@@ -114,3 +121,4 @@ protected:
 	 */
 	static bool IsIgnoredPinOfReturnNonArrayType(const UEdGraphNode* EdGraphNode, const FProperty* Param);
 };
+

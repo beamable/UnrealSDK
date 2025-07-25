@@ -75,11 +75,6 @@ FName UK2BeamNode_BeamFlow::GetCornerIcon() const
 	return FName("BeamIcon_AutoGenRequests");
 }
 
-UObject* UK2BeamNode_BeamFlow::GetJumpTargetForDoubleClick() const
-{
-	return Super::GetJumpTargetForDoubleClick();
-}
-
 void UK2BeamNode_BeamFlow::GetNodeContextMenuActions(UToolMenu* Menu, UGraphNodeContextMenuContext* Context) const
 {
 	Super::GetNodeContextMenuActions(Menu, Context);

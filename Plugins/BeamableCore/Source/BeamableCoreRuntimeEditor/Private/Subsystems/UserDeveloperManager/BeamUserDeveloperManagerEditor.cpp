@@ -115,12 +115,16 @@ void UBeamUserDeveloperManagerEditor::TriggerOnPreBeginPIE(ULevelEditorPlaySetti
 	TMap<FBeamGamerTag, int32> TemplateAmount;
 	for (auto AssignedUserKeyPair : Settings->AssignedUsers)
 	{
+		if (!AssignedUserKeyPair.Key.CreateCopyOnPIE)
+		{
+			continue;
+		}
 		// Clear the saved users from the previous session
 		BeamUserSlots->ClearAllCachedUserDataAtNamespacedSlot(BeamUserSlots->GetNamespacedSlotId(AssignedUserKeyPair.Key.Slot, AssignedUserKeyPair.Key.PIEIndex));
 
 		// Count the numbers of each template
 		auto UserSlotHandle = AssignedUserKeyPair.Key;
-		if (FBeamGamerTag GamerTag = AssignedUserKeyPair.Value; TemplateAmount.Contains(GamerTag))
+		if (FBeamGamerTag GamerTag = AssignedUserKeyPair.Value.GamerTag; TemplateAmount.Contains(GamerTag))
 		{
 			TemplateAmount[GamerTag]++;
 		}
@@ -155,18 +159,22 @@ void UBeamUserDeveloperManagerEditor::TriggerOnPreBeginPIE(ULevelEditorPlaySetti
 
 		for (auto AssignedUserKeyPair : Settings->AssignedUsers)
 		{
-			auto CreatedUser = CreatedUserMap[AssignedUserKeyPair.Value.AsLong][0];
-			
-			BeamUserSlots->SaveSlot(AssignedUserKeyPair.Key.Slot, AssignedUserKeyPair.Key.PIEIndex,
-			                        CreatedUser->GamerTag,
-			                        CreatedUser->AccessToken,
-			                        CreatedUser->RefreshToken,
-			                        FDateTime::UtcNow().ToUnixTimestamp(),
-			                        CreatedUser->ExpiresIn,
-			                        CreatedUser->Cid,
-			                        CreatedUser->Pid);
+			UDeveloperUserDataStreamData* DeveloperUser;
+			if (AssignedUserKeyPair.Key.CreateCopyOnPIE)
+				DeveloperUser = CreatedUserMap[AssignedUserKeyPair.Value.GamerTag.AsLong][0];
+			else
+				DeveloperUser = LocalUserDeveloperCache[AssignedUserKeyPair.Value.GamerTag.AsLong];
 
-			CreatedUserMap[AssignedUserKeyPair.Value.AsLong].Remove(CreatedUser);
+			BeamUserSlots->SaveSlot(AssignedUserKeyPair.Key.Slot, AssignedUserKeyPair.Key.PIEIndex,
+			                        DeveloperUser->GamerTag,
+			                        DeveloperUser->AccessToken,
+			                        DeveloperUser->RefreshToken,
+			                        FDateTime::UtcNow().ToUnixTimestamp(),
+			                        DeveloperUser->ExpiresIn,
+			                        DeveloperUser->Cid,
+			                        DeveloperUser->Pid);
+
+			CreatedUserMap[AssignedUserKeyPair.Value.GamerTag.AsLong].Remove(DeveloperUser);
 		}
 	};
 	CreateUserBatchCommand->OnCompleted = [this, Handler](const int& ResCode, const FBeamOperationHandle&)
@@ -185,15 +193,16 @@ void UBeamUserDeveloperManagerEditor::TriggerOnPreBeginPIE(ULevelEditorPlaySetti
 		{
 			UE_LOG(LogTemp, Error, TEXT("CREATE BATCH CLI COMMAND: CLI_ERROR_SAVE_FILE %d"), ResCode);
 			RequestTracker->TriggerOperationError(Handler, TEXT("CLI_ERROR_SAVE_FILE"));
-		}else if (ResCode != 0)
+		}
+		else if (ResCode != 0)
 		{
 			// Unknown error
 			RequestTracker->TriggerOperationError(Handler, TEXT(""));
-		}else
+		}
+		else
 		{
 			RequestTracker->TriggerOperationSuccess(Handler, TEXT(""));
 		}
-		
 	};
 
 	TArray<FString> GamerTags;
@@ -212,6 +221,15 @@ void UBeamUserDeveloperManagerEditor::TriggerOnPreBeginPIE(ULevelEditorPlaySetti
 	};
 
 	BeamCli->RunCommandServer(CreateUserBatchCommand, args, Handler);
+}
+
+UDeveloperUserDataStreamData* UBeamUserDeveloperManagerEditor::GetUserWithGamerTag(FBeamGamerTag GamerTag)
+{
+	if (LocalUserDeveloperCache.Contains(GamerTag))
+	{
+		return LocalUserDeveloperCache[GamerTag];
+	}
+	return nullptr;
 }
 
 void UBeamUserDeveloperManagerEditor::GetUsersWithFilter(FString NameFilter, FString TagFilter, TArray<UDeveloperUserDataStreamData*>& AllUsers)
@@ -261,7 +279,9 @@ void UBeamUserDeveloperManagerEditor::GetUsersWithFilter(FString NameFilter, FSt
 			return A.DeveloperUserType > B.DeveloperUserType;
 		}
 
-		return A.GamerTag > B.GamerTag;
+		auto Source = FString::Printf(TEXT("%s%lld"), *A.Alias, A.CreatedDate);
+		auto Target = FString::Printf(TEXT("%s%lld"), *B.Alias, B.CreatedDate);
+		return Source.Compare(Target) < 0;
 	});
 
 	AllUsers = Result;
@@ -289,7 +309,7 @@ void UBeamUserDeveloperManagerEditor::DeleteUser(FBeamGamerTag GamerTag)
 }
 
 
-void UBeamUserDeveloperManagerEditor::CopyTemplateToNewUserOperation(FBeamGamerTag TemplateGamerTag, EBeamDeveloperUserType DeveloperUserType, FBeamOperationEventHandler OperationEventHandle)
+void UBeamUserDeveloperManagerEditor::CopyTemplateToNewUserOperation(UDeveloperUserDataStreamData* UserData, EBeamDeveloperUserType DeveloperUserType, FBeamOperationEventHandler OperationEventHandle)
 {
 	auto OperationHandler = RequestTracker->BeginOperation({}, GetName(), OperationEventHandle);
 	UBeamCliDeveloperUserManagerCreateUserCommand* CreateUserCommand = NewObject<UBeamCliDeveloperUserManagerCreateUserCommand>();
@@ -310,11 +330,19 @@ void UBeamUserDeveloperManagerEditor::CopyTemplateToNewUserOperation(FBeamGamerT
 		}
 	};
 
+	FString TagsStr = "";
+
+	for (auto tag : UserData->Tags)
+	{
+		TagsStr += FString::Printf(TEXT("--tags \"%s\" "), *tag);
+	}
+
 	auto args = {
-		FString::Printf(TEXT("--template \"%s\""), *TemplateGamerTag.AsString),
-		FString::Printf(TEXT("--alias \"%s\""), TEXT("")),
-		FString::Printf(TEXT("--description \"%s\""), TEXT("")),
+		FString::Printf(TEXT("--template \"%lld\""), UserData->GamerTag),
+		FString::Printf(TEXT("--alias \"%s Copy\""), *UserData->Alias),
+		FString::Printf(TEXT("--description \"%s\""), *UserData->Description),
 		FString::Printf(TEXT("--user-type %d"), DeveloperUserType),
+		FString::Printf(TEXT("%s"), *TagsStr),
 	};
 
 	auto Handler = RequestTracker->CPP_BeginOperation({}, GetName(), {});
