@@ -240,6 +240,24 @@ class UK2BeamNode_GetLocalState_TryGetLobbyPlayerData : public UK2BeamNode_GetLo
 
 #undef LOCTEXT_NAMESPACE
 
+#define LOCTEXT_NAMESPACE "K2BeamNode_GetLocalState_TryGetLobbyPlayerDataCasted"
+
+UCLASS(meta=(BeamGetLocalState))
+class UK2BeamNode_GetLocalState_TryGetLobbyPlayerDataCasted : public UK2BeamNode_GetLocalState
+{
+	GENERATED_BODY()
+
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Local State - Lobby - TryGetLobbyPlayerDataCasted"); }
+
+	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLobbySubsystem, GetSelf); }
+
+	virtual FName GetFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLobbySubsystem, TryGetLobbyPlayerDataCasted); }
+
+	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamLobbySubsystem::StaticClass(); }
+};
+
+#undef LOCTEXT_NAMESPACE
+
 #define LOCTEXT_NAMESPACE "K2BeamNode_GetLocalStateForeach_GetAllLobbyPlayerData"
 
 UCLASS(meta=(BeamGetLocalStateForeach))

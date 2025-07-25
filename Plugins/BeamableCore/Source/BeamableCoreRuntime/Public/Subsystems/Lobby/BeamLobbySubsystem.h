@@ -290,9 +290,9 @@ public:
 	 *  The default value is what will be return in case of it fail to get the value.
 	 */
 	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
-	bool TryGetLobbyPlayerDataCasted(ULobby* Lobby, FBeamGamerTag PlayerGamerTag,  UPARAM(meta=(MustImplement = "BeamJsonSerializableUObject", BeamCastType))TSubclassOf<UObject> CastTarget, FString DataKey,
-									 UPARAM(meta=(MustImplement = "BeamJsonSerializableUObject"))UObject* DefaultValue, UPARAM(meta=(BeamCastTarget))UObject*& PlayerData);
-	
+	bool TryGetLobbyPlayerDataCasted(ULobby* Lobby, FBeamGamerTag PlayerGamerTag, UPARAM(meta=(MustImplement = "BeamJsonSerializableUObject", BeamCastType))TSubclassOf<UObject> CastTarget, FString DataKey,
+	                                 UPARAM(meta=(MustImplement = "BeamJsonSerializableUObject"))UObject* DefaultValue, UPARAM(meta=(BeamCastTarget))UObject*& PlayerData);
+
 	/**
 	 *  It will return the a specific player data from a ULobby* Object as parallel lists of keys and values.
 	 */
@@ -422,13 +422,15 @@ public:
 	 * LobbyData is data associated to the lobby and PlayerTags are a set of non-unique Name/Value pairs associated to each player.
 	 */
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Lobby")
-	FBeamOperationHandle CreateOpenLobbyOperation(FUserSlot UserSlot, FBeamOperationEventHandler OnOperationEvent, FString Name, FString Desc, FBeamContentId MatchType, int32 MaxPlayers, TMap<FString, FString> LobbyData,
+	FBeamOperationHandle CreateOpenLobbyOperation(FUserSlot UserSlot, FBeamOperationEventHandler OnOperationEvent, FString Name, FString Desc, UPARAM(meta=(BeamFilter="game_types"))FBeamContentId MatchType,
+	                                              int32 MaxPlayers, TMap<FString, FString> LobbyData,
 	                                              TArray<FBeamTag> PlayerTags);
 
 	/**
 	 * @copydoc CreateOpenLobbyOperation 
 	 */
-	FBeamOperationHandle CPP_CreateOpenLobbyOperation(FUserSlot UserSlot, FBeamOperationEventHandlerCode OnOperationEvent, FString Name, FString Desc, FBeamContentId MatchType, int32 MaxPlayers = 32,
+	FBeamOperationHandle CPP_CreateOpenLobbyOperation(FUserSlot UserSlot, FBeamOperationEventHandlerCode OnOperationEvent, FString Name, FString Desc, UPARAM(meta=(BeamFilter="game_types"))FBeamContentId MatchType,
+	                                                  int32 MaxPlayers = 32,
 	                                                  TMap<FString, FString> LobbyData = {},
 	                                                  TArray<FBeamTag> PlayerTags = {});
 
@@ -438,13 +440,15 @@ public:
 	 * LobbyData is data associated to the lobby and PlayerTags are a set of non-unique Name/Value pairs associated to each player.
 	 */
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Lobby")
-	FBeamOperationHandle CreateClosedLobbyOperation(FUserSlot UserSlot, FBeamOperationEventHandler OnOperationEvent, FString Name, FString Desc, FBeamContentId MatchType, int32 MaxPlayers,
+	FBeamOperationHandle CreateClosedLobbyOperation(FUserSlot UserSlot, FBeamOperationEventHandler OnOperationEvent, FString Name, FString Desc, UPARAM(meta=(BeamFilter="game_types"))FBeamContentId MatchType,
+	                                                int32 MaxPlayers,
 	                                                TMap<FString, FString> LobbyData, TArray<FBeamTag> PlayerTags);
 
 	/**
 	 * @copydoc CreateClosedLobbyOperation 
 	 */
-	FBeamOperationHandle CPP_CreateClosedLobbyOperation(FUserSlot UserSlot, FBeamOperationEventHandlerCode OnOperationEvent, FString Name, FString Desc, FBeamContentId MatchType, int32 MaxPlayers = 32,
+	FBeamOperationHandle CPP_CreateClosedLobbyOperation(FUserSlot UserSlot, FBeamOperationEventHandlerCode OnOperationEvent, FString Name, FString Desc, UPARAM(meta=(BeamFilter="game_types"))FBeamContentId MatchType,
+	                                                    int32 MaxPlayers = 32,
 	                                                    TMap<FString, FString> LobbyData = {},
 	                                                    TArray<FBeamTag> PlayerTags = {});
 
@@ -465,7 +469,8 @@ public:
 	 * Generally, you'll call this to show a list of public lobbies people can join and play. Try to use paging to avoid performance issues. 
 	 */
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Lobby")
-	FBeamOperationHandle RefreshLobbiesDataOperation(FUserSlot UserSlot, FBeamOperationEventHandler OnOperationEvent, FBeamContentId MatchTypeFilter, int32 PageStart = -1, int32 PageSize = -1);
+	FBeamOperationHandle RefreshLobbiesDataOperation(FUserSlot UserSlot, FBeamOperationEventHandler OnOperationEvent, UPARAM(meta=(BeamFilter="game_types"))FBeamContentId MatchTypeFilter, int32 PageStart = -1,
+	                                                 int32 PageSize = -1);
 
 	/**
 	 * @copydoc RefreshLobbiesDataOperation 
