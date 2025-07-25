@@ -44,11 +44,11 @@ public:
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("ManifestId")), ManifestId);
-		UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("ConflictingContents")), ConflictingContents, OuterOwner);
-		UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("AutoSynchedContents")), AutoSynchedContents, OuterOwner);
-		UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("ReferenceUpdatedContents")), ReferenceUpdatedContents, OuterOwner);
-		UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("DeletedCreatedContents")), DeletedCreatedContents, OuterOwner);	
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("ManifestId"), Bag, ManifestId);
+		UBeamJsonUtils::DeserializeArray<FString>(TEXT("ConflictingContents"), Bag, ConflictingContents, OuterOwner);
+		UBeamJsonUtils::DeserializeArray<FString>(TEXT("AutoSynchedContents"), Bag, AutoSynchedContents, OuterOwner);
+		UBeamJsonUtils::DeserializeArray<FString>(TEXT("ReferenceUpdatedContents"), Bag, ReferenceUpdatedContents, OuterOwner);
+		UBeamJsonUtils::DeserializeArray<FString>(TEXT("DeletedCreatedContents"), Bag, DeletedCreatedContents, OuterOwner);	
 	}
 };
 

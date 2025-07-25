@@ -17,7 +17,7 @@ void UBatchDeleteInFlightRequestBody::BeamSerializeProperties(TUnrealPrettyJsonS
 
 void UBatchDeleteInFlightRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("inFlightFailureIds")), InFlightFailureIds, OuterOwner);
+	UBeamJsonUtils::DeserializeArray<FString>(TEXT("inFlightFailureIds"), Bag, InFlightFailureIds, OuterOwner);
 }
 
 

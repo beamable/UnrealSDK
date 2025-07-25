@@ -29,9 +29,9 @@ void UPerformanceResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer& 
 void UPerformanceResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	UBeamJsonUtils::DeserializeUObject<UDatabaseMeasurements*>("databaseMeasurements", Bag, DatabaseMeasurements, OuterOwner);
-	UBeamJsonUtils::DeserializeArray<UPANamespace*>(Bag->GetArrayField(TEXT("namespaces")), Namespaces, OuterOwner);
-	UBeamJsonUtils::DeserializeArray<UPASuggestedIndex*>(Bag->GetArrayField(TEXT("indexes")), Indexes, OuterOwner);
-	UBeamJsonUtils::DeserializeArray<UPASlowQuery*>(Bag->GetArrayField(TEXT("queries")), Queries, OuterOwner);
+	UBeamJsonUtils::DeserializeArray<UPANamespace*>(TEXT("namespaces"), Bag, Namespaces, OuterOwner);
+	UBeamJsonUtils::DeserializeArray<UPASuggestedIndex*>(TEXT("indexes"), Bag, Indexes, OuterOwner);
+	UBeamJsonUtils::DeserializeArray<UPASlowQuery*>(TEXT("queries"), Bag, Queries, OuterOwner);
 }
 
 

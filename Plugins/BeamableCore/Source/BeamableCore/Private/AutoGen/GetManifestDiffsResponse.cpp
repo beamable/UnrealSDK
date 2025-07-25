@@ -28,10 +28,10 @@ void UGetManifestDiffsResponse::BeamSerializeProperties(TUnrealPrettyJsonSeriali
 
 void UGetManifestDiffsResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("hasMore")), bHasMore);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("manifestId")), ManifestId);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("totalCount")), TotalCount);
-	UBeamJsonUtils::DeserializeArray<UManifestDiffSummary*>(Bag->GetArrayField(TEXT("diffs")), Diffs, OuterOwner);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("hasMore"), Bag, bHasMore);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("manifestId"), Bag, ManifestId);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("totalCount"), Bag, TotalCount);
+	UBeamJsonUtils::DeserializeArray<UManifestDiffSummary*>(TEXT("diffs"), Bag, Diffs, OuterOwner);
 }
 
 

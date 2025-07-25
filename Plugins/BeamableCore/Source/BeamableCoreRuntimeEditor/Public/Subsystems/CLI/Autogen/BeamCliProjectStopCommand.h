@@ -7,6 +7,7 @@
 #include "Subsystems/CLI/Autogen/StreamData/FederationInstanceStreamData.h"
 #include "Subsystems/CLI/Autogen/StreamData/HostServiceDescriptorStreamData.h"
 #include "Subsystems/CLI/Autogen/StreamData/RemoteServiceDescriptorStreamData.h"
+#include "Subsystems/CLI/Autogen/StreamData/RemoteStorageDescriptorStreamData.h"
 #include "BeamCliProjectStopCommand.generated.h"
 
 
@@ -36,7 +37,7 @@ public:
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("serviceName")), ServiceName);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("serviceName"), Bag, ServiceName);
 		UBeamJsonUtils::DeserializeUObject<UServiceInstanceStreamData*>("instance", Bag, Instance, OuterOwner);	
 	}
 };

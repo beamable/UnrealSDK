@@ -28,7 +28,7 @@ void UAccountPersonallyIdentifiableInformationResponse::BeamDeserializePropertie
 {
 	UBeamJsonUtils::DeserializeUObject<UAccountsBasicAccount*>("account", Bag, Account, OuterOwner);
 	UBeamJsonUtils::DeserializeUObject<UListAuditResponse*>("paymentAudits", Bag, PaymentAudits, OuterOwner);
-	UBeamJsonUtils::DeserializeArray<UStatsResponse*>(Bag->GetArrayField(TEXT("stats")), Stats, OuterOwner);
+	UBeamJsonUtils::DeserializeArray<UStatsResponse*>(TEXT("stats"), Bag, Stats, OuterOwner);
 }
 
 

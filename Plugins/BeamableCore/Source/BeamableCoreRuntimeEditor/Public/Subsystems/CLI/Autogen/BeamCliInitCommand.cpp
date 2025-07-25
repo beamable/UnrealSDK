@@ -27,6 +27,40 @@ bool UBeamCliInitCommand::HandleStreamReceived(FBeamOperationHandle Op, FString 
 		
 		return true;				
 	}
+
+	if(ReceivedStreamType.Equals(StreamTypeErrorLoginFailedError) && OnErrorLoginFailedErrorStreamOutput)
+	{
+		UBeamCliInitErrorLoginFailedErrorStreamData* Data = NewObject<UBeamCliInitErrorLoginFailedErrorStreamData>(this);
+		Data->OuterOwner = this;
+		Data->BeamDeserializeProperties(DataJson);
+
+		ErrorLoginFailedErrorStream.Add(Data);
+		ErrorLoginFailedErrorTimestamps.Add(Timestamp);
+		
+		AsyncTask(ENamedThreads::GameThread, [this, Op]
+		{
+			OnErrorLoginFailedErrorStreamOutput(ErrorLoginFailedErrorStream, ErrorLoginFailedErrorTimestamps, Op);
+		});
+		
+		return true;				
+	}
+
+	if(ReceivedStreamType.Equals(StreamTypeErrorInvalidCidError) && OnErrorInvalidCidErrorStreamOutput)
+	{
+		UBeamCliInitErrorInvalidCidErrorStreamData* Data = NewObject<UBeamCliInitErrorInvalidCidErrorStreamData>(this);
+		Data->OuterOwner = this;
+		Data->BeamDeserializeProperties(DataJson);
+
+		ErrorInvalidCidErrorStream.Add(Data);
+		ErrorInvalidCidErrorTimestamps.Add(Timestamp);
+		
+		AsyncTask(ENamedThreads::GameThread, [this, Op]
+		{
+			OnErrorInvalidCidErrorStreamOutput(ErrorInvalidCidErrorStream, ErrorInvalidCidErrorTimestamps, Op);
+		});
+		
+		return true;				
+	}
 	
 	return false;
 }

@@ -22,7 +22,7 @@ void UBatchReadStatsResponse::BeamSerializeProperties(TUnrealPrettyJsonSerialize
 
 void UBatchReadStatsResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeArray<UNetworkSerializable*>(Bag->GetArrayField(TEXT("results")), Results, OuterOwner);
+	UBeamJsonUtils::DeserializeArray<UNetworkSerializable*>(TEXT("results"), Bag, Results, OuterOwner);
 }
 
 

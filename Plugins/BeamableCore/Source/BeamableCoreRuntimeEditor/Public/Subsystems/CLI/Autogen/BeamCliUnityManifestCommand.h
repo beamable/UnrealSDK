@@ -47,11 +47,11 @@ public:
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("localRoutingKey")), LocalRoutingKey);
-		UBeamJsonUtils::DeserializeArray<UManifestServiceEntryStreamData*>(Bag->GetArrayField(TEXT("services")), Services, OuterOwner);
-		UBeamJsonUtils::DeserializeArray<UManifestStorageEntryStreamData*>(Bag->GetArrayField(TEXT("storages")), Storages, OuterOwner);
-		UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("existingFederationIds")), ExistingFederationIds, OuterOwner);
-		UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("availableFederationTypes")), AvailableFederationTypes, OuterOwner);	
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("localRoutingKey"), Bag, LocalRoutingKey);
+		UBeamJsonUtils::DeserializeArray<UManifestServiceEntryStreamData*>(TEXT("services"), Bag, Services, OuterOwner);
+		UBeamJsonUtils::DeserializeArray<UManifestStorageEntryStreamData*>(TEXT("storages"), Bag, Storages, OuterOwner);
+		UBeamJsonUtils::DeserializeArray<FString>(TEXT("existingFederationIds"), Bag, ExistingFederationIds, OuterOwner);
+		UBeamJsonUtils::DeserializeArray<FString>(TEXT("availableFederationTypes"), Bag, AvailableFederationTypes, OuterOwner);	
 	}
 };
 

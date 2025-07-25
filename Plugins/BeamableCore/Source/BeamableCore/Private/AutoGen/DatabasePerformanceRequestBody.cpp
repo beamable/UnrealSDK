@@ -25,8 +25,8 @@ void UDatabasePerformanceRequestBody::BeamSerializeProperties(TUnrealPrettyJsonS
 
 void UDatabasePerformanceRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("storageObjectName")), StorageObjectName);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("granularity")), Granularity);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("storageObjectName"), Bag, StorageObjectName);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("granularity"), Bag, Granularity);
 	UBeamJsonUtils::DeserializeOptional<FString>("endDate", Bag, EndDate, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("startDate", Bag, StartDate, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("period", Bag, Period, OuterOwner);

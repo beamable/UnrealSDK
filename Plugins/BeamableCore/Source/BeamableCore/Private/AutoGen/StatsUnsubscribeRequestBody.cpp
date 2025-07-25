@@ -19,7 +19,7 @@ void UStatsUnsubscribeRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSeri
 
 void UStatsUnsubscribeRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("service")), Service);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("service"), Bag, Service);
 	UBeamJsonUtils::DeserializeOptional<TArray<FString>, FString>("subscriptions", Bag, Subscriptions, OuterOwner);
 }
 

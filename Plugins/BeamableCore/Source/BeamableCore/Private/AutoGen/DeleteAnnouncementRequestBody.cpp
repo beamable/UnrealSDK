@@ -17,7 +17,7 @@ void UDeleteAnnouncementRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSe
 
 void UDeleteAnnouncementRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("symbol")), Symbol);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("symbol"), Bag, Symbol);
 }
 
 

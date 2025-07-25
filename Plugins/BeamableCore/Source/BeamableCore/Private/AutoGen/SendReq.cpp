@@ -17,7 +17,7 @@ void USendReq::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) 
 
 void USendReq::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeArray<USendMsg*>(Bag->GetArrayField(TEXT("msgs")), Msgs, OuterOwner);
+	UBeamJsonUtils::DeserializeArray<USendMsg*>(TEXT("msgs"), Bag, Msgs, OuterOwner);
 }
 
 

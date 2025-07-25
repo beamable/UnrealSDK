@@ -44,11 +44,11 @@ public:
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("attempted")), Attempted);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("alreadyRunning")), AlreadyRunning);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("unavailable")), Unavailable);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("dockerDesktopUrl")), DockerDesktopUrl);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("downloadUrl")), DownloadUrl);	
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("attempted"), Bag, Attempted);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("alreadyRunning"), Bag, AlreadyRunning);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("unavailable"), Bag, Unavailable);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("dockerDesktopUrl"), Bag, DockerDesktopUrl);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("downloadUrl"), Bag, DownloadUrl);	
 	}
 };
 

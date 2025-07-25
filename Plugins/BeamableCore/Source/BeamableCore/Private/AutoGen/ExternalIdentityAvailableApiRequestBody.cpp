@@ -21,8 +21,8 @@ void UExternalIdentityAvailableApiRequestBody::BeamSerializeProperties(TUnrealPr
 
 void UExternalIdentityAvailableApiRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("provider_service")), ProviderService);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("user_id")), UserId);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("provider_service"), Bag, ProviderService);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("user_id"), Bag, UserId);
 	UBeamJsonUtils::DeserializeOptional<FString>("provider_namespace", Bag, ProviderNamespace, OuterOwner);
 }
 

@@ -21,9 +21,9 @@ void URedisShard::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serialize
 
 void URedisShard::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("shardId")), ShardId);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("masterHost")), MasterHost);
-	UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("slaveHosts")), SlaveHosts, OuterOwner);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("shardId"), Bag, ShardId);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("masterHost"), Bag, MasterHost);
+	UBeamJsonUtils::DeserializeArray<FString>(TEXT("slaveHosts"), Bag, SlaveHosts, OuterOwner);
 }
 
 

@@ -19,7 +19,7 @@ void UUploadRequestsFromPortal::BeamSerializeProperties(TUnrealPrettyJsonSeriali
 
 void UUploadRequestsFromPortal::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeArray<UUploadRequestFromPortal*>(Bag->GetArrayField(TEXT("request")), Request, OuterOwner);
+	UBeamJsonUtils::DeserializeArray<UUploadRequestFromPortal*>(TEXT("request"), Bag, Request, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<int64>("playerId", Bag, PlayerId, OuterOwner);
 }
 

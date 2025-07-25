@@ -22,7 +22,7 @@ void UGetLocalizationsResponse::BeamSerializeProperties(TUnrealPrettyJsonSeriali
 
 void UGetLocalizationsResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeMap<FArrayOfLocalizedValue>(Bag->GetObjectField(TEXT("localizations")), Localizations, OuterOwner);
+	UBeamJsonUtils::DeserializeMap<FArrayOfLocalizedValue>(TEXT("localizations"), Bag, Localizations, OuterOwner);
 }
 
 

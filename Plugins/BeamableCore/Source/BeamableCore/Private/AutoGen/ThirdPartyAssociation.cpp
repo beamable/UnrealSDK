@@ -27,10 +27,10 @@ void UThirdPartyAssociation::BeamSerializeProperties(TUnrealPrettyJsonSerializer
 
 void UThirdPartyAssociation::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("name")), Name);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("userAppId")), UserAppId);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("appId")), AppId);
-	UBeamJsonUtils::DeserializeMap<FString>(Bag->GetObjectField(TEXT("meta")), Meta, OuterOwner);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("name"), Bag, Name);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("userAppId"), Bag, UserAppId);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("appId"), Bag, AppId);
+	UBeamJsonUtils::DeserializeMap<FString>(TEXT("meta"), Bag, Meta, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("email", Bag, Email, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("userBusinessId", Bag, UserBusinessId, OuterOwner);
 }

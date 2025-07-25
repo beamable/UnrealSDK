@@ -45,16 +45,16 @@ void UAnnouncementView::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Ser
 
 void UAnnouncementView::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("isClaimed")), bIsClaimed);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("isDeleted")), bIsDeleted);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("isRead")), bIsRead);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("body")), Body);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("channel")), Channel);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("id")), Id);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("title")), Title);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("summary")), Summary);
-	UBeamJsonUtils::DeserializeArray<UClientDataEntry*>(Bag->GetArrayField(TEXT("clientDataList")), ClientDataList, OuterOwner);
-	UBeamJsonUtils::DeserializeArray<UAnnouncementAttachment*>(Bag->GetArrayField(TEXT("attachments")), Attachments, OuterOwner);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("isClaimed"), Bag, bIsClaimed);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("isDeleted"), Bag, bIsDeleted);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("isRead"), Bag, bIsRead);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("body"), Bag, Body);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("channel"), Bag, Channel);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("id"), Bag, Id);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("title"), Bag, Title);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("summary"), Bag, Summary);
+	UBeamJsonUtils::DeserializeArray<UClientDataEntry*>(TEXT("clientDataList"), Bag, ClientDataList, OuterOwner);
+	UBeamJsonUtils::DeserializeArray<UAnnouncementAttachment*>(TEXT("attachments"), Bag, Attachments, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("endDate", Bag, EndDate, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<UPlayerReward*>("gift", Bag, Gift, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<int64>("secondsRemaining", Bag, SecondsRemaining, OuterOwner);

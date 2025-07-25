@@ -22,7 +22,7 @@ void UGroupSearchResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer& 
 
 void UGroupSearchResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeArray<UGroup*>(Bag->GetArrayField(TEXT("groups")), Groups, OuterOwner);
+	UBeamJsonUtils::DeserializeArray<UGroup*>(TEXT("groups"), Bag, Groups, OuterOwner);
 }
 
 

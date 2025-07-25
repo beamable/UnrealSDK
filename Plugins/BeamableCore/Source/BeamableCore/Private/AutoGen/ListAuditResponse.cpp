@@ -22,7 +22,7 @@ void UListAuditResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Se
 
 void UListAuditResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeArray<UPaymentAuditEntryViewModel*>(Bag->GetArrayField(TEXT("audits")), Audits, OuterOwner);
+	UBeamJsonUtils::DeserializeArray<UPaymentAuditEntryViewModel*>(TEXT("audits"), Bag, Audits, OuterOwner);
 }
 
 

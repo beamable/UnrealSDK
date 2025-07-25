@@ -22,7 +22,7 @@ void UResultResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Seria
 
 void UResultResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("result")), bResult);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("result"), Bag, bResult);
 }
 
 

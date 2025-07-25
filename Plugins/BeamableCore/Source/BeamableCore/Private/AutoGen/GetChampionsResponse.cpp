@@ -22,7 +22,7 @@ void UGetChampionsResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer&
 
 void UGetChampionsResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeArray<UChampionScore*>(Bag->GetArrayField(TEXT("entries")), Entries, OuterOwner);
+	UBeamJsonUtils::DeserializeArray<UChampionScore*>(TEXT("entries"), Bag, Entries, OuterOwner);
 }
 
 

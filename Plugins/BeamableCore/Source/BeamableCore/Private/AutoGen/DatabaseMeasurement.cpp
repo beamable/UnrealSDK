@@ -21,9 +21,9 @@ void UDatabaseMeasurement::BeamSerializeProperties(TUnrealPrettyJsonSerializer& 
 
 void UDatabaseMeasurement::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("name")), Name);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("units")), Units);
-	UBeamJsonUtils::DeserializeArray<UDataPoint*>(Bag->GetArrayField(TEXT("dataPoints")), DataPoints, OuterOwner);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("name"), Bag, Name);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("units"), Bag, Units);
+	UBeamJsonUtils::DeserializeArray<UDataPoint*>(TEXT("dataPoints"), Bag, DataPoints, OuterOwner);
 }
 
 

@@ -32,8 +32,8 @@ public:
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		UBeamJsonUtils::DeserializeArray<UServiceInfoStreamData*>(Bag->GetArrayField(TEXT("localServices")), LocalServices, OuterOwner);
-		UBeamJsonUtils::DeserializeArray<UServiceInfoStreamData*>(Bag->GetArrayField(TEXT("localStorages")), LocalStorages, OuterOwner);	
+		UBeamJsonUtils::DeserializeArray<UServiceInfoStreamData*>(TEXT("localServices"), Bag, LocalServices, OuterOwner);
+		UBeamJsonUtils::DeserializeArray<UServiceInfoStreamData*>(TEXT("localStorages"), Bag, LocalStorages, OuterOwner);	
 	}
 };
 

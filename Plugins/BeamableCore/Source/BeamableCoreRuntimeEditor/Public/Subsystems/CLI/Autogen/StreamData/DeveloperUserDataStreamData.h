@@ -28,8 +28,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<FString> Tags = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	int64 CreatedDate = {};
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString AccessToken = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString RefreshToken = {};
@@ -39,6 +37,8 @@ public:
 	FString Cid = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int64 ExpiresIn = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int64 CreatedDate = {};
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
 	{
@@ -49,12 +49,12 @@ public:
 		UBeamJsonUtils::SerializeRawPrimitive(TEXT("Alias"), Alias, Serializer);
 		UBeamJsonUtils::SerializeRawPrimitive(TEXT("Description"), Description, Serializer);
 		UBeamJsonUtils::SerializeArray<FString>(TEXT("Tags"), Tags, Serializer);
-		UBeamJsonUtils::SerializeRawPrimitive(TEXT("CreatedDate"), CreatedDate, Serializer);
 		UBeamJsonUtils::SerializeRawPrimitive(TEXT("AccessToken"), AccessToken, Serializer);
 		UBeamJsonUtils::SerializeRawPrimitive(TEXT("RefreshToken"), RefreshToken, Serializer);
 		UBeamJsonUtils::SerializeRawPrimitive(TEXT("Pid"), Pid, Serializer);
 		UBeamJsonUtils::SerializeRawPrimitive(TEXT("Cid"), Cid, Serializer);
-		UBeamJsonUtils::SerializeRawPrimitive(TEXT("ExpiresIn"), ExpiresIn, Serializer);	
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("ExpiresIn"), ExpiresIn, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("CreatedDate"), CreatedDate, Serializer);	
 	}
 
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
@@ -66,29 +66,29 @@ public:
 		UBeamJsonUtils::SerializeRawPrimitive(TEXT("Alias"), Alias, Serializer);
 		UBeamJsonUtils::SerializeRawPrimitive(TEXT("Description"), Description, Serializer);
 		UBeamJsonUtils::SerializeArray<FString>(TEXT("Tags"), Tags, Serializer);
-		UBeamJsonUtils::SerializeRawPrimitive(TEXT("CreatedDate"), CreatedDate, Serializer);
 		UBeamJsonUtils::SerializeRawPrimitive(TEXT("AccessToken"), AccessToken, Serializer);
 		UBeamJsonUtils::SerializeRawPrimitive(TEXT("RefreshToken"), RefreshToken, Serializer);
 		UBeamJsonUtils::SerializeRawPrimitive(TEXT("Pid"), Pid, Serializer);
 		UBeamJsonUtils::SerializeRawPrimitive(TEXT("Cid"), Cid, Serializer);
-		UBeamJsonUtils::SerializeRawPrimitive(TEXT("ExpiresIn"), ExpiresIn, Serializer);	
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("ExpiresIn"), ExpiresIn, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("CreatedDate"), CreatedDate, Serializer);	
 	}
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("GamerTag")), GamerTag);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("TemplateGamerTag")), TemplateGamerTag);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("IsCorrupted")), IsCorrupted);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("DeveloperUserType")), DeveloperUserType);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("Alias")), Alias);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("Description")), Description);
-		UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("Tags")), Tags, OuterOwner);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("CreatedDate")), CreatedDate);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("AccessToken")), AccessToken);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("RefreshToken")), RefreshToken);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("Pid")), Pid);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("Cid")), Cid);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("ExpiresIn")), ExpiresIn);	
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("GamerTag"), Bag, GamerTag);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("TemplateGamerTag"), Bag, TemplateGamerTag);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("IsCorrupted"), Bag, IsCorrupted);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("DeveloperUserType"), Bag, DeveloperUserType);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("Alias"), Bag, Alias);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("Description"), Bag, Description);
+		UBeamJsonUtils::DeserializeArray<FString>(TEXT("Tags"), Bag, Tags, OuterOwner);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("AccessToken"), Bag, AccessToken);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("RefreshToken"), Bag, RefreshToken);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("Pid"), Bag, Pid);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("Cid"), Bag, Cid);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("ExpiresIn"), Bag, ExpiresIn);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("CreatedDate"), Bag, CreatedDate);	
 	}
 };
 

@@ -25,10 +25,10 @@ void UEventPhase::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serialize
 
 void UEventPhase::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("name")), Name);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("duration_minutes")), DurationMinutes);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("durationMillis")), DurationMillis);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("durationSeconds")), DurationSeconds);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("name"), Bag, Name);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("duration_minutes"), Bag, DurationMinutes);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("durationMillis"), Bag, DurationMillis);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("durationSeconds"), Bag, DurationSeconds);
 	UBeamJsonUtils::DeserializeOptional<TArray<UEventRule*>, UEventRule*>("rules", Bag, Rules, OuterOwner);
 }
 

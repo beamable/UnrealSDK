@@ -22,7 +22,7 @@ void UGetPlayerStatusResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializ
 
 void UGetPlayerStatusResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeArray<UPlayerStatus*>(Bag->GetArrayField(TEXT("statuses")), Statuses, OuterOwner);
+	UBeamJsonUtils::DeserializeArray<UPlayerStatus*>(TEXT("statuses"), Bag, Statuses, OuterOwner);
 }
 
 

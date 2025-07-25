@@ -21,9 +21,9 @@ void UServiceRoute::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Seriali
 
 void UServiceRoute::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("service")), Service);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("endpoint")), Endpoint);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("serviceTypeStr")), ServiceTypeStr);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("service"), Bag, Service);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("endpoint"), Bag, Endpoint);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("serviceTypeStr"), Bag, ServiceTypeStr);
 }
 
 

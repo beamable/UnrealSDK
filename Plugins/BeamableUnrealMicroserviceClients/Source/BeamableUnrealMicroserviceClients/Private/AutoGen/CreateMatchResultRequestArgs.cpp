@@ -19,8 +19,8 @@ void UCreateMatchResultRequestArgs::BeamSerializeProperties(TUnrealPrettyJsonSer
 
 void UCreateMatchResultRequestArgs::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("userId")), UserId);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("lobbyId")), LobbyId);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("userId"), Bag, UserId);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("lobbyId"), Bag, LobbyId);
 }
 
 

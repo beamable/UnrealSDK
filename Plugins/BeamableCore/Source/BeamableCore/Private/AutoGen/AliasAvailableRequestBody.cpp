@@ -17,7 +17,7 @@ void UAliasAvailableRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerial
 
 void UAliasAvailableRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("alias")), Alias);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("alias"), Bag, Alias);
 }
 
 

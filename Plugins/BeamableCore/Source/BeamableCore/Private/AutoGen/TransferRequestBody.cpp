@@ -21,7 +21,7 @@ void UTransferRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer& 
 
 void UTransferRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeSemanticType<int64>(Bag->TryGetField(TEXT("recipientPlayer")), RecipientPlayer, OuterOwner);
+	UBeamJsonUtils::DeserializeSemanticType<int64>(TEXT("recipientPlayer"), Bag, RecipientPlayer, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("transaction", Bag, Transaction, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<TMap<FString, int64>, int64>("currencies", Bag, Currencies, OuterOwner);
 }

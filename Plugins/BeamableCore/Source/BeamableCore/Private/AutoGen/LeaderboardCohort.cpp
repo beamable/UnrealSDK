@@ -21,8 +21,8 @@ void ULeaderboardCohort::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Se
 
 void ULeaderboardCohort::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("id")), Id);
-	UBeamJsonUtils::DeserializeArray<UPlayerStatRequirement*>(Bag->GetArrayField(TEXT("statRequirements")), StatRequirements, OuterOwner);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("id"), Bag, Id);
+	UBeamJsonUtils::DeserializeArray<UPlayerStatRequirement*>(TEXT("statRequirements"), Bag, StatRequirements, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("description", Bag, Description, OuterOwner);
 }
 

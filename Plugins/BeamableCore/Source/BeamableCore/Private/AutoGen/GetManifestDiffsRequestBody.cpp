@@ -29,7 +29,7 @@ void UGetManifestDiffsRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSeri
 
 void UGetManifestDiffsRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeSemanticType<FString>(Bag->TryGetField(TEXT("manifestId")), ManifestId, OuterOwner);
+	UBeamJsonUtils::DeserializeSemanticType<FString>(TEXT("manifestId"), Bag, ManifestId, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("fromUid", Bag, FromUid, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("toUid", Bag, ToUid, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<int32>("offset", Bag, Offset, OuterOwner);

@@ -17,7 +17,7 @@ void UGetServiceURLsRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerial
 
 void UGetServiceURLsRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeArray<UServiceImageLayers*>(Bag->GetArrayField(TEXT("requests")), Requests, OuterOwner);
+	UBeamJsonUtils::DeserializeArray<UServiceImageLayers*>(TEXT("requests"), Bag, Requests, OuterOwner);
 }
 
 

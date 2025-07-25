@@ -29,12 +29,12 @@ void UGroupStatus::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializ
 
 void UGroupStatus::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("lastUpdateCycle")), LastUpdateCycle);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("tournamentId")), TournamentId);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("stage")), Stage);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("tier")), Tier);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("groupId")), GroupId);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("contentId")), ContentId);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("lastUpdateCycle"), Bag, LastUpdateCycle);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("tournamentId"), Bag, TournamentId);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("stage"), Bag, Stage);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("tier"), Bag, Tier);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("groupId"), Bag, GroupId);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("contentId"), Bag, ContentId);
 	UBeamJsonUtils::DeserializeOptional<TArray<UCompletedStatus*>, UCompletedStatus*>("completed", Bag, Completed, OuterOwner);
 }
 

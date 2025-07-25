@@ -72,20 +72,20 @@ void UGroup::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) co
 
 void UGroup::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("requirement")), Requirement);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("maxSize")), MaxSize);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("type")), Type);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("id")), Id);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("motd")), Motd);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("slogan")), Slogan);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("leader")), Leader);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("created")), Created);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("name")), Name);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("enrollmentType")), EnrollmentType);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("freeSlots")), FreeSlots);
-	UBeamJsonUtils::DeserializeArray<UGroup*>(Bag->GetArrayField(TEXT("subGroups")), SubGroups, OuterOwner);
-	UBeamJsonUtils::DeserializeArray<UMember*>(Bag->GetArrayField(TEXT("members")), Members, OuterOwner);
-	UBeamJsonUtils::DeserializeMap<FString>(Bag->GetObjectField(TEXT("scores")), Scores, OuterOwner);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("requirement"), Bag, Requirement);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("maxSize"), Bag, MaxSize);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("type"), Bag, Type);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("id"), Bag, Id);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("motd"), Bag, Motd);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("slogan"), Bag, Slogan);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("leader"), Bag, Leader);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("created"), Bag, Created);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("name"), Bag, Name);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("enrollmentType"), Bag, EnrollmentType);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("freeSlots"), Bag, FreeSlots);
+	UBeamJsonUtils::DeserializeArray<UGroup*>(TEXT("subGroups"), Bag, SubGroups, OuterOwner);
+	UBeamJsonUtils::DeserializeArray<UMember*>(TEXT("members"), Bag, Members, OuterOwner);
+	UBeamJsonUtils::DeserializeMap<FString>(TEXT("scores"), Bag, Scores, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<bool>("canDisband", Bag, bCanDisband, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<bool>("canUpdateEnrollment", Bag, bCanUpdateEnrollment, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<bool>("canUpdateMOTD", Bag, bCanUpdateMOTD, OuterOwner);

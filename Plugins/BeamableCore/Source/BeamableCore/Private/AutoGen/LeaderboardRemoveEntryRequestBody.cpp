@@ -17,7 +17,7 @@ void ULeaderboardRemoveEntryRequestBody::BeamSerializeProperties(TUnrealPrettyJs
 
 void ULeaderboardRemoveEntryRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("id")), Id);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("id"), Bag, Id);
 }
 
 

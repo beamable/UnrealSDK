@@ -28,7 +28,7 @@ public:
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("outputsPaths")), OutputsPaths, OuterOwner);	
+		UBeamJsonUtils::DeserializeArray<FString>(TEXT("outputsPaths"), Bag, OutputsPaths, OuterOwner);	
 	}
 };
 

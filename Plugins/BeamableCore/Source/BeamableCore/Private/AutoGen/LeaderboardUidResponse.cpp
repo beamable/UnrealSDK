@@ -22,7 +22,7 @@ void ULeaderboardUidResponse::BeamSerializeProperties(TUnrealPrettyJsonSerialize
 
 void ULeaderboardUidResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("id")), Id);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("id"), Bag, Id);
 }
 
 

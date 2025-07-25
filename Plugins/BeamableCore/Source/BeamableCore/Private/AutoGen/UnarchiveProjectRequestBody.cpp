@@ -17,7 +17,7 @@ void UUnarchiveProjectRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSeri
 
 void UUnarchiveProjectRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeSemanticType<FString>(Bag->TryGetField(TEXT("projectId")), ProjectId, OuterOwner);
+	UBeamJsonUtils::DeserializeSemanticType<FString>(TEXT("projectId"), Bag, ProjectId, OuterOwner);
 }
 
 

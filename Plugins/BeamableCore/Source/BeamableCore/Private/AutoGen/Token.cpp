@@ -44,10 +44,10 @@ void UToken::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) co
 
 void UToken::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeSemanticType<int64>(Bag->TryGetField(TEXT("cid")), Cid, OuterOwner);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("token")), Token);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("type")), Type);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("created")), Created);
+	UBeamJsonUtils::DeserializeSemanticType<int64>(TEXT("cid"), Bag, Cid, OuterOwner);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("token"), Bag, Token);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("type"), Bag, Type);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("created"), Bag, Created);
 	UBeamJsonUtils::DeserializeOptional<FBeamGamerTag, int64>("gamerTag", Bag, GamerTag, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FBeamAccountId, int64>("accountId", Bag, AccountId, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FBeamPid, FString>("pid", Bag, Pid, OuterOwner);

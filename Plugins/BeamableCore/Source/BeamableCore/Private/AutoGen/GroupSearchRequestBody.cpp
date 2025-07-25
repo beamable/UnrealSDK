@@ -39,7 +39,7 @@ void UGroupSearchRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerialize
 
 void UGroupSearchRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("type")), Type);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("type"), Bag, Type);
 	UBeamJsonUtils::DeserializeOptional<bool>("hasSlots", Bag, bHasSlots, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<bool>("subGroup", Bag, bSubGroup, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("name", Bag, Name, OuterOwner);

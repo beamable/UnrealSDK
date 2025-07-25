@@ -29,13 +29,13 @@ void UScheduleDefinition::BeamSerializeProperties(TUnrealPrettyJsonSerializer& S
 
 void UScheduleDefinition::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("dayOfWeek")), DayOfWeek, OuterOwner);
-	UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("minute")), Minute, OuterOwner);
-	UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("dayOfMonth")), DayOfMonth, OuterOwner);
-	UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("year")), Year, OuterOwner);
-	UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("hour")), Hour, OuterOwner);
-	UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("second")), Second, OuterOwner);
-	UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("month")), Month, OuterOwner);
+	UBeamJsonUtils::DeserializeArray<FString>(TEXT("dayOfWeek"), Bag, DayOfWeek, OuterOwner);
+	UBeamJsonUtils::DeserializeArray<FString>(TEXT("minute"), Bag, Minute, OuterOwner);
+	UBeamJsonUtils::DeserializeArray<FString>(TEXT("dayOfMonth"), Bag, DayOfMonth, OuterOwner);
+	UBeamJsonUtils::DeserializeArray<FString>(TEXT("year"), Bag, Year, OuterOwner);
+	UBeamJsonUtils::DeserializeArray<FString>(TEXT("hour"), Bag, Hour, OuterOwner);
+	UBeamJsonUtils::DeserializeArray<FString>(TEXT("second"), Bag, Second, OuterOwner);
+	UBeamJsonUtils::DeserializeArray<FString>(TEXT("month"), Bag, Month, OuterOwner);
 }
 
 

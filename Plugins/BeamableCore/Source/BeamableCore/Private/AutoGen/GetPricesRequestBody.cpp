@@ -17,7 +17,7 @@ void UGetPricesRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer&
 
 void UGetPricesRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("steamId")), SteamId);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("steamId"), Bag, SteamId);
 }
 
 

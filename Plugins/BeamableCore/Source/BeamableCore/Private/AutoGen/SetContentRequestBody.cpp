@@ -24,7 +24,7 @@ void USetContentRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer
 void USetContentRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	UBeamJsonUtils::DeserializeUObject<UEvent*>("event", Bag, Event, OuterOwner);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("origin")), Origin);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("origin"), Bag, Origin);
 	UBeamJsonUtils::DeserializeOptional<FString>("rootEventId", Bag, RootEventId, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("originType", Bag, OriginType, OuterOwner);
 }

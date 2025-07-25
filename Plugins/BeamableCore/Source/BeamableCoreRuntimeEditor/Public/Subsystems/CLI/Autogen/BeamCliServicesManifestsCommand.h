@@ -32,7 +32,7 @@ public:
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		UBeamJsonUtils::DeserializeArray<UCliServiceManifestStreamData*>(Bag->GetArrayField(TEXT("manifests")), Manifests, OuterOwner);	
+		UBeamJsonUtils::DeserializeArray<UCliServiceManifestStreamData*>(TEXT("manifests"), Bag, Manifests, OuterOwner);	
 	}
 };
 

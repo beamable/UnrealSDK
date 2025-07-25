@@ -61,15 +61,15 @@ public:
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("serviceName")), ServiceName);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("checksum")), Checksum);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("enabled")), Enabled);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("imageId")), ImageId);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("templateId")), TemplateId);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("comments")), Comments);
-		UBeamJsonUtils::DeserializeArray<UCliServiceDependencyStreamData*>(Bag->GetArrayField(TEXT("dependencies")), Dependencies, OuterOwner);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("containerHealthCheckPort")), ContainerHealthCheckPort);
-		UBeamJsonUtils::DeserializeArray<UCliServiceComponentStreamData*>(Bag->GetArrayField(TEXT("components")), Components, OuterOwner);	
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("serviceName"), Bag, ServiceName);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("checksum"), Bag, Checksum);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("enabled"), Bag, Enabled);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("imageId"), Bag, ImageId);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("templateId"), Bag, TemplateId);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("comments"), Bag, Comments);
+		UBeamJsonUtils::DeserializeArray<UCliServiceDependencyStreamData*>(TEXT("dependencies"), Bag, Dependencies, OuterOwner);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("containerHealthCheckPort"), Bag, ContainerHealthCheckPort);
+		UBeamJsonUtils::DeserializeArray<UCliServiceComponentStreamData*>(TEXT("components"), Bag, Components, OuterOwner);	
 	}
 };
 

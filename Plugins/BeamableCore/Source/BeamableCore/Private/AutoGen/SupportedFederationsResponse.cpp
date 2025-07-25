@@ -22,7 +22,7 @@ void USupportedFederationsResponse::BeamSerializeProperties(TUnrealPrettyJsonSer
 
 void USupportedFederationsResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeArray<USupportedFederationRegistration*>(Bag->GetArrayField(TEXT("registrations")), Registrations, OuterOwner);
+	UBeamJsonUtils::DeserializeArray<USupportedFederationRegistration*>(TEXT("registrations"), Bag, Registrations, OuterOwner);
 }
 
 

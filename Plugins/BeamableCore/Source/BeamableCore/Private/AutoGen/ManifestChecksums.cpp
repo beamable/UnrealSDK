@@ -22,7 +22,7 @@ void UManifestChecksums::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Se
 
 void UManifestChecksums::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeArray<UContentBasicManifestChecksum*>(Bag->GetArrayField(TEXT("manifests")), Manifests, OuterOwner);
+	UBeamJsonUtils::DeserializeArray<UContentBasicManifestChecksum*>(TEXT("manifests"), Bag, Manifests, OuterOwner);
 }
 
 

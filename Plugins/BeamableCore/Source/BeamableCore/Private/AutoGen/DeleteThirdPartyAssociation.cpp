@@ -19,8 +19,8 @@ void UDeleteThirdPartyAssociation::BeamSerializeProperties(TUnrealPrettyJsonSeri
 
 void UDeleteThirdPartyAssociation::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("thirdParty")), ThirdParty);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("userAppId")), UserAppId);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("thirdParty"), Bag, ThirdParty);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("userAppId"), Bag, UserAppId);
 }
 
 

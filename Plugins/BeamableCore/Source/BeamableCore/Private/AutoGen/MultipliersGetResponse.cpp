@@ -22,7 +22,7 @@ void UMultipliersGetResponse::BeamSerializeProperties(TUnrealPrettyJsonSerialize
 
 void UMultipliersGetResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeArray<UVipBonus*>(Bag->GetArrayField(TEXT("multipliers")), Multipliers, OuterOwner);
+	UBeamJsonUtils::DeserializeArray<UVipBonus*>(TEXT("multipliers"), Bag, Multipliers, OuterOwner);
 }
 
 

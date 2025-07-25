@@ -23,10 +23,10 @@ void UCompletedStatus::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Seri
 
 void UCompletedStatus::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("cycle")), Cycle);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("tier")), Tier);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("stage")), Stage);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("delta")), Delta);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("cycle"), Bag, Cycle);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("tier"), Bag, Tier);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("stage"), Bag, Stage);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("delta"), Bag, Delta);
 }
 
 

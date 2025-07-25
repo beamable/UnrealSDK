@@ -22,7 +22,7 @@ void UOtelViewsResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Se
 
 void UOtelViewsResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeArray<UOtelView*>(Bag->GetArrayField(TEXT("views")), Views, OuterOwner);
+	UBeamJsonUtils::DeserializeArray<UOtelView*>(TEXT("views"), Bag, Views, OuterOwner);
 }
 
 

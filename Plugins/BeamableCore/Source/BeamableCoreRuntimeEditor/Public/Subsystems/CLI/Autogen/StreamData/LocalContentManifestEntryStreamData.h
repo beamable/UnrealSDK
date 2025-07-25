@@ -64,16 +64,16 @@ public:
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("FullId")), FullId);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("TypeName")), TypeName);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("Name")), Name);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("CurrentStatus")), CurrentStatus);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("IsInConflict")), IsInConflict);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("Hash")), Hash);
-		UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("Tags")), Tags, OuterOwner);
-		UBeamJsonUtils::DeserializeArray<int32>(Bag->GetArrayField(TEXT("TagsStatus")), TagsStatus, OuterOwner);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("JsonFilePath")), JsonFilePath);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("ReferenceManifestUid")), ReferenceManifestUid);	
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("FullId"), Bag, FullId);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("TypeName"), Bag, TypeName);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("Name"), Bag, Name);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("CurrentStatus"), Bag, CurrentStatus);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("IsInConflict"), Bag, IsInConflict);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("Hash"), Bag, Hash);
+		UBeamJsonUtils::DeserializeArray<FString>(TEXT("Tags"), Bag, Tags, OuterOwner);
+		UBeamJsonUtils::DeserializeArray<int32>(TEXT("TagsStatus"), Bag, TagsStatus, OuterOwner);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("JsonFilePath"), Bag, JsonFilePath);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("ReferenceManifestUid"), Bag, ReferenceManifestUid);	
 	}
 };
 

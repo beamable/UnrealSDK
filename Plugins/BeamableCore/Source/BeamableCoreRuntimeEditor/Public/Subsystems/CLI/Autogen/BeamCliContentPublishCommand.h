@@ -32,6 +32,53 @@ public:
 };
 
 
+UCLASS(BlueprintType)
+class UBeamCliContentPublishProgressStreamStreamData : public UObject, public IBeamJsonSerializableUObject
+{
+	GENERATED_BODY()
+
+public:	
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 EventType = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString ContentName = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString ErrorMessage = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 TotalItems = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 ProcessedItems = {};
+
+	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
+	{
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("EventType"), EventType, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("contentName"), ContentName, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("errorMessage"), ErrorMessage, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("totalItems"), TotalItems, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("processedItems"), ProcessedItems, Serializer);	
+	}
+
+	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
+	{
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("EventType"), EventType, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("contentName"), ContentName, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("errorMessage"), ErrorMessage, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("totalItems"), TotalItems, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("processedItems"), ProcessedItems, Serializer);	
+	}
+
+	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
+	{
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("EventType"), Bag, EventType);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("contentName"), Bag, ContentName);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("errorMessage"), Bag, ErrorMessage);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("totalItems"), Bag, TotalItems);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("processedItems"), Bag, ProcessedItems);	
+	}
+};
+
+
 /**
  Description:
   Publish content and manifest
@@ -75,7 +122,12 @@ public:
 	inline static FString StreamType = FString(TEXT("stream"));
 	UPROPERTY() TArray<UBeamCliContentPublishStreamData*> Stream;
 	UPROPERTY() TArray<int64> Timestamps;
-	TFunction<void (TArray<UBeamCliContentPublishStreamData*>& StreamData, TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnStreamOutput;	
+	TFunction<void (TArray<UBeamCliContentPublishStreamData*>& StreamData, TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnStreamOutput;
+
+	inline static FString StreamTypeProgressStream = FString(TEXT("progressStream"));
+	UPROPERTY() TArray<UBeamCliContentPublishProgressStreamStreamData*> ProgressStreamStream;
+	UPROPERTY() TArray<int64> ProgressStreamTimestamps;
+	TFunction<void (TArray<UBeamCliContentPublishProgressStreamStreamData*>& StreamData, TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnProgressStreamStreamOutput;	
 
 	TFunction<void (const int& ResCode, const FBeamOperationHandle& Op)> OnCompleted;
 	virtual bool HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer) override;

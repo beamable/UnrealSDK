@@ -38,15 +38,15 @@ void UAdminPlayerStatus::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Se
 
 void UAdminPlayerStatus::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("tournamentId")), TournamentId);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("stage")), Stage);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("tier")), Tier);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("rank")), Rank);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("score")), Score);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("playerId")), PlayerId);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("contentId")), ContentId);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("nextCycleStartMs")), NextCycleStartMs);
-	UBeamJsonUtils::DeserializeArray<UTournamentCurrencyReward*>(Bag->GetArrayField(TEXT("unclaimedRewards")), UnclaimedRewards, OuterOwner);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("tournamentId"), Bag, TournamentId);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("stage"), Bag, Stage);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("tier"), Bag, Tier);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("rank"), Bag, Rank);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("score"), Bag, Score);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("playerId"), Bag, PlayerId);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("contentId"), Bag, ContentId);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("nextCycleStartMs"), Bag, NextCycleStartMs);
+	UBeamJsonUtils::DeserializeArray<UTournamentCurrencyReward*>(TEXT("unclaimedRewards"), Bag, UnclaimedRewards, OuterOwner);
 }
 
 

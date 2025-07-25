@@ -17,7 +17,7 @@ void UOrderRules::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serialize
 
 void UOrderRules::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeArray<UOrderRule*>(Bag->GetArrayField(TEXT("orules")), Orules, OuterOwner);
+	UBeamJsonUtils::DeserializeArray<UOrderRule*>(TEXT("orules"), Bag, Orules, OuterOwner);
 }
 
 

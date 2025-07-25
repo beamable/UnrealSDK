@@ -19,8 +19,8 @@ void UCohortEntry::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializ
 
 void UCohortEntry::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("trial")), Trial);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("cohort")), Cohort);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("trial"), Bag, Trial);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("cohort"), Bag, Cohort);
 }
 
 

@@ -22,7 +22,7 @@ void UListMailCategoriesResponse::BeamSerializeProperties(TUnrealPrettyJsonSeria
 
 void UListMailCategoriesResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("result")), Result, OuterOwner);
+	UBeamJsonUtils::DeserializeArray<FString>(TEXT("result"), Bag, Result, OuterOwner);
 }
 
 

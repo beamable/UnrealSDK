@@ -22,7 +22,7 @@ void UGetTemplatesResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer&
 
 void UGetTemplatesResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeArray<UServiceTemplate*>(Bag->GetArrayField(TEXT("templates")), Templates, OuterOwner);
+	UBeamJsonUtils::DeserializeArray<UServiceTemplate*>(TEXT("templates"), Bag, Templates, OuterOwner);
 }
 
 

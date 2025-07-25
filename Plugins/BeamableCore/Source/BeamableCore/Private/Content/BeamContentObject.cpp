@@ -1588,7 +1588,9 @@ void UBeamContentObject::ParseArrayProperty(const FString& PropName, const TArra
 		for (int i = 0; i < JsonArray.Num(); ++i)
 		{
 			const auto ValData = reinterpret_cast<FSoftObjectPtr*>(ArrayHelper.GetRawPtr(i));
-			*ValData = FSoftObjectPath(JsonArray[i]->AsString());
+			FString JsonStr;
+			JsonArray[i]->TryGetString(JsonStr);
+			*ValData = FSoftObjectPath(JsonStr);
 		}
 	}
 	else if (const auto InnerStructProperty = CastField<FStructProperty>(ArrayProperty->Inner))
@@ -1675,7 +1677,8 @@ void UBeamContentObject::ParseArrayProperty(const FString& PropName, const TArra
 			for (int i = 0; i < JsonArray.Num(); ++i)
 			{
 				FGameplayTag* ValData = reinterpret_cast<FGameplayTag*>(ArrayHelper.GetRawPtr(i));
-				const FString JsonStr = JsonArray[i]->AsString();
+				FString JsonStr;
+				JsonArray[i]->TryGetString(JsonStr);
 				const auto bShouldError = GetDefault<UBeamCoreSettings>()->bErrorIfGameplayTagNotFound;
 				*ValData = FGameplayTag::RequestGameplayTag(FName(JsonStr), !JsonStr.Equals(TEXT("None")) && bShouldError);
 			}
@@ -1685,7 +1688,8 @@ void UBeamContentObject::ParseArrayProperty(const FString& PropName, const TArra
 			for (int i = 0; i < JsonArray.Num(); ++i)
 			{
 				FGameplayTagContainer* ValData = reinterpret_cast<FGameplayTagContainer*>(ArrayHelper.GetRawPtr(i));
-				const FString JsonStr = JsonArray[i]->AsString();
+				FString JsonStr;
+				JsonArray[i]->TryGetString(JsonStr);
 				ValData->FromExportString(JsonStr);
 			}
 		}
@@ -1694,7 +1698,9 @@ void UBeamContentObject::ParseArrayProperty(const FString& PropName, const TArra
 			for (int i = 0; i < JsonArray.Num(); ++i)
 			{
 				FBeamSemanticType* ValData = reinterpret_cast<FBeamSemanticType*>(ArrayHelper.GetRawPtr(i));
-				const FString JsonStr = JsonArray[i]->AsString();
+				FString JsonStr;
+				JsonArray[i]->TryGetString(JsonStr);
+		
 				ValData->Set(&JsonStr, ValData->GetSerializationRepresentationName(0));
 			}
 		}
@@ -1717,7 +1723,9 @@ void UBeamContentObject::ParseArrayProperty(const FString& PropName, const TArra
 		for (int i = 0; i < JsonArray.Num(); ++i)
 		{
 			const auto ValData = reinterpret_cast<UClass**>(ArrayHelper.GetRawPtr(i));
-			*ValData = FSoftClassPath{JsonArray[i]->AsString()}.ResolveClass();
+			FString SerializedVal;
+			JsonArray[i]->TryGetString(SerializedVal);
+			*ValData = FSoftClassPath{SerializedVal}.ResolveClass();
 		}
 	}
 
@@ -1747,7 +1755,10 @@ void UBeamContentObject::ParseArrayProperty(const FString& PropName, const TArra
 		for (int i = 0; i < JsonArray.Num(); ++i)
 		{
 			const auto ValData = reinterpret_cast<FText*>(ArrayHelper.GetRawPtr(i));
-			auto SerializedVal = JsonArray[i]->AsString();
+		
+			FString SerializedVal;
+			JsonArray[i]->TryGetString(SerializedVal);
+			
 			if (SerializedVal.StartsWith(TEXT("BEAM_ST₢")))
 			{
 				SerializedVal.RightChopInline(SerializedVal.Find(TEXT("₢")) + 1);
@@ -1770,7 +1781,9 @@ void UBeamContentObject::ParseArrayProperty(const FString& PropName, const TArra
 		for (int i = 0; i < JsonArray.Num(); ++i)
 		{
 			const auto ValData = reinterpret_cast<FName*>(ArrayHelper.GetRawPtr(i));
-			*ValData = FName(JsonArray[i]->AsString());
+			FString JsonStr;
+			JsonArray[i]->TryGetString(JsonStr);
+			*ValData = FName(JsonStr);
 		}
 	}
 	else if (CastField<FStrProperty>(ArrayProperty->Inner))
@@ -1778,7 +1791,9 @@ void UBeamContentObject::ParseArrayProperty(const FString& PropName, const TArra
 		for (int i = 0; i < JsonArray.Num(); ++i)
 		{
 			const auto ValData = reinterpret_cast<FString*>(ArrayHelper.GetRawPtr(i));
-			*ValData = JsonArray[i]->AsString();
+			FString JsonStr;
+			JsonArray[i]->TryGetString(JsonStr);
+			*ValData = JsonStr;
 		}
 	}
 	else if (CastField<FBoolProperty>(ArrayProperty->Inner))
@@ -1786,7 +1801,9 @@ void UBeamContentObject::ParseArrayProperty(const FString& PropName, const TArra
 		for (int i = 0; i < JsonArray.Num(); ++i)
 		{
 			const auto ValData = reinterpret_cast<bool*>(ArrayHelper.GetRawPtr(i));
-			*ValData = JsonArray[i]->AsString().Equals(TEXT("true"), ESearchCase::IgnoreCase);
+			FString JsonStr;
+			JsonArray[i]->TryGetString(JsonStr);
+			*ValData = JsonStr.Equals(TEXT("true"), ESearchCase::IgnoreCase);
 		}
 	}
 	else if (CastField<FFloatProperty>(ArrayProperty->Inner))
@@ -1794,7 +1811,9 @@ void UBeamContentObject::ParseArrayProperty(const FString& PropName, const TArra
 		for (int i = 0; i < JsonArray.Num(); ++i)
 		{
 			const auto ValData = reinterpret_cast<float*>(ArrayHelper.GetRawPtr(i));
-			FDefaultValueHelper::ParseFloat(JsonArray[i]->AsString(), *ValData);
+			FString JsonStr;
+			JsonArray[i]->TryGetString(JsonStr);
+			FDefaultValueHelper::ParseFloat(JsonStr, *ValData);
 		}
 	}
 	else if (CastField<FDoubleProperty>(ArrayProperty->Inner))
@@ -1802,7 +1821,9 @@ void UBeamContentObject::ParseArrayProperty(const FString& PropName, const TArra
 		for (int i = 0; i < JsonArray.Num(); ++i)
 		{
 			const auto ValData = reinterpret_cast<double*>(ArrayHelper.GetRawPtr(i));
-			FDefaultValueHelper::ParseDouble(JsonArray[i]->AsString(), *ValData);
+			FString JsonStr;
+			JsonArray[i]->TryGetString(JsonStr);
+			FDefaultValueHelper::ParseDouble(JsonStr, *ValData);
 		}
 	}
 	else if (CastField<FIntProperty>(ArrayProperty->Inner))
@@ -1810,7 +1831,9 @@ void UBeamContentObject::ParseArrayProperty(const FString& PropName, const TArra
 		for (int i = 0; i < JsonArray.Num(); ++i)
 		{
 			const auto ValData = reinterpret_cast<int32*>(ArrayHelper.GetRawPtr(i));
-			FDefaultValueHelper::ParseInt(JsonArray[i]->AsString(), *ValData);
+			FString JsonStr;
+			JsonArray[i]->TryGetString(JsonStr);
+			FDefaultValueHelper::ParseInt(JsonStr, *ValData);
 		}
 	}
 	else if (CastField<FInt64Property>(ArrayProperty->Inner))
@@ -1818,7 +1841,9 @@ void UBeamContentObject::ParseArrayProperty(const FString& PropName, const TArra
 		for (int i = 0; i < JsonArray.Num(); ++i)
 		{
 			const auto ValData = reinterpret_cast<int64*>(ArrayHelper.GetRawPtr(i));
-			FDefaultValueHelper::ParseInt64(JsonArray[i]->AsString(), *ValData);
+			FString JsonStr;
+			JsonArray[i]->TryGetString(JsonStr);
+			FDefaultValueHelper::ParseInt64(JsonStr, *ValData);
 		}
 	}
 	else if (CastField<FByteProperty>(ArrayProperty->Inner))
@@ -1826,8 +1851,11 @@ void UBeamContentObject::ParseArrayProperty(const FString& PropName, const TArra
 		for (int i = 0; i < JsonArray.Num(); ++i)
 		{
 			const auto ValData = reinterpret_cast<uint8*>(ArrayHelper.GetRawPtr(i));
+			FString JsonStr;
+			JsonArray[i]->TryGetString(JsonStr);
+			
 			int32 Parsed;
-			FDefaultValueHelper::ParseInt(JsonArray[i]->AsString(), Parsed);
+			FDefaultValueHelper::ParseInt(JsonStr, Parsed);
 			*ValData = static_cast<int8>(Parsed);
 		}
 	}
@@ -2156,7 +2184,9 @@ void UBeamContentObject::ParseMapProperty(const FString& PropName, const TShared
 				*KeyData = Key;
 
 				FSoftObjectPtr* ValData = reinterpret_cast<FSoftObjectPtr*>(MapHelper.GetValuePtr(LastEntryIdx));
-				*ValData = FSoftObjectPtr(FSoftObjectPath(Value.Value->AsString()));
+				FString JsonStr;
+				Value.Value->TryGetString(JsonStr);
+				*ValData = FSoftObjectPtr(FSoftObjectPath(JsonStr));
 			}
 		}
 		else if (const auto InnerStructProperty = CastField<FStructProperty>(MapProperty->ValueProp))
@@ -2311,7 +2341,8 @@ void UBeamContentObject::ParseMapProperty(const FString& PropName, const TShared
 					*KeyData = Key;
 
 					FGameplayTag* ValData = reinterpret_cast<FGameplayTag*>(MapHelper.GetValuePtr(LastEntryIdx));
-					const FString JsonStr = Value.Value->AsString();
+					FString JsonStr;
+					Value.Value->TryGetString(JsonStr);
 					const auto bShouldError = GetDefault<UBeamCoreSettings>()->bErrorIfGameplayTagNotFound;
 					*ValData = FGameplayTag::RequestGameplayTag(FName(JsonStr), !JsonStr.Equals(TEXT("None")) && bShouldError);
 				}
@@ -2328,7 +2359,9 @@ void UBeamContentObject::ParseMapProperty(const FString& PropName, const TShared
 					*KeyData = Key;
 
 					FGameplayTagContainer* ValData = reinterpret_cast<FGameplayTagContainer*>(MapHelper.GetValuePtr(LastEntryIdx));
-					const FString JsonStr = Value.Value->AsString();
+					FString JsonStr;
+					Value.Value->TryGetString(JsonStr);
+					
 					ValData->FromExportString(JsonStr);
 				}
 			}
@@ -2344,7 +2377,8 @@ void UBeamContentObject::ParseMapProperty(const FString& PropName, const TShared
 					*KeyData = Key;
 
 					FBeamSemanticType* ValData = reinterpret_cast<FBeamSemanticType*>(MapHelper.GetValuePtr(LastEntryIdx));
-					const FString JsonStr = Value.Value->AsString();
+					FString JsonStr;
+					Value.Value->TryGetString(JsonStr);
 					ValData->Set(&JsonStr, ValData->GetSerializationRepresentationName(0));
 				}
 			}
@@ -2378,7 +2412,9 @@ void UBeamContentObject::ParseMapProperty(const FString& PropName, const TShared
 				*KeyData = Value.Key;
 
 				auto ValData = reinterpret_cast<UClass**>(MapHelper.GetValuePtr(LastEntryIdx));
-				*ValData = FSoftClassPath{Value.Value->AsString()}.ResolveClass();
+				FString JsonStr;
+				Value.Value->TryGetString(JsonStr);
+				*ValData = FSoftClassPath{JsonStr}.ResolveClass();
 			}
 		}
 		else if (const auto InnerObjectProp = CastField<FObjectProperty>(MapProperty->ValueProp))
@@ -2417,7 +2453,9 @@ void UBeamContentObject::ParseMapProperty(const FString& PropName, const TShared
 				*KeyData = Value.Key;
 
 				auto ValData = reinterpret_cast<FText*>(MapHelper.GetValuePtr(LastEntryIdx));
-				auto SerializedVal = Value.Value->AsString();
+				FString JsonStr;
+				Value.Value->TryGetString(JsonStr);
+				auto SerializedVal = JsonStr;
 				if (SerializedVal.StartsWith(TEXT("BEAM_ST₢")))
 				{
 					SerializedVal.RightChopInline(SerializedVal.Find(TEXT("₢")) + 1);
@@ -2431,7 +2469,7 @@ void UBeamContentObject::ParseMapProperty(const FString& PropName, const TShared
 				}
 				else
 				{
-					*ValData = FText::FromString(Value.Value->AsString());
+					*ValData = FText::FromString(JsonStr);
 				}
 			}
 		}
@@ -2445,7 +2483,9 @@ void UBeamContentObject::ParseMapProperty(const FString& PropName, const TShared
 				*KeyData = Value.Key;
 
 				auto ValData = reinterpret_cast<FName*>(MapHelper.GetValuePtr(LastEntryIdx));
-				*ValData = FName(Value.Value->AsString());
+				FString JsonStr;
+				Value.Value->TryGetString(JsonStr);
+				*ValData = FName(JsonStr);
 			}
 		}
 		else if (CastField<FStrProperty>(MapProperty->ValueProp))
@@ -2458,7 +2498,9 @@ void UBeamContentObject::ParseMapProperty(const FString& PropName, const TShared
 				*KeyData = Value.Key;
 
 				auto ValData = reinterpret_cast<FString*>(MapHelper.GetValuePtr(LastEntryIdx));
-				*ValData = Value.Value->AsString();
+				FString JsonStr;
+				Value.Value->TryGetString(JsonStr);
+				*ValData = JsonStr;
 			}
 		}
 		else if (CastField<FBoolProperty>(MapProperty->ValueProp))
@@ -2471,7 +2513,9 @@ void UBeamContentObject::ParseMapProperty(const FString& PropName, const TShared
 				*KeyData = Value.Key;
 
 				auto ValData = reinterpret_cast<bool*>(MapHelper.GetValuePtr(LastEntryIdx));
-				*ValData = Value.Value->AsString().Equals(TEXT("true"), ESearchCase::IgnoreCase);
+				FString JsonStr;
+				Value.Value->TryGetString(JsonStr);
+				*ValData = JsonStr.Equals(TEXT("true"), ESearchCase::IgnoreCase);
 			}
 		}
 		else if (CastField<FFloatProperty>(MapProperty->ValueProp))
@@ -2484,7 +2528,9 @@ void UBeamContentObject::ParseMapProperty(const FString& PropName, const TShared
 				*KeyData = Value.Key;
 
 				auto ValData = reinterpret_cast<float*>(MapHelper.GetValuePtr(LastEntryIdx));
-				FDefaultValueHelper::ParseFloat(Value.Value->AsString(), *ValData);
+				FString JsonStr;
+				Value.Value->TryGetString(JsonStr);
+				FDefaultValueHelper::ParseFloat(JsonStr, *ValData);
 			}
 		}
 		else if (CastField<FDoubleProperty>(MapProperty->ValueProp))
@@ -2497,7 +2543,9 @@ void UBeamContentObject::ParseMapProperty(const FString& PropName, const TShared
 				*KeyData = Value.Key;
 
 				auto ValData = reinterpret_cast<double*>(MapHelper.GetValuePtr(LastEntryIdx));
-				FDefaultValueHelper::ParseDouble(Value.Value->AsString(), *ValData);
+				FString JsonStr;
+				Value.Value->TryGetString(JsonStr);
+				FDefaultValueHelper::ParseDouble(JsonStr, *ValData);
 			}
 		}
 		else if (CastField<FIntProperty>(MapProperty->ValueProp))
@@ -2510,7 +2558,9 @@ void UBeamContentObject::ParseMapProperty(const FString& PropName, const TShared
 				*KeyData = Value.Key;
 
 				auto ValData = reinterpret_cast<int32*>(MapHelper.GetValuePtr(LastEntryIdx));
-				FDefaultValueHelper::ParseInt(Value.Value->AsString(), *ValData);
+				FString JsonStr;
+				Value.Value->TryGetString(JsonStr);
+				FDefaultValueHelper::ParseInt(JsonStr, *ValData);
 			}
 		}
 		else if (CastField<FInt64Property>(MapProperty->ValueProp))
@@ -2523,7 +2573,9 @@ void UBeamContentObject::ParseMapProperty(const FString& PropName, const TShared
 				*KeyData = Value.Key;
 
 				auto ValData = reinterpret_cast<int64*>(MapHelper.GetValuePtr(LastEntryIdx));
-				FDefaultValueHelper::ParseInt64(Value.Value->AsString(), *ValData);
+				FString JsonStr;
+				Value.Value->TryGetString(JsonStr);
+				FDefaultValueHelper::ParseInt64(JsonStr, *ValData);
 			}
 		}
 		else if (CastField<FByteProperty>(MapProperty->ValueProp))
@@ -2536,8 +2588,10 @@ void UBeamContentObject::ParseMapProperty(const FString& PropName, const TShared
 				*KeyData = Value.Key;
 
 				auto ValData = reinterpret_cast<uint8*>(MapHelper.GetValuePtr(LastEntryIdx));
+				FString JsonStr;
+				Value.Value->TryGetString(JsonStr);
 				int32 Parsed;
-				FDefaultValueHelper::ParseInt(Value.Value->AsString(), Parsed);
+				FDefaultValueHelper::ParseInt(JsonStr, Parsed);
 				*ValData = static_cast<int8>(Parsed);
 			}
 		}

@@ -22,7 +22,7 @@ void UMailSearchResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer& S
 
 void UMailSearchResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeArray<UMailSearchResponseClause*>(Bag->GetArrayField(TEXT("results")), Results, OuterOwner);
+	UBeamJsonUtils::DeserializeArray<UMailSearchResponseClause*>(TEXT("results"), Bag, Results, OuterOwner);
 }
 
 

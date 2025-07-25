@@ -21,16 +21,13 @@ public:
 	TArray<UDeveloperUserDataStreamData*> UpdatedUsers = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<UDeveloperUserDataStreamData*> SavedUsers = {};
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TArray<UDeveloperUserDataStreamData*> CorruptedUsers = {};
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
 	{
 		UBeamJsonUtils::SerializeArray<UDeveloperUserDataStreamData*>(TEXT("CreatedUsers"), CreatedUsers, Serializer);
 		UBeamJsonUtils::SerializeArray<UDeveloperUserDataStreamData*>(TEXT("DeletedUsers"), DeletedUsers, Serializer);
 		UBeamJsonUtils::SerializeArray<UDeveloperUserDataStreamData*>(TEXT("UpdatedUsers"), UpdatedUsers, Serializer);
-		UBeamJsonUtils::SerializeArray<UDeveloperUserDataStreamData*>(TEXT("SavedUsers"), SavedUsers, Serializer);
-		UBeamJsonUtils::SerializeArray<UDeveloperUserDataStreamData*>(TEXT("CorruptedUsers"), CorruptedUsers, Serializer);	
+		UBeamJsonUtils::SerializeArray<UDeveloperUserDataStreamData*>(TEXT("SavedUsers"), SavedUsers, Serializer);	
 	}
 
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
@@ -38,54 +35,54 @@ public:
 		UBeamJsonUtils::SerializeArray<UDeveloperUserDataStreamData*>(TEXT("CreatedUsers"), CreatedUsers, Serializer);
 		UBeamJsonUtils::SerializeArray<UDeveloperUserDataStreamData*>(TEXT("DeletedUsers"), DeletedUsers, Serializer);
 		UBeamJsonUtils::SerializeArray<UDeveloperUserDataStreamData*>(TEXT("UpdatedUsers"), UpdatedUsers, Serializer);
-		UBeamJsonUtils::SerializeArray<UDeveloperUserDataStreamData*>(TEXT("SavedUsers"), SavedUsers, Serializer);
-		UBeamJsonUtils::SerializeArray<UDeveloperUserDataStreamData*>(TEXT("CorruptedUsers"), CorruptedUsers, Serializer);	
+		UBeamJsonUtils::SerializeArray<UDeveloperUserDataStreamData*>(TEXT("SavedUsers"), SavedUsers, Serializer);	
 	}
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		UBeamJsonUtils::DeserializeArray<UDeveloperUserDataStreamData*>(Bag->GetArrayField(TEXT("CreatedUsers")), CreatedUsers, OuterOwner);
-		UBeamJsonUtils::DeserializeArray<UDeveloperUserDataStreamData*>(Bag->GetArrayField(TEXT("DeletedUsers")), DeletedUsers, OuterOwner);
-		UBeamJsonUtils::DeserializeArray<UDeveloperUserDataStreamData*>(Bag->GetArrayField(TEXT("UpdatedUsers")), UpdatedUsers, OuterOwner);
-		UBeamJsonUtils::DeserializeArray<UDeveloperUserDataStreamData*>(Bag->GetArrayField(TEXT("SavedUsers")), SavedUsers, OuterOwner);
-		UBeamJsonUtils::DeserializeArray<UDeveloperUserDataStreamData*>(Bag->GetArrayField(TEXT("CorruptedUsers")), CorruptedUsers, OuterOwner);	
+		UBeamJsonUtils::DeserializeArray<UDeveloperUserDataStreamData*>(TEXT("CreatedUsers"), Bag, CreatedUsers, OuterOwner);
+		UBeamJsonUtils::DeserializeArray<UDeveloperUserDataStreamData*>(TEXT("DeletedUsers"), Bag, DeletedUsers, OuterOwner);
+		UBeamJsonUtils::DeserializeArray<UDeveloperUserDataStreamData*>(TEXT("UpdatedUsers"), Bag, UpdatedUsers, OuterOwner);
+		UBeamJsonUtils::DeserializeArray<UDeveloperUserDataStreamData*>(TEXT("SavedUsers"), Bag, SavedUsers, OuterOwner);	
 	}
 };
 
 
 /**
  Description:
+  Create a single user that can be from a template or just create new empty user
 
 Usage:
   Beamable.Tools developer-user-manager create-user [options]
 
 Options:
-  --alias <alias>                        The alias is a chosen name for this player which is not the same as the player name in the backend
-  --template <template>                  A gamer tag to a template that will be used to copy the stats and inventory to the created player
-  --description <description>            A shortly description of this new player
-  --user-type <user-type>                The user type of this player 0 - Captured 1 - Local 2 - Shared
-  --tags <tags>                          A list of tags to set in this new player (only locally)
-  --dryrun                               [DEPRECATED] Run as much of the command as possible without making any network calls
-  --cid <cid>                            CID (CustomerId) to use (found in Portal->Account); defaults to whatever is in '.beamable/connection-configuration.json'
-  --pid <pid>                            PID (Realm ID) to use (found in Portal -> Games -> Any Realm's details); defaults to whatever is in '.beamable/connection-configuration.json'
-  -q, --quiet                            When true, skip input waiting and use default arguments (or error if no defaults are possible) [default: False]
-  --host <host>                          This option defines the target Beamable environment. Needed for private cloud customers to target their exclusive Beamable environment. Ignorable by everyone else. Stored in '.beamable/connection-configuration.json'
-  --access-token <access-token>          The access token to use for the requests. It overwrites the logged in user stored in connection-auth.json for THIS INVOCATION ONLY
-  --refresh-token <refresh-token>        A Refresh Token to use for the requests. It overwrites the logged in user stored in connection-auth.json for THIS INVOCATION ONLY
-  --log, --logs <log>                    Extra logs gets printed out
-  --no-redirect                          If there is a local dotnet tool installation (with a ./config/dotnet-tools.json file) for the beam tool, then any global invocation of the beam tool will automatically redirect and call the local version. However, there will be a performance penalty due to the extra process invocation. This option flag will cause an error to occur instead of automatically redirecting the execution to a new process invocation.
-  -prf, --prefer-remote-federation       By default, any local CLI invocation that should trigger a Federation of any type will prefer locally running Microservices. However, if you need the CLI to use the remotely running Microservices, use this option to ignore locally running services.
-  --unmask-logs                          By default, logs will automatically mask tokens. However, when this option is enabled, tokens will be visible in their full text. This is a security risk.
-  --no-log-file                          By default, logs are automatically written to a temp file so that they can be used in an error case. However, when this option is enabled, logs are not written. Also, if the BEAM_CLI_NO_FILE_LOG environment variable is set, no log file will be written.  [default: False]
-  --docker-cli-path <docker-cli-path>    a custom location for docker. By default, the CLI will attempt to resolve docker through its usual install locations. You can also use the BEAM_DOCKER_EXE environment variable to specify. 
-                                         Currently, a docker path has been automatically identified. [default: docker]
-  --emit-log-streams                     Out all log messages as data payloads in addition to however they are logged
-  --add-project-path <add-project-path>  additional file paths to be included when building a local project manifest.
-  --dir <dir>                            [DEPRECATED] Path override for the .beamable folder
-  --raw                                  Output raw JSON to standard out. This happens by default when the command is being piped
-  --pretty                               Output syntax highlighted box text. This happens by default when the command is not piped
-  --dotnet-path <dotnet-path>            a custom location for dotnet [default: dotnet]
-  -?, -h, --help                         Show help and usage information
+  --rolling-buffer-size <rolling-buffer-size>  The max amount of captured users that you can have before starting to delete the oldest (0 means infinity)
+  --alias <alias>                              The alias is a chosen name for this player which is not the same as the player name in the backend
+  --template <template>                        A gamer tag to a template that will be used to copy the stats and inventory to the created player
+  --description <description>                  A shortly description of this new player
+  --user-type <user-type>                      The user type of this player 0 - Captured 1 - Local 2 - Shared
+  --tags <tags>                                A list of tags to set in this new player (only locally)
+  --dryrun                                     [DEPRECATED] Run as much of the command as possible without making any network calls
+  --cid <cid>                                  CID (CustomerId) to use (found in Portal->Account); defaults to whatever is in '.beamable/connection-configuration.json'
+  --pid <pid>                                  PID (Realm ID) to use (found in Portal -> Games -> Any Realm's details); defaults to whatever is in '.beamable/connection-configuration.json'
+  -q, --quiet                                  When true, skip input waiting and use default arguments (or error if no defaults are possible) [default: False]
+  --host <host>                                This option defines the target Beamable environment. Needed for private cloud customers to target their exclusive Beamable environment. Ignorable by everyone else. Stored in '.beamable/connection-configuration.json'
+  --access-token <access-token>                The access token to use for the requests. It overwrites the logged in user stored in connection-auth.json for THIS INVOCATION ONLY
+  --refresh-token <refresh-token>              A Refresh Token to use for the requests. It overwrites the logged in user stored in connection-auth.json for THIS INVOCATION ONLY
+  --log, --logs <log>                          Extra logs gets printed out
+  --no-redirect                                If there is a local dotnet tool installation (with a ./config/dotnet-tools.json file) for the beam tool, then any global invocation of the beam tool will automatically redirect and call the local version. However, there will be a performance penalty due to the extra process invocation. This option flag will cause an error to occur instead of automatically redirecting the execution to a new process invocation.
+  -prf, --prefer-remote-federation             By default, any local CLI invocation that should trigger a Federation of any type will prefer locally running Microservices. However, if you need the CLI to use the remotely running Microservices, use this option to ignore locally running services.
+  --unmask-logs                                By default, logs will automatically mask tokens. However, when this option is enabled, tokens will be visible in their full text. This is a security risk.
+  --no-log-file                                By default, logs are automatically written to a temp file so that they can be used in an error case. However, when this option is enabled, logs are not written. Also, if the BEAM_CLI_NO_FILE_LOG environment variable is set, no log file will be written.  [default: False]
+  --docker-cli-path <docker-cli-path>          a custom location for docker. By default, the CLI will attempt to resolve docker through its usual install locations. You can also use the BEAM_DOCKER_EXE environment variable to specify. 
+                                               Currently, a docker path has been automatically identified. [default: docker]
+  --emit-log-streams                           Out all log messages as data payloads in addition to however they are logged
+  --add-project-path <add-project-path>        additional file paths to be included when building a local project manifest.
+  --dir <dir>                                  [DEPRECATED] Path override for the .beamable folder
+  --raw                                        Output raw JSON to standard out. This happens by default when the command is being piped
+  --pretty                                     Output syntax highlighted box text. This happens by default when the command is not piped
+  --dotnet-path <dotnet-path>                  a custom location for dotnet [default: dotnet]
+  -?, -h, --help                               Show help and usage information
 
 
 

@@ -25,11 +25,11 @@ void UBeamoV2PASuggestedIndex::BeamSerializeProperties(TUnrealPrettyJsonSerializ
 
 void UBeamoV2PASuggestedIndex::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("id")), Id);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("namespace")), Namespace);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("weight")), Weight);
-	UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("impact")), Impact, OuterOwner);
-	UBeamJsonUtils::DeserializeArray<FMapOfInt32>(Bag->GetArrayField(TEXT("index")), Index, OuterOwner);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("id"), Bag, Id);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("namespace"), Bag, Namespace);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("weight"), Bag, Weight);
+	UBeamJsonUtils::DeserializeArray<FString>(TEXT("impact"), Bag, Impact, OuterOwner);
+	UBeamJsonUtils::DeserializeArray<FMapOfInt32>(TEXT("index"), Bag, Index, OuterOwner);
 }
 
 

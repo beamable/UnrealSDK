@@ -44,11 +44,11 @@ public:
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("level")), Level);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("formattedMessage")), FormattedMessage);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("uri")), Uri);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("line")), Line);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("column")), Column);	
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("level"), Bag, Level);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("formattedMessage"), Bag, FormattedMessage);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("uri"), Bag, Uri);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("line"), Bag, Line);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("column"), Bag, Column);	
 	}
 };
 

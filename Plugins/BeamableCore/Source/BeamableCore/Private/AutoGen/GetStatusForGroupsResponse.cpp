@@ -24,8 +24,8 @@ void UGetStatusForGroupsResponse::BeamSerializeProperties(TUnrealPrettyJsonSeria
 
 void UGetStatusForGroupsResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("contentId")), ContentId);
-	UBeamJsonUtils::DeserializeArray<UGroupStatus*>(Bag->GetArrayField(TEXT("statuses")), Statuses, OuterOwner);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("contentId"), Bag, ContentId);
+	UBeamJsonUtils::DeserializeArray<UGroupStatus*>(TEXT("statuses"), Bag, Statuses, OuterOwner);
 }
 
 

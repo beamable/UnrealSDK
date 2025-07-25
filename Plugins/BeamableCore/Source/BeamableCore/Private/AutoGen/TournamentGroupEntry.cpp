@@ -25,11 +25,11 @@ void UTournamentGroupEntry::BeamSerializeProperties(TUnrealPrettyJsonSerializer&
 
 void UTournamentGroupEntry::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("rank")), Rank);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("score")), Score);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("groupId")), GroupId);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("stageChange")), StageChange);
-	UBeamJsonUtils::DeserializeArray<UTournamentCurrencyReward*>(Bag->GetArrayField(TEXT("currencyRewards")), CurrencyRewards, OuterOwner);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("rank"), Bag, Rank);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("score"), Bag, Score);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("groupId"), Bag, GroupId);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("stageChange"), Bag, StageChange);
+	UBeamJsonUtils::DeserializeArray<UTournamentCurrencyReward*>(TEXT("currencyRewards"), Bag, CurrencyRewards, OuterOwner);
 }
 
 

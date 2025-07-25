@@ -17,7 +17,7 @@ void URewardCalendarDay::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Se
 
 void URewardCalendarDay::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeArray<UEntitlementGenerator*>(Bag->GetArrayField(TEXT("obtain")), Obtain, OuterOwner);
+	UBeamJsonUtils::DeserializeArray<UEntitlementGenerator*>(TEXT("obtain"), Bag, Obtain, OuterOwner);
 }
 
 

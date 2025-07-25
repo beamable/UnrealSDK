@@ -22,7 +22,7 @@ void ULaunchMessageListResponse::BeamSerializeProperties(TUnrealPrettyJsonSerial
 
 void ULaunchMessageListResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("files")), Files, OuterOwner);
+	UBeamJsonUtils::DeserializeArray<FString>(TEXT("files"), Bag, Files, OuterOwner);
 }
 
 

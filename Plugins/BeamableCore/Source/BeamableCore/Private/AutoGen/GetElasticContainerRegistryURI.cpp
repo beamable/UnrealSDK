@@ -22,7 +22,7 @@ void UGetElasticContainerRegistryURI::BeamSerializeProperties(TUnrealPrettyJsonS
 
 void UGetElasticContainerRegistryURI::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("uri")), Uri);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("uri"), Bag, Uri);
 }
 
 

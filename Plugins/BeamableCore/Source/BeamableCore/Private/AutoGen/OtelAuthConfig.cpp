@@ -28,9 +28,9 @@ void UOtelAuthConfig::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Seria
 
 void UOtelAuthConfig::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("endpoint")), Endpoint);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("username")), Username);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("password")), Password);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("endpoint"), Bag, Endpoint);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("username"), Bag, Username);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("password"), Bag, Password);
 	UBeamJsonUtils::DeserializeOptional<FDateTime>("expiresAt", Bag, ExpiresAt, OuterOwner);
 }
 

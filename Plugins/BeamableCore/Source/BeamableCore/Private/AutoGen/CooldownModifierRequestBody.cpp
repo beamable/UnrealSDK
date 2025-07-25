@@ -19,8 +19,8 @@ void UCooldownModifierRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSeri
 
 void UCooldownModifierRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("gamerTag")), GamerTag);
-	UBeamJsonUtils::DeserializeArray<UUpdateListingCooldownRequestBody*>(Bag->GetArrayField(TEXT("updateListingCooldownRequests")), UpdateListingCooldownRequests, OuterOwner);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("gamerTag"), Bag, GamerTag);
+	UBeamJsonUtils::DeserializeArray<UUpdateListingCooldownRequestBody*>(TEXT("updateListingCooldownRequests"), Bag, UpdateListingCooldownRequests, OuterOwner);
 }
 
 

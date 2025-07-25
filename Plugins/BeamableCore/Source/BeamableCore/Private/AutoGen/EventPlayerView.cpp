@@ -24,8 +24,8 @@ void UEventPlayerView::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Seri
 
 void UEventPlayerView::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeArray<UEventPlayerStateView*>(Bag->GetArrayField(TEXT("running")), Running, OuterOwner);
-	UBeamJsonUtils::DeserializeArray<UEventPlayerStateView*>(Bag->GetArrayField(TEXT("done")), Done, OuterOwner);
+	UBeamJsonUtils::DeserializeArray<UEventPlayerStateView*>(TEXT("running"), Bag, Running, OuterOwner);
+	UBeamJsonUtils::DeserializeArray<UEventPlayerStateView*>(TEXT("done"), Bag, Done, OuterOwner);
 }
 
 

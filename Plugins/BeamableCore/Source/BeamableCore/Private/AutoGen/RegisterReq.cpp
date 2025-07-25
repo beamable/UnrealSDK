@@ -19,8 +19,8 @@ void URegisterReq::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializ
 
 void URegisterReq::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("provider")), Provider);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("token")), Token);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("provider"), Bag, Provider);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("token"), Bag, Token);
 }
 
 

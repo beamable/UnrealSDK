@@ -26,9 +26,9 @@ void ULeaderboardListResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializ
 
 void ULeaderboardListResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("total")), Total);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("offset")), Offset);
-	UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("nameList")), NameList, OuterOwner);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("total"), Bag, Total);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("offset"), Bag, Offset);
+	UBeamJsonUtils::DeserializeArray<FString>(TEXT("nameList"), Bag, NameList, OuterOwner);
 }
 
 

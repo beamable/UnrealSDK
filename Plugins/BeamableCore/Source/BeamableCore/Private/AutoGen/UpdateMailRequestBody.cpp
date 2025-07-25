@@ -29,7 +29,7 @@ void UUpdateMailRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer
 
 void UUpdateMailRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("mailId")), MailId);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("mailId"), Bag, MailId);
 	UBeamJsonUtils::DeserializeOptional<bool>("acceptAttachments", Bag, bAcceptAttachments, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("body", Bag, Body, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("expires", Bag, Expires, OuterOwner);

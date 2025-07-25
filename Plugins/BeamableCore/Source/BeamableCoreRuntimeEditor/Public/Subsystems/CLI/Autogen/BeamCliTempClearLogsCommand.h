@@ -32,8 +32,8 @@ public:
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("deletedFiles")), DeletedFiles, OuterOwner);
-		UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("failedToDeleteFiles")), FailedToDeleteFiles, OuterOwner);	
+		UBeamJsonUtils::DeserializeArray<FString>(TEXT("deletedFiles"), Bag, DeletedFiles, OuterOwner);
+		UBeamJsonUtils::DeserializeArray<FString>(TEXT("failedToDeleteFiles"), Bag, FailedToDeleteFiles, OuterOwner);	
 	}
 };
 

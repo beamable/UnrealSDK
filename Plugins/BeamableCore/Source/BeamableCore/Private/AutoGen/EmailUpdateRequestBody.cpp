@@ -19,7 +19,7 @@ void UEmailUpdateRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerialize
 
 void UEmailUpdateRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("newEmail")), NewEmail);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("newEmail"), Bag, NewEmail);
 	UBeamJsonUtils::DeserializeOptional<FString>("codeType", Bag, CodeType, OuterOwner);
 }
 

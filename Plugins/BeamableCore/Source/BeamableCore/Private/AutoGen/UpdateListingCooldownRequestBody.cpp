@@ -19,8 +19,8 @@ void UUpdateListingCooldownRequestBody::BeamSerializeProperties(TUnrealPrettyJso
 
 void UUpdateListingCooldownRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("symbol")), Symbol);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("cooldownReduction")), CooldownReduction);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("symbol"), Bag, Symbol);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("cooldownReduction"), Bag, CooldownReduction);
 }
 
 

@@ -21,7 +21,7 @@ void UGetActiveListingRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSeri
 
 void UGetActiveListingRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("listing")), Listing);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("listing"), Bag, Listing);
 	UBeamJsonUtils::DeserializeOptional<FString>("store", Bag, Store, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("time", Bag, Time, OuterOwner);
 }

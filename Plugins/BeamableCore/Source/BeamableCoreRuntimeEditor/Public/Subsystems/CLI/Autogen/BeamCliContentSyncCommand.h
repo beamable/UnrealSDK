@@ -28,7 +28,54 @@ public:
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		UBeamJsonUtils::DeserializeArray<UContentSyncReportStreamData*>(Bag->GetArrayField(TEXT("Reports")), Reports, OuterOwner);	
+		UBeamJsonUtils::DeserializeArray<UContentSyncReportStreamData*>(TEXT("Reports"), Bag, Reports, OuterOwner);	
+	}
+};
+
+
+UCLASS(BlueprintType)
+class UBeamCliContentSyncProgressStreamStreamData : public UObject, public IBeamJsonSerializableUObject
+{
+	GENERATED_BODY()
+
+public:	
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 EventType = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString ContentName = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString ErrorMessage = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 TotalItems = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 ProcessedItems = {};
+
+	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
+	{
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("EventType"), EventType, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("contentName"), ContentName, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("errorMessage"), ErrorMessage, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("totalItems"), TotalItems, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("processedItems"), ProcessedItems, Serializer);	
+	}
+
+	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
+	{
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("EventType"), EventType, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("contentName"), ContentName, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("errorMessage"), ErrorMessage, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("totalItems"), TotalItems, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("processedItems"), ProcessedItems, Serializer);	
+	}
+
+	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
+	{
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("EventType"), Bag, EventType);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("contentName"), Bag, ContentName);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("errorMessage"), Bag, ErrorMessage);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("totalItems"), Bag, TotalItems);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("processedItems"), Bag, ProcessedItems);	
 	}
 };
 
@@ -51,6 +98,7 @@ Options:
   --sync-created                                                           Deletes any created content that is not present in the latest manifest. If filters are provided, will only delete the created content that matches the filter
   --sync-modified                                                          This will discard your local changes ONLY on files that are NOT conflicted. If filters are provided, will only do this for content that matches the filter
   --sync-conflicts                                                         This will discard your local changes ONLY on files that ARE conflicted. If filters are provided, will only do this for content that matches the filter
+  --sync-deleted                                                           This will revert all your deleted files. If filters are provided, will only do this for content that matches the filter
   --target <target>                                                        If you pass in a Manifest's UID, we'll sync with that as the target. If filters are provided, will only do this for content that matches the filter
   --dryrun                                                                 [DEPRECATED] Run as much of the command as possible without making any network calls
   --cid <cid>                                                              CID (CustomerId) to use (found in Portal->Account); defaults to whatever is in '.beamable/connection-configuration.json'
@@ -86,7 +134,12 @@ public:
 	inline static FString StreamType = FString(TEXT("stream"));
 	UPROPERTY() TArray<UBeamCliContentSyncStreamData*> Stream;
 	UPROPERTY() TArray<int64> Timestamps;
-	TFunction<void (TArray<UBeamCliContentSyncStreamData*>& StreamData, TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnStreamOutput;	
+	TFunction<void (TArray<UBeamCliContentSyncStreamData*>& StreamData, TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnStreamOutput;
+
+	inline static FString StreamTypeProgressStream = FString(TEXT("progressStream"));
+	UPROPERTY() TArray<UBeamCliContentSyncProgressStreamStreamData*> ProgressStreamStream;
+	UPROPERTY() TArray<int64> ProgressStreamTimestamps;
+	TFunction<void (TArray<UBeamCliContentSyncProgressStreamStreamData*>& StreamData, TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnProgressStreamStreamOutput;	
 
 	TFunction<void (const int& ResCode, const FBeamOperationHandle& Op)> OnCompleted;
 	virtual bool HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer) override;

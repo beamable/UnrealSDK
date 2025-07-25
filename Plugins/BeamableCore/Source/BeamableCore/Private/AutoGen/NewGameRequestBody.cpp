@@ -17,7 +17,7 @@ void UNewGameRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer& S
 
 void UNewGameRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("gameName")), GameName);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("gameName"), Bag, GameName);
 }
 
 

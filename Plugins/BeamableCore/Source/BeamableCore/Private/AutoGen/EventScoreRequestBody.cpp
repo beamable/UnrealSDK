@@ -23,8 +23,8 @@ void UEventScoreRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer
 
 void UEventScoreRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("eventId")), EventId);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("score")), Score);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("eventId"), Bag, EventId);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("score"), Bag, Score);
 	UBeamJsonUtils::DeserializeOptional<bool>("increment", Bag, bIncrement, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<TMap<FString, FString>, FString>("stats", Bag, Stats, OuterOwner);
 }

@@ -50,12 +50,12 @@ public:
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("EventType")), EventType);
-		UBeamJsonUtils::DeserializeArray<ULocalContentManifestStreamData*>(Bag->GetArrayField(TEXT("RelevantManifestsAgainstLatest")), RelevantManifestsAgainstLatest, OuterOwner);
-		UBeamJsonUtils::DeserializeArray<ULocalContentManifestStreamData*>(Bag->GetArrayField(TEXT("ToRemoveLocalEntries")), ToRemoveLocalEntries, OuterOwner);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("PublisherEmail")), PublisherEmail);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("PublisherAccountId")), PublisherAccountId);
-		UBeamJsonUtils::DeserializeArray<UContentSyncReportStreamData*>(Bag->GetArrayField(TEXT("SyncReports")), SyncReports, OuterOwner);	
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("EventType"), Bag, EventType);
+		UBeamJsonUtils::DeserializeArray<ULocalContentManifestStreamData*>(TEXT("RelevantManifestsAgainstLatest"), Bag, RelevantManifestsAgainstLatest, OuterOwner);
+		UBeamJsonUtils::DeserializeArray<ULocalContentManifestStreamData*>(TEXT("ToRemoveLocalEntries"), Bag, ToRemoveLocalEntries, OuterOwner);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("PublisherEmail"), Bag, PublisherEmail);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("PublisherAccountId"), Bag, PublisherAccountId);
+		UBeamJsonUtils::DeserializeArray<UContentSyncReportStreamData*>(TEXT("SyncReports"), Bag, SyncReports, OuterOwner);	
 	}
 };
 

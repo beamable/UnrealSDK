@@ -17,7 +17,7 @@ void UCalendarClaimRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSeriali
 
 void UCalendarClaimRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("id")), Id);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("id"), Bag, Id);
 }
 
 

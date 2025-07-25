@@ -19,7 +19,7 @@ void UEventInventoryRewardItem::BeamSerializeProperties(TUnrealPrettyJsonSeriali
 
 void UEventInventoryRewardItem::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("id")), Id);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("id"), Bag, Id);
 	UBeamJsonUtils::DeserializeOptional<TMap<FString, FString>, FString>("properties", Bag, Properties, OuterOwner);
 }
 

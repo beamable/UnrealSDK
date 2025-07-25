@@ -22,7 +22,7 @@ void UCustomersResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Se
 
 void UCustomersResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeArray<UCustomer*>(Bag->GetArrayField(TEXT("result")), Result, OuterOwner);
+	UBeamJsonUtils::DeserializeArray<UCustomer*>(TEXT("result"), Bag, Result, OuterOwner);
 }
 
 

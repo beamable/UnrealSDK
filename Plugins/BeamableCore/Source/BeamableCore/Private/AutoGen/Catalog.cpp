@@ -23,10 +23,10 @@ void UCatalog::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) 
 
 void UCatalog::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("version")), Version);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("created")), Created);
-	UBeamJsonUtils::DeserializeArray<UStore*>(Bag->GetArrayField(TEXT("stores")), Stores, OuterOwner);
-	UBeamJsonUtils::DeserializeArray<UOfferDefinition*>(Bag->GetArrayField(TEXT("offerDefinitions")), OfferDefinitions, OuterOwner);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("version"), Bag, Version);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("created"), Bag, Created);
+	UBeamJsonUtils::DeserializeArray<UStore*>(TEXT("stores"), Bag, Stores, OuterOwner);
+	UBeamJsonUtils::DeserializeArray<UOfferDefinition*>(TEXT("offerDefinitions"), Bag, OfferDefinitions, OuterOwner);
 }
 
 

@@ -19,8 +19,8 @@ void UWebhookInvocationStrategy::BeamSerializeProperties(TUnrealPrettyJsonSerial
 
 void UWebhookInvocationStrategy::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("invocationType")), InvocationType);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("retryType")), RetryType);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("invocationType"), Bag, InvocationType);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("retryType"), Bag, RetryType);
 }
 
 

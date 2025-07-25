@@ -21,16 +21,13 @@ public:
 	TArray<UDeveloperUserDataStreamData*> UpdatedUsers = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<UDeveloperUserDataStreamData*> SavedUsers = {};
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TArray<UDeveloperUserDataStreamData*> CorruptedUsers = {};
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
 	{
 		UBeamJsonUtils::SerializeArray<UDeveloperUserDataStreamData*>(TEXT("CreatedUsers"), CreatedUsers, Serializer);
 		UBeamJsonUtils::SerializeArray<UDeveloperUserDataStreamData*>(TEXT("DeletedUsers"), DeletedUsers, Serializer);
 		UBeamJsonUtils::SerializeArray<UDeveloperUserDataStreamData*>(TEXT("UpdatedUsers"), UpdatedUsers, Serializer);
-		UBeamJsonUtils::SerializeArray<UDeveloperUserDataStreamData*>(TEXT("SavedUsers"), SavedUsers, Serializer);
-		UBeamJsonUtils::SerializeArray<UDeveloperUserDataStreamData*>(TEXT("CorruptedUsers"), CorruptedUsers, Serializer);	
+		UBeamJsonUtils::SerializeArray<UDeveloperUserDataStreamData*>(TEXT("SavedUsers"), SavedUsers, Serializer);	
 	}
 
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
@@ -38,17 +35,15 @@ public:
 		UBeamJsonUtils::SerializeArray<UDeveloperUserDataStreamData*>(TEXT("CreatedUsers"), CreatedUsers, Serializer);
 		UBeamJsonUtils::SerializeArray<UDeveloperUserDataStreamData*>(TEXT("DeletedUsers"), DeletedUsers, Serializer);
 		UBeamJsonUtils::SerializeArray<UDeveloperUserDataStreamData*>(TEXT("UpdatedUsers"), UpdatedUsers, Serializer);
-		UBeamJsonUtils::SerializeArray<UDeveloperUserDataStreamData*>(TEXT("SavedUsers"), SavedUsers, Serializer);
-		UBeamJsonUtils::SerializeArray<UDeveloperUserDataStreamData*>(TEXT("CorruptedUsers"), CorruptedUsers, Serializer);	
+		UBeamJsonUtils::SerializeArray<UDeveloperUserDataStreamData*>(TEXT("SavedUsers"), SavedUsers, Serializer);	
 	}
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		UBeamJsonUtils::DeserializeArray<UDeveloperUserDataStreamData*>(Bag->GetArrayField(TEXT("CreatedUsers")), CreatedUsers, OuterOwner);
-		UBeamJsonUtils::DeserializeArray<UDeveloperUserDataStreamData*>(Bag->GetArrayField(TEXT("DeletedUsers")), DeletedUsers, OuterOwner);
-		UBeamJsonUtils::DeserializeArray<UDeveloperUserDataStreamData*>(Bag->GetArrayField(TEXT("UpdatedUsers")), UpdatedUsers, OuterOwner);
-		UBeamJsonUtils::DeserializeArray<UDeveloperUserDataStreamData*>(Bag->GetArrayField(TEXT("SavedUsers")), SavedUsers, OuterOwner);
-		UBeamJsonUtils::DeserializeArray<UDeveloperUserDataStreamData*>(Bag->GetArrayField(TEXT("CorruptedUsers")), CorruptedUsers, OuterOwner);	
+		UBeamJsonUtils::DeserializeArray<UDeveloperUserDataStreamData*>(TEXT("CreatedUsers"), Bag, CreatedUsers, OuterOwner);
+		UBeamJsonUtils::DeserializeArray<UDeveloperUserDataStreamData*>(TEXT("DeletedUsers"), Bag, DeletedUsers, OuterOwner);
+		UBeamJsonUtils::DeserializeArray<UDeveloperUserDataStreamData*>(TEXT("UpdatedUsers"), Bag, UpdatedUsers, OuterOwner);
+		UBeamJsonUtils::DeserializeArray<UDeveloperUserDataStreamData*>(TEXT("SavedUsers"), Bag, SavedUsers, OuterOwner);	
 	}
 };
 

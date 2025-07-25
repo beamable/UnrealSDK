@@ -22,7 +22,7 @@ void UMicroserviceSecretResponse::BeamSerializeProperties(TUnrealPrettyJsonSeria
 
 void UMicroserviceSecretResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("secret")), Secret);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("secret"), Bag, Secret);
 }
 
 

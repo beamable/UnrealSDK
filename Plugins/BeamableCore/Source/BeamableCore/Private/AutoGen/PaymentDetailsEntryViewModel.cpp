@@ -37,13 +37,13 @@ void UPaymentDetailsEntryViewModel::BeamSerializeProperties(TUnrealPrettyJsonSer
 
 void UPaymentDetailsEntryViewModel::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("reference")), Reference);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("name")), Name);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("quantity")), Quantity);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("sku")), Sku);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("price")), Price);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("gameplace")), Gameplace);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("providerProductId")), ProviderProductId);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("reference"), Bag, Reference);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("name"), Bag, Name);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("quantity"), Bag, Quantity);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("sku"), Bag, Sku);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("price"), Bag, Price);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("gameplace"), Bag, Gameplace);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("providerProductId"), Bag, ProviderProductId);
 	UBeamJsonUtils::DeserializeOptional<FString>("subcategory", Bag, Subcategory, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("localPrice", Bag, LocalPrice, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("category", Bag, Category, OuterOwner);

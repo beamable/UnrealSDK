@@ -32,8 +32,8 @@ public:
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("beamoId")), BeamoId);
-		UBeamJsonUtils::DeserializeArray<URequiredFileEditStreamData*>(Bag->GetArrayField(TEXT("fileEdits")), FileEdits, OuterOwner);	
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("beamoId"), Bag, BeamoId);
+		UBeamJsonUtils::DeserializeArray<URequiredFileEditStreamData*>(TEXT("fileEdits"), Bag, FileEdits, OuterOwner);	
 	}
 };
 
@@ -64,8 +64,8 @@ public:
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("code")), Code);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("status")), Status);	
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("code"), Bag, Code);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("status"), Bag, Status);	
 	}
 };
 

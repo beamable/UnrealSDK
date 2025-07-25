@@ -33,10 +33,10 @@ void UDataDomain::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serialize
 
 void UDataDomain::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("mongoSSLEnabled")), bMongoSSLEnabled);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("mongoSharded")), bMongoSharded);
-	UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("memcachedHosts")), MemcachedHosts, OuterOwner);
-	UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("mongoHosts")), MongoHosts, OuterOwner);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("mongoSSLEnabled"), Bag, bMongoSSLEnabled);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("mongoSharded"), Bag, bMongoSharded);
+	UBeamJsonUtils::DeserializeArray<FString>(TEXT("memcachedHosts"), Bag, MemcachedHosts, OuterOwner);
+	UBeamJsonUtils::DeserializeArray<FString>(TEXT("mongoHosts"), Bag, MongoHosts, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<bool>("mongoSSL", Bag, bMongoSSL, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("mongoSrvAddress", Bag, MongoSrvAddress, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<TArray<FString>, FString>("messageBusAnalytics", Bag, MessageBusAnalytics, OuterOwner);

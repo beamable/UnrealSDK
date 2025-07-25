@@ -22,7 +22,7 @@ void UMicroserviceRegistrationsResponse::BeamSerializeProperties(TUnrealPrettyJs
 
 void UMicroserviceRegistrationsResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeArray<UMicroserviceRegistrations*>(Bag->GetArrayField(TEXT("registrations")), Registrations, OuterOwner);
+	UBeamJsonUtils::DeserializeArray<UMicroserviceRegistrations*>(TEXT("registrations"), Bag, Registrations, OuterOwner);
 }
 
 

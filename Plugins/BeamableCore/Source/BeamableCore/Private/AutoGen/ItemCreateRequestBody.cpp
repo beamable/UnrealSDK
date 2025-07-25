@@ -19,8 +19,8 @@ void UItemCreateRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer
 
 void UItemCreateRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("contentId")), ContentId);
-	UBeamJsonUtils::DeserializeArray<UItemProperty*>(Bag->GetArrayField(TEXT("properties")), Properties, OuterOwner);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("contentId"), Bag, ContentId);
+	UBeamJsonUtils::DeserializeArray<UItemProperty*>(TEXT("properties"), Bag, Properties, OuterOwner);
 }
 
 

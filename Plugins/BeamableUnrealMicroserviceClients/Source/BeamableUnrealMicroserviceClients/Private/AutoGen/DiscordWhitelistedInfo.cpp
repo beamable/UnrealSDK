@@ -22,7 +22,7 @@ void UDiscordWhitelistedInfo::BeamSerializeProperties(TUnrealPrettyJsonSerialize
 
 void UDiscordWhitelistedInfo::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("matchmaking_discord_whitelisted")), bMatchmakingDiscordWhitelisted);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("matchmaking_discord_whitelisted"), Bag, bMatchmakingDiscordWhitelisted);
 }
 
 
