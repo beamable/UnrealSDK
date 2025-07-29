@@ -154,6 +154,14 @@ struct FFilterInventoryCache
 	TArray<TContent*> Contents;
 
 	TArray<TState> States;
+
+	FFilterInventoryCache() {  }
+
+	FFilterInventoryCache(TArray<TContent*> Contents, TArray<TState> States)
+		: Contents(Contents),
+		  States(States)
+	{
+	}
 };
 
 USTRUCT()

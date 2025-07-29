@@ -3,7 +3,6 @@
 
 #include "Subsystems/Inventory/BeamInventorySubsystem.h"
 
-#include "IDetailTreeNode.h"
 #include "AutoGen/ItemDeleteRequestBody.h"
 #include "AutoGen/ItemUpdateRequestBody.h"
 #include "AutoGen/Optionals/OptionalArrayOfItemDeleteRequestBody.h"
@@ -17,7 +16,6 @@
 #include "BeamNotifications/SubSystems/BeamInventoryNotifications.h"
 #include "Subsystems/Content/BeamContentSubsystem.h"
 #include "Subsystems/LiveOps/BeamAnnouncementsSubsystem.h"
-#include "VerseVM/VVMPackageTypes.h"
 
 bool FBeamInventoryState::TryGetPlayerCurrencyProperties(const FBeamContentId& CurrencyId, FBeamPlayerCurrency& Currency)
 {

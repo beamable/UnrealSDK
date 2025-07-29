@@ -156,11 +156,11 @@ public:
 
 	TMap<FBeamPIE_UserSlotHandle, FDelegateHandle> LobbyJoinedHandles;
 	TMap<FBeamPIE_UserSlotHandle, FDelegateHandle> UserSlotAuthenticatedHandles;
+	TMap<FBeamPIE_UserSlotHandle, FBeamGamerTag> ServerGamerTags;
 
 #if WITH_EDITOR
 	FDelegateHandle StartPIEHandler;
 	FDelegateHandle OnInstancePreLoadMap;
-	TMap<FBeamPIE_UserSlotHandle, FBeamGamerTag> ServerGamerTags;
 #endif
 
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override
