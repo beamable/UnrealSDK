@@ -119,7 +119,7 @@ void FBeamContentIdCustomization::CustomizeHeader(TSharedRef<IPropertyHandle> St
 			{
 				Ids.Append(ContentType.Value);
 			}
-			if (Id.IsEmpty())
+			if (Id.IsEmpty() && Ids.Num() > 0)
 			{
 				AsStringPropertyHandle->SetValue(Ids[0]->ToString());
 				Id = Ids[0]->ToString();

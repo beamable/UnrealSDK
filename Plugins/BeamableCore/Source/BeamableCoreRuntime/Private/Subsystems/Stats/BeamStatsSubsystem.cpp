@@ -97,8 +97,28 @@ void UBeamStatsSubsystem::OnUserSignedIn_Implementation(const FUserSlot& UserSlo
 		}
 	}
 
+	ResultOp = RequestTracker->CPP_BeginOperation({UserSlot}, GetName(), {});
+	
+	auto OperationHandler = FBeamOperationEventHandlerCode::CreateLambda([ResultOp, this, UserSlot, UserGamerTag](const FBeamOperationEvent& Event)
+	{
+		if (Event.EventType != OET_SUCCESS)
+		{
+			RequestTracker->TriggerOperationError(ResultOp, Event.EventCode);
+		}
+	});
+	
 	FBeamStatsType ClientPublicStats = UBeamStatsTypeLibrary::MakeStatsType(Client, Public, UserGamerTag);
-	ResultOp = RefreshStatsOperation(UserSlot, ClientPublicStats, {});
+	auto HandlerPublic = CPP_RefreshStatsOperation(UserSlot, ClientPublicStats, OperationHandler);
+	FBeamStatsType ClientPrivateStats = UBeamStatsTypeLibrary::MakeStatsType(Client, Private, UserGamerTag);
+	auto HandlerPrivate = CPP_RefreshStatsOperation(UserSlot, ClientPrivateStats, OperationHandler);
+	
+	RequestTracker->CPP_WaitAll({}, {HandlerPublic, HandlerPrivate}, {}, FOnWaitCompleteCode::CreateLambda([this, ResultOp](const FBeamWaitCompleteEvent& Event)
+	{
+		if (RequestTracker->IsOperationActive(ResultOp))
+		{
+			RequestTracker->TriggerOperationSuccess(ResultOp, TEXT("Success"));
+		}
+	}));
 }
 
 void UBeamStatsSubsystem::OnUserSignedOut_Implementation(const FUserSlot& UserSlot, const EUserSlotClearedReason Reason, const FBeamRealmUser& BeamRealmUser, FBeamOperationHandle& ResultOp)
@@ -305,6 +325,13 @@ FBeamOperationHandle UBeamStatsSubsystem::CPP_IncrementStatsOperation(FUserSlot 
 
 void UBeamStatsSubsystem::RefreshStats(FUserSlot UserSlot, FBeamStatsType Type, FBeamOperationHandle Op)
 {
+	auto StatType = Type;
+	
+	TEnumAsByte<EBeamStatsDomain> Domain;
+	TEnumAsByte<EBeamStatsVisibility> Visibility;
+	FBeamGamerTag GamerTag;
+	
+	UBeamStatsTypeLibrary::BreakStatsType(Type, Domain, Visibility, GamerTag);
 	// Ensure we have a user at the given slot.
 	FBeamRealmUser RealmUser;
 	if (!IsRunningDedicatedServer())
@@ -314,14 +341,22 @@ void UBeamStatsSubsystem::RefreshStats(FUserSlot UserSlot, FBeamStatsType Type, 
 			RequestTracker->TriggerOperationError(Op, TEXT("NO_AUTHENTICATED_USER_AT_SLOT"));
 			return;
 		}
+		
+		// Get the stat key for this user, if none is provided
+		if (GamerTag.AsString.IsEmpty())
+		{
+			GamerTag = RealmUser.GamerTag;
+			StatType = UBeamStatsTypeLibrary::CopyStatsTypeWithGamerTag(Type, RealmUser.GamerTag);
+		}
+		
+		if (Domain == EBeamStatsDomain::Client && Visibility == EBeamStatsVisibility::Private && RealmUser.GamerTag.AsString != GamerTag.AsString)
+		{
+			RequestTracker->TriggerOperationError(Op, TEXT("TRY_TO_ACCESS_OTHER_USER_PRIVATE_STAT"));
+			return;
+		}
 	}
+	
 
-	// Get the stat key for this user, if none is provided
-	auto StatType = Type;
-	if (UBeamStatsTypeLibrary::GetGamerTag(Type).AsString.IsEmpty())
-	{
-		StatType = UBeamStatsTypeLibrary::CopyStatsTypeWithGamerTag(Type, RealmUser.GamerTag);
-	}
 
 	auto Handler = FOnGetClientFullResponse::CreateLambda([this, Op, UserSlot, StatType](FGetClientFullResponse Resp)
 	{
@@ -376,6 +411,15 @@ void UBeamStatsSubsystem::RefreshStats(FUserSlot UserSlot, FBeamStatsType Type, 
 
 void UBeamStatsSubsystem::RefreshSingleStat(FUserSlot UserSlot, FBeamStatsType Type, FString StatKey, FBeamOperationHandle Op)
 {
+	TEnumAsByte<EBeamStatsDomain> Domain;
+	TEnumAsByte<EBeamStatsVisibility> Visibility;
+	FBeamGamerTag GamerTag;
+	
+	UBeamStatsTypeLibrary::BreakStatsType(Type, Domain, Visibility, GamerTag);
+
+	// Get the stat key for this user, if none is provided
+	auto StatType = Type;
+	
 	// Ensure we have a user at the given slot when running in clients.
 	FBeamRealmUser RealmUser;
 	if (!IsRunningDedicatedServer())
@@ -385,13 +429,19 @@ void UBeamStatsSubsystem::RefreshSingleStat(FUserSlot UserSlot, FBeamStatsType T
 			RequestTracker->TriggerOperationError(Op, TEXT("NO_AUTHENTICATED_USER_AT_SLOT"));
 			return;
 		}
-	}
+		
+		// Get the stat key for this user, if none is provided
+		if (GamerTag.AsString.IsEmpty())
+		{
+			GamerTag = RealmUser.GamerTag;
+			StatType = UBeamStatsTypeLibrary::CopyStatsTypeWithGamerTag(Type, RealmUser.GamerTag);
+		}
 
-	// Get the stat key for this user, if none is provided
-	auto StatType = Type;
-	if (UBeamStatsTypeLibrary::GetGamerTag(Type).AsString.IsEmpty())
-	{
-		StatType = UBeamStatsTypeLibrary::CopyStatsTypeWithGamerTag(Type, RealmUser.GamerTag);
+		if (Domain == EBeamStatsDomain::Client && Visibility == EBeamStatsVisibility::Private && RealmUser.GamerTag.AsString != GamerTag.AsString)
+		{
+			RequestTracker->TriggerOperationError(Op, TEXT("TRY_TO_ACCESS_OTHER_USER_PRIVATE_STAT"));
+			return;
+		}
 	}
 
 	auto Handler = FOnGetClientFullResponse::CreateLambda([this, Op, UserSlot, StatType](FGetClientFullResponse Resp)

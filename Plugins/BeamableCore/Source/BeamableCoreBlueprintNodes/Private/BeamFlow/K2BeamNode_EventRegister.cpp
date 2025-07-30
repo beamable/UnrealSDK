@@ -68,16 +68,24 @@ void UK2BeamNode_EventRegister::AllocateDefaultPins()
 		}
 	}
 
+	bool HasUnbindPin = false;
 	// Iterate over all FMulticastDelegateProperty (bluprintassingnable delegates) and create the pin
 	for (TFieldIterator<FMulticastDelegateProperty> It(ReferenceClass); It; ++It)
 	{
 		FMulticastDelegateProperty* DelegateProp = *It;
 		if (DelegateProp && IsValidProperty(DelegateProp) && ShowUnbindAsExecuteProperty(DelegateProp))
 		{
+			HasUnbindPin = true;
 			// Create the out execution flow pin
 			const auto UnbindPin = CreatePin(EGPD_Input, UEdGraphSchema_K2::PC_Exec, FName(DelegateProp->GetName() + TEXT("_Unbind")));
 			UnbindPin->PinFriendlyName = FText::FromName(FName(TEXT("Unbind - ") + DelegateProp->GetName()));
 		}
+	}
+
+	if (HasUnbindPin)
+	{
+		const auto ThenUnbindPin = CreatePin(EGPD_Output, UEdGraphSchema_K2::PC_Exec, FName("Then_Unbind"));
+		ThenUnbindPin->PinFriendlyName = FText::FromName(FName("After Unbind - Then"));
 	}
 }
 
@@ -286,6 +294,14 @@ void UK2BeamNode_EventRegister::ExpandNode(FKismetCompilerContext& CompilerConte
 			K2Schema->TryCreateConnection(DelegatePinsMap[DelegateProp->GetName()], RemoveDelegate_Delegate);
 
 			CompilerContext.MovePinLinksToIntermediate(*FindPin(DelegateProp->GetName() + TEXT("_Unbind")), *RemoveDelegate_ExecPin);
+
+			UEdGraphPin* ThenUnbind = FindPin(FName("Then_Unbind"));
+			
+			if (ThenUnbind && ThenUnbind->LinkedTo.Num() > 0 && K2Schema->TryCreateConnection(ThenUnbind->LinkedTo[0], RemoveDelegateNode->GetThenPin()))
+			{
+				auto UnbindThenPin = ThenUnbind->LinkedTo[0];
+				RemoveDelegateNode->GetThenPin()->MakeLinkTo(UnbindThenPin);
+			}
 		}
 	}
 
