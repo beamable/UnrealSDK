@@ -40,19 +40,24 @@ TSharedRef<SWidget> SBeamContentIdPin::GetDefaultValueWidget()
 
 	const auto InitialSelectedType = GetSelectedType();
 
-
+	// If the pin is connected with some other pin then we show only the category not the specific item
 	if (GraphPinObj->LinkedTo.Num() > 0)
 	{
-		return SAssignNew(WidgetContainer, SVerticalBox)
+		// We only shows the category if the beam target cast meta exists in tha node.
+		FString TargetMeta = GraphPinObj->GetOwningNode()->GetPinMetaData(GraphPinObj->PinName, FName(BeamK2::MD_BeamCastParameterName));
+		if (!TargetMeta.IsEmpty())
+		{
+			return SAssignNew(WidgetContainer, SVerticalBox)
 			+ SVerticalBox::Slot()
-			[
-				SAssignNew(TypeComboBox, SNameComboBox) // you can display any widget here
-				                                       .ContentPadding(FMargin(6.0f, 2.0f)) // you can stylize how you want by the way, check Slate library
-				                                       .OptionsSource(&ContentTypeNames) // this to create all possibilities
-				                                       .InitiallySelectedItem(InitialSelectedType) // the default or previous selected value
-				                                       .OnComboBoxOpening(this, &SBeamContentIdPin::OnTypeComboBoxOpening) // this event is defined by the SNameComboBox
-				                                       .OnSelectionChanged(this, &SBeamContentIdPin::OnTypeSelected) // dito
-			];
+				[
+					SAssignNew(TypeComboBox, SNameComboBox) // you can display any widget here
+														   .ContentPadding(FMargin(6.0f, 2.0f)) // you can stylize how you want by the way, check Slate library
+														   .OptionsSource(&ContentTypeNames) // this to create all possibilities
+														   .InitiallySelectedItem(InitialSelectedType) // the default or previous selected value
+														   .OnComboBoxOpening(this, &SBeamContentIdPin::OnTypeComboBoxOpening) // this event is defined by the SNameComboBox
+														   .OnSelectionChanged(this, &SBeamContentIdPin::OnTypeSelected) // dito
+				];
+		}
 	}
 	else
 	{
@@ -76,6 +81,7 @@ TSharedRef<SWidget> SBeamContentIdPin::GetDefaultValueWidget()
 				                                     .OnSelectionChanged(this, &SBeamContentIdPin::OnIdSelected) // dito
 			];
 	}
+	return SGraphPin::GetDefaultValueWidget();
 }
 
 void SBeamContentIdPin::OnIdSelected(TSharedPtr<FName> ItemSelected, ESelectInfo::Type SelectInfo)

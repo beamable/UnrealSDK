@@ -103,6 +103,46 @@ bool UBeamFriendsSubsystem::TryGetUserFriendState(FUserSlot UserSlot, FBeamFrien
 	return TryGetPlayerFriendState(RealmUser.GamerTag, FriendState);
 }
 
+bool UBeamFriendsSubsystem::TryGetUserFriendsInfo(FUserSlot UserSlot, TArray<FBeamFriendInfo>& Friends)
+{
+	FBeamRealmUser RealmUser;
+	if (!Runtime->UserSlotSystem->GetUserDataAtSlot(UserSlot, RealmUser, this))
+	{
+		return false;
+	}
+	return TryGetPlayerFriendsInfo(RealmUser.GamerTag, Friends);
+}
+
+bool UBeamFriendsSubsystem::TryGetUserBlockedFriends(FUserSlot UserSlot, TArray<FBeamPlayerBlocked>& BlockedFriends)
+{
+	FBeamRealmUser RealmUser;
+	if (!Runtime->UserSlotSystem->GetUserDataAtSlot(UserSlot, RealmUser, this))
+	{
+		return false;
+	}
+	return TryGetPlayerBlockedFriends(RealmUser.GamerTag, BlockedFriends);
+}
+
+bool UBeamFriendsSubsystem::TryGetUserReceivedInvites(FUserSlot UserSlot, TArray<FBeamFriendInvite>& ReceivedInvites)
+{
+	FBeamRealmUser RealmUser;
+	if (!Runtime->UserSlotSystem->GetUserDataAtSlot(UserSlot, RealmUser, this))
+	{
+		return false;
+	}
+	return TryGetPlayerReceivedInvites(RealmUser.GamerTag, ReceivedInvites);
+}
+
+bool UBeamFriendsSubsystem::TryGetUserSentInvites(FUserSlot UserSlot, TArray<FBeamFriendInvite>& SentInvites)
+{
+	FBeamRealmUser RealmUser;
+	if (!Runtime->UserSlotSystem->GetUserDataAtSlot(UserSlot, RealmUser, this))
+	{
+		return false;
+	}
+	return TryGetPlayerSentInvites(RealmUser.GamerTag, SentInvites);
+}
+
 bool UBeamFriendsSubsystem::TryGetPlayerFriendState(FBeamGamerTag PlayerGamerTag, FBeamFriendState& FriendState)
 {
 	if (!FriendStates.Contains(PlayerGamerTag))
@@ -111,6 +151,54 @@ bool UBeamFriendsSubsystem::TryGetPlayerFriendState(FBeamGamerTag PlayerGamerTag
 	}
 
 	FriendState = FriendStates[PlayerGamerTag];
+
+	return true;
+}
+
+bool UBeamFriendsSubsystem::TryGetPlayerFriendsInfo(FBeamGamerTag PlayerGamerTag, TArray<FBeamFriendInfo>& Friends)
+{
+	if (!FriendStates.Contains(PlayerGamerTag))
+	{
+		return false;
+	}
+
+	Friends = FriendStates[PlayerGamerTag].Friends;
+
+	return true;
+}
+
+bool UBeamFriendsSubsystem::TryGetPlayerBlockedFriends(FBeamGamerTag PlayerGamerTag, TArray<FBeamPlayerBlocked>& BlockedFriends)
+{
+	if (!FriendStates.Contains(PlayerGamerTag))
+	{
+		return false;
+	}
+
+	BlockedFriends = FriendStates[PlayerGamerTag].BlockedPlayers;
+
+	return true;
+}
+
+bool UBeamFriendsSubsystem::TryGetPlayerReceivedInvites(FBeamGamerTag PlayerGamerTag, TArray<FBeamFriendInvite>& ReceivedInvites)
+{
+	if (!FriendStates.Contains(PlayerGamerTag))
+	{
+		return false;
+	}
+
+	ReceivedInvites = FriendStates[PlayerGamerTag].ReceivedInvites;
+
+	return true;
+}
+
+bool UBeamFriendsSubsystem::TryGetPlayerSentInvites(FBeamGamerTag PlayerGamerTag, TArray<FBeamFriendInvite>& SentInvites)
+{
+	if (!FriendStates.Contains(PlayerGamerTag))
+	{
+		return false;
+	}
+
+	SentInvites = FriendStates[PlayerGamerTag].SentInvites;
 
 	return true;
 }

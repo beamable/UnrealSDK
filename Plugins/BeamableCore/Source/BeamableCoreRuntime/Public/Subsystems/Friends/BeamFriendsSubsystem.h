@@ -367,6 +367,62 @@ public:
 	bool TryGetUserFriendState(FUserSlot UserSlot, FBeamFriendState& FriendState);
 
 	/**
+	 * @brief Attempts to retrieve all player friend info for a specific player using the UserSlot.
+	 *
+	 * This gets the array for the friends infos.
+	 *
+	 * @param UserSlot: The UserSlot that you try to get the friend infos array.
+	 * @param Friends: The reference for the out result of the players info array.
+	 *
+	 * @return Returns False if the user don't have the friend state initialized or if it's not possible to retrieve the data.
+	 */
+	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Friend",
+		meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext", ExpandBoolAsExecs="ReturnValue"))
+	bool TryGetUserFriendsInfo(FUserSlot UserSlot, TArray<FBeamFriendInfo>& Friends);
+
+	/**
+	 * @brief Attempts to retrieve all blocked players for a specific player using the UserSlot.
+	 *
+	 * This gets the array for the blocked players.
+	 *
+	 * @param UserSlot: The UserSlot that you try to get the blocked players list.
+	 * @param BlockedFriends: The reference for the out result of the blocked players array.
+	 *
+	 * @return Returns False if the user don't have the friend state initialized or if it's not possible to retrieve the data.
+	 */
+	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Friend",
+		meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext", ExpandBoolAsExecs="ReturnValue"))
+	bool TryGetUserBlockedFriends(FUserSlot UserSlot, TArray<FBeamPlayerBlocked>& BlockedFriends);
+
+	/**
+	 * @brief Attempts to retrieve all received friend invites for a specific player using the UserSlot.
+	 *
+	 * This gets the array for the received invites.
+	 *
+	 * @param UserSlot: The UserSlot that you try to get the friend state.
+	 * @param ReceivedInvites: The reference for the out result of the received invites array.
+	 *
+	 * @return Returns False if the user don't have the friend state initialized or if it's not possible to retrieve the data.
+	 */
+	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Friend",
+		meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext", ExpandBoolAsExecs="ReturnValue"))
+	bool TryGetUserReceivedInvites(FUserSlot UserSlot, TArray<FBeamFriendInvite>& ReceivedInvites);
+
+	/**
+	 * @brief Attempts to retrieve all sent friend invites for a specific player using the UserSlot.
+	 *
+	 * This gets the array for the sent invites.
+	 *
+	 * @param UserSlot: The UserSlot that you try to get the friend state.
+	 * @param SentInvites: The reference for the out result of the sent invites array.
+	 *
+	 * @return Returns False if the user don't have the friend state initialized or if it's not possible to retrieve the data.
+	 */
+	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Friend",
+		meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext", ExpandBoolAsExecs="ReturnValue"))
+	bool TryGetUserSentInvites(FUserSlot UserSlot, TArray<FBeamFriendInvite>& SentInvites);
+	
+	/**
 	 * @brief Attempts to retrieve the friend state for a specific player using the FBeamGamerTag.
 	 *
 	 * This gets the FriendState from the local state.
@@ -380,6 +436,62 @@ public:
 		meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext", ExpandBoolAsExecs="ReturnValue"))
 	bool TryGetPlayerFriendState(FBeamGamerTag PlayerGamerTag, FBeamFriendState& FriendState);
 
+	/**
+	 * @brief Attempts to retrieve all player friend info for a specific player using the FBeamGamerTag.
+	 *
+	 * This gets the array for the friends infos.
+	 *
+	 * @param PlayerGamerTag: The PlayerGamerTag that you try to get the friend state.
+	 * @param Friends: The reference for the out result of the players info array.
+	 *
+	 * @return Returns False if the user don't have the friend state initialized or if it's not possible to retrieve the data.
+	 */
+	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Friend",
+	meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext", ExpandBoolAsExecs="ReturnValue"))
+	bool TryGetPlayerFriendsInfo(FBeamGamerTag PlayerGamerTag, TArray<FBeamFriendInfo>& Friends);
+
+	/**
+	 * @brief Attempts to retrieve all blocked players for a specific player using the FBeamGamerTag.
+	 *
+	 * This gets the array for the blocked players.
+	 *
+	 * @param PlayerGamerTag: The PlayerGamerTag that you try to get the friend state.
+	 * @param BlockedFriends: The reference for the out result of the blocked players array.
+	 *
+	 * @return Returns False if the user don't have the friend state initialized or if it's not possible to retrieve the data.
+	 */
+	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Friend",
+		meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext", ExpandBoolAsExecs="ReturnValue"))
+	bool TryGetPlayerBlockedFriends(FBeamGamerTag PlayerGamerTag, TArray<FBeamPlayerBlocked>& BlockedFriends);
+
+	/**
+	 * @brief Attempts to retrieve all received friend invites for a specific player using the FBeamGamerTag.
+	 *
+	 * This gets the array for the received invites.
+	 *
+	 * @param PlayerGamerTag: The PlayerGamerTag that you try to get the friend state.
+	 * @param ReceivedInvites: The reference for the out result of the received invites array.
+	 *
+	 * @return Returns False if the user don't have the friend state initialized or if it's not possible to retrieve the data.
+	 */
+	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Friend",
+		meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext", ExpandBoolAsExecs="ReturnValue"))
+	bool TryGetPlayerReceivedInvites(FBeamGamerTag PlayerGamerTag, TArray<FBeamFriendInvite>& ReceivedInvites);
+
+	/**
+	 * @brief Attempts to retrieve all sent friend invites for a specific player using the FBeamGamerTag.
+	 *
+	 * This gets the array for the sent invites.
+	 *
+	 * @param PlayerGamerTag: The PlayerGamerTag that you try to get the friend state.
+	 * @param SentInvites: The reference for the out result of the sent invites array.
+	 *
+	 * @return Returns False if the user don't have the friend state initialized or if it's not possible to retrieve the data.
+	 */
+	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Friend",
+		meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext", ExpandBoolAsExecs="ReturnValue"))
+	bool TryGetPlayerSentInvites(FBeamGamerTag PlayerGamerTag, TArray<FBeamFriendInvite>& SentInvites);
+	
 	/**
 	 * @brief Attempts to retrieve the friend presence status for a specific player using the FBeamGamerTag.
 	 *

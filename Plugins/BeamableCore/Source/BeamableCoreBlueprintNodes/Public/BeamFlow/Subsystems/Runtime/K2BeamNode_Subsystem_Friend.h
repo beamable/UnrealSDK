@@ -7,6 +7,7 @@
 #include "BeamFlow/K2BeamNode_EventUnregister.h"
 #include "BeamFlow/K2BeamNode_EventUnregisterAll.h"
 #include "BeamFlow/K2BeamNode_GetLocalState.h"
+#include "BeamFlow/K2BeamNode_GetLocalStateForeach.h"
 #include "BeamFlow/K2BeamNode_Operation.h"
 #include "Subsystems/Friends/BeamFriendsSubsystem.h"
 #include "K2BeamNode_Subsystem_Friend.generated.h"
@@ -123,6 +124,150 @@ class UK2BeamNode_GetLocalState_TryGetUserFriendState : public UK2BeamNode_GetLo
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamFriendsSubsystem, GetSelf); }
 
 	virtual FName GetFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamFriendsSubsystem, TryGetUserFriendState); }
+
+	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamFriendsSubsystem::StaticClass(); }
+};
+
+#undef LOCTEXT_NAMESPACE
+
+#define LOCTEXT_NAMESPACE "K2BeamNode_GetLocalStateForeach_TryGetUserFriendsInfo"
+
+UCLASS(meta=(BeamGetLocalStateForeach))
+class UK2BeamNode_GetLocalStateForeach_TryGetUserFriendsInfo : public UK2BeamNode_GetLocalStateForeach
+{
+	GENERATED_BODY()
+
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Local State - Friends - TryGetUserFriendsInfo"); }
+
+	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamFriendsSubsystem, GetSelf); }
+
+	virtual FName GetFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamFriendsSubsystem, TryGetUserFriendsInfo); }
+
+	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamFriendsSubsystem::StaticClass(); }
+};
+
+#undef LOCTEXT_NAMESPACE
+
+#define LOCTEXT_NAMESPACE "K2BeamNode_GetLocalStateForeach_TryGetUserBlockedFriends"
+
+UCLASS(meta=(BeamGetLocalStateForeach))
+class UK2BeamNode_GetLocalStateForeach_TryGetUserBlockedFriends : public UK2BeamNode_GetLocalStateForeach
+{
+	GENERATED_BODY()
+
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Local State - Friends - TryGetUserBlockedFriends"); }
+
+	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamFriendsSubsystem, GetSelf); }
+
+	virtual FName GetFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamFriendsSubsystem, TryGetUserBlockedFriends); }
+
+	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamFriendsSubsystem::StaticClass(); }
+};
+
+#undef LOCTEXT_NAMESPACE
+
+#define LOCTEXT_NAMESPACE "K2BeamNode_GetLocalStateForeach_TryGetUserReceivedInvites"
+
+UCLASS(meta=(BeamGetLocalStateForeach))
+class UK2BeamNode_GetLocalStateForeach_TryGetUserReceivedInvites : public UK2BeamNode_GetLocalStateForeach
+{
+	GENERATED_BODY()
+
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Local State - Friends - TryGetUserReceivedInvites"); }
+
+	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamFriendsSubsystem, GetSelf); }
+
+	virtual FName GetFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamFriendsSubsystem, TryGetUserReceivedInvites); }
+
+	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamFriendsSubsystem::StaticClass(); }
+};
+
+#undef LOCTEXT_NAMESPACE
+
+#define LOCTEXT_NAMESPACE "K2BeamNode_GetLocalStateForeach_TryGetUserSentInvites"
+
+UCLASS(meta=(BeamGetLocalStateForeach))
+class UK2BeamNode_GetLocalStateForeach_TryGetUserSentInvites : public UK2BeamNode_GetLocalStateForeach
+{
+	GENERATED_BODY()
+
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Local State - Friends - TryGetUserSentInvites"); }
+
+	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamFriendsSubsystem, GetSelf); }
+
+	virtual FName GetFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamFriendsSubsystem, TryGetUserSentInvites); }
+
+	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamFriendsSubsystem::StaticClass(); }
+};
+
+#undef LOCTEXT_NAMESPACE
+
+#define LOCTEXT_NAMESPACE "K2BeamNode_GetLocalStateForeach_TryGetPlayerReceivedInvites"
+
+UCLASS(meta=(BeamGetLocalStateForeach))
+class UK2BeamNode_GetLocalStateForeach_TryGetPlayerReceivedInvites : public UK2BeamNode_GetLocalStateForeach
+{
+	GENERATED_BODY()
+
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Local State - Friends - TryGetPlayerReceivedInvites"); }
+
+	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamFriendsSubsystem, GetSelf); }
+
+	virtual FName GetFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamFriendsSubsystem, TryGetPlayerReceivedInvites); }
+
+	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamFriendsSubsystem::StaticClass(); }
+};
+
+#undef LOCTEXT_NAMESPACE
+
+#define LOCTEXT_NAMESPACE "K2BeamNode_GetLocalStateForeach_TryGetPlayerSentInvites"
+
+UCLASS(meta=(BeamGetLocalStateForeach))
+class UK2BeamNode_GetLocalStateForeach_TryGetPlayerSentInvites : public UK2BeamNode_GetLocalStateForeach
+{
+	GENERATED_BODY()
+
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Local State - Friends - TryGetPlayerSentInvites"); }
+
+	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamFriendsSubsystem, GetSelf); }
+
+	virtual FName GetFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamFriendsSubsystem, TryGetPlayerSentInvites); }
+
+	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamFriendsSubsystem::StaticClass(); }
+};
+
+#undef LOCTEXT_NAMESPACE
+
+#define LOCTEXT_NAMESPACE "K2BeamNode_GetLocalStateForeach_TryGetPlayerFriendsInfo"
+
+UCLASS(meta=(BeamGetLocalStateForeach))
+class UK2BeamNode_GetLocalStateForeach_TryGetPlayerFriendsInfo : public UK2BeamNode_GetLocalStateForeach
+{
+	GENERATED_BODY()
+
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Local State - Friends - TryGetPlayerFriendsInfo"); }
+
+	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamFriendsSubsystem, GetSelf); }
+
+	virtual FName GetFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamFriendsSubsystem, TryGetPlayerFriendsInfo); }
+
+	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamFriendsSubsystem::StaticClass(); }
+};
+
+#undef LOCTEXT_NAMESPACE
+
+#define LOCTEXT_NAMESPACE "K2BeamNode_GetLocalStateForeach_TryGetPlayerBlockedFriends"
+
+UCLASS(meta=(BeamGetLocalStateForeach))
+class UK2BeamNode_GetLocalStateForeach_TryGetPlayerBlockedFriends : public UK2BeamNode_GetLocalStateForeach
+{
+	GENERATED_BODY()
+
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Local State - Friends - TryGetPlayerBlockedFriends"); }
+
+	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamFriendsSubsystem, GetSelf); }
+
+	virtual FName GetFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamFriendsSubsystem, TryGetPlayerBlockedFriends); }
 
 	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamFriendsSubsystem::StaticClass(); }
 };
