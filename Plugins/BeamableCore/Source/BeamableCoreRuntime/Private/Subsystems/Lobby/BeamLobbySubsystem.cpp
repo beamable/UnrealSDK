@@ -1424,7 +1424,7 @@ void UBeamLobbySubsystem::AcceptUserIntoGameServer(const FUserSlot& Slot, const 
 		const auto bHasLobby = UGameplayStatics::HasOption(Options, "BeamLobbyId");
 
 		// If we are missing either of the two required options...			
-		if (!(bHasAccessToken || bHasLobby))
+		if (!bHasAccessToken || !bHasLobby)
 		{
 			// ... and we are configured to create a fake lobby...
 			const auto Setting = PIE->GetSelectedPIESettings();
@@ -1463,7 +1463,7 @@ void UBeamLobbySubsystem::AcceptUserIntoGameServer(const FUserSlot& Slot, const 
 
 			// ... make sure the provided Lobby id is managed by this game server
 			// (failing this is an invalid state -- you must ensure that the server has fetched the lobby data
-			// via the RegisterLobbyWithServerOperation before trying to accept any user)
+			// via the RegisterLobbyWithServerOperation before notifying users that they can connect via NotifyLobbyReadyForClients
 			ULobby* TargetLobby = nullptr;
 			if (!TryGetLobbyById(LobbyGuid, TargetLobby))
 			{
@@ -1495,7 +1495,7 @@ void UBeamLobbySubsystem::AcceptUserIntoGameServer(const FUserSlot& Slot, const 
 						}
 
 						// TODO: Expose hook here, after hook redesign.
-
+						
 						if (bIsInTargetLobby)
 							RequestTracker->TriggerOperationSuccess(Op, TEXT(""));
 						else

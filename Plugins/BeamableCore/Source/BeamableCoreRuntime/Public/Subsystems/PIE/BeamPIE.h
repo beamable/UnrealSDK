@@ -23,7 +23,7 @@
 #include "BeamPIE.generated.h"
 
 // UCLASS(BlueprintType, Blueprintable)
-// class AMyServerBootGameMode : public AGameModeBase
+// class AMyServerBootGameMode : public AGameModeBase, public IBeamPIEGameMode
 // {
 // 	GENERATED_BODY()
 //
@@ -38,12 +38,20 @@
 // 		//     Lobby->CPP_RefreshLobbyDataOperation({}, FBeamOperationEventHandlerCode::CreateLambda([](FBeamOperationEvent Evt)
 // 		//     {
 // 		//     	   if (Evt.CompletedWithSuccess())
-// 		//     	   { 
+// 		//     	   {
+//		//      	   // Game Maker code that will load every asset and prepare whatever needs preparing to begin accepting connections for players that are in this lobby.		
+//		//             PrepareLobbyForReceiveConnections()
+//		//      
 // 		//             // Once you have refreshed the lobby, if your server is properly initialized and ready to receive player connections, you should call
 // 		//             Lobby->CPP_SetLobbyAsReadyForConnectionsOperation({}, NewLobbyId, {});
 // 		//     	   }     	
 // 		//     }), NewLobbyId);
 // 	}
+//  
+//   OnBeamPIELobbyRegistered() {
+//      PrepareLobbyForReceiveConnections();
+// 		Lobby->CPP_SetLobbyAsReadyForConnectionsOperation({}, NewLobbyId, {});
+//   }
 //
 // 	virtual void PreLoginAsync(const FString& Options, const FString& Address, const FUniqueNetIdRepl& UniqueId, const FOnPreLoginCompleteDelegate& OnComplete) override
 // 	{
@@ -733,7 +741,7 @@ public:
 	{
 		if (Resp.State == RS_Success)
 		{
-			UE_LOG(LogBeamEditor, Log, TEXT("%s Server - Created Lobby."), *GetLogArgs(TEXT("Beam PIE Prepare"), WorldContext));
+			UE_LOG(LogBeamEditor, Log, TEXT("%s Server - Created Lobby."), *GetLogArgs(TEXT("Beam PIE Prepare"), WorldContext));			
 			RequestTracker->TriggerOperationSuccess(PrepareOp, TEXT(""));
 		}
 		else
