@@ -1406,9 +1406,11 @@ void UBeamLobbySubsystem::AcceptUserIntoGameServer(const FUserSlot& Slot, const 
 {
 	ensureAlwaysMsgf(Runtime->IsDedicatedGameServer(), TEXT("This can only be run from inside a dedicated server!"));
 
+	
 	// First thing is starting a BeamPIE operation that sees if it's initialization process is complete.
 	// Outside of PIE, this does NOTHING other than immediately complete.
 	const auto PIE = GEngine->GetEngineSubsystem<UBeamPIE>();
+	
 	const auto PostBeamPIE = FBeamOperationEventHandlerCode::CreateLambda([this, Options, Op, PIE](FBeamOperationEvent Evt)
 	{
 		// Do nothing on error or cancellation (should never happen unless something fails in the PIE initialization flow)
@@ -1504,7 +1506,15 @@ void UBeamLobbySubsystem::AcceptUserIntoGameServer(const FUserSlot& Slot, const 
 				}), Ctx, Op, this);
 		}
 	});
-	PIE->CPP_WaitForBeamPIEOperation(Slot, this, PostBeamPIE);
+	if (GetWorld()->WorldType != EWorldType::Type::PIE)
+	{
+		PIE->CPP_WaitForBeamPIEOperation(Slot, this, PostBeamPIE);
+	}else
+	{
+		FBeamOperationHandle OperationHandle = RequestTracker->CPP_BeginOperation({}, GetName(), PostBeamPIE);
+		RequestTracker->TriggerOperationSuccess(OperationHandle, TEXT(""));
+	}
+
 }
 
 // REQUEST HELPERS
@@ -1719,7 +1729,7 @@ void UBeamLobbySubsystem::OnLobbyUpdatedHandler(FLobbyUpdateNotificationMessage 
 					if (TryGetLobbyById(LobbyId, LobbyData))
 					{
 						// If this local player was the one who joined the lobby (was not in any lobby, but is in the refreshed lobby)
-						if (bWasNotInLobby && Lobby->LobbyId == Msg.LobbyId && Msg.Type == EBeamLobbyEvent::BEAM_PlayerJoined)
+						if (bWasNotInLobby && Lobby->LobbyId == Msg.LobbyId && Msg.Type == EBeamLobbyEvent::BEAM_PlayerJoined || Msg.Type == EBeamLobbyEvent::BEAM_LobbyCreated)
 						{
 							Lobby->OnLobbyJoinedCode.Broadcast(Slot, LobbyData, Msg);
 							Lobby->OnLobbyJoined.Broadcast(Slot, LobbyData, Msg);

@@ -184,50 +184,52 @@ public:
 #if WITH_EDITOR
 
 		// This block of code only runs on separate-process-PIE-instances.
-		if (!GEngine->IsEditor())
-		{
+		
 			// We setup a delegate that will run before the separate process begins loading its starting map. 
 			OnInstancePreLoadMap = FCoreUObjectDelegates::PreLoadMap.AddLambda([this](FString MapName)
 			{
-				// First, we parse out which PIE-instance this is from an argument that Unreal sends down to every separate-process-PIE.
-				FString GameUserSettingIni;
-				if (FParse::Value(FCommandLine::Get(), TEXT("GameUserSettingsINI="), GameUserSettingIni, false))
+				UE_LOG(LogTemp, Display, TEXT("OnInstancePreLoadMap %s"), *MapName);
+				if (!GEngine->IsEditor())
 				{
-					auto InstanceStr = GameUserSettingIni.Replace(TEXT("PIEGameUserSettings"), TEXT(""));
-					if (!FDefaultValueHelper::ParseInt(InstanceStr, InstanceOverride))
+					// First, we parse out which PIE-instance this is from an argument that Unreal sends down to every separate-process-PIE.
+					FString GameUserSettingIni;
+					if (FParse::Value(FCommandLine::Get(), TEXT("GameUserSettingsINI="), GameUserSettingIni, false))
 					{
-						UE_LOG(LogBeamEditor, Error, TEXT("Error on parse the override instance for the STR: %s"), *InstanceStr);
+						auto InstanceStr = GameUserSettingIni.Replace(TEXT("PIEGameUserSettings"), TEXT(""));
+						if (!FDefaultValueHelper::ParseInt(InstanceStr, InstanceOverride))
+						{
+							UE_LOG(LogBeamEditor, Error, TEXT("Error on parse the override instance for the STR: %s"), *InstanceStr);
+						}
 					}
+					else
+					{
+						UE_LOG(LogBeamEditor, Error, TEXT("Failed to read expected `GameUserSettingsINI` argument from separate-process-PIE-instance."));
+						SelectedSettings = DefaultSettings();
+						return;
+					}
+
+					// Then, we get the BeamPIEConfig and ensure it's values are loaded.
+					const auto Config = GetMutableDefault<UBeamPIEConfig>();
+					UE_LOG(LogTemp, Warning, TEXT("Standalone - Default Load BeamPIE Config - Is Running Server Locally: %d, Local Server Port: %s"),
+					       Config->bIsRunningGameServerLocally,
+					       *Config->CurrLocalServerPort);
+
+					Config->LoadConfig();
+					UE_LOG(LogTemp, Warning, TEXT("Standalone - Manual  Load BeamPIE Config - Is Running Server Locally: %d, Local Server Port: %s"),
+					       Config->bIsRunningGameServerLocally,
+					       *Config->CurrLocalServerPort);
+
+					// Then, we clear the subsystem state to ensure we have a blank slate.
+					bFinishedSetup = false;
+					LobbyJoinedHandles.Reset();
+					UserSlotAuthenticatedHandles.Reset();
+
+					// Finally, we select the correct settings based on the initial map for the server and then clean up this delegate.
+					SelectedSettings = ChooseSelectedPIESettings(UWorld::RemovePIEPrefix(MapName));
+					FCoreUObjectDelegates::PreLoadMap.Remove(OnInstancePreLoadMap);
 				}
-				else
-				{
-					UE_LOG(LogBeamEditor, Error, TEXT("Failed to read expected `GameUserSettingsINI` argument from separate-process-PIE-instance."));
-					SelectedSettings = DefaultSettings();
-					return;
-				}
-
-				// Then, we get the BeamPIEConfig and ensure it's values are loaded.
-				const auto Config = GetMutableDefault<UBeamPIEConfig>();
-				UE_LOG(LogTemp, Warning, TEXT("Standalone - Default Load BeamPIE Config - Is Running Server Locally: %d, Local Server Port: %s"),
-				       Config->bIsRunningGameServerLocally,
-				       *Config->CurrLocalServerPort);
-
-				Config->LoadConfig();
-				UE_LOG(LogTemp, Warning, TEXT("Standalone - Manual  Load BeamPIE Config - Is Running Server Locally: %d, Local Server Port: %s"),
-				       Config->bIsRunningGameServerLocally,
-				       *Config->CurrLocalServerPort);
-
-				// Then, we clear the subsystem state to ensure we have a blank slate.
-				bFinishedSetup = false;
-				LobbyJoinedHandles.Reset();
-				UserSlotAuthenticatedHandles.Reset();
-
-				// Finally, we select the correct settings based on the initial map for the server and then clean up this delegate.
-				SelectedSettings = ChooseSelectedPIESettings(UWorld::RemovePIEPrefix(MapName));
-				FCoreUObjectDelegates::PreLoadMap.Remove(OnInstancePreLoadMap);
 			});
-		}
-
+		
 		// This block of code sets up the in-editor state for this system --- this runs for when you are entering PIE with all instances `Running Under One Process`.
 		// Regardless of whether we are Running Under One Process`, this runs before the PIE instances are open and therefore we can make modifications to parameters in ULevelEditorPlaySettings.
 		// Today, we add a few arguments for when we run PIE on separate processes such that it can work with local microservices and BeamPIE.
@@ -741,7 +743,7 @@ public:
 	{
 		if (Resp.State == RS_Success)
 		{
-			UE_LOG(LogBeamEditor, Log, TEXT("%s Server - Created Lobby."), *GetLogArgs(TEXT("Beam PIE Prepare"), WorldContext));			
+			UE_LOG(LogBeamEditor, Log, TEXT("%s Server - Created Lobby."), *GetLogArgs(TEXT("Beam PIE Prepare"), WorldContext));
 			RequestTracker->TriggerOperationSuccess(PrepareOp, TEXT(""));
 		}
 		else
@@ -779,19 +781,19 @@ public:
 				UE_LOG(LogBeamEditor, Log, TEXT("%s Client - Logged in from Cache. USER_SLOT=%s, PIE=%d"), *GetLogArgs(TEXT("Beam PIE Prepare"), GEngine->GetWorldContextFromWorld(Runtime->GetWorld())),
 				       *CurrSlotHandle.Slot.Name, CurrSlotHandle.PIEIndex);
 
-				WaitUntilClientIsLoggedIn(Runtime, PossibleSlotHandles, PrepareOp);
+				// WaitUntilClientIsLoggedIn(Runtime, PossibleSlotHandles, PrepareOp);
 
 				// TODO: Talk to Justin about why we're not getting notifications for having joined the lobby.
-				// // If we are creating the fake lobby, set up a "wait until we are in the lobby operation" that will complete the PrepareOp when it finishes.
-				// if (Setting->FakeLobby.bShouldAutoCreateLobby)
-				// {
-				// 	WaitUntilClientIsInLobby(Runtime, PossibleSlotHandles, PrepareOp);
-				// }
-				// // Otherwise, check if all the users managed by this PIE instance are logged in and then complete the PrepareOp.
-				// else
-				// {
-				// 	WaitUntilClientIsLoggedIn(Runtime, PossibleSlotHandles, PrepareOp);
-				// }
+				// If we are creating the fake lobby, set up a "wait until we are in the lobby operation" that will complete the PrepareOp when it finishes.
+				if (Setting->FakeLobby.bShouldAutoCreateLobby)
+				{
+					WaitUntilClientIsInLobby(Runtime, PossibleSlotHandles, PrepareOp);
+				}
+				// Otherwise, check if all the users managed by this PIE instance are logged in and then complete the PrepareOp.
+				else
+				{
+					WaitUntilClientIsLoggedIn(Runtime, PossibleSlotHandles, PrepareOp);
+				}
 			}
 
 			// If we fail, create a new handler and call the Login from Cache Operation again
@@ -975,8 +977,10 @@ public:
 							return;
 						}
 
-
+						
 						// TODO: Wait for Lobby to be set as "Ready"
+						
+						// RequestTracker->TriggerOperationSuccess(Op, TEXT(""));
 					}
 					// In the clients, Init PIE will wait until the user is in the lobby.
 					else

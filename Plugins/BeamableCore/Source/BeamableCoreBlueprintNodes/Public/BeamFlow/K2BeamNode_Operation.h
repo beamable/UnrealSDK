@@ -195,7 +195,7 @@ protected:
 	                                   const TArray<TArray<UEdGraphNode*>>& PerFlowEventNodes);
 
 	void ExpandBeamFlowSubEvents(FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph, const UEdGraphSchema_K2* K2Schema,
-	                             const TArray<FName>& EventIds, const TMap<FName, UClass*>& EventDataCasts, const TArray<FName>& EventsFlowPinNames, UK2Node_BreakStruct* BreakOperationResultNode, UEdGraphPin* SubEventSwitchExecPin);
+	                             const TArray<FName>& EventIds, const TMap<FName, UClass*>& EventDataCasts, const TArray<FName>& EventsFlowPinNames, UK2Node_BreakStruct* BreakOperationResultNode, UEdGraphPin* SubEventSwitchExecPin, FName BaseExecPinName);
 };
 
 #undef LOCTEXT_NAMESPACE
