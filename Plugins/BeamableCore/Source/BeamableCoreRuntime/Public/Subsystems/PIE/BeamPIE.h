@@ -192,16 +192,8 @@ public:
 				if (!GEngine->IsEditor())
 				{
 					// First, we parse out which PIE-instance this is from an argument that Unreal sends down to every separate-process-PIE.
-					FString GameUserSettingIni;
-					if (FParse::Value(FCommandLine::Get(), TEXT("GameUserSettingsINI="), GameUserSettingIni, false))
-					{
-						auto InstanceStr = GameUserSettingIni.Replace(TEXT("PIEGameUserSettings"), TEXT(""));
-						if (!FDefaultValueHelper::ParseInt(InstanceStr, InstanceOverride))
-						{
-							UE_LOG(LogBeamEditor, Error, TEXT("Error on parse the override instance for the STR: %s"), *InstanceStr);
-						}
-					}
-					else
+					
+					if (!GetPIEInstanceFromCommandLine(InstanceOverride))
 					{
 						UE_LOG(LogBeamEditor, Error, TEXT("Failed to read expected `GameUserSettingsINI` argument from separate-process-PIE-instance."));
 						SelectedSettings = DefaultSettings();
@@ -225,7 +217,15 @@ public:
 					UserSlotAuthenticatedHandles.Reset();
 
 					// Finally, we select the correct settings based on the initial map for the server and then clean up this delegate.
-					SelectedSettings = ChooseSelectedPIESettings(UWorld::RemovePIEPrefix(MapName));
+
+					auto MapPath = UWorld::RemovePIEPrefix(MapName);
+					TArray<FString> MapPathSplit;
+					MapPath.ParseIntoArray(MapPathSplit, TEXT("/"));
+					
+					UE_LOG(LogTemp, Warning, TEXT("REMOVE PIE PREFIX: %s"), *MapPathSplit[MapPathSplit.Num() - 1]);
+					UE_LOG(LogTemp, Warning, TEXT("MAP NAME: %s"), *MapName);
+					
+					SelectedSettings = ChooseSelectedPIESettings(*MapPathSplit[MapPathSplit.Num() - 1]);
 					FCoreUObjectDelegates::PreLoadMap.Remove(OnInstancePreLoadMap);
 				}
 			});
@@ -553,8 +553,13 @@ public:
 			// Let's get the list of PIE+Slot combinations for which we have configured users.
 			UE_LOG(LogBeamEditor, Log, TEXT("%s Client - Building List of Assigned PIE Users"), *GetLogArgs(TEXT("Beam PIE Prepare"), WorldContext));
 			TArray<FBeamPIE_UserSlotHandle> PossibleSlotHandles;
+			UE_LOG(LogTemp, Warning, TEXT("Client - PIE INSTANCE %d"), GetPIEInstance(WorldContext));
+	
 			for (const auto& AssignedUser : Setting->AssignedUsers)
 			{
+				// When its running in a different process the 0 is the server
+				// and also the first client index so for this case we have to subtract 1 from the index configuration
+				
 				if (AssignedUser.Key.PIEIndex == GetPIEInstance(WorldContext))
 				{
 					UE_LOG(LogBeamEditor, Log, TEXT("%s Client - Found Assigned User. USER_SLOT=%s, PIE=%d"), *GetLogArgs(TEXT("Beam PIE Prepare"), WorldContext),
@@ -566,6 +571,7 @@ public:
 			// If no users are configured, we complete the operation here.
 			if (PossibleSlotHandles.Num() == 0)
 			{
+				UE_LOG(LogTemp, Warning, TEXT("No User Configured for Slot Handles."));
 				RequestTracker->TriggerOperationSuccess(Op,TEXT(""));
 				return;
 			}
@@ -1000,7 +1006,27 @@ public:
 		}
 	}
 
+	bool GetPIEInstanceFromCommandLine(int& Instance) const
+	{
+		Instance = -1;
+		FString GameUserSettingIni;
+					
+		if (FParse::Value(FCommandLine::Get(), TEXT("GameUserSettingsINI="), GameUserSettingIni, false))
+		{
+			auto InstanceStr = GameUserSettingIni.Replace(TEXT("PIEGameUserSettings"), TEXT(""));
+			if (!FDefaultValueHelper::ParseInt(InstanceStr, Instance))
+			{
+				UE_LOG(LogBeamEditor, Error, TEXT("Error on parse the override instance for the STR: %s"), *InstanceStr);
+				return false;
+			}
+		}else
+		{
+			return false;
+		}
 
+		return true;
+	}
+	
 	/**
 	 * Gets the currently selected setting (asserting its existence). 
 	 */
@@ -1024,12 +1050,18 @@ public:
 
 		const auto Config = GetDefault<UBeamPIEConfig>();
 
+		UE_LOG(LogTemp, Warning, TEXT("MAP NAME CHOOSE: %s"), *MapName);
+		
+		for (auto MapSelection : Config->PerMapSelection)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("MAP KEY: %s"), *MapSelection.Key);
+		}
 		if (Config->PerMapSelection.Contains(MapName))
 		{
 			const auto Id = GetDefault<UBeamPIEConfig>()->PerMapSelection[MapName];
 			return Config->AllSettings.FindByPredicate([Id](FBeamPIE_Settings& S) { return S.SettingsId == Id; });
 		}
-
+	
 		// Guaranteed to exist from editor code.
 		return DefaultSettings();
 	}
@@ -1041,6 +1073,17 @@ public:
 	int32 GetPIEInstance(FWorldContext* WorldContext) const
 	{
 		if (InstanceOverride != -1) return InstanceOverride;
+
+#if WITH_EDITOR
+		int Instance;
+		
+		// If is running in the engine but in a different process
+		if (!GEngine->IsEditor() && GetPIEInstanceFromCommandLine(Instance))
+		{
+			return Instance + 1;
+		}
+#endif
+		
 		return WorldContext->PIEInstance;
 	}
 

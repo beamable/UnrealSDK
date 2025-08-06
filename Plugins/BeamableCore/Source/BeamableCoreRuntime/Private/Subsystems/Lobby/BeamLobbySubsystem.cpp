@@ -1367,7 +1367,7 @@ void UBeamLobbySubsystem::RegisterLobbyWithServer(const FUserSlot& Slot, const F
 	ensureAlwaysMsgf(Runtime->IsDedicatedGameServer(), TEXT("This can only be run from inside a dedicated server!"));
 
 	// We start by fetching the lobby...
-	const auto Handler = FBeamOperationEventHandlerCode::CreateLambda([this, Op](FBeamOperationEvent Evt)
+	const auto Handler = FBeamOperationEventHandlerCode::CreateLambda([this, Op, LobbyId](FBeamOperationEvent Evt)
 	{
 		// If we failed to fetch the lobby, fail to register it.
 		if (!Evt.CompletedWithSuccess())
@@ -1379,9 +1379,22 @@ void UBeamLobbySubsystem::RegisterLobbyWithServer(const FUserSlot& Slot, const F
 		// TODO: Expose hook at the last mile of this process, after hook redesign.
 
 		// TODO: Set up a notification handler for this lobby that becomes aware (we need to fix)
-		// LobbyNotification->CPP_SubscribeToLobbyUpdate()
+		const auto ServerSlot = GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot();
+		
+		FDelegateHandle NotificationHandler;
+		FOnLobbyUpdateNotificationCode GamerServerLobbyNotificationHandler = FOnLobbyUpdateNotificationCode::CreateLambda([this, ServerSlot, Op, LobbyId, &NotificationHandler](const FLobbyUpdateNotificationMessage& Message)
+		{
+			if (Message.LobbyId == LobbyId)
+			{
+				RequestTracker->TriggerOperationSuccess(Op, TEXT(""));
+				LobbyNotification->CPP_UnsubscribeToLobbyUpdate(ServerSlot, Runtime->DefaultNotificationChannel, NotificationHandler, this);
+			}
+		});
+		
+		NotificationHandler = LobbyNotification->CPP_SubscribeToLobbyUpdate(ServerSlot, Runtime->DefaultNotificationChannel, GamerServerLobbyNotificationHandler, this);
+
 		// For now, we just complete the op successfully after we fetch it.
-		RequestTracker->TriggerOperationSuccess(Op, TEXT(""));
+		// RequestTracker->TriggerOperationSuccess(Op, TEXT(""));
 	});
 	CPP_RefreshLobbyDataOperation(Slot, Handler, LobbyId);
 }
@@ -1506,15 +1519,14 @@ void UBeamLobbySubsystem::AcceptUserIntoGameServer(const FUserSlot& Slot, const 
 				}), Ctx, Op, this);
 		}
 	});
-	if (GetWorld()->WorldType != EWorldType::Type::PIE)
-	{
-		PIE->CPP_WaitForBeamPIEOperation(Slot, this, PostBeamPIE);
-	}else
-	{
-		FBeamOperationHandle OperationHandle = RequestTracker->CPP_BeginOperation({}, GetName(), PostBeamPIE);
-		RequestTracker->TriggerOperationSuccess(OperationHandle, TEXT(""));
-	}
-
+#if WITH_EDITOR
+	UE_LOG(LogTemp, Warning, TEXT("Playing in a PIE, so we will skip it."));
+	FBeamOperationHandle OperationHandle = RequestTracker->CPP_BeginOperation({}, GetName(), PostBeamPIE);
+	RequestTracker->TriggerOperationSuccess(OperationHandle, TEXT(""));
+#else
+	UE_LOG(LogTemp, Warning, TEXT("Is not playing in a PIE, so we wait for the operation"));
+	PIE->CPP_WaitForBeamPIEOperation(Slot, this, PostBeamPIE);
+#endif
 }
 
 // REQUEST HELPERS
