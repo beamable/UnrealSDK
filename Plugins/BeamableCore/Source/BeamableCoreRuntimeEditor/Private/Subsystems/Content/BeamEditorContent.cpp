@@ -514,6 +514,68 @@ bool UBeamEditorContent::DeleteContentObject(const FBeamContentManifestId& Manif
 	return false;
 }
 
+bool UBeamEditorContent::DuplicateContent(const FBeamContentManifestId& ManifestId, FBeamContentId Id, FString& ErrMsg)
+{
+	const auto Entries = LocalManifestCache[ManifestId]->Entries;
+	if (const auto Entry = Entries.FindByPredicate([Id](ULocalContentManifestEntryStreamData* Data)
+	{
+	   return Data->FullId.Equals(Id.AsString);
+	}))
+	{
+		const auto FilePath = (*Entry)->JsonFilePath;
+		IFileManager& FileManager = IFileManager::Get();
+       
+		// Extract file components
+		FString FileDirectory = FPaths::GetPath(FilePath);
+		FString FileName = FPaths::GetBaseFilename(FilePath);
+		FString FileExtension = FPaths::GetExtension(FilePath);
+       
+		// Parse existing suffix from filename
+		FString BaseFileName = FileName;
+		int32 ExistingSuffix = 0;
+		
+		// Check if filename ends with "_Number" pattern
+		int32 LastUnderscoreIndex;
+		if (FileName.FindLastChar(TEXT('_'), LastUnderscoreIndex))
+		{
+			FString SuffixPart = FileName.Mid(LastUnderscoreIndex + 1);
+			if (SuffixPart.IsNumeric())
+			{
+				ExistingSuffix = FCString::Atoi(*SuffixPart);
+				BaseFileName = FileName.Left(LastUnderscoreIndex);
+			}
+		}
+		
+		// Start with the next logical number
+		int32 CopyIndex = ExistingSuffix + 1;
+		FString DuplicateFilePath;
+		
+		do 
+		{
+			FString NewFileName = BaseFileName + FString::Printf(TEXT("_%d"), CopyIndex);
+			DuplicateFilePath = FPaths::Combine(FileDirectory, NewFileName + TEXT(".") + FileExtension);
+			CopyIndex++;
+		} 
+		while (FileManager.FileExists(*DuplicateFilePath));
+       
+		// Copy the file
+		uint32 bCopied = FileManager.Copy(*DuplicateFilePath, *FilePath);
+		if (bCopied == 0)
+		{
+			return true;
+		}
+
+		ErrMsg = FString::Format(TEXT("Failed to duplicate the content object {0}"), {Id.AsString});
+		UE_LOG(LogBeamContent, Error, TEXT("%s"), *ErrMsg);
+       
+		return false;
+	}
+
+	ErrMsg = FString::Format(TEXT("Failed to find the content object {0} for duplication"), {Id.AsString});
+	UE_LOG(LogBeamContent, Error, TEXT("%s"), *ErrMsg);
+	return false;
+}
+
 bool UBeamEditorContent::TryRenameContent(const FBeamContentManifestId& ManifestId, const FBeamContentId& ContentId,
                                           const FString& NewContentName, FText& Err)
 {
