@@ -246,6 +246,7 @@ bool UBeamEditorContent::ForceSyncContent(FBeamContentManifestId ContentManifest
 	Params.Append({TEXT("--filter"), IdsParam});
 	Params.Append({TEXT("--filter-type"), TEXT("ExactIds")});
 	Params.Append({TEXT("--sync-created")});
+	Params.Append({TEXT("--sync-deleted")});
 	Params.Append({TEXT("--sync-modified")});
 	Params.Append({TEXT("--sync-conflicts")});
 	Cli->RunCommandServer(SyncCommand, Params, {});
