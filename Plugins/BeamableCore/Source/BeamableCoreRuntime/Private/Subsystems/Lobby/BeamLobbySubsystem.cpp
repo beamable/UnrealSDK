@@ -1519,14 +1519,14 @@ void UBeamLobbySubsystem::AcceptUserIntoGameServer(const FUserSlot& Slot, const 
 				}), Ctx, Op, this);
 		}
 	});
-#if WITH_EDITOR
-	UE_LOG(LogTemp, Warning, TEXT("Playing in a PIE, so we will skip it."));
-	FBeamOperationHandle OperationHandle = RequestTracker->CPP_BeginOperation({}, GetName(), PostBeamPIE);
-	RequestTracker->TriggerOperationSuccess(OperationHandle, TEXT(""));
-#else
+// #if WITH_EDITOR
+// 	UE_LOG(LogTemp, Warning, TEXT("Playing in a PIE, so we will skip it."));
+// 	FBeamOperationHandle OperationHandle = RequestTracker->CPP_BeginOperation({}, GetName(), PostBeamPIE);
+// 	RequestTracker->TriggerOperationSuccess(OperationHandle, TEXT(""));
+// #else
 	UE_LOG(LogTemp, Warning, TEXT("Is not playing in a PIE, so we wait for the operation"));
 	PIE->CPP_WaitForBeamPIEOperation(Slot, this, PostBeamPIE);
-#endif
+// #endif
 }
 
 // REQUEST HELPERS

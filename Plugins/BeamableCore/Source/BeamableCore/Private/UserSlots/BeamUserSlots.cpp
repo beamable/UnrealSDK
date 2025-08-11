@@ -7,6 +7,7 @@
 #include "BeamLogging.h"
 #include "JsonObjectConverter.h"
 #include "HAL/FileManagerGeneric.h"
+#include "PIE/BeamPIE_Utilities.h"
 
 void UBeamUserSlots::Initialize(FSubsystemCollectionBase& Collection)
 {
@@ -60,23 +61,16 @@ bool UBeamUserSlots::IsPIEContext(const UObject* CallingContext)
 
 FString UBeamUserSlots::GetNamespacedSlotId(FUserSlot SlotId, const UObject* CallingContext)
 {
-#if WITH_EDITOR
-	// If we are already a namespaced name, we just return it.
-	if (SlotId.Name.StartsWith("PIE_"))
-		return SlotId;
-
-	if (CallingContext)
+	FString NamespacedSlotId;
+	if (FBeamPIE_Utilities::GetNamespacedUserSlotForPIE(CallingContext, SlotId, NamespacedSlotId))
 	{
-		const auto WorldContext = GEngine->GetWorldContextFromWorld(CallingContext->GetWorld());
-		if (WorldContext && WorldContext->WorldType == EWorldType::PIE)
-		{
-			// Format the namespace  
-			return FString::Printf(TEXT("PIE_%d_%s"), WorldContext->PIEInstance, *SlotId.Name);
-		}
+		return NamespacedSlotId;
 	}
-#endif
-
-	return SlotId.Name;
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("USING SLOT NAME ON CACHED LOGIN %s"), *SlotId.Name);
+		return SlotId.Name;
+	}
 }
 
 FString UBeamUserSlots::GetNamespacedSlotId(FUserSlot SlotId, int32 PIEInstance)
@@ -578,6 +572,28 @@ int32 UBeamUserSlots::TryLoadSavedUserAtSlotAndAuth(FUserSlot SlotId, UObject* C
 	FUserSlotAuthData SlotSerializedAuthData;
 	FUserSlotAccountData SlotSerializedAccountData;
 	const auto Ret = TryLoadSavedUserAtSlot(SlotId, SlotSerializedAuthData, SlotSerializedAccountData, CallingContext);
+	if (Ret != LoadSavedUserResult_Failed)
+	{
+		const auto AccessToken = SlotSerializedAuthData.AccessToken;
+		const auto RefreshToken = SlotSerializedAuthData.RefreshToken;
+		const auto ExpiresIn = SlotSerializedAuthData.ExpiresIn;
+		const auto Cid = SlotSerializedAuthData.Cid;
+		auto Pid = SlotSerializedAuthData.Pid;
+
+		SetAuthenticationDataAtSlot(SlotId, AccessToken, RefreshToken, FDateTime::UtcNow().ToUnixTimestamp(), ExpiresIn, Cid, Pid, CallingContext);
+		SetAccountIdAtSlot(SlotId, SlotSerializedAccountData.AccountId, CallingContext);
+		SetGamerTagAtSlot(SlotId, SlotSerializedAccountData.GamerTag, CallingContext);
+		SetEmailAtSlot(SlotId, SlotSerializedAccountData.Email, CallingContext);
+		SetExternalIdsAtSlot(SlotId, SlotSerializedAccountData.ExternalIdentities, CallingContext);
+	}
+	return Ret;
+}
+
+int32 UBeamUserSlots::TryLoadSavedUserAtSlotAndAuthWithNamespace(FUserSlot SlotId, FString NamespacedSlotId, UObject* CallingContext)
+{
+	FUserSlotAuthData SlotSerializedAuthData;
+	FUserSlotAccountData SlotSerializedAccountData;
+	const auto Ret = TryLoadSavedUserAtNamespacedSlot(NamespacedSlotId, SlotSerializedAuthData, SlotSerializedAccountData);;
 	if (Ret != LoadSavedUserResult_Failed)
 	{
 		const auto AccessToken = SlotSerializedAuthData.AccessToken;
