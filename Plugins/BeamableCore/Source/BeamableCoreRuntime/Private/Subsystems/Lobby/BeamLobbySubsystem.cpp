@@ -206,7 +206,7 @@ bool UBeamLobbySubsystem::TryGetGlobalLobbyDataCasted(ULobby* Lobby, FString Dat
 	{
 		return false;
 	}
-	
+
 	if (!Lobby->Data.Val.Contains(DataKey))
 	{
 		return false;
@@ -217,7 +217,7 @@ bool UBeamLobbySubsystem::TryGetGlobalLobbyDataCasted(ULobby* Lobby, FString Dat
 	JsonBag.FromJson(Json);
 
 	GlobalData = NewObject<UObject>(GetTransientPackage(), CastTarget);
-	
+
 	TScriptInterface<IBeamJsonSerializableUObject> GlobalDataObject{GlobalData};
 
 	GlobalDataObject->BeamDeserializeProperties(JsonBag.JsonObject);
@@ -305,7 +305,7 @@ bool UBeamLobbySubsystem::TryGetLobbyPlayerDataCasted(ULobby* Lobby, FBeamGamerT
 							JsonBag.FromJson(Json);
 
 							PlayerData = NewObject<UObject>(GetTransientPackage(), CastTarget);
-	
+
 							TScriptInterface<IBeamJsonSerializableUObject> GlobalDataObject{PlayerData};
 
 							GlobalDataObject->BeamDeserializeProperties(JsonBag.JsonObject);
@@ -1380,17 +1380,18 @@ void UBeamLobbySubsystem::RegisterLobbyWithServer(const FUserSlot& Slot, const F
 
 		// TODO: Set up a notification handler for this lobby that becomes aware (we need to fix)
 		const auto ServerSlot = GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot();
-		
+
 		FDelegateHandle NotificationHandler;
-		FOnLobbyUpdateNotificationCode GamerServerLobbyNotificationHandler = FOnLobbyUpdateNotificationCode::CreateLambda([this, ServerSlot, Op, LobbyId, &NotificationHandler](const FLobbyUpdateNotificationMessage& Message)
-		{
-			if (Message.LobbyId == LobbyId)
+		FOnLobbyUpdateNotificationCode GamerServerLobbyNotificationHandler = FOnLobbyUpdateNotificationCode::CreateLambda(
+			[this, ServerSlot, Op, LobbyId, &NotificationHandler](const FLobbyUpdateNotificationMessage& Message)
 			{
-				RequestTracker->TriggerOperationSuccess(Op, TEXT(""));
-				LobbyNotification->CPP_UnsubscribeToLobbyUpdate(ServerSlot, Runtime->DefaultNotificationChannel, NotificationHandler, this);
-			}
-		});
-		
+				if (Message.LobbyId == LobbyId)
+				{
+					RequestTracker->TriggerOperationSuccess(Op, TEXT(""));
+					LobbyNotification->CPP_UnsubscribeToLobbyUpdate(ServerSlot, Runtime->DefaultNotificationChannel, NotificationHandler, this);
+				}
+			});
+
 		NotificationHandler = LobbyNotification->CPP_SubscribeToLobbyUpdate(ServerSlot, Runtime->DefaultNotificationChannel, GamerServerLobbyNotificationHandler, this);
 
 		// For now, we just complete the op successfully after we fetch it.
@@ -1419,11 +1420,11 @@ void UBeamLobbySubsystem::AcceptUserIntoGameServer(const FUserSlot& Slot, const 
 {
 	ensureAlwaysMsgf(Runtime->IsDedicatedGameServer(), TEXT("This can only be run from inside a dedicated server!"));
 
-	
+
 	// First thing is starting a BeamPIE operation that sees if it's initialization process is complete.
 	// Outside of PIE, this does NOTHING other than immediately complete.
 	const auto PIE = GEngine->GetEngineSubsystem<UBeamPIE>();
-	
+
 	const auto PostBeamPIE = FBeamOperationEventHandlerCode::CreateLambda([this, Options, Op, PIE](FBeamOperationEvent Evt)
 	{
 		// Do nothing on error or cancellation (should never happen unless something fails in the PIE initialization flow)
@@ -1510,7 +1511,7 @@ void UBeamLobbySubsystem::AcceptUserIntoGameServer(const FUserSlot& Slot, const 
 						}
 
 						// TODO: Expose hook here, after hook redesign.
-						
+
 						if (bIsInTargetLobby)
 							RequestTracker->TriggerOperationSuccess(Op, TEXT(""));
 						else
@@ -1519,14 +1520,8 @@ void UBeamLobbySubsystem::AcceptUserIntoGameServer(const FUserSlot& Slot, const 
 				}), Ctx, Op, this);
 		}
 	});
-// #if WITH_EDITOR
-// 	UE_LOG(LogTemp, Warning, TEXT("Playing in a PIE, so we will skip it."));
-// 	FBeamOperationHandle OperationHandle = RequestTracker->CPP_BeginOperation({}, GetName(), PostBeamPIE);
-// 	RequestTracker->TriggerOperationSuccess(OperationHandle, TEXT(""));
-// #else
-	UE_LOG(LogTemp, Warning, TEXT("Is not playing in a PIE, so we wait for the operation"));
+
 	PIE->CPP_WaitForBeamPIEOperation(Slot, this, PostBeamPIE);
-// #endif
 }
 
 // REQUEST HELPERS

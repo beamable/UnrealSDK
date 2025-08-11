@@ -68,7 +68,6 @@ FString UBeamUserSlots::GetNamespacedSlotId(FUserSlot SlotId, const UObject* Cal
 	}
 	else
 	{
-		UE_LOG(LogTemp, Warning, TEXT("USING SLOT NAME ON CACHED LOGIN %s"), *SlotId.Name);
 		return SlotId.Name;
 	}
 }
@@ -531,7 +530,7 @@ void UBeamUserSlots::ClearAllCachedUserDataAtNamespacedSlot(FString NamespacedSl
 		if (!CachedUserSlotDataFile.Contains(NamespacedSlot)) continue;
 
 		if (CachedUserSlotDataFile.Contains(TEXT("_Auth.json")))
-		{			
+		{
 			const auto SavedUserAuthDataPath = GetSavedSlotsDirectory() / CachedUserSlotDataFile;
 			if (IFileManager::Get().Delete(*SavedUserAuthDataPath))
 			{
@@ -546,7 +545,7 @@ void UBeamUserSlots::ClearAllCachedUserDataAtNamespacedSlot(FString NamespacedSl
 		if (CachedUserSlotDataFile.Contains("_Account.json"))
 		{
 			// Save the User Account data to the slot.
-			const auto SavedUserAccountDataPath = GetSavedSlotsDirectory() / CachedUserSlotDataFile;			
+			const auto SavedUserAccountDataPath = GetSavedSlotsDirectory() / CachedUserSlotDataFile;
 			if (IFileManager::Get().Delete(*SavedUserAccountDataPath))
 			{
 				UE_LOG(LogBeamUserSlots, Verbose, TEXT("Cleared User Slot - Account File!\nUSER_SLOT=%s\nFILE_PATH=%s"), *NamespacedSlot, *SavedUserAccountDataPath);

@@ -27,7 +27,7 @@ class BEAMPROJ_BEAMBALL_API ABeamBallGameMode : public AGameMode
 			// ---- [Deployed build only] One server per instance. The lobby ID should be passed via command line or environment variable. (Consider creating a utility function for this.)
 			// ---- [Deployed build only] Multiple instances running on the same server. Every time a new instance is assigned, the game maker must call the register function for that instance.
 			// ---- [Editor only — all modes: standalone, client, etc.] During Beam PIE, there's no need to call register manually; the process is handled automatically.
-			
+
 			// Setup Hathora, Agones, GameLyft, whatever you need to extract from your game server orchestrator's SDK, the Beamable Lobby Id your federation gave it.
 			// Once you have the lobby
 			// const auto LobbySubsystem = GetGameInstance()->GetSubsystem<UBeamLobbySubsystem>();
@@ -35,32 +35,28 @@ class BEAMPROJ_BEAMBALL_API ABeamBallGameMode : public AGameMode
 
 			// If we have no settings, then we are running in a build.
 			UE_LOG(LogTemp, Warning, TEXT("Setting up my orchestrator!!!!"));
-
 		}
 	}
 
 public:
-	
 	virtual void PreLoginAsync(const FString& Options, const FString& Address, const FUniqueNetIdRepl& UniqueId, const FOnPreLoginCompleteDelegate& OnComplete) override
 	{
 		const auto Lobby = GetGameInstance()->GetSubsystem<UBeamLobbySubsystem>();
 		const auto ServerSlot = GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot();
 
-		// UE_LOG(LogTemp, Warning, TEXT("Pre-Login - Options:%s, Id:%s"), *Options, *UniqueId.ToString());
-		// Super::PreLoginAsync(Options, Address, UniqueId, OnComplete);
-		
+
 		Lobby->CPP_AcceptUserIntoGameServerOperation(ServerSlot, Options, Address, UniqueId, FBeamOperationEventHandlerCode::CreateLambda([this, OnComplete, Options, Address, UniqueId](FBeamOperationEvent Evt)
 		{
 			if (Evt.EventType == OET_SUCCESS)
-			{				
+			{
 				Super::PreLoginAsync(Options, Address, UniqueId, OnComplete);
 			}
-		
+
 			// If failed, deny entry into the server.
 			if (Evt.EventType == OET_ERROR)
 			{
-				OnComplete.ExecuteIfBound(Evt.EventCode);				
-			}		
+				OnComplete.ExecuteIfBound(Evt.EventCode);
+			}
 		}));
 
 		// TODO: We need to make sure this is set up correctly with a sufficiently large value. 
