@@ -58,6 +58,34 @@ class UK2BeamNode_Operation_BeamInitPIE : public UK2BeamNode_Operation
 	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamPIE, BeamInitPIEOperation); }
 
 	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamPIE::StaticClass(); }
+
+protected:
+	virtual TArray<FName> GetOperationEventIds(EBeamOperationEventType Type) const override
+	{
+		TArray<FName> Ids = Super::GetOperationEventIds(Type);
+
+		switch (Type)
+		{
+		case OET_SUCCESS:
+			Ids.Add(UBeamPIE::GetOperationEventID_PIE_ClientLoggedIn());
+			return Ids;
+		}
+
+		return Ids;
+	};
+
+	virtual TArray<FString> GetOperationEventIdTooltips(EBeamOperationEventType Type) const override
+	{
+		TArray<FString> Ids = Super::GetOperationEventIdTooltips(Type);
+
+		switch (Type)
+		{
+		case OET_SUCCESS:
+			Ids.Add(TEXT("Triggered when the player is logged in."));
+			return Ids;
+		}
+		return Ids;
+	}
 };
 
 #undef LOCTEXT_NAMESPACE

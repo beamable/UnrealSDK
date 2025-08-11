@@ -103,7 +103,7 @@ class BEAMABLECORERUNTIME_API UBeamConnectivityManager : public UObject
 	/**
 	 * Websocket notifications connection handler. 
 	 */
-	void ConnectionHandler(const FNotificationEvent& Evt, FBeamRealmUser BeamRealmUser, FBeamOperationHandle Op);
+	void ConnectionHandler(const FNotificationEvent& Evt, bool TriggerAuthenticatedSlot, FBeamOperationHandle Op);
 
 public:
 	UPROPERTY()
@@ -273,6 +273,8 @@ class BEAMABLECORERUNTIME_API UBeamRuntime : public UGameInstanceSubsystem
 {
 	friend class UBeamConnectivityManager;
 
+	friend class UBeamPIE;
+	
 	GENERATED_BODY()
 
 	/** @brief Initializes the subsystem.  */
@@ -1066,9 +1068,12 @@ public:
 	 */
 	FBeamOperationHandle CPP_LogoutOperation(FUserSlot UserSlot, EUserSlotClearedReason Reason, bool bRemoveLocalData, FBeamOperationEventHandlerCode OnOperationEvent);
 
+
 private:
 	// BP/CPP Independent Operation Implementations
 	void LoginFromCache(FUserSlot UserSlot, FBeamOperationHandle Op);
+	// Login from cache and connect to the web socket without do the full flow of login
+	void LoginFromCacheAndConnectToWebSocket(FUserSlot UserSlot, FString NamespacedSlotId, FBeamOperationHandle Op);
 	void LoginFrictionless(FUserSlot UserSlot, TMap<FString, FString> InitProperties, FBeamOperationHandle Op);
 	void LoginFederated(FUserSlot UserSlot, FString MicroserviceId, FString FederationId, FString FederatedAuthToken, FBeamOperationHandle Op);
 	void CommitLoginFederated(FUserSlot UserSlot, UBeamMultiFactorLoginData* ChallengeSolution, FBeamOperationHandle Op);
@@ -1096,6 +1101,9 @@ private:
 	void RunPostAuthenticationSetup_OnGetMe(FBasicAccountsGetMeFullResponse Resp, FUserSlot UserSlot, FBeamOperationHandle Op);
 	void RunPostAuthenticationSetup_PrepareNotificationService(FGetClientDefaultsFullResponse Resp, FUserSlot UserSlot, FBeamRealmUser BeamRealmUser, FBeamOperationHandle Op);
 
+	void GetRealmInfoConnectToSocketOperation(FUserSlot UserSlot, FBeamOperationHandle Op);
+	void ConnectToWebSocketOperation(FGetClientDefaultsFullResponse Resp, FUserSlot UserSlot, FBeamRealmUser BeamRealmUser, FBeamOperationHandle Op);
+	
 	// Reusable Helper Functions
 	void LoadCachedUserAtSlot(FUserSlot UserSlot, FBeamOperationHandle AuthOp, FSimpleDelegate RunIfNoUser);
 	FBeamRequestContext LoginGuest(FUserSlot UserSlot, FBeamOperationHandle Op, TMap<FString, FString> InitProperties, FDelayedOperation OnBeforePostAuthentication = {});
@@ -1151,7 +1159,7 @@ public:
 	// Game Server Utilities
 public:
 	UFUNCTION(BlueprintGetter)
-	bool IsGameServer() const { return GetWorld()->GetNetMode() < NM_Client; }
+	bool IsGameServer() const { return GetWorld()->GetNetMode() < NM_Client && GetWorld()->GetNetMode() != NM_Standalone; }
 
 	UFUNCTION(BlueprintGetter)
 	bool IsDedicatedGameServer() const { return GetWorld()->IsNetMode(NM_DedicatedServer); }

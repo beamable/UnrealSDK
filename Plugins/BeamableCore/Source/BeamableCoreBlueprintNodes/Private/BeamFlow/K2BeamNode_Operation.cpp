@@ -731,16 +731,16 @@ void UK2BeamNode_Operation::SetUpPinsForSubEventsBeamFlow(FKismetCompilerContext
 
 	// Expand the Success SubEvents
 	ExpandBeamFlowSubEvents(CompilerContext, SourceGraph, K2Schema, GetOperationEventIds(OET_SUCCESS), GetOperationEventCastClass(OET_SUCCESS), SuccessEventFlowPinNames, BreakOperationResultNode,
-	                        SwitchEnum->FindPin(StaticEnum<EBeamOperationEventType>()->GetNameByValue(OET_SUCCESS)));
+	                        SwitchEnum->FindPin(StaticEnum<EBeamOperationEventType>()->GetNameByValue(OET_SUCCESS)), OP_Operation_Expanded_OnSuccess);
 
 	// Expand the Error SubEvents
 	ExpandBeamFlowSubEvents(CompilerContext, SourceGraph, K2Schema, GetOperationEventIds(OET_ERROR), GetOperationEventCastClass(OET_ERROR), ErrorEventFlowPinNames, BreakOperationResultNode,
-	                        SwitchEnum->FindPin(StaticEnum<EBeamOperationEventType>()->GetNameByValue(OET_ERROR)));
+	                        SwitchEnum->FindPin(StaticEnum<EBeamOperationEventType>()->GetNameByValue(OET_ERROR)), OP_Operation_Expanded_OnError);
 
 
 	// Expand the Cancelled SubEvents
 	ExpandBeamFlowSubEvents(CompilerContext, SourceGraph, K2Schema, GetOperationEventIds(OET_CANCELLED), GetOperationEventCastClass(OET_CANCELLED), CancelledEventFlowPinNames, BreakOperationResultNode,
-	                        SwitchEnum->FindPin(StaticEnum<EBeamOperationEventType>()->GetNameByValue(OET_CANCELLED)));
+	                        SwitchEnum->FindPin(StaticEnum<EBeamOperationEventType>()->GetNameByValue(OET_CANCELLED)), OP_Operation_Expanded_OnCancelled);
 
 	for (int i = 0; i < PerFlowNodes.Num(); ++i)
 	{
@@ -762,7 +762,7 @@ void UK2BeamNode_Operation::SetUpPinsForSubEventsBeamFlow(FKismetCompilerContext
 
 void UK2BeamNode_Operation::ExpandBeamFlowSubEvents(FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph, const UEdGraphSchema_K2* K2Schema,
                                                     const TArray<FName>& EventIds, const TMap<FName, UClass*>& EventDataCasts, const TArray<FName>& EventsFlowPinNames,
-                                                    UK2Node_BreakStruct* const BreakOperationResultNode, UEdGraphPin* const SubEventSwitchExecPin)
+                                                    UK2Node_BreakStruct* const BreakOperationResultNode, UEdGraphPin* const SubEventSwitchExecPin, FName BaseExecPinName)
 {
 	const auto SubTypeCodePin = BreakOperationResultNode->FindPin(GET_MEMBER_NAME_CHECKED(FBeamOperationEvent, EventId));
 
@@ -770,12 +770,15 @@ void UK2BeamNode_Operation::ExpandBeamFlowSubEvents(FKismetCompilerContext& Comp
 	const auto SubEventSwitch = CreateSwitchNameNode(this, CompilerContext, SourceGraph, K2Schema, EventIds, SubEventSwitchExecPin, SubTypeCodePin);
 	for (int i = 0; i < EventsFlowPinNames.Num(); ++i)
 	{
-		const auto FlowPin = FindPin(EventsFlowPinNames[i]);
-
-
 		// Get the intermediate pins we'll need to connect to all the places our custom node's output pins are connected to.
 		// If we expect a string, than we forward the raw event data string. Otherwise...
 		const auto SubEventValue = EventIds[i];
+		
+		const auto ExecPinName = SubEventValue == NAME_None ? BaseExecPinName : FName(FString::Printf(TEXT("%s - %s"), *BaseExecPinName.ToString(), *SubEventValue.ToString()));
+					
+		const auto FlowPin = FindPin(ExecPinName);
+
+		
 		auto IntermediateSubEventFlowPin = SubEventSwitch->FindPin(SubEventValue);
 
 		// Create the cast node and link the success and fail to the subevent execute

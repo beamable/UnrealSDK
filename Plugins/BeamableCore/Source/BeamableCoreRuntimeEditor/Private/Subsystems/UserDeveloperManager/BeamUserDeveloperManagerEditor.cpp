@@ -134,9 +134,33 @@ void UBeamUserDeveloperManagerEditor::TriggerOnPreBeginPIE(ULevelEditorPlaySetti
 		}
 	}
 
-	auto Handler = RequestTracker->CPP_BeginOperation({}, GetName(), {});
+	TArray<FString> GamerTags;
+	TArray<FString> AmountList;
+
+	for (auto TemplateGamerTagAmountKeyPair : TemplateAmount)
+	{
+		GamerTags.Add(TemplateGamerTagAmountKeyPair.Key.AsString);
+		AmountList.Add(std::to_string(TemplateGamerTagAmountKeyPair.Value).data());
+	}
+
+	auto args = {
+		FString::Printf(TEXT("--templates-list %s"), *FString::Join(GamerTags, TEXT(" "))),
+		FString::Printf(TEXT("--amount-list %s"), *FString::Join(AmountList, TEXT(" "))),
+		FString::Printf(TEXT("--rolling-buffer-size %d"), 100),
+	};
 
 	UBeamCliDeveloperUserManagerCreateUserBatchCommand* CreateUserBatchCommand = NewObject<UBeamCliDeveloperUserManagerCreateUserBatchCommand>();
+
+	auto Handler = RequestTracker->CPP_BeginOperation({}, GetName(), FBeamOperationEventHandlerCode::CreateLambda([this, CreateUserBatchCommand, args](const FBeamOperationEvent& Event)
+	{
+		if (Event.EventCode == TEXT("CLI_ERROR_UNKNOWN_BACKEND"))
+		{
+			auto Handler = RequestTracker->CPP_BeginOperation({}, GetName(), {});
+			// Try Again if fail with no operarion
+			BeamCli->RunCommandServer(CreateUserBatchCommand, args, Handler);
+		}
+	}));
+
 
 	CreateUserBatchCommand->OnStreamOutput = [this, Settings](const TArray<UBeamCliDeveloperUserManagerCreateUserBatchStreamData*>& Stream, const TArray<int64>&,
 	                                                          const FBeamOperationHandle&)
@@ -197,27 +221,12 @@ void UBeamUserDeveloperManagerEditor::TriggerOnPreBeginPIE(ULevelEditorPlaySetti
 		else if (ResCode != 0)
 		{
 			// Unknown error
-			RequestTracker->TriggerOperationError(Handler, TEXT(""));
+			RequestTracker->TriggerOperationError(Handler, TEXT("CLI_ERROR_UNKNOWN"));
 		}
 		else
 		{
 			RequestTracker->TriggerOperationSuccess(Handler, TEXT(""));
 		}
-	};
-
-	TArray<FString> GamerTags;
-	TArray<FString> AmountList;
-
-	for (auto TemplateGamerTagAmountKeyPair : TemplateAmount)
-	{
-		GamerTags.Add(TemplateGamerTagAmountKeyPair.Key.AsString);
-		AmountList.Add(std::to_string(TemplateGamerTagAmountKeyPair.Value).data());
-	}
-
-	auto args = {
-		FString::Printf(TEXT("--templates-list %s"), *FString::Join(GamerTags, TEXT(" "))),
-		FString::Printf(TEXT("--amount-list %s"), *FString::Join(AmountList, TEXT(" "))),
-		FString::Printf(TEXT("--rolling-buffer-size %d"), 10),
 	};
 
 	BeamCli->RunCommandServer(CreateUserBatchCommand, args, Handler);
