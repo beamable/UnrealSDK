@@ -238,7 +238,7 @@ bool UBeamEditorContent::ForceSyncContent(FBeamContentManifestId ContentManifest
 	// Get all the Content Ids in the form "type.id1 type.id2".
 	auto IdsStr = TArray<FString>{};
 	for (FBeamContentId Id : Ids) IdsStr.Add(Id.AsString);
-	auto IdsParam = Ids.Num() > 0 ? FString::Printf(TEXT("%s"), *FString::Join(IdsStr, TEXT(" "))) : TEXT("");
+	auto IdsParam = Ids.Num() > 0 ? FString::Printf(TEXT("%s"), *FString::Join(IdsStr, TEXT(","))) : TEXT("");
 
 	// Build the CLI args
 	TArray<FString> Params;
@@ -246,6 +246,7 @@ bool UBeamEditorContent::ForceSyncContent(FBeamContentManifestId ContentManifest
 	Params.Append({TEXT("--filter"), IdsParam});
 	Params.Append({TEXT("--filter-type"), TEXT("ExactIds")});
 	Params.Append({TEXT("--sync-created")});
+	Params.Append({TEXT("--sync-deleted")});
 	Params.Append({TEXT("--sync-modified")});
 	Params.Append({TEXT("--sync-conflicts")});
 	Cli->RunCommandServer(SyncCommand, Params, {});
