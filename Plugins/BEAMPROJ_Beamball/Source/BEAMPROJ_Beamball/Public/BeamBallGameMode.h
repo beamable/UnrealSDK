@@ -23,11 +23,10 @@ class BEAMPROJ_BEAMBALL_API ABeamBallGameMode : public AGameMode
 		// If we need to set up our orchestrator... 
 		if (PIE->RequiresGameServerOrchestratorSetup(this))
 		{
-			// 3 casos
-			// ---- [Só na build deployed] 1 servidor por instancia, passa por linha de comando/EnvVariable o ID do lobby (Criar uma funçao utilitaria)
-			// ---- [Só na build deployed] multiplas instancias dentro do mesmo servidor, toda vez que uma instancia nova for assigned o game maker teria que chamar o register para a nova instancia.
-			// ---- [Só Roda no editor em todos os modos (standalone, client etc) ] Durante o beam PIE nao precisa chamar o register ( o processo acontece automatico )
-			
+			// 3 scenarios:
+			// ---- [Deployed build only] One server per instance. The lobby ID should be passed via command line or environment variable. (Consider creating a utility function for this.)
+			// ---- [Deployed build only] Multiple instances running on the same server. Every time a new instance is assigned, the game maker must call the register function for that instance.
+			// ---- [Editor only — all modes: standalone, client, etc.] During Beam PIE, there's no need to call register manually; the process is handled automatically.
 			
 			// Setup Hathora, Agones, GameLyft, whatever you need to extract from your game server orchestrator's SDK, the Beamable Lobby Id your federation gave it.
 			// Once you have the lobby
