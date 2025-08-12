@@ -69,7 +69,7 @@ void FBeamableCoreEditorModule::StartupModule()
 	NewToolbarExtender->AddToolBarExtension("ProjectSettings", EExtensionHook::Before,
 	                                        PluginCommands, FToolBarExtensionDelegate::CreateStatic(&FBeamableCoreEditorModule::AddBeamableButtons));
 
-	NewToolbarExtender->AddToolBarExtension("Play", EExtensionHook::After,
+	NewToolbarExtender->AddToolBarExtension("Play", EExtensionHook::Before,
 										PluginCommands, FToolBarExtensionDelegate::CreateStatic(&FBeamableCoreEditorModule::AddPIEBeamableComboBox));
 
 	LevelEditorModule.GetToolBarExtensibilityManager()->AddExtender(NewToolbarExtender);
@@ -318,6 +318,15 @@ void FBeamableCoreEditorModule::AddPIEBeamableComboBox(FToolBarBuilder& Builder)
 			.Size(FVector2D(10.f, 1.0f))
 		]
 		+ SHorizontalBox::Slot()
+		.VAlign(VAlign_Center)
+		.AutoWidth()
+		.Padding(FMargin(0, 0, 6.f, 0.f))
+		[
+			SNew(SImage)
+			.Image(FSlateIcon(FName(TEXT("BeamableCore")), FName(TEXT("BeamIcon"))).GetIcon())
+			.DesiredSizeOverride(FVector2D(20.f, 20.f))
+		] 
+		+ SHorizontalBox::Slot()
 		.AutoWidth()
 		[
 			PIEPerMapSelectionComboButton
@@ -328,11 +337,22 @@ void FBeamableCoreEditorModule::AddPIEBeamableComboBox(FToolBarBuilder& Builder)
 			SNew(SSpacer)
 			.Size(FVector2D(10.f, 1.0f))
 		];
-		
-
-	Builder.AddWidget(EditorPIEPerMapSelectionWidget);
 
 	Builder.AddSeparator(NAME_None);
+	
+	// Builder.AddWidget(SNew(SHorizontalBox)
+	// 	+ SHorizontalBox::Slot()
+	// 	.VAlign(VAlign_Center)
+	// 	.Padding(FMargin(10.f, 0, 6.f, 0.f))
+	// 	[
+	// 		SNew(SImage)
+	// 		.Image(FSlateIcon(FName(TEXT("BeamableCore")), FName(TEXT("BeamIcon"))).GetIcon())
+	// 		.DesiredSizeOverride(FVector2D(20.f, 20.f))
+	// 	] );
+	
+	Builder.AddWidget(EditorPIEPerMapSelectionWidget);
+
+
 }
 void FBeamableCoreEditorModule::OpenMainBeamableWindow() const
 {
