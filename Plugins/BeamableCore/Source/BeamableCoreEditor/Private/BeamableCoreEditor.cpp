@@ -10,6 +10,7 @@
 #include "IDataTableEditor.h"
 #include "K2Node_GetSubsystem.h"
 #include "LevelEditor.h"
+#include "LevelEditorModesActions.h"
 #include "AssetRegistry/AssetRegistryModule.h"
 #include "AssetTypeActions/AssetTypeActions_DataAsset.h"
 #include "AutoGen/Optionals/OptionalArrayOfBeamGamerTag.h"
@@ -18,6 +19,7 @@
 #include "BeamFlow/K2BeamNode_EventUnregister.h"
 #include "Content/BeamContentTypes/BeamListingContent.h"
 #include "Kismet2/KismetEditorUtilities.h"
+#include "PIE/BeamPIEConfig.h"
 #include "PropertyType/BeamClientPermissionCustomization.h"
 #include "PropertyType/BeamContentIdCustomization.h"
 #include "PropertyType/FBeamOptionalCustomization.h"
@@ -66,6 +68,9 @@ void FBeamableCoreEditorModule::StartupModule()
 	const TSharedPtr<FExtender> NewToolbarExtender = MakeShareable<FExtender>(new FExtender());
 	NewToolbarExtender->AddToolBarExtension("ProjectSettings", EExtensionHook::Before,
 	                                        PluginCommands, FToolBarExtensionDelegate::CreateStatic(&FBeamableCoreEditorModule::AddBeamableButtons));
+
+	NewToolbarExtender->AddToolBarExtension("Play", EExtensionHook::After,
+										PluginCommands, FToolBarExtensionDelegate::CreateStatic(&FBeamableCoreEditorModule::AddPIEBeamableComboBox));
 
 	LevelEditorModule.GetToolBarExtensibilityManager()->AddExtender(NewToolbarExtender);
 
@@ -204,7 +209,131 @@ void FBeamableCoreEditorModule::AddBeamableButtons(FToolBarBuilder& Builder)
 	                         LOCTEXT("Beamable", "Beamable"), LOCTEXT("BeamableTooltip", "Opens the Beamable Window"),
 	                         FSlateIcon(FName(TEXT("BeamableCore")), FName(TEXT("BeamIcon"))));
 }
+void FBeamableCoreEditorModule::AddPIEBeamableComboBox(FToolBarBuilder& Builder)
+{
+	
+	TSharedRef<SComboButton> PIEPerMapSelectionComboButton = SNew(SComboButton)
+		.OnGetMenuContent_Lambda([]()
+		{
+			const auto Config = GetDefault<UBeamPIEConfig>();
+			
+			FMenuBuilder MenuBuilder(true, {});
+			
+			MenuBuilder.BeginSection("PIEPerMapSelection");
 
+			// Default option to remove PIE map from settings
+			MenuBuilder.AddMenuEntry(FText::FromString("None"),
+				FText(),
+				FSlateIcon(FAppStyle::GetAppStyleSetName(), "LevelEditor.GameSettings"),
+				FUIAction(FExecuteAction::CreateLambda([=]()
+				{
+					const auto ConfigMutable = GetMutableDefault<UBeamPIEConfig>();
+					
+					auto MapName = GEditor->GetEditorWorldContext().World()->GetMapName();
+					if (ConfigMutable->PerMapSelection.Contains(MapName))
+					{
+						ConfigMutable->PerMapSelection.Remove(MapName);
+						ConfigMutable->Save();
+					}
+				}))
+			);
+
+			// Get all the settings options to create the combo box
+			for (auto PIESetting : Config->AllSettings)
+			{
+				MenuBuilder.AddMenuEntry(FText::FromString(PIESetting.Name),
+					FText(),
+					FSlateIcon(FAppStyle::GetAppStyleSetName(), "LevelEditor.GameSettings"),
+					FUIAction(FExecuteAction::CreateLambda([=]()
+					{
+						const auto ConfigMutable = GetMutableDefault<UBeamPIEConfig>();
+					
+						auto MapName = GEditor->GetEditorWorldContext().World()->GetMapName();
+						ConfigMutable->PerMapSelection.Add(MapName, PIESetting.SettingsId);
+						ConfigMutable->Save();
+					}))
+				);
+			}
+			
+			MenuBuilder.EndSection();
+
+			return MenuBuilder.MakeWidget();
+		})
+		.ButtonContent()
+		[
+			SNew(SHorizontalBox)
+			+ SHorizontalBox::Slot()
+			.AutoWidth()
+			.Padding(FMargin(0.f, 0.f, 6.f, 0.f))
+			[
+				SNew(SBox)
+				.WidthOverride(16.f)
+				.HeightOverride(16.f)
+				[
+					SNew(SImage)
+					.Image_Lambda([]()
+					{
+						return FAppStyle::Get().GetBrush("LevelEditor.GameSettings");
+					})
+				]
+				
+			]
+			+ SHorizontalBox::Slot()
+			[
+				SNew(STextBlock)
+				.Text_Lambda([]()
+				{
+					const auto Config = GetMutableDefault<UBeamPIEConfig>();
+					auto MapName = GEditor->GetEditorWorldContext().World()->GetMapName();
+
+					if (Config->PerMapSelection.Contains(MapName))
+					{
+						FGuid SettingGuid = Config->PerMapSelection[MapName];
+						for (auto PIESetting : Config->AllSettings)
+						{
+							if (PIESetting.SettingsId == SettingGuid)
+							{
+								return FText::FromString(PIESetting.Name);
+							}
+						}
+						// If the settings don't exist anymore when you open the level it will remove the value from the config
+						Config->PerMapSelection.Remove(MapName);
+						Config->Save();
+						
+						return FText::FromString("None");
+					}
+					return FText::FromString("None");
+				})
+			]
+			
+		];
+
+	// Horizontal Box to add some spacing beside the modes combo button
+	TSharedRef<SHorizontalBox> EditorPIEPerMapSelectionWidget = 
+		SNew(SHorizontalBox)
+		+ SHorizontalBox::Slot()
+		.FillWidth(1.0)
+		[
+			SNew(SSpacer)
+			.Size(FVector2D(10.f, 1.0f))
+		]
+		+ SHorizontalBox::Slot()
+		.AutoWidth()
+		[
+			PIEPerMapSelectionComboButton
+		]
+		+ SHorizontalBox::Slot()
+		.FillWidth(1.0)
+		[
+			SNew(SSpacer)
+			.Size(FVector2D(10.f, 1.0f))
+		];
+		
+
+	Builder.AddWidget(EditorPIEPerMapSelectionWidget);
+
+	Builder.AddSeparator(NAME_None);
+}
 void FBeamableCoreEditorModule::OpenMainBeamableWindow() const
 {
 	UBeamableEditorBlueprintLibrary::StartEditorWidget(GetDefault<UBeamEditorSettings>()->BeamableMainWindow.LoadSynchronous());

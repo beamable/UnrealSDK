@@ -555,7 +555,6 @@ public:
 			// Let's get the list of PIE+Slot combinations for which we have configured users.
 			UE_LOG(LogBeamEditor, Log, TEXT("%s Client - Building List of Assigned PIE Users"), *GetLogArgs(TEXT("Beam PIE Prepare"), WorldContext));
 			TArray<FBeamPIE_UserSlotHandle> PossibleSlotHandles;
-			UE_LOG(LogTemp, Warning, TEXT("Client - PIE INSTANCE %d"), FBeamPIE_Utilities::GetPIEInstance(WorldContext));
 
 			for (const auto& AssignedUser : Setting->AssignedUsers)
 			{
