@@ -112,6 +112,11 @@ void UBeamUserDeveloperManagerEditor::TriggerOnUserSlotAuthenticated(const FUser
 
 void UBeamUserDeveloperManagerEditor::TriggerOnPreBeginPIE(ULevelEditorPlaySettings* PlaySettings, const FBeamPIE_Settings* Settings)
 {
+	// If there's no assigned user set-up we don't need to do nothing
+	if (Settings->AssignedUsers.Num() == 0)
+	{
+		return;
+	}
 	TMap<FBeamGamerTag, int32> TemplateAmount;
 	for (auto AssignedUserKeyPair : Settings->AssignedUsers)
 	{

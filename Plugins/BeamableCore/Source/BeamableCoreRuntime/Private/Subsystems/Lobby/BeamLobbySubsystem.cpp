@@ -1444,7 +1444,7 @@ void UBeamLobbySubsystem::AcceptUserIntoGameServer(const FUserSlot& Slot, const 
 		{
 			// ... and we are configured to create a fake lobby...
 			const auto Setting = PIE->GetSelectedPIESettings();
-			if (Setting && Setting->FakeLobby.bShouldAutoCreateLobby)
+			if (Setting && (Setting->FakeLobby.bShouldAutoCreateLobby || Setting->IsDefaultSettings()))
 			{
 				/// ... accept the user even without any options
 				/// (we need to do this in this way because UE does not allow us to define options when entering PIE)
@@ -1521,7 +1521,9 @@ void UBeamLobbySubsystem::AcceptUserIntoGameServer(const FUserSlot& Slot, const 
 		}
 	});
 
+
 	PIE->CPP_WaitForBeamPIEOperation(Slot, this, PostBeamPIE);
+	
 }
 
 // REQUEST HELPERS
@@ -1736,7 +1738,7 @@ void UBeamLobbySubsystem::OnLobbyUpdatedHandler(FLobbyUpdateNotificationMessage 
 					if (TryGetLobbyById(LobbyId, LobbyData))
 					{
 						// If this local player was the one who joined the lobby (was not in any lobby, but is in the refreshed lobby)
-						if (bWasNotInLobby && Lobby->LobbyId == Msg.LobbyId && Msg.Type == EBeamLobbyEvent::BEAM_PlayerJoined || Msg.Type == EBeamLobbyEvent::BEAM_LobbyCreated)
+						if (bWasNotInLobby && Lobby->LobbyId == Msg.LobbyId && Msg.Type == EBeamLobbyEvent::BEAM_PlayerJoined)
 						{
 							Lobby->OnLobbyJoinedCode.Broadcast(Slot, LobbyData, Msg);
 							Lobby->OnLobbyJoined.Broadcast(Slot, LobbyData, Msg);

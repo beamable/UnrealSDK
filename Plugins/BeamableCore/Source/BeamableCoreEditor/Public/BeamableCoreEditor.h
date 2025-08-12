@@ -19,6 +19,7 @@ private:
 	TSharedPtr<FBeamRuntimeContentCacheAssetTypeActions> BeamRuntimeContentCacheAssetTypeActions;
 
 	static void AddBeamableButtons(FToolBarBuilder& Builder);
+	static void AddPIEBeamableComboBox(FToolBarBuilder& Builder);
 	void OpenMainBeamableWindow() const;
 
 #if WITH_EDITOR
