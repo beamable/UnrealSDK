@@ -4,8 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "BeamEditorSettings.h"
+#include "EditorUtilitySubsystem.h"
+#include "EditorUtilityWidget.h"
 #include "WidgetBlueprint.h"
 #include "PropertyEditorClipboard.h"
+#include "EditorUtilitySubsystem.h"
+#include "EditorUtilityWidgetBlueprint.h"
+
 #include "BeamableEditorBlueprintLibrary.generated.h"
 
 
@@ -16,7 +21,7 @@ class BEAMABLECOREEDITOR_API UBeamableEditorBlueprintLibrary : public UBlueprint
 
 public:
 	UFUNCTION(BlueprintCallable, Category="Beam|Editor")
-	static void StartEditorWidget(UWidgetBlueprint* Blueprint);
+	static UEditorUtilityWidget* StartEditorWidget(UWidgetBlueprint* Blueprint);
 
 	UFUNCTION(BlueprintCallable, Category="Beam|Editor")
 	static void GetRealmsForProject(const FBeamCustomerProjectData& ProjectData, const FString ProjectName, TArray<FBeamProjectRealmData>& ProjectRealms);	

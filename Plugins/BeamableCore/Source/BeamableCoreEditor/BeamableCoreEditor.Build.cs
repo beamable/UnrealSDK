@@ -30,6 +30,7 @@ public class BeamableCoreEditor : ModuleRules
 				"DeveloperToolSettings",
 				"AssetTools",
 				"InputCore",
+	
 
 				"BeamableCore",
 				"BeamableCoreRuntime",
@@ -57,6 +58,7 @@ public class BeamableCoreEditor : ModuleRules
 				"HTTP",
 				"InputCore",
 				"BeamableCoreBlueprintNodes",
+				"UMG",    
 			}
 		);
 	}

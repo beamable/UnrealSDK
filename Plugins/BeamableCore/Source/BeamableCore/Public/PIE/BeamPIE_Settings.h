@@ -22,7 +22,7 @@ struct BEAMABLECORE_API FBeamPIE_Settings
 	TMap<FBeamPIE_UserSlotHandle, FBeamPIE_PerUserSetting> AssignedUsers;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FString AllowedMapNamePattern = TEXT("*");
+	FString AllowedMapNamePattern = TEXT(".*");
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(AllowedClasses="/Script/Engine.World"))
 	TArray<TSoftObjectPtr<UWorld>> AllowedInMaps;

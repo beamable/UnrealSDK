@@ -1,5 +1,6 @@
 #pragma once
 #include "BeamLogging.h"
+#include "BeamPIEConfig.h"
 #include "Misc/DefaultValueHelper.h"
 
 class FBeamPIE_Utilities
@@ -26,6 +27,29 @@ public:
 		return true;
 	}
 
+	
+	static bool CheckPIEMapFilter(FString MapName, FBeamPIE_Settings PIESetting)
+	{
+		FRegexMatcher Regex = FRegexMatcher(FRegexPattern(PIESetting.AllowedMapNamePattern), MapName);
+		if (Regex.FindNext())
+		{
+			if (PIESetting.AllowedInMaps.Num() != 0)
+			{
+				for (auto MapWorld : PIESetting.AllowedInMaps)
+				{
+					FString WorldName = MapWorld.GetAssetName();
+					if (WorldName.Contains(MapName))
+					{
+						return true;
+					}
+				}
+			}else
+			{
+				return true;
+			}
+		}
+		return false;
+	} 
 
 	/**
 	 * This will return either @link FWorldContext::PIEInstance @endlink or the Instance based on whether we've

@@ -17,9 +17,11 @@
 #include "AutoGen/Optionals/OptionalArrayOfBeamTag.h"
 #include "BeamBackend/ReplacementTypes/BeamClientPermission.h"
 #include "BeamFlow/K2BeamNode_EventUnregister.h"
+#include "Components/Button.h"
 #include "Content/BeamContentTypes/BeamListingContent.h"
 #include "Kismet2/KismetEditorUtilities.h"
 #include "PIE/BeamPIEConfig.h"
+#include "PIE/BeamPIE_Utilities.h"
 #include "PropertyType/BeamClientPermissionCustomization.h"
 #include "PropertyType/BeamContentIdCustomization.h"
 #include "PropertyType/FBeamOptionalCustomization.h"
@@ -70,7 +72,7 @@ void FBeamableCoreEditorModule::StartupModule()
 	                                        PluginCommands, FToolBarExtensionDelegate::CreateStatic(&FBeamableCoreEditorModule::AddBeamableButtons));
 
 	NewToolbarExtender->AddToolBarExtension("Play", EExtensionHook::Before,
-										PluginCommands, FToolBarExtensionDelegate::CreateStatic(&FBeamableCoreEditorModule::AddPIEBeamableComboBox));
+										{}, FToolBarExtensionDelegate::CreateStatic(&FBeamableCoreEditorModule::AddPIEBeamableComboBox));
 
 	LevelEditorModule.GetToolBarExtensibilityManager()->AddExtender(NewToolbarExtender);
 
@@ -241,18 +243,23 @@ void FBeamableCoreEditorModule::AddPIEBeamableComboBox(FToolBarBuilder& Builder)
 			// Get all the settings options to create the combo box
 			for (auto PIESetting : Config->AllSettings)
 			{
-				MenuBuilder.AddMenuEntry(FText::FromString(PIESetting.Name),
-					FText(),
-					FSlateIcon(FAppStyle::GetAppStyleSetName(), "LevelEditor.GameSettings"),
-					FUIAction(FExecuteAction::CreateLambda([=]()
-					{
-						const auto ConfigMutable = GetMutableDefault<UBeamPIEConfig>();
-					
-						auto MapName = GEditor->GetEditorWorldContext().World()->GetMapName();
-						ConfigMutable->PerMapSelection.Add(MapName, PIESetting.SettingsId);
-						ConfigMutable->Save();
-					}))
-				);
+				auto MapName = GEditor->GetEditorWorldContext().World()->GetMapName();
+
+				if (FBeamPIE_Utilities::CheckPIEMapFilter(MapName, PIESetting))
+				{
+					MenuBuilder.AddMenuEntry(FText::FromString(PIESetting.Name),
+						FText(),
+						FSlateIcon(FAppStyle::GetAppStyleSetName(), "LevelEditor.GameSettings"),
+							FUIAction(FExecuteAction::CreateLambda([=]()
+							{
+									const auto ConfigMutable = GetMutableDefault<UBeamPIEConfig>();
+							
+								ConfigMutable->PerMapSelection.Add(MapName, PIESetting.SettingsId);
+								ConfigMutable->Save();
+							}))
+					);
+				}
+				
 			}
 			
 			MenuBuilder.EndSection();
@@ -289,11 +296,13 @@ void FBeamableCoreEditorModule::AddPIEBeamableComboBox(FToolBarBuilder& Builder)
 					if (Config->PerMapSelection.Contains(MapName))
 					{
 						FGuid SettingGuid = Config->PerMapSelection[MapName];
-						for (auto PIESetting : Config->AllSettings)
+						for (FBeamPIE_Settings PIESetting : Config->AllSettings)
 						{
 							if (PIESetting.SettingsId == SettingGuid)
 							{
-								return FText::FromString(PIESetting.Name);
+								if (FBeamPIE_Utilities::CheckPIEMapFilter(MapName, PIESetting)){
+									return FText::FromString(PIESetting.Name);
+								}
 							}
 						}
 						// If the settings don't exist anymore when you open the level it will remove the value from the config
@@ -322,9 +331,19 @@ void FBeamableCoreEditorModule::AddPIEBeamableComboBox(FToolBarBuilder& Builder)
 		.AutoWidth()
 		.Padding(FMargin(0, 0, 6.f, 0.f))
 		[
-			SNew(SImage)
-			.Image(FSlateIcon(FName(TEXT("BeamableCore")), FName(TEXT("BeamIcon"))).GetIcon())
-			.DesiredSizeOverride(FVector2D(20.f, 20.f))
+			SNew(SButton)
+			.ButtonStyle(&FCoreStyle::Get().GetWidgetStyle<FButtonStyle>("HoverHintOnly"))
+			.OnClicked(FOnClicked::CreateLambda([]()
+			{
+				FBeamableCoreEditorModule::OpenPIEBeamableWindow();
+				return FReply::Handled();
+			}))
+			.ToolTipText(FText::FromString("Open Beam PIE Window"))
+			[
+				SNew(SImage)
+				.Image(FSlateIcon(FName(TEXT("BeamableCore")), FName(TEXT("BeamIcon"))).GetIcon())
+				.DesiredSizeOverride(FVector2D(20.f, 20.f))
+			]
 		] 
 		+ SHorizontalBox::Slot()
 		.AutoWidth()
@@ -337,26 +356,69 @@ void FBeamableCoreEditorModule::AddPIEBeamableComboBox(FToolBarBuilder& Builder)
 			SNew(SSpacer)
 			.Size(FVector2D(10.f, 1.0f))
 		];
+	FName EntryName = FName("BeamablePIEMapSelection");
+	auto ToolMenu = UToolMenus::Get();
+	auto Menu = ToolMenu->FindMenu("LevelEditor.LevelEditorToolBar.PlayToolBar");
+	if (Menu != nullptr)
+	{
+		auto Play = Menu->FindSection(FName("Play"));
+		if (Play != nullptr)
+		{
+			auto Args = FToolMenuEntry::InitWidget(EntryName, EditorPIEPerMapSelectionWidget, FText::FromString("Beamable PIE Map Selection"));
 
+			// This code is called multiple times, once when its registering and then after register
+			// So if we already inserted our menu in the unreal toolbar we just ignore the second pass.
+			if (Play->Blocks[1].Name == EntryName)
+			{
+				return;
+			}
+
+			Play->AddEntry(Args);
+			auto Last = Play->Blocks[Play->Blocks.Num() - 1];
+			Play->Blocks.Insert(Last, 1);
+			Play->Blocks.RemoveAt(Play->Blocks.Num() - 1);
+			return;
+		}
+	
+	}
+	// Fallback for the case the menu cannot be added
 	Builder.AddSeparator(NAME_None);
 	
-	// Builder.AddWidget(SNew(SHorizontalBox)
-	// 	+ SHorizontalBox::Slot()
-	// 	.VAlign(VAlign_Center)
-	// 	.Padding(FMargin(10.f, 0, 6.f, 0.f))
-	// 	[
-	// 		SNew(SImage)
-	// 		.Image(FSlateIcon(FName(TEXT("BeamableCore")), FName(TEXT("BeamIcon"))).GetIcon())
-	// 		.DesiredSizeOverride(FVector2D(20.f, 20.f))
-	// 	] );
-	
 	Builder.AddWidget(EditorPIEPerMapSelectionWidget);
-
-
+	
 }
 void FBeamableCoreEditorModule::OpenMainBeamableWindow() const
 {
 	UBeamableEditorBlueprintLibrary::StartEditorWidget(GetDefault<UBeamEditorSettings>()->BeamableMainWindow.LoadSynchronous());
+}
+
+void FBeamableCoreEditorModule::OpenPIEBeamableWindow()
+{
+	auto Widget = UBeamableEditorBlueprintLibrary::StartEditorWidget(GetDefault<UBeamEditorSettings>()->BeamableMainWindow.LoadSynchronous());
+	if (Widget)
+	{
+		// Get the PIE Settings button and call the broadcast
+		UWidget* WidgetPIEButton = Widget->GetWidgetFromName(TEXT("Btn_Pie_Settings"));
+		UButton* PIEButton = dynamic_cast<UButton*>(WidgetPIEButton);
+		if (PIEButton)
+		{
+			PIEButton->OnClicked.Broadcast();
+			
+			UWidget* PIEWidgetWindow = Widget->GetWidgetFromName(TEXT("EWBP_PieSettingsWindow"));
+			UEditorUtilityWidget* PIEEditorUtility = dynamic_cast<UEditorUtilityWidget*>(PIEWidgetWindow);
+			// Get the Play Settings Button and call the broadcast
+			if (PIEEditorUtility)
+			{
+				UWidget* PIEWidgetButton = PIEEditorUtility->GetWidgetFromName(TEXT("Btn_Pie_Settings_Play_Settings"));
+				UButton* PlaySettingsButton = dynamic_cast<UButton*>(PIEWidgetButton);
+						
+				if (PlaySettingsButton)
+				{
+					PlaySettingsButton->OnClicked.Broadcast();
+				}
+			}
+		}
+	}
 }
 
 

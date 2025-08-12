@@ -21,6 +21,7 @@ private:
 	static void AddBeamableButtons(FToolBarBuilder& Builder);
 	static void AddPIEBeamableComboBox(FToolBarBuilder& Builder);
 	void OpenMainBeamableWindow() const;
+	static void OpenPIEBeamableWindow();
 
 #if WITH_EDITOR
 

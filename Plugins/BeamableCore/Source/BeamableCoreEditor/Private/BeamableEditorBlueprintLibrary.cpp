@@ -4,13 +4,10 @@
 #include "BeamableEditorBlueprintLibrary.h"
 
 #include "BeamEditorSettings.h"
-#include "BeamCoreSettings.h"
-#include "EditorUtilitySubsystem.h"
-#include "EditorUtilityWidget.h"
 #include "EditorUtilityWidgetBlueprint.h"
-#include "LevelEditor.h"
 
-void UBeamableEditorBlueprintLibrary::StartEditorWidget(UWidgetBlueprint* Blueprint)
+
+UEditorUtilityWidget* UBeamableEditorBlueprintLibrary::StartEditorWidget(UWidgetBlueprint* Blueprint)
 {
 	// INFO: See AssetTypeActions_EditorUtilityWidgetBlueprint.cpp (method ExecuteRun).
 	if (Blueprint->GeneratedClass->IsChildOf(UEditorUtilityWidget::StaticClass()))
@@ -20,10 +17,11 @@ void UBeamableEditorBlueprintLibrary::StartEditorWidget(UWidgetBlueprint* Bluepr
 			if (UEditorUtilityWidgetBlueprint* EditorWidget = Cast<UEditorUtilityWidgetBlueprint>(Blueprint))
 			{
 				UEditorUtilitySubsystem* EditorUtilitySubsystem = GEditor->GetEditorSubsystem<UEditorUtilitySubsystem>();
-				EditorUtilitySubsystem->SpawnAndRegisterTab(EditorWidget);
+				return EditorUtilitySubsystem->SpawnAndRegisterTab(EditorWidget);
 			}
 		}
 	}
+	return nullptr;
 }
 
 
