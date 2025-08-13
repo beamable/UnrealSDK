@@ -261,6 +261,9 @@ public:
 	bool bEditorReady;
 
 	UPROPERTY(BlueprintReadOnly, Category="Beam")
+	TArray<FString> EditorInitializationError;
+
+	UPROPERTY(BlueprintReadOnly, Category="Beam")
 	UBeamableWindowMessage* WindowMessage;
 
 	UPROPERTY(BlueprintAssignable)

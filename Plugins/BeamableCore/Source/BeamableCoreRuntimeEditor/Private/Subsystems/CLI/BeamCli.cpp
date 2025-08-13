@@ -94,9 +94,12 @@ FBeamOperationHandle UBeamCli::InitializeWhenEditorReady()
 			}
 			else
 			{
-				bInstalled = FOptionalBool{false};
-				const auto Err = FString::Printf(TEXT("Failed to run `dotnet beam`. Take a look at the logs for more information. Try running a `dotnet tool restore` and re-running the editor."));
-				RequestTracker->TriggerOperationError(Op, Err);
+				if (!bInstalled.IsSet)
+				{
+					bInstalled = FOptionalBool{false};
+					const auto Err = FString::Printf(TEXT("Failed to run `dotnet beam`. Take a look at the logs for more information. Try running a `dotnet tool restore` and re-running the editor."));
+					RequestTracker->TriggerOperationError(Op, Err);
+				}
 			}
 		});
 	});

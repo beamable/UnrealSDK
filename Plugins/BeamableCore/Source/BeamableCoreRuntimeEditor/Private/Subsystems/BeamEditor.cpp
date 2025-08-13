@@ -201,17 +201,8 @@ void UBeamEditorBootstrapper::Run_DelayedInitialize()
 void UBeamEditorBootstrapper::Run_TrySignIntoMainEditorSlot(FBeamWaitCompleteEvent Evt)
 {
 	const auto RequestTracker = GEngine->GetEngineSubsystem<UBeamRequestTracker>();
-	TArray<FString> Errs;
-	if (RequestTracker->IsWaitFailed(Evt, Errs))
-	{
-		for (FString Err : Errs)
-		{
-			UE_LOG(LogBeamEditor, Error, TEXT("Error initializing the Beamable SDK: %s"), *Err);
-		}
-		UE_LOG(LogBeamEditor, Error, TEXT("Please restart the editor to try again after fixing whatever issues the errors describe."));
-		return;
-	}
-
+	const auto BeamEditor = GEditor->GetEditorSubsystem<UBeamEditor>();
+	
 	// When the CLI is not installed, we DO NOT sign in the editor.
 	// Instead, we just use the TargetRealm that is configured in the .ini file in this branch. 
 	const auto Cli = GEditor->GetEditorSubsystem<UBeamCli>();
@@ -219,10 +210,26 @@ void UBeamEditorBootstrapper::Run_TrySignIntoMainEditorSlot(FBeamWaitCompleteEve
 	{
 		// TODO: Check that the Target Realm is set, if not log a big error that says the target realm is not set and therefore no beamable feature will work at runtime.
 		// Push out a notification that the CLI is not installed and therefore no beamable editor functionality will work (neither will local microservices).
-		return;
+		UE_LOG(LogBeamEditor, Error, TEXT("Error initializing the Beamable SDK: CLI is not installed!"));
+		BeamEditor->EditorInitializationError.Add(TEXT("Error initializing the Beamable SDK: CLI is not installed!"));
 	}
 
-	const auto BeamEditor = GEditor->GetEditorSubsystem<UBeamEditor>();
+	TArray<FString> Errs;
+	if (RequestTracker->IsWaitFailed(Evt, Errs))
+	{
+		for (FString Err : Errs)
+		{
+			UE_LOG(LogBeamEditor, Error, TEXT("Error initializing the Beamable SDK: %s"), *Err);
+			BeamEditor->EditorInitializationError.Add(Err);
+		}
+		UE_LOG(LogBeamEditor, Error, TEXT("Please restart the editor to try again after fixing whatever issues the errors describe."));
+	}
+
+	if (!BeamEditor->EditorInitializationError.IsEmpty())
+	{
+		return;
+	}
+		
 	auto Op = RequestTracker->CPP_BeginOperation({}, BeamEditor->GetName(), FBeamOperationEventHandlerCode::CreateLambda([this, BeamEditor](FBeamOperationEvent Evt)
 	{
 		if (Evt.EventType == OET_ERROR)
