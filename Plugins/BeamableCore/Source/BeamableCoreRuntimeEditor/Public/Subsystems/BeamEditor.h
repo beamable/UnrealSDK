@@ -15,6 +15,7 @@
 #include "AutoGen/SubSystems/Realms/GetGamesRequest.h"
 #include "AutoGen/SubSystems/Realms/PostCustomerRequest.h"
 #include "EditorSubsystem.h"
+#include "CLI/Autogen/StreamData/DeveloperUserDataStreamData.h"
 
 #include "UObject/Object.h"
 
@@ -403,6 +404,13 @@ private:
 	 */
 	UFUNCTION(BlueprintCallable, Category="Beam")
 	void OpenPortal(EPortalPage page);
+
+	/**
+	 * @brief Opens the Beamable Portal for a specific user data.
+	 */
+	
+	UFUNCTION(BlueprintCallable, Category="Beam")
+	void OpenPortalOnUserData(UDeveloperUserDataStreamData *UserData);
 
 	// Utility Functions
 private:

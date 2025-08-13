@@ -24,6 +24,7 @@
 #include "Subsystems/CLI/Autogen/BeamCliLogoutCommand.h"
 #include "Subsystems/CLI/Autogen/BeamCliMeCommand.h"
 #include "Subsystems/CLI/Autogen/BeamCliOrgRealmsCommand.h"
+#include "Subsystems/CLI/Autogen/StreamData/DeveloperUserDataStreamData.h"
 
 const FBeamRealmHandle UBeamEditor::Signed_Out_Realm_Handle = FBeamRealmHandle{FString(""), FString("")};
 
@@ -824,6 +825,40 @@ void UBeamEditor::OpenPortal(EPortalPage PortalPage)
 			                                 RefreshToken,
 			                                 FString::Join(AdditionalQueryArgs, TEXT(""))
 		                                 });
+
+		FPlatformProcess::LaunchURL(*URL, nullptr, nullptr);
+	}
+}
+
+void UBeamEditor::OpenPortalOnUserData(UDeveloperUserDataStreamData* UserData)
+{
+	FUserSlot MainEditorSlot;
+	FBeamRealmUser Data;
+	if (TryGetMainEditorSlot(MainEditorSlot, Data))
+	{
+		FBeamCustomerProjectData Proj;
+		FBeamProjectRealmData RealmData;
+		GetActiveProjectAndRealmData(Proj, RealmData);
+
+		const auto PortalUrl = GetDefault<UBeamCoreSettings>()->BeamableEnvironment->PortalUrl;
+		const auto RealmCid = Data.RealmHandle.Cid.AsString;
+		const auto ProductionPid = Proj.AllRealms.FindByPredicate([](FBeamProjectRealmData d) { return d.bIsProduction; })->PID.AsString;
+		const auto Pid = UserData->Pid;
+		const auto GamerTag = UserData->GamerTag;
+		const auto RefreshToken = Data.AuthToken.RefreshToken;
+		FString Page;
+		TArray<FString> AdditionalQueryArgs = {};
+		
+		const auto URL = FString::Format(TEXT("{0}/{1}/games/{2}/realms/{3}/players/{4}?refresh_token={5}"),
+										 {
+											 PortalUrl,
+											 RealmCid,
+											 ProductionPid,
+											 Pid,
+											 GamerTag,
+										 	 RefreshToken,
+											 FString::Join(AdditionalQueryArgs, TEXT(""))
+										 });
 
 		FPlatformProcess::LaunchURL(*URL, nullptr, nullptr);
 	}
