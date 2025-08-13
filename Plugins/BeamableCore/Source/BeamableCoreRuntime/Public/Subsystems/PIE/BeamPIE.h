@@ -4,7 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "AutoGen/SubSystems/BeamLobbyApi.h"
+#include "AutoGen/SubSystems/BeamPlayerLobbyApi.h"
 #include "AutoGen/SubSystems/Lobby/PutLobbiesRequest.h"
+#include "AutoGen/SubSystems/PlayerLobby/ApiPlayerLobbyGetLobbiesByPlayerIdRequest.h"
 #include "Subsystems/EngineSubsystem.h"
 #include "BeamableCoreRuntime/Public/Runtime/BeamRuntime.h"
 #include "BeamableCoreRuntime/Public/Subsystems/Lobby/BeamLobbySubsystem.h"
@@ -912,46 +914,66 @@ public:
 			// We only care about the users in this PIE instance.
 			if (Handle.PIEIndex != PieInstance) continue;
 
-			auto LobbyState = LobbySystem->GetCurrentSlotLobbyState(Handle.Slot);
-
 			// If the user is NOT already in the lobby, let's set up a notification that will trigger when they see that they've joined it.
 			ULobby* UserLobby = nullptr;
 			if (!LobbySystem->TryGetCurrentLobby(Handle.Slot, UserLobby) || !UserLobby->Data.Val.Contains(UBeamLobbySubsystem::Reserved_Lobby_From_Editor_Play_Mode_Property))
 			{
 				UE_LOG(LogBeamEditor, Log, TEXT("%s Client - User is not in Lobby yet. Setting up the notification listener. USER_SLOT=%s, PIE=%d"), *GetLogArgs(TEXT("Beam PIE Prepare"),
 					       GEngine->GetWorldContextFromWorld(Runtime->GetWorld())), *Handle.Slot.Name, Handle.PIEIndex);
-
+				
 				bAreAllUsersAlreadyInTheLobby = false;
-				// Add a notification for when the player joins the lobby
-				const auto LobbyJoinedHandle = LobbyState->OnLobbyJoinedCode.AddLambda(
-					[this, PieInstance, Runtime, Handle, LobbySystem, LobbyState, PossibleSlotHandles, Op](const FUserSlot&, ULobby*, FLobbyUpdateNotificationMessage)
+		
+				const auto API = GEngine->GetEngineSubsystem<UBeamPlayerLobbyApi>();
+
+				// If the player wasn't in the lobby we need to create a request to get the player's lobby, because the backend probably already added the player
+				// So we cannot rely on the notifications
+				auto Request = NewObject<UApiPlayerLobbyGetLobbiesByPlayerIdRequest>();
+				FBeamRealmUser UserData;
+				if (UserSlots->GetUserDataAtSlot(Handle.Slot, UserData, Runtime))
+				{
+					Request->PlayerId = UserData.GamerTag.AsString;
+
+					const auto CreateLobbyHandler = FOnApiPlayerLobbyGetLobbiesByPlayerIdFullResponse::CreateLambda([PieInstance, LobbySystem, Handle, PossibleSlotHandles, Runtime, this, Op](const FApiPlayerLobbyGetLobbiesByPlayerIdFullResponse& Response)
 					{
-						// Check to see if ALL slots managed by this PIE instance are already in the lobby.
-						auto bAreAllSlotsInTheLobby = true;
-						for (const auto& SlotHandle : PossibleSlotHandles)
+						// After get the player lobby we refresh the lobby data with the lobby Id we just get.
+						// It will change the local state of the lobby system
+						LobbySystem->CPP_RefreshLobbyDataOperation(Handle.Slot, FBeamOperationEventHandlerCode::CreateLambda([PieInstance, Runtime, PossibleSlotHandles, LobbySystem, this, Op](const FBeamOperationEvent& Evt)
 						{
-							// We only care about the users in this PIE instance.
-							if (SlotHandle.PIEIndex != PieInstance) continue;
+							
+								// Check to see if ALL slots managed by this PIE instance are already in the lobby.
+								auto bAreAllSlotsInTheLobby = true;
+								for (const auto& SlotHandle : PossibleSlotHandles)
+								{
+									// We only care about the users in this PIE instance.
+									if (SlotHandle.PIEIndex != PieInstance) continue;
 
-							ULobby* L = nullptr;
-							const auto JoinedLobby = LobbySystem->TryGetCurrentLobby(SlotHandle.Slot, L) && L->Data.Val.Contains(UBeamLobbySubsystem::Reserved_Lobby_From_Editor_Play_Mode_Property);
-							bAreAllSlotsInTheLobby &= JoinedLobby;
-							if (JoinedLobby)
-							{
-								UE_LOG(LogBeamEditor, Log, TEXT("%s Client - User is joined Lobby. USER_SLOT=%s, PIE=%d, LOBBY=%s"), *GetLogArgs(TEXT("Beam PIE Prepare"),
-									       GEngine->GetWorldContextFromWorld(Runtime->GetWorld())), *SlotHandle.Slot.Name, SlotHandle.PIEIndex, *L->LobbyId.Val);
-							}
-						}
+									ULobby* L = nullptr;
+									const auto JoinedLobby = LobbySystem->TryGetCurrentLobby(SlotHandle.Slot, L) && L->Data.Val.Contains(UBeamLobbySubsystem::Reserved_Lobby_From_Editor_Play_Mode_Property);
+									bAreAllSlotsInTheLobby &= JoinedLobby;
+									if (JoinedLobby)
+									{
+										UE_LOG(LogBeamEditor, Log, TEXT("%s Client - User is joined Lobby. USER_SLOT=%s, PIE=%d, LOBBY=%s"), *GetLogArgs(TEXT("Beam PIE Prepare"),
+												   GEngine->GetWorldContextFromWorld(Runtime->GetWorld())), *SlotHandle.Slot.Name, SlotHandle.PIEIndex, *L->LobbyId.Val);
+									}
+								}
 
-						// If all slots in this instance are in the lobby, we are done and can complete the operation.
-						if (bAreAllSlotsInTheLobby)
-						{
-							LobbyState->OnLobbyJoinedCode.Remove(LobbyJoinedHandles[Handle]);
-							LobbyJoinedHandles.Remove(Handle);
-							RequestTracker->TriggerOperationSuccess(Op, TEXT(""));
-						}
+								// If all slots in this instance are in the lobby, we are done and can complete the operation.
+								if (bAreAllSlotsInTheLobby)
+								{
+									RequestTracker->TriggerOperationSuccess(Op, TEXT(""));
+								}else
+								{
+									// This case shouldn't be possible, because the backend already put all the players in the lobby
+									UE_LOG(LogTemp, Error, TEXT("Error on get player lobby - All players should already exist in the lobby, please check if the config in the PIE settings is correct."));
+									RequestTracker->TriggerOperationError(Op, TEXT(""));
+								}
+						}), FGuid(Response.SuccessData->LobbyId.Val));
 					});
-				LobbyJoinedHandles.Add(Handle, LobbyJoinedHandle);
+					FBeamRequestContext Ctx;
+					const auto ServerSlot = GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot();
+					API->CPP_GetLobbies(Handle.Slot, Request, CreateLobbyHandler, Ctx, Op, WorldContext->World());
+				}
+				
 			}
 			else
 			{
