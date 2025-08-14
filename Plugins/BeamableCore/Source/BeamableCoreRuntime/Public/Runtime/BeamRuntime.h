@@ -1113,7 +1113,7 @@ ______                           __               ______                        
 	 * In dedicated servers, this maps the UE's LocalPlayerIndex to a ServerMapping slot and is handled by @link UBeamLobbySubsystem::AcceptUserIntoGameServer @endlink.
 	 */
 	UFUNCTION(BlueprintCallable)
-	FUserSlot GetUserSlotTagByPlayerIndex(int32 PlayerIdx);
+	FUserSlot GetUserSlotByPlayerIndex(int32 PlayerIdx);
 
 	/**
 	 * For integration with other implementations of Unreal's Gameplay Framework.

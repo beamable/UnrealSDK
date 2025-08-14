@@ -1538,7 +1538,7 @@ ULocalPlayer* UBeamRuntime::GetLocalPlayerForSlot(FUserSlot Slot)
 	return nullptr;
 }
 
-FUserSlot UBeamRuntime::GetUserSlotTagByPlayerIndex(int32 PlayerIdx)
+FUserSlot UBeamRuntime::GetUserSlotByPlayerIndex(int32 PlayerIdx)
 {
 	if (LocalPlayerIndexToUserSlotMapping.Contains(PlayerIdx))
 	{
