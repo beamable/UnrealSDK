@@ -49,7 +49,8 @@ Arguments:
   <source>  The .dll filepath for the built microservice
 
 Options:
-  --ids <ids>                                          The list of services to include, defaults to all local services (separated by whitespace)
+  --ids <ids>                                          The list of services to include, defaults to all local services (separated by whitespace). To use NO services, use the --exact-ids flag
+  --exact-ids                                          By default, a blank --ids option maps to ALL available ids. When the --exact-ids flag is given, a blank --ids option maps to NO ids
   --without-group, --without-groups <without-group>    A set of BeamServiceGroup tags that will exclude the associated services. Exclusion takes precedence over inclusion
   --with-group, --with-groups <with-group>             A set of BeamServiceGroup tags that will include the associated services
   --output-dir <output-dir>                            Directory to write the output client at

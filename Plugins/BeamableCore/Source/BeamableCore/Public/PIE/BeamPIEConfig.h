@@ -24,6 +24,15 @@ public:
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite)
 	FString CurrLocalServerPort;
 
+	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite)
+	FBeamRealmHandle CurrTargetRealm;
+
+	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite)
+	FString CurrRealmSecret;
+	
+	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite)
+	FString CurrRoutingKeyMap;	
+
 
 	/**
 	 * Saves this as the configuration file.

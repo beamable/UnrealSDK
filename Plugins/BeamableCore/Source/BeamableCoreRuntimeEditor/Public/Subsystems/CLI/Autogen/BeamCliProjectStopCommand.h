@@ -51,7 +51,8 @@ Usage:
   Beamable.Tools project stop [options]
 
 Options:
-  --ids <ids>                            The list of services to include, defaults to all local services (separated by whitespace)
+  --ids <ids>                            The list of services to include, defaults to all local services (separated by whitespace). To use NO services, use the --exact-ids flag
+  --exact-ids                            By default, a blank --ids option maps to ALL available ids. When the --exact-ids flag is given, a blank --ids option maps to NO ids
   -k, --kill-task                        Kill the task instead of sending a graceful shutdown signal via the socket [default: False]
   --dryrun                               [DEPRECATED] Run as much of the command as possible without making any network calls
   --cid <cid>                            CID (CustomerId) to use (found in Portal->Account); defaults to whatever is in '.beamable/connection-configuration.json'

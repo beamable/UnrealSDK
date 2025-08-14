@@ -33,6 +33,8 @@ public:
 	FString JsonFilePath = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString ReferenceManifestUid = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int64 LatestUpdateAtDate = {};
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
 	{
@@ -45,7 +47,8 @@ public:
 		UBeamJsonUtils::SerializeArray<FString>(TEXT("Tags"), Tags, Serializer);
 		UBeamJsonUtils::SerializeArray<int32>(TEXT("TagsStatus"), TagsStatus, Serializer);
 		UBeamJsonUtils::SerializeRawPrimitive(TEXT("JsonFilePath"), JsonFilePath, Serializer);
-		UBeamJsonUtils::SerializeRawPrimitive(TEXT("ReferenceManifestUid"), ReferenceManifestUid, Serializer);	
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("ReferenceManifestUid"), ReferenceManifestUid, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("LatestUpdateAtDate"), LatestUpdateAtDate, Serializer);	
 	}
 
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
@@ -59,7 +62,8 @@ public:
 		UBeamJsonUtils::SerializeArray<FString>(TEXT("Tags"), Tags, Serializer);
 		UBeamJsonUtils::SerializeArray<int32>(TEXT("TagsStatus"), TagsStatus, Serializer);
 		UBeamJsonUtils::SerializeRawPrimitive(TEXT("JsonFilePath"), JsonFilePath, Serializer);
-		UBeamJsonUtils::SerializeRawPrimitive(TEXT("ReferenceManifestUid"), ReferenceManifestUid, Serializer);	
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("ReferenceManifestUid"), ReferenceManifestUid, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("LatestUpdateAtDate"), LatestUpdateAtDate, Serializer);	
 	}
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
@@ -73,7 +77,8 @@ public:
 		UBeamJsonUtils::DeserializeArray<FString>(TEXT("Tags"), Bag, Tags, OuterOwner);
 		UBeamJsonUtils::DeserializeArray<int32>(TEXT("TagsStatus"), Bag, TagsStatus, OuterOwner);
 		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("JsonFilePath"), Bag, JsonFilePath);
-		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("ReferenceManifestUid"), Bag, ReferenceManifestUid);	
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("ReferenceManifestUid"), Bag, ReferenceManifestUid);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("LatestUpdateAtDate"), Bag, LatestUpdateAtDate);	
 	}
 };
 

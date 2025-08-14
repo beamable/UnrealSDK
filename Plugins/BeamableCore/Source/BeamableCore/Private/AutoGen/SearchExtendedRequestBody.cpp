@@ -12,6 +12,8 @@ void USearchExtendedRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& 
 	UBeamJsonUtils::SerializeRawPrimitive(TEXT("access"), Access, Serializer);
 	UBeamJsonUtils::SerializeArray<UStatsSearchCriteria*>(TEXT("criteria"), Criteria, Serializer);
 	UBeamJsonUtils::SerializeArray<FString>(TEXT("statKeys"), StatKeys, Serializer);
+	UBeamJsonUtils::SerializeOptional<int32>(TEXT("offset"), &Offset, Serializer);
+	UBeamJsonUtils::SerializeOptional<int32>(TEXT("limit"), &Limit, Serializer);
 }
 
 void USearchExtendedRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
@@ -20,7 +22,9 @@ void USearchExtendedRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerial
 	UBeamJsonUtils::SerializeRawPrimitive(TEXT("objectType"), ObjectType, Serializer);
 	UBeamJsonUtils::SerializeRawPrimitive(TEXT("access"), Access, Serializer);
 	UBeamJsonUtils::SerializeArray<UStatsSearchCriteria*>(TEXT("criteria"), Criteria, Serializer);
-	UBeamJsonUtils::SerializeArray<FString>(TEXT("statKeys"), StatKeys, Serializer);		
+	UBeamJsonUtils::SerializeArray<FString>(TEXT("statKeys"), StatKeys, Serializer);
+	UBeamJsonUtils::SerializeOptional<int32>(TEXT("offset"), &Offset, Serializer);
+	UBeamJsonUtils::SerializeOptional<int32>(TEXT("limit"), &Limit, Serializer);		
 }
 
 void USearchExtendedRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
@@ -30,6 +34,8 @@ void USearchExtendedRequestBody::BeamDeserializeProperties(const TSharedPtr<FJso
 	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("access"), Bag, Access);
 	UBeamJsonUtils::DeserializeArray<UStatsSearchCriteria*>(TEXT("criteria"), Bag, Criteria, OuterOwner);
 	UBeamJsonUtils::DeserializeArray<FString>(TEXT("statKeys"), Bag, StatKeys, OuterOwner);
+	UBeamJsonUtils::DeserializeOptional<int32>("offset", Bag, Offset, OuterOwner);
+	UBeamJsonUtils::DeserializeOptional<int32>("limit", Bag, Limit, OuterOwner);
 }
 
 

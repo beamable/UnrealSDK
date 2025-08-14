@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalInt64.h"
 #include "Serialization/BeamJsonUtils.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
 #include "BeamBackend/SemanticTypes/BeamContentId.h"
@@ -26,8 +27,12 @@ public:
 	EBeamContentType Type = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Tags", Category="Beam")
 	TArray<FString> Tags = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Updated At", Category="Beam")
+	FOptionalInt64 UpdatedAt = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Checksum", Category="Beam")
 	FOptionalString Checksum = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Created At", Category="Beam")
+	FOptionalInt64 CreatedAt = {};
 
 	
 

@@ -3,9 +3,9 @@
 #include "CoreMinimal.h"
 #include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
-#include "BeamableCore/Public/AutoGen/Optionals/OptionalInt64.h"
-#include "BeamBackend/ReplacementTypes/BeamRemoteContentManifestEntry.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
+#include "BeamBackend/ReplacementTypes/BeamRemoteContentManifestEntry.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalInt64.h"
 
 #include "ClientManifestJsonResponse.generated.h"
 
@@ -17,14 +17,12 @@ class BEAMABLECORE_API UClientManifestJsonResponse : public UObject, public IBea
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Entries", Category="Beam")
 	TArray<FBeamRemoteContentManifestEntry> Entries = {};
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Latest Update", Category="Beam")
-	FOptionalInt64 LatestUpdate = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Uid", Category="Beam")
+	FOptionalString Uid = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Publisher Account Id", Category="Beam")
 	FOptionalInt64 PublisherAccountId = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Created At", Category="Beam")
 	FOptionalInt64 CreatedAt = {};
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Uid", Category="Beam")
-	FOptionalString Uid = {};
 
 	virtual void DeserializeRequestResponse(UObject* RequestData, FString ResponseContent) override;
 

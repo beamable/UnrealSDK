@@ -13,7 +13,7 @@ struct BEAMABLECORE_API FBeamOptional
 
 	virtual const void* GetAddr() const;
 
-	virtual bool TryGet(void* OutData, size_t& OutSize) const;;
+	virtual bool TryGet(void* OutData, size_t& OutSize) const;
 
 	virtual void Set(const void* Data);
 
@@ -30,4 +30,11 @@ struct BEAMABLECORE_API FBeamOptional
 
 	template <typename T>
 	static const T& GetValue(const FBeamOptional* Optional) { return *static_cast<const T*>(Optional->GetAddr()); }
+
+	template<typename T>
+	const T& GetValueOrDefault(const T& Default)
+	{
+		if (!IsSet) return Default;
+		return *static_cast<const T*>(GetAddr());
+	}
 };

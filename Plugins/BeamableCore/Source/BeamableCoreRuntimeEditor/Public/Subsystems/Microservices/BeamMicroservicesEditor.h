@@ -322,12 +322,6 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Beam|Editor|Microservice")
 	void SaveFederationProperties(FString ServiceId, FString FedId, FLocalFederationData Federation);
 
-	/**
-	 * This runs before each time we will kick off PIE instances.
-	 * It will ensure that the correct routing key map is passed along to the PIE instances running on separate processes. 
-	 */
-	void TriggerOnPreBeginPIE(ULevelEditorPlaySettings* PlaySettings, FBeamPIE_Settings const* SelectedSettings);
-
 protected:
 	void DeployMicroservices(const TArray<FString>& EnableBeamoIds, const TArray<FString>& DisableBeamoIds, const FBeamOperationHandle& Op) const;
 
@@ -346,6 +340,5 @@ protected:
 	void SetupLogTail(FLocalMicroserviceData* RunningService);
 	void AppendToLogs(FLocalMicroserviceData* RunningService, const TArray<UBeamCliLogEntry*>& Log);
 	void StopLogTail(FLocalMicroserviceData* RunningService);
-	void SplitByHostOrDocker(const TArray<FString>& BeamoIds, TArray<FString>& DockerBeamoIds, TArray<FString>& HostBeamoIds);
-	void SetRoutingKeyMapAsAdditionalLaunchArgs(ULevelEditorPlaySettings* PlaySettings);
+	void SplitByHostOrDocker(const TArray<FString>& BeamoIds, TArray<FString>& DockerBeamoIds, TArray<FString>& HostBeamoIds);	
 };

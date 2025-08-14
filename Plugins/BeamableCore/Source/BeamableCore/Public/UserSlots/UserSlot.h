@@ -40,6 +40,9 @@ struct BEAMABLECORE_API FUserSlot
 	operator FString();
 
 	bool IsTestSlot() const { return Name.Contains("Test"); }
+	bool IsServerMappingSlot() const { return Name.Contains("BeamServerUserMapping"); }
+
+	inline static FUserSlot MakeServerMappingSlot(int64 MappingIdx) { return FUserSlot{FString::Printf(TEXT("BeamServerUserMapping_%lld"), MappingIdx)}; }
 };
 
 FORCEINLINE uint32 GetTypeHash(const FUserSlot& UserSlot) { return GetTypeHash(UserSlot.Name); }

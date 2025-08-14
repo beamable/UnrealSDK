@@ -9,7 +9,7 @@ FUserSlot::FUserSlot()
 FUserSlot::FUserSlot(const FString& x)
 {
 	// We allow setting a user slot as empty or as any Test slot. Other than those, it must be registered in the core settings. 
-	if (!x.IsEmpty() && !x.Contains("Test"))
+	if (!x.IsEmpty() && !x.Contains("Test") && !x.StartsWith("BeamServerUserMapping"))
 	{
 		if (x.StartsWith("PIE_"))
 		{

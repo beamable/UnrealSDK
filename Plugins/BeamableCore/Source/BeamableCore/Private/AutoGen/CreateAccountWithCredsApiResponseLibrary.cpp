@@ -23,7 +23,7 @@ FString UCreateAccountWithCredsApiResponseLibrary::CreateAccountWithCredsApiResp
 	return Result;
 }	
 
-UCreateAccountWithCredsApiResponse* UCreateAccountWithCredsApiResponseLibrary::Make(FOptionalAccountsBasicAccount Account, FOptionalString ChallengeToken, FOptionalTokenResponse Token, UObject* Outer)
+UCreateAccountWithCredsApiResponse* UCreateAccountWithCredsApiResponseLibrary::Make(FOptionalAccountPlayerView Account, FOptionalString ChallengeToken, FOptionalTokenResponse Token, UObject* Outer)
 {
 	auto Serializable = NewObject<UCreateAccountWithCredsApiResponse>(Outer);
 	Serializable->Account = Account;
@@ -33,7 +33,7 @@ UCreateAccountWithCredsApiResponse* UCreateAccountWithCredsApiResponseLibrary::M
 	return Serializable;
 }
 
-void UCreateAccountWithCredsApiResponseLibrary::Break(const UCreateAccountWithCredsApiResponse* Serializable, FOptionalAccountsBasicAccount& Account, FOptionalString& ChallengeToken, FOptionalTokenResponse& Token)
+void UCreateAccountWithCredsApiResponseLibrary::Break(const UCreateAccountWithCredsApiResponse* Serializable, FOptionalAccountPlayerView& Account, FOptionalString& ChallengeToken, FOptionalTokenResponse& Token)
 {
 	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
 	{

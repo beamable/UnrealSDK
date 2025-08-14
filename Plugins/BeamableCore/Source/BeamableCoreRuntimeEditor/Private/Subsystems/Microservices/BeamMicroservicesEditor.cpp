@@ -506,12 +506,6 @@ void UBeamMicroservicesEditor::SaveFederationProperties(FString ServiceId, FStri
 	Cli->RunCommandServer(Cmd, Params, {});
 }
 
-void UBeamMicroservicesEditor::TriggerOnPreBeginPIE(ULevelEditorPlaySettings* PlaySettings, FBeamPIE_Settings const*)
-{
-	// Ensure that the additional launch args are up-to-date with the locally running services.
-	SetRoutingKeyMapAsAdditionalLaunchArgs(PlaySettings);
-}
-
 
 void UBeamMicroservicesEditor::DeployMicroservices(const TArray<FString>& EnableBeamoIds, const TArray<FString>& DisableBeamoIds, const FBeamOperationHandle& Op) const
 {
@@ -822,42 +816,4 @@ void UBeamMicroservicesEditor::SplitByHostOrDocker(const TArray<FString>& BeamoI
 				HostBeamoIds.Add(BeamoId);
 		}
 	}
-}
-
-void UBeamMicroservicesEditor::SetRoutingKeyMapAsAdditionalLaunchArgs(ULevelEditorPlaySettings* PlaySettings)
-{
-	// Helper function to updated/set the routing key map to a string that might already contain it.
-	const auto AppendToParams = [](FString RoutingKeyMap, FString OldParams)
-	{
-		auto NewParams = FString(OldParams);
-
-		const auto StartIdx = OldParams.Find(TEXT("beamable-routing-key-map"));
-
-		// We have it in the string, first we remove it 
-		if (StartIdx != INDEX_NONE)
-		{
-			auto EndIdx = OldParams.Find(TEXT(" "), ESearchCase::IgnoreCase, ESearchDir::FromStart, StartIdx);
-			if (EndIdx == INDEX_NONE) EndIdx = OldParams.Len();
-			NewParams.RemoveAt(StartIdx, EndIdx - StartIdx);
-		}
-		// If it's not there, we add a space.
-		else
-		{
-			NewParams.Append(TEXT(" "));
-		}
-
-		// Then we add the most recent routing key map	
-		NewParams.Append(FString::Printf(TEXT("%s=%s"), TEXT("beamable-routing-key-map"), *RoutingKeyMap));
-
-		return NewParams;
-	};
-
-	// Construct the RoutingKeyMap and apply it to both Client and Server Launch Parameters.
-	const auto KeyMap = ConstructRoutingKeyMap();
-	const auto ClientParams = PlaySettings->AdditionalLaunchParameters;
-	const auto ServerParams = PlaySettings->AdditionalServerLaunchParameters;
-
-	// Set the updated paramters in both the server and the client launch parameters.
-	PlaySettings->AdditionalLaunchParameters = AppendToParams(KeyMap, ClientParams);
-	PlaySettings->AdditionalServerLaunchParameters = AppendToParams(KeyMap, ServerParams);
 }

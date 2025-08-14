@@ -70,28 +70,6 @@ void UBeamBackend::Initialize(FSubsystemCollectionBase& Collection)
 	AlwaysLogSuccessResponses = GetDefault<UBeamCoreSettings>()->AlwaysLogSuccessResponses;
 	AlwaysLogErrorResponses = GetDefault<UBeamCoreSettings>()->AlwaysLogErrorResponses;
 	AlwaysLogCompleteResponses = GetDefault<UBeamCoreSettings>()->AlwaysLogCompletedResponses;
-
-	// There are some things you can't test in PIE-mode and instead you must run as a Standalone Game.
-	// There is no way for us to programatically set the routing key map like we do for regular PIE so...
-	// In order to work with locally running microservices in this mode, this needs to be set via CommandLine or EnvVar.
-	// See our docs for more information on how to configure this.
-#if !UE_BUILD_SHIPPING
-	FString RoutingKeyMap;
-	if (!FParse::Value(FCommandLine::Get(), TEXT("beamable-routing-key-map="), RoutingKeyMap, false))
-	{
-		RoutingKeyMap = FPlatformMisc::GetEnvironmentVariable(TEXT("BEAMABLE_ROUTING_KEY_MAP"));
-		if (!RoutingKeyMap.IsEmpty())
-		{
-			SetRoutingKeyMap(RoutingKeyMap);
-			UE_LOG(LogBeamBackend, Display, TEXT("Parsed Routing Key from EnvVar | ROUTING_KEY_MAP=%s, NUM=%d"), *RoutingKeyMap, CurrentRoutingKeyMaps.Num());						
-		}
-	}
-	else
-	{
-		SetRoutingKeyMap(RoutingKeyMap);
-		UE_LOG(LogBeamBackend, Display, TEXT("Parsed Routing Key from CLArgs | ROUTING_KEY_MAP=%s, NUM=%d, FOR_OWNER=%s"), *RoutingKeyMap, CurrentRoutingKeyMaps.Num(), *CurrentRoutingKeyMaps[GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot()]);		
-	}
-#endif
 }
 
 void UBeamBackend::Deinitialize()
@@ -173,7 +151,7 @@ TUnrealRequestPtr UBeamBackend::CreateUnpreparedRequest(int64& OutRequestId, con
 	// We set the activity timeout to the requested timeout since the regular timeout was deprecated in UE 5.4
 	// In UE 5.4, the regular timeout will prevent the request object from being reused after a timeout.
 	// Using ActivityTimeout makes it possible to reuse this request object (which is important for our retry logic --- see TickRetryQueue)
-	Req->SetActivityTimeout(RetryConfig.Timeout);
+	Req->SetActivityTimeout(RetryConfig.Timeout * 2);
 
 	// Set the timeout header so that Beamable's Gateway itself knows how long
 	long long timeoutInMilliseconds = RetryConfig.Timeout * 1000;

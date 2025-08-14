@@ -1436,29 +1436,50 @@ void UBeamLobbySubsystem::AcceptUserIntoGameServer(const FUserSlot& Slot, const 
 		}
 
 		// Then, we can parse the options.
+		const auto bHasGamerTag = UGameplayStatics::HasOption(Options, "BeamGamerTag");
 		const auto bHasAccessToken = UGameplayStatics::HasOption(Options, "BeamAccessToken");
+		const auto bHasRefreshToken = UGameplayStatics::HasOption(Options, "BeamRefreshToken");
 		const auto bHasLobby = UGameplayStatics::HasOption(Options, "BeamLobbyId");
 
 		// If we are missing either of the two required options...			
-		if (!bHasAccessToken || !bHasLobby)
+		if (!bHasAccessToken || !bHasLobby || !bHasRefreshToken)
 		{
 			// ... and we are configured to create a fake lobby...
 			const auto Setting = PIE->GetSelectedPIESettings();
 			if (Setting && (Setting->FakeLobby.bShouldAutoCreateLobby || Setting->IsDefaultSettings()))
 			{
-				/// ... accept the user even without any options
+				/// ... accept all Assigned users at once.			 
 				/// (we need to do this in this way because UE does not allow us to define options when entering PIE)
+				auto Count = -1;
+				for (const auto& Kvp : Setting->AssignedUsers)
+				{
+					Count += 1;
+					const auto User = Kvp.Value;
+					const auto ServerMappingSlot = FUserSlot{FString::Printf(TEXT("BeamServerUserMapping_%d"), Count)};
+					if (!UserSlots->IsUserSlotAuthenticated(ServerMappingSlot, this))
+					{
+						// We add a delegate that we use to map this user to the player index on the server;
+						// This ensures that any calls to Runtime->
+						// const auto Handle = GetGameInstance()->OnLocalPlayerAddedEvent.AddLambda([this, ServerMappingSlot, Handle](ULocalPlayer* LocalPlayer)
+						// {
+						// 	const auto Idx = LocalPlayer->GetIndexInGameInstance();
+						// 	Runtime->LocalPlayerIndexToUserSlotMapping.Add(Idx, ServerMappingSlot);
+						// 	GetGameInstance()->OnLocalPlayerAddedEvent.Remove(Handle);
+						// });
+
+						//       - In the server, this is updated whenever we accept a player into a server inside UBeamLobbySubsystem::AcceptPlayerIntoLobby ---
+						//         which creates fake lobbies for each server player and stores there data there. In practice, this means the users are "logged into the game server"
+						//         (I think this means that the server can make any request "as the user" by using one of the fake user slots; kinda like AssumeUser from C#MS but much more lightweight).
+						// TODO: GetMe -> Hook -> Store in FakeSlot.
+					}
+				}
+
 				RequestTracker->TriggerOperationSuccess(Op, TEXT(""));
 			}
 			else
 			{
 				// Reject the user because they MUST pass these options.
-				if (bHasAccessToken)
-					RequestTracker->TriggerOperationError(Op, TEXT("NO_LOBBY_ID_PROVIDED"));
-				else if (bHasLobby)
-					RequestTracker->TriggerOperationError(Op, TEXT("NO_ACCESS_TOKEN_PROVIDED"));
-				else
-					RequestTracker->TriggerOperationError(Op, TEXT("NO_OPTIONS_PROVIDED"));
+				RequestTracker->TriggerOperationError(Op, TEXT("MISSING_REQUIRED_OPTIONS_PROVIDED"));
 			}
 		}
 		// If there are options...
@@ -1466,6 +1487,7 @@ void UBeamLobbySubsystem::AcceptUserIntoGameServer(const FUserSlot& Slot, const 
 		{
 			// ... fetch the beamable specific options
 			const FString& ConnectingAccessToken = UGameplayStatics::ParseOption(Options, "BeamAccessToken");
+			const FString& ConnectingRefreshToken = UGameplayStatics::ParseOption(Options, "BeamRefreshToken");
 			const FString& ConnectingToLobby = UGameplayStatics::ParseOption(Options, "BeamLobbyId");
 
 			// ... make the provided lobby id is parseable
@@ -1487,6 +1509,8 @@ void UBeamLobbySubsystem::AcceptUserIntoGameServer(const FUserSlot& Slot, const 
 				return;
 			}
 
+			const auto CurrMappingIdx = FPlatformAtomics::InterlockedIncrement(&AutoIncrementServerMappingSlotsIdx);
+			
 			/// ... prepare and make a GetMe request using the provided access token.
 			const auto AccountsApi = GEngine->GetEngineSubsystem<UBeamAccountsApi>();
 			const auto Req = UBasicAccountsGetMeRequest::Make(GetTransientPackage(), {});
@@ -1495,7 +1519,7 @@ void UBeamLobbySubsystem::AcceptUserIntoGameServer(const FUserSlot& Slot, const 
 			AccountsApi->CPP_GetMe(
 				GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot(),
 				Req,
-				FOnBasicAccountsGetMeFullResponse::CreateLambda([this, TargetLobby, Op](FBasicAccountsGetMeFullResponse Resp)
+				FOnBasicAccountsGetMeFullResponse::CreateLambda([this, CurrMappingIdx, ConnectingAccessToken, ConnectingRefreshToken, TargetLobby, Op](FBasicAccountsGetMeFullResponse Resp)
 				{
 					if (Resp.State == RS_Success)
 					{
@@ -1510,10 +1534,36 @@ void UBeamLobbySubsystem::AcceptUserIntoGameServer(const FUserSlot& Slot, const 
 							bIsInTargetLobby |= RequestingGamerTag == GT;
 						}
 
-						// TODO: Expose hook here, after hook redesign.
-
 						if (bIsInTargetLobby)
+						{
+							// Use the GetMe response here to set stuff about the user in the fake UserSlot for this user (maps to PlayerIndex: "BeamServerUserMapping_X"
+							FBeamRealmUser _;
+							FUserSlot MappingSlot;
+							FString DefaultStr = TEXT("");
+							if (!UserSlots->GetUserDataWithGamerTag(RequestingGamerTag, _, MappingSlot, DefaultStr))
+							{
+								MappingSlot = FUserSlot::MakeServerMappingSlot(CurrMappingIdx);
+
+								const auto TargetRealm = GetDefault<UBeamCoreSettings>()->TargetRealm;
+								UserSlots->SetAuthenticationDataAtSlot(MappingSlot, ConnectingAccessToken, ConnectingRefreshToken,
+								                                       FDateTime::UtcNow().ToUnixTimestamp(), 30000, TargetRealm.Cid, TargetRealm.Pid, this);
+								UserSlots->SetGamerTagAtSlot(MappingSlot, RequestingGamerTag, this);
+								UserSlots->SetEmailAtSlot(MappingSlot, Resp.SuccessData->Email.GetValueOrDefault(DefaultStr), this);
+
+								TArray<FBeamExternalIdentity> EmptyIdentities;
+								UserSlots->SetExternalIdsAtSlot(MappingSlot, Resp.SuccessData->External.GetValueOrDefault(EmptyIdentities), this);
+
+								// We don't trigger user authenticated callbacks.
+								// TODO: The user can use the hook here to explicitly refresh data for this slot using the various SubSystems.
+								// No, when we do the hook thing, people will be able to do this themselves.
+							}
+
+							// TODO: Expose hook here, after hook redesign.
+							
+
+
 							RequestTracker->TriggerOperationSuccess(Op, TEXT(""));
+						}
 						else
 							RequestTracker->TriggerOperationError(Op, TEXT("PLAYER_NOT_IN_LOBBY"));
 					}
@@ -1523,7 +1573,6 @@ void UBeamLobbySubsystem::AcceptUserIntoGameServer(const FUserSlot& Slot, const 
 
 
 	PIE->CPP_WaitForBeamPIEOperation(Slot, this, PostBeamPIE);
-	
 }
 
 // REQUEST HELPERS
@@ -1738,7 +1787,7 @@ void UBeamLobbySubsystem::OnLobbyUpdatedHandler(FLobbyUpdateNotificationMessage 
 					if (TryGetLobbyById(LobbyId, LobbyData))
 					{
 						// If this local player was the one who joined the lobby (was not in any lobby, but is in the refreshed lobby)
-						if (bWasNotInLobby && Lobby->LobbyId == Msg.LobbyId && Msg.Type == EBeamLobbyEvent::BEAM_PlayerJoined)
+						if (bWasNotInLobby && Lobby->LobbyId == Msg.LobbyId && (Msg.Type == EBeamLobbyEvent::BEAM_PlayerJoined || Msg.Type == EBeamLobbyEvent::BEAM_LobbyCreated))
 						{
 							Lobby->OnLobbyJoinedCode.Broadcast(Slot, LobbyData, Msg);
 							Lobby->OnLobbyJoined.Broadcast(Slot, LobbyData, Msg);

@@ -59,7 +59,8 @@ Usage:
 
 Options:
   -w, --watch                                        When true, the command will run forever and watch the state of the program
-  --ids <ids>                                        The list of services to include, defaults to all local services (separated by whitespace)
+  --ids <ids>                                        The list of services to include, defaults to all local services (separated by whitespace). To use NO services, use the --exact-ids flag
+  --exact-ids                                        By default, a blank --ids option maps to ALL available ids. When the --exact-ids flag is given, a blank --ids option maps to NO ids
   --without-group, --without-groups <without-group>  A set of BeamServiceGroup tags that will exclude the associated services. Exclusion takes precedence over inclusion
   --with-group, --with-groups <with-group>           A set of BeamServiceGroup tags that will include the associated services
   --require-process-id <require-process-id>          Listens to the given process id. Terminates this long-running command when the it no longer is running

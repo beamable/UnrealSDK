@@ -363,35 +363,6 @@ public:
 	static void RemovePiePrefix(const FString& Str, FString& WithoutPiePrefix);
 #endif
 
-	/**
-	______                           __               ______                                             __  
-  / ____/___ _____ ___  ___  ____  / /___ ___  __   / ____/________ _____ ___  ___ _      ______  _____/ /__
- / / __/ __ `/ __ `__ \/ _ \/ __ \/ / __ `/ / / /  / /_  / ___/ __ `/ __ `__ \/ _ \ | /| / / __ \/ ___/ //_/
-/ /_/ / /_/ / / / / / /  __/ /_/ / / /_/ / /_/ /  / __/ / /  / /_/ / / / / / /  __/ |/ |/ / /_/ / /  / ,<   
-\____/\__,_/_/ /_/ /_/\___/ .___/_/\__,_/\__, /  /_/   /_/   \__,_/_/ /_/ /_/\___/|__/|__/\____/_/  /_/|_|  
-						 /_/            /____/                                                              
-	 */
-
-	/**
-	 * For integration with other implementations of Unreal's Online Subsystem --- this maps the indices of the array of @link UBeamCoreSettings::RuntimeUserSlots @endlink to
-	 * Unreal's @link FUniqueNetIdRepl @endlink, @link ULocalPlayer @endlink and @link APlayerController @endlink objects.
-	 */
-	UFUNCTION(BlueprintCallable, meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
-	FUniqueNetIdRepl GetUniqueNetIdForSlot(FUserSlot Slot, UObject* CallingContext);
-
-	/**
-	 * For integration with other implementations of Unreal's Online Subsystem --- this maps the indices of the array of @link UBeamCoreSettings::RuntimeUserSlots @endlink to
-	 * Unreal's @link FUniqueNetIdRepl @endlink, @link ULocalPlayer @endlink and @link APlayerController @endlink objects.
-	 */
-	UFUNCTION(BlueprintCallable, meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
-	APlayerController* GetPlayerControllerForSlot(FUserSlot Slot, UObject* CallingContext);
-
-	/**
-	 * For integration with other implementations of Unreal's Online Subsystem --- this maps the indices of the array of @link UBeamCoreSettings::RuntimeUserSlots @endlink to
-	 * Unreal's @link FUniqueNetIdRepl @endlink, @link ULocalPlayer @endlink and @link APlayerController @endlink objects.
-	 */
-	UFUNCTION(BlueprintCallable, meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
-	ULocalPlayer* GetLocalPlayerForSlot(FUserSlot Slot, UObject* CallingContext);
 
 	/**
 	 

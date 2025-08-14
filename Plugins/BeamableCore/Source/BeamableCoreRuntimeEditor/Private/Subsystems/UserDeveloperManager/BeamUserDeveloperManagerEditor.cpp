@@ -112,6 +112,10 @@ void UBeamUserDeveloperManagerEditor::TriggerOnUserSlotAuthenticated(const FUser
 
 void UBeamUserDeveloperManagerEditor::TriggerOnPreBeginPIE(ULevelEditorPlaySettings* PlaySettings, const FBeamPIE_Settings* Settings)
 {
+	FScopedSlowTask SlowTask(100, FText::FromString(TEXT("Starting Beam PIE - Copying Users")));
+	SlowTask.MakeDialog(false, true);
+	SlowTask.EnterProgressFrame(10);	
+	
 	// If there's no assigned user set-up we don't need to do nothing
 	if (Settings->AssignedUsers.Num() == 0)
 	{
@@ -155,18 +159,6 @@ void UBeamUserDeveloperManagerEditor::TriggerOnPreBeginPIE(ULevelEditorPlaySetti
 	};
 
 	UBeamCliDeveloperUserManagerCreateUserBatchCommand* CreateUserBatchCommand = NewObject<UBeamCliDeveloperUserManagerCreateUserBatchCommand>();
-
-	auto Handler = RequestTracker->CPP_BeginOperation({}, GetName(), FBeamOperationEventHandlerCode::CreateLambda([this, CreateUserBatchCommand, args](const FBeamOperationEvent& Event)
-	{
-		if (Event.EventCode == TEXT("CLI_ERROR_UNKNOWN_BACKEND"))
-		{
-			auto Handler = RequestTracker->CPP_BeginOperation({}, GetName(), {});
-			// Try Again if fail with no operarion
-			BeamCli->RunCommandServer(CreateUserBatchCommand, args, Handler);
-		}
-	}));
-
-
 	CreateUserBatchCommand->OnStreamOutput = [this, Settings](const TArray<UBeamCliDeveloperUserManagerCreateUserBatchStreamData*>& Stream, const TArray<int64>&,
 	                                                          const FBeamOperationHandle&)
 	{
@@ -206,35 +198,33 @@ void UBeamUserDeveloperManagerEditor::TriggerOnPreBeginPIE(ULevelEditorPlaySetti
 			CreatedUserMap[AssignedUserKeyPair.Value.GamerTag.AsLong].Remove(DeveloperUser);
 		}
 	};
-	CreateUserBatchCommand->OnCompleted = [this, Handler](const int& ResCode, const FBeamOperationHandle&)
+	
+	CreateUserBatchCommand->OnCompleted = [this](const int& ResCode, const FBeamOperationHandle&)
 	{
 		if (ResCode == CLI_ERROR_BACKEND)
 		{
-			UE_LOG(LogTemp, Error, TEXT("CREATE BATCH CLI COMMAND: CLI_ERROR_BACKEND %d"), ResCode);
-			RequestTracker->TriggerOperationError(Handler, TEXT("CLI_ERROR_BACKEND"));
+			UE_LOG(LogTemp, Error, TEXT("CREATE BATCH CLI COMMAND: CLI_ERROR_BACKEND %d"), ResCode);			
 		}
 		else if (ResCode == CLI_ERROR_UNKNOWN_BACKEND)
 		{
-			UE_LOG(LogTemp, Error, TEXT("CREATE BATCH CLI COMMAND: CLI_ERROR_UNKNOWN_BACKEND %d"), ResCode);
-			RequestTracker->TriggerOperationError(Handler, TEXT("CLI_ERROR_UNKNOWN_BACKEND"));
+			UE_LOG(LogTemp, Error, TEXT("CREATE BATCH CLI COMMAND: CLI_ERROR_UNKNOWN_BACKEND %d"), ResCode);			
 		}
 		else if (ResCode == CLI_ERROR_SAVE_FILE)
 		{
 			UE_LOG(LogTemp, Error, TEXT("CREATE BATCH CLI COMMAND: CLI_ERROR_SAVE_FILE %d"), ResCode);
-			RequestTracker->TriggerOperationError(Handler, TEXT("CLI_ERROR_SAVE_FILE"));
 		}
 		else if (ResCode != 0)
 		{
 			// Unknown error
-			RequestTracker->TriggerOperationError(Handler, TEXT("CLI_ERROR_UNKNOWN"));
 		}
 		else
-		{
-			RequestTracker->TriggerOperationSuccess(Handler, TEXT(""));
+		{			
 		}
 	};
 
-	BeamCli->RunCommandServer(CreateUserBatchCommand, args, Handler);
+	SlowTask.EnterProgressFrame(50);	
+	BeamCli->RunCommandSync(CreateUserBatchCommand, args);
+	SlowTask.EnterProgressFrame(40);	
 }
 
 UDeveloperUserDataStreamData* UBeamUserDeveloperManagerEditor::GetUserWithGamerTag(FBeamGamerTag GamerTag)

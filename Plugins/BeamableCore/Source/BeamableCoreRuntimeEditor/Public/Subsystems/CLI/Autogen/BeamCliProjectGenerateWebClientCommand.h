@@ -47,7 +47,7 @@ Usage:
 
 Options:
   -o, --output-dir <output-dir>          The directory where the generated code will be written
-  -l, --lang <lang>                      The language of the generated code. Valid values are: `typescript` (default), `javascript` [default: typescript]
+  -l, --lang <lang>                      The language of the generated code. Valid values are: `typescript` (default), `ts`, `javascript`, `js` [default: typescript]
   --dryrun                               [DEPRECATED] Run as much of the command as possible without making any network calls
   --cid <cid>                            CID (CustomerId) to use (found in Portal->Account); defaults to whatever is in '.beamable/connection-configuration.json'
   --pid <pid>                            PID (Realm ID) to use (found in Portal -> Games -> Any Realm's details); defaults to whatever is in '.beamable/connection-configuration.json'

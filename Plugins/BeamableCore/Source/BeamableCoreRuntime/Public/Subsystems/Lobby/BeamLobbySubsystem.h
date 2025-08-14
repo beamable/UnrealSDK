@@ -196,6 +196,9 @@ public:
 	TMap<FUserSlot, UBeamLobbyUpdateCommand*> UpdateCommands;
 
 private:
+
+	volatile int64 AutoIncrementServerMappingSlotsIdx = -1;
+	
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 	virtual void Deinitialize() override;
 

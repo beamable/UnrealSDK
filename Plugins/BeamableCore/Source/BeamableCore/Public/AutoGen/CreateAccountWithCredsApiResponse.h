@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 #include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
-#include "BeamableCore/Public/AutoGen/Optionals/OptionalAccountsBasicAccount.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalAccountPlayerView.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalTokenResponse.h"
 
@@ -16,7 +16,7 @@ class BEAMABLECORE_API UCreateAccountWithCredsApiResponse : public UObject, publ
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Account", Category="Beam")
-	FOptionalAccountsBasicAccount Account = {};
+	FOptionalAccountPlayerView Account = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Challenge Token", Category="Beam")
 	FOptionalString ChallengeToken = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Token", Category="Beam")

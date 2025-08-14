@@ -45,17 +45,17 @@ class UK2BeamNode_GetLocalState_RequiresGameServerOrchestratorSetup : public UK2
 #define LOCTEXT_NAMESPACE "K2BeamNode_Operation_BeamInitPIE"
 
 UCLASS(meta=(BeamFlowNode))
-class UK2BeamNode_Operation_BeamInitPIE : public UK2BeamNode_Operation
+class UK2BeamNode_Operation_BeamPreparePIE : public UK2BeamNode_Operation
 {
 	GENERATED_BODY()
 
-	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Operation - PIE - Init SDK"); }
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Operation - PIE - Prepare"); }
 
 	virtual FText GetKeywords() const override { return FText::FromString(Super::GetKeywords().ToString() + " PIE"); }
 
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamPIE, GetSelf); }
 
-	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamPIE, BeamInitPIEOperation); }
+	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamPIE, BeamPreparePIEOperation); }
 
 	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamPIE::StaticClass(); }
 
@@ -86,24 +86,6 @@ protected:
 		}
 		return Ids;
 	}
-};
-
-#undef LOCTEXT_NAMESPACE
-
-#define LOCTEXT_NAMESPACE "K2BeamNode_Operation_BeamPreparePIE"
-
-UCLASS(meta=(BeamFlowNode))
-class UK2BeamNode_Operation_BeamPreparePIE : public UK2BeamNode_Operation
-{
-	GENERATED_BODY()
-
-	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Operation - PIE - Prepare State"); }
-
-	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamPIE, GetSelf); }
-
-	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamPIE, BeamPreparePIEOperation); }
-
-	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamPIE::StaticClass(); }
 };
 
 #undef LOCTEXT_NAMESPACE

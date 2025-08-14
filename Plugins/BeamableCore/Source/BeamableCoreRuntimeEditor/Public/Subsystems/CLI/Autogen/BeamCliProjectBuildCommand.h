@@ -48,7 +48,8 @@ Usage:
 
 Options:
   -w, --watch                            When true, the command will run forever and watch the state of the program
-  --ids <ids>                            The list of services to include, defaults to all local services (separated by whitespace)
+  --ids <ids>                            The list of services to include, defaults to all local services (separated by whitespace). To use NO services, use the --exact-ids flag
+  --exact-ids                            By default, a blank --ids option maps to ALL available ids. When the --exact-ids flag is given, a blank --ids option maps to NO ids
   --dryrun                               [DEPRECATED] Run as much of the command as possible without making any network calls
   --cid <cid>                            CID (CustomerId) to use (found in Portal->Account); defaults to whatever is in '.beamable/connection-configuration.json'
   --pid <pid>                            PID (Realm ID) to use (found in Portal -> Games -> Any Realm's details); defaults to whatever is in '.beamable/connection-configuration.json'

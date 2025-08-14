@@ -700,62 +700,7 @@ void UBeamUserSlots::RemovePiePrefix(const FString& Str, FString& WithoutPiePref
 }
 #endif
 
-/**
-   ______                           __               ______                                             __  
-  / ____/___ _____ ___  ___  ____  / /___ ___  __   / ____/________ _____ ___  ___ _      ______  _____/ /__
- / / __/ __ `/ __ `__ \/ _ \/ __ \/ / __ `/ / / /  / /_  / ___/ __ `/ __ `__ \/ _ \ | /| / / __ \/ ___/ //_/
-/ /_/ / /_/ / / / / / /  __/ /_/ / / /_/ / /_/ /  / __/ / /  / /_/ / / / / / /  __/ |/ |/ / /_/ / /  / ,<   
-\____/\__,_/_/ /_/ /_/\___/ .___/_/\__,_/\__, /  /_/   /_/   \__,_/_/ /_/ /_/\___/|__/|__/\____/_/  /_/|_|  
-					 /_/            /____/                                                              
- */
 
-FUniqueNetIdRepl UBeamUserSlots::GetUniqueNetIdForSlot(FUserSlot Slot, UObject* CallingContext)
-{
-	if (const auto& LocalPlayer = GetLocalPlayerForSlot(Slot, CallingContext))
-		return LocalPlayer->GetUniqueNetIdForPlatformUser();
-	return FUniqueNetIdRepl::Invalid();
-}
-
-APlayerController* UBeamUserSlots::GetPlayerControllerForSlot(FUserSlot Slot, UObject* CallingContext)
-{
-	if (const auto& LocalPlayer = GetLocalPlayerForSlot(Slot, CallingContext))
-		return LocalPlayer->GetPlayerController(CallingContext->GetWorld());
-	return nullptr;
-}
-
-ULocalPlayer* UBeamUserSlots::GetLocalPlayerForSlot(FUserSlot Slot, UObject* CallingContext)
-{
-	const auto MappedIdx = GetKnownSlots().Find(Slot);
-	if (MappedIdx != INDEX_NONE)
-	{
-		if (const auto& LocalPlayer = CallingContext->GetWorld()->GetGameInstance()->GetLocalPlayerByIndex(MappedIdx))
-			return LocalPlayer;
-	}
-	else if (Slot.IsTestSlot())
-	{
-		// In test slots, you can add a "_Local_NUM" to map it to a local player
-		if (Slot.Name.Contains("_Local"))
-		{
-			const auto LocalStartIdx = Slot.Name.Find(TEXT("Local"));
-			const auto Local = Slot.Name.RightChop(LocalStartIdx);
-
-			TArray<FString> LocalArr;
-			Local.ParseIntoArray(LocalArr, TEXT("_"));
-			if (LocalArr.Num() >= 2)
-			{
-				const auto LocalIdxStr = LocalArr[1];
-				int32 LocalIdx;
-				if (FDefaultValueHelper::ParseInt(LocalIdxStr, LocalIdx))
-				{
-					if (const auto& LocalPlayer = CallingContext->GetWorld()->GetGameInstance()->GetLocalPlayerByIndex(LocalIdx))
-						return LocalPlayer;
-				}
-			}
-		}
-	}
-
-	return nullptr;
-}
 
 void UBeamUserSlots::SaveSlot(FUserSlot SlotId, int32 PIEInstance, int64 GamerTag, const FString& AccessToken, const FString& RefreshToken, const int64& IssuedAt, const int64& ExpiresIn, const FBeamCid& Cid,
                               const FBeamPid& Pid)

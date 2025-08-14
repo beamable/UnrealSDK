@@ -7,6 +7,51 @@
 #include "Subsystems/PIE/BeamPIE.h"
 #include "BeamBallGameMode.generated.h"
 
+UCLASS()
+class UBeamBallGameInstance : public UGameInstance
+{
+	GENERATED_BODY()
+
+public:
+	virtual void StartGameInstance() override
+	{
+		UE_LOG(LogBeamRuntime, Warning, TEXT("INIT PLAY IN EDITOR --- Is Server: %d"), IsDedicatedServerInstance());
+		auto asd = GEngine->GetEngineSubsystem<UBeamPIE>();		
+		asd->CPP_BeamPreparePIEOperation(GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot(), GetWorld(), {});
+		
+		Super::StartGameInstance();
+
+	}
+
+	virtual FGameInstancePIEResult StartPlayInEditorGameInstance(ULocalPlayer* LocalPlayer, const FGameInstancePIEParameters& Params) override
+	{
+		UE_LOG(LogBeamRuntime, Warning, TEXT("INIT PLAY IN EDITOR (PIE) --- Is Server: %d, NextURL: %s"), IsDedicatedServerInstance(), *GetWorld()->NextURL);
+		auto BeamPie = GEngine->GetEngineSubsystem<UBeamPIE>();
+		BeamPie->CPP_BeamPreparePIEOperation(GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot(), GetWorld(), {});
+
+		return Super::StartPlayInEditorGameInstance(LocalPlayer, Params);
+	}
+
+	bool BeganOp = false;
+	FBeamOperationHandle WaitForReady;
+
+	virtual bool DelayPendingNetGameTravel() override
+	{
+		auto zxc = GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot();
+		auto asd = GEngine->GetEngineSubsystem<UBeamPIE>();
+		if (!BeganOp)
+		{
+			WaitForReady = asd->CPP_WaitForBeamPIEOperation(zxc, this, {});
+			BeganOp = true;
+		}
+
+		auto ReqTracker = GEngine->GetEngineSubsystem<UBeamRequestTracker>();
+		UE_LOG(LogBeamRuntime, Warning, TEXT("DELAYING NET GAME TRAVEL --- Is Server: %d"), IsDedicatedServerInstance());
+		return BeganOp && ReqTracker->IsOperationActive(WaitForReady);
+		//return GEngine->GetEngineSubsystem<UBeamPIE>()->IsLoading(this);
+	}
+};
+
 /**
  * 
  */
@@ -39,12 +84,16 @@ class BEAMPROJ_BEAMBALL_API ABeamBallGameMode : public AGameMode
 	}
 
 public:
+
+	
 	virtual void PreLoginAsync(const FString& Options, const FString& Address, const FUniqueNetIdRepl& UniqueId, const FOnPreLoginCompleteDelegate& OnComplete) override
 	{
 		const auto Lobby = GetGameInstance()->GetSubsystem<UBeamLobbySubsystem>();
 		const auto ServerSlot = GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot();
+		const auto PIE = GEngine->GetEngineSubsystem<UBeamPIE>();
 
 
+		// const auto BeamOptions = PIE->GetExpectedClientPIEOptions(Options);		
 		Lobby->CPP_AcceptUserIntoGameServerOperation(ServerSlot, Options, Address, UniqueId, FBeamOperationEventHandlerCode::CreateLambda([this, OnComplete, Options, Address, UniqueId](FBeamOperationEvent Evt)
 		{
 			if (Evt.EventType == OET_SUCCESS)

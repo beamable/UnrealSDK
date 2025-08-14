@@ -23,7 +23,7 @@ FString UClientContentInfoLibrary::ClientContentInfoToJsonString(const UClientCo
 	return Result;
 }	
 
-UClientContentInfo* UClientContentInfoLibrary::Make(FString Uri, FString Version, FBeamContentId ContentId, EBeamContentType Type, TArray<FString> Tags, FOptionalString Checksum, UObject* Outer)
+UClientContentInfo* UClientContentInfoLibrary::Make(FString Uri, FString Version, FBeamContentId ContentId, EBeamContentType Type, TArray<FString> Tags, FOptionalInt64 UpdatedAt, FOptionalString Checksum, FOptionalInt64 CreatedAt, UObject* Outer)
 {
 	auto Serializable = NewObject<UClientContentInfo>(Outer);
 	Serializable->Uri = Uri;
@@ -31,12 +31,14 @@ UClientContentInfo* UClientContentInfoLibrary::Make(FString Uri, FString Version
 	Serializable->ContentId = ContentId;
 	Serializable->Type = Type;
 	Serializable->Tags = Tags;
+	Serializable->UpdatedAt = UpdatedAt;
 	Serializable->Checksum = Checksum;
+	Serializable->CreatedAt = CreatedAt;
 	
 	return Serializable;
 }
 
-void UClientContentInfoLibrary::Break(const UClientContentInfo* Serializable, FString& Uri, FString& Version, FBeamContentId& ContentId, EBeamContentType& Type, TArray<FString>& Tags, FOptionalString& Checksum)
+void UClientContentInfoLibrary::Break(const UClientContentInfo* Serializable, FString& Uri, FString& Version, FBeamContentId& ContentId, EBeamContentType& Type, TArray<FString>& Tags, FOptionalInt64& UpdatedAt, FOptionalString& Checksum, FOptionalInt64& CreatedAt)
 {
 	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
 	{
@@ -45,7 +47,9 @@ void UClientContentInfoLibrary::Break(const UClientContentInfo* Serializable, FS
 		ContentId = Serializable->ContentId;
 		Type = Serializable->Type;
 		Tags = Serializable->Tags;
+		UpdatedAt = Serializable->UpdatedAt;
 		Checksum = Serializable->Checksum;
+		CreatedAt = Serializable->CreatedAt;
 	}
 		
 }
