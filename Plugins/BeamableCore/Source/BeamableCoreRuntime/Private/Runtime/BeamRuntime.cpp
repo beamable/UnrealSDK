@@ -547,14 +547,17 @@ void UBeamRuntime::TriggerOnBeamableStarting(FBeamWaitCompleteEvent Evt, bool bA
 		// In the editor, this is set by the UBeamEditor subsystem whenever you change realms. 
 		if (!GIsEditor)
 		{
-			checkf(!RealmSecret.IsEmpty(), TEXT("To run a dedicated server that communicates with Beamable, either:\n"
-				       "- Start it with the command line \'-beamable-realm-secret <realm_secret>\'\n"
-				       "- Start it in an environment with the EnvVar \'BEAMABLE_REALM_SECRET\' set to your realm secret.\n"
-				       "To find your realm secret for your realms, look into your Project Settings => Editor => Beamable Editor => PerSlotDeveloperProjectData => All Realms\n"
-				       "Remember to set this command line argument in your Networking settings for playmode in Editor Settings => Level Editor => Play => Multiplayer Options => Server => Additional Server Launch Parameters."
-			       ))
-
-			GEngine->GetEngineSubsystem<UBeamBackend>()->RealmSecret = RealmSecret;
+			// If something else already set the Realm Secret (BeamPIE, for example) we just ignore this. 
+			if (GEngine->GetEngineSubsystem<UBeamBackend>()->RealmSecret.IsEmpty())
+			{
+				checkf(!RealmSecret.IsEmpty(), TEXT("To run a dedicated server that communicates with Beamable, either:\n"
+						  "- Start it with the command line \'-beamable-realm-secret <realm_secret>\'\n"
+						  "- Start it in an environment with the EnvVar \'BEAMABLE_REALM_SECRET\' set to your realm secret.\n"
+						  "To find your realm secret for your realms, look into your Project Settings => Editor => Beamable Editor => PerSlotDeveloperProjectData => All Realms\n"
+						  "Remember to set this command line argument in your Networking settings for playmode in Editor Settings => Level Editor => Play => Multiplayer Options => Server => Additional Server Launch Parameters."
+					  ))
+				GEngine->GetEngineSubsystem<UBeamBackend>()->RealmSecret = RealmSecret;
+			}
 		}
 	}
 

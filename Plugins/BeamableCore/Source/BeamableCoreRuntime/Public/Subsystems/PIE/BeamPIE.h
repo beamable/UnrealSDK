@@ -126,7 +126,9 @@ public:
 
 		// Set the default settings
 		SelectedSettings = DefaultSettings();
-
+		PreLoginExpectingPieIndex = 1; // Starts at one because all PIE clients are instances 1~X.
+		PreLoginExpectingUserSlotInPieIndex = 0; // Starts at one because this indexes into UBeamCoreSettings::RuntimeUserSlots for each PreLoginExpectingPieIndex.
+		
 #if WITH_EDITOR
 
 		// This block of code only runs on separate-process-PIE-instances.
@@ -189,7 +191,8 @@ public:
 		StartPIEHandler = FEditorDelegates::StartPIE.AddLambda([this](const bool)
 		{
 			FakeLobbyId.Empty();
-			PreLoginExpectingPieIndex = 1; // Starts at one because all PIE clients are instances 1~X. 
+			PreLoginExpectingPieIndex = 1; // Starts at one because all PIE clients are instances 1~X.
+			PreLoginExpectingUserSlotInPieIndex = 0; // Starts at one because this indexes into UBeamCoreSettings::RuntimeUserSlots for each PreLoginExpectingPieIndex.
 
 			// Get the editor world so we can figure out what map is currently open (and, therefore, the map through which we are entering PIE).
 			UWorld* EditorWorld = GEditor->GetEditorWorldContext().World();
@@ -363,6 +366,11 @@ public:
 		if (bHasGamerTag || bHasAccessToken || bHasRefreshToken)
 			return Options;
 
+		// If we are not using a PIE setting, we should not be doing anything here.
+		const auto CurrSettings = GetSelectedPIESettings();		  
+		if (!CurrSettings)
+			return Options;
+		
 		// Get the world
 		const auto World = CallingContext->GetWorld();
 		ensureAlwaysMsgf(World, TEXT("You must provide a calling context with a valid World to this function!"));
@@ -377,11 +385,11 @@ public:
 		const auto Lobby = GI->GetSubsystem<UBeamLobbySubsystem>();
 
 		const auto CurrPieIdx = PreLoginExpectingPieIndex;
-		const auto CurrSlotIdx = PreLoginExpectingUserSlotInPieIndex;
-		const auto CurrSettings = GetSelectedPIESettings();
+		const auto CurrSlotIdx = PreLoginExpectingUserSlotInPieIndex;		
+		
 		TArray<FUserSlot> OrderedSlots;
 		for (const auto& Kvp : CurrSettings->AssignedUsers)
-		{
+		{			
 			if (Kvp.Key.PIEIndex == CurrPieIdx)
 			{
 				OrderedSlots.Add(Kvp.Key.Slot);
@@ -399,7 +407,6 @@ public:
 
 		const auto ExpectedSlot = OrderedSlots[PreLoginExpectingUserSlotInPieIndex];
 		FString NamespacedSlotId = UserSlots->GetNamespacedSlotId(ExpectedSlot, CurrPieIdx);
-
 
 		FUserSlotAuthData SlotSerializedAuthData;
 		FUserSlotAccountData SlotSerializedAccountData;
@@ -1199,12 +1206,5 @@ namespace BeamPIE
 		const auto Handle = BeamPIE->ClientDelayMapHandles[PieInstanceIdx];
 		auto ReqTracker = GEngine->GetEngineSubsystem<UBeamRequestTracker>();
 		return ReqTracker->IsOperationActive(Handle);
-	}
-
-	inline FString GetGameLoginOptions(const ULocalPlayer* This, const FString& BaseOptions)
-	{
-		FString Options = BaseOptions;
-		const auto Lobby = This->GetGameInstance()->GetSubsystem<UBeamLobbySubsystem>();
-		return Lobby->PrepareLoginOptions(This, Options);
 	}
 }

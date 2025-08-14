@@ -16,7 +16,9 @@ class UBeamBallLocalPlayer : public ULocalPlayer
 public:
 	virtual FString GetGameLoginOptions() const override
 	{
-		return BeamPIE::GetGameLoginOptions(this, Super::GetGameLoginOptions());
+		FString Options = Super::GetGameLoginOptions();
+		const auto Lobby = GetGameInstance()->GetSubsystem<UBeamLobbySubsystem>();
+		return Lobby->PrepareLoginOptions(this, Options);		
 	}
 };
 
