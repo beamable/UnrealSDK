@@ -177,4 +177,8 @@ public:
 		return ensureAlwaysMsgf(Serializable, 
 			TEXT("Trying to break a null Beam Json Serializable object. If you don't care and just want to skip nulls, you can disable this ensure globally at Project Settings -> Beamable Core -> bSilenceBreakGuardEnsures."));	
 	}
+
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Experimental")
+	bool bEnableBeamPIE = false;
+	
 };
