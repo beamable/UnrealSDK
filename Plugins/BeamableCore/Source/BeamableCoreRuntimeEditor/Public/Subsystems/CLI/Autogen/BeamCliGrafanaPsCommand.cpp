@@ -13,15 +13,16 @@ bool UBeamCliGrafanaPsCommand::HandleStreamReceived(FBeamOperationHandle Op, FSt
 	
 	if(ReceivedStreamType.Equals(StreamType) && OnStreamOutput)
 	{
-		UBeamCliGrafanaPsStreamData* Data = NewObject<UBeamCliGrafanaPsStreamData>(this);
-		Data->OuterOwner = this;
-		Data->BeamDeserializeProperties(DataJson);
-
-		Stream.Add(Data);
-		Timestamps.Add(Timestamp);
-		
-		AsyncTask(ENamedThreads::GameThread, [this, Op]
+		AsyncTask(ENamedThreads::GameThread, [this, DataJson, Timestamp, Op]
 		{
+			UBeamCliGrafanaPsStreamData* Data = NewObject<UBeamCliGrafanaPsStreamData>(this);
+			Data->OuterOwner = this;
+			Data->BeamDeserializeProperties(DataJson);
+
+			Stream.Add(Data);
+			Timestamps.Add(Timestamp);
+		
+		
 			OnStreamOutput(Stream, Timestamps, Op);
 		});
 		

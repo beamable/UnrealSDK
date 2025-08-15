@@ -13,15 +13,16 @@ bool UBeamCliServerClearCommand::HandleStreamReceived(FBeamOperationHandle Op, F
 	
 	if(ReceivedStreamType.Equals(StreamType) && OnStreamOutput)
 	{
-		UBeamCliServerClearStreamData* Data = NewObject<UBeamCliServerClearStreamData>(this);
-		Data->OuterOwner = this;
-		Data->BeamDeserializeProperties(DataJson);
-
-		Stream.Add(Data);
-		Timestamps.Add(Timestamp);
-		
-		AsyncTask(ENamedThreads::GameThread, [this, Op]
+		AsyncTask(ENamedThreads::GameThread, [this, DataJson, Timestamp, Op]
 		{
+			UBeamCliServerClearStreamData* Data = NewObject<UBeamCliServerClearStreamData>(this);
+			Data->OuterOwner = this;
+			Data->BeamDeserializeProperties(DataJson);
+
+			Stream.Add(Data);
+			Timestamps.Add(Timestamp);
+		
+		
 			OnStreamOutput(Stream, Timestamps, Op);
 		});
 		

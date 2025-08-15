@@ -13,15 +13,16 @@ bool UBeamCliContentArchiveManifestCommand::HandleStreamReceived(FBeamOperationH
 	
 	if(ReceivedStreamType.Equals(StreamType) && OnStreamOutput)
 	{
-		UBeamCliContentArchiveManifestStreamData* Data = NewObject<UBeamCliContentArchiveManifestStreamData>(this);
-		Data->OuterOwner = this;
-		Data->BeamDeserializeProperties(DataJson);
-
-		Stream.Add(Data);
-		Timestamps.Add(Timestamp);
-		
-		AsyncTask(ENamedThreads::GameThread, [this, Op]
+		AsyncTask(ENamedThreads::GameThread, [this, DataJson, Timestamp, Op]
 		{
+			UBeamCliContentArchiveManifestStreamData* Data = NewObject<UBeamCliContentArchiveManifestStreamData>(this);
+			Data->OuterOwner = this;
+			Data->BeamDeserializeProperties(DataJson);
+
+			Stream.Add(Data);
+			Timestamps.Add(Timestamp);
+		
+		
 			OnStreamOutput(Stream, Timestamps, Op);
 		});
 		

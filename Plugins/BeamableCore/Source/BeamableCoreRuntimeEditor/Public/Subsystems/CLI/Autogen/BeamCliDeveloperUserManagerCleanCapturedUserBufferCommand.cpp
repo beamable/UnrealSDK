@@ -13,15 +13,16 @@ bool UBeamCliDeveloperUserManagerCleanCapturedUserBufferCommand::HandleStreamRec
 	
 	if(ReceivedStreamType.Equals(StreamType) && OnStreamOutput)
 	{
-		UBeamCliDeveloperUserManagerCleanCapturedUserBufferStreamData* Data = NewObject<UBeamCliDeveloperUserManagerCleanCapturedUserBufferStreamData>(this);
-		Data->OuterOwner = this;
-		Data->BeamDeserializeProperties(DataJson);
-
-		Stream.Add(Data);
-		Timestamps.Add(Timestamp);
-		
-		AsyncTask(ENamedThreads::GameThread, [this, Op]
+		AsyncTask(ENamedThreads::GameThread, [this, DataJson, Timestamp, Op]
 		{
+			UBeamCliDeveloperUserManagerCleanCapturedUserBufferStreamData* Data = NewObject<UBeamCliDeveloperUserManagerCleanCapturedUserBufferStreamData>(this);
+			Data->OuterOwner = this;
+			Data->BeamDeserializeProperties(DataJson);
+
+			Stream.Add(Data);
+			Timestamps.Add(Timestamp);
+		
+		
 			OnStreamOutput(Stream, Timestamps, Op);
 		});
 		

@@ -13,15 +13,16 @@ bool UBeamCliMeCommand::HandleStreamReceived(FBeamOperationHandle Op, FString Re
 	
 	if(ReceivedStreamType.Equals(StreamType) && OnStreamOutput)
 	{
-		UBeamCliMeStreamData* Data = NewObject<UBeamCliMeStreamData>(this);
-		Data->OuterOwner = this;
-		Data->BeamDeserializeProperties(DataJson);
-
-		Stream.Add(Data);
-		Timestamps.Add(Timestamp);
-		
-		AsyncTask(ENamedThreads::GameThread, [this, Op]
+		AsyncTask(ENamedThreads::GameThread, [this, DataJson, Timestamp, Op]
 		{
+			UBeamCliMeStreamData* Data = NewObject<UBeamCliMeStreamData>(this);
+			Data->OuterOwner = this;
+			Data->BeamDeserializeProperties(DataJson);
+
+			Stream.Add(Data);
+			Timestamps.Add(Timestamp);
+		
+		
 			OnStreamOutput(Stream, Timestamps, Op);
 		});
 		
@@ -30,15 +31,16 @@ bool UBeamCliMeCommand::HandleStreamReceived(FBeamOperationHandle Op, FString Re
 
 	if(ReceivedStreamType.Equals(StreamTypeErrorNoTokenError) && OnErrorNoTokenErrorStreamOutput)
 	{
-		UBeamCliMeErrorNoTokenErrorStreamData* Data = NewObject<UBeamCliMeErrorNoTokenErrorStreamData>(this);
-		Data->OuterOwner = this;
-		Data->BeamDeserializeProperties(DataJson);
-
-		ErrorNoTokenErrorStream.Add(Data);
-		ErrorNoTokenErrorTimestamps.Add(Timestamp);
-		
-		AsyncTask(ENamedThreads::GameThread, [this, Op]
+		AsyncTask(ENamedThreads::GameThread, [this, DataJson, Timestamp, Op]
 		{
+			UBeamCliMeErrorNoTokenErrorStreamData* Data = NewObject<UBeamCliMeErrorNoTokenErrorStreamData>(this);
+			Data->OuterOwner = this;
+			Data->BeamDeserializeProperties(DataJson);
+
+			ErrorNoTokenErrorStream.Add(Data);
+			ErrorNoTokenErrorTimestamps.Add(Timestamp);
+		
+		
 			OnErrorNoTokenErrorStreamOutput(ErrorNoTokenErrorStream, ErrorNoTokenErrorTimestamps, Op);
 		});
 		
@@ -47,15 +49,16 @@ bool UBeamCliMeCommand::HandleStreamReceived(FBeamOperationHandle Op, FString Re
 
 	if(ReceivedStreamType.Equals(StreamTypeErrorInvalidTokenError) && OnErrorInvalidTokenErrorStreamOutput)
 	{
-		UBeamCliMeErrorInvalidTokenErrorStreamData* Data = NewObject<UBeamCliMeErrorInvalidTokenErrorStreamData>(this);
-		Data->OuterOwner = this;
-		Data->BeamDeserializeProperties(DataJson);
-
-		ErrorInvalidTokenErrorStream.Add(Data);
-		ErrorInvalidTokenErrorTimestamps.Add(Timestamp);
-		
-		AsyncTask(ENamedThreads::GameThread, [this, Op]
+		AsyncTask(ENamedThreads::GameThread, [this, DataJson, Timestamp, Op]
 		{
+			UBeamCliMeErrorInvalidTokenErrorStreamData* Data = NewObject<UBeamCliMeErrorInvalidTokenErrorStreamData>(this);
+			Data->OuterOwner = this;
+			Data->BeamDeserializeProperties(DataJson);
+
+			ErrorInvalidTokenErrorStream.Add(Data);
+			ErrorInvalidTokenErrorTimestamps.Add(Timestamp);
+		
+		
 			OnErrorInvalidTokenErrorStreamOutput(ErrorInvalidTokenErrorStream, ErrorInvalidTokenErrorTimestamps, Op);
 		});
 		

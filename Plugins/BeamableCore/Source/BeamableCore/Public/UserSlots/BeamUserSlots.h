@@ -328,12 +328,12 @@ public:
 	 * @copydoc @link TryLoadSavedUserAtSlotAndAuth @endlink 
 	 */
 	UFUNCTION(BlueprintCallable, Category="Beam", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext", ExpandBoolAsExecs="ReturnValue"))
-	int32 TryLoadSavedUserAtSlot(FUserSlot SlotId, FUserSlotAuthData& OutAuthData, FUserSlotAccountData& OutAccountData, UObject* CallingContext);
+	int32 TryGetSavedUserDataAtSlot(FUserSlot SlotId, FUserSlotAuthData& OutAuthData, FUserSlotAccountData& OutAccountData, UObject* CallingContext);
 
 	/**
 	 * @copydoc @link TryLoadSavedUserAtSlotAndAuth @endlink 
 	 */
-	int32 TryLoadSavedUserAtNamespacedSlot(FString NamespacedSlotId, FUserSlotAuthData& OutAuthData, FUserSlotAccountData& OutAccountData);
+	int32 TryGetSavedUserDataAtNamespacedSlot(FString NamespacedSlotId, FUserSlotAuthData& OutAuthData, FUserSlotAccountData& OutAccountData);
 
 
 	/**

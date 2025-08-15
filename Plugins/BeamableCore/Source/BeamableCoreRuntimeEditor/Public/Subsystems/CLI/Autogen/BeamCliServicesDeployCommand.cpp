@@ -13,15 +13,16 @@ bool UBeamCliServicesDeployCommand::HandleStreamReceived(FBeamOperationHandle Op
 	
 	if(ReceivedStreamType.Equals(StreamType) && OnStreamOutput)
 	{
-		UBeamCliServicesDeployStreamData* Data = NewObject<UBeamCliServicesDeployStreamData>(this);
-		Data->OuterOwner = this;
-		Data->BeamDeserializeProperties(DataJson);
-
-		Stream.Add(Data);
-		Timestamps.Add(Timestamp);
-		
-		AsyncTask(ENamedThreads::GameThread, [this, Op]
+		AsyncTask(ENamedThreads::GameThread, [this, DataJson, Timestamp, Op]
 		{
+			UBeamCliServicesDeployStreamData* Data = NewObject<UBeamCliServicesDeployStreamData>(this);
+			Data->OuterOwner = this;
+			Data->BeamDeserializeProperties(DataJson);
+
+			Stream.Add(Data);
+			Timestamps.Add(Timestamp);
+		
+		
 			OnStreamOutput(Stream, Timestamps, Op);
 		});
 		
@@ -30,15 +31,16 @@ bool UBeamCliServicesDeployCommand::HandleStreamReceived(FBeamOperationHandle Op
 
 	if(ReceivedStreamType.Equals(StreamTypeRemoteProgress) && OnRemoteProgressStreamOutput)
 	{
-		UBeamCliServicesDeployRemoteProgressStreamData* Data = NewObject<UBeamCliServicesDeployRemoteProgressStreamData>(this);
-		Data->OuterOwner = this;
-		Data->BeamDeserializeProperties(DataJson);
-
-		RemoteProgressStream.Add(Data);
-		RemoteProgressTimestamps.Add(Timestamp);
-		
-		AsyncTask(ENamedThreads::GameThread, [this, Op]
+		AsyncTask(ENamedThreads::GameThread, [this, DataJson, Timestamp, Op]
 		{
+			UBeamCliServicesDeployRemoteProgressStreamData* Data = NewObject<UBeamCliServicesDeployRemoteProgressStreamData>(this);
+			Data->OuterOwner = this;
+			Data->BeamDeserializeProperties(DataJson);
+
+			RemoteProgressStream.Add(Data);
+			RemoteProgressTimestamps.Add(Timestamp);
+		
+		
 			OnRemoteProgressStreamOutput(RemoteProgressStream, RemoteProgressTimestamps, Op);
 		});
 		

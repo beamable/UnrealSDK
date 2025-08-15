@@ -13,15 +13,16 @@ bool UBeamCliDeveloperUserManagerCreateUserBatchCommand::HandleStreamReceived(FB
 	
 	if(ReceivedStreamType.Equals(StreamType) && OnStreamOutput)
 	{
-		UBeamCliDeveloperUserManagerCreateUserBatchStreamData* Data = NewObject<UBeamCliDeveloperUserManagerCreateUserBatchStreamData>(this);
-		Data->OuterOwner = this;
-		Data->BeamDeserializeProperties(DataJson);
-
-		Stream.Add(Data);
-		Timestamps.Add(Timestamp);
-		
-		AsyncTask(ENamedThreads::GameThread, [this, Op]
+		AsyncTask(ENamedThreads::GameThread, [this, DataJson, Timestamp, Op]
 		{
+			UBeamCliDeveloperUserManagerCreateUserBatchStreamData* Data = NewObject<UBeamCliDeveloperUserManagerCreateUserBatchStreamData>(this);
+			Data->OuterOwner = this;
+			Data->BeamDeserializeProperties(DataJson);
+
+			Stream.Add(Data);
+			Timestamps.Add(Timestamp);
+		
+		
 			OnStreamOutput(Stream, Timestamps, Op);
 		});
 		

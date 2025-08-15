@@ -13,15 +13,16 @@ bool UBeamCliInitCommand::HandleStreamReceived(FBeamOperationHandle Op, FString 
 	
 	if(ReceivedStreamType.Equals(StreamType) && OnStreamOutput)
 	{
-		UBeamCliInitStreamData* Data = NewObject<UBeamCliInitStreamData>(this);
-		Data->OuterOwner = this;
-		Data->BeamDeserializeProperties(DataJson);
-
-		Stream.Add(Data);
-		Timestamps.Add(Timestamp);
-		
-		AsyncTask(ENamedThreads::GameThread, [this, Op]
+		AsyncTask(ENamedThreads::GameThread, [this, DataJson, Timestamp, Op]
 		{
+			UBeamCliInitStreamData* Data = NewObject<UBeamCliInitStreamData>(this);
+			Data->OuterOwner = this;
+			Data->BeamDeserializeProperties(DataJson);
+
+			Stream.Add(Data);
+			Timestamps.Add(Timestamp);
+		
+		
 			OnStreamOutput(Stream, Timestamps, Op);
 		});
 		
@@ -30,15 +31,16 @@ bool UBeamCliInitCommand::HandleStreamReceived(FBeamOperationHandle Op, FString 
 
 	if(ReceivedStreamType.Equals(StreamTypeErrorLoginFailedError) && OnErrorLoginFailedErrorStreamOutput)
 	{
-		UBeamCliInitErrorLoginFailedErrorStreamData* Data = NewObject<UBeamCliInitErrorLoginFailedErrorStreamData>(this);
-		Data->OuterOwner = this;
-		Data->BeamDeserializeProperties(DataJson);
-
-		ErrorLoginFailedErrorStream.Add(Data);
-		ErrorLoginFailedErrorTimestamps.Add(Timestamp);
-		
-		AsyncTask(ENamedThreads::GameThread, [this, Op]
+		AsyncTask(ENamedThreads::GameThread, [this, DataJson, Timestamp, Op]
 		{
+			UBeamCliInitErrorLoginFailedErrorStreamData* Data = NewObject<UBeamCliInitErrorLoginFailedErrorStreamData>(this);
+			Data->OuterOwner = this;
+			Data->BeamDeserializeProperties(DataJson);
+
+			ErrorLoginFailedErrorStream.Add(Data);
+			ErrorLoginFailedErrorTimestamps.Add(Timestamp);
+		
+		
 			OnErrorLoginFailedErrorStreamOutput(ErrorLoginFailedErrorStream, ErrorLoginFailedErrorTimestamps, Op);
 		});
 		
@@ -47,15 +49,16 @@ bool UBeamCliInitCommand::HandleStreamReceived(FBeamOperationHandle Op, FString 
 
 	if(ReceivedStreamType.Equals(StreamTypeErrorInvalidCidError) && OnErrorInvalidCidErrorStreamOutput)
 	{
-		UBeamCliInitErrorInvalidCidErrorStreamData* Data = NewObject<UBeamCliInitErrorInvalidCidErrorStreamData>(this);
-		Data->OuterOwner = this;
-		Data->BeamDeserializeProperties(DataJson);
-
-		ErrorInvalidCidErrorStream.Add(Data);
-		ErrorInvalidCidErrorTimestamps.Add(Timestamp);
-		
-		AsyncTask(ENamedThreads::GameThread, [this, Op]
+		AsyncTask(ENamedThreads::GameThread, [this, DataJson, Timestamp, Op]
 		{
+			UBeamCliInitErrorInvalidCidErrorStreamData* Data = NewObject<UBeamCliInitErrorInvalidCidErrorStreamData>(this);
+			Data->OuterOwner = this;
+			Data->BeamDeserializeProperties(DataJson);
+
+			ErrorInvalidCidErrorStream.Add(Data);
+			ErrorInvalidCidErrorTimestamps.Add(Timestamp);
+		
+		
 			OnErrorInvalidCidErrorStreamOutput(ErrorInvalidCidErrorStream, ErrorInvalidCidErrorTimestamps, Op);
 		});
 		

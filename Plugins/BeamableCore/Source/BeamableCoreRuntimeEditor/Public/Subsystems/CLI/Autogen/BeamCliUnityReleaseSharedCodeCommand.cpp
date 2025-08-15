@@ -13,15 +13,16 @@ bool UBeamCliUnityReleaseSharedCodeCommand::HandleStreamReceived(FBeamOperationH
 	
 	if(ReceivedStreamType.Equals(StreamType) && OnStreamOutput)
 	{
-		UBeamCliUnityReleaseSharedCodeStreamData* Data = NewObject<UBeamCliUnityReleaseSharedCodeStreamData>(this);
-		Data->OuterOwner = this;
-		Data->BeamDeserializeProperties(DataJson);
-
-		Stream.Add(Data);
-		Timestamps.Add(Timestamp);
-		
-		AsyncTask(ENamedThreads::GameThread, [this, Op]
+		AsyncTask(ENamedThreads::GameThread, [this, DataJson, Timestamp, Op]
 		{
+			UBeamCliUnityReleaseSharedCodeStreamData* Data = NewObject<UBeamCliUnityReleaseSharedCodeStreamData>(this);
+			Data->OuterOwner = this;
+			Data->BeamDeserializeProperties(DataJson);
+
+			Stream.Add(Data);
+			Timestamps.Add(Timestamp);
+		
+		
 			OnStreamOutput(Stream, Timestamps, Op);
 		});
 		

@@ -13,15 +13,16 @@ bool UBeamCliDeveloperUserManagerUpdateInfoCommand::HandleStreamReceived(FBeamOp
 	
 	if(ReceivedStreamType.Equals(StreamType) && OnStreamOutput)
 	{
-		UBeamCliDeveloperUserManagerUpdateInfoStreamData* Data = NewObject<UBeamCliDeveloperUserManagerUpdateInfoStreamData>(this);
-		Data->OuterOwner = this;
-		Data->BeamDeserializeProperties(DataJson);
-
-		Stream.Add(Data);
-		Timestamps.Add(Timestamp);
-		
-		AsyncTask(ENamedThreads::GameThread, [this, Op]
+		AsyncTask(ENamedThreads::GameThread, [this, DataJson, Timestamp, Op]
 		{
+			UBeamCliDeveloperUserManagerUpdateInfoStreamData* Data = NewObject<UBeamCliDeveloperUserManagerUpdateInfoStreamData>(this);
+			Data->OuterOwner = this;
+			Data->BeamDeserializeProperties(DataJson);
+
+			Stream.Add(Data);
+			Timestamps.Add(Timestamp);
+		
+		
 			OnStreamOutput(Stream, Timestamps, Op);
 		});
 		

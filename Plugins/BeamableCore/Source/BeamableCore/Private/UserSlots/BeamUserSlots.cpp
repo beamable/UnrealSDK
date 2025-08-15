@@ -570,7 +570,7 @@ int32 UBeamUserSlots::TryLoadSavedUserAtSlotAndAuth(FUserSlot SlotId, UObject* C
 {
 	FUserSlotAuthData SlotSerializedAuthData;
 	FUserSlotAccountData SlotSerializedAccountData;
-	const auto Ret = TryLoadSavedUserAtSlot(SlotId, SlotSerializedAuthData, SlotSerializedAccountData, CallingContext);
+	const auto Ret = TryGetSavedUserDataAtSlot(SlotId, SlotSerializedAuthData, SlotSerializedAccountData, CallingContext);
 	if (Ret != LoadSavedUserResult_Failed)
 	{
 		const auto AccessToken = SlotSerializedAuthData.AccessToken;
@@ -592,7 +592,7 @@ int32 UBeamUserSlots::TryLoadSavedUserAtSlotAndAuthWithNamespace(FUserSlot SlotI
 {
 	FUserSlotAuthData SlotSerializedAuthData;
 	FUserSlotAccountData SlotSerializedAccountData;
-	const auto Ret = TryLoadSavedUserAtNamespacedSlot(NamespacedSlotId, SlotSerializedAuthData, SlotSerializedAccountData);;
+	const auto Ret = TryGetSavedUserDataAtNamespacedSlot(NamespacedSlotId, SlotSerializedAuthData, SlotSerializedAccountData);;
 	if (Ret != LoadSavedUserResult_Failed)
 	{
 		const auto AccessToken = SlotSerializedAuthData.AccessToken;
@@ -610,14 +610,14 @@ int32 UBeamUserSlots::TryLoadSavedUserAtSlotAndAuthWithNamespace(FUserSlot SlotI
 	return Ret;
 }
 
-int32 UBeamUserSlots::TryLoadSavedUserAtSlot(FUserSlot SlotId, FUserSlotAuthData& OutAuthData, FUserSlotAccountData& OutAccountData, UObject* CallingContext)
+int32 UBeamUserSlots::TryGetSavedUserDataAtSlot(FUserSlot SlotId, FUserSlotAuthData& OutAuthData, FUserSlotAccountData& OutAccountData, UObject* CallingContext)
 {
 	FString NamespacedSlotId = GetNamespacedSlotId(SlotId, CallingContext);
-	return TryLoadSavedUserAtNamespacedSlot(NamespacedSlotId, OutAuthData, OutAccountData);
+	return TryGetSavedUserDataAtNamespacedSlot(NamespacedSlotId, OutAuthData, OutAccountData);
 }
 
 
-int32 UBeamUserSlots::TryLoadSavedUserAtNamespacedSlot(FString NamespacedSlotId, FUserSlotAuthData& OutAuthData, FUserSlotAccountData& OutAccountData)
+int32 UBeamUserSlots::TryGetSavedUserDataAtNamespacedSlot(FString NamespacedSlotId, FUserSlotAuthData& OutAuthData, FUserSlotAccountData& OutAccountData)
 {
 	FString SlotAuthFile;
 	FString SlotAccountFile;

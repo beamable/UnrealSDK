@@ -18,14 +18,11 @@ void UBeamLobbySubsystem::Initialize(FSubsystemCollectionBase& Collection)
 	LobbyApi = GEngine->GetEngineSubsystem<UBeamLobbyApi>();
 	LobbyNotification = GEngine->GetEngineSubsystem<UBeamLobbyNotifications>();
 
-	// Initialize state for each configured RuntimeUserSlots
-	if (!IsRunningDedicatedServer())
+	// Initialize state for each configured RuntimeUserSlots	
+	for (FString RuntimeUserSlot : GetDefault<UBeamCoreSettings>()->RuntimeUserSlots)
 	{
-		for (FString RuntimeUserSlot : GetDefault<UBeamCoreSettings>()->RuntimeUserSlots)
-		{
-			// This just creates the objects for every slot.
-			InitializeLobbyInfoForSlot(RuntimeUserSlot, {});			
-		}
+		// This just creates the objects for every slot.
+		InitializeLobbyInfoForSlot(RuntimeUserSlot, {});			
 	}
 }
 
@@ -164,8 +161,10 @@ bool UBeamLobbySubsystem::TryGetCurrentSlotPasscode(FUserSlot Slot, FString& Pas
 
 bool UBeamLobbySubsystem::TryGetLobbyById(FGuid LobbyId, ULobby*& Lobby)
 {
-	if (const auto ExistingLobbyIdx = KnownLobbies.IndexOfByPredicate([LobbyId](const ULobby* Lob) { return Lob->LobbyId.Val == LobbyId.ToString(EGuidFormats::DigitsWithHyphensLower); });
-		ExistingLobbyIdx != INDEX_NONE)
+	if (const auto ExistingLobbyIdx = KnownLobbies.IndexOfByPredicate([LobbyId](const ULobby* Lob)
+	{
+		return Lob->LobbyId.Val == LobbyId.ToString(EGuidFormats::DigitsWithHyphensLower);
+	}); ExistingLobbyIdx != INDEX_NONE)
 	{
 		Lobby = KnownLobbies[ExistingLobbyIdx];
 		return true;

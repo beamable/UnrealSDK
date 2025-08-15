@@ -13,15 +13,16 @@ bool UBeamCliProjectStorageEraseCommand::HandleStreamReceived(FBeamOperationHand
 	
 	if(ReceivedStreamType.Equals(StreamType) && OnStreamOutput)
 	{
-		UBeamCliProjectStorageEraseStreamData* Data = NewObject<UBeamCliProjectStorageEraseStreamData>(this);
-		Data->OuterOwner = this;
-		Data->BeamDeserializeProperties(DataJson);
-
-		Stream.Add(Data);
-		Timestamps.Add(Timestamp);
-		
-		AsyncTask(ENamedThreads::GameThread, [this, Op]
+		AsyncTask(ENamedThreads::GameThread, [this, DataJson, Timestamp, Op]
 		{
+			UBeamCliProjectStorageEraseStreamData* Data = NewObject<UBeamCliProjectStorageEraseStreamData>(this);
+			Data->OuterOwner = this;
+			Data->BeamDeserializeProperties(DataJson);
+
+			Stream.Add(Data);
+			Timestamps.Add(Timestamp);
+		
+		
 			OnStreamOutput(Stream, Timestamps, Op);
 		});
 		
@@ -30,15 +31,16 @@ bool UBeamCliProjectStorageEraseCommand::HandleStreamReceived(FBeamOperationHand
 
 	if(ReceivedStreamType.Equals(StreamTypeMongoLogs) && OnMongoLogsStreamOutput)
 	{
-		UBeamCliProjectStorageEraseMongoLogsStreamData* Data = NewObject<UBeamCliProjectStorageEraseMongoLogsStreamData>(this);
-		Data->OuterOwner = this;
-		Data->BeamDeserializeProperties(DataJson);
-
-		MongoLogsStream.Add(Data);
-		MongoLogsTimestamps.Add(Timestamp);
-		
-		AsyncTask(ENamedThreads::GameThread, [this, Op]
+		AsyncTask(ENamedThreads::GameThread, [this, DataJson, Timestamp, Op]
 		{
+			UBeamCliProjectStorageEraseMongoLogsStreamData* Data = NewObject<UBeamCliProjectStorageEraseMongoLogsStreamData>(this);
+			Data->OuterOwner = this;
+			Data->BeamDeserializeProperties(DataJson);
+
+			MongoLogsStream.Add(Data);
+			MongoLogsTimestamps.Add(Timestamp);
+		
+		
 			OnMongoLogsStreamOutput(MongoLogsStream, MongoLogsTimestamps, Op);
 		});
 		

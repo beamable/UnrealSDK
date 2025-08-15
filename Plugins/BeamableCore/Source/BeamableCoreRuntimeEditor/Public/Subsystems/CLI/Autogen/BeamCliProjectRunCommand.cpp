@@ -13,15 +13,16 @@ bool UBeamCliProjectRunCommand::HandleStreamReceived(FBeamOperationHandle Op, FS
 	
 	if(ReceivedStreamType.Equals(StreamType) && OnStreamOutput)
 	{
-		UBeamCliProjectRunStreamData* Data = NewObject<UBeamCliProjectRunStreamData>(this);
-		Data->OuterOwner = this;
-		Data->BeamDeserializeProperties(DataJson);
-
-		Stream.Add(Data);
-		Timestamps.Add(Timestamp);
-		
-		AsyncTask(ENamedThreads::GameThread, [this, Op]
+		AsyncTask(ENamedThreads::GameThread, [this, DataJson, Timestamp, Op]
 		{
+			UBeamCliProjectRunStreamData* Data = NewObject<UBeamCliProjectRunStreamData>(this);
+			Data->OuterOwner = this;
+			Data->BeamDeserializeProperties(DataJson);
+
+			Stream.Add(Data);
+			Timestamps.Add(Timestamp);
+		
+		
 			OnStreamOutput(Stream, Timestamps, Op);
 		});
 		
@@ -30,15 +31,16 @@ bool UBeamCliProjectRunCommand::HandleStreamReceived(FBeamOperationHandle Op, FS
 
 	if(ReceivedStreamType.Equals(StreamTypeBuildErrors) && OnBuildErrorsStreamOutput)
 	{
-		UBeamCliProjectRunBuildErrorsStreamData* Data = NewObject<UBeamCliProjectRunBuildErrorsStreamData>(this);
-		Data->OuterOwner = this;
-		Data->BeamDeserializeProperties(DataJson);
-
-		BuildErrorsStream.Add(Data);
-		BuildErrorsTimestamps.Add(Timestamp);
-		
-		AsyncTask(ENamedThreads::GameThread, [this, Op]
+		AsyncTask(ENamedThreads::GameThread, [this, DataJson, Timestamp, Op]
 		{
+			UBeamCliProjectRunBuildErrorsStreamData* Data = NewObject<UBeamCliProjectRunBuildErrorsStreamData>(this);
+			Data->OuterOwner = this;
+			Data->BeamDeserializeProperties(DataJson);
+
+			BuildErrorsStream.Add(Data);
+			BuildErrorsTimestamps.Add(Timestamp);
+		
+		
 			OnBuildErrorsStreamOutput(BuildErrorsStream, BuildErrorsTimestamps, Op);
 		});
 		
@@ -47,15 +49,16 @@ bool UBeamCliProjectRunCommand::HandleStreamReceived(FBeamOperationHandle Op, FS
 
 	if(ReceivedStreamType.Equals(StreamTypeErrorRunFailErrorOutput) && OnErrorRunFailErrorOutputStreamOutput)
 	{
-		UBeamCliProjectRunErrorRunFailErrorOutputStreamData* Data = NewObject<UBeamCliProjectRunErrorRunFailErrorOutputStreamData>(this);
-		Data->OuterOwner = this;
-		Data->BeamDeserializeProperties(DataJson);
-
-		ErrorRunFailErrorOutputStream.Add(Data);
-		ErrorRunFailErrorOutputTimestamps.Add(Timestamp);
-		
-		AsyncTask(ENamedThreads::GameThread, [this, Op]
+		AsyncTask(ENamedThreads::GameThread, [this, DataJson, Timestamp, Op]
 		{
+			UBeamCliProjectRunErrorRunFailErrorOutputStreamData* Data = NewObject<UBeamCliProjectRunErrorRunFailErrorOutputStreamData>(this);
+			Data->OuterOwner = this;
+			Data->BeamDeserializeProperties(DataJson);
+
+			ErrorRunFailErrorOutputStream.Add(Data);
+			ErrorRunFailErrorOutputTimestamps.Add(Timestamp);
+		
+		
 			OnErrorRunFailErrorOutputStreamOutput(ErrorRunFailErrorOutputStream, ErrorRunFailErrorOutputTimestamps, Op);
 		});
 		

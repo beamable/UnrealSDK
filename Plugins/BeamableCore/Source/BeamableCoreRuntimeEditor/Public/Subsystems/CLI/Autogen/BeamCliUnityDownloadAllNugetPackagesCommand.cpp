@@ -13,15 +13,16 @@ bool UBeamCliUnityDownloadAllNugetPackagesCommand::HandleStreamReceived(FBeamOpe
 	
 	if(ReceivedStreamType.Equals(StreamType) && OnStreamOutput)
 	{
-		UBeamCliUnityDownloadAllNugetPackagesStreamData* Data = NewObject<UBeamCliUnityDownloadAllNugetPackagesStreamData>(this);
-		Data->OuterOwner = this;
-		Data->BeamDeserializeProperties(DataJson);
-
-		Stream.Add(Data);
-		Timestamps.Add(Timestamp);
-		
-		AsyncTask(ENamedThreads::GameThread, [this, Op]
+		AsyncTask(ENamedThreads::GameThread, [this, DataJson, Timestamp, Op]
 		{
+			UBeamCliUnityDownloadAllNugetPackagesStreamData* Data = NewObject<UBeamCliUnityDownloadAllNugetPackagesStreamData>(this);
+			Data->OuterOwner = this;
+			Data->BeamDeserializeProperties(DataJson);
+
+			Stream.Add(Data);
+			Timestamps.Add(Timestamp);
+		
+		
 			OnStreamOutput(Stream, Timestamps, Op);
 		});
 		

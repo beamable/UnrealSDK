@@ -13,15 +13,16 @@ bool UBeamCliLoginCommand::HandleStreamReceived(FBeamOperationHandle Op, FString
 	
 	if(ReceivedStreamType.Equals(StreamTypeErrorLoginFailedError) && OnErrorLoginFailedErrorStreamOutput)
 	{
-		UBeamCliLoginErrorLoginFailedErrorStreamData* Data = NewObject<UBeamCliLoginErrorLoginFailedErrorStreamData>(this);
-		Data->OuterOwner = this;
-		Data->BeamDeserializeProperties(DataJson);
-
-		ErrorLoginFailedErrorStream.Add(Data);
-		ErrorLoginFailedErrorTimestamps.Add(Timestamp);
-		
-		AsyncTask(ENamedThreads::GameThread, [this, Op]
+		AsyncTask(ENamedThreads::GameThread, [this, DataJson, Timestamp, Op]
 		{
+			UBeamCliLoginErrorLoginFailedErrorStreamData* Data = NewObject<UBeamCliLoginErrorLoginFailedErrorStreamData>(this);
+			Data->OuterOwner = this;
+			Data->BeamDeserializeProperties(DataJson);
+
+			ErrorLoginFailedErrorStream.Add(Data);
+			ErrorLoginFailedErrorTimestamps.Add(Timestamp);
+		
+		
 			OnErrorLoginFailedErrorStreamOutput(ErrorLoginFailedErrorStream, ErrorLoginFailedErrorTimestamps, Op);
 		});
 		
@@ -30,15 +31,16 @@ bool UBeamCliLoginCommand::HandleStreamReceived(FBeamOperationHandle Op, FString
 
 	if(ReceivedStreamType.Equals(StreamType) && OnStreamOutput)
 	{
-		UBeamCliLoginStreamData* Data = NewObject<UBeamCliLoginStreamData>(this);
-		Data->OuterOwner = this;
-		Data->BeamDeserializeProperties(DataJson);
-
-		Stream.Add(Data);
-		Timestamps.Add(Timestamp);
-		
-		AsyncTask(ENamedThreads::GameThread, [this, Op]
+		AsyncTask(ENamedThreads::GameThread, [this, DataJson, Timestamp, Op]
 		{
+			UBeamCliLoginStreamData* Data = NewObject<UBeamCliLoginStreamData>(this);
+			Data->OuterOwner = this;
+			Data->BeamDeserializeProperties(DataJson);
+
+			Stream.Add(Data);
+			Timestamps.Add(Timestamp);
+		
+		
 			OnStreamOutput(Stream, Timestamps, Op);
 		});
 		

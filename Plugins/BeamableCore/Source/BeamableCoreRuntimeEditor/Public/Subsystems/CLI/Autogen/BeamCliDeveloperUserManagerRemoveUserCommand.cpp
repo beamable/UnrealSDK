@@ -13,15 +13,16 @@ bool UBeamCliDeveloperUserManagerRemoveUserCommand::HandleStreamReceived(FBeamOp
 	
 	if(ReceivedStreamType.Equals(StreamType) && OnStreamOutput)
 	{
-		UBeamCliDeveloperUserManagerRemoveUserStreamData* Data = NewObject<UBeamCliDeveloperUserManagerRemoveUserStreamData>(this);
-		Data->OuterOwner = this;
-		Data->BeamDeserializeProperties(DataJson);
-
-		Stream.Add(Data);
-		Timestamps.Add(Timestamp);
-		
-		AsyncTask(ENamedThreads::GameThread, [this, Op]
+		AsyncTask(ENamedThreads::GameThread, [this, DataJson, Timestamp, Op]
 		{
+			UBeamCliDeveloperUserManagerRemoveUserStreamData* Data = NewObject<UBeamCliDeveloperUserManagerRemoveUserStreamData>(this);
+			Data->OuterOwner = this;
+			Data->BeamDeserializeProperties(DataJson);
+
+			Stream.Add(Data);
+			Timestamps.Add(Timestamp);
+		
+		
 			OnStreamOutput(Stream, Timestamps, Op);
 		});
 		

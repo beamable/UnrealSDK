@@ -89,6 +89,11 @@ public:
 	 */
 	bool bInitBeamPIERequested = false;
 
+	/**
+	 * When running in separate processes, this ensures that we only run BeamPIE's config selection logic during the time you first enter playmode. 
+	 */
+	bool bPreLoadMapRan = false;
+
 	TMap<FBeamPIE_UserSlotHandle, FDelegateHandle> LobbyJoinedHandles;
 	TMap<FBeamPIE_UserSlotHandle, FDelegateHandle> UserSlotAuthenticatedHandles;
 	TMap<FBeamPIE_UserSlotHandle, FBeamGamerTag> ServerGamerTags;
@@ -105,7 +110,7 @@ public:
 	 * Keep the reference for the scene 
 	 */
 	FString CachedLevel = "";
-	
+
 	/**
 	 * This is irrelevant on the server -- only matters in the client.
 	 * Keep the reference for the fake options 
@@ -143,6 +148,9 @@ public:
 		PreLoginExpectingPieIndex = 1; // Starts at one because all PIE clients are instances 1~X.
 		PreLoginExpectingUserSlotInPieIndex = 0; // Starts at one because this indexes into UBeamCoreSettings::RuntimeUserSlots for each PreLoginExpectingPieIndex.
 		bInitBeamPIERequested = false;
+		bPreLoadMapRan = false;
+		ClientDelayMapHandles.Reset();
+
 #if WITH_EDITOR
 
 		// This block of code only runs on separate-process-PIE-instances.
@@ -156,13 +164,11 @@ public:
 			MapPath.ParseIntoArray(MapPathSplit, TEXT("/"));
 			FString MapNameWithoutPath = MapPathSplit[MapPathSplit.Num() - 1];
 
-			// Check if the current map is the temporary room if so we don't need to do nothing with the setup
-			if (WaitRoomLevel == MapNameWithoutPath)
-			{
-				return;
-			}
-			
 			UE_LOG(LogTemp, Display, TEXT("OnInstancePreLoadMap %s"), *MapName);
+			// Check if the current map is the temporary room if so we don't need to do nothing with the setup
+			if (WaitRoomLevel == MapNameWithoutPath || bPreLoadMapRan) return;
+
+			UE_LOG(LogTemp, Display, TEXT("Beam PIE - Choose Selection %s"), *MapName);
 			if (!GEngine->IsEditor())
 			{
 				// First, we parse out which PIE-instance this is from an argument that Unreal sends down to every separate-process-PIE.
@@ -198,7 +204,6 @@ public:
 				Backend->RealmSecret = Config->CurrRealmSecret;
 				Backend->SetRoutingKeyMap(Config->CurrRoutingKeyMap);
 
-			
 
 				UE_LOG(LogTemp, Warning, TEXT("REMOVE PIE PREFIX: %s"), *MapNameWithoutPath);
 				UE_LOG(LogTemp, Warning, TEXT("MAP NAME: %s"), *MapName);
@@ -206,6 +211,9 @@ public:
 				SelectedSettings = ChooseSelectedPIESettings(*MapNameWithoutPath);
 				FCoreUObjectDelegates::PreLoadMap.Remove(OnInstancePreLoadMap);
 			}
+
+			// Keep track that we've already ran this once.
+			bPreLoadMapRan = true;
 		});
 
 		// This block of code sets up the in-editor state for this system --- this runs for when you are entering PIE with all instances `Running Under One Process`.
@@ -213,10 +221,15 @@ public:
 		// Today, we add a few arguments for when we run PIE on separate processes such that it can work with local microservices and BeamPIE.
 		StartPIEHandler = FEditorDelegates::StartPIE.AddLambda([this](const bool)
 		{
-			bInitBeamPIERequested = false;
-			FakeLobbyId.Empty();
-			PreLoginExpectingPieIndex = 1; // Starts at one because all PIE clients are instances 1~X.
-			PreLoginExpectingUserSlotInPieIndex = 0; // Starts at one because this indexes into UBeamCoreSettings::RuntimeUserSlots for each PreLoginExpectingPieIndex.
+			// Reset all the internal state we use to initialize BeamPIE every time we go into play mode
+			{
+				bInitBeamPIERequested = false;
+				bPreLoadMapRan = false;
+				FakeLobbyId.Empty();
+				PreLoginExpectingPieIndex = 1; // Starts at one because all PIE clients are instances 1~X.
+				PreLoginExpectingUserSlotInPieIndex = 0; // Starts at one because this indexes into UBeamCoreSettings::RuntimeUserSlots for each PreLoginExpectingPieIndex.}
+				ClientDelayMapHandles.Reset();
+			}
 
 			// Get the editor world so we can figure out what map is currently open (and, therefore, the map through which we are entering PIE).
 			UWorld* EditorWorld = GEditor->GetEditorWorldContext().World();
@@ -225,7 +238,7 @@ public:
 				UE_LOG(LogBeamEditor, Error, TEXT("Could not find the editor world context!"));
 				return;
 			}
-	
+
 			// Select the settings based on our current map.
 			const auto PIE = GEngine->GetEngineSubsystem<UBeamPIE>();
 			SelectedSettings = PIE->ChooseSelectedPIESettings(UWorld::RemovePIEPrefix(EditorWorld->GetMapName()));
@@ -363,8 +376,8 @@ public:
 		return true;
 #endif
 
-		const auto Setting = GetSelectedPIESettings();
-		if (!Setting) return true;
+		const auto Settings = GetSelectedPIESettings();
+		if (!Settings || Settings->IsDefaultSettings()) return true;
 
 		// We only need to set up orchestrator if...		
 		if (CallingContext)
@@ -391,10 +404,10 @@ public:
 			return Options;
 
 		// If we are not using a PIE setting, we should not be doing anything here.
-		const auto CurrSettings = GetSelectedPIESettings();		  
-		if (!CurrSettings)
+		const auto CurrSettings = GetSelectedPIESettings();
+		if (!CurrSettings || CurrSettings->IsDefaultSettings())
 			return Options;
-		
+
 		// Get the world
 		const auto World = CallingContext->GetWorld();
 		ensureAlwaysMsgf(World, TEXT("You must provide a calling context with a valid World to this function!"));
@@ -409,11 +422,11 @@ public:
 		const auto Lobby = GI->GetSubsystem<UBeamLobbySubsystem>();
 
 		const auto CurrPieIdx = PreLoginExpectingPieIndex;
-		const auto CurrSlotIdx = PreLoginExpectingUserSlotInPieIndex;		
-		
+		const auto CurrSlotIdx = PreLoginExpectingUserSlotInPieIndex;
+
 		TArray<FUserSlot> OrderedSlots;
 		for (const auto& Kvp : CurrSettings->AssignedUsers)
-		{			
+		{
 			if (Kvp.Key.PIEIndex == CurrPieIdx)
 			{
 				OrderedSlots.Add(Kvp.Key.Slot);
@@ -434,7 +447,7 @@ public:
 
 		FUserSlotAuthData SlotSerializedAuthData;
 		FUserSlotAccountData SlotSerializedAccountData;
-		const auto Ret = UserSlots->TryLoadSavedUserAtNamespacedSlot(NamespacedSlotId, SlotSerializedAuthData, SlotSerializedAccountData);;
+		const auto Ret = UserSlots->TryGetSavedUserDataAtNamespacedSlot(NamespacedSlotId, SlotSerializedAuthData, SlotSerializedAccountData);;
 
 		FString NewOption = {};
 		if (Ret != UBeamUserSlots::LoadSavedUserResult_Failed)
@@ -468,6 +481,7 @@ public:
 
 		return NewOption;
 	}
+
 	UFUNCTION(BlueprintCallable, meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
 	void BeamInitPIEGameplay(FString Options, UObject* CallingContext)
 	{
@@ -549,7 +563,7 @@ public:
 
 		// If we don't have a selected setting, don't do anything.
 		const auto Settings = GetSelectedPIESettings();
-		if (!Settings)
+		if (!Settings || Settings->IsDefaultSettings())
 		{
 			RequestTracker->TriggerOperationSuccess(Op, TEXT(""));
 			return;
@@ -605,7 +619,7 @@ public:
 
 		// If we don't have a selected setting, don't do anything.
 		const auto Settings = GetSelectedPIESettings();
-		if (!Settings)
+		if (!Settings || Settings->IsDefaultSettings())
 		{
 			RequestTracker->TriggerOperationSuccess(Op, TEXT(""));
 			return;
@@ -630,8 +644,8 @@ public:
 #endif
 
 		// If we don't have a setting selected, we should just complete the operation (this happens in builds).
-		const auto Setting = GetSelectedPIESettings();
-		if (!Setting)
+		const auto Settings = GetSelectedPIESettings();
+		if (!Settings || Settings->IsDefaultSettings())
 		{
 			RequestTracker->TriggerOperationSuccess(Op, TEXT(""));
 			return;
@@ -647,7 +661,7 @@ public:
 			UE_LOG(LogBeamEditor, Log, TEXT("%s Client - Building List of Assigned PIE Users"), *GetLogArgs(TEXT("Beam PIE Prepare"), WorldContext));
 			TArray<FBeamPIE_UserSlotHandle> PossibleSlotHandles;
 
-			for (const auto& AssignedUser : Setting->AssignedUsers)
+			for (const auto& AssignedUser : Settings->AssignedUsers)
 			{
 				// When its running in a different process the 0 is the server
 				// and also the first client index so for this case we have to subtract 1 from the index configuration
@@ -714,7 +728,7 @@ public:
 		else
 		{
 			// If we are not configured to create a lobby, we complete the operation here.
-			if (!Setting->FakeLobby.bShouldAutoCreateLobby)
+			if (!Settings->FakeLobby.bShouldAutoCreateLobby)
 			{
 				RequestTracker->TriggerOperationSuccess(Op,TEXT(""));
 				return;
@@ -731,128 +745,103 @@ public:
 			// Let's get the list of PIE+Slot combinations for which we have configured users.
 			UE_LOG(LogBeamEditor, Log, TEXT("%s Server - Building List of Assigned PIE Users"), *GetLogArgs(TEXT("Beam PIE Prepare"), WorldContext));
 			TArray<FBeamPIE_UserSlotHandle> PossibleSlotHandles;
-			for (const auto& AssignedUser : Setting->AssignedUsers)
+			for (const auto& AssignedUser : Settings->AssignedUsers)
 			{
 				UE_LOG(LogBeamEditor, Log, TEXT("%s Server - Found Assigned User. USER_SLOT=%s, PIE=%d"), *GetLogArgs(TEXT("Beam PIE Prepare"), WorldContext),
 				       *AssignedUser.Key.Slot.Name, AssignedUser.Key.PIEIndex);
 				PossibleSlotHandles.Add(AssignedUser.Key);
 			}
 
-			// First, we'll need wait until the configured PIE users are all in the Saved/Beamable/UserSlot folder
-			FTSTicker::GetCoreTicker().AddTicker(FTickerDelegate::CreateLambda([this, WorldContext, PossibleSlotHandles, Setting, Op](const float)
+			// First, we'll need wait until the configured PIE users are all in the Saved/Beamable/UserSlot folder			
+			UE_LOG(LogBeamEditor, Log, TEXT("%s Server - Loading Users into BeamPIE slots."), *GetLogArgs(TEXT("Beam PIE Prepare"), WorldContext));
+			// Let's try to load the user's from the Saved folder
+
+			for (FBeamPIE_UserSlotHandle PossibleSlotHandle : PossibleSlotHandles)
 			{
-				// Check if the context is valid
-				if (!IsValidContext(WorldContext))
+				const auto NamespacedSlot = UserSlots->GetNamespacedSlotId(PossibleSlotHandle.Slot.Name, PossibleSlotHandle.PIEIndex);
+
+				UE_LOG(LogBeamEditor, Log, TEXT("%s Server - Attempting to load data for Assigned User. USER_SLOT=%s, PIE=%d"),
+				       *GetLogArgs(TEXT("Beam PIE Prepare"), WorldContext), *PossibleSlotHandle.Slot.Name, PossibleSlotHandle.PIEIndex);
+
+				FUserSlotAuthData Auth;
+				FUserSlotAccountData Account;
+				const auto Res = UserSlots->TryGetSavedUserDataAtNamespacedSlot(NamespacedSlot, Auth, Account);
+				const auto bDidLoad = Res != UBeamUserSlots::LoadSavedUserResult_Failed;
+				if (bDidLoad)
 				{
-					return false;
+					UE_LOG(LogBeamEditor, Log, TEXT("%s Server - Loaded data for Assigned User. USER_SLOT=%s, PIE=%d, GAMER_TAG=%s"),
+					       *GetLogArgs(TEXT("Beam PIE Prepare"), WorldContext), *PossibleSlotHandle.Slot.Name, PossibleSlotHandle.PIEIndex, *Account.GamerTag.AsString);
+					ServerGamerTags.Add(PossibleSlotHandle, Account.GamerTag);
 				}
-				UE_LOG(LogBeamEditor, Log, TEXT("%s Server - Waiting for Users."), *GetLogArgs(TEXT("Beam PIE Prepare"), WorldContext));
-				// Let's try to load the user's from the Saved folder
-				bool bAreAllUsersReady = true;
-				for (FBeamPIE_UserSlotHandle PossibleSlotHandle : PossibleSlotHandles)
+			}
+
+			// If all the users are loaded (and we now know their gamertags)...
+			UE_LOG(LogBeamEditor, Log, TEXT("%s Server - Loaded data for All Assigned Users."), *GetLogArgs(TEXT("Beam PIE Prepare"), WorldContext));
+
+			UE_LOG(LogBeamEditor, Log, TEXT("%s Server - Creating Fake Lobby for GameServer."), *GetLogArgs(TEXT("Beam PIE Prepare"), WorldContext));
+			// Then, we call the make magical lobby endpoint until it succeeds passing in these users.					
+			const auto API = GEngine->GetEngineSubsystem<UBeamLobbyApi>();
+			const auto ServerSlot = GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot();
+
+			ULobby* FakeLobby = NewObject<ULobby>();
+			UE_LOG(LogBeamEditor, Log, TEXT("%s Server - Preparing Fake Lobby"), *GetLogArgs(TEXT("Beam PIE Prepare"), WorldContext));
+			const auto& FakeLobbySettings = Settings->FakeLobby;
+			if (FakeLobbySettings.bIsDedicatedServer)
+			{
+				// Set up the game type
+				FakeLobby->MatchType = FOptionalMatchType{NewObject<UMatchType>()};
+				FakeLobby->MatchType.Val->Id = FOptionalBeamContentId{FakeLobbySettings.GameType};
+				UE_LOG(LogBeamEditor, Log, TEXT("%s Server - Preparing Fake Lobby - Setting GameType %s"),
+				       *GetLogArgs(TEXT("Beam PIE Prepare"), WorldContext), *FakeLobbySettings.GameType.AsString);
+
+				// Add the configured global data (with a flag that tells us that the lobby is coming from PIE).
+				FakeLobby->Data = FOptionalMapOfString{TMap<FString, FString>{{UBeamLobbySubsystem::Reserved_Lobby_From_Editor_Play_Mode_Property, FString(TEXT("true"))}}};
+				for (const auto& LobbyGlobalData : FakeLobbySettings.LobbyGlobalData)
 				{
-					const auto NamespacedSlot = UserSlots->GetNamespacedSlotId(PossibleSlotHandle.Slot, PossibleSlotHandle.PIEIndex);
+					FakeLobby->Data.Val.Add(LobbyGlobalData.Key, LobbyGlobalData.Value);
+					UE_LOG(LogBeamEditor, Log, TEXT("%s Server - Preparing Fake Lobby - Setting Global Data - Key=%s, Val=%s"),
+					       *GetLogArgs(TEXT("Beam PIE Prepare"), WorldContext), *LobbyGlobalData.Key, *LobbyGlobalData.Value);
+				}
 
-					UE_LOG(LogBeamEditor, Log, TEXT("%s Server - Attempting to load data for Assigned User. USER_SLOT=%s, PIE=%d"),
-					       *GetLogArgs(TEXT("Beam PIE Prepare"), WorldContext), *PossibleSlotHandle.Slot.Name, PossibleSlotHandle.PIEIndex);
+				// Dedicated servers are always Null restriction
+				FakeLobby->Restriction = FOptionalLobbyRestriction{EBeamLobbyRestriction::BEAM_Null};
+				FakeLobby->Host = {};
 
-					FUserSlotAuthData Auth;
-					FUserSlotAccountData Account;
-					const auto Res = UserSlots->TryLoadSavedUserAtNamespacedSlot(NamespacedSlot, Auth, Account);
-					const auto bDidLoad = Res != UBeamUserSlots::LoadSavedUserResult_Failed;
-					if (bDidLoad)
+				// Set up the players in the fake lobby.
+				FakeLobby->Players = FOptionalArrayOfLobbyPlayer{{}};
+				for (const auto& KVP : ServerGamerTags)
+				{
+					const auto& Handle = KVP.Key;
+					const auto& GamerTag = KVP.Value;
+					const auto bHasPlayerSettings = Settings->AssignedUsers.Contains(Handle);
+					const auto& Tags = bHasPlayerSettings ? Settings->AssignedUsers[Handle].Tags : TArray<FBeamTag>();
+
+					// Set the properties we forward
+					const auto LobbyPlayer = NewObject<ULobbyPlayer>();
+					LobbyPlayer->PlayerId = FOptionalBeamGamerTag{GamerTag};
+					LobbyPlayer->Joined = FOptionalDateTime{FDateTime::UtcNow()};
+					LobbyPlayer->Tags = bHasPlayerSettings ? FOptionalArrayOfBeamTag{Tags} : FOptionalArrayOfBeamTag{};
+
+					FakeLobby->Players.Val.Add(LobbyPlayer);
+					for (FBeamTag Tag : Tags)
 					{
-						UE_LOG(LogBeamEditor, Log, TEXT("%s Server - Loaded data for Assigned User. USER_SLOT=%s, PIE=%d, GAMER_TAG=%s"),
-						       *GetLogArgs(TEXT("Beam PIE Prepare"), WorldContext), *PossibleSlotHandle.Slot.Name, PossibleSlotHandle.PIEIndex, *Account.GamerTag.AsString);
-						ServerGamerTags.Add(PossibleSlotHandle, Account.GamerTag);
+						UE_LOG(LogBeamEditor, Log, TEXT("%s Server - Preparing Fake Lobby - Setting Player Data - GAMER_TAG=%s, Key=%s, Val=%s"),
+						       *GetLogArgs(TEXT("Beam PIE Prepare"), WorldContext), *GamerTag.AsString, *Tag.Name.Val, *Tag.Value.Val);
 					}
-					bAreAllUsersReady &= bDidLoad;
 				}
+			}
+			else
+			{
+				RequestTracker->TriggerOperationError(Op, TEXT("UNSUPPORTED_LISTEN_SERVER"));
+			}
 
-				// If all the users are loaded (and we now know their gamertags)... 
-				if (bAreAllUsersReady)
-				{
-					UE_LOG(LogBeamEditor, Log, TEXT("%s Server - Loaded data for All Assigned Users."), *GetLogArgs(TEXT("Beam PIE Prepare"), WorldContext));
+			UE_LOG(LogBeamEditor, Log, TEXT("%s Server - Trying to Create the Fake Lobby"), *GetLogArgs(TEXT("Beam PIE Prepare"), WorldContext));
+			auto Req = NewObject<UPutLobbiesRequest>();
+			Req->Body = FakeLobby;
 
-					FTSTicker::GetCoreTicker().AddTicker(FTickerDelegate::CreateLambda([this, WorldContext, Setting, PossibleSlotHandles, Op](const float)
-					{
-						if (!IsValidContext(WorldContext))
-						{
-							return false;
-						}
-						UE_LOG(LogBeamEditor, Log, TEXT("%s Server - Preparing Fake Lobby."), *GetLogArgs(TEXT("Beam PIE Prepare"), WorldContext));
-
-						// Then, we call the make magical lobby endpoint until it succeeds passing in these users.					
-						const auto API = GEngine->GetEngineSubsystem<UBeamLobbyApi>();
-						const auto ServerSlot = GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot();
-
-						ULobby* FakeLobby = NewObject<ULobby>();
-						UE_LOG(LogBeamEditor, Log, TEXT("%s Server - Preparing Fake Lobby"), *GetLogArgs(TEXT("Beam PIE Prepare"), WorldContext));
-						const auto& FakeLobbySettings = Setting->FakeLobby;
-						if (FakeLobbySettings.bIsDedicatedServer)
-						{
-							// Set up the game type
-							FakeLobby->MatchType = FOptionalMatchType{NewObject<UMatchType>()};
-							FakeLobby->MatchType.Val->Id = FOptionalBeamContentId{FakeLobbySettings.GameType};
-							UE_LOG(LogBeamEditor, Log, TEXT("%s Server - Preparing Fake Lobby - Setting GameType %s"),
-							       *GetLogArgs(TEXT("Beam PIE Prepare"), WorldContext), *FakeLobbySettings.GameType.AsString);
-
-							// Add the configured global data (with a flag that tells us that the lobby is coming from PIE).
-							FakeLobby->Data = FOptionalMapOfString{TMap<FString, FString>{{UBeamLobbySubsystem::Reserved_Lobby_From_Editor_Play_Mode_Property, FString(TEXT("true"))}}};
-							for (const auto& LobbyGlobalData : FakeLobbySettings.LobbyGlobalData)
-							{
-								FakeLobby->Data.Val.Add(LobbyGlobalData.Key, LobbyGlobalData.Value);
-								UE_LOG(LogBeamEditor, Log, TEXT("%s Server - Preparing Fake Lobby - Setting Global Data - Key=%s, Val=%s"),
-								       *GetLogArgs(TEXT("Beam PIE Prepare"), WorldContext), *LobbyGlobalData.Key, *LobbyGlobalData.Value);
-							}
-
-							// Dedicated servers are always Null restriction
-							FakeLobby->Restriction = FOptionalLobbyRestriction{EBeamLobbyRestriction::BEAM_Null};
-							FakeLobby->Host = {};
-
-							// Set up the players in the fake lobby.
-							FakeLobby->Players = FOptionalArrayOfLobbyPlayer{{}};
-							for (const auto& KVP : ServerGamerTags)
-							{
-								const auto& Handle = KVP.Key;
-								const auto& GamerTag = KVP.Value;
-								const auto bHasPlayerSettings = Setting->AssignedUsers.Contains(Handle);
-								const auto& Tags = bHasPlayerSettings ? Setting->AssignedUsers[Handle].Tags : TArray<FBeamTag>();
-
-								// Set the properties we forward
-								const auto LobbyPlayer = NewObject<ULobbyPlayer>();
-								LobbyPlayer->PlayerId = FOptionalBeamGamerTag{GamerTag};
-								LobbyPlayer->Joined = FOptionalDateTime{FDateTime::UtcNow()};
-								LobbyPlayer->Tags = bHasPlayerSettings ? FOptionalArrayOfBeamTag{Tags} : FOptionalArrayOfBeamTag{};
-
-								FakeLobby->Players.Val.Add(LobbyPlayer);
-								for (FBeamTag Tag : Tags)
-								{
-									UE_LOG(LogBeamEditor, Log, TEXT("%s Server - Preparing Fake Lobby - Setting Player Data - GAMER_TAG=%s, Key=%s, Val=%s"),
-									       *GetLogArgs(TEXT("Beam PIE Prepare"), WorldContext), *GamerTag.AsString, *Tag.Name.Val, *Tag.Value.Val);
-								}
-							}
-						}
-						else
-						{
-							// TODO: Listen server case...
-						}
-
-						UE_LOG(LogBeamEditor, Log, TEXT("%s Server - Trying to Create the Fake Lobby"), *GetLogArgs(TEXT("Beam PIE Prepare"), WorldContext));
-						auto Req = NewObject<UPutLobbiesRequest>();
-						Req->Body = FakeLobby;
-
-						const auto CreateLobbyHandler = FOnPutLobbiesFullResponse::CreateUObject(this, &UBeamPIE::PIEServerCreateLobbyHandler, WorldContext, Req, PossibleSlotHandles, Op);
-						FBeamRequestContext Ctx;
-						API->CPP_PutLobbies(ServerSlot, Req, CreateLobbyHandler, Ctx, Op, WorldContext->World());
-
-						return false;
-					}), 5);
-				}
-
-
-				return !bAreAllUsersReady;
-			}), 0.2f);
+			const auto CreateLobbyHandler = FOnPutLobbiesFullResponse::CreateUObject(this, &UBeamPIE::PIEServerCreateLobbyHandler, WorldContext, Req, PossibleSlotHandles, Op);
+			FBeamRequestContext Ctx;
+			API->CPP_PutLobbies(ServerSlot, Req, CreateLobbyHandler, Ctx, Op, WorldContext->World());
 		}
 	}
 
@@ -862,7 +851,7 @@ public:
 		UWorld* World = CallingContext->GetWorld();
 		auto GI = World->GetGameInstance();
 		UBeamRuntime* BeamRuntime = GI->GetSubsystem<UBeamRuntime>();
-		
+
 		auto InitHandler = FBeamOperationEventHandlerCode::CreateLambda([CallingContext, this, BeamRuntime](const FBeamOperationEvent& Event)
 		{
 			if (BeamRuntime->IsGameServer())
@@ -870,7 +859,7 @@ public:
 				FString LevelToReload = CachedLevel;
 				if (!FakeOptions.IsEmpty())
 				{
-					LevelToReload += "?"+FakeOptions;
+					LevelToReload += "?" + FakeOptions;
 				}
 				CallingContext->GetWorld()->ServerTravel(LevelToReload);
 			}
@@ -881,10 +870,8 @@ public:
 
 	void PIEServerCreateLobbyHandler(FPutLobbiesFullResponse Resp, FWorldContext* WorldContext, UPutLobbiesRequest* Req, TArray<FBeamPIE_UserSlotHandle> PossibleSlotHandles, FBeamOperationHandle PrepareOp)
 	{
-		if (!IsValidContext(WorldContext))
-		{
-			return;
-		}
+		if (!IsValidContext(WorldContext)) return;
+		
 		if (Resp.State == RS_Success)
 		{
 			UE_LOG(LogBeamEditor, Log, TEXT("%s Server - Created Lobby."), *GetLogArgs(TEXT("Beam PIE Prepare"), WorldContext));
@@ -901,10 +888,8 @@ public:
 			// This is guaranteed to succeed eventually because all clients are logging into the game.
 			FTSTicker::GetCoreTicker().AddTicker(FTickerDelegate::CreateLambda([this,WorldContext, PossibleSlotHandles, PrepareOp, Req](const float)
 			{
-				if (!IsValidContext(WorldContext))
-				{
-					return false;
-				}
+				if (!IsValidContext(WorldContext)) return false;
+				
 				UE_LOG(LogBeamEditor, Log, TEXT("%s Server - Failed to create lobby. Trying again."), *GetLogArgs(TEXT("Beam PIE Prepare"), WorldContext));
 
 				const auto CreateLobbyHandler = FOnPutLobbiesFullResponse::CreateUObject(this, &UBeamPIE::PIEServerCreateLobbyHandler, WorldContext, Req, PossibleSlotHandles, PrepareOp);
@@ -1091,8 +1076,8 @@ public:
 			if (const auto World = CallingContext->GetWorld())
 			{
 				// If we don't have a selected setting, don't do anything.
-				const auto Setting = GetSelectedPIESettings();
-				if (!Setting)
+				const auto Settings = GetSelectedPIESettings();
+				if (!Settings || Settings->IsDefaultSettings())
 				{
 					RequestTracker->TriggerOperationSuccess(Op, TEXT(""));
 					return;
@@ -1103,7 +1088,7 @@ public:
 				{
 					// Let's wait until the local cache has files in it in accordance to what is configured in the Settings.
 					TArray<FBeamPIE_UserSlotHandle> PossibleSlotHandles;
-					for (const auto& AssignedUser : Setting->AssignedUsers)
+					for (const auto& AssignedUser : Settings->AssignedUsers)
 					{
 						if (AssignedUser.Key.PIEIndex == FBeamPIE_Utilities::GetPIEInstance(WorldContext) || FBeamPIE_Utilities::IsRunningOnServer(World))
 						{
@@ -1115,7 +1100,7 @@ public:
 					if (FBeamPIE_Utilities::IsRunningOnServer(World))
 					{
 						// ... but we shouldn't create a lobby --- just complete the operation cause the server is ready.
-						if (!Setting->FakeLobby.bShouldAutoCreateLobby)
+						if (!Settings->FakeLobby.bShouldAutoCreateLobby)
 						{
 							RequestTracker->TriggerOperationSuccess(Op, TEXT(""));
 							return;
@@ -1123,14 +1108,18 @@ public:
 
 						// The server is creating the lobby and, once its done it'll register the created lobby with itself.						
 						// So... we wait for it and then trigger successfully.
-						Async(EAsyncExecution::Thread, [this, Op, World, CallingContext]()
+						Async(EAsyncExecution::Thread, [this, Op, World, WorldContext, CallingContext]()
 						{
 							ULobby* FoundLobby;
 							auto FoundLobbyInServer = World->GetGameInstance()->GetSubsystem<UBeamLobbySubsystem>()->TryGetLobbyById(FGuid{FakeLobbyId}, FoundLobby);
-							while (!FoundLobbyInServer && IsValidChecked(CallingContext))
+							while (IsValidContext(WorldContext) && !FoundLobbyInServer)
 							{
 								FPlatformProcess::Sleep(0.1f);
-								FoundLobbyInServer = World->GetGameInstance()->GetSubsystem<UBeamLobbySubsystem>()->TryGetLobbyById(FGuid{FakeLobbyId}, FoundLobby);
+								if (IsValidContext(WorldContext))
+								{
+									if (const auto LobbySubsystem = World->GetGameInstance()->GetSubsystem<UBeamLobbySubsystem>())
+										FoundLobbyInServer = LobbySubsystem->TryGetLobbyById(FGuid{FakeLobbyId}, FoundLobby);
+								}
 							}
 
 							AsyncTask(ENamedThreads::GameThread, [this, Op, CallingContext]()
@@ -1141,14 +1130,12 @@ public:
 								}
 							});
 						});
-
-						// RequestTracker->TriggerOperationSuccess(Op, TEXT(""));
 					}
 					// In the clients, Init PIE will wait until the user is in the lobby.
 					else
 					{
 						const auto Runtime = World->GetGameInstance()->GetSubsystem<UBeamRuntime>();
-						if (Setting->FakeLobby.bShouldAutoCreateLobby)
+						if (Settings->FakeLobby.bShouldAutoCreateLobby)
 						{
 							WaitUntilClientIsInLobby(Runtime, PossibleSlotHandles, Op);
 						}
@@ -1206,7 +1193,7 @@ public:
 	 */
 	bool IsValidContext(FWorldContext* Context)
 	{
-		return Context->WorldType != EWorldType::None;
+		return Context != nullptr && Context->WorldType != EWorldType::None;
 	}
 
 	/**
@@ -1214,7 +1201,7 @@ public:
 	 */
 	FString GetLogArgs(FString Header, FWorldContext* WorldContext)
 	{
-		if (WorldContext && WorldContext->World())
+		if (IsValidContext(WorldContext) && WorldContext->World())
 		{
 			const auto CurrMapName = UWorld::RemovePIEPrefix(WorldContext->World()->GetMapName());
 			return FString::Printf(TEXT("%s [Index: %d, Starting Map: %s, IsServer: %d, NetMode: %d] -"), *Header, FBeamPIE_Utilities::GetPIEInstance(WorldContext), *CurrMapName,
