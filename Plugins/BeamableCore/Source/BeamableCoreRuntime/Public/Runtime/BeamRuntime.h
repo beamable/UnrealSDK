@@ -1127,8 +1127,7 @@ ______                           __               ______                        
 private:
 	// BP/CPP Independent Operation Implementations
 	void LoginFromCache(FUserSlot UserSlot, FBeamOperationHandle Op);
-	// Login from cache and connect to the web socket without do the full flow of login
-	void LoginFromCacheAndConnectToWebSocket(FUserSlot UserSlot, FString NamespacedSlotId, FBeamOperationHandle Op);
+
 	void LoginFrictionless(FUserSlot UserSlot, TMap<FString, FString> InitProperties, FBeamOperationHandle Op);
 	void LoginFederated(FUserSlot UserSlot, FString MicroserviceId, FString FederationId, FString FederatedAuthToken, FBeamOperationHandle Op);
 	void CommitLoginFederated(FUserSlot UserSlot, UBeamMultiFactorLoginData* ChallengeSolution, FBeamOperationHandle Op);
@@ -1157,9 +1156,6 @@ private:
 	void RunPostAuthenticationSetup(FUserSlot UserSlot, const UAccountPlayerView* OptionalAccountData, FBeamOperationHandle Op);
 	void RunPostAuthenticationSetup_CacheLocalAccountInfo(const UAccountPlayerView* AccountPlayerView, FUserSlot UserSlot, FBeamOperationHandle Op);
 	void RunPostAuthenticationSetup_PrepareNotificationService(FGetClientDefaultsFullResponse Resp, FUserSlot UserSlot, FBeamRealmUser BeamRealmUser, FBeamOperationHandle Op);
-
-	void GetRealmInfoConnectToSocketOperation(FUserSlot UserSlot, FBeamOperationHandle Op);
-	void ConnectToWebSocketOperation(FGetClientDefaultsFullResponse Resp, FUserSlot UserSlot, FBeamRealmUser BeamRealmUser, FBeamOperationHandle Op);
 
 	// Reusable Helper Functions
 	void LoadCachedUserAtSlot(FUserSlot UserSlot, FBeamOperationHandle AuthOp, FSimpleDelegate RunIfNoUser);

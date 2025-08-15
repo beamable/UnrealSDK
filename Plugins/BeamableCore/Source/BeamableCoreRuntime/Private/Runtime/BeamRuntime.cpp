@@ -551,11 +551,11 @@ void UBeamRuntime::TriggerOnBeamableStarting(FBeamWaitCompleteEvent Evt, bool bA
 			if (GEngine->GetEngineSubsystem<UBeamBackend>()->RealmSecret.IsEmpty())
 			{
 				checkf(!RealmSecret.IsEmpty(), TEXT("To run a dedicated server that communicates with Beamable, either:\n"
-						  "- Start it with the command line \'-beamable-realm-secret <realm_secret>\'\n"
-						  "- Start it in an environment with the EnvVar \'BEAMABLE_REALM_SECRET\' set to your realm secret.\n"
-						  "To find your realm secret for your realms, look into your Project Settings => Editor => Beamable Editor => PerSlotDeveloperProjectData => All Realms\n"
-						  "Remember to set this command line argument in your Networking settings for playmode in Editor Settings => Level Editor => Play => Multiplayer Options => Server => Additional Server Launch Parameters."
-					  ))
+					       "- Start it with the command line \'-beamable-realm-secret <realm_secret>\'\n"
+					       "- Start it in an environment with the EnvVar \'BEAMABLE_REALM_SECRET\' set to your realm secret.\n"
+					       "To find your realm secret for your realms, look into your Project Settings => Editor => Beamable Editor => PerSlotDeveloperProjectData => All Realms\n"
+					       "Remember to set this command line argument in your Networking settings for playmode in Editor Settings => Level Editor => Play => Multiplayer Options => Server => Additional Server Launch Parameters."
+				       ))
 				GEngine->GetEngineSubsystem<UBeamBackend>()->RealmSecret = RealmSecret;
 			}
 		}
@@ -1545,7 +1545,7 @@ FUserSlot UBeamRuntime::GetUserSlotByPlayerIndex(int32 PlayerIdx)
 {
 	if (LocalPlayerIndexToUserSlotMapping.Contains(PlayerIdx))
 	{
-		const auto Slot = LocalPlayerIndexToUserSlotMapping[PlayerIdx];		
+		const auto Slot = LocalPlayerIndexToUserSlotMapping[PlayerIdx];
 		return Slot;
 	}
 
@@ -1555,7 +1555,7 @@ FUserSlot UBeamRuntime::GetUserSlotByPlayerIndex(int32 PlayerIdx)
 		// TODO: Loga um warning dizendo q se vc quiser usar isso aqui no server vc precisa fazer o GameMode.
 	}
 #endif
-	
+
 	return FUserSlot{};
 }
 
@@ -1575,7 +1575,7 @@ FBeamGamerTag UBeamRuntime::GetGamerTagByPlayerIndex(int32 PlayerIdx)
 		// TODO: Loga um warning dizendo q se vc quiser usar isso aqui no server vc precisa fazer o GameMode.
 	}
 #endif
-	
+
 	return FBeamGamerTag{};
 }
 
@@ -1597,68 +1597,6 @@ void UBeamRuntime::LoginFromCache(FUserSlot UserSlot, FBeamOperationHandle Op)
 			RequestTrackerSystem->TriggerOperationError(Op, TEXT("There's no cached user to do the login."));
 		}
 	}));
-}
-
-void UBeamRuntime::GetRealmInfoConnectToSocketOperation(FUserSlot UserSlot, FBeamOperationHandle Op)
-{
-	FBeamRealmUser BeamRealmUser;
-	if (UserSlotSystem->GetUserDataAtSlot(UserSlot, BeamRealmUser, this))
-	{
-		const FOnGetClientDefaultsFullResponse HandlerConfig = FOnGetClientDefaultsFullResponse::CreateUObject(this, &UBeamRuntime::ConnectToWebSocketOperation, UserSlot,
-		                                                                                                       BeamRealmUser, Op);
-
-		UGetClientDefaultsRequest* GetClientDefaultsReq = UGetClientDefaultsRequest::Make(this, {});
-		FBeamRequestContext GetClientDefaultsCtx;
-		GEngine->GetEngineSubsystem<UBeamRealmsApi>()->CPP_GetClientDefaults(GetClientDefaultsReq, HandlerConfig, GetClientDefaultsCtx, Op, this);
-	}
-	else
-	{
-		UserSlotSystem->ClearUserAtSlot(UserSlot, USCR_FailedAuthentication, true, this);
-		RequestTrackerSystem->TriggerOperationError(Op, TEXT("Failed to find user data. This should never be seen."));
-	}
-}
-
-void UBeamRuntime::LoginFromCacheAndConnectToWebSocket(FUserSlot UserSlot, FString NamespacedSlotId, FBeamOperationHandle Op)
-{
-	const int32 Result = UserSlotSystem->TryLoadSavedUserAtSlotAndAuthWithNamespace(UserSlot, NamespacedSlotId, this);
-	if (Result != UBeamUserSlots::LoadSavedUserResult_Failed)
-	{
-		// If expired, let's make a request to get a new token through the auto-refresh for expired tokens and then trigger the auth.
-		if (Result == UBeamUserSlots::LoadSavedUserResult_ExpiredToken)
-		{
-			const FOnBasicAccountsGetMeFullResponse Handler = FOnBasicAccountsGetMeFullResponse::CreateLambda([this, UserSlot, Op](const FBasicAccountsGetMeFullResponse& Resp)
-			{
-				if (Resp.State == EBeamFullResponseState::RS_Success)
-				{
-					GetRealmInfoConnectToSocketOperation(UserSlot, Op);
-
-					UE_LOG(LogBeamRuntime, Display, TEXT("Authenticated User at Slot! SLOT=%s GAMER TAG=%s"), *UserSlot.Name, *Resp.SuccessData->Id.AsString);
-				}
-				// If this request failed entirely (all retries)... 
-				else if (Resp.State == EBeamFullResponseState::RS_Error)
-				{
-					RequestTrackerSystem->TriggerOperationError(Op, Resp.ErrorData.message);
-				}
-			});
-
-			const UBeamAccountsApi* AccountsApi = GEngine->GetEngineSubsystem<UBeamAccountsApi>();
-			UBasicAccountsGetMeRequest* MeReq = UBasicAccountsGetMeRequest::Make(GetTransientPackage(), {});
-			FBeamRequestContext Ctx;
-			AccountsApi->CPP_GetMe(UserSlot, MeReq, Handler, Ctx, Op, this);
-			UE_LOG(LogBeamRuntime, Display, TEXT("User at Slot has an expired token. Refreshing the token. SLOT=%s"), *UserSlot.Name);
-		}
-
-		// If we loaded and the token wasn't expired. Let's continue the auth setup flow.
-		if (Result == UBeamUserSlots::LoadSavedUserResult_Success)
-		{
-			GetRealmInfoConnectToSocketOperation(UserSlot, Op);
-			UE_LOG(LogBeamRuntime, Display, TEXT("Authenticated User at Slot! SLOT=%s"), *UserSlot.Name);
-		}
-	}
-	else
-	{
-		RequestTrackerSystem->TriggerOperationError(Op, TEXT("Fail to login from cache."));
-	}
 }
 
 void UBeamRuntime::LoginFrictionless(FUserSlot UserSlot, TMap<FString, FString> InitProperties, FBeamOperationHandle Op)
@@ -2387,34 +2325,6 @@ void UBeamRuntime::RunPostAuthenticationSetup_PrepareNotificationService(FGetCli
 
 		const auto Connectivity = ConnectivityState.FindRef(UserSlot);
 		const auto ConnHandler = FOnNotificationEvent::CreateUObject(Connectivity, &UBeamConnectivityManager::ConnectionHandler, true, Op);
-
-		const FString Uri = Resp.SuccessData->WebsocketConfig->Uri.Val / TEXT("connect");
-		UE_LOG(LogBeamRuntime, Verbose, TEXT("WebSocket URI=%s, Setting=%s"), *Resp.SuccessData->WebsocketConfig->Uri.Val, *Resp.SuccessData->WebsocketConfig->Provider)
-
-		TMap<FString, FString> Headers;
-		FillDefaultSessionHeaders(Headers);
-
-		FBeamWebSocketHandle Handle;
-		GEngine->GetEngineSubsystem<UBeamNotifications>()->Connect(UserSlot, BeamRealmUser, DefaultNotificationChannel, Uri, Headers, ConnHandler, Handle, this->GetWorld());
-	}
-	// If we failed the ClientDefaults request
-	else if (Resp.State == RS_Error)
-	{
-		UserSlotSystem->ClearUserAtSlot(UserSlot, USCR_FailedAuthentication, true, this);
-		RequestTrackerSystem->TriggerOperationError(Op, Resp.ErrorData.message);
-	}
-}
-
-void UBeamRuntime::ConnectToWebSocketOperation(FGetClientDefaultsFullResponse Resp, FUserSlot UserSlot, FBeamRealmUser BeamRealmUser, FBeamOperationHandle Op)
-{
-	if (Resp.State == RS_Retrying) return;
-
-	if (Resp.State == RS_Success)
-	{
-		EnsureConnectivityManagerForSlot(UserSlot);
-
-		const auto Connectivity = ConnectivityState.FindRef(UserSlot);
-		const auto ConnHandler = FOnNotificationEvent::CreateUObject(Connectivity, &UBeamConnectivityManager::ConnectionHandler, false, Op);
 
 		const FString Uri = Resp.SuccessData->WebsocketConfig->Uri.Val / TEXT("connect");
 		UE_LOG(LogBeamRuntime, Verbose, TEXT("WebSocket URI=%s, Setting=%s"), *Resp.SuccessData->WebsocketConfig->Uri.Val, *Resp.SuccessData->WebsocketConfig->Provider)

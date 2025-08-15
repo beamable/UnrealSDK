@@ -114,26 +114,39 @@ void UBeamUserDeveloperManagerEditor::TriggerOnPreBeginPIE(ULevelEditorPlaySetti
 {
 	FScopedSlowTask SlowTask(100, FText::FromString(TEXT("Starting Beam PIE - Copying Users")));
 	SlowTask.MakeDialog(false, true);
-	SlowTask.EnterProgressFrame(10);	
-	
+	SlowTask.EnterProgressFrame(10);
+
 	// If there's no assigned user set-up we don't need to do nothing
 	if (Settings->AssignedUsers.Num() == 0)
 	{
 		return;
 	}
-	TMap<FBeamGamerTag, int32> TemplateAmount;
-	for (auto AssignedUserKeyPair : Settings->AssignedUsers)
+	auto BeamCoreSettings = GetDefault<UBeamCoreSettings>();
+
+	// We have this guard to force copy the user if the PID / Cid is different from the target
+	auto ShouldCopyPIE = [this, BeamCoreSettings](TTuple<FBeamPIE_UserSlotHandle, FBeamPIE_PerUserSetting> AssignedUser)
 	{
-		if (!AssignedUserKeyPair.Key.CreateCopyOnPIE)
+		auto DeveloperUser = LocalUserDeveloperCache[AssignedUser.Value.GamerTag.AsLong];
+		if (DeveloperUser->Cid != BeamCoreSettings->TargetRealm.Cid || DeveloperUser->Pid != BeamCoreSettings->TargetRealm.Pid)
+		{
+			return true;
+		}
+		return AssignedUser.Key.CreateCopyOnPIE;
+	};
+
+	TMap<FBeamGamerTag, int32> TemplateAmount;
+	for (auto AssignedUser : Settings->AssignedUsers)
+	{
+		if (!ShouldCopyPIE(AssignedUser))
 		{
 			continue;
 		}
 		// Clear the saved users from the previous session
-		BeamUserSlots->ClearAllCachedUserDataAtNamespacedSlot(BeamUserSlots->GetNamespacedSlotId(AssignedUserKeyPair.Key.Slot, AssignedUserKeyPair.Key.PIEIndex));
+		BeamUserSlots->ClearAllCachedUserDataAtNamespacedSlot(BeamUserSlots->GetNamespacedSlotId(AssignedUser.Key.Slot, AssignedUser.Key.PIEIndex));
 
 		// Count the numbers of each template
-		auto UserSlotHandle = AssignedUserKeyPair.Key;
-		if (FBeamGamerTag GamerTag = AssignedUserKeyPair.Value.GamerTag; TemplateAmount.Contains(GamerTag))
+		auto UserSlotHandle = AssignedUser.Key;
+		if (FBeamGamerTag GamerTag = AssignedUser.Value.GamerTag; TemplateAmount.Contains(GamerTag))
 		{
 			TemplateAmount[GamerTag]++;
 		}
@@ -159,13 +172,13 @@ void UBeamUserDeveloperManagerEditor::TriggerOnPreBeginPIE(ULevelEditorPlaySetti
 	};
 
 	UBeamCliDeveloperUserManagerCreateUserBatchCommand* CreateUserBatchCommand = NewObject<UBeamCliDeveloperUserManagerCreateUserBatchCommand>();
-	CreateUserBatchCommand->OnStreamOutput = [this, Settings](const TArray<UBeamCliDeveloperUserManagerCreateUserBatchStreamData*>& Stream, const TArray<int64>&,
-	                                                          const FBeamOperationHandle&)
+	CreateUserBatchCommand->OnStreamOutput = [this, Settings, ShouldCopyPIE](const TArray<UBeamCliDeveloperUserManagerCreateUserBatchStreamData*>& Stream, const TArray<int64>&,
+	                                                                         const FBeamOperationHandle&)
 	{
 		auto Data = Stream.Last();
 
 		TMap<long, TArray<UDeveloperUserDataStreamData*>> CreatedUserMap;
-
+		// Build a list with the created users
 		for (UDeveloperUserDataStreamData* CreatedUser : Data->CreatedUsers)
 		{
 			if (CreatedUserMap.Contains(CreatedUser->TemplateGamerTag))
@@ -181,10 +194,12 @@ void UBeamUserDeveloperManagerEditor::TriggerOnPreBeginPIE(ULevelEditorPlaySetti
 		for (auto AssignedUserKeyPair : Settings->AssignedUsers)
 		{
 			UDeveloperUserDataStreamData* DeveloperUser;
-			if (AssignedUserKeyPair.Key.CreateCopyOnPIE)
-				DeveloperUser = CreatedUserMap[AssignedUserKeyPair.Value.GamerTag.AsLong][0];
-			else
-				DeveloperUser = LocalUserDeveloperCache[AssignedUserKeyPair.Value.GamerTag.AsLong];
+			// If we shouldn't copy the PIE we just skip it
+			if (!ShouldCopyPIE(AssignedUserKeyPair))
+			{
+				continue;
+			}
+			DeveloperUser = CreatedUserMap[AssignedUserKeyPair.Value.GamerTag.AsLong][0];
 
 			BeamUserSlots->SaveSlot(AssignedUserKeyPair.Key.Slot, AssignedUserKeyPair.Key.PIEIndex,
 			                        DeveloperUser->GamerTag,
@@ -198,16 +213,16 @@ void UBeamUserDeveloperManagerEditor::TriggerOnPreBeginPIE(ULevelEditorPlaySetti
 			CreatedUserMap[AssignedUserKeyPair.Value.GamerTag.AsLong].Remove(DeveloperUser);
 		}
 	};
-	
+
 	CreateUserBatchCommand->OnCompleted = [this](const int& ResCode, const FBeamOperationHandle&)
 	{
 		if (ResCode == CLI_ERROR_BACKEND)
 		{
-			UE_LOG(LogTemp, Error, TEXT("CREATE BATCH CLI COMMAND: CLI_ERROR_BACKEND %d"), ResCode);			
+			UE_LOG(LogTemp, Error, TEXT("CREATE BATCH CLI COMMAND: CLI_ERROR_BACKEND %d"), ResCode);
 		}
 		else if (ResCode == CLI_ERROR_UNKNOWN_BACKEND)
 		{
-			UE_LOG(LogTemp, Error, TEXT("CREATE BATCH CLI COMMAND: CLI_ERROR_UNKNOWN_BACKEND %d"), ResCode);			
+			UE_LOG(LogTemp, Error, TEXT("CREATE BATCH CLI COMMAND: CLI_ERROR_UNKNOWN_BACKEND %d"), ResCode);
 		}
 		else if (ResCode == CLI_ERROR_SAVE_FILE)
 		{
@@ -218,13 +233,37 @@ void UBeamUserDeveloperManagerEditor::TriggerOnPreBeginPIE(ULevelEditorPlaySetti
 			// Unknown error
 		}
 		else
-		{			
+		{
 		}
 	};
+	// Before call the CLI we check if there's any assigned user that should be copy
+	// If there's no assigned user we just don't call the CLI
+	bool NeedCopy = false;
+	for (auto AssignedUser : Settings->AssignedUsers)
+	{
+		if (ShouldCopyPIE(AssignedUser))
+		{
+			NeedCopy = true;
+			continue;
+		}
+		UDeveloperUserDataStreamData* DeveloperUser = LocalUserDeveloperCache[AssignedUser.Value.GamerTag.AsLong];
 
-	SlowTask.EnterProgressFrame(50);	
-	BeamCli->RunCommandSync(CreateUserBatchCommand, args);
-	SlowTask.EnterProgressFrame(40);	
+		BeamUserSlots->SaveSlot(AssignedUser.Key.Slot, AssignedUser.Key.PIEIndex,
+		                        DeveloperUser->GamerTag,
+		                        DeveloperUser->AccessToken,
+		                        DeveloperUser->RefreshToken,
+		                        DeveloperUser->CreatedDate,
+		                        DeveloperUser->ExpiresIn,
+		                        DeveloperUser->Cid,
+		                        DeveloperUser->Pid);
+	}
+
+	SlowTask.EnterProgressFrame(50);
+	if (NeedCopy)
+	{
+		BeamCli->RunCommandSync(CreateUserBatchCommand, args);
+	}
+	SlowTask.EnterProgressFrame(40);
 }
 
 UDeveloperUserDataStreamData* UBeamUserDeveloperManagerEditor::GetUserWithGamerTag(FBeamGamerTag GamerTag)
