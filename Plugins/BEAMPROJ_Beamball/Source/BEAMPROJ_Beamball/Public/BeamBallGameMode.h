@@ -7,6 +7,21 @@
 #include "Subsystems/PIE/BeamPIE.h"
 #include "BeamBallGameMode.generated.h"
 
+
+UCLASS()
+class UBeamBallLocalPlayer : public ULocalPlayer
+{
+	GENERATED_BODY()
+
+public:
+	virtual FString GetGameLoginOptions() const override
+	{
+		FString Options = Super::GetGameLoginOptions();
+		const auto Lobby = GetGameInstance()->GetSubsystem<UBeamLobbySubsystem>();
+		return Lobby->PrepareLoginOptions(this, Options);		
+	}
+};
+
 UCLASS()
 class UBeamBallGameInstance : public UGameInstance
 {
@@ -15,40 +30,19 @@ class UBeamBallGameInstance : public UGameInstance
 public:
 	virtual void StartGameInstance() override
 	{
-		UE_LOG(LogBeamRuntime, Warning, TEXT("INIT PLAY IN EDITOR --- Is Server: %d"), IsDedicatedServerInstance());
-		auto asd = GEngine->GetEngineSubsystem<UBeamPIE>();		
-		asd->CPP_BeamPreparePIEOperation(GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot(), GetWorld(), {});
-		
 		Super::StartGameInstance();
-
+		BeamPIE::StartGameInstance(this);
 	}
 
 	virtual FGameInstancePIEResult StartPlayInEditorGameInstance(ULocalPlayer* LocalPlayer, const FGameInstancePIEParameters& Params) override
 	{
-		UE_LOG(LogBeamRuntime, Warning, TEXT("INIT PLAY IN EDITOR (PIE) --- Is Server: %d, NextURL: %s"), IsDedicatedServerInstance(), *GetWorld()->NextURL);
-		auto BeamPie = GEngine->GetEngineSubsystem<UBeamPIE>();
-		BeamPie->CPP_BeamPreparePIEOperation(GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot(), GetWorld(), {});
-
+		BeamPIE::StartPlayInEditorGameInstance(this, LocalPlayer, Params);
 		return Super::StartPlayInEditorGameInstance(LocalPlayer, Params);
 	}
 
-	bool BeganOp = false;
-	FBeamOperationHandle WaitForReady;
-
 	virtual bool DelayPendingNetGameTravel() override
 	{
-		auto zxc = GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot();
-		auto asd = GEngine->GetEngineSubsystem<UBeamPIE>();
-		if (!BeganOp)
-		{
-			WaitForReady = asd->CPP_WaitForBeamPIEOperation(zxc, this, {});
-			BeganOp = true;
-		}
-
-		auto ReqTracker = GEngine->GetEngineSubsystem<UBeamRequestTracker>();
-		UE_LOG(LogBeamRuntime, Warning, TEXT("DELAYING NET GAME TRAVEL --- Is Server: %d"), IsDedicatedServerInstance());
-		return BeganOp && ReqTracker->IsOperationActive(WaitForReady);
-		//return GEngine->GetEngineSubsystem<UBeamPIE>()->IsLoading(this);
+		return BeamPIE::DelayPendingNetGameTravel(this);
 	}
 };
 
@@ -84,8 +78,6 @@ class BEAMPROJ_BEAMBALL_API ABeamBallGameMode : public AGameMode
 	}
 
 public:
-
-	
 	virtual void PreLoginAsync(const FString& Options, const FString& Address, const FUniqueNetIdRepl& UniqueId, const FOnPreLoginCompleteDelegate& OnComplete) override
 	{
 		const auto Lobby = GetGameInstance()->GetSubsystem<UBeamLobbySubsystem>();
@@ -93,20 +85,21 @@ public:
 		const auto PIE = GEngine->GetEngineSubsystem<UBeamPIE>();
 
 
-		// const auto BeamOptions = PIE->GetExpectedClientPIEOptions(Options);		
-		Lobby->CPP_AcceptUserIntoGameServerOperation(ServerSlot, Options, Address, UniqueId, FBeamOperationEventHandlerCode::CreateLambda([this, OnComplete, Options, Address, UniqueId](FBeamOperationEvent Evt)
-		{
-			if (Evt.EventType == OET_SUCCESS)
-			{
-				Super::PreLoginAsync(Options, Address, UniqueId, OnComplete);
-			}
+		const auto BeamOptions = PIE->GetExpectedClientPIEOptions(Options, this);
+		Lobby->CPP_AcceptUserIntoGameServerOperation(ServerSlot, BeamOptions, Address, UniqueId,
+		                                             FBeamOperationEventHandlerCode::CreateLambda([this, OnComplete, BeamOptions, Address, UniqueId](FBeamOperationEvent Evt)
+		                                             {
+			                                             if (Evt.EventType == OET_SUCCESS)
+			                                             {
+				                                             Super::PreLoginAsync(BeamOptions, Address, UniqueId, OnComplete);
+			                                             }
 
-			// If failed, deny entry into the server.
-			if (Evt.EventType == OET_ERROR)
-			{
-				OnComplete.ExecuteIfBound(Evt.EventCode);
-			}
-		}));
+			                                             // If failed, deny entry into the server.
+			                                             if (Evt.EventType == OET_ERROR)
+			                                             {
+				                                             OnComplete.ExecuteIfBound(Evt.EventCode);
+			                                             }
+		                                             }));
 
 		// TODO: We need to make sure this is set up correctly with a sufficiently large value. 
 		// https://forums.unrealengine.com/t/where-to-set-connectiontimeout-value/378351/4
@@ -128,20 +121,5 @@ public:
 		// It must also keep a map of GamerTag to FUniqueNetIdRepl so that we can easily have a way of getting the gamertag from any ULocalPlayer object
 		// https://forums.unrealengine.com/t/how-to-pass-a-custom-uniqueid-into-prelogin-from-clienttravel/459527
 		// These should be in the lobby itself.
-
-		// Lobby->AcceptUserIntoGameServerOperation(Options, Address, UniqueId, FBeamOperationEventHandlerCode::CreateLambda([Options, Address, UniqueId, OnComplete](FBeamOperationEvent Evt)
-		// {
-		// 	// If successful, just forward control back to the engine
-		// 	if (Evt.EventType == OET_SUCCESS)
-		// 	{				
-		// 		Super::PreLoginAsync(Options, Address, UniqueId, OnComplete);
-		// 	}
-		//
-		// 	// If failed, deny entry into the server.
-		// 	if (Evt.EventType == OET_ERROR)
-		// 	{
-		// 		OnComplete.ExecuteIfBound(Evt.EventCode);				
-		// 	}			
-		// }));
 	}
 };

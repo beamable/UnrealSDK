@@ -154,6 +154,8 @@ UCLASS(BlueprintType, Config=Game)
 class BEAMABLECORERUNTIME_API UBeamLobbySubsystem : public UBeamRuntimeSubsystem
 {
 	GENERATED_BODY()
+	
+	friend class UBeamPIE;
 
 public:
 	inline static const FString Reserved_Lobby_From_Editor_Play_Mode_Property = "__beam_lobby_from_editor_play_mode_settings__";
@@ -164,6 +166,12 @@ public:
 
 	inline static const FString Reserved_Dedicated_Server_Property = TEXT("__beam_game_server_lobby__");
 	inline static const FString Reserved_Listen_Server_Property = TEXT("__beam_listen_server_lobby__");
+
+	inline static const FString Reserved_LoginOpt_GamerTag_Required = TEXT("LogOptBeamGamerTag");
+	inline static const FString Reserved_LoginOpt_AccessToken_Required = TEXT("LogOptBeamAccessToken");
+	inline static const FString Reserved_LoginOpt_RefreshToken_Required = TEXT("LogOptBeamRefreshToken");
+	inline static const FString Reserved_LoginOpt_ExpiresIn_Required = TEXT("LogOptBeamExpiresIn");
+	inline static const FString Reserved_LoginOpt_LobbyId_Optional = TEXT("LogOptLobbyId");
 
 	UPROPERTY()
 	UBeamUserSlots* UserSlots;
@@ -196,9 +204,8 @@ public:
 	TMap<FUserSlot, UBeamLobbyUpdateCommand*> UpdateCommands;
 
 private:
-
 	volatile int64 AutoIncrementServerMappingSlotsIdx = -1;
-	
+
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 	virtual void Deinitialize() override;
 
@@ -272,8 +279,11 @@ public:
 	 *  The default value is what will be return in case of it fail to get the value.
 	 */
 	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
-	bool TryGetGlobalLobbyDataCasted(ULobby* Lobby, FString DataKey, UPARAM(meta=(MustImplement = "BeamJsonSerializableUObject", BeamCastType))TSubclassOf<UObject> CastTarget,
-	                                 UPARAM(meta=(MustImplement = "BeamJsonSerializableUObject"))UObject* DefaultValue, UPARAM(meta=(BeamCastTarget))UObject*& GlobalData);
+	bool TryGetGlobalLobbyDataCasted(ULobby* Lobby, FString DataKey, UPARAM(meta=(MustImplement = "BeamJsonSerializableUObject", BeamCastType))
+	                                 TSubclassOf<UObject> CastTarget,
+	                                 UPARAM(meta=(MustImplement = "BeamJsonSerializableUObject"))
+	                                 UObject* DefaultValue, UPARAM(meta=(BeamCastTarget))
+	                                 UObject*& GlobalData);
 
 	/**
 	 *  It will return the global data from a ULobby* Object as parallel lists of keys and values.
@@ -293,8 +303,11 @@ public:
 	 *  The default value is what will be return in case of it fail to get the value.
 	 */
 	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
-	bool TryGetLobbyPlayerDataCasted(ULobby* Lobby, FBeamGamerTag PlayerGamerTag, UPARAM(meta=(MustImplement = "BeamJsonSerializableUObject", BeamCastType))TSubclassOf<UObject> CastTarget, FString DataKey,
-	                                 UPARAM(meta=(MustImplement = "BeamJsonSerializableUObject"))UObject* DefaultValue, UPARAM(meta=(BeamCastTarget))UObject*& PlayerData);
+	bool TryGetLobbyPlayerDataCasted(ULobby* Lobby, FBeamGamerTag PlayerGamerTag, UPARAM(meta=(MustImplement = "BeamJsonSerializableUObject", BeamCastType))
+	                                 TSubclassOf<UObject> CastTarget, FString DataKey,
+	                                 UPARAM(meta=(MustImplement = "BeamJsonSerializableUObject"))
+	                                 UObject* DefaultValue, UPARAM(meta=(BeamCastTarget))
+	                                 UObject*& PlayerData);
 
 	/**
 	 *  It will return the a specific player data from a ULobby* Object as parallel lists of keys and values.
@@ -418,6 +431,21 @@ public:
 	bool TryGetDedicatedServerInstanceLobby(ULobby*& Lobby);
 
 
+	/**
+	 * Use this to create to add to an OpenLevel URL all the options required to use CPP_AcceptUserIntoGameServerOperation in your UGameModeBase::PreLoginAsync call. 
+	 */
+	UFUNCTION(BlueprintCallable)
+	FString PrepareLoginOptions(const ULocalPlayer* LocalPlayer, const FString Options);
+
+	UFUNCTION(BlueprintCallable)
+	FString PrepareLoginOptionsSlot(const FUserSlot& Slot, const FString Options);
+	
+	/**
+	 * Use this to create to add to an OpenLevel URL all the options required to use CPP_AcceptUserIntoGameServerOperation in your UGameModeBase::PreLoginAsync call. 
+	 */
+	UFUNCTION(BlueprintCallable)
+	FString PrepareLoginOptionsFull(const FString& Options, const FString& AccessToken, const FString& RefreshToken, int64 ExpiresIn, const FBeamGamerTag& GamerTag, FString LobbyId) const;
+
 	// OPERATIONS
 
 	/**
@@ -425,14 +453,16 @@ public:
 	 * LobbyData is data associated to the lobby and PlayerTags are a set of non-unique Name/Value pairs associated to each player.
 	 */
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Lobby")
-	FBeamOperationHandle CreateOpenLobbyOperation(FUserSlot UserSlot, FBeamOperationEventHandler OnOperationEvent, FString Name, FString Desc, UPARAM(meta=(BeamFilter="game_types"))FBeamContentId MatchType,
+	FBeamOperationHandle CreateOpenLobbyOperation(FUserSlot UserSlot, FBeamOperationEventHandler OnOperationEvent, FString Name, FString Desc, UPARAM(meta=(BeamFilter="game_types"))
+	                                              FBeamContentId MatchType,
 	                                              int32 MaxPlayers, TMap<FString, FString> LobbyData,
 	                                              TArray<FBeamTag> PlayerTags);
 
 	/**
 	 * @copydoc CreateOpenLobbyOperation 
 	 */
-	FBeamOperationHandle CPP_CreateOpenLobbyOperation(FUserSlot UserSlot, FBeamOperationEventHandlerCode OnOperationEvent, FString Name, FString Desc, UPARAM(meta=(BeamFilter="game_types"))FBeamContentId MatchType,
+	FBeamOperationHandle CPP_CreateOpenLobbyOperation(FUserSlot UserSlot, FBeamOperationEventHandlerCode OnOperationEvent, FString Name, FString Desc, UPARAM(meta=(BeamFilter="game_types"))
+	                                                  FBeamContentId MatchType,
 	                                                  int32 MaxPlayers = 32,
 	                                                  TMap<FString, FString> LobbyData = {},
 	                                                  TArray<FBeamTag> PlayerTags = {});
@@ -443,14 +473,16 @@ public:
 	 * LobbyData is data associated to the lobby and PlayerTags are a set of non-unique Name/Value pairs associated to each player.
 	 */
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Lobby")
-	FBeamOperationHandle CreateClosedLobbyOperation(FUserSlot UserSlot, FBeamOperationEventHandler OnOperationEvent, FString Name, FString Desc, UPARAM(meta=(BeamFilter="game_types"))FBeamContentId MatchType,
+	FBeamOperationHandle CreateClosedLobbyOperation(FUserSlot UserSlot, FBeamOperationEventHandler OnOperationEvent, FString Name, FString Desc, UPARAM(meta=(BeamFilter="game_types"))
+	                                                FBeamContentId MatchType,
 	                                                int32 MaxPlayers,
 	                                                TMap<FString, FString> LobbyData, TArray<FBeamTag> PlayerTags);
 
 	/**
 	 * @copydoc CreateClosedLobbyOperation 
 	 */
-	FBeamOperationHandle CPP_CreateClosedLobbyOperation(FUserSlot UserSlot, FBeamOperationEventHandlerCode OnOperationEvent, FString Name, FString Desc, UPARAM(meta=(BeamFilter="game_types"))FBeamContentId MatchType,
+	FBeamOperationHandle CPP_CreateClosedLobbyOperation(FUserSlot UserSlot, FBeamOperationEventHandlerCode OnOperationEvent, FString Name, FString Desc, UPARAM(meta=(BeamFilter="game_types"))
+	                                                    FBeamContentId MatchType,
 	                                                    int32 MaxPlayers = 32,
 	                                                    TMap<FString, FString> LobbyData = {},
 	                                                    TArray<FBeamTag> PlayerTags = {});
@@ -472,7 +504,8 @@ public:
 	 * Generally, you'll call this to show a list of public lobbies people can join and play. Try to use paging to avoid performance issues. 
 	 */
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Lobby")
-	FBeamOperationHandle RefreshLobbiesDataOperation(FUserSlot UserSlot, FBeamOperationEventHandler OnOperationEvent, UPARAM(meta=(BeamFilter="game_types"))FBeamContentId MatchTypeFilter, int32 PageStart = -1,
+	FBeamOperationHandle RefreshLobbiesDataOperation(FUserSlot UserSlot, FBeamOperationEventHandler OnOperationEvent, UPARAM(meta=(BeamFilter="game_types"))
+	                                                 FBeamContentId MatchTypeFilter, int32 PageStart = -1,
 	                                                 int32 PageSize = -1);
 
 	/**
@@ -659,8 +692,9 @@ private:
 	void InitializeLobbyInfoForSlot(const FUserSlot& UserSlot, const FBeamRealmUser& BeamRealmUser);
 	void UpdateLobbyPlayerInfo(FUserSlot Slot, const ULobby* LobbyData);
 	void ReplaceOrAddKnownLobbyData(ULobby* LobbyData);
-	void ClearLobbyForSlot(FUserSlot Slot);
+	void ClearLobbyForSlot(FUserSlot Slot);	
+
 	bool GuardSlotIsInLobby(const FUserSlot& Slot, UBeamLobbyState*& LobbyState);
 	bool GuardIsLobbyOwner(const FUserSlot& Slot, UBeamLobbyState* LobbyState);
-	bool GuardUpdateCommandBegun(const FUserSlot& Slot);
+	bool GuardUpdateCommandBegun(const FUserSlot& Slot);	
 };

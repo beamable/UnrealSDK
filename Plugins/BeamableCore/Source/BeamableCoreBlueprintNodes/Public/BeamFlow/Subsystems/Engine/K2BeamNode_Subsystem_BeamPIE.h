@@ -65,20 +65,20 @@ class UK2BeamNode_GetLocalState_GamePlayInit : public UK2BeamNode_GetLocalState
 //       |_|     
 
 
-#define LOCTEXT_NAMESPACE "K2BeamNode_Operation_GamePlayInit"
+#define LOCTEXT_NAMESPACE "K2BeamNode_Operation_PrepareFakeLobby"
 
 UCLASS(meta=(BeamFlowNode))
-class UK2BeamNode_Operation_GamePlayInit : public UK2BeamNode_Operation
+class UK2BeamNode_Operation_PrepareFakeLobby : public UK2BeamNode_Operation
 {
 	GENERATED_BODY()
 
-	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Operation - PIE - GamePlayInit"); }
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Operation - PIE - Prepare Fake Lobby"); }
 
 	virtual FText GetKeywords() const override { return FText::FromString(Super::GetKeywords().ToString() + " PIE"); }
 
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamPIE, GetSelf); }
 
-	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamPIE, BeamInitPIEGameplayOperation); }
+	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamPIE, BeamPIEPrepareFakeLobbyOperation); }
 
 	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamPIE::StaticClass(); }
 };

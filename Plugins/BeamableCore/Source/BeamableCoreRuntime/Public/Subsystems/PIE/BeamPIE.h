@@ -26,82 +26,6 @@
 
 #include "BeamPIE.generated.h"
 
-// UCLASS(BlueprintType, Blueprintable)
-// class AMyServerBootGameMode : public AGameModeBase, public IBeamPIEGameMode
-// {
-// 	GENERATED_BODY()
-//
-// public:
-// 	virtual void BeginPlay() override
-// 	{
-// 		// Use your orchestrator's SDK to get what the Lobby Id is from their "room" setup.
-// 		// Whenever you detect a lobby was assigned to this server instance, you should call:
-// 		//
-// 		// 	const auto NewLobbyId = FGuid(LobbyFromOrchestrator);
-// 		//     const auto Lobby = GetGameInstance()->GetSubsystem<UBeamLobbySubsystem>();
-// 		//     Lobby->CPP_RefreshLobbyDataOperation({}, FBeamOperationEventHandlerCode::CreateLambda([](FBeamOperationEvent Evt)
-// 		//     {
-// 		//     	   if (Evt.CompletedWithSuccess())
-// 		//     	   {
-//		//      	   // Game Maker code that will load every asset and prepare whatever needs preparing to begin accepting connections for players that are in this lobby.		
-//		//             PrepareLobbyForReceiveConnections()
-//		//      
-// 		//             // Once you have refreshed the lobby, if your server is properly initialized and ready to receive player connections, you should call
-// 		//             Lobby->CPP_SetLobbyAsReadyForConnectionsOperation({}, NewLobbyId, {});
-// 		//     	   }     	
-// 		//     }), NewLobbyId);
-// 	}
-//  
-//   OnBeamPIELobbyRegistered() {
-//      PrepareLobbyForReceiveConnections();
-// 		Lobby->CPP_SetLobbyAsReadyForConnectionsOperation({}, NewLobbyId, {});
-//   }
-//
-// 	virtual void PreLoginAsync(const FString& Options, const FString& Address, const FUniqueNetIdRepl& UniqueId, const FOnPreLoginCompleteDelegate& OnComplete) override
-// 	{
-// 		const auto Lobby = GetGameInstance()->GetSubsystem<UBeamLobbySubsystem>();
-// 		UE_LOG(LogTemp, Warning, TEXT("Pre-Login - Options:%s, Id:%s"), *Options, *UniqueId.ToString());
-// 		// Lobby->CPP_AcceptUserIntoGameServerOperation()
-// 		Super::PreLoginAsync(Options, Address, UniqueId, OnComplete);
-//
-// 		// TODO: We need to make sure this is set up correctly with a sufficiently large value. 
-// 		// https://forums.unrealengine.com/t/where-to-set-connectiontimeout-value/378351/4
-//
-//
-// 		// Beamable works with the default UniqueIds (basically, we do NOT use an OnlineSubsystem to validate the user)
-// 		//   - Way too much noise on those systems.		
-// 		// TODO: When you join the matchmaking queue, party or lobby, we add a property for each player (which is their ULocalPlayer::UniqueNetId)		
-// 		// TODO: If you are using no OnlineSubsystem here in the server, we'll validate via an Option in the travel (LobbyId+AccessToken --- our AcceptUserIntoLobbyOperation will use that
-// 		// token to verify that you are in-fact you and that you are in one of the lobbies this server manages) and just leave the UniqueId untouched.		
-// 		// TODO: If you are using an OnlineSubsystem here in the server, we'll use the UniqueId to validate that the user coming in from Unreal ClientTravel is
-// 		// actually allowed into the server (by comparing with the property in the lobby). This allows you to use whatever subsystem you want to generate the UniqueNetIds and it'll just work with Beamable.
-// 		// But if you want to avoid OnlineSubsystems in servers, you can.
-//
-// 		// Checks if the SDK is initialized, if not --- wait until it is.
-// 		// Then, checks if the provided lobby is in the list of KnownLobbies:
-// 		//   - If it is, validate the user is in it.
-// 		//   - If it isn't, fetch it and then accept the users into it.
-// 		// It must also keep a map of GamerTag to FUniqueNetIdRepl so that we can easily have a way of getting the gamertag from any ULocalPlayer object
-// 		// https://forums.unrealengine.com/t/how-to-pass-a-custom-uniqueid-into-prelogin-from-clienttravel/459527
-// 		// These should be in the lobby itself.
-//
-// 		// Lobby->AcceptUserIntoGameServerOperation(Options, Address, UniqueId, FBeamOperationEventHandlerCode::CreateLambda([Options, Address, UniqueId, OnComplete](FBeamOperationEvent Evt)
-// 		// {
-// 		// 	// If successful, just forward control back to the engine
-// 		// 	if (Evt.EventType == OET_SUCCESS)
-// 		// 	{				
-// 		// 		Super::PreLoginAsync(Options, Address, UniqueId, OnComplete);
-// 		// 	}
-// 		//
-// 		// 	// If failed, deny entry into the server.
-// 		// 	if (Evt.EventType == OET_ERROR)
-// 		// 	{
-// 		// 		OnComplete.ExecuteIfBound(Evt.EventCode);				
-// 		// 	}			
-// 		// }));
-// 	}
-// };
-
 
 /**
  * 
@@ -163,11 +87,13 @@ public:
 	/**
 	 * This ensures that the init flow only runs once per PIE run (even if you circle back to the starting map).
 	 */
-	bool bInitBeamPIERequested;
+	bool bInitBeamPIERequested = false;
 
 	TMap<FBeamPIE_UserSlotHandle, FDelegateHandle> LobbyJoinedHandles;
 	TMap<FBeamPIE_UserSlotHandle, FDelegateHandle> UserSlotAuthenticatedHandles;
 	TMap<FBeamPIE_UserSlotHandle, FBeamGamerTag> ServerGamerTags;
+
+	TMap<int32, FBeamOperationHandle> ClientDelayMapHandles;
 
 	/**
 	 * This is irrelevant on the client --- only matters in the server. 
@@ -193,6 +119,11 @@ public:
 	 */
 	int32 PreLoginExpectingPieIndex;
 
+	/**
+	 * This is irrelevant on the client --- only matters in the server. 
+	 */
+	int32 PreLoginExpectingUserSlotInPieIndex;
+
 #if WITH_EDITOR
 	FDelegateHandle StartPIEHandler;
 	FDelegateHandle OnInstancePreLoadMap;
@@ -209,7 +140,9 @@ public:
 
 		// Set the default settings
 		SelectedSettings = DefaultSettings();
-
+		PreLoginExpectingPieIndex = 1; // Starts at one because all PIE clients are instances 1~X.
+		PreLoginExpectingUserSlotInPieIndex = 0; // Starts at one because this indexes into UBeamCoreSettings::RuntimeUserSlots for each PreLoginExpectingPieIndex.
+		bInitBeamPIERequested = false;
 #if WITH_EDITOR
 
 		// This block of code only runs on separate-process-PIE-instances.
@@ -280,9 +213,10 @@ public:
 		// Today, we add a few arguments for when we run PIE on separate processes such that it can work with local microservices and BeamPIE.
 		StartPIEHandler = FEditorDelegates::StartPIE.AddLambda([this](const bool)
 		{
-		
+			bInitBeamPIERequested = false;
 			FakeLobbyId.Empty();
-			PreLoginExpectingPieIndex = 0;
+			PreLoginExpectingPieIndex = 1; // Starts at one because all PIE clients are instances 1~X.
+			PreLoginExpectingUserSlotInPieIndex = 0; // Starts at one because this indexes into UBeamCoreSettings::RuntimeUserSlots for each PreLoginExpectingPieIndex.
 
 			// Get the editor world so we can figure out what map is currently open (and, therefore, the map through which we are entering PIE).
 			UWorld* EditorWorld = GEditor->GetEditorWorldContext().World();
@@ -444,52 +378,96 @@ public:
 	}
 
 
-	// 	FString GetExpectedClientPIEOptions(FString Options)
-	// 	{
-	// #if !WITH_EDITOR		
-	// 		return Options;
-	// #endif
-	//
-	// 		const auto bHasGamerTag = UGameplayStatics::HasOption(Options, "BeamGamerTag_0");
-	// 		const auto bHasAccessToken = UGameplayStatics::HasOption(Options, "BeamAccessToken_0");
-	// 		const auto bHasRefreshToken = UGameplayStatics::HasOption(Options, "BeamRefreshToken_0");
-	// 		if (bHasGamerTag || bHasAccessToken || bHasRefreshToken)
-	// 			return Options;
-	// 			
-	// 		const auto CurrPieIdx = PreLoginExpectingPieIndex;
-	// 		FString NewOptions = Options;
-	//
-	// 		const auto CurrSettings = GetSelectedPIESettings();
-	// 		TArray<FUserSlot> OrderedSlots;
-	// 		for (const auto Kvp : CurrSettings->AssignedUsers)
-	// 		{
-	// 			if (Kvp.Key.PIEIndex == CurrPieIdx)
-	// 			{			
-	// 				
-	// 			}			
-	// 		}
-	//
-	//
-	// 		LocalPlayerCount += 1;
-	// 				
-	// 		FString NamespacedSlotId = UserSlots->GetNamespacedSlotId(Kvp.Key.Slot, CurrPieIdx);
-	// 		FUserSlotAuthData SlotSerializedAuthData;
-	// 		FUserSlotAccountData SlotSerializedAccountData;
-	// 		const auto Ret = UserSlots->TryLoadSavedUserAtNamespacedSlot(NamespacedSlotId, SlotSerializedAuthData, SlotSerializedAccountData);;
-	// 		if (Ret != UBeamUserSlots::LoadSavedUserResult_Failed)
-	// 		{
-	// 			const auto AccessToken = SlotSerializedAuthData.AccessToken;
-	// 			const auto RefreshToken = SlotSerializedAuthData.RefreshToken;
-	// 			const auto ExpiresIn = SlotSerializedAuthData.ExpiresIn;					
-	// 			const auto GamerTag = SlotSerializedAccountData.GamerTag;
-	//
-	// 			NewOptions += FString::Printf(TEXT("?BeamGamerTag_%d=%s"), GamerTag.AsLong, 
-	// 		}
-	// 		
-	//
-	// 		PreLoginExpectingPieIndex += 1;
-	// 		return NewOptions;		
-	// 	}
+	FString GetExpectedClientPIEOptions(FString Options, UObject* CallingContext)
+	{
+#if !WITH_EDITOR
+		return Options;
+#endif
+
+		const auto bHasGamerTag = UGameplayStatics::HasOption(Options, "BeamGamerTag_0");
+		const auto bHasAccessToken = UGameplayStatics::HasOption(Options, "BeamAccessToken_0");
+		const auto bHasRefreshToken = UGameplayStatics::HasOption(Options, "BeamRefreshToken_0");
+		if (bHasGamerTag || bHasAccessToken || bHasRefreshToken)
+			return Options;
+
+		// If we are not using a PIE setting, we should not be doing anything here.
+		const auto CurrSettings = GetSelectedPIESettings();		  
+		if (!CurrSettings)
+			return Options;
+		
+		// Get the world
+		const auto World = CallingContext->GetWorld();
+		ensureAlwaysMsgf(World, TEXT("You must provide a calling context with a valid World to this function!"));
+
+		// Get the world context.
+		const auto WorldContext = GEngine->GetWorldContextFromWorld(World);
+		ensureAlwaysMsgf(WorldContext, TEXT("You should never see this!"));
+
+		const auto GI = World->GetGameInstance();
+		ensureAlwaysMsgf(GI, TEXT("You should never see this!"));
+
+		const auto Lobby = GI->GetSubsystem<UBeamLobbySubsystem>();
+
+		const auto CurrPieIdx = PreLoginExpectingPieIndex;
+		const auto CurrSlotIdx = PreLoginExpectingUserSlotInPieIndex;		
+		
+		TArray<FUserSlot> OrderedSlots;
+		for (const auto& Kvp : CurrSettings->AssignedUsers)
+		{			
+			if (Kvp.Key.PIEIndex == CurrPieIdx)
+			{
+				OrderedSlots.Add(Kvp.Key.Slot);
+			}
+		}
+
+		// Order the slots as we expect them to arrive
+		const auto CoreSettings = GetDefault<UBeamCoreSettings>();
+		OrderedSlots.StableSort([CoreSettings](FUserSlot A, FUserSlot B)
+		{
+			const auto IdxA = CoreSettings->RuntimeUserSlots.Find(A.Name);
+			const auto IdxB = CoreSettings->RuntimeUserSlots.Find(A.Name);
+			return IdxA < IdxB;
+		});
+
+		const auto ExpectedSlot = OrderedSlots[PreLoginExpectingUserSlotInPieIndex];
+		FString NamespacedSlotId = UserSlots->GetNamespacedSlotId(ExpectedSlot, CurrPieIdx);
+
+		FUserSlotAuthData SlotSerializedAuthData;
+		FUserSlotAccountData SlotSerializedAccountData;
+		const auto Ret = UserSlots->TryLoadSavedUserAtNamespacedSlot(NamespacedSlotId, SlotSerializedAuthData, SlotSerializedAccountData);;
+
+		FString NewOption = {};
+		if (Ret != UBeamUserSlots::LoadSavedUserResult_Failed)
+		{
+			const auto AccessToken = SlotSerializedAuthData.AccessToken;
+			const auto RefreshToken = SlotSerializedAuthData.RefreshToken;
+			const auto ExpiresIn = SlotSerializedAuthData.ExpiresIn;
+			const auto GamerTag = SlotSerializedAccountData.GamerTag;
+
+			NewOption = Lobby->PrepareLoginOptionsFull(Options, AccessToken, RefreshToken, ExpiresIn, GamerTag, FString{});
+			if (CurrSlotIdx == OrderedSlots.Num() - 1)
+			{
+				PreLoginExpectingUserSlotInPieIndex = 0;
+				PreLoginExpectingPieIndex += 1;
+			}
+			else
+			{
+				PreLoginExpectingUserSlotInPieIndex += 1;
+			}
+		}
+		else
+		{
+			ensureAlwaysMsgf(false,
+			                 TEXT(
+				                 "You should never see this! If you do, something went wrong with the BeamPIE initialization. Please reproduce this with `log LogBeamPIE Verbose` to see more details about what might be the problem."
+			                 ));
+
+			// We'll exit PIE with this error
+			GI->GetEngine()->DeferredCommands.Add(TEXT("exit"));
+		}
+
+		return NewOption;
+	}
 	UFUNCTION(BlueprintCallable, meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
 	void BeamInitPIEGameplay(FString Options, UObject* CallingContext)
 	{
@@ -497,7 +475,7 @@ public:
 		auto GI = World->GetGameInstance();
 		UBeamRuntime* BeamRuntime = GI->GetSubsystem<UBeamRuntime>();
 		UBeamPIE* BeamPIE = GEngine->GetEngineSubsystem<UBeamPIE>();
-		if (BeamRuntime->IsGameServer() && BeamPIE->FakeLobbyId.IsEmpty())
+		if (BeamRuntime->IsGameServer() && BeamPIE->FakeLobbyId.IsEmpty() && !bInitBeamPIERequested)
 		{
 			FakeOptions = Options;
 			CachedLevel = UWorld::RemovePIEPrefix(World->GetWorld()->GetMapName());
@@ -510,7 +488,7 @@ public:
 	 * This function will initialize all the passed subsystems along with the user data
 	 */
 	UFUNCTION(BlueprintCallable, meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
-	FBeamOperationHandle BeamInitPIEGameplayOperation(FUserSlot UserSlot, UObject* CallingContext, FBeamOperationEventHandler OnOperationEvent)
+	FBeamOperationHandle BeamPIEPrepareFakeLobbyOperation(FUserSlot UserSlot, UObject* CallingContext, FBeamOperationEventHandler OnOperationEvent)
 	{
 		FBeamOperationHandle Op = RequestTracker->BeginOperation({}, CallingContext->GetName(), OnOperationEvent);
 		BeamPIEGamePlay(CallingContext, Op);
@@ -518,9 +496,9 @@ public:
 	}
 
 	/**
-	 * @copydoc BeamInitPIEGameplayOperation
+	 * @copydoc BeamPIEPrepareFakeLobbyOperation
 	 */
-	FBeamOperationHandle CPP_BeamInitPIEGameplayOperation(FUserSlot UserSlot, UObject* CallingContext, FBeamOperationEventHandlerCode OnOperationEvent)
+	FBeamOperationHandle CPP_BeamPIEPrepareFakeLobbyOperation(FUserSlot UserSlot, UObject* CallingContext, FBeamOperationEventHandlerCode OnOperationEvent)
 	{
 		FBeamOperationHandle Op = RequestTracker->CPP_BeginOperation({}, CallingContext->GetName(), OnOperationEvent);
 		BeamPIEGamePlay(CallingContext, Op);
@@ -601,7 +579,7 @@ public:
 			Started.BindLambda([this, WorldContext, Op]()
 			{
 				// Find the name of the current map and compare
-				UE_LOG(LogBeamEditor, Log, TEXT("%s Beamable SDK Initialized"), *GetLogArgs(TEXT("Beam PIE Init"), WorldContext));
+				UE_BEAM_LOG(WorldContext, LogBeamEditor, Log, TEXT(" Beamable SDK Initialized"));
 				BeamPreparePIE(WorldContext, Op);
 			});
 
@@ -720,6 +698,16 @@ public:
 				       *GetLogArgs(TEXT("Beam PIE Prepare"), WorldContext), *CurrSlotHandle.Slot.Name, CurrSlotHandle.PIEIndex);
 
 				Runtime->CPP_LoginFromCacheOperation(CurrSlotHandle.Slot, LoginLocalCacheHandler);
+
+				// This makes the lobby system initialize at the right
+				// time for when the user has their own LocalPlayer implementation using
+				// BeamPIE::GetGameLoginOptions.
+				{
+					FBeamRealmUser User;
+					UserSlots->GetUserDataAtSlot(CurrSlotHandle.Slot, User, GI);
+					auto LobbySubsystem = GI->GetSubsystem<UBeamLobbySubsystem>();
+					LobbySubsystem->InitializeLobbyInfoForSlot(CurrSlotHandle.Slot, User);
+				}
 			}
 		}
 		// If we are in the server... 
@@ -900,8 +888,12 @@ public:
 		if (Resp.State == RS_Success)
 		{
 			UE_LOG(LogBeamEditor, Log, TEXT("%s Server - Created Lobby."), *GetLogArgs(TEXT("Beam PIE Prepare"), WorldContext));
+
 			FakeLobbyId = Resp.SuccessData->LobbyId.Val;
-			RequestTracker->TriggerOperationSuccess(PrepareOp, TEXT(""));
+
+			const auto LobbySubsystem = WorldContext->World()->GetGameInstance()->GetSubsystem<UBeamLobbySubsystem>();
+			const auto ServerSlot = GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot();
+			LobbySubsystem->RegisterLobbyWithServer(ServerSlot, FGuid{FakeLobbyId}, PrepareOp);
 		}
 		else
 		{
@@ -1129,14 +1121,16 @@ public:
 							return;
 						}
 
-						// The server is creating the lobby and, once its done, this FakeLobbyId is set.
-						// This is only set by the server and never valid in the client.
+						// The server is creating the lobby and, once its done it'll register the created lobby with itself.						
 						// So... we wait for it and then trigger successfully.
-						Async(EAsyncExecution::Thread, [this, Op, CallingContext]()
+						Async(EAsyncExecution::Thread, [this, Op, World, CallingContext]()
 						{
-							while (FakeLobbyId.IsEmpty() && IsValidChecked(CallingContext))
+							ULobby* FoundLobby;
+							auto FoundLobbyInServer = World->GetGameInstance()->GetSubsystem<UBeamLobbySubsystem>()->TryGetLobbyById(FGuid{FakeLobbyId}, FoundLobby);
+							while (!FoundLobbyInServer && IsValidChecked(CallingContext))
 							{
 								FPlatformProcess::Sleep(0.1f);
+								FoundLobbyInServer = World->GetGameInstance()->GetSubsystem<UBeamLobbySubsystem>()->TryGetLobbyById(FGuid{FakeLobbyId}, FoundLobby);
 							}
 
 							AsyncTask(ENamedThreads::GameThread, [this, Op, CallingContext]()
@@ -1229,3 +1223,49 @@ public:
 		return TEXT("");
 	}
 };
+
+
+namespace BeamPIE
+{
+	inline void StartGameInstance(UGameInstance* This)
+	{
+#if !WITH_EDITOR
+		return;
+#endif
+		UE_LOG(LogBeamRuntime, Warning, TEXT("INIT PLAY IN EDITOR --- Is Server: %d"), This->IsDedicatedServerInstance());
+		auto BeamPIE = GEngine->GetEngineSubsystem<UBeamPIE>();
+		BeamPIE->CPP_BeamPreparePIEOperation(GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot(), This->GetWorld(), {});
+	}
+
+	inline void StartPlayInEditorGameInstance(UGameInstance* This, ULocalPlayer* LocalPlayer, const FGameInstancePIEParameters& Params)
+	{
+#if !WITH_EDITOR
+		return;
+#endif
+		UE_LOG(LogBeamRuntime, Warning, TEXT("INIT PLAY IN EDITOR (PIE) --- Is Server: %d"), This->IsDedicatedServerInstance());
+		auto BeamPie = GEngine->GetEngineSubsystem<UBeamPIE>();
+		BeamPie->CPP_BeamPreparePIEOperation(GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot(), This->GetWorld(), {});
+	}
+
+	inline bool DelayPendingNetGameTravel(UGameInstance* This)
+	{
+#if !WITH_EDITOR
+		return false;
+#endif
+
+		auto CoreSettings = GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot();
+		auto BeamPIE = GEngine->GetEngineSubsystem<UBeamPIE>();
+
+		const auto PieInstanceIdx = FBeamPIE_Utilities::GetPIEInstance(This->GetWorldContext());
+		if (!BeamPIE->ClientDelayMapHandles.Contains(PieInstanceIdx))
+		{
+			const auto Handle = BeamPIE->CPP_WaitForBeamPIEOperation(CoreSettings, This, {});
+			BeamPIE->ClientDelayMapHandles.Add(PieInstanceIdx, Handle);
+			return true;
+		}
+
+		const auto Handle = BeamPIE->ClientDelayMapHandles[PieInstanceIdx];
+		auto ReqTracker = GEngine->GetEngineSubsystem<UBeamRequestTracker>();
+		return ReqTracker->IsOperationActive(Handle);
+	}
+}
