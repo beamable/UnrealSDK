@@ -22,10 +22,10 @@ if [ -f "BeamProjOverride.txt" ]; then
     if [ -n "$content" ]; then
         projectId=$(echo "$content" | xargs)
     else
-        projectId="BEAMPROJ_Sandbox"
+        projectId="BEAMPROJ_Beamball"
     fi
 else
-    projectId="BEAMPROJ_Sandbox"
+    projectId="BEAMPROJ_Beamball"
 fi
 
 echo "$projectId" > BeamProjOverride.txt

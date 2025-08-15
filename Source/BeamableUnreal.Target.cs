@@ -26,7 +26,7 @@ public class BeamableUnrealTarget : TargetRules
 		var samplePluginName = GetCurrBeamProj(Target);
 		Console.WriteLine($"Configuring standalone project as beamproj={samplePluginName}.");
 
-		ConfigureIfSandbox(this, samplePluginName);
+		ConfigureIfBeamball(this, samplePluginName);
 		ConfigureIfLiveOpsDemo(this, samplePluginName);
 		ConfigureIfHathoraDemo(this, samplePluginName);
 		ConfigureIfSteamDemo(this, samplePluginName);
@@ -52,14 +52,14 @@ public class BeamableUnrealTarget : TargetRules
 			}
 		}
 
-		return kBeamProj_Sandbox;
+		return kBeamProj_Beamball;
 	}
+	
+	public const string kBeamProj_Beamball = "BEAMPROJ_Beamball";
 
-	public const string kBeamProj_Sandbox = "BEAMPROJ_Sandbox";
-
-	public static void ConfigureIfSandbox(TargetRules TargetRules, string beamProj)
+	public static void ConfigureIfBeamball(TargetRules TargetRules, string beamProj)
 	{
-		if (beamProj == kBeamProj_Sandbox)
+		if (beamProj == kBeamProj_Beamball)
 		{
 			var oss = Beam.OssConfig.Disabled();
 
@@ -81,7 +81,7 @@ public class BeamableUnrealTarget : TargetRules
 			}
 		}
 	}
-
+	
 	public const string kBeamProj_LiveOpsDemo = "BEAMPROJ_LiveOpsDemo";
 
 	public static void ConfigureIfLiveOpsDemo(TargetRules TargetRules, string beamProj)
