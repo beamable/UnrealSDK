@@ -57,10 +57,14 @@ public:
 	 */
 	static int32 GetPIEInstance(FWorldContext* WorldContext)
 	{
+		if (WorldContext == nullptr)
+		{
+			return -1;
+		}
 		int Instance;
 #if WITH_EDITOR
 		// If is running in the engine but in a different process
-		if ((WorldContext && WorldContext->WorldType == EWorldType::PIE || WorldContext->WorldType == EWorldType::Game))
+		if (WorldContext && (WorldContext->WorldType == EWorldType::PIE || WorldContext->WorldType == EWorldType::Game))
 		{
 			if (!GEngine->IsEditor() || (WorldContext->PIEInstance == 0 && !IsRunningOnServer(WorldContext->World())))
 			{
