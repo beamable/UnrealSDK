@@ -1215,16 +1215,16 @@ public:
 
 	// Game Server Utilities
 public:
-	UFUNCTION(BlueprintGetter)
+	UFUNCTION(BlueprintPure)
 	bool IsGameServer() const { return GetWorld()->GetNetMode() < NM_Client && GetWorld()->GetNetMode() != NM_Standalone; }
 
-	UFUNCTION(BlueprintGetter)
+	UFUNCTION(BlueprintPure)
 	bool IsDedicatedGameServer() const { return GetWorld()->IsNetMode(NM_DedicatedServer); }
 
-	UFUNCTION(BlueprintGetter)
+	UFUNCTION(BlueprintPure)
 	bool IsListenGameServer() const { return GetWorld()->IsNetMode(NM_ListenServer); }
 
-	UFUNCTION(BlueprintGetter)
+	UFUNCTION(BlueprintPure)
 	bool IsClient() const { return GetWorld()->IsNetMode(NM_Client); }
 
 

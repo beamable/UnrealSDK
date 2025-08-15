@@ -175,6 +175,20 @@ public:
 	FString FakeLobbyId = "";
 
 	/**
+	 * This is irrelevant on the client -- only matters in the server.
+	 * Keep the reference for the scene 
+	 */
+	FString CachedLevel = "";
+	
+	/**
+	 * This is irrelevant on the server -- only matters in the client.
+	 * Keep the reference for the fake options 
+	 */
+	FString FakeOptions = "";
+
+	FString const WaitRoomLevel = "L_Beamable_PIEWaitRoom";
+
+	/**
 	 * This is irrelevant on the client --- only matters in the server. 
 	 */
 	int32 PreLoginExpectingPieIndex;
@@ -203,6 +217,18 @@ public:
 		// We setup a delegate that will run before the separate process begins loading its starting map. 
 		OnInstancePreLoadMap = FCoreUObjectDelegates::PreLoadMap.AddLambda([this](FString MapName)
 		{
+			// Finally, we select the correct settings based on the initial map for the server and then clean up this delegate.
+			auto MapPath = UWorld::RemovePIEPrefix(MapName);
+			TArray<FString> MapPathSplit;
+			MapPath.ParseIntoArray(MapPathSplit, TEXT("/"));
+			FString MapNameWithoutPath = MapPathSplit[MapPathSplit.Num() - 1];
+
+			// Check if the current map is the temporary room if so we don't need to do nothing with the setup
+			if (WaitRoomLevel == MapNameWithoutPath)
+			{
+				return;
+			}
+			
 			UE_LOG(LogTemp, Display, TEXT("OnInstancePreLoadMap %s"), *MapName);
 			if (!GEngine->IsEditor())
 			{
@@ -239,15 +265,12 @@ public:
 				Backend->RealmSecret = Config->CurrRealmSecret;
 				Backend->SetRoutingKeyMap(Config->CurrRoutingKeyMap);
 
-				// Finally, we select the correct settings based on the initial map for the server and then clean up this delegate.
-				auto MapPath = UWorld::RemovePIEPrefix(MapName);
-				TArray<FString> MapPathSplit;
-				MapPath.ParseIntoArray(MapPathSplit, TEXT("/"));
+			
 
-				UE_LOG(LogTemp, Warning, TEXT("REMOVE PIE PREFIX: %s"), *MapPathSplit[MapPathSplit.Num() - 1]);
+				UE_LOG(LogTemp, Warning, TEXT("REMOVE PIE PREFIX: %s"), *MapNameWithoutPath);
 				UE_LOG(LogTemp, Warning, TEXT("MAP NAME: %s"), *MapName);
 
-				SelectedSettings = ChooseSelectedPIESettings(*MapPathSplit[MapPathSplit.Num() - 1]);
+				SelectedSettings = ChooseSelectedPIESettings(*MapNameWithoutPath);
 				FCoreUObjectDelegates::PreLoadMap.Remove(OnInstancePreLoadMap);
 			}
 		});
@@ -257,6 +280,7 @@ public:
 		// Today, we add a few arguments for when we run PIE on separate processes such that it can work with local microservices and BeamPIE.
 		StartPIEHandler = FEditorDelegates::StartPIE.AddLambda([this](const bool)
 		{
+		
 			FakeLobbyId.Empty();
 			PreLoginExpectingPieIndex = 0;
 
@@ -267,7 +291,7 @@ public:
 				UE_LOG(LogBeamEditor, Error, TEXT("Could not find the editor world context!"));
 				return;
 			}
-
+	
 			// Select the settings based on our current map.
 			const auto PIE = GEngine->GetEngineSubsystem<UBeamPIE>();
 			SelectedSettings = PIE->ChooseSelectedPIESettings(UWorld::RemovePIEPrefix(EditorWorld->GetMapName()));
@@ -420,52 +444,66 @@ public:
 	}
 
 
-// 	FString GetExpectedClientPIEOptions(FString Options)
-// 	{
-// #if !WITH_EDITOR		
-// 		return Options;
-// #endif
-//
-// 		const auto bHasGamerTag = UGameplayStatics::HasOption(Options, "BeamGamerTag_0");
-// 		const auto bHasAccessToken = UGameplayStatics::HasOption(Options, "BeamAccessToken_0");
-// 		const auto bHasRefreshToken = UGameplayStatics::HasOption(Options, "BeamRefreshToken_0");
-// 		if (bHasGamerTag || bHasAccessToken || bHasRefreshToken)
-// 			return Options;
-// 			
-// 		const auto CurrPieIdx = PreLoginExpectingPieIndex;
-// 		FString NewOptions = Options;
-//
-// 		const auto CurrSettings = GetSelectedPIESettings();
-// 		TArray<FUserSlot> OrderedSlots;
-// 		for (const auto Kvp : CurrSettings->AssignedUsers)
-// 		{
-// 			if (Kvp.Key.PIEIndex == CurrPieIdx)
-// 			{			
-// 				
-// 			}			
-// 		}
-//
-//
-// 		LocalPlayerCount += 1;
-// 				
-// 		FString NamespacedSlotId = UserSlots->GetNamespacedSlotId(Kvp.Key.Slot, CurrPieIdx);
-// 		FUserSlotAuthData SlotSerializedAuthData;
-// 		FUserSlotAccountData SlotSerializedAccountData;
-// 		const auto Ret = UserSlots->TryLoadSavedUserAtNamespacedSlot(NamespacedSlotId, SlotSerializedAuthData, SlotSerializedAccountData);;
-// 		if (Ret != UBeamUserSlots::LoadSavedUserResult_Failed)
-// 		{
-// 			const auto AccessToken = SlotSerializedAuthData.AccessToken;
-// 			const auto RefreshToken = SlotSerializedAuthData.RefreshToken;
-// 			const auto ExpiresIn = SlotSerializedAuthData.ExpiresIn;					
-// 			const auto GamerTag = SlotSerializedAccountData.GamerTag;
-//
-// 			NewOptions += FString::Printf(TEXT("?BeamGamerTag_%d=%s"), GamerTag.AsLong, 
-// 		}
-// 		
-//
-// 		PreLoginExpectingPieIndex += 1;
-// 		return NewOptions;		
-// 	}
+	// 	FString GetExpectedClientPIEOptions(FString Options)
+	// 	{
+	// #if !WITH_EDITOR		
+	// 		return Options;
+	// #endif
+	//
+	// 		const auto bHasGamerTag = UGameplayStatics::HasOption(Options, "BeamGamerTag_0");
+	// 		const auto bHasAccessToken = UGameplayStatics::HasOption(Options, "BeamAccessToken_0");
+	// 		const auto bHasRefreshToken = UGameplayStatics::HasOption(Options, "BeamRefreshToken_0");
+	// 		if (bHasGamerTag || bHasAccessToken || bHasRefreshToken)
+	// 			return Options;
+	// 			
+	// 		const auto CurrPieIdx = PreLoginExpectingPieIndex;
+	// 		FString NewOptions = Options;
+	//
+	// 		const auto CurrSettings = GetSelectedPIESettings();
+	// 		TArray<FUserSlot> OrderedSlots;
+	// 		for (const auto Kvp : CurrSettings->AssignedUsers)
+	// 		{
+	// 			if (Kvp.Key.PIEIndex == CurrPieIdx)
+	// 			{			
+	// 				
+	// 			}			
+	// 		}
+	//
+	//
+	// 		LocalPlayerCount += 1;
+	// 				
+	// 		FString NamespacedSlotId = UserSlots->GetNamespacedSlotId(Kvp.Key.Slot, CurrPieIdx);
+	// 		FUserSlotAuthData SlotSerializedAuthData;
+	// 		FUserSlotAccountData SlotSerializedAccountData;
+	// 		const auto Ret = UserSlots->TryLoadSavedUserAtNamespacedSlot(NamespacedSlotId, SlotSerializedAuthData, SlotSerializedAccountData);;
+	// 		if (Ret != UBeamUserSlots::LoadSavedUserResult_Failed)
+	// 		{
+	// 			const auto AccessToken = SlotSerializedAuthData.AccessToken;
+	// 			const auto RefreshToken = SlotSerializedAuthData.RefreshToken;
+	// 			const auto ExpiresIn = SlotSerializedAuthData.ExpiresIn;					
+	// 			const auto GamerTag = SlotSerializedAccountData.GamerTag;
+	//
+	// 			NewOptions += FString::Printf(TEXT("?BeamGamerTag_%d=%s"), GamerTag.AsLong, 
+	// 		}
+	// 		
+	//
+	// 		PreLoginExpectingPieIndex += 1;
+	// 		return NewOptions;		
+	// 	}
+	UFUNCTION(BlueprintCallable, meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
+	void BeamInitPIEGameplay(FString Options, UObject* CallingContext)
+	{
+		UWorld* World = CallingContext->GetWorld();
+		auto GI = World->GetGameInstance();
+		UBeamRuntime* BeamRuntime = GI->GetSubsystem<UBeamRuntime>();
+		UBeamPIE* BeamPIE = GEngine->GetEngineSubsystem<UBeamPIE>();
+		if (BeamRuntime->IsGameServer() && BeamPIE->FakeLobbyId.IsEmpty())
+		{
+			FakeOptions = Options;
+			CachedLevel = UWorld::RemovePIEPrefix(World->GetWorld()->GetMapName());
+			World->ServerTravel(WaitRoomLevel);
+		}
+	}
 
 	/**
 	 * @brief Call this function if you want to initialize a subsystem that was set to manually initialize from the project settings.
@@ -475,7 +513,7 @@ public:
 	FBeamOperationHandle BeamInitPIEGameplayOperation(FUserSlot UserSlot, UObject* CallingContext, FBeamOperationEventHandler OnOperationEvent)
 	{
 		FBeamOperationHandle Op = RequestTracker->BeginOperation({}, CallingContext->GetName(), OnOperationEvent);
-		// TODO: Make Magical Operation
+		BeamPIEGamePlay(CallingContext, Op);
 		return Op;
 	}
 
@@ -485,7 +523,7 @@ public:
 	FBeamOperationHandle CPP_BeamInitPIEGameplayOperation(FUserSlot UserSlot, UObject* CallingContext, FBeamOperationEventHandlerCode OnOperationEvent)
 	{
 		FBeamOperationHandle Op = RequestTracker->CPP_BeginOperation({}, CallingContext->GetName(), OnOperationEvent);
-		// TODO: Make Magical Operation
+		BeamPIEGamePlay(CallingContext, Op);
 		return Op;
 	}
 
@@ -510,10 +548,10 @@ public:
 		BeamInitPIE(CallingContext, Op);
 		return Op;
 	}
-	
+
 	/**
 	 * @brief Call this function if you want run code AFTER the BeamPIE initialization has finished.
-	 */	
+	 */
 	FBeamOperationHandle CPP_WaitForBeamPIEOperation(FUserSlot UserSlot, UObject* CallingContext, FBeamOperationEventHandlerCode OnOperationEvent)
 	{
 		FBeamOperationHandle Op = RequestTracker->CPP_BeginOperation({}, CallingContext->GetName(), OnOperationEvent);
@@ -549,7 +587,7 @@ public:
 
 		// We only run this once per-PIE-Instance-Session (this is here since people might loop back around within a single PIE session --- in which case this should not run).
 		bInitBeamPIERequested = true;
-		
+
 		const auto GI = World->GetGameInstance();
 		ensureAlwaysMsgf(GI, TEXT("You should never see this!"));
 
@@ -810,7 +848,7 @@ public:
 						else
 						{
 							// TODO: Listen server case...
-						}						
+						}
 
 						UE_LOG(LogBeamEditor, Log, TEXT("%s Server - Trying to Create the Fake Lobby"), *GetLogArgs(TEXT("Beam PIE Prepare"), WorldContext));
 						auto Req = NewObject<UPutLobbiesRequest>();
@@ -828,6 +866,29 @@ public:
 				return !bAreAllUsersReady;
 			}), 0.2f);
 		}
+	}
+
+	void BeamPIEGamePlay(UObject* CallingContext, FBeamOperationHandle Op)
+	{
+		auto BeamPIE = GEngine->GetEngineSubsystem<UBeamPIE>();
+		UWorld* World = CallingContext->GetWorld();
+		auto GI = World->GetGameInstance();
+		UBeamRuntime* BeamRuntime = GI->GetSubsystem<UBeamRuntime>();
+		
+		auto InitHandler = FBeamOperationEventHandlerCode::CreateLambda([CallingContext, this, BeamRuntime](const FBeamOperationEvent& Event)
+		{
+			if (BeamRuntime->IsGameServer())
+			{
+				FString LevelToReload = CachedLevel;
+				if (!FakeOptions.IsEmpty())
+				{
+					LevelToReload += "?"+FakeOptions;
+				}
+				CallingContext->GetWorld()->ServerTravel(LevelToReload);
+			}
+		});
+
+		BeamPIE->CPP_BeamPreparePIEOperation(GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot(), CallingContext, InitHandler);
 	}
 
 	void PIEServerCreateLobbyHandler(FPutLobbiesFullResponse Resp, FWorldContext* WorldContext, UPutLobbiesRequest* Req, TArray<FBeamPIE_UserSlotHandle> PossibleSlotHandles, FBeamOperationHandle PrepareOp)
