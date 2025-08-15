@@ -119,7 +119,7 @@ FString UBeamProjSyncSubsystem::GetActiveBeamProj() const
 		}
 	}
 
-	return KBeamProj_Sandbox;
+	return KBeamProj_Beamball;
 }
 
 void UBeamProjSyncSubsystem::ApplyProjectOverrides(const FString& BeamProj) const

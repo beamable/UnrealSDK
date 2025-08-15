@@ -14,8 +14,8 @@
  * This is true for the directories in the OverridenDirectories list.
  *
  * Practically this means that:
- *  - If your project is set to BEAMPROJ_Sandbox, the Config and .beamable/content folders will be mirrored to what's in the Plugins/BEAMPROJ_Sandbox/Overrides directories.
- *  - If your project is set to BEAMPROJ_HathoraDemo, the Config and .beamable/content folders will be mirrored to what's in the Plugins/BEAMPROJ_HathoraDemo/Overrides directories.
+ *  - If your project is set to BEAMPROJ_Beamball, the Config folders will be mirrored to what's in the Plugins/BEAMPROJ_Beamball/Overrides directories.
+ *  - If your project is set to BEAMPROJ_HathoraDemo, the Config folders will be mirrored to what's in the Plugins/BEAMPROJ_HathoraDemo/Overrides directories.
  *
  * For all intents and purposes, this makes it so that we effectively have "N- Unreal projects" inside this repo.
  * For more information on how this is applied, go look at BeamableUnreal.Target.cs's variours ConfigureIf functions.
@@ -36,7 +36,7 @@ public:
 private:
 	inline static TArray<FString> OverridenDirectories = {TEXT("Config"), TEXT(".beamable")};
 	inline static TArray<FDelegateHandle> OverridenDirectoriesHandlers = {{}, {}};
-	inline static FString KBeamProj_Sandbox = "BEAMPROJ_Sandbox";
+	inline static FString KBeamProj_Beamball = "BEAMPROJ_Beamball";
 
 	UPROPERTY()
 	UBeamEditorContent* EditorContent;
