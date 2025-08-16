@@ -627,6 +627,17 @@ public:
 	 */
 	FBeamOperationHandle CPP_ProvisionGameServerForLobbyOperation(FUserSlot UserSlot, FOptionalBeamContentId NewGameType, FBeamOperationEventHandlerCode OnOperationEvent);
 
+	/**
+	 * @brief From a dedicated server OR if you are the lobby host, you can update the global data when you are inside the lobby.
+	 */
+	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Lobby")
+	FBeamOperationHandle UpdateGlobalDataOperation(FUserSlot UserSlot, const FGuid& LobbyId, TMap<FString, FString> ToUpdate, TArray<FString> ToDelete, FBeamOperationEventHandler OnOperationEvent);
+
+	/**
+	 * @copydoc UpdateGlobalDataOperation 
+	 */
+	FBeamOperationHandle CPP_UpdateGlobalDataOperation(FUserSlot UserSlot, const FGuid& LobbyId, TMap<FString, FString> ToUpdate, TArray<FString> ToDelete, FBeamOperationEventHandlerCode OnOperationEvent);
+
 	// OPERATIONS - Dedicated Server
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Lobby", meta=(AutoCreateRefTerm="NewGameType"))
 	FBeamOperationHandle RegisterLobbyWithServerOperation(FUserSlot UserSlot, const FGuid& LobbyId, FBeamOperationEventHandler OnOperationEvent);
@@ -655,14 +666,14 @@ private:
 	void JoinLobbyByPasscode(FUserSlot UserSlot, FString Passcode, TArray<FBeamTag> PlayerTags = {}, FBeamOperationHandle Op = {});
 	void LeaveLobby(FUserSlot UserSlot, FBeamOperationHandle Op);
 	void KickPlayer(FUserSlot UserSlot, FBeamGamerTag Player, FBeamOperationHandle Op);
-	void CommitLobbyUpdate(const FUserSlot& Slot, FBeamOperationHandle Op);
+	void CommitLobbyUpdate(const FUserSlot& Slot, FBeamOperationHandle Op);	
 	void UpdatePlayerTags(const FUserSlot& Slot, FBeamGamerTag TargetPlayer, TArray<FBeamTag> Tags, bool bShouldReplaceRepeatedTags, FBeamOperationHandle Op);
 	void DeletePlayerTags(const FUserSlot& Slot, FBeamGamerTag TargetPlayer, TArray<FBeamTag> Tags, FBeamOperationHandle Op);
 	void ProvisionGameServerForLobby(const FUserSlot& Slot, FOptionalBeamContentId NewGameContent, FBeamOperationHandle Op);
+	void UpdateGlobalData(FUserSlot Slot, const FGuid& LobbyId, TMap<FString, FString> ToUpdate, TArray<FString> ToDelete, FBeamOperationHandle Op);
 
 	// Dedicated Server API
-	void RegisterLobbyWithServer(const FUserSlot& Slot, const FGuid& LobbyId, FBeamOperationHandle Op);
-	void NotifyLobbyReadyForClients(const FUserSlot& Slot, const FGuid& LobbyId, FBeamOperationHandle Op);
+	void RegisterLobbyWithServer(const FUserSlot& Slot, const FGuid& LobbyId, FBeamOperationHandle Op);	
 	void AcceptUserIntoGameServer(const FUserSlot& Slot, const FString& Options, const FString& Address, const FUniqueNetIdRepl& UniqueId, FBeamOperationHandle Op);
 
 	// Request Helper Functions

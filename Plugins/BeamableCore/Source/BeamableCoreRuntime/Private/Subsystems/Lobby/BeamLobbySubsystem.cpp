@@ -22,7 +22,7 @@ void UBeamLobbySubsystem::Initialize(FSubsystemCollectionBase& Collection)
 	for (FString RuntimeUserSlot : GetDefault<UBeamCoreSettings>()->RuntimeUserSlots)
 	{
 		// This just creates the objects for every slot.
-		InitializeLobbyInfoForSlot(RuntimeUserSlot, {});			
+		InitializeLobbyInfoForSlot(RuntimeUserSlot, {});
 	}
 }
 
@@ -848,6 +848,37 @@ FBeamOperationHandle UBeamLobbySubsystem::CPP_ProvisionGameServerForLobbyOperati
 	return Handle;
 }
 
+FBeamOperationHandle UBeamLobbySubsystem::UpdateGlobalDataOperation(FUserSlot UserSlot, const FGuid& LobbyId, TMap<FString, FString> ToUpdate, TArray<FString> ToDelete, FBeamOperationEventHandler OnOperationEvent)
+{
+	const auto Handle = Runtime->RequestTrackerSystem->BeginOperation({UserSlot}, GetClass()->GetFName().ToString(), OnOperationEvent);
+	FBeamRealmUser SlotUser;
+	if (UserSlots->GetUserDataAtSlot(UserSlot, SlotUser, this))
+	{
+		UpdateGlobalData(UserSlot, LobbyId, ToUpdate, ToDelete, Handle);
+	}
+	else
+	{
+		RequestTracker->TriggerOperationError(Handle, FString("NOT_SIGNED_IN"));
+	}
+	return Handle;
+}
+
+FBeamOperationHandle UBeamLobbySubsystem::CPP_UpdateGlobalDataOperation(FUserSlot UserSlot, const FGuid& LobbyId, TMap<FString, FString> ToUpdate, TArray<FString> ToDelete,
+                                                                        FBeamOperationEventHandlerCode OnOperationEvent)
+{
+	const auto Handle = Runtime->RequestTrackerSystem->CPP_BeginOperation({UserSlot}, GetClass()->GetFName().ToString(), OnOperationEvent);
+	FBeamRealmUser SlotUser;
+	if (UserSlots->GetUserDataAtSlot(UserSlot, SlotUser, this))
+	{
+		UpdateGlobalData(UserSlot, LobbyId, ToUpdate, ToDelete, Handle);
+	}
+	else
+	{
+		RequestTracker->TriggerOperationError(Handle, FString("NOT_SIGNED_IN"));
+	}
+	return Handle;
+}
+
 // Dedicated Server Operations API
 FBeamOperationHandle UBeamLobbySubsystem::RegisterLobbyWithServerOperation(FUserSlot UserSlot, const FGuid& LobbyId, FBeamOperationEventHandler OnOperationEvent)
 {
@@ -866,14 +897,16 @@ FBeamOperationHandle UBeamLobbySubsystem::CPP_RegisterLobbyWithServerOperation(F
 FBeamOperationHandle UBeamLobbySubsystem::NotifyLobbyReadyForClientsOperation(FUserSlot UserSlot, const FGuid& LobbyId, FBeamOperationEventHandler OnOperationEvent)
 {
 	const auto Handle = Runtime->RequestTrackerSystem->BeginOperation({UserSlot}, GetClass()->GetFName().ToString(), OnOperationEvent);
-	NotifyLobbyReadyForClients(UserSlot, LobbyId, Handle);
+	ensureAlwaysMsgf(Runtime->IsDedicatedGameServer(), TEXT("This can only be run from inside a dedicated server!"));
+	UpdateGlobalData(UserSlot, LobbyId, TMap<FString, FString>{{Reserved_Game_Server_Ready_Property, TEXT("true")}}, {}, Handle);
 	return Handle;
 }
 
 FBeamOperationHandle UBeamLobbySubsystem::CPP_NotifyLobbyReadyForClientsOperation(FUserSlot UserSlot, const FGuid& LobbyId, FBeamOperationEventHandlerCode OnOperationEvent)
 {
 	const auto Handle = Runtime->RequestTrackerSystem->CPP_BeginOperation({UserSlot}, GetClass()->GetFName().ToString(), OnOperationEvent);
-	NotifyLobbyReadyForClients(UserSlot, LobbyId, Handle);
+	ensureAlwaysMsgf(Runtime->IsDedicatedGameServer(), TEXT("This can only be run from inside a dedicated server!"));
+	UpdateGlobalData(UserSlot, LobbyId, TMap<FString, FString>{{Reserved_Game_Server_Ready_Property, TEXT("true")}}, {}, Handle);
 	return Handle;
 }
 
@@ -1428,13 +1461,91 @@ void UBeamLobbySubsystem::ProvisionGameServerForLobby(const FUserSlot& Slot, FOp
 	auto _ = RequestPostServer(Slot, LobbyState->LobbyId, NewGameContent, Op, Handler);
 }
 
+void UBeamLobbySubsystem::UpdateGlobalData(const FUserSlot Slot, const FGuid& LobbyId, TMap<FString, FString> ToUpdate, TArray<FString> ToDelete, FBeamOperationHandle Op)
+{
+	ULobby* Lobby;
+	if (!TryGetLobbyById(LobbyId, Lobby))
+	{
+		RequestTracker->TriggerOperationError(Op, TEXT("FAILED_TO_FETCH_LOBBY_DATA"));
+		return;
+	}
+
+	if (!Runtime->IsDedicatedGameServer())
+	{
+		UBeamLobbyState* LobbyState;
+		if (!GuardSlotIsInLobby(Slot, LobbyState))
+		{
+			RequestTracker->TriggerOperationError(Op, FString("NOT_IN_LOBBY"));
+			return;
+		}
+
+		// If we are not the owner, we can only change our own tags.
+		if (!GuardIsLobbyOwner(Slot, LobbyState))
+		{
+			RequestTracker->TriggerOperationError(Op, FString("NOT_LOBBY_OWNER"));
+			return;
+		}
+	}
+
+	const auto GlobalDataUpdates = FOptionalMapOfString{ToUpdate};
+	const auto GlobalDataDeletes = FOptionalArrayOfString{ToDelete};
+
+	const auto Handler = FOnApiLobbyPutMetadataByIdFullResponse::CreateLambda([this, Slot, Op, LobbyId, GlobalDataUpdates, GlobalDataDeletes](FApiLobbyPutMetadataByIdFullResponse Resp)
+	{
+		// If we are invoking this before retrying, we just don't do anything 
+		if (Resp.State == RS_Retrying) return;
+
+		if (Resp.State != RS_Success)
+		{
+			RequestTracker->TriggerOperationError(Op, Resp.ErrorData.message);
+			return;
+		}
+
+		ReplaceOrAddKnownLobbyData(Resp.SuccessData);
+
+		auto AddedOrUpdatedGlobalDataLog = FString("");
+		auto RemovedGlobalDataLog = FString("");
+
+		if (GlobalDataUpdates.IsSet)
+		{
+			for (auto Val : GlobalDataUpdates.Val)
+				AddedOrUpdatedGlobalDataLog += FString::Printf(TEXT("(%s,%s), "), *Val.Key, *Val.Value);
+		}
+
+		if (GlobalDataDeletes.IsSet)
+		{
+			for (auto Val : GlobalDataDeletes.Val)
+				RemovedGlobalDataLog += FString::Printf(TEXT("%s, "), *Val);
+		}
+
+		RequestTracker->TriggerOperationSuccess(Op, LobbyId.ToString(EGuidFormats::DigitsWithHyphensLower));
+
+		UE_LOG(LogBeamLobby, Verbose, TEXT("Successfully updated data for the lobby. LOBBY_ID=%s,GLOBAL_DATA_ADDED=%s,GLOBAL_DATA_REMOVED=%s"),
+		       *Resp.SuccessData->LobbyId.Val,
+		       *AddedOrUpdatedGlobalDataLog,
+		       *RemovedGlobalDataLog)
+	});
+	auto _ = RequestUpdateLobbyMetadata(Slot, LobbyId,
+	                                    FOptionalString{},
+	                                    FOptionalString{},
+	                                    FOptionalLobbyRestriction{},
+	                                    FOptionalBeamContentId{},
+	                                    FOptionalBeamGamerTag{},
+	                                    FOptionalInt32{},
+	                                    GlobalDataUpdates,
+	                                    GlobalDataDeletes,
+	                                    Op,
+	                                    Handler);
+}
+
+
 // Dedicated Server API
 void UBeamLobbySubsystem::RegisterLobbyWithServer(const FUserSlot& Slot, const FGuid& LobbyId, FBeamOperationHandle Op)
 {
 	ensureAlwaysMsgf(Runtime->IsDedicatedGameServer(), TEXT("This can only be run from inside a dedicated server!"));
 
 	// We start by fetching the lobby...
-	const auto Handler = FBeamOperationEventHandlerCode::CreateLambda([this, Op, LobbyId](FBeamOperationEvent Evt)
+	const auto Handler = FBeamOperationEventHandlerCode::CreateLambda([this, Slot, Op, LobbyId](FBeamOperationEvent Evt)
 	{
 		// If we failed to fetch the lobby, fail to register it.
 		if (!Evt.CompletedWithSuccess())
@@ -1443,44 +1554,9 @@ void UBeamLobbySubsystem::RegisterLobbyWithServer(const FUserSlot& Slot, const F
 			return;
 		}
 
-		// TODO: Expose hook at the last mile of this process, after hook redesign.
-
-		// TODO: Once we integrate DedicatedServer notifications this register will have to happen in the call to Register Unsafe call here and that needs to be turned into an operation.
-		// const auto ServerSlot = GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot();
-		//
-		// FDelegateHandle NotificationHandler;
-		// FOnLobbyUpdateNotificationCode GamerServerLobbyNotificationHandler = FOnLobbyUpdateNotificationCode::CreateLambda(
-		// 	[this, ServerSlot, Op, LobbyId, &NotificationHandler](const FLobbyUpdateNotificationMessage& Message)
-		// 	{
-		// 		if (Message.LobbyId == LobbyId)
-		// 		{
-		// 			RequestTracker->TriggerOperationSuccess(Op, TEXT(""));
-		// 			LobbyNotification->CPP_UnsubscribeToLobbyUpdate(ServerSlot, Runtime->DefaultNotificationChannel, NotificationHandler, this);
-		// 		}
-		// 	});
-		//
-		// NotificationHandler = LobbyNotification->CPP_SubscribeToLobbyUpdate(ServerSlot, Runtime->DefaultNotificationChannel, GamerServerLobbyNotificationHandler, this);
-
-		// For now, we just complete the op successfully after we fetch it.
 		RequestTracker->TriggerOperationSuccess(Op, TEXT(""));
 	});
 	CPP_RefreshLobbyDataOperation(Slot, Handler, LobbyId);
-}
-
-void UBeamLobbySubsystem::NotifyLobbyReadyForClients(const FUserSlot& Slot, const FGuid& LobbyId, FBeamOperationHandle Op)
-{
-	ensureAlwaysMsgf(Runtime->IsDedicatedGameServer(), TEXT("This can only be run from inside a dedicated server!"));
-	RequestUpdateLobbyMetadata(Slot, LobbyId, FOptionalString{}, FOptionalString{}, FOptionalLobbyRestriction{}, FOptionalBeamContentId{}, FOptionalBeamGamerTag{},
-	                           FOptionalInt32{}, FOptionalMapOfString{TMap<FString, FString>{{Reserved_Game_Server_Ready_Property, TEXT("true")}}}, FOptionalArrayOfString{}, Op,
-	                           FOnApiLobbyPutMetadataByIdFullResponse::CreateLambda([this, Op](FApiLobbyPutMetadataByIdFullResponse Resp)
-	                           {
-		                           if (Resp.State != RS_Success)
-		                           {
-			                           RequestTracker->TriggerOperationError(Op, TEXT(""));
-			                           return;
-		                           }
-		                           RequestTracker->TriggerOperationSuccess(Op, TEXT(""));
-	                           }));
 }
 
 void UBeamLobbySubsystem::AcceptUserIntoGameServer(const FUserSlot& Slot, const FString& Options, const FString& Address, const FUniqueNetIdRepl& UniqueId, FBeamOperationHandle Op)

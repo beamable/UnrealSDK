@@ -278,6 +278,16 @@ class BEAMABLECORERUNTIME_API UBeamRuntime : public UGameInstanceSubsystem
 
 	GENERATED_BODY()
 
+
+	UFUNCTION(BlueprintPure)
+	FString PrintIsso(const FUniqueNetIdRepl& Repl)
+	{
+		if (Repl.IsValid())
+			return Repl.GetUniqueNetId().Get()->ToString();
+
+		return FString(TEXT("BUGADO"));
+	}
+	
 	/** @brief Initializes the subsystem.  */
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 

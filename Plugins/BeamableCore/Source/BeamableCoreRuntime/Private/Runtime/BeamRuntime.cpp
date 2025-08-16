@@ -6,11 +6,13 @@
 #include "HttpModule.h"
 
 #include "BeamLogging.h"
+#include "OnlineSubsystemTypes.h"
 #include "AutoGen/SubSystems/BeamRealmsApi.h"
 #include "AutoGen/SubSystems/Realms/GetClientDefaultsRequest.h"
 #include "BeamNotifications/BeamNotifications.h"
 #include "GenericPlatform/GenericPlatformHttp.h"
 #include "Kismet/GameplayStatics.h"
+#include "PIE/BeamPIE_Utilities.h"
 #include "Runtime/BeamRuntimeSubsystem.h"
 #include "Subsystems/Content/BeamContentSubsystem.h"
 
@@ -62,6 +64,17 @@ void UBeamConnectivityManager::ConnectionHandler(const FNotificationEvent& Evt, 
 			{
 				UserSlots->SaveSlot(UserSlot, this);
 				UserSlots->TriggerUserAuthenticatedIntoSlot(UserSlot, Op, this);
+
+				// If we are mapping the UniqueNetIds to Beamable GamerTags, we do so whenever we log in (mapping done implicitly by order of UBeamCoreSettings::RuntimeUserSlots).
+				if (GetDefault<UBeamRuntimeSettings>()->bUseBeamableGamerTagsAsUniqueNetIds)
+				{
+					auto LocalPlayerForSlot = Runtime->GetLocalPlayerForSlot(UserSlot);
+					FBeamGamerTag GamerTag;
+					Runtime->TryGetSlotGamerTag(UserSlot, GamerTag);
+					auto UnitNetId = FUniqueNetIdString::Create(GamerTag.AsString, NAME_None);
+					FUniqueNetIdRepl UniqueNetRepl(UnitNetId.Get());
+					LocalPlayerForSlot->SetCachedUniqueNetId(UniqueNetRepl);
+				}
 			}
 		}
 		// This only runs during reconnection...
@@ -174,6 +187,32 @@ void UBeamRuntime::Initialize(FSubsystemCollectionBase& Collection)
 	Super::Initialize(Collection);
 	CurrentSdkState = NotInitialized;
 	AutomaticallyInitializedSubsystems = {};
+
+	GetGameInstance()->OnLocalPlayerAddedEvent.AddLambda([this](ULocalPlayer* Lp)
+	{
+		// If we are mapping the UniqueNetIds to Beamable GamerTags, we do so whenever we log in (mapping done implicitly by order of UBeamCoreSettings::RuntimeUserSlots).
+		if (GetDefault<UBeamRuntimeSettings>()->bUseBeamableGamerTagsAsUniqueNetIds)
+		{
+			const auto LpIdx = Lp->GetLocalPlayerIndex();
+
+			// Make sure the user correctly configured beamable to support multiple local players.
+			if (!ensureAlwaysMsgf(LpIdx < GetDefault<UBeamCoreSettings>()->RuntimeUserSlots.Num(),
+			                      TEXT("You have more spawned LocalPlayers than configured in UBeamCoreSettings::RuntimeSlots")))
+			{
+				return;
+			}
+
+			// If that slot is already signed in, we set the unique id as the gamertag.
+			const auto PairedSlot = GetDefault<UBeamCoreSettings>()->RuntimeUserSlots[LpIdx];
+			FBeamGamerTag GamerTag;
+			if (TryGetSlotGamerTag(PairedSlot, GamerTag))
+			{
+				auto UnitNetId = FUniqueNetIdString::Create(GamerTag.AsString, NAME_None);
+				FUniqueNetIdRepl UniqueNetRepl(UnitNetId.Get());
+				Lp->SetCachedUniqueNetId(UniqueNetRepl);
+			}
+		}
+	});
 
 	// We do some initialization for dedicated servers... 
 	if (GetGameInstance()->IsDedicatedServerInstance())
@@ -1496,7 +1535,8 @@ FBeamOperationHandle UBeamRuntime::CPP_LogoutOperation(FUserSlot UserSlot, EUser
 FUniqueNetIdRepl UBeamRuntime::GetUniqueNetIdForSlot(FUserSlot Slot)
 {
 	if (const auto& LocalPlayer = GetLocalPlayerForSlot(Slot))
-		return LocalPlayer->GetUniqueNetIdForPlatformUser();
+		return LocalPlayer->GetPreferredUniqueNetId();
+
 	return FUniqueNetIdRepl::Invalid();
 }
 
@@ -1509,32 +1549,13 @@ APlayerController* UBeamRuntime::GetPlayerControllerForSlot(FUserSlot Slot)
 
 ULocalPlayer* UBeamRuntime::GetLocalPlayerForSlot(FUserSlot Slot)
 {
-	const auto MappedIdx = UserSlotSystem->GetKnownSlots().Find(Slot);
-	if (MappedIdx != INDEX_NONE)
+	if (ensureAlwaysMsgf(IsClient(), TEXT("Not supported in the server. Please use GetUserSlotByUniqueId or GetUserSlotByPlayerController")))
 	{
-		if (const auto& LocalPlayer = GetGameInstance()->GetLocalPlayerByIndex(MappedIdx))
-			return LocalPlayer;
-	}
-	else if (Slot.IsTestSlot())
-	{
-		// In test slots, you can add a "_Local_NUM" to map it to a local player
-		if (Slot.Name.Contains("_Local"))
+		const auto MappedIdx = GetDefault<UBeamCoreSettings>()->RuntimeUserSlots.Find(Slot.Name);
+		if (ensureAlwaysMsgf(MappedIdx != INDEX_NONE, TEXT("On clients, Local Players must mirror RuntimeUserSlots. PLAYER_IDX=%d"), MappedIdx))
 		{
-			const auto LocalStartIdx = Slot.Name.Find(TEXT("Local"));
-			const auto Local = Slot.Name.RightChop(LocalStartIdx);
-
-			TArray<FString> LocalArr;
-			Local.ParseIntoArray(LocalArr, TEXT("_"));
-			if (LocalArr.Num() >= 2)
-			{
-				const auto LocalIdxStr = LocalArr[1];
-				int32 LocalIdx;
-				if (FDefaultValueHelper::ParseInt(LocalIdxStr, LocalIdx))
-				{
-					if (const auto& LocalPlayer = GetGameInstance()->GetLocalPlayerByIndex(LocalIdx))
-						return LocalPlayer;
-				}
-			}
+			if (const auto& LocalPlayer = GetGameInstance()->GetLocalPlayerByIndex(MappedIdx))
+				return LocalPlayer;
 		}
 	}
 
@@ -1543,38 +1564,33 @@ ULocalPlayer* UBeamRuntime::GetLocalPlayerForSlot(FUserSlot Slot)
 
 FUserSlot UBeamRuntime::GetUserSlotByPlayerIndex(int32 PlayerIdx)
 {
-	if (LocalPlayerIndexToUserSlotMapping.Contains(PlayerIdx))
+	// TODO: Make the versions of these that work on the server (GetUserSlotByPlayerController and GetGamerTagByPlayerState works on both server and client).
+	if (ensureAlwaysMsgf(IsClient(), TEXT("Not supported in the server. Please use GetUserSlotByUniqueId or GetUserSlotByPlayerController")))
 	{
-		const auto Slot = LocalPlayerIndexToUserSlotMapping[PlayerIdx];
-		return Slot;
-	}
+		if (ensureAlwaysMsgf(PlayerIdx < GetDefault<UBeamCoreSettings>()->RuntimeUserSlots.Num(), TEXT("On clients, Local Players must mirror RuntimeUserSlots. PLAYER_IDX=%d"), PlayerIdx))
+		{
+			return GetDefault<UBeamCoreSettings>()->RuntimeUserSlots[PlayerIdx];
+		}
 
-#if UE_BUILD_DEVELOPMENT
-	if (IsDedicatedGameServer())
-	{
-		// TODO: Loga um warning dizendo q se vc quiser usar isso aqui no server vc precisa fazer o GameMode.
+		return FUserSlot{};
 	}
-#endif
 
 	return FUserSlot{};
 }
 
 FBeamGamerTag UBeamRuntime::GetGamerTagByPlayerIndex(int32 PlayerIdx)
 {
-	if (LocalPlayerIndexToUserSlotMapping.Contains(PlayerIdx))
+	if (ensureAlwaysMsgf(IsClient(), TEXT("Not supported in the server. Please use GetGamerTagByUniqueId/GetGamerTagByPlayerController/GetGamerTagByPlayerState")))
 	{
-		const auto Slot = LocalPlayerIndexToUserSlotMapping[PlayerIdx];
-		FBeamRealmUser UserData;
-		if (UserSlotSystem->GetUserDataAtSlot(Slot, UserData, this))
-			return UserData.GamerTag;
+		if (ensureAlwaysMsgf(PlayerIdx < GetDefault<UBeamCoreSettings>()->RuntimeUserSlots.Num(), TEXT("On clients, Local Players must mirror RuntimeUserSlots. PLAYER_IDX=%d"), PlayerIdx))
+		{
+			const auto Slot = GetDefault<UBeamCoreSettings>()->RuntimeUserSlots[PlayerIdx];
+			FBeamRealmUser UserData;
+			if (UserSlotSystem->GetUserDataAtSlot(Slot, UserData, this))
+				return UserData.GamerTag;
+		}
+		return FBeamGamerTag{};
 	}
-
-#if UE_BUILD_DEVELOPMENT
-	if (IsDedicatedGameServer())
-	{
-		// TODO: Loga um warning dizendo q se vc quiser usar isso aqui no server vc precisa fazer o GameMode.
-	}
-#endif
 
 	return FBeamGamerTag{};
 }

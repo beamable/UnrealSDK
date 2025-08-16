@@ -92,4 +92,14 @@ public:
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Connectivity")
 	bool AutomaticallyNotifyFixupComplete = true;
 
+
+	/**
+	 * @brief The SDK will ensure that, on clients and game server, every spawned ULocalPlayer instance has its UniqueNetId set as <NAME_None:BeamableGamerTag.AsString>.
+	 *
+	 * Under the hood, we use FUniqueNetIdString to do this as Beamable does not support OnlineSubsystems (because their interfaces are insufficient for supporting the key features of Beamable).
+	 * We do this, because we use this to automatically map the Unreal connections in the server to Beamable GamerTags so we know which Beamable user is which automatically.
+	 * Disabling this will require you to use 
+	 */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Gameplay Framework")
+	bool bUseBeamableGamerTagsAsUniqueNetIds = true;
 };

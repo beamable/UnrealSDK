@@ -808,3 +808,21 @@ class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_Operation_ProvisionGameServerFo
 };
 
 #undef LOCTEXT_NAMESPACE
+
+#define LOCTEXT_NAMESPACE "UK2BeamNode_Operation_UpdateGlobalDataOperation"
+
+UCLASS(meta=(BeamFlowNode))
+class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_Operation_UpdateGlobalDataOperation : public UK2BeamNode_Operation
+{
+	GENERATED_BODY()
+
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Operation - Lobby - Update Global Data"); }
+
+	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLobbySubsystem, GetSelf); }
+
+	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLobbySubsystem, UpdateGlobalDataOperation); }
+
+	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamLobbySubsystem::StaticClass(); }
+};
+
+#undef LOCTEXT_NAMESPACE

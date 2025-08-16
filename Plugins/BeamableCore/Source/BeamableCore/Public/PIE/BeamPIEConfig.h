@@ -31,7 +31,10 @@ public:
 	FString CurrRealmSecret;
 	
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite)
-	FString CurrRoutingKeyMap;	
+	FString CurrRoutingKeyMap;
+
+	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite)
+	FString CurrPIEMap;	
 
 
 	/**
