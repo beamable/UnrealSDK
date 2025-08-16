@@ -198,7 +198,7 @@ public:
 	 * @brief Tries to find the a FUserSlot, and its data, that contains the user with the given FBeamGamerTag.	  
 	 * @return True, if there is a user mapped. False, if no user mapped was found. 
 	 */
-	bool GetUserDataWithGamerTag(const FBeamGamerTag& GamerTag, FBeamRealmUser& OutUserData, FUserSlot& OutUserSlot, FString& NamespacedSlotId) const;
+	bool GetUserDataWithGamerTag(const FBeamGamerTag& GamerTag, FBeamRealmUser& OutUserData, FUserSlot& OutUserSlot, FString& NamespacedSlotId, const UObject* CallingContext) const;
 
 	/**
 	 * @brief Tries to get the user currently  mapped to the given slot.	  

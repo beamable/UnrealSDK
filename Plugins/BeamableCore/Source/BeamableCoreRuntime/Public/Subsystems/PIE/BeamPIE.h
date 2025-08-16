@@ -551,13 +551,21 @@ public:
 		UE_LOG(LogBeamEditor, Log, TEXT("%s Initializing Beamable SDK"), *GetLogArgs(TEXT("Beam PIE Init"), WorldContext));
 
 		// During BeamPIE, we enforce that the UniqueId is set as the Beamable UniqueId, if configured to do so.
-		if (GetDefault<UBeamRuntimeSettings>()->bUseBeamableGamerTagsAsUniqueNetIds)
+		for (const auto& AssignedUser : Settings->AssignedUsers)
 		{
-			for (const auto& AssignedUser : Settings->AssignedUsers)
+			// When its running in a different process the 0 is the server
+			// and also the first client index so for this case we have to subtract 1 from the index configuration
+			if (AssignedUser.Key.PIEIndex == FBeamPIE_Utilities::GetPIEInstance(WorldContext))
 			{
-				// When its running in a different process the 0 is the server
-				// and also the first client index so for this case we have to subtract 1 from the index configuration
-				if (AssignedUser.Key.PIEIndex == FBeamPIE_Utilities::GetPIEInstance(WorldContext))
+				const auto LpIdx = GetDefault<UBeamCoreSettings>()->RuntimeUserSlots.Find(AssignedUser.Key.Slot.Name);
+				ULocalPlayer* Lp = GI->GetLocalPlayerByIndex(LpIdx);
+				if (!Lp)
+				{
+					FString Err;
+					Lp = GI->CreateLocalPlayer(LpIdx, Err, false);
+				}
+
+				if (GetDefault<UBeamRuntimeSettings>()->bUseBeamableGamerTagsAsUniqueNetIds)
 				{
 					UE_LOG(LogBeamEditor, Log, TEXT("%s Client - Found Assigned User. Creating mapped local player. USER_SLOT=%s, PIE=%d"),
 					       *GetLogArgs(TEXT("Beam PIE Prepare"), WorldContext), *AssignedUser.Key.Slot.Name, AssignedUser.Key.PIEIndex);
@@ -569,23 +577,21 @@ public:
 					const auto Ret = UserSlots->TryGetSavedUserDataAtNamespacedSlot(NamespacedSlotId, OutAuthData, OutAccountData);
 					if (Ret != UBeamUserSlots::LoadSavedUserResult_Failed)
 					{
-						const auto Idx = GetDefault<UBeamCoreSettings>()->RuntimeUserSlots.Find(AssignedUser.Key.Slot.Name);
-						ULocalPlayer* LP = GI->GetLocalPlayerByIndex(Idx);
-						if (!LP)
-						{
-							FString Err;
-							LP = GI->CreateLocalPlayer(Idx, Err, false);
-						}
-
 						auto NetIdRef = FUniqueNetIdString::Create(OutAccountData.GamerTag.AsString, NAME_None);
 						FUniqueNetIdRepl NetIdRepl(NetIdRef.Get());
-						LP->SetCachedUniqueNetId(NetIdRepl);
+						Lp->SetCachedUniqueNetId(NetIdRepl);
 					}
-					else
-					{
-						RequestTracker->TriggerOperationError(Op, TEXT("You should not be seeing this!"));
-						return;
-					}
+				}
+				else
+				{
+					// TODO: Allow users to define a hook operation that can initialize other things (steam, etc...) BEFORE we do this --- so that they can use that UniqueNetId instead.
+					// For now, BeamPIE requires "bUseBeamableGamerTagsAsUniqueNetIds" to be "true".
+
+					UE_BEAM_LOG(WorldContext, LogBeamEditor, Warning,
+					            TEXT("If you are not using Beamable GamerTags as UniqueNetIds because you want to use something else as the UniqueId,"
+						            " you need to either configure NetIds manually in the play settings OR"
+						            " set up the AcceptUserIntoGameServer flow so we can keep the mapping between UniqueNetIds and GamerTags.\n"
+						            "If you aren't using any other UniqueNetIds, we recommend you turn UBeamRuntimeSettings::bUseBeamableGamerTagsAsUniqueNetIds on in your Project Settings."))
 				}
 			}
 		}
@@ -818,13 +824,31 @@ public:
 					const auto& Handle = KVP.Key;
 					const auto& GamerTag = KVP.Value;
 					const auto bHasPlayerSettings = Settings->AssignedUsers.Contains(Handle);
-					const auto& Tags = bHasPlayerSettings ? Settings->AssignedUsers[Handle].Tags : TArray<FBeamTag>();
+					auto Tags = TArray<FBeamTag>();
+					if (bHasPlayerSettings)
+					{
+						for (const auto& LobbyData : Settings->AssignedUsers[Handle].LobbyData)
+							Tags.Add(FBeamTag{LobbyData.Key, LobbyData.Value});
+					}
 
 					// Set the properties we forward
 					const auto LobbyPlayer = NewObject<ULobbyPlayer>();
 					LobbyPlayer->PlayerId = FOptionalBeamGamerTag{GamerTag};
 					LobbyPlayer->Joined = FOptionalDateTime{FDateTime::UtcNow()};
 					LobbyPlayer->Tags = bHasPlayerSettings ? FOptionalArrayOfBeamTag{Tags} : FOptionalArrayOfBeamTag{};
+					if (GetDefault<UBeamRuntimeSettings>()->bUseBeamableGamerTagsAsUniqueNetIds)
+					{
+						if (LobbyPlayer->Tags.IsSet) LobbyPlayer->Tags.Val.Add(FBeamTag{UBeamLobbySubsystem::Reserved_PlayerTag_UniqueNetId_Property, GamerTag.AsString});
+						else LobbyPlayer->Tags = FOptionalArrayOfBeamTag{TArray{FBeamTag{UBeamLobbySubsystem::Reserved_PlayerTag_UniqueNetId_Property, GamerTag.AsString}}};
+					}
+					else
+					{
+						UE_BEAM_LOG(WorldContext, LogBeamEditor, Warning,
+						            TEXT("If you are not using Beamable GamerTags as UniqueNetIds because you want to use something else as the UniqueId,"
+							            " you need to either configure NetIds manually in the play settings OR"
+							            " set up the AcceptUserIntoGameServer flow so we can keep the mapping between UniqueNetIds and GamerTags.\n"
+							            "If you aren't using any other UniqueNetIds, we recommend you turn UBeamRuntimeSettings::bUseBeamableGamerTagsAsUniqueNetIds on in your Project Settings."))
+					}
 
 					FakeLobby->Players.Val.Add(LobbyPlayer);
 					for (FBeamTag Tag : Tags)

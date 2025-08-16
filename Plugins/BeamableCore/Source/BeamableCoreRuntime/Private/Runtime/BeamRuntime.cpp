@@ -10,6 +10,9 @@
 #include "AutoGen/SubSystems/BeamRealmsApi.h"
 #include "AutoGen/SubSystems/Realms/GetClientDefaultsRequest.h"
 #include "BeamNotifications/BeamNotifications.h"
+#include "GameFramework/GameModeBase.h"
+#include "GameFramework/GameStateBase.h"
+#include "GameFramework/PlayerState.h"
 #include "GenericPlatform/GenericPlatformHttp.h"
 #include "Kismet/GameplayStatics.h"
 #include "PIE/BeamPIE_Utilities.h"
@@ -1529,27 +1532,33 @@ FBeamOperationHandle UBeamRuntime::CPP_LogoutOperation(FUserSlot UserSlot, EUser
  / / __/ __ `/ __ `__ \/ _ \/ __ \/ / __ `/ / / /  / /_  / ___/ __ `/ __ `__ \/ _ \ | /| / / __ \/ ___/ //_/
 / /_/ / /_/ / / / / / /  __/ /_/ / / /_/ / /_/ /  / __/ / /  / /_/ / / / / / /  __/ |/ |/ / /_/ / /  / ,<   
 \____/\__,_/_/ /_/ /_/\___/ .___/_/\__,_/\__, /  /_/   /_/   \__,_/_/ /_/ /_/\___/|__/|__/\____/_/  /_/|_|  
-					 /_/            /____/                                                              
+					     /_/            /____/                                                              
  */
 
 FUniqueNetIdRepl UBeamRuntime::GetUniqueNetIdForSlot(FUserSlot Slot)
 {
-	if (const auto& LocalPlayer = GetLocalPlayerForSlot(Slot))
-		return LocalPlayer->GetPreferredUniqueNetId();
+	if (ensureAlwaysMsgf(IsClient(), TEXT("Not supported in the server.")))
+	{
+		if (const auto& LocalPlayer = GetLocalPlayerForSlot(Slot))
+			return LocalPlayer->GetPreferredUniqueNetId();
+	}
 
 	return FUniqueNetIdRepl::Invalid();
 }
 
 APlayerController* UBeamRuntime::GetPlayerControllerForSlot(FUserSlot Slot)
 {
-	if (const auto& LocalPlayer = GetLocalPlayerForSlot(Slot))
-		return LocalPlayer->GetPlayerController(GetWorld());
+	if (ensureAlwaysMsgf(IsClient(), TEXT("Not supported in the server. Please use the similar APIs from UBeamLobbySubsystem instead.")))
+	{
+		if (const auto& LocalPlayer = GetLocalPlayerForSlot(Slot))
+			return LocalPlayer->GetPlayerController(GetWorld());
+	}
 	return nullptr;
 }
 
 ULocalPlayer* UBeamRuntime::GetLocalPlayerForSlot(FUserSlot Slot)
 {
-	if (ensureAlwaysMsgf(IsClient(), TEXT("Not supported in the server. Please use GetUserSlotByUniqueId or GetUserSlotByPlayerController")))
+	if (ensureAlwaysMsgf(IsClient(), TEXT("Not supported in the server.")))
 	{
 		const auto MappedIdx = GetDefault<UBeamCoreSettings>()->RuntimeUserSlots.Find(Slot.Name);
 		if (ensureAlwaysMsgf(MappedIdx != INDEX_NONE, TEXT("On clients, Local Players must mirror RuntimeUserSlots. PLAYER_IDX=%d"), MappedIdx))
@@ -1564,8 +1573,7 @@ ULocalPlayer* UBeamRuntime::GetLocalPlayerForSlot(FUserSlot Slot)
 
 FUserSlot UBeamRuntime::GetUserSlotByPlayerIndex(int32 PlayerIdx)
 {
-	// TODO: Make the versions of these that work on the server (GetUserSlotByPlayerController and GetGamerTagByPlayerState works on both server and client).
-	if (ensureAlwaysMsgf(IsClient(), TEXT("Not supported in the server. Please use GetUserSlotByUniqueId or GetUserSlotByPlayerController")))
+	if (ensureAlwaysMsgf(IsClient(), TEXT("Not supported in the server.")))
 	{
 		if (ensureAlwaysMsgf(PlayerIdx < GetDefault<UBeamCoreSettings>()->RuntimeUserSlots.Num(), TEXT("On clients, Local Players must mirror RuntimeUserSlots. PLAYER_IDX=%d"), PlayerIdx))
 		{
@@ -1578,9 +1586,34 @@ FUserSlot UBeamRuntime::GetUserSlotByPlayerIndex(int32 PlayerIdx)
 	return FUserSlot{};
 }
 
+FUserSlot UBeamRuntime::GetUserSlotByPlayerController(const AController* Controller)
+{
+	if (Controller->IsPlayerController())
+	{
+		if (ensureAlwaysMsgf(Controller->IsLocalController(), TEXT("Not supported for non-locally controlled objects. Please use the similar APIs from UBeamLobbySubsystem instead.")))
+		{
+			if (const auto PlayerCtrl = Cast<APlayerController>(Controller))
+			{
+				return GetUserSlotByPlayerIndex(PlayerCtrl->GetLocalPlayer()->GetLocalPlayerIndex());
+			}
+		}
+	}
+	return FUserSlot{};
+}
+
+FUserSlot UBeamRuntime::GetUserSlotByPlayerState(const APlayerState* State)
+{
+	const auto PlayerCtrl = State->GetPlayerController();
+	if (ensureAlwaysMsgf(PlayerCtrl, TEXT("Not supported for non-locally controlled objects. Please use the similar APIs from UBeamLobbySubsystem instead.")))
+	{
+		return GetUserSlotByPlayerIndex(PlayerCtrl->GetLocalPlayer()->GetLocalPlayerIndex());
+	}
+	return FUserSlot{};
+}
+
 FBeamGamerTag UBeamRuntime::GetGamerTagByPlayerIndex(int32 PlayerIdx)
 {
-	if (ensureAlwaysMsgf(IsClient(), TEXT("Not supported in the server. Please use GetGamerTagByUniqueId/GetGamerTagByPlayerController/GetGamerTagByPlayerState")))
+	if (ensureAlwaysMsgf(IsClient(), TEXT("Not supported in the server. Please use the similar APIs from UBeamLobbySubsystem instead.")))
 	{
 		if (ensureAlwaysMsgf(PlayerIdx < GetDefault<UBeamCoreSettings>()->RuntimeUserSlots.Num(), TEXT("On clients, Local Players must mirror RuntimeUserSlots. PLAYER_IDX=%d"), PlayerIdx))
 		{
@@ -1592,6 +1625,41 @@ FBeamGamerTag UBeamRuntime::GetGamerTagByPlayerIndex(int32 PlayerIdx)
 		return FBeamGamerTag{};
 	}
 
+	return FBeamGamerTag{};
+}
+
+FBeamGamerTag UBeamRuntime::GetGamerTagByPlayerController(const AController* Controller)
+{
+	if (ensureAlwaysMsgf(IsClient(), TEXT("Not supported in the server. Please use the similar APIs from UBeamLobbySubsystem instead.")))
+	{
+		if (Controller->IsLocalController())
+		{
+			if (auto PlayerCtrl = Cast<APlayerController>(Controller))
+			{
+				return GetGamerTagByPlayerIndex(PlayerCtrl->GetLocalPlayer()->GetLocalPlayerIndex());
+			}
+		}
+	}
+
+	return FBeamGamerTag{};
+}
+
+FBeamGamerTag UBeamRuntime::GetGamerTagByPlayerState(const APlayerState* State)
+{
+	if (State)
+	{
+		if (ensureAlwaysMsgf(IsClient(), TEXT("Not supported in the server. Please use the similar APIs from UBeamLobbySubsystem instead.")))
+		{
+			auto Controller = State->GetOwningController();
+			if (Controller->IsLocalController())
+			{
+				if (auto PlayerCtrl = Cast<APlayerController>(Controller))
+				{
+					return GetGamerTagByPlayerIndex(PlayerCtrl->GetLocalPlayer()->GetLocalPlayerIndex());
+				}
+			}
+		}
+	}
 	return FBeamGamerTag{};
 }
 

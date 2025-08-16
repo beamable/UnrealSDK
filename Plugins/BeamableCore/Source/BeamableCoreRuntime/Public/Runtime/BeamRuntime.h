@@ -1124,6 +1124,10 @@ ______                           __               ______                        
 	 */
 	UFUNCTION(BlueprintCallable)
 	FUserSlot GetUserSlotByPlayerIndex(int32 PlayerIdx);
+	UFUNCTION(BlueprintCallable)
+	FUserSlot GetUserSlotByPlayerController(const AController* Controller);
+	UFUNCTION(BlueprintCallable)
+	FUserSlot GetUserSlotByPlayerState(const APlayerState* State);
 
 	/**
 	 * For integration with other implementations of Unreal's Gameplay Framework.
@@ -1133,6 +1137,10 @@ ______                           __               ______                        
 	 */
 	UFUNCTION(BlueprintCallable)
 	FBeamGamerTag GetGamerTagByPlayerIndex(int32 PlayerIdx);
+	UFUNCTION(BlueprintCallable)
+	FBeamGamerTag GetGamerTagByPlayerController(const AController* Controller);
+	UFUNCTION(BlueprintCallable)
+	FBeamGamerTag GetGamerTagByPlayerState(const APlayerState* State);
 
 private:
 	// BP/CPP Independent Operation Implementations

@@ -1,6 +1,7 @@
 #include "Runtime/BeamMultiplayer.h"
 
 #include "GameFramework/GameModeBase.h"
+#include "GameFramework/PlayerState.h"
 #include "PIE/BeamPIE_Utilities.h"
 #include "Subsystems/Lobby/BeamLobbySubsystem.h"
 #include "Subsystems/PIE/BeamPIE.h"
@@ -77,7 +78,7 @@ namespace BeamMultiplayer
 		{
 			FString Options = BaseOptions;
 			const auto Lobby = This->GetGameInstance()->GetSubsystem<UBeamLobbySubsystem>();
-			return Lobby->PrepareLoginOptions(This, Options);
+			return Lobby->PrepareLoginOptionsByLocalPlayer(This, Options);
 		}
 	}
 

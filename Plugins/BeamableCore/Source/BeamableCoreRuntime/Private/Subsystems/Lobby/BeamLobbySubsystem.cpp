@@ -5,7 +5,10 @@
 
 #include "AutoGen/Optionals/OptionalArrayOfLobbyLibrary.h"
 #include "AutoGen/SubSystems/BeamLobbyApi.h"
+#include "GameFramework/GameStateBase.h"
+#include "GameFramework/PlayerState.h"
 #include "Kismet/GameplayStatics.h"
+#include "Runtime/BeamMultiplayer.h"
 #include "Subsystems/Inventory/BeamInventorySubsystem.h"
 #include "Subsystems/Matchmaking/BeamMatchmakingSubsystem.h"
 #include "Subsystems/PIE/BeamPIE.h"
@@ -170,6 +173,18 @@ bool UBeamLobbySubsystem::TryGetLobbyById(FGuid LobbyId, ULobby*& Lobby)
 		return true;
 	}
 	Lobby = nullptr;
+	return false;
+}
+
+
+bool UBeamLobbySubsystem::TryGetCurrentLobbyId(FUserSlot Slot, FGuid& LobbyId)
+{
+	if (ensureAlwaysMsgf(Runtime->IsClient(), TEXT("This is not supported in the server. Please use GetCurrentLobbyId")))
+	{
+		ULobby* Found;
+		const auto& bFound = TryGetCurrentLobby(Slot, Found);
+		if (bFound) return FGuid::Parse(Found->LobbyId.Val, LobbyId);
+	}
 	return false;
 }
 
@@ -520,38 +535,9 @@ void UBeamLobbySubsystem::PrepareDeleteGlobalData(FUserSlot Slot, const TArray<F
 	UpdateCommands[Slot]->GlobalDataDeletes = FOptionalArrayOfString(GlobalDataToRemove);
 }
 
-// LOCAL STATE - Dedicated Server
-bool UBeamLobbySubsystem::TryGetDedicatedServerInstanceLobby(ULobby*& Lobby)
+FString UBeamLobbySubsystem::PrepareLoginOptions(const FUserSlot& Slot, const FString Options)
 {
-	ensureAlwaysMsgf(Runtime->IsDedicatedGameServer(), TEXT("This cannot be called on non-dedicated servers!"));
-
-	Lobby = nullptr;
-	for (ULobby* KnownLobby : KnownLobbies)
-	{
-		if (KnownLobby->Data.IsSet)
-		{
-			if (KnownLobby->Data.Val.Contains(Reserved_Dedicated_Server_Property))
-			{
-				Lobby = KnownLobby;
-				return true;
-			}
-		}
-	}
-
-	return false;
-}
-
-FString UBeamLobbySubsystem::PrepareLoginOptions(const ULocalPlayer* LocalPlayer, const FString Options)
-{
-	ensureAlwaysMsgf(!IsRunningDedicatedServer(), TEXT("This cannot be called on the server!"));
-
-	const auto LocalPlayerIdx = LocalPlayer->GetLocalPlayerIndex();
-	return PrepareLoginOptionsSlot(Runtime->GetUserSlotByPlayerIndex(LocalPlayerIdx), Options);
-}
-
-FString UBeamLobbySubsystem::PrepareLoginOptionsSlot(const FUserSlot& Slot, const FString Options)
-{
-	ensureAlwaysMsgf(!IsRunningDedicatedServer(), TEXT("This cannot be called on the server!"));
+	ensureAlwaysMsgf(!Runtime->IsDedicatedGameServer(), TEXT("This cannot be called on the server!"));
 
 	FBeamRealmUser User;
 	if (Runtime->TryGetSlotUserData(Slot, User))
@@ -566,6 +552,36 @@ FString UBeamLobbySubsystem::PrepareLoginOptionsSlot(const FUserSlot& Slot, cons
 	}
 	return Options;
 }
+
+FString UBeamLobbySubsystem::PrepareLoginOptionsByLocalPlayer(const ULocalPlayer* LocalPlayer, const FString Options)
+{
+	ensureAlwaysMsgf(!Runtime->IsDedicatedGameServer(), TEXT("This cannot be called on the server!"));
+
+	const auto LocalPlayerIdx = LocalPlayer->GetLocalPlayerIndex();
+	return PrepareLoginOptions(Runtime->GetUserSlotByPlayerIndex(LocalPlayerIdx), Options);
+}
+
+FString UBeamLobbySubsystem::PrepareLoginOptionsByPlayerController(const AController* Controller, const FString Options)
+{
+	ensureAlwaysMsgf(!Runtime->IsDedicatedGameServer(), TEXT("This cannot be called on the server!"));
+
+	if (Controller->IsLocalPlayerController())
+	{
+		if (const auto& PlayerCtrl = Cast<APlayerController>(Controller))
+		{
+			const auto LocalPlayerIdx = PlayerCtrl->GetLocalPlayer()->GetLocalPlayerIndex();
+			return PrepareLoginOptions(Runtime->GetUserSlotByPlayerIndex(LocalPlayerIdx), Options);
+		}
+	}
+	return Options;
+}
+
+FString UBeamLobbySubsystem::PrepareLoginOptionsByLocalPlayerIndex(int32 LocalPlayerIdx, const FString Options)
+{
+	ensureAlwaysMsgf(!Runtime->IsDedicatedGameServer(), TEXT("This cannot be called on the server!"));
+	return PrepareLoginOptions(Runtime->GetUserSlotByPlayerIndex(LocalPlayerIdx), Options);
+}
+
 
 FString UBeamLobbySubsystem::PrepareLoginOptionsFull(const FString& Options, const FString& AccessToken, const FString& RefreshToken, int64 ExpiresIn, const FBeamGamerTag& GamerTag, FString LobbyId) const
 {
@@ -592,6 +608,191 @@ FString UBeamLobbySubsystem::PrepareLoginOptionsFull(const FString& Options, con
 	return NewOptions;
 }
 
+APlayerController* UBeamLobbySubsystem::GetPlayerControllerByGamerTag(FBeamGamerTag GamerTag)
+{
+	// If it is a local user, we can forward this along to the Runtime's client implementation.
+	FBeamRealmUser _;
+	FString _1;
+	FUserSlot Slot;
+	if (UserSlots->GetUserDataWithGamerTag(GamerTag, _, Slot, _1, this))
+	{
+		if (!Slot.IsServerMappingSlot())
+		{
+			return Runtime->GetPlayerControllerForSlot(Slot);
+		}
+	}
+
+	// If you are not logged in, we can't map this back to a player controller.
+	if (Runtime->IsClient())
+		return nullptr;
+
+	// If we are in the server... we need to find the player state for this GamerTag so we can get the player controller from it.
+	// TODO: We can probably remove the need for this loop if we store the UniqueId's full name "PLATFORM:ID" -- that way we can reconstruct it using FUniqueIdString and use UE's own "FindByUniqueId" functions.
+	if (const auto& UniqueIdStrPtr = Server_GamerTagToNetId.Find(GamerTag))
+	{
+		const auto UniqueIdStr = *UniqueIdStrPtr;
+
+		if (const auto& W = GetWorld())
+		{
+			if (const auto& GS = W->GetGameState())
+			{
+				const auto& Players = GS->PlayerArray;
+				for (const auto& PlayerState : Players)
+				{
+					const auto& UniqueId = PlayerState->GetUniqueId();
+					if (!UniqueId.IsValid()) continue;
+
+					const auto& UniqueIdStrComp = UniqueId.GetUniqueNetId()->ToString();
+					if (UniqueIdStrComp == UniqueIdStr)
+					{
+						return PlayerState->GetPlayerController();
+					}
+				}
+			}
+		}
+	}
+
+	return nullptr;
+}
+
+FUserSlot UBeamLobbySubsystem::GetUserSlotByPlayerController(const AController* Controller)
+{
+	if (ensureAlways(Controller))
+	{
+		if (Runtime->IsClient() && Controller->IsLocalPlayerController())
+			return Runtime->GetUserSlotByPlayerController(Controller);
+
+		if (const auto& PlayerState = Controller->GetPlayerState<APlayerState>())
+			return GetUserSlotByPlayerState(PlayerState);
+	}
+
+	return FUserSlot{};
+}
+
+FUserSlot UBeamLobbySubsystem::GetUserSlotByPlayerState(const APlayerState* State)
+{
+	if (ensureAlways(State))
+	{
+		if (Runtime->IsClient() && State->GetOwningController()->IsLocalPlayerController())
+			return Runtime->GetUserSlotByPlayerState(State);
+
+		const auto& UniqueId = State->GetUniqueId();
+		if (!UniqueId.IsValid()) return FUserSlot{};
+
+		// If we are using GamerTags as UniqueIds, then we can just check if accept user was called and created a servermapping slot for the user.
+		const auto& UniqueIdAsStr = UniqueId.GetUniqueNetId()->ToString();
+		if (GetDefault<UBeamRuntimeSettings>()->bUseBeamableGamerTagsAsUniqueNetIds)
+		{
+			FBeamRealmUser _;
+			FString _1;
+			FUserSlot Slot;
+			const auto& bHasAcceptedUserIntoServer = UserSlots->GetUserDataWithGamerTag(FBeamGamerTag{UniqueIdAsStr}, _, Slot, _1, this);
+			if (ensureAlwaysMsgf(bHasAcceptedUserIntoServer,
+			                     TEXT("If you're not calling AcceptUserIntoGameServer, you cannot use this function. Please refer to our multiplayer Authentication docs for more info.")))
+			{
+				return Slot;
+			}
+
+			return FUserSlot{};
+		}
+
+		// If not, we need to find the player that matches this unique id.
+		if (const auto& GamerTagPtr = Server_NetIdToGamerTag.Find(UniqueIdAsStr))
+		{
+			const FBeamGamerTag& GamerTag = *GamerTagPtr;
+			FBeamRealmUser _;
+			FString _1;
+			FUserSlot Slot;
+			const auto bHasAcceptedUserIntoServer = UserSlots->GetUserDataWithGamerTag(GamerTag, _, Slot, _1, this);
+			if (ensureAlwaysMsgf(bHasAcceptedUserIntoServer, TEXT("If you're not calling AcceptUserIntoGameServer, you cannot use this function. Please refer to our multiplayer Authentication docs for more info.")))
+			{
+				return Slot;
+			}
+		}
+	}
+
+	return FUserSlot{};
+}
+
+FBeamGamerTag UBeamLobbySubsystem::GetGamerTagByPlayerController(const AController* Controller)
+{
+	if (ensureAlways(Controller))
+	{
+		if (Runtime->IsClient() && Controller->IsLocalPlayerController())
+			return Runtime->GetGamerTagByPlayerController(Controller);
+
+		if (const auto& PlayerState = Controller->GetPlayerState<APlayerState>())
+			return GetGamerTagByPlayerState(PlayerState);
+	}
+
+	return FBeamGamerTag{};
+}
+
+FBeamGamerTag UBeamLobbySubsystem::GetGamerTagByPlayerState(const APlayerState* State)
+{
+	if (ensureAlways(State))
+	{
+		if (Runtime->IsClient() && State->GetOwningController()->IsLocalPlayerController())
+			return Runtime->GetGamerTagByPlayerState(State);
+
+		const auto& UniqueId = State->GetUniqueId();
+		if (!UniqueId.IsValid()) return FBeamGamerTag{};
+
+		// If we are using GamerTags as UniqueIds, then we can just check if accept user was called and created a servermapping slot for the user.
+		const auto& UniqueIdAsStr = UniqueId.GetUniqueNetId()->ToString();
+		if (GetDefault<UBeamRuntimeSettings>()->bUseBeamableGamerTagsAsUniqueNetIds)
+		{
+			return FBeamGamerTag{UniqueIdAsStr};
+		}
+
+		// If not, we need to find the player that matches this unique id.
+		// TODO: There's a current limitation with party matchmaking that will make party members not forward UniqueNetIds to Beamable.
+		if (const auto& GamerTagPtr = Server_NetIdToGamerTag.Find(UniqueIdAsStr))
+		{
+			return *GamerTagPtr;
+		}
+	}
+
+	return FBeamGamerTag{};
+}
+
+FGuid UBeamLobbySubsystem::GetLobbyIdByGamerTag(FBeamGamerTag GamerTag)
+{
+	for (const auto& KnownLobby : KnownLobbies)
+	{
+		for (const auto& Val : KnownLobby->Players.Val)
+		{
+			if (Val->PlayerId.Val == GamerTag)
+			{
+				FGuid ParsedId;
+				if (FGuid::Parse(KnownLobby->LobbyId.Val, ParsedId))
+					return ParsedId;
+			}
+		}
+	}
+	return FGuid{};
+}
+
+// LOCAL STATE - Dedicated Server
+bool UBeamLobbySubsystem::TryGetDedicatedServerInstanceLobby(ULobby*& Lobby)
+{
+	ensureAlwaysMsgf(Runtime->IsDedicatedGameServer(), TEXT("This cannot be called on non-dedicated servers!"));
+
+	Lobby = nullptr;
+	for (ULobby* KnownLobby : KnownLobbies)
+	{
+		if (KnownLobby->Data.IsSet)
+		{
+			if (KnownLobby->Data.Val.Contains(Reserved_Dedicated_Server_Property))
+			{
+				Lobby = KnownLobby;
+				return true;
+			}
+		}
+	}
+
+	return false;
+}
 
 // OPERATIONS
 
@@ -926,7 +1127,6 @@ FBeamOperationHandle UBeamLobbySubsystem::CPP_AcceptUserIntoGameServerOperation(
 	return Handle;
 }
 
-
 // OPERATIONS Implementations
 
 void UBeamLobbySubsystem::CreateOpenLobby(FUserSlot UserSlot, FString Name, FString Desc, FBeamContentId MatchType, int32 MaxPlayers, TMap<FString, FString> LobbyData, TArray<FBeamTag> PlayerTags,
@@ -950,6 +1150,9 @@ void UBeamLobbySubsystem::CreateOpenLobby(FUserSlot UserSlot, FString Name, FStr
 		}
 	});
 
+	// We use this to enable compatibility with UE's Real-Time Multiplayer Gameplay Framework
+	const auto LocalPlayer = Runtime->GetLocalPlayerForSlot(UserSlot);
+	if (LocalPlayer && LocalPlayer->GetPreferredUniqueNetId().IsValid()) PlayerTags.Add(FBeamTag{Reserved_PlayerTag_UniqueNetId_Property, LocalPlayer->GetPreferredUniqueNetId().GetUniqueNetId()->ToString()});
 
 	FBeamRequestContext Ctx = RequestPostLobbies(UserSlot, Name, Desc, EBeamLobbyRestriction::BEAM_Open, MatchType, 0, MaxPlayers, LobbyData, PlayerTags, Op, Handler);
 }
@@ -978,6 +1181,10 @@ void UBeamLobbySubsystem::CreateClosedLobby(FUserSlot UserSlot, FString Name, FS
 		}
 	});
 
+	// We use this to enable compatibility with UE's Real-Time Multiplayer Gameplay Framework
+	const auto LocalPlayer = Runtime->GetLocalPlayerForSlot(UserSlot);
+	if (LocalPlayer && LocalPlayer->GetPreferredUniqueNetId().IsValid()) PlayerTags.Add(FBeamTag{Reserved_PlayerTag_UniqueNetId_Property, LocalPlayer->GetPreferredUniqueNetId().GetUniqueNetId()->ToString()});
+
 	FBeamRequestContext Ctx = RequestPostLobbies(UserSlot, Name, Desc, EBeamLobbyRestriction::BEAM_Closed, MatchType, PasscodeSize, MaxPlayers, LobbyData, PlayerTags, Op, Handler);
 }
 
@@ -1005,7 +1212,7 @@ void UBeamLobbySubsystem::RefreshLobbyData(FUserSlot UserSlot, FGuid LobbyId, FB
 				FString _;
 
 				// If we are in this new lobby we just fetched... 
-				if (UserSlots->GetUserDataWithGamerTag(Val->PlayerId.Val, Data, Slot, _))
+				if (UserSlots->GetUserDataWithGamerTag(Val->PlayerId.Val, Data, Slot, _, this))
 				{
 					// On the dedicated server, the user will exist but... we don't have a UBeamLobbyState for it.
 					// This means that ANY of the UBeamLobbyState related APIs are client only.
@@ -1103,6 +1310,10 @@ void UBeamLobbySubsystem::JoinLobby(FUserSlot UserSlot, FGuid LobbyId, TArray<FB
 		}
 	});
 
+	// We use this to enable compatibility with UE's Real-Time Multiplayer Gameplay Framework
+	const auto LocalPlayer = Runtime->GetLocalPlayerForSlot(UserSlot);
+	if (LocalPlayer && LocalPlayer->GetPreferredUniqueNetId().IsValid()) PlayerTags.Add(FBeamTag{Reserved_PlayerTag_UniqueNetId_Property, LocalPlayer->GetPreferredUniqueNetId().GetUniqueNetId()->ToString()});
+
 	FBeamRequestContext Ctx = RequestJoin(UserSlot, LobbyId, PlayerTags, Op, Handler);
 }
 
@@ -1130,6 +1341,14 @@ void UBeamLobbySubsystem::JoinLobbyByPasscode(FUserSlot UserSlot, FString Passco
 			       *Resp.SuccessData->Passcode.Val)
 		}
 	});
+
+	// TODO: Handle the Party Join case (at the moment, we can't store key-value pairs that are visibile to the entire party AND we can't pass in tags for our party members)
+	// TODO: We'll need to enable party members to set-on-join (as well as modify) FBeamTags that "will get put into the lobby/queue" along with them when the leader joins it.
+	// TODO: Until then, party-join will have a small delay since players will update the ticket/lobby when they get put into it. 
+
+	// We use this to enable compatibility with UE's Real-Time Multiplayer Gameplay Framework
+	const auto LocalPlayer = Runtime->GetLocalPlayerForSlot(UserSlot);
+	if (LocalPlayer && LocalPlayer->GetPreferredUniqueNetId().IsValid()) PlayerTags.Add(FBeamTag{Reserved_PlayerTag_UniqueNetId_Property, LocalPlayer->GetPreferredUniqueNetId().GetUniqueNetId()->ToString()});
 
 	FBeamRequestContext Ctx = RequestJoinByPassword(UserSlot, Passcode, PlayerTags, Op, Handler);
 }
@@ -1554,6 +1773,25 @@ void UBeamLobbySubsystem::RegisterLobbyWithServer(const FUserSlot& Slot, const F
 			return;
 		}
 
+		// Here, we cache a map of all the UniqueNetIds we expect these players to have.
+		// This trusts the clients informing the Ids are authenticated with them.
+		// If you want to verify that, you'll have to implement PreLoginAsync in your GameMode and call BeamMultiplayer::Authentication::PreLoginAsync.
+		ULobby* FoundLobby;
+		TryGetLobbyById(LobbyId, FoundLobby);
+		const auto& Players = FoundLobby->Players.GetValueOrDefault(TArray<ULobbyPlayer*>{});
+		for (const auto& P : Players)
+		{
+			const auto& Tags = P->Tags.GetValueOrDefault(TArray<FBeamTag>{});
+			for (const auto& Tag : Tags)
+			{
+				if (Tag.Name.Val == Reserved_PlayerTag_UniqueNetId_Property)
+				{
+					Server_NetIdToGamerTag.Add(Tag.Value.Val, P->PlayerId.Val);
+					Server_GamerTagToNetId.Add(P->PlayerId.Val, Tag.Value.Val);
+				}
+			}
+		}
+
 		RequestTracker->TriggerOperationSuccess(Op, TEXT(""));
 	});
 	CPP_RefreshLobbyDataOperation(Slot, Handler, LobbyId);
@@ -1568,7 +1806,7 @@ void UBeamLobbySubsystem::AcceptUserIntoGameServer(const FUserSlot& Slot, const 
 	// Outside of PIE, this does NOTHING other than immediately complete.
 	const auto PIE = GEngine->GetEngineSubsystem<UBeamPIE>();
 
-	const auto PostBeamPIE = FBeamOperationEventHandlerCode::CreateLambda([this, Options, Op, PIE](FBeamOperationEvent Evt)
+	const auto PostBeamPIE = FBeamOperationEventHandlerCode::CreateLambda([this, Options, Op, UniqueId](FBeamOperationEvent Evt)
 	{
 		// Do nothing on error or cancellation (should never happen unless something fails in the PIE initialization flow)
 		if (Evt.CompletedWithError() || Evt.CompletedWithCancelling())
@@ -1581,7 +1819,8 @@ void UBeamLobbySubsystem::AcceptUserIntoGameServer(const FUserSlot& Slot, const 
 		TArray<FString> Errs = {};
 
 		// Then, we can parse the options.
-		const auto bHasGamerTag = UGameplayStatics::HasOption(Options, Reserved_LoginOpt_GamerTag_Required);
+		auto bHasGamerTag = UGameplayStatics::HasOption(Options, Reserved_LoginOpt_GamerTag_Required);
+		if (!bHasGamerTag && GetDefault<UBeamRuntimeSettings>()->bUseBeamableGamerTagsAsUniqueNetIds) { bHasGamerTag = true; }
 		if (!bHasGamerTag) Errs.Add(TEXT("MISSING_GAMER_TAG_OPT"));
 
 		const auto bHasAccessToken = UGameplayStatics::HasOption(Options, Reserved_LoginOpt_AccessToken_Required);
@@ -1602,10 +1841,11 @@ void UBeamLobbySubsystem::AcceptUserIntoGameServer(const FUserSlot& Slot, const 
 		}
 
 		// If we got the options, let's get ALL the options and then verify each user is in a Lobby.
-		const FString& ConnectingGamerTag = UGameplayStatics::ParseOption(Options, Reserved_LoginOpt_GamerTag_Required);
+		FString ConnectingGamerTag = UGameplayStatics::ParseOption(Options, Reserved_LoginOpt_GamerTag_Required);
+		if (ConnectingGamerTag.IsEmpty()) ConnectingGamerTag = UniqueId.GetUniqueNetId()->ToString();
 		const FString& ConnectingAccessToken = UGameplayStatics::ParseOption(Options, Reserved_LoginOpt_AccessToken_Required);
 		const FString& ConnectingRefreshToken = UGameplayStatics::ParseOption(Options, Reserved_LoginOpt_RefreshToken_Required);
-		const FString& ConnectingTokenExpiresIn = UGameplayStatics::ParseOption(Options, Reserved_LoginOpt_ExpiresIn_Required);
+		const int32& ConnectingTokenExpiresIn = UGameplayStatics::GetIntOption(Options, Reserved_LoginOpt_ExpiresIn_Required, 30000);
 		const FString& ConnectingToLobby = UGameplayStatics::ParseOption(Options, Reserved_LoginOpt_LobbyId_Optional);
 
 		ULobby* TargetLobby = nullptr;
@@ -1669,8 +1909,20 @@ void UBeamLobbySubsystem::AcceptUserIntoGameServer(const FUserSlot& Slot, const 
 			}
 		}
 
+		// If the user was already validated by this server at some point, we just accept them
+		FBeamRealmUser _;
+		FUserSlot _1;
+		FString _2;
+		if (UserSlots->GetUserDataWithGamerTag(FBeamGamerTag{ConnectingGamerTag}, _, _1, _2, this))
+		{
+			RequestTracker->TriggerOperationSuccess(Op, TEXT(""));
+			return;
+		}
+
 		// Now that we know the player is in one of the lobbies registered in the server, we can validate that this user actually had a valid access token for the given user.
 		// We'll keep the user data inside a series of FUserSlot::MakeServerMappingSlot that are forever increasing.
+		// TODO: This will not require a request to be made when we move to per-realm JWTs.
+
 		// TODO: This means that whenever local players disconnect, we'll need to clear their UserSlot out. 
 		const auto CurrMappingIdx = FPlatformAtomics::InterlockedIncrement(&AutoIncrementServerMappingSlotsIdx);
 
@@ -1682,7 +1934,7 @@ void UBeamLobbySubsystem::AcceptUserIntoGameServer(const FUserSlot& Slot, const 
 		AccountsApi->CPP_GetMe(
 			GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot(),
 			Req,
-			FOnBasicAccountsGetMeFullResponse::CreateLambda([this, CurrMappingIdx, ConnectingAccessToken, ConnectingRefreshToken, TargetLobby, Op](FBasicAccountsGetMeFullResponse Resp)
+			FOnBasicAccountsGetMeFullResponse::CreateLambda([this, CurrMappingIdx, ConnectingAccessToken, ConnectingRefreshToken,ConnectingTokenExpiresIn, TargetLobby, Op, UniqueId](FBasicAccountsGetMeFullResponse Resp)
 			{
 				if (Resp.State == RS_Error)
 				{
@@ -1699,13 +1951,13 @@ void UBeamLobbySubsystem::AcceptUserIntoGameServer(const FUserSlot& Slot, const 
 					FBeamRealmUser _;
 					FUserSlot MappingSlot;
 					FString DefaultStr = TEXT("");
-					if (!UserSlots->GetUserDataWithGamerTag(RequestingGamerTag, _, MappingSlot, DefaultStr))
+					if (!UserSlots->GetUserDataWithGamerTag(RequestingGamerTag, _, MappingSlot, DefaultStr, this))
 					{
 						MappingSlot = FUserSlot::MakeServerMappingSlot(CurrMappingIdx);
 
 						const auto TargetRealm = GetDefault<UBeamCoreSettings>()->TargetRealm;
 						UserSlots->SetAuthenticationDataAtSlot(MappingSlot, ConnectingAccessToken, ConnectingRefreshToken,
-						                                       FDateTime::UtcNow().ToUnixTimestamp(), 30000, TargetRealm.Cid, TargetRealm.Pid, this);
+						                                       FDateTime::UtcNow().ToUnixTimestamp(), ConnectingTokenExpiresIn, TargetRealm.Cid, TargetRealm.Pid, this);
 						UserSlots->SetGamerTagAtSlot(MappingSlot, RequestingGamerTag, this);
 						UserSlots->SetEmailAtSlot(MappingSlot, Resp.SuccessData->Email.GetValueOrDefault(DefaultStr), this);
 
@@ -1718,6 +1970,14 @@ void UBeamLobbySubsystem::AcceptUserIntoGameServer(const FUserSlot& Slot, const 
 					}
 
 					// TODO: Expose hook here, after hook redesign.
+
+					// We also map this gamertag to this net id.
+					if (UniqueId.IsValid())
+					{
+						const auto& Str = UniqueId.GetUniqueNetId()->ToString();
+						Server_NetIdToGamerTag.Add(Str, RequestingGamerTag);
+						Server_GamerTagToNetId.Add(RequestingGamerTag, Str);
+					}
 
 					RequestTracker->TriggerOperationSuccess(Op, TEXT(""));
 				}

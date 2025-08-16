@@ -66,10 +66,8 @@ FString UBeamUserSlots::GetNamespacedSlotId(FUserSlot SlotId, const UObject* Cal
 	{
 		return NamespacedSlotId;
 	}
-	else
-	{
-		return SlotId.Name;
-	}
+
+	return SlotId.Name;
 }
 
 FString UBeamUserSlots::GetNamespacedSlotId(FUserSlot SlotId, int32 PIEInstance)
@@ -145,7 +143,7 @@ bool UBeamUserSlots::GetUserDataAtSlot(FUserSlot SlotId, FBeamRealmUser& OutUser
 	return false;
 }
 
-bool UBeamUserSlots::GetUserDataWithGamerTag(const FBeamGamerTag& GamerTag, FBeamRealmUser& OutUserData, FUserSlot& OutUserSlot, FString& NamespacedSlotId) const
+bool UBeamUserSlots::GetUserDataWithGamerTag(const FBeamGamerTag& GamerTag, FBeamRealmUser& OutUserData, FUserSlot& OutUserSlot, FString& NamespacedSlotId, const UObject* CallingContext) const
 {
 	for (const auto& UserMapping : AuthenticatedUserMapping)
 	{
@@ -154,8 +152,11 @@ bool UBeamUserSlots::GetUserDataWithGamerTag(const FBeamGamerTag& GamerTag, FBea
 		{
 			NamespacedSlotId = UserMapping.Key;
 			GetSlotIdFromNamespacedSlotId(NamespacedSlotId, OutUserSlot);
-			UE_LOG(LogBeamUserSlots, Verbose, TEXT("Found User Data with PID and RefreshToken At Slot!\nUSER_SLOT=%s"), *OutUserSlot.Name);
-			return true;
+			if (GetNamespacedSlotId(OutUserSlot, CallingContext) == NamespacedSlotId)
+			{
+				UE_LOG(LogBeamUserSlots, Verbose, TEXT("Found User Data with PID and RefreshToken At Slot!\nUSER_SLOT=%s"), *OutUserSlot.Name);
+				return true;
+			}
 		}
 	}
 

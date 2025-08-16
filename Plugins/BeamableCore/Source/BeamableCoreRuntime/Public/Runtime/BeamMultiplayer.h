@@ -14,6 +14,7 @@ namespace BeamMultiplayer
 	namespace Authentication
 	{
 		BEAMABLECORERUNTIME_API void PreLoginAsync(const AGameModeBase* GameMode, const FString& String, const FString& Address, const FUniqueNetIdRepl& UniqueId, const FBeamOperationEventHandlerCode& OperationHandler);
+		BEAMABLECORERUNTIME_API void Logout(const AController* Controller);
 	}
 	
 	namespace LocalPlayer

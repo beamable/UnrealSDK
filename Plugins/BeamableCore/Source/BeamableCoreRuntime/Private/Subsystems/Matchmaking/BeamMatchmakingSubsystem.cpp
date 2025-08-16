@@ -243,7 +243,7 @@ void UBeamMatchmakingSubsystem::TryJoinQueue(FUserSlot Slot, FBeamContentId Game
 				FUserSlot SlotInTicket;
 				FBeamRealmUser RealmUser{};
 				FString _;
-				if (UserSlots->GetUserDataWithGamerTag(GamerTag, RealmUser, SlotInTicket, _))
+				if (UserSlots->GetUserDataWithGamerTag(GamerTag, RealmUser, SlotInTicket, _, this))
 					SlotsInTicket.Add(SlotInTicket);
 
 				GamerTagsInTicket.Add(GamerTag);
@@ -270,6 +270,15 @@ void UBeamMatchmakingSubsystem::TryJoinQueue(FUserSlot Slot, FBeamContentId Game
 		}
 	});
 
+	// We use this to enable compatibility with UE's Real-Time Multiplayer Gameplay Framework
+	const auto LocalPlayer = Runtime->GetLocalPlayerForSlot(Slot);
+	if (LocalPlayer && LocalPlayer->GetPreferredUniqueNetId().IsValid())
+	{
+		auto TagsVal = Tags.GetValueOrDefault(TArray<FBeamTag>{});
+		TagsVal.Add(FBeamTag{UBeamLobbySubsystem::Reserved_PlayerTag_UniqueNetId_Property, LocalPlayer->GetPreferredUniqueNetId().GetUniqueNetId()->ToString()});
+		Tags.Val = TagsVal;
+	}
+	
 	FBeamRequestContext Ctx;
 	const auto Req = UPostTicketsRequest::Make(FOptionalBool{true}, {}, Team, {}, FOptionalArrayOfBeamContentId{{GameTypeQueue}}, Tags, GetTransientPackage(), {});
 	MatchmakingApi->CPP_PostTickets(Slot, Req, Handler, Ctx, Op, this);
@@ -344,7 +353,7 @@ void UBeamMatchmakingSubsystem::OnMatchmakingRemoteUpdateReceived(FMatchmakingRe
 						FUserSlot SlotInTicket;
 						FBeamRealmUser RealmUser{};
 						FString _;
-						if (UserSlots->GetUserDataWithGamerTag(GamerTag, RealmUser, SlotInTicket, _))
+						if (UserSlots->GetUserDataWithGamerTag(GamerTag, RealmUser, SlotInTicket, _, this))
 							SlotsInMsg.Add(SlotInTicket);
 
 						GamerTagsInMsg.Add(GamerTag);

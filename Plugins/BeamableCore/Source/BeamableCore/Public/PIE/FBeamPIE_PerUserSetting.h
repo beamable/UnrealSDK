@@ -11,9 +11,6 @@ struct FBeamPIE_PerUserSetting
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FBeamGamerTag GamerTag;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TArray<FBeamTag> Tags = {};
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TMap<FString, FString> LobbyData  = {};

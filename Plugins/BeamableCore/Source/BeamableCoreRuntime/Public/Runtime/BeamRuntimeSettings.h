@@ -98,7 +98,10 @@ public:
 	 *
 	 * Under the hood, we use FUniqueNetIdString to do this as Beamable does not support OnlineSubsystems (because their interfaces are insufficient for supporting the key features of Beamable).
 	 * We do this, because we use this to automatically map the Unreal connections in the server to Beamable GamerTags so we know which Beamable user is which automatically.
-	 * Disabling this will require you to use 
+	 *
+	 * We HIGHLY recommend keeping this enabled as this will make it so as the Beamable GamerTag is used as cross-platform UniqueNetId when developing Real-Time Multiplayer Games.
+	 * This does NOT prevent usage of other OnlineSubsystems (such as Steam or platform ones) --- it just enforces that the UniqueNetId clients send to game servers when connecting is the Beamable GamerTag.
+	 * In other words, this only affects your Replicated UniqueNetId for Real-Time Multiplayer purposes (@link ULocalPlayer::CachedUniqueNetId @endlink); it does not affect ANY ids you get through normal usage of Steam or other platform's OnlineSubsystems. 
 	 */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Gameplay Framework")
 	bool bUseBeamableGamerTagsAsUniqueNetIds = true;

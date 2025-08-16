@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameMode.h"
+#include "GameFramework/PlayerState.h"
 #include "Runtime/BeamMultiplayer.h"
 #include "Subsystems/PIE/BeamPIE.h"
 #include "BeamBallGameMode.generated.h"
@@ -100,6 +101,25 @@ class BEAMPROJ_BEAMBALL_API ABeamBallGameMode : public AGameMode
 	}
 
 public:
+
+	virtual void PostLogin(APlayerController* NewPlayer) override
+	{
+		Super::PostLogin(NewPlayer);
+		// TODO: We can ask people to call a node/utility function here so we can make the various GetUserSlotByPlayerController/State work both in the server and in the client.
+		// It'll work for as long as we have the UniqueId Mapping options set in RuntimeSettings...
+		// When that is turned off, we can emit warnings that these functions will all stop working until you start calling a utility in the Login flow
+		// If you do, that utility will ask the RuntimeSubsystem to map the Player's Controller to their GamerTag --- that mapping is used as a fallback in the server to get a
+		// FUserSlot that returns true for FUserSlot::IsServerMappingSlot (as well as whenever people ask for a gamertag by uniqueid or player controller).
+		// If you don't call this utility, those functions don't work on the server.
+		//BeamMultiplayer::PlayerController::PostLogin(NewPlayer);
+		const auto UniqueIdA = NewPlayer->NetConnection->PlayerId;
+		const auto UniqueIdB = NewPlayer->GetPlayerState<APlayerState>()->GetUniqueId();
+		
+		UE_BEAM_LOG(GEngine->GetWorldContextFromWorld(this->GetWorld()), LogBeamEditor, Warning, TEXT("LoggedIn Id - %s - %s"),
+							*UniqueIdA.GetUniqueNetId().Get()->ToString(),
+							*UniqueIdB.GetUniqueNetId().Get()->ToString())
+	}
+	
 	virtual void PreLoginAsync(const FString& Options, const FString& Address, const FUniqueNetIdRepl& UniqueId, const FOnPreLoginCompleteDelegate& OnComplete) override
 	{
 		// This enables us to test the Pre-Login in PIE correctly (it adds options so that we can accept users in the expected deterministic order the PIE instances create and connect) 
@@ -122,5 +142,10 @@ public:
 				OnComplete.ExecuteIfBound(Evt.EventCode);
 			}
 		}));		
+	}
+
+	virtual void Logout(AController* Exiting) override
+	{
+		Super::Logout(Exiting);
 	}
 };

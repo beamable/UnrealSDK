@@ -154,7 +154,7 @@ UCLASS(BlueprintType, Config=Game)
 class BEAMABLECORERUNTIME_API UBeamLobbySubsystem : public UBeamRuntimeSubsystem
 {
 	GENERATED_BODY()
-	
+
 	friend class UBeamPIE;
 
 public:
@@ -166,6 +166,8 @@ public:
 
 	inline static const FString Reserved_Dedicated_Server_Property = TEXT("__beam_game_server_lobby__");
 	inline static const FString Reserved_Listen_Server_Property = TEXT("__beam_listen_server_lobby__");
+
+	inline static const FString Reserved_PlayerTag_UniqueNetId_Property = TEXT("__beam_unique_net_id__");
 
 	inline static const FString Reserved_LoginOpt_GamerTag_Required = TEXT("LogOptBeamGamerTag");
 	inline static const FString Reserved_LoginOpt_AccessToken_Required = TEXT("LogOptBeamAccessToken");
@@ -205,6 +207,12 @@ public:
 
 private:
 	volatile int64 AutoIncrementServerMappingSlotsIdx = -1;
+
+	/**
+	 * This only ever exists in game servers that call RegisterLobbyWithServerOperation.
+	 */	
+	TMap<FString, FBeamGamerTag> Server_NetIdToGamerTag;
+	TMap<FBeamGamerTag, FString> Server_GamerTagToNetId;
 
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 	virtual void Deinitialize() override;
@@ -261,6 +269,12 @@ public:
 	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
 	bool TryGetLobbyById(FGuid LobbyId, ULobby*& Lobby);
 
+	/**
+	 * Gets the current LobbyId for a give slot. 
+	 */
+	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
+	bool TryGetCurrentLobbyId(FUserSlot Slot, FGuid& LobbyId);
+	
 	/**
 	 * Tries to get whatever the current local data for the given user slot's current lobby. If you want a guarantee that this data is up-to-date call, [CPP_]RefreshLobbyOperation first.
 	 */
@@ -420,6 +434,91 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void PrepareDeleteGlobalData(FUserSlot Slot, const TArray<FString>& GlobalDataToRemove);
 
+	/**
+	 * Use this to create to add to an OpenLevel URL all the options required to use CPP_AcceptUserIntoGameServerOperation in your UGameModeBase::PreLoginAsync call. 
+	 */
+	UFUNCTION(BlueprintCallable)
+	FString PrepareLoginOptions(const FUserSlot& Slot, const FString Options);
+	
+	/**
+	 * @copybrief PrepareLoginOptions
+	 */
+	UFUNCTION(BlueprintCallable)
+	FString PrepareLoginOptionsByLocalPlayer(const ULocalPlayer* LocalPlayer, const FString Options);	
+
+	/**
+	 * @copybrief PrepareLoginOptions
+	 */
+	UFUNCTION(BlueprintCallable)
+	FString PrepareLoginOptionsByPlayerController(const AController* Controller, const FString Options);
+
+	/**
+	 * @copybrief PrepareLoginOptions
+	 */
+	UFUNCTION(BlueprintCallable)
+	FString PrepareLoginOptionsByLocalPlayerIndex(int32 LocalPlayerIdx, const FString Options);
+	
+	/**
+	 * @copybrief PrepareLoginOptions
+	 */
+	UFUNCTION(BlueprintCallable)
+	FString PrepareLoginOptionsFull(const FString& Options, const FString& AccessToken, const FString& RefreshToken, int64 ExpiresIn, const FBeamGamerTag& GamerTag, FString LobbyId) const;
+
+	/**
+	 * For integration with other implementations of Unreal's Gameplay Framework.
+	 *
+	 * In the client, this maps the UE's LocalPlayerIndex to the array of @link UBeamCoreSettings::RuntimeUserSlots @endlink.
+	 * In dedicated servers, we map the UE's a controller's APlayerState's UniqueNetId to a user in a Lobby. This mapping is used to find the PlayerController for the given GamerTag.	 
+	 *	 
+	 * In all failure cases, this returns an empty @link FBeamGamerTag @endlink 
+	 */
+	UFUNCTION(BlueprintCallable)
+	APlayerController* GetPlayerControllerByGamerTag(FBeamGamerTag GamerTag);
+	
+	/**
+	 * For integration with other implementations of Unreal's Gameplay Framework.
+	 *
+	 * In the client, this maps the UE's LocalPlayerIndex to the array of @link UBeamCoreSettings::RuntimeUserSlots @endlink.
+	 * In dedicated servers, this maps the UE's a controller's APlayerState's UniqueNetId to a user in a Lobby.
+	 * Then, it maps that user to a @link FUserSlot @endlink if you have called @link UBeamLobbySubsystem::AcceptUserIntoGameServer @endlink.
+	 *
+	 * These are not available unless you are using @link UBeamLobbySubsystem::AcceptUserIntoGameServer @endlink.
+	 *
+	 * In all failure cases, this returns an empty @link FUserSlot @endlink 
+	 */
+	UFUNCTION(BlueprintCallable)
+	FUserSlot GetUserSlotByPlayerController(const AController* Controller);
+
+	/**
+	 * @copybrief GetUserSlotByPlayerController
+	 */
+	UFUNCTION(BlueprintCallable)
+	FUserSlot GetUserSlotByPlayerState(const APlayerState* State);
+
+	/**
+	 * For integration with other implementations of Unreal's Gameplay Framework.
+	 *
+	 * In the client, this maps the UE's LocalPlayerIndex to the array of @link UBeamCoreSettings::RuntimeUserSlots @endlink. This returns an empty Gamertag if the user is not authenticated.
+	 *
+	 * In dedicated servers, this maps the UE's a controller's APlayerState's UniqueNetId to a user in a Lobby.
+	 * If @link UBeamRuntimeSettings::bUseBeamableGamerTagsAsUniqueNetIds @endlink is true, this will just get the gamertag from it.
+	 * This returns an empty GamerTag if the user was not accepted into the game server yet.
+	 */
+	UFUNCTION(BlueprintCallable)
+	FBeamGamerTag GetGamerTagByPlayerController(const AController* Controller);
+	/**
+	 * @copybrief GetGamerTagByPlayerState
+	 */
+	UFUNCTION(BlueprintCallable)
+	FBeamGamerTag GetGamerTagByPlayerState(const APlayerState* State);
+
+	/**
+	 * Iterates over the list of lobbies we are managing and find the one that has this player.
+	 */
+	UFUNCTION(BlueprintCallable)
+	FGuid GetLobbyIdByGamerTag(FBeamGamerTag GamerTag);
+
+
 	// LOCAL STATE - Dedicated Server
 
 	/**
@@ -429,22 +528,6 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
 	bool TryGetDedicatedServerInstanceLobby(ULobby*& Lobby);
-
-
-	/**
-	 * Use this to create to add to an OpenLevel URL all the options required to use CPP_AcceptUserIntoGameServerOperation in your UGameModeBase::PreLoginAsync call. 
-	 */
-	UFUNCTION(BlueprintCallable)
-	FString PrepareLoginOptions(const ULocalPlayer* LocalPlayer, const FString Options);
-
-	UFUNCTION(BlueprintCallable)
-	FString PrepareLoginOptionsSlot(const FUserSlot& Slot, const FString Options);
-	
-	/**
-	 * Use this to create to add to an OpenLevel URL all the options required to use CPP_AcceptUserIntoGameServerOperation in your UGameModeBase::PreLoginAsync call. 
-	 */
-	UFUNCTION(BlueprintCallable)
-	FString PrepareLoginOptionsFull(const FString& Options, const FString& AccessToken, const FString& RefreshToken, int64 ExpiresIn, const FBeamGamerTag& GamerTag, FString LobbyId) const;
 
 	// OPERATIONS
 
@@ -666,14 +749,14 @@ private:
 	void JoinLobbyByPasscode(FUserSlot UserSlot, FString Passcode, TArray<FBeamTag> PlayerTags = {}, FBeamOperationHandle Op = {});
 	void LeaveLobby(FUserSlot UserSlot, FBeamOperationHandle Op);
 	void KickPlayer(FUserSlot UserSlot, FBeamGamerTag Player, FBeamOperationHandle Op);
-	void CommitLobbyUpdate(const FUserSlot& Slot, FBeamOperationHandle Op);	
+	void CommitLobbyUpdate(const FUserSlot& Slot, FBeamOperationHandle Op);
 	void UpdatePlayerTags(const FUserSlot& Slot, FBeamGamerTag TargetPlayer, TArray<FBeamTag> Tags, bool bShouldReplaceRepeatedTags, FBeamOperationHandle Op);
 	void DeletePlayerTags(const FUserSlot& Slot, FBeamGamerTag TargetPlayer, TArray<FBeamTag> Tags, FBeamOperationHandle Op);
 	void ProvisionGameServerForLobby(const FUserSlot& Slot, FOptionalBeamContentId NewGameContent, FBeamOperationHandle Op);
 	void UpdateGlobalData(FUserSlot Slot, const FGuid& LobbyId, TMap<FString, FString> ToUpdate, TArray<FString> ToDelete, FBeamOperationHandle Op);
 
 	// Dedicated Server API
-	void RegisterLobbyWithServer(const FUserSlot& Slot, const FGuid& LobbyId, FBeamOperationHandle Op);	
+	void RegisterLobbyWithServer(const FUserSlot& Slot, const FGuid& LobbyId, FBeamOperationHandle Op);
 	void AcceptUserIntoGameServer(const FUserSlot& Slot, const FString& Options, const FString& Address, const FUniqueNetIdRepl& UniqueId, FBeamOperationHandle Op);
 
 	// Request Helper Functions
@@ -703,9 +786,9 @@ private:
 	void InitializeLobbyInfoForSlot(const FUserSlot& UserSlot, const FBeamRealmUser& BeamRealmUser);
 	void UpdateLobbyPlayerInfo(FUserSlot Slot, const ULobby* LobbyData);
 	void ReplaceOrAddKnownLobbyData(ULobby* LobbyData);
-	void ClearLobbyForSlot(FUserSlot Slot);	
+	void ClearLobbyForSlot(FUserSlot Slot);
 
 	bool GuardSlotIsInLobby(const FUserSlot& Slot, UBeamLobbyState*& LobbyState);
 	bool GuardIsLobbyOwner(const FUserSlot& Slot, UBeamLobbyState* LobbyState);
-	bool GuardUpdateCommandBegun(const FUserSlot& Slot);	
+	bool GuardUpdateCommandBegun(const FUserSlot& Slot);
 };
