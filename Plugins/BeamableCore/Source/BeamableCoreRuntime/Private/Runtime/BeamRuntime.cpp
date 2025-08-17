@@ -65,19 +65,30 @@ void UBeamConnectivityManager::ConnectionHandler(const FNotificationEvent& Evt, 
 
 			if (TriggerAuthenticatedSlot)
 			{
-				UserSlots->SaveSlot(UserSlot, this);
-				UserSlots->TriggerUserAuthenticatedIntoSlot(UserSlot, Op, this);
+				UserSlots->SaveSlot(UserSlot, this);				
 
 				// If we are mapping the UniqueNetIds to Beamable GamerTags, we do so whenever we log in (mapping done implicitly by order of UBeamCoreSettings::RuntimeUserSlots).
 				if (GetDefault<UBeamRuntimeSettings>()->bUseBeamableGamerTagsAsUniqueNetIds)
 				{
 					auto LocalPlayerForSlot = Runtime->GetLocalPlayerForSlot(UserSlot);
+					if (!LocalPlayerForSlot)
+					{
+						FString Err;					
+						LocalPlayerForSlot = Runtime->GetGameInstance()->CreateLocalPlayer({}, Err, Runtime->GetGameInstance()->GetNumLocalPlayers() == 0);
+						if (!Err.IsEmpty())
+						{
+							RequestTracker->TriggerOperationError(Op, TEXT("FAILED_TO_ASSOCIATE_LOCAL_PLAYER_WITH_SLOT"));							
+							return; 
+						}
+					}
 					FBeamGamerTag GamerTag;
 					Runtime->TryGetSlotGamerTag(UserSlot, GamerTag);
 					auto UnitNetId = FUniqueNetIdString::Create(GamerTag.AsString, NAME_None);
 					FUniqueNetIdRepl UniqueNetRepl(UnitNetId.Get());
 					LocalPlayerForSlot->SetCachedUniqueNetId(UniqueNetRepl);
 				}
+
+				UserSlots->TriggerUserAuthenticatedIntoSlot(UserSlot, Op, this);
 			}
 		}
 		// This only runs during reconnection...

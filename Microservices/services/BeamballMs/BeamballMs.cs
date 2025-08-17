@@ -8,6 +8,7 @@ using Beamable.Common;
 using Beamable.Common.Api.Stats;
 using Beamable.Common.Content;
 using Beamable.Server;
+using Beamable.Server.Api.RealmConfig;
 using Lobby = Beamable.Experimental.Api.Lobbies.Lobby;
 
 namespace Beamable.BeamballMs
@@ -34,9 +35,12 @@ namespace Beamable.BeamballMs
             var gamerTag = account.gamerTags[0].gamerTag;
 
             var userAPI = AssumeNewUser(gamerTag);
-            
+
             var emailSplited = account.email.GetOrElse("No Email@").Split("@");
-            if (emailSplited.Length > 0) { name = emailSplited[0]; }
+            if (emailSplited.Length > 0)
+            {
+                name = emailSplited[0];
+            }
 
             // Add Initial Currency and Skin
             await userAPI.Services.Stats.SetStats(StatsDomainType.Client, StatsAccessType.Public, gamerTag, new Dictionary<string, string>() { { "player_name", name } });
@@ -58,8 +62,7 @@ namespace Beamable.BeamballMs
             // We need to assume new user due the fact it is not called by an authenticated context
             var newUser = AssumeNewUser(userId);
 
-            
-            
+
             // This is a way to fake running the match in the server after 10 seconds it will trigger a server callable 
             // Which is close to an external server calling it with the match result
             await newUser.Services.Scheduler.Schedule().Microservice<BeamballMs>(false)
@@ -87,10 +90,10 @@ namespace Beamable.BeamballMs
             for (var i = 0; i < lobby.players.Value.Length; i++)
             {
                 var lp = lobby.players.Value[i];
-                if(string.IsNullOrEmpty(stats[i])) continue;
-                serverInfo.playerData.Add(lp.playerId, new (){{"beamable.selected_skin", stats[i]}});
+                if (string.IsNullOrEmpty(stats[i])) continue;
+                serverInfo.playerData.Add(lp.playerId, new() { { "beamable.selected_skin", stats[i] } });
             }
-            
+
             return serverInfo;
         }
 
@@ -135,5 +138,37 @@ namespace Beamable.BeamballMs
                 })
             });
         }
+
+        /// <summary>
+        /// Utility function defining defaults and keys for the "hathora_integration" realm-config namespace.
+        /// These must be correctly set up in your realm for this microservice to work. 
+        /// </summary>
+        private static HathoraRealmConfig GetHathoraRealmConfig(RealmConfig config)
+        {
+            const string kNamespaceHathoraIntegration = "hathora_integration";
+            const string kKeyAppID = "app_id";
+            const string kKeyDevToken = "dev_token";
+            const string kKeyFallbackRegion = "fallback_region";
+            const string kKeyHathoraURL = "hathora_url";
+
+
+            var hathoraRealmConfig = new HathoraRealmConfig
+            {
+                AppId = config.GetSetting(kNamespaceHathoraIntegration, kKeyAppID),
+                DeveloperToken = config.GetSetting(kNamespaceHathoraIntegration, kKeyDevToken),
+                FallbackRegion = config.GetSetting(kNamespaceHathoraIntegration, kKeyFallbackRegion, "Seattle"),
+                HathoraURL = new Uri(config.GetSetting(kNamespaceHathoraIntegration, kKeyHathoraURL, "https://api.hathora.dev"))
+            };
+
+            return hathoraRealmConfig;
+        }
+    }
+
+    public class HathoraRealmConfig
+    {
+        public string AppId;
+        public string DeveloperToken;
+        public string FallbackRegion;
+        public Uri HathoraURL;
     }
 }

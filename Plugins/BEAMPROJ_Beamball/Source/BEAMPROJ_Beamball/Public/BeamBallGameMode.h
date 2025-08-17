@@ -35,11 +35,13 @@ public:
 		BeamPIE::GameInstance::StartGameInstance(this);
 	}
 
+#if WITH_EDITOR
 	virtual FGameInstancePIEResult StartPlayInEditorGameInstance(ULocalPlayer* LocalPlayer, const FGameInstancePIEParameters& Params) override
 	{
 		BeamPIE::GameInstance::StartPlayInEditorGameInstance(this, LocalPlayer, Params);
 		return Super::StartPlayInEditorGameInstance(LocalPlayer, Params);
 	}
+#endif
 
 	virtual bool DelayPendingNetGameTravel() override
 	{

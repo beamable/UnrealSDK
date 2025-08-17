@@ -8,6 +8,8 @@
 #include "KismetCompiler.h"
 #include "MVVM/ViewModels/OutlinerColumns/OutlinerColumnTypes.h"
 
+#define LOCTEXT_NAMESPACE "K2BeamNode_CastNode"
+
 void UK2BeamNode_CastNode::AllocateDefaultPins()
 {
 	Super::AllocateDefaultPins();
@@ -222,7 +224,7 @@ void UK2BeamNode_CastNode::GetNodeContextMenuActions(UToolMenu* Menu, UGraphNode
 	{
 		FToolMenuSection& Section = Menu->AddSection("UK2BeamNode_Switch", NSLOCTEXT("K2Nodes", "UK2BeamNode_SwitchHeader", "Switch Node"));
 
-		FTextKey LLOCTEXT_NAMESPACE;
+		
 		if (Context->Pin != NULL)
 		{
 			if (Context->Pin->Direction == EGPD_Input && Context->Pin->ParentPin == nullptr && !WildcardsPins.Contains(FGuid(Context->Pin->PinName.ToString())))
@@ -303,7 +305,6 @@ void UK2BeamNode_CastNode::RemoveInputPin(UEdGraphPin* Pin)
 	check(Pin->ParentPin == nullptr);
 	checkSlow(Pins.Contains(Pin));
 
-	FTextKey LLOCTEXT_NAMESPACE;
 	FScopedTransaction Transaction(LOCTEXT("RemovePinTx", "RemovePin"));
 	Modify();
 
@@ -566,3 +567,5 @@ FNodeHandlingFunctor* UK2BeamNode_CastNode::CreateNodeHandler(FKismetCompilerCon
 {
 	return new FNodeHandlingFunctor(CompilerContext);
 }
+
+#undef LOCTEXT_NAMESPACE

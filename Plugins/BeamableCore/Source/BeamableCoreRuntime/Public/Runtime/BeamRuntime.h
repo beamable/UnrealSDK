@@ -1239,7 +1239,7 @@ public:
 	bool IsListenGameServer() const { return GetWorld()->IsNetMode(NM_ListenServer); }
 
 	UFUNCTION(BlueprintPure)
-	bool IsClient() const { return GetWorld()->IsNetMode(NM_Client); }
+	bool IsClient() const { return GetWorld()->IsNetMode(NM_Client) || GetWorld()->IsNetMode(NM_Standalone); }
 
 
 	// Notification Utilities
