@@ -500,7 +500,7 @@ public:
 	 *
 	 * In the client, this maps the UE's LocalPlayerIndex to the array of @link UBeamCoreSettings::RuntimeUserSlots @endlink. This returns an empty Gamertag if the user is not authenticated.
 	 *
-	 * In dedicated servers, this maps the UE's a controller's APlayerState's UniqueNetId to a user in a Lobby.
+	 * In dedicated servers, this maps the UE's a controller's APlayerState's UniqueNetId to a user in a Lobby. Will only return valid values AFTER AGameMode::OnPostLogin.
 	 * If @link UBeamRuntimeSettings::bUseBeamableGamerTagsAsUniqueNetIds @endlink is true, this will just get the gamertag from it.
 	 * This returns an empty GamerTag if the user was not accepted into the game server yet.
 	 */
