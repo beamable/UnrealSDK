@@ -1,60 +1,59 @@
 #pragma once
 
 #include "BeamCoreSettings.h"
+#include "BeamLogging.h"
 #include "IPIEAuthorizer.h"
 #include "PIE/BeamPIEConfig.h"
 #include "PIE/BeamPIE_Settings.h"
 
 
-class UBeamPIEModularFeature: public IPIEAuthorizer
+class UBeamPIEModularFeature : public IPIEAuthorizer
 {
 public:
-
 	virtual bool RequestPIEPermission(bool bIsSimulateInEditor, FString& OutReason) const override
 	{
 		auto BeamCoreSettings = GetDefault<UBeamCoreSettings>();
-		if (!BeamCoreSettings->bEnableBeamPIE)
-		{
-			return true;
-		}
-		
+		if (!BeamCoreSettings->bEnableBeamPIE) return true;
+
 		auto PlaySettings = GetMutableDefault<ULevelEditorPlaySettings>();
-		
+
 		int NumOfPlayers;
 		PlaySettings->GetPlayNumberOfClients(NumOfPlayers);
 
 		auto BeamPIEConfig = GetMutableDefault<UBeamPIEConfig>();
-		
+
 		FGuid SelectedSettingGUID;
 		SelectedSettingGUID.Invalidate();
 
 		auto Contexts = GEngine->GetWorldContexts();
 		for (auto Context : Contexts)
 		{
-			UE_LOG(LogTemp, Display, TEXT("GetWorldContexts %s"), *Context.World()->GetMapName());
+			UE_LOG(LogBeamEditor, Verbose, TEXT("GetWorldContexts %s"), *Context.World()->GetMapName());
 		}
+
 		if (Contexts.Num() == 0)
 		{
-			OutReason = TEXT("There's no level opened, you shouldn't be able to entering in the PIE mode.");
+			OutReason = TEXT("There's no level opened, you shouldn't be able to enter PIE mode.");
 			return false;
 		}
-		auto World = Contexts[0].World();
-		FString CurrentLevel = 	World->GetMapName();
+
+		const auto& World = Contexts[0].World();
+		const auto& CurrentLevel = World->GetMapName();
 		if (BeamPIEConfig->PerMapSelection.Contains(CurrentLevel))
 		{
 			SelectedSettingGUID = BeamPIEConfig->PerMapSelection[CurrentLevel];
 		}
 		UE_LOG(LogTemp, Display, TEXT("Current Level: %s"), *CurrentLevel);
-		
+
 		if (!SelectedSettingGUID.IsValid())
 		{
 			// If the selected settings is not valid that means there's no select settings for this level
 			// So we just allow you to continue.
 			return true;
 		}
-		
+
 		FBeamPIE_Settings SelectedSetting;
-		
+
 		for (auto Setting : BeamPIEConfig->AllSettings)
 		{
 			if (Setting.SettingsId == SelectedSettingGUID)
@@ -66,17 +65,25 @@ public:
 		FString ErrorReason = TEXT("");
 
 		// Checking if the number of assigned user is the same as the play mode setup
-		ErrorReason +=  NumOfPlayers != SelectedSetting.AssignedUsers.Num() ? FString::Printf(TEXT("\nThe number of players in the PIE Settings should be the same as in the Play config. [PIE Settings Players: %d] [Play Config Players: %d]"), SelectedSetting.AssignedUsers.Num(), NumOfPlayers) : TEXT("");
+		ErrorReason += NumOfPlayers != SelectedSetting.AssignedUsers.Num()
+			               ? FString::Printf(
+				               TEXT("\nThe number of players in the PIE Settings should be the same as in the Play config. [PIE Settings Players: %d] [Play Config Players: %d]"), SelectedSetting.AssignedUsers.Num(),
+				               NumOfPlayers)
+			               : TEXT("");
 
 		// Checking the gamer tag for each assigned user
 		for (auto AssignedUser : SelectedSetting.AssignedUsers)
 		{
-			ErrorReason += AssignedUser.Value.GamerTag.AsString.IsEmpty() ? FString::Printf(TEXT("\nThe [PIE Index: %d UserSlot %s] is not configured correctly, it's missing the gamer tag."), AssignedUser.Key.PIEIndex, *AssignedUser.Key.Slot.Name) : TEXT("");
+			ErrorReason += AssignedUser.Value.GamerTag.AsString.IsEmpty()
+				               ? FString::Printf(TEXT("\nThe [PIE Index: %d UserSlot %s] is not configured correctly, it's missing the gamer tag."), AssignedUser.Key.PIEIndex, *AssignedUser.Key.Slot.Name)
+				               : TEXT("");
 		}
-		
-		if ( !ErrorReason.IsEmpty() )
+
+		if (!ErrorReason.IsEmpty())
 		{
-			OutReason = FString::Printf(TEXT("PIE Setting Failed: %s"), *ErrorReason);
+			OutReason = FString::Printf(TEXT("BeamPIE Setting Failed: %s"), *ErrorReason);
+			FMessageDialog WarningDialog;
+			WarningDialog.Open(EAppMsgCategory::Error, EAppMsgType::Ok, FText::FromString(ErrorReason),FText::FromString(TEXT("BeamPIE Setting Failed")) );
 			return false; // PIE will be blocked
 		}
 
