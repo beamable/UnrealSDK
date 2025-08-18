@@ -121,6 +121,13 @@ void UBeamUserDeveloperManagerEditor::TriggerOnPreBeginPIE(ULevelEditorPlaySetti
 	{
 		return;
 	}
+	for (auto AssignedUser : Settings->AssignedUsers)
+	{
+		if (AssignedUser.Value.GamerTag.AsString.IsEmpty())
+		{
+			return;
+		}
+	}
 	auto BeamCoreSettings = GetDefault<UBeamCoreSettings>();
 
 	// We have this guard to force copy the user if the PID / Cid is different from the target
