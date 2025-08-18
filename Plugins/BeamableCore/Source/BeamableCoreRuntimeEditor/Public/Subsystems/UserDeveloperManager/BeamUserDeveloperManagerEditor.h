@@ -88,6 +88,13 @@ public:
 	void DeleteUser(FBeamGamerTag GamerTag);
 
 	/**
+	 * Create a new user
+	 */
+	UFUNCTION(BlueprintCallable)
+	void CreateNewUserOperation(FString Alias, EBeamDeveloperUserType DeveloperUserType, FBeamOperationEventHandler OperationEventHandle);
+
+	
+	/**
 	 * Create a new user and copy the stats and inventory to the created user from a template gamer tag
 	 */
 	UFUNCTION(BlueprintCallable)

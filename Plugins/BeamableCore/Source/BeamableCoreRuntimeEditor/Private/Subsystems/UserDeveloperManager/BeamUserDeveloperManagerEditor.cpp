@@ -358,6 +358,38 @@ void UBeamUserDeveloperManagerEditor::DeleteUser(FBeamGamerTag GamerTag)
 	BeamCli->RunCommandServer(RemoveCommand, args, Handler);
 }
 
+void UBeamUserDeveloperManagerEditor::CreateNewUserOperation(FString Alias, EBeamDeveloperUserType DeveloperUserType, FBeamOperationEventHandler OperationEventHandle)
+{
+	auto OperationHandler = RequestTracker->BeginOperation({}, GetName(), OperationEventHandle);
+	UBeamCliDeveloperUserManagerCreateUserCommand* CreateUserCommand = NewObject<UBeamCliDeveloperUserManagerCreateUserCommand>();
+
+	CreateUserCommand->OnStreamOutput = [this](const TArray<UBeamCliDeveloperUserManagerCreateUserStreamData*>& Stream, const TArray<int64>&,
+											   const FBeamOperationHandle&)
+	{
+	};
+	CreateUserCommand->OnCompleted = [this, OperationHandler](const int& Res, const FBeamOperationHandle&)
+	{
+		if (Res == 0)
+		{
+			RequestTracker->TriggerOperationSuccess(OperationHandler, TEXT(""));
+		}
+		else
+		{
+			RequestTracker->TriggerOperationError(OperationHandler, TEXT(""));
+		}
+	};
+
+	auto args = {
+		FString::Printf(TEXT("--alias \"%s\""), *Alias),
+		FString::Printf(TEXT("--description \"\"")),
+		FString::Printf(TEXT("--user-type %d"), DeveloperUserType),
+	};
+
+	auto Handler = RequestTracker->CPP_BeginOperation({}, GetName(), {});
+
+	BeamCli->RunCommandServer(CreateUserCommand, args, Handler);
+}
+
 
 void UBeamUserDeveloperManagerEditor::CopyTemplateToNewUserOperation(UDeveloperUserDataStreamData* UserData, EBeamDeveloperUserType DeveloperUserType, FBeamOperationEventHandler OperationEventHandle)
 {
