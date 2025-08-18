@@ -179,6 +179,7 @@ public:
 			// Then, we apply the realm secret and the routing key map
 			Backend->RealmSecret = Config->CurrRealmSecret;
 			Backend->SetRoutingKeyMap(Config->CurrRoutingKeyMap);
+			CoreSettings->TargetRealm = Config->CurrTargetRealm;
 
 			const auto MapName = Config->CurrPIEMap;
 			UE_LOG(LogTemp, Warning, TEXT("MAP NAME: %s"), *MapName);
@@ -326,7 +327,6 @@ public:
 	                                FRuntimeError OnStartedFailedHandler,
 	                                UObject* CallingContext)
 	{
-
 #if WITH_EDITOR
 		// If we don't have a selected setting while in the editor, don't do anything.
 		// Outside the editor and in game servers, this node acts like a BeamInit node.
@@ -497,9 +497,6 @@ public:
 		RequestTracker->TriggerOperationSuccess(Op, TEXT(""));
 		return;
 #endif
-
-		// We only run this once per-PIE-Instance-Session (this is here since people might loop back around within a single PIE session --- in which case this should not run).
-		bCustomGameInstanceGuard = true;
 
 		ensureAlwaysMsgf(CallingContext, TEXT("You must provide a calling context to this function!"));
 
@@ -1124,30 +1121,26 @@ private:
 							return;
 						}
 
-						// The server is creating the lobby and, once its done it'll register the created lobby with itself.						
-						// So... we wait for it and then trigger successfully.
-						Async(EAsyncExecution::Thread, [this, Op, World, WorldContext, CallingContext]()
+						ULobby* FoundLobby;
+						auto FoundLobbyInServer = World->GetGameInstance()->GetSubsystem<UBeamLobbySubsystem>()->TryGetLobbyById(FGuid{FakeLobbyId}, FoundLobby);
+						if (!FoundLobbyInServer)
 						{
-							ULobby* FoundLobby;
-							auto FoundLobbyInServer = World->GetGameInstance()->GetSubsystem<UBeamLobbySubsystem>()->TryGetLobbyById(FGuid{FakeLobbyId}, FoundLobby);
-							while (IsValidContext(WorldContext) && !FoundLobbyInServer)
+							FTSTicker::GetCoreTicker().AddTicker(FTickerDelegate::CreateLambda([this,WorldContext, Op](const float)
 							{
-								FPlatformProcess::Sleep(0.2f);
-								if (IsValidContext(WorldContext))
-								{
-									if (const auto LobbySubsystem = World->GetGameInstance()->GetSubsystem<UBeamLobbySubsystem>())
-										FoundLobbyInServer = LobbySubsystem->TryGetLobbyById(FGuid{FakeLobbyId}, FoundLobby);
-								}
-							}
-
-							AsyncTask(ENamedThreads::GameThread, [this, Op, CallingContext]()
-							{
-								if (IsValidChecked(CallingContext))
+								if (!IsValidContext(WorldContext) || !WorldContext->World()) return false;
+								ULobby* FoundLobby;
+								if (WorldContext->World()->GetGameInstance()->GetSubsystem<UBeamLobbySubsystem>()->TryGetLobbyById(FGuid{FakeLobbyId}, FoundLobby))
 								{
 									RequestTracker->TriggerOperationSuccess(Op, TEXT(""));
+									return false;
 								}
-							});
-						});
+								return true;
+							}), 0.2f);
+						}
+						else
+						{
+							RequestTracker->TriggerOperationSuccess(Op, TEXT(""));
+						}
 					}
 					// In the clients, Init PIE will wait until the user is in the lobby.
 					else
@@ -1410,15 +1403,17 @@ namespace BeamPIE
 			auto BeamPIE = GEngine->GetEngineSubsystem<UBeamPIE>();
 			BeamPIE->PreparePIE_Advanced_NotifyCustomGameInstanceGuard(false);
 			BeamPIE->CPP_PreparePIEOperation(GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot(), This->GetWorld(), {});
+			BeamPIE->PreparePIE_Advanced_NotifyCustomGameInstanceGuard(true);			
 		}
 
 #if WITH_EDITOR
 		BEAMABLECORERUNTIME_API inline void StartPlayInEditorGameInstance(UGameInstance* This, ULocalPlayer* LocalPlayer, const FGameInstancePIEParameters& Params)
 		{
 			UE_LOG(LogBeamRuntime, Warning, TEXT("INIT PLAY IN EDITOR (PIE) --- Is Server: %d"), This->IsDedicatedServerInstance());
-			auto BeamPIE = GEngine->GetEngineSubsystem<UBeamPIE>();
-			BeamPIE->PreparePIE_Advanced_NotifyCustomGameInstanceGuard(false);
+			auto BeamPIE = GEngine->GetEngineSubsystem<UBeamPIE>();			
+			BeamPIE->PreparePIE_Advanced_NotifyCustomGameInstanceGuard(false);			
 			BeamPIE->CPP_PreparePIEOperation(GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot(), This->GetWorld(), {});
+			BeamPIE->PreparePIE_Advanced_NotifyCustomGameInstanceGuard(true);			
 		}
 #endif
 
