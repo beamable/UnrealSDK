@@ -39,7 +39,7 @@ class BEAMABLECORERUNTIME_API UBeamPIE : public UEngineSubsystem
 
 	friend class UBeamRuntime;
 
-	const static inline FString WaitRoomLevel = "L_Beamable_PIEWaitRoom";
+	const static inline FString WaitRoomLevel = TEXT("L_Beamable_PIEWaitRoom");
 
 	static inline FBeamPIE_Settings DefaultSettingsPtr = {};
 
@@ -50,9 +50,11 @@ class BEAMABLECORERUNTIME_API UBeamPIE : public UEngineSubsystem
 	TMap<int32, FBeamOperationHandle> ClientDelayMapHandles;
 
 	/**
-	 * This ensures that the init flow only runs once per PIE run (even if you circle back to the starting map).
+	 * Basically, this allows us to know that a custom game instance implementation is being used to bootstrap Beamable.
+	 * We need to know this so we can correctly guarantee that Easy/Advanced implementations of BeamPIE don't conflict.
+	 * Ie.: Try to initialize more than once.
 	 */
-	bool bInitBeamPIERequested = false;
+	bool bCustomGameInstanceGuard = false;
 
 	/**
 	 * This is irrelevant on the server -- only matters in the client.
@@ -141,7 +143,7 @@ public:
 		SelectedSettings = DefaultSettings();
 		PreLoginExpectingPieIndex = 1; // Starts at one because all PIE clients are instances 1~X.
 		PreLoginExpectingUserSlotInPieIndex = 0; // Starts at one because this indexes into UBeamCoreSettings::RuntimeUserSlots for each PreLoginExpectingPieIndex.
-		bInitBeamPIERequested = false;
+		bCustomGameInstanceGuard = false;
 		ClientDelayMapHandles.Reset();
 
 #if WITH_EDITOR
@@ -190,7 +192,7 @@ public:
 		{
 			// Reset all the internal state we use to initialize BeamPIE every time we go into play mode
 			{
-				bInitBeamPIERequested = false;
+				bCustomGameInstanceGuard = false;
 				FakeLobbyId.Empty();
 				PreLoginExpectingPieIndex = 1; // Starts at one because all PIE clients are instances 1~X.
 				PreLoginExpectingUserSlotInPieIndex = 0; // Starts at one because this indexes into UBeamCoreSettings::RuntimeUserSlots for each PreLoginExpectingPieIndex.}
@@ -317,15 +319,20 @@ public:
 	 * This enables BeamPIE for any gameplay level where you put this as the Level Blueprint's BeginPlay function.  
 	 */
 	UFUNCTION(BlueprintCallable, DisplayName="Easy Enable - Gameplay", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
-	void EasyEnableBeamPIE_Gameplay(FString Options, UObject* CallingContext)
+	void EasyEnableBeamPIE_Gameplay(FString Options, bool InitWhenServerBuild,
+	                                UPARAM(DisplayName="Server Build - On Started")
+	                                FBeamRuntimeHandler OnStarted,
+	                                UPARAM(DisplayName="Server Build - On Started Failed")
+	                                FRuntimeError OnStartedFailedHandler,
+	                                UObject* CallingContext)
 	{
-#if !WITH_EDITOR
-		return;
-#endif
 
-		// If we don't have a selected setting, don't do anything.
+#if WITH_EDITOR
+		// If we don't have a selected setting while in the editor, don't do anything.
+		// Outside the editor and in game servers, this node acts like a BeamInit node.
 		const auto Settings = GetSelectedPIESettings();
 		if (!Settings || Settings->IsDefaultSettings()) return;
+#endif
 
 		// Get the world
 		const auto World = CallingContext->GetWorld();
@@ -338,9 +345,19 @@ public:
 		const auto GI = World->GetGameInstance();
 		if (!ensureAlwaysMsgf(GI, TEXT("You should never see this!"))) return;
 
-		UBeamPIE* BeamPIE = GEngine->GetEngineSubsystem<UBeamPIE>();
+		// Get the runtime and, when this is a server build, this node is equivalent to a UBeamRuntime::InitSDK.
 		UBeamRuntime* BeamRuntime = GI->GetSubsystem<UBeamRuntime>();
-		if (BeamRuntime->IsGameServer() && BeamPIE->FakeLobbyId.IsEmpty() && !bInitBeamPIERequested)
+#if !WITH_EDITOR
+		if (BeamRuntime->IsGameServer() && InitWhenServerBuild)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Initializing Beamable from Easy BeamPIE!"));
+			BeamRuntime->InitSDK(OnStarted, OnStartedFailedHandler);
+		}
+		return;
+#endif
+
+		UBeamPIE* BeamPIE = GEngine->GetEngineSubsystem<UBeamPIE>();
+		if (BeamRuntime->IsGameServer() && BeamPIE->FakeLobbyId.IsEmpty() && !bCustomGameInstanceGuard)
 		{
 			FakeOptions = Options;
 			World->ServerTravel(WaitRoomLevel);
@@ -377,7 +394,7 @@ public:
 	FBeamOperationHandle PreparePIEOperation(FUserSlot UserSlot, UObject* CallingContext, FBeamOperationEventHandler OnOperationEvent)
 	{
 		FBeamOperationHandle Op = RequestTracker->BeginOperation({}, CallingContext->GetName(), OnOperationEvent);
-		if (!bInitBeamPIERequested) PreparePIE_EnsureInit(CallingContext, Op);
+		if (!bCustomGameInstanceGuard) PreparePIE_EnsureInit(CallingContext, Op);
 		else WaitUntilInitPIE(CallingContext, Op);
 		return Op;
 	}
@@ -388,7 +405,7 @@ public:
 	FBeamOperationHandle CPP_PreparePIEOperation(FUserSlot UserSlot, UObject* CallingContext, FBeamOperationEventHandlerCode OnOperationEvent)
 	{
 		FBeamOperationHandle Op = RequestTracker->CPP_BeginOperation({}, CallingContext->GetName(), OnOperationEvent);
-		if (!bInitBeamPIERequested) PreparePIE_EnsureInit(CallingContext, Op);
+		if (!bCustomGameInstanceGuard) PreparePIE_EnsureInit(CallingContext, Op);
 		else WaitUntilInitPIE(CallingContext, Op);
 		return Op;
 	}
@@ -482,7 +499,7 @@ public:
 #endif
 
 		// We only run this once per-PIE-Instance-Session (this is here since people might loop back around within a single PIE session --- in which case this should not run).
-		bInitBeamPIERequested = true;
+		bCustomGameInstanceGuard = true;
 
 		ensureAlwaysMsgf(CallingContext, TEXT("You must provide a calling context to this function!"));
 
@@ -1024,11 +1041,11 @@ public:
 	 * When setting up the advanced flow, we need this function to be called before we actually prepare PIE so that it disables the Easy Mode Beam PIE from running.
 	 * This is mostly just to not have to ask people to remove the node from their level blueprints. 
 	 */
-	void PreparePIE_Advanced_NotifyRequestedPreparePIE(bool state)
+	void PreparePIE_Advanced_NotifyCustomGameInstanceGuard(bool state)
 	{
 #if WITH_EDITOR
-		bInitBeamPIERequested = state;
-#endif		
+		bCustomGameInstanceGuard = state;
+#endif
 	}
 
 	/**
@@ -1042,7 +1059,7 @@ public:
 #if !WITH_EDITOR
 		return false;
 #endif
-		
+
 		auto CoreSettings = GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot();
 		const auto PieInstanceIdx = FBeamPIE_Utilities::GetPIEInstance(This->GetWorldContext());
 		if (!ClientDelayMapHandles.Contains(PieInstanceIdx))
@@ -1381,7 +1398,7 @@ namespace BeamPIE
 #endif
 			UE_LOG(LogBeamRuntime, Warning, TEXT("PRE-INIT PLAY IN EDITOR --- Is Server: %d"), This->IsDedicatedServerInstance());
 			auto BeamPIE = GEngine->GetEngineSubsystem<UBeamPIE>();
-			BeamPIE->PreparePIE_Advanced_NotifyRequestedPreparePIE(true);
+			BeamPIE->PreparePIE_Advanced_NotifyCustomGameInstanceGuard(true);
 		}
 
 		BEAMABLECORERUNTIME_API inline void StartGameInstance(UGameInstance* This)
@@ -1391,7 +1408,7 @@ namespace BeamPIE
 #endif
 			UE_LOG(LogBeamRuntime, Warning, TEXT("INIT PLAY IN EDITOR --- Is Server: %d"), This->IsDedicatedServerInstance());
 			auto BeamPIE = GEngine->GetEngineSubsystem<UBeamPIE>();
-			BeamPIE->PreparePIE_Advanced_NotifyRequestedPreparePIE(false);
+			BeamPIE->PreparePIE_Advanced_NotifyCustomGameInstanceGuard(false);
 			BeamPIE->CPP_PreparePIEOperation(GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot(), This->GetWorld(), {});
 		}
 
@@ -1399,8 +1416,9 @@ namespace BeamPIE
 		BEAMABLECORERUNTIME_API inline void StartPlayInEditorGameInstance(UGameInstance* This, ULocalPlayer* LocalPlayer, const FGameInstancePIEParameters& Params)
 		{
 			UE_LOG(LogBeamRuntime, Warning, TEXT("INIT PLAY IN EDITOR (PIE) --- Is Server: %d"), This->IsDedicatedServerInstance());
-			auto BeamPie = GEngine->GetEngineSubsystem<UBeamPIE>();
-			BeamPie->CPP_PreparePIEOperation(GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot(), This->GetWorld(), {});
+			auto BeamPIE = GEngine->GetEngineSubsystem<UBeamPIE>();
+			BeamPIE->PreparePIE_Advanced_NotifyCustomGameInstanceGuard(false);
+			BeamPIE->CPP_PreparePIEOperation(GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot(), This->GetWorld(), {});
 		}
 #endif
 

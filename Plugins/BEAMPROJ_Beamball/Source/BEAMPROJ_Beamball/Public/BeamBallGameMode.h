@@ -59,51 +59,56 @@ class BEAMPROJ_BEAMBALL_API ABeamBallGameMode : public AGameMode
 
 	virtual void BeginPlay() override
 	{
-		// If we need to set up our orchestrator... 
-		if (BeamPIE::Orchestrator::ShouldRegisterOrchestrator(this))
+		// This will run once beamable (you can either call init here OR 
+		const auto BeamRuntime = GetGameInstance()->GetSubsystem<UBeamRuntime>();
+		BeamRuntime->CPP_RegisterOnStarted(FBeamRuntimeHandlerCode::CreateLambda([this]()
 		{
-			// If we have no settings, then we are running in a build.
-			UE_LOG(LogTemp, Warning, TEXT("Setting up my orchestrator!!!!"));
-
-			// Let's call RegisterLobbyWithServer so that the Federation becomes aware that the GameServer already has the Beamable lobby data in it.
-			// Only after this call succeeds will the Federation notify users that the match was found --- this means that PreLoginAsync is guaranteed to have the lobby data at that point. 
-			const auto LobbyId = BeamMultiplayer::Orchestrator::GetLobbyIdFromCLArgs(this);
-			BeamMultiplayer::Orchestrator::RegisterLobbyWithServer(this, LobbyId, FBeamOperationEventHandlerCode::CreateLambda([this, LobbyId](FBeamOperationEvent Evt)
+			UE_LOG(LogTemp, Warning, TEXT("Started!"));
+			// If we need to set up our orchestrator... 
+			if (BeamPIE::Orchestrator::ShouldRegisterOrchestrator(this))
 			{
-				// Failed to get lobby data from Beamable
-				// TODO: Handle error by telling Orchestrator to kill the room maybe? 
-				if (Evt.CompletedWithError()) return;
+				// If we have no settings, then we are running in a build.
+				UE_LOG(LogTemp, Warning, TEXT("Setting up my orchestrator!!!!"));
 
-				// Got the lobby data from Beamable
-				// TODO: Handle success by doing whatever sort of pre-loading of data based on the lobby 
-				if (Evt.CompletedWithSuccess())
+				// Let's call RegisterLobbyWithServer so that the Federation becomes aware that the GameServer already has the Beamable lobby data in it.
+				// Only after this call succeeds will the Federation notify users that the match was found --- this means that PreLoginAsync is guaranteed to have the lobby data at that point. 
+				const auto LobbyId = BeamMultiplayer::Orchestrator::GetLobbyIdFromCLArgs(this);
+				BeamMultiplayer::Orchestrator::RegisterLobbyWithServer(this, LobbyId, FBeamOperationEventHandlerCode::CreateLambda([this, LobbyId](FBeamOperationEvent Evt)
 				{
-					const auto Lobbies = GetGameInstance()->GetSubsystem<UBeamLobbySubsystem>();
-					ULobby* Lobby;
-					if (Lobbies->TryGetLobbyById(LobbyId, Lobby))
-					{
-						// Do stuff with the lobby
-						BeamMultiplayer::Orchestrator::NotifyLobbyReady(this, LobbyId, FBeamOperationEventHandlerCode::CreateLambda([](FBeamOperationEvent Evt)
-						{
-							// Users will never receive the notification that a match was found, will timeout and get put back into the queue.
-							// TODO: Maybe kill the server so it doesn't linger?
-							if (Evt.CompletedWithError()) return;
+					// Failed to get lobby data from Beamable
+					// TODO: Handle error by telling Orchestrator to kill the room maybe? 
+					if (Evt.CompletedWithError()) return;
 
-							// Users will start trying to connect soon (PreLoginAsync flow)
-							if (Evt.CompletedWithSuccess()) return;
-						}));
-					}
-					else
+					// Got the lobby data from Beamable
+					// TODO: Handle success by doing whatever sort of pre-loading of data based on the lobby 
+					if (Evt.CompletedWithSuccess())
 					{
-						// Something went really wrong inside the Lobby Subsystem (report to Beamable)...
+						const auto Lobbies = GetGameInstance()->GetSubsystem<UBeamLobbySubsystem>();
+						ULobby* Lobby;
+						if (Lobbies->TryGetLobbyById(LobbyId, Lobby))
+						{
+							// Do stuff with the lobby
+							BeamMultiplayer::Orchestrator::NotifyLobbyReady(this, LobbyId, FBeamOperationEventHandlerCode::CreateLambda([](FBeamOperationEvent Evt)
+							{
+								// Users will never receive the notification that a match was found, will timeout and get put back into the queue.
+								// TODO: Maybe kill the server so it doesn't linger?
+								if (Evt.CompletedWithError()) return;
+
+								// Users will start trying to connect soon (PreLoginAsync flow)
+								if (Evt.CompletedWithSuccess()) return;
+							}));
+						}
+						else
+						{
+							// Something went really wrong inside the Lobby Subsystem (report to Beamable)...
+						}
 					}
-				}
-			}));
-		}
+				}));
+			}
+		}));
 	}
 
 public:
-
 	virtual void PostLogin(APlayerController* NewPlayer) override
 	{
 		Super::PostLogin(NewPlayer);
@@ -113,15 +118,17 @@ public:
 		// If you do, that utility will ask the RuntimeSubsystem to map the Player's Controller to their GamerTag --- that mapping is used as a fallback in the server to get a
 		// FUserSlot that returns true for FUserSlot::IsServerMappingSlot (as well as whenever people ask for a gamertag by uniqueid or player controller).
 		// If you don't call this utility, those functions don't work on the server.
-		//BeamMultiplayer::PlayerController::PostLogin(NewPlayer);
-		const auto UniqueIdA = NewPlayer->NetConnection->PlayerId;
-		const auto UniqueIdB = NewPlayer->GetPlayerState<APlayerState>()->GetUniqueId();
-		
-		UE_BEAM_LOG(GEngine->GetWorldContextFromWorld(this->GetWorld()), LogBeamEditor, Warning, TEXT("LoggedIn Id - %s - %s"),
-							*UniqueIdA.GetUniqueNetId().Get()->ToString(),
-							*UniqueIdB.GetUniqueNetId().Get()->ToString())
+		//
+		// BeamMultiplayer::PlayerController::PostLogin(NewPlayer);
+		// 
+		// const auto UniqueIdA = NewPlayer->NetConnection->PlayerId;
+		// const auto UniqueIdB = NewPlayer->GetPlayerState<APlayerState>()->GetUniqueId();
+		//
+		// UE_BEAM_LOG(GEngine->GetWorldContextFromWorld(this->GetWorld()), LogBeamEditor, Warning, TEXT("LoggedIn Id - %s - %s"),
+		// 					*UniqueIdA.GetUniqueNetId().Get()->ToString(),
+		// 					*UniqueIdB.GetUniqueNetId().Get()->ToString())
 	}
-	
+
 	virtual void PreLoginAsync(const FString& Options, const FString& Address, const FUniqueNetIdRepl& UniqueId, const FOnPreLoginCompleteDelegate& OnComplete) override
 	{
 		// This enables us to test the Pre-Login in PIE correctly (it adds options so that we can accept users in the expected deterministic order the PIE instances create and connect) 
@@ -143,11 +150,12 @@ public:
 			{
 				OnComplete.ExecuteIfBound(Evt.EventCode);
 			}
-		}));		
+		}));
 	}
 
 	virtual void Logout(AController* Exiting) override
 	{
 		Super::Logout(Exiting);
+		// TODO: Cleanup UserSlots that are registered when a controller leaves.
 	}
 };

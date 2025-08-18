@@ -210,7 +210,7 @@ private:
 
 	/**
 	 * This only ever exists in game servers that call RegisterLobbyWithServerOperation.
-	 */	
+	 */
 	TMap<FString, FBeamGamerTag> Server_NetIdToGamerTag;
 	TMap<FBeamGamerTag, FString> Server_GamerTagToNetId;
 
@@ -274,7 +274,7 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
 	bool TryGetCurrentLobbyId(FUserSlot Slot, FGuid& LobbyId);
-	
+
 	/**
 	 * Tries to get whatever the current local data for the given user slot's current lobby. If you want a guarantee that this data is up-to-date call, [CPP_]RefreshLobbyOperation first.
 	 */
@@ -342,10 +342,10 @@ public:
 	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
 	bool GetAllLobbyGlobalDataById(FGuid LobbyId, TArray<FString>& Keys, TArray<FString>& Values);
 
-	/*
+	/**
 	 * Get a player data property for a specific player
 	 * Returns false if this property don't exists
-	*/
+	 */
 	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
 	bool TryGetLobbyPlayerDataById(FGuid LobbyId, FBeamGamerTag PlayerGamerTag, FString DataKey, FString DefaultValue, FString& PlayerData);
 
@@ -355,7 +355,7 @@ public:
 	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
 	bool GetAllLobbyPlayerDataById(FGuid LobbyId, FBeamGamerTag PlayerGamerTag, TArray<FString>& Keys, TArray<FString>& Values);
 
-	/*
+	/**
 	 * Return a list with all lobbies and a parallel list with the lobby global data.
 	 */
 	UFUNCTION(BlueprintCallable)
@@ -439,12 +439,12 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable)
 	FString PrepareLoginOptions(const FUserSlot& Slot, const FString Options);
-	
+
 	/**
 	 * @copybrief PrepareLoginOptions
 	 */
 	UFUNCTION(BlueprintCallable)
-	FString PrepareLoginOptionsByLocalPlayer(const ULocalPlayer* LocalPlayer, const FString Options);	
+	FString PrepareLoginOptionsByLocalPlayer(const ULocalPlayer* LocalPlayer, const FString Options);
 
 	/**
 	 * @copybrief PrepareLoginOptions
@@ -457,7 +457,7 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable)
 	FString PrepareLoginOptionsByLocalPlayerIndex(int32 LocalPlayerIdx, const FString Options);
-	
+
 	/**
 	 * @copybrief PrepareLoginOptions
 	 */
@@ -474,7 +474,7 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable)
 	APlayerController* GetPlayerControllerByGamerTag(FBeamGamerTag GamerTag);
-	
+
 	/**
 	 * For integration with other implementations of Unreal's Gameplay Framework.
 	 *
@@ -520,6 +520,15 @@ public:
 
 
 	// LOCAL STATE - Dedicated Server
+
+	/**
+	 * Parses the CLArgs for the "BeamableDedicatedServerInstanceLobbyId" for this process.
+	 * If it fails to find it, falls back to the "BEAMABLE_DEDICATED_SERVER_INSTANCE_LOBBY_ID" env-arg.
+	 *
+	 * Logs out a warning if neither are present.
+	 */
+	UFUNCTION(BlueprintCallable)
+	FGuid GetLobbyIdFromCLArgs();
 
 	/**
 	 * You should only ever use this if you are running a single Lobby/Match per instance.

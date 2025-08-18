@@ -774,6 +774,28 @@ FGuid UBeamLobbySubsystem::GetLobbyIdByGamerTag(FBeamGamerTag GamerTag)
 }
 
 // LOCAL STATE - Dedicated Server
+FGuid UBeamLobbySubsystem::GetLobbyIdFromCLArgs()
+{
+	//... that expects to run a single lobby's match (we expect either a CLArg or a EnvVar to exist)
+	FString LobbyIdStr;
+	if (!FParse::Value(FCommandLine::Get(), TEXT("BeamableDedicatedServerInstanceLobbyId="), LobbyIdStr))
+	{
+		LobbyIdStr = FPlatformMisc::GetEnvironmentVariable(TEXT("BEAMABLE_DEDICATED_SERVER_INSTANCE_LOBBY_ID"));
+	}
+
+	// If no CLArg or EnvVar are provided, we assume the user will run multiple matches per server and will make the calls to RefreshLobbyDataOperation from their integration with their game server orchestrator
+	// (Hathora, GameLift, etc...)
+	if (LobbyIdStr.IsEmpty())
+	{
+		UE_LOG(LogBeamLobby, Warning, TEXT("No LobbyId was provided via CLArgs/EnvVars. "
+			       "Take a look at our Multiplayer docs to understand when/how to use this."))
+
+		return FGuid{};
+	}
+
+	return FGuid(LobbyIdStr);
+}
+
 bool UBeamLobbySubsystem::TryGetDedicatedServerInstanceLobby(ULobby*& Lobby)
 {
 	ensureAlwaysMsgf(Runtime->IsDedicatedGameServer(), TEXT("This cannot be called on non-dedicated servers!"));
