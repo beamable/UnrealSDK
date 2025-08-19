@@ -35,6 +35,8 @@ class BEAMABLECORERUNTIMEEDITOR_API UBeamUserDeveloperManagerEditor : public UBe
 	static constexpr int32 CLI_ERROR_UNKNOWN_BACKEND = 500;
 	static constexpr int32 CLI_ERROR_SAVE_FILE = 300;
 
+	const FString DEVELOPER_USER_NEW_USER_NAME = "New User";
+	
 	GENERATED_BODY()
 
 
@@ -83,8 +85,22 @@ public:
 	 * OBS: It will NOT delete the user from the portal
 	 */
 	UFUNCTION(BlueprintCallable)
-	void DeleteUser(FBeamGamerTag GamerTag);
+	void DeleteUsers(TArray<FBeamGamerTag> GamerTags);
 
+	/**
+	 * Delete all users for a type from the local files
+	 * OBS: It will NOT delete the user from the portal
+	 */
+	UFUNCTION(BlueprintCallable)
+	void DeleteAllOfSpecificType(EBeamDeveloperUserType DeveloperUserType);
+
+	/**
+	 * Get the next New User Alias
+	 */
+	UFUNCTION(BlueprintCallable)
+	FString GetNextNewUserAlias();
+
+	
 	/**
 	 * Create a new user
 	 */

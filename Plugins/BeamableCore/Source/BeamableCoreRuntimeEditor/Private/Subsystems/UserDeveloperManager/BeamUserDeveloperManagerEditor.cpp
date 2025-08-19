@@ -39,9 +39,12 @@ FBeamOperationHandle UBeamUserDeveloperManagerEditor::OnRealmInitialized(FBeamRe
 		UE_LOG(LogBeamCli, Error, TEXT("Editor Subsystem %s - Content depends on the CLI. It was not found locally. This system is not guaranteed to work because of this."), *GetName());
 		return RequestTracker->CPP_BeginSuccessfulOperation({}, GetName(), {}, {});
 	}
-
+	
 	// Start up the PS command for the current realm
-	const auto Op = RequestTracker->CPP_BeginOperation({}, GetName(), {});
+	const auto Op = RequestTracker->CPP_BeginOperation({}, GetName(), FBeamOperationEventHandlerCode::CreateLambda([this](FBeamOperationEvent Event)
+	{
+		DeleteAllOfSpecificType(BEAM_CAPTURED);
+	}));
 	RunPsCommand(Op);
 
 	return Op;
@@ -337,7 +340,7 @@ void UBeamUserDeveloperManagerEditor::GetUsersWithFilter(FString NameFilter, FSt
 	AllUsers = Result;
 }
 
-void UBeamUserDeveloperManagerEditor::DeleteUser(FBeamGamerTag GamerTag)
+void UBeamUserDeveloperManagerEditor::DeleteUsers(TArray<FBeamGamerTag> GamerTags)
 {
 	UBeamCliDeveloperUserManagerRemoveUserCommand* RemoveCommand = NewObject<UBeamCliDeveloperUserManagerRemoveUserCommand>();
 
@@ -349,13 +352,50 @@ void UBeamUserDeveloperManagerEditor::DeleteUser(FBeamGamerTag GamerTag)
 	{
 	};
 
+	TArray<FString> StringGamerTags;
+	for (auto GamerTag : GamerTags)
+	{
+		StringGamerTags.Add(GamerTag.AsString);
+	}
+	
 	auto args = {
-		FString::Printf(TEXT("--gamer-tag \"%s\""), *GamerTag.AsString),
+		FString::Printf(TEXT("--gamer-tag %s"), *FString::Join(StringGamerTags, TEXT(" "))),
 	};
 
 	auto Handler = RequestTracker->CPP_BeginOperation({}, GetName(), {});
 
 	BeamCli->RunCommandServer(RemoveCommand, args, Handler);
+}
+
+void UBeamUserDeveloperManagerEditor::DeleteAllOfSpecificType(EBeamDeveloperUserType DeveloperUserType)
+{
+	TArray<FBeamGamerTag> GamerTags;
+	for (auto UserDeveloperKeyPair : LocalUserDeveloperCache)
+	{
+		if (UserDeveloperKeyPair.Value->DeveloperUserType == DeveloperUserType)
+		{
+			GamerTags.Add(UserDeveloperKeyPair.Key);
+		}
+	}
+	DeleteUsers(GamerTags);
+}
+
+FString UBeamUserDeveloperManagerEditor::GetNextNewUserAlias()
+{
+	int32 NewUserIndex = 0;
+	for (auto UserDeveloperKeyPair : LocalUserDeveloperCache)
+	{
+		if (UserDeveloperKeyPair.Value->Alias.Contains(DEVELOPER_USER_NEW_USER_NAME))
+		{
+			NewUserIndex++;
+		}
+	}
+	if (NewUserIndex != 0)
+	{
+		return FString::Printf(TEXT("%s %d"), *DEVELOPER_USER_NEW_USER_NAME, NewUserIndex);
+	}
+
+	return DEVELOPER_USER_NEW_USER_NAME;
 }
 
 void UBeamUserDeveloperManagerEditor::CreateNewUserOperation(FString Alias, EBeamDeveloperUserType DeveloperUserType, FBeamOperationEventHandler OperationEventHandle)
