@@ -125,6 +125,8 @@ public:
 	 */
 	void TriggerOnPreBeginPIE(ULevelEditorPlaySettings* PlaySettings, const FBeamPIE_Settings* Settings);
 
+	bool IsValidUser(FBeamGamerTag GamerTag);
+	
 	/**
 	 * A utility that cast a soft object path to a UWorld Soft Pointer
 	 */
@@ -144,6 +146,8 @@ public:
 	{
 		return A == B;
 	}
+
+	
 
 protected:
 	void RunPsCommand(FBeamOperationHandle OperationHandle);

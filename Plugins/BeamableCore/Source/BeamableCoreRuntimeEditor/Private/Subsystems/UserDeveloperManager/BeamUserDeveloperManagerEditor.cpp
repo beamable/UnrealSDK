@@ -126,7 +126,7 @@ void UBeamUserDeveloperManagerEditor::TriggerOnPreBeginPIE(ULevelEditorPlaySetti
 	}
 	for (auto AssignedUser : Settings->AssignedUsers)
 	{
-		if (AssignedUser.Value.GamerTag.AsString.IsEmpty())
+		if (!IsValidUser(AssignedUser.Value.GamerTag))
 		{
 			return;
 		}
@@ -274,6 +274,11 @@ void UBeamUserDeveloperManagerEditor::TriggerOnPreBeginPIE(ULevelEditorPlaySetti
 		BeamCli->RunCommandSync(CreateUserBatchCommand, args);
 	}
 	SlowTask.EnterProgressFrame(40);
+}
+
+bool UBeamUserDeveloperManagerEditor::IsValidUser(FBeamGamerTag GamerTag)
+{
+	return !GamerTag.AsString.IsEmpty() && LocalUserDeveloperCache.Contains(GamerTag);
 }
 
 UDeveloperUserDataStreamData* UBeamUserDeveloperManagerEditor::GetUserWithGamerTag(FBeamGamerTag GamerTag)

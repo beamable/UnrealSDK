@@ -5,6 +5,7 @@
 #include "IPIEAuthorizer.h"
 #include "PIE/BeamPIEConfig.h"
 #include "PIE/BeamPIE_Settings.h"
+#include "Subsystems/UserDeveloperManager/BeamUserDeveloperManagerEditor.h"
 
 
 class UBeamPIEModularFeature : public IPIEAuthorizer
@@ -71,10 +72,12 @@ public:
 				               NumOfPlayers)
 			               : TEXT("");
 
+		auto DeveloperUserSubsystem = GEditor->GetEditorSubsystem<UBeamUserDeveloperManagerEditor>();
+	
 		// Checking the gamer tag for each assigned user
 		for (auto AssignedUser : SelectedSetting.AssignedUsers)
 		{
-			ErrorReason += AssignedUser.Value.GamerTag.AsString.IsEmpty()
+			ErrorReason += !DeveloperUserSubsystem->IsValidUser(AssignedUser.Value.GamerTag)
 				               ? FString::Printf(TEXT("\nThe [PIE Index: %d UserSlot %s] is not configured correctly, it's missing the gamer tag."), AssignedUser.Key.PIEIndex, *AssignedUser.Key.Slot.Name)
 				               : TEXT("");
 		}
