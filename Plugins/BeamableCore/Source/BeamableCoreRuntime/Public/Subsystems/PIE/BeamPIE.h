@@ -1234,8 +1234,6 @@ private:
 			// We only care about the users in this PIE instance.
 			if (Handle.PIEIndex != PieInstance) continue;
 
-			auto LobbyState = LobbySystem->GetCurrentSlotLobbyState(Handle.Slot);
-
 			// If the user is NOT already in the lobby, let's set up a notification that will trigger when they see that they've joined it.
 			ULobby* UserLobby = nullptr;
 			if (!LobbySystem->TryGetCurrentLobby(Handle.Slot, UserLobby) || !UserLobby->Data.Val.Contains(UBeamLobbySubsystem::Reserved_Lobby_From_Editor_Play_Mode_Property))
@@ -1244,36 +1242,36 @@ private:
 					       GEngine->GetWorldContextFromWorld(Runtime->GetWorld())), *Handle.Slot.Name, Handle.PIEIndex);
 
 				bAreAllUsersAlreadyInTheLobby = false;
-				// Add a notification for when the player joins the lobby
-				const auto LobbyJoinedHandle = LobbyState->OnLobbyJoinedCode.AddLambda(
-					[this, PieInstance, Runtime, Handle, LobbySystem, LobbyState, PossibleSlotHandles, Op](const FUserSlot&, ULobby*, FLobbyUpdateNotificationMessage)
+				// Add a ticker function to check if the user is inside a lobby
+				FTSTicker::GetCoreTicker().AddTicker(FTickerDelegate::CreateLambda([=, this](const float)
+				{
+					if (!IsValidContext(WorldContext) || !WorldContext->World()) return false;
+		
+					auto bAreAllUsersInTheLobby = true;
+					for (const auto& CurrHandle : PossibleSlotHandles)
 					{
-						// Check to see if ALL slots managed by this PIE instance are already in the lobby.
-						auto bAreAllSlotsInTheLobby = true;
-						for (const auto& SlotHandle : PossibleSlotHandles)
+						// We only care about the users in this PIE instance.
+						if (CurrHandle.PIEIndex != PieInstance) continue;
+						
+						ULobby* Lobby;
+						if (!LobbySystem->TryGetCurrentLobby(CurrHandle.Slot, Lobby))
 						{
-							// We only care about the users in this PIE instance.
-							if (SlotHandle.PIEIndex != PieInstance) continue;
-
-							ULobby* L = nullptr;
-							const auto JoinedLobby = LobbySystem->TryGetCurrentLobby(SlotHandle.Slot, L) && L->Data.Val.Contains(UBeamLobbySubsystem::Reserved_Lobby_From_Editor_Play_Mode_Property);
-							bAreAllSlotsInTheLobby &= JoinedLobby;
-							if (JoinedLobby)
-							{
-								UE_LOG(LogBeamEditor, Log, TEXT("%s Client - User is joined Lobby. USER_SLOT=%s, PIE=%d, LOBBY=%s"), *GetLogArgs(TEXT("Beam PIE Prepare"),
-									       GEngine->GetWorldContextFromWorld(Runtime->GetWorld())), *SlotHandle.Slot.Name, SlotHandle.PIEIndex, *L->LobbyId.Val);
-							}
-						}
-
-						// If all slots in this instance are in the lobby, we are done and can complete the operation.
-						if (bAreAllSlotsInTheLobby)
+							// Set this as false
+							bAreAllUsersInTheLobby = false;
+						}else
 						{
-							LobbyState->OnLobbyJoinedCode.Remove(LobbyJoinedHandles[Handle]);
-							LobbyJoinedHandles.Remove(Handle);
-							RequestTracker->TriggerOperationSuccess(Op, TEXT(""));
+							UE_LOG(LogBeamEditor, Log, TEXT("%s Client - User is joined Lobby. USER_SLOT=%s, PIE=%d, LOBBY=%s"), *GetLogArgs(TEXT("Beam PIE Prepare"),
+										   GEngine->GetWorldContextFromWorld(Runtime->GetWorld())), *Handle.Slot.Name, Handle.PIEIndex, *Lobby->LobbyId.Val);
 						}
-					});
-				LobbyJoinedHandles.Add(Handle, LobbyJoinedHandle);
+					}
+
+					if (bAreAllUsersInTheLobby)
+					{
+						RequestTracker->TriggerOperationSuccess(Op, TEXT(""));
+						return false;
+					}
+					return true;
+				}), 0.2f);
 			}
 			else
 			{
