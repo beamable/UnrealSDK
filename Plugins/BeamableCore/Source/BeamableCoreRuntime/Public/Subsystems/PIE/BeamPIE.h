@@ -1177,42 +1177,44 @@ private:
 
 			// If we are NOT already logged in...
 			FBeamRealmUser UserData;
-			if (!UserSlots->GetUserDataAtSlot(CurrHandle.Slot, UserData, Runtime))
+			if (!Runtime->GetSlotConnectivity(CurrHandle.Slot)->bIsUserReady)
 			{
 				// Set this as false
 				bAreAllUsersAlreadyLoggedIn = false;
-
-				// Set up a callback that will try to verify that we are all logged in whenever a user does log in.
-				const auto UserLoggedInHandler = UserSlots->GlobalUserSlotAuthenticatedCodeHandler.AddLambda(
-					[this, CurrHandle, Runtime, PieInstance, PossibleSlotHandles, Op]
-				(const FUserSlot&, const FBeamRealmUser&, const FBeamOperationHandle&, const UObject*)
-					{
-						// Check to see if ALL slots managed by this PIE instance are already logged in.
-						auto bAreAllSlotsInLoggedIn = true;
-						for (const auto& SlotHandle : PossibleSlotHandles)
-						{
-							// We only care about the users in this PIE instance.
-							if (SlotHandle.PIEIndex != PieInstance) continue;
-
-							FBeamRealmUser _;
-							bAreAllSlotsInLoggedIn &= UserSlots->GetUserDataAtSlot(SlotHandle.Slot, _, Runtime);
-						}
-
-						// If all slots in this instance are logged in, we are done and can complete the operation and remove this callback.
-						if (bAreAllSlotsInLoggedIn)
-						{
-							UserSlots->GlobalUserSlotAuthenticatedCodeHandler.Remove(UserSlotAuthenticatedHandles[CurrHandle]);
-							UserSlotAuthenticatedHandles.Remove(CurrHandle);
-							RequestTracker->TriggerOperationSuccess(Op, TEXT(""));
-						}
-					});
-				UserSlotAuthenticatedHandles.Add(CurrHandle, UserLoggedInHandler);
 			}
 		}
 
 		if (bAreAllUsersAlreadyLoggedIn)
 		{
 			RequestTracker->TriggerOperationSuccess(Op, TEXT(""));
+		}else
+		{
+			FTSTicker::GetCoreTicker().AddTicker(FTickerDelegate::CreateLambda([this,PieInstance, WorldContext, Op, PossibleSlotHandles, Runtime](const float)
+							{
+								if (!IsValidContext(WorldContext) || !WorldContext->World()) return false;
+								// Let's make sure all the users configured for this PIE instance are done logging in.
+								auto bAreAllUsersAlreadyLoggedIn = true;
+								for (const auto& CurrHandle : PossibleSlotHandles)
+								{
+									// We only care about the users in this PIE instance.
+									if (CurrHandle.PIEIndex != PieInstance) continue;
+
+									// If we are NOT already logged in...
+									FBeamRealmUser UserData;
+									if (!Runtime->GetSlotConnectivity(CurrHandle.Slot)->bIsUserReady)
+									{
+										// Set this as false
+										bAreAllUsersAlreadyLoggedIn = false;
+									}
+								}
+
+								if (bAreAllUsersAlreadyLoggedIn)
+								{
+									RequestTracker->TriggerOperationSuccess(Op, TEXT(""));
+									return false;
+								}
+								return true;
+							}), 0.2f);
 		}
 	}
 

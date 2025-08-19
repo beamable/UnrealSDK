@@ -869,6 +869,9 @@ void UBeamRuntime::TriggerSubsystemPostUserSignIn(FBeamWaitCompleteEvent Evt, FU
 						Subsystem->CurrentUserState[UserSlot] = BeamInitializedWithUserData;
 					}
 				}
+
+				GetSlotConnectivity(UserSlot)->bIsUserReady = true;
+				
 				RequestTrackerSystem->TriggerOperationSuccess(AuthOpHandle, {});
 
 				OnUserReadyCode.Broadcast(UserSlot);
@@ -899,6 +902,7 @@ void UBeamRuntime::TriggerOnUserSlotCleared(const EUserSlotClearedReason& Reason
 		ConnectivityManager->CurrentConnectionLostTime = FDateTime::UtcNow();
 		ConnectivityManager->ConnectionLostCountInSession = 0;
 		ConnectivityManager->CurrentReconnectionCount = 0;
+		ConnectivityManager->bIsUserReady = false;
 	}
 
 	const auto Connectivity = ConnectivityState.FindRef(UserSlot);
@@ -2451,7 +2455,7 @@ void UBeamRuntime::LoadCachedUserAtSlot(FUserSlot UserSlot, FBeamOperationHandle
 			{
 				if (Resp.State == EBeamFullResponseState::RS_Success)
 				{
-					RunPostAuthenticationSetup(UserSlot, nullptr, AuthOp);
+					RunPostAuthenticationSetup(UserSlot, Resp.SuccessData, AuthOp);
 
 					UE_LOG(LogBeamRuntime, Display, TEXT("Authenticated User at Slot! SLOT=%s GAMER TAG=%s"), *UserSlot.Name, *Resp.SuccessData->Id.AsString);
 				}

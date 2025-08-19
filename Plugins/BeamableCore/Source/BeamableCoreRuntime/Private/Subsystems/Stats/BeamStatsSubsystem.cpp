@@ -99,24 +99,19 @@ void UBeamStatsSubsystem::OnUserSignedIn_Implementation(const FUserSlot& UserSlo
 
 	ResultOp = RequestTracker->CPP_BeginOperation({UserSlot}, GetName(), {});
 	
-	auto OperationHandler = FBeamOperationEventHandlerCode::CreateLambda([ResultOp, this, UserSlot, UserGamerTag](const FBeamOperationEvent& Event)
-	{
-		if (Event.EventType != OET_SUCCESS)
-		{
-			RequestTracker->TriggerOperationError(ResultOp, Event.EventCode);
-		}
-	});
-	
 	FBeamStatsType ClientPublicStats = UBeamStatsTypeLibrary::MakeStatsType(Client, Public, UserGamerTag);
-	auto HandlerPublic = CPP_RefreshStatsOperation(UserSlot, ClientPublicStats, OperationHandler);
+	auto HandlerPublic = CPP_RefreshStatsOperation(UserSlot, ClientPublicStats, {});
 	FBeamStatsType ClientPrivateStats = UBeamStatsTypeLibrary::MakeStatsType(Client, Private, UserGamerTag);
-	auto HandlerPrivate = CPP_RefreshStatsOperation(UserSlot, ClientPrivateStats, OperationHandler);
+	auto HandlerPrivate = CPP_RefreshStatsOperation(UserSlot, ClientPrivateStats, {});
 	
 	RequestTracker->CPP_WaitAll({}, {HandlerPublic, HandlerPrivate}, {}, FOnWaitCompleteCode::CreateLambda([this, ResultOp](const FBeamWaitCompleteEvent& Event)
 	{
-		if (RequestTracker->IsOperationActive(ResultOp))
+		if (RequestTracker->IsWaitSuccessful(Event))
 		{
 			RequestTracker->TriggerOperationSuccess(ResultOp, TEXT("Success"));
+		}else
+		{
+			RequestTracker->TriggerOperationError(ResultOp, TEXT(""));
 		}
 	}));
 }
@@ -376,7 +371,7 @@ void UBeamStatsSubsystem::RefreshStats(FUserSlot UserSlot, FBeamStatsType Type, 
 			FBeamStatsUpdatedEvent Evt;
 			Evt.GamerTag = UBeamStatsTypeLibrary::GetGamerTag(StatType);
 			Evt.LocalSlot = UserSlot;
-
+			
 			for (const auto& Stat : Resp.SuccessData->Stats)
 			{
 				const FString StatKey = Stat.Key;
@@ -401,7 +396,7 @@ void UBeamStatsSubsystem::RefreshStats(FUserSlot UserSlot, FBeamStatsType Type, 
 
 			OnStatsUpdatedCode.Broadcast(Evt);
 			OnStatsUpdated.Broadcast(Evt);
-			UE_LOG(LogBeamStats, Display, TEXT("Updated Stats!"))
+			UE_LOG(LogBeamStats, Display, TEXT("UserSlot: %s | Updated Stats! %s"), *UserSlot.Name,  *StatType.AsString)
 			RequestTracker->TriggerOperationSuccess(Op, {});
 		}
 	});

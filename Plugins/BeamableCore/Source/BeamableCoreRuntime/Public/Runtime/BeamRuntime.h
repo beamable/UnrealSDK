@@ -95,10 +95,12 @@ class BEAMABLECORERUNTIME_API UBeamConnectivityManager : public UObject
 	GENERATED_BODY()
 
 	friend class UBeamRuntime;
+	friend class UBeamPIE;
 
 	EBeamRuntimeConnectivityState CurrentState;
 	FTSTicker::FDelegateHandle FixupUpdateHandle;
 	FTSTicker::FDelegateHandle ReconnectingUpdateHandle;
+	bool bIsUserReady;
 
 	/**
 	 * Websocket notifications connection handler. 
@@ -199,6 +201,12 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable)
 	bool IsDisconnected() const { return IsAuthenticated() && CurrentState == CONN_Offline && ConnectionLostCountInSession; }
+	
+	/**
+	 * @return If we are authenticated and the current state is ONLINE. 
+	 */
+	UFUNCTION(BlueprintCallable)
+	bool IsOnline() const { return IsAuthenticated() && CurrentState == CONN_Online; }
 
 	/**
 	 * @return If we are authenticated, lost our websocket connection and then recovered it; we are now in Fixup. 
