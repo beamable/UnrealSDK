@@ -53,7 +53,7 @@ void UBeamUserDeveloperManagerEditor::TriggerOnUserSlotAuthenticated(const FUser
 	if (Context)
 	{
 		const auto WorldContext = GEngine->GetWorldContextFromWorld(Context->GetWorld());
-		if (WorldContext && WorldContext->WorldType == EWorldType::PIE)
+		if (WorldContext && WorldContext->WorldType == EWorldType::PIE && !LocalUserDeveloperCache.Contains(BeamRealmUser.GamerTag))
 		{
 			TArray<FBeamRealmUser> RealmUsers = {BeamRealmUser};
 

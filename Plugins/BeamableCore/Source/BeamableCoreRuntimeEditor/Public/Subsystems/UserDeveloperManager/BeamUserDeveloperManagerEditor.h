@@ -47,8 +47,6 @@ class BEAMABLECORERUNTIMEEDITOR_API UBeamUserDeveloperManagerEditor : public UBe
 	UPROPERTY()
 	TMap<FBeamGamerTag, UDeveloperUserDataStreamData*> LocalUserDeveloperCache;
 
-	TMap<int32, TArray<FBeamRealmUser>> CapturedUsers;
-
 	/**
 	 * @brief Stored lambda delegate handle for what this subsystem does when a user slot is authenticated.
 	 */
