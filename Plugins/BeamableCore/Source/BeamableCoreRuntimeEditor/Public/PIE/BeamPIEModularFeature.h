@@ -79,6 +79,14 @@ public:
 				               : TEXT("");
 		}
 
+		EPlayNetMode PlayNetMode;
+		PlaySettings->GetPlayNetMode(PlayNetMode);
+		
+		if (SelectedSetting.FakeLobby.bShouldAutoCreateLobby && PlayNetMode != PIE_Client)
+		{
+			ErrorReason += FString::Printf(TEXT("\nThe PIE config is not correct, you not able to have a \"Fake Lobby Settings\" enabled and start the game in a different settings than the \"Play As Client\""));
+		}
+
 		if (!ErrorReason.IsEmpty())
 		{
 			OutReason = FString::Printf(TEXT("BeamPIE Setting Failed: %s"), *ErrorReason);
