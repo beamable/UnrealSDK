@@ -529,6 +529,12 @@ public:
 	bool IsInitialized() { return CurrentSdkState == Initialized; }
 
 	/**
+	 * Returns true when the SDK was initialized.  
+	 */
+	UFUNCTION(BlueprintCallable)
+	bool IsInitializing() { return CurrentSdkState == Initializing; }
+
+	/**
 	 * For cases where you want to de-register all the callbacks to the various runtime events:
 	 *  - OnStarted
 	 *  - OnStartedFailed

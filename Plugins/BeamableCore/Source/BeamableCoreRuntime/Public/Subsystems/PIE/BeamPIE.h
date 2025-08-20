@@ -223,14 +223,6 @@ public:
 			// Now, we do some setup regarding the parameters with which we'll be starting the PIE instances.
 			if (auto PlaySettings = GetMutableDefault<ULevelEditorPlaySettings>())
 			{
-				// We start by asking the UBeamUserDeveloperManagerEditor to configure any mapped cached users in the `Saved/Beamable/UserSlots` directory.
-				// This makes it so that, when we `LoginCached` as part of our `BeamInitPIE`, the mapped users will be the ones we are loading.
-				// This may also clone the mapped users and use the clone depending on the settings. 
-				{
-					auto DeveloperUserSubsystem = GEditor->GetEditorSubsystem<UBeamUserDeveloperManagerEditor>();
-					DeveloperUserSubsystem->TriggerOnPreBeginPIE(PlaySettings, SelectedSettings);
-				}
-
 				// Then, if we are creating a FakeLobby in which we'll test our dedicated server map, we can define that map as the ServerMapOverride.
 				// This is useful when you want to have a few settings that will always start on a specific map (this means you don't have to manually configure that in UE's Advanced Networking tabs).				
 				if (SelectedSettings->FakeLobby.bShouldAutoCreateLobby)
@@ -292,6 +284,14 @@ public:
 				}
 
 				Config->Save();
+
+				// We end by asking the UBeamUserDeveloperManagerEditor to configure any mapped cached users in the `Saved/Beamable/UserSlots` directory.
+				// This makes it so that, when we `LoginCached` as part of our `BeamInitPIE`, the mapped users will be the ones we are loading.
+				// This may also clone the mapped users and use the clone depending on the settings. 
+				{
+					auto DeveloperUserSubsystem = GEditor->GetEditorSubsystem<UBeamUserDeveloperManagerEditor>();
+					DeveloperUserSubsystem->TriggerOnPreBeginPIE(PlaySettings, SelectedSettings);
+				}
 			}
 			else
 			{
@@ -532,7 +532,7 @@ public:
 		}
 
 		// Find the name of the current map and compare
-		UE_LOG(LogBeamEditor, Log, TEXT("%s Initializing Beamable SDK"), *GetLogArgs(TEXT("Beam PIE Init"), WorldContext));
+		UE_LOG(LogBeamEditor, Log, TEXT("%s Checking if need Initialization of Beamable SDK"), *GetLogArgs(TEXT("Beam PIE Init"), WorldContext));
 
 		// During BeamPIE, we enforce that the UniqueId is set as the Beamable UniqueId, if configured to do so.
 		const auto Runtime = GI->GetSubsystem<UBeamRuntime>();
@@ -540,8 +540,7 @@ public:
 		{
 			for (const auto& AssignedUser : Settings->AssignedUsers)
 			{
-				// When its running in a different process the 0 is the server
-				// and also the first client index so for this case we have to subtract 1 from the index configuration
+				// Only iterate over users that are for this PIE Instance.
 				if (AssignedUser.Key.PIEIndex == FBeamPIE_Utilities::GetPIEInstance(WorldContext))
 				{
 					const auto LpIdx = GetDefault<UBeamCoreSettings>()->RuntimeUserSlots.Find(AssignedUser.Key.Slot.Name);
@@ -590,12 +589,18 @@ public:
 			Started.BindLambda([this, WorldContext, Op]()
 			{
 				// Find the name of the current map and compare
-				UE_BEAM_LOG(WorldContext, LogBeamEditor, Log, TEXT(" Beamable SDK Initialized"));
+				UE_BEAM_LOG(WorldContext, LogBeamEditor, Log, TEXT("Beamable SDK Initialized"));
 				PreparePIE_ApplySelectedSettings(WorldContext, Op);
 			});
 
-			Runtime->CPP_RegisterOnStarted_NoExecute(Started);
-			Runtime->InitSDK({}, {});
+			Runtime->CPP_RegisterOnStarted(Started);
+
+			// If we are not already initializing it, trigger the initialization
+			if (!Runtime->IsInitializing())
+			{
+				Runtime->InitSDK({}, {});
+				UE_LOG(LogBeamEditor, Log, TEXT("%s Initializing Beamable SDK"), *GetLogArgs(TEXT("Beam PIE Init"), WorldContext));
+			}
 		}
 		else
 		{
@@ -649,9 +654,7 @@ public:
 
 			for (const auto& AssignedUser : Settings->AssignedUsers)
 			{
-				// When its running in a different process the 0 is the server
-				// and also the first client index so for this case we have to subtract 1 from the index configuration
-
+				// Only iterate over users that are assigned to this PIE instance.
 				if (AssignedUser.Key.PIEIndex == FBeamPIE_Utilities::GetPIEInstance(WorldContext))
 				{
 					UE_LOG(LogBeamEditor, Log, TEXT("%s Client - Found Assigned User. USER_SLOT=%s, PIE=%d"), *GetLogArgs(TEXT("Beam PIE Prepare"), WorldContext),
@@ -1105,6 +1108,7 @@ private:
 					TArray<FBeamPIE_UserSlotHandle> PossibleSlotHandles;
 					for (const auto& AssignedUser : Settings->AssignedUsers)
 					{
+						// On clients, only iterate over users for those clients. On the server, collect all the users.
 						if (AssignedUser.Key.PIEIndex == FBeamPIE_Utilities::GetPIEInstance(WorldContext) || FBeamPIE_Utilities::IsRunningOnServer(World))
 						{
 							PossibleSlotHandles.Add(AssignedUser.Key);
@@ -1186,35 +1190,37 @@ private:
 
 		if (bAreAllUsersAlreadyLoggedIn)
 		{
+			UE_BEAM_LOG(WorldContext, LogBeamEditor, Log, TEXT("Completed Wait until all Login Operation right away"));
 			RequestTracker->TriggerOperationSuccess(Op, TEXT(""));
-		}else
+		}
+		else
 		{
 			FTSTicker::GetCoreTicker().AddTicker(FTickerDelegate::CreateLambda([this,PieInstance, WorldContext, Op, PossibleSlotHandles, Runtime](const float)
-							{
-								if (!IsValidContext(WorldContext) || !WorldContext->World()) return false;
-								// Let's make sure all the users configured for this PIE instance are done logging in.
-								auto bAreAllUsersAlreadyLoggedIn = true;
-								for (const auto& CurrHandle : PossibleSlotHandles)
-								{
-									// We only care about the users in this PIE instance.
-									if (CurrHandle.PIEIndex != PieInstance) continue;
+			{
+				if (!IsValidContext(WorldContext) || !WorldContext->World()) return false;
+				// Let's make sure all the users configured for this PIE instance are done logging in.
+				auto bAreAllUsersAlreadyLoggedIn = true;
+				for (const auto& CurrHandle : PossibleSlotHandles)
+				{
+					// We only care about the users in this PIE instance.
+					if (CurrHandle.PIEIndex != PieInstance) continue;
 
-									// If we are NOT already logged in...
-									FBeamRealmUser UserData;
-									if (!Runtime->GetSlotConnectivity(CurrHandle.Slot)->bIsUserReady)
-									{
-										// Set this as false
-										bAreAllUsersAlreadyLoggedIn = false;
-									}
-								}
+					// If we are NOT already logged in...
+					FBeamRealmUser UserData;
+					if (!Runtime->GetSlotConnectivity(CurrHandle.Slot)->bIsUserReady)
+					{
+						// Set this as false
+						bAreAllUsersAlreadyLoggedIn = false;
+					}
+				}
 
-								if (bAreAllUsersAlreadyLoggedIn)
-								{
-									RequestTracker->TriggerOperationSuccess(Op, TEXT(""));
-									return false;
-								}
-								return true;
-							}), 0.2f);
+				if (bAreAllUsersAlreadyLoggedIn)
+				{
+					RequestTracker->TriggerOperationSuccess(Op, TEXT(""));
+					return false;
+				}
+				return true;
+			}), 0.2f);
 		}
 	}
 
@@ -1384,6 +1390,9 @@ namespace BeamPIE
 {
 	namespace GameInstance
 	{
+		/**
+		 * Must be called BEFORE Super::StartGameInstance() inside custom UGameInstance implementations. 
+		 */
 		BEAMABLECORERUNTIME_API inline void PreStartGameInstance(UGameInstance* This)
 		{
 #if !WITH_EDITOR
@@ -1394,6 +1403,9 @@ namespace BeamPIE
 			BeamPIE->PreparePIE_Advanced_NotifyCustomGameInstanceGuard(true);
 		}
 
+		/**
+		 * Must be called AFTER Super::StartGameInstance() inside custom UGameInstance implementations. 
+		 */
 		BEAMABLECORERUNTIME_API inline void StartGameInstance(UGameInstance* This)
 		{
 #if !WITH_EDITOR
@@ -1403,20 +1415,28 @@ namespace BeamPIE
 			auto BeamPIE = GEngine->GetEngineSubsystem<UBeamPIE>();
 			BeamPIE->PreparePIE_Advanced_NotifyCustomGameInstanceGuard(false);
 			BeamPIE->CPP_PreparePIEOperation(GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot(), This->GetWorld(), {});
-			BeamPIE->PreparePIE_Advanced_NotifyCustomGameInstanceGuard(true);			
+			BeamPIE->PreparePIE_Advanced_NotifyCustomGameInstanceGuard(true);
 		}
 
 #if WITH_EDITOR
+		/**
+		 * Must be called BEFORE Super::StartPlayInEditorGameInstance() inside custom UGameInstance implementations.
+		 * Remember to wrap your @link UGameInstance::StartPlayInEditorGameInstance @endlink implementation in WITH_EDITOR directives.
+		 */
 		BEAMABLECORERUNTIME_API inline void StartPlayInEditorGameInstance(UGameInstance* This, ULocalPlayer* LocalPlayer, const FGameInstancePIEParameters& Params)
 		{
-			UE_LOG(LogBeamRuntime, Warning, TEXT("INIT PLAY IN EDITOR (PIE) --- Is Server: %d"), This->IsDedicatedServerInstance());
-			auto BeamPIE = GEngine->GetEngineSubsystem<UBeamPIE>();			
-			BeamPIE->PreparePIE_Advanced_NotifyCustomGameInstanceGuard(false);			
+			UE_LOG(LogBeamRuntime, Warning, TEXT("INIT PLAY IN EDITOR (PIE) --- Is Server: %d, PIE_Instance: %d"), This->IsDedicatedServerInstance(), This->GetWorldContext()->PIEInstance);
+			auto BeamPIE = GEngine->GetEngineSubsystem<UBeamPIE>();
+			BeamPIE->PreparePIE_Advanced_NotifyCustomGameInstanceGuard(false);
 			BeamPIE->CPP_PreparePIEOperation(GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot(), This->GetWorld(), {});
-			BeamPIE->PreparePIE_Advanced_NotifyCustomGameInstanceGuard(true);			
+			BeamPIE->PreparePIE_Advanced_NotifyCustomGameInstanceGuard(true);
 		}
 #endif
 
+		/**
+		 * Returns true only AFTER the SDK has been initialized and all local players on this client have logged in. 
+		 * Must be returned from @link UGameInstance::DelayPendingNetGameTravel @endlink (or composited with other custom conditions your game might have). 
+		 */
 		BEAMABLECORERUNTIME_API inline bool DelayPendingNetGameTravel(UGameInstance* This)
 		{
 #if !WITH_EDITOR
@@ -1462,6 +1482,12 @@ namespace BeamPIE
 
 	namespace Authentication
 	{
+		/**
+		 * This leverages PIE's property of starting clients in-order (and attempting to connect them to the server in order),
+		 * to guarantee the Options being passed when your PIE clients start mirror what would be passed in a real PreLoginAsync call.
+		 *
+		 * This enables you to test the PreLoginAsync in PIE correctly (as in, Beamable's @link UBeamLobbySubsystem::CPP_AcceptUserIntoGameServerOperation @endlink runs the same logic in both PIE and builds).
+		 */
 		BEAMABLECORERUNTIME_API inline FString GetExpectedClientPIEOptions(const AGameModeBase* GameMode, const FString& Options, const FString& Address, const FUniqueNetIdRepl& UniqueId)
 		{
 #if !WITH_EDITOR
