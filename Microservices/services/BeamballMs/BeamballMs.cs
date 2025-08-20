@@ -112,10 +112,17 @@ namespace Beamable.BeamballMs
                     // Computing things here and storing them in the lobby is a tradeoff:
                     //   - it allows the game-server to avoid fetching things once it boots up, but it increases the size of the lobby data structure.
                     //   - for most cases, this is a fine trade-off to make; but, think about your own case's specifics as you decided.
-                    var gamerTag = long.Parse(lp.playerId.Value);
-                    var selectedSkin = await Services.Stats.GetStat(StatsDomainType.Client, StatsAccessType.Public, gamerTag, "beamable.selected_skin");
                     var data = new Dictionary<string, string>();
-                    data["beamable.selected_skin"] = selectedSkin;
+                    var existingSkinData = lp.tags.GetOrElse([]).FirstOrDefault(t => t.name.GetOrElse("") == "beamable.selected_skin");
+                    if(existingSkinData == null)
+                    {
+                        var gamerTag = long.Parse(lp.playerId.Value);
+                        var selectedSkin = await Services.Stats.GetStat(StatsDomainType.Client, StatsAccessType.Public, gamerTag, "beamable.selected_skin");
+                        if(!string.IsNullOrEmpty(selectedSkin))
+                        {
+                            data["beamable.selected_skin"] = selectedSkin;
+                        }
+                    }
                     return data;
                 });
 
