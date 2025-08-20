@@ -49,8 +49,24 @@ public:
 			}
 		}
 		return false;
-	} 
+	}
+	// UE_LOG(CategoryName, Verbosity, TEXT("%s - %s"), \
+	// 	*FString::Printf(TEXT("[Index: %d, IsServer: %d, NetMode: %d]"), FBeamPIE_Utilities::GetPIEInstance(Ctx), \
+	// 	FBeamPIE_Utilities::IsRunningOnServer(Ctx->World()), Ctx->World()->GetNetMode()), *FString::Printf(Format, ##__VA_ARGS__)); 
+	static FString BeamLogFormat(FWorldContext* WorldContext)
+	{
+		 return *FString::Printf(TEXT("[Index: %d, IsServer: %d, NetMode: %d]"), GetPIEInstance(WorldContext), IsRunningOnServer(WorldContext->World()), WorldContext->World()->GetNetMode());
+	}
 
+	static FString BeamLogFormat(UObject* Context)
+	{
+		if (Context == nullptr || Context->GetWorld() == nullptr)
+		{
+			return "";
+		}
+		return BeamLogFormat(GEngine->GetWorldContextFromWorld(Context->GetWorld()));
+	}
+	
 	/**
 	 * This will return either @link FWorldContext::PIEInstance @endlink or the Instance based on whether we've
 	 * extracted from the CLArgs Unreal passes to separate-process-PIEs.

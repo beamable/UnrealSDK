@@ -213,7 +213,10 @@ void FBeamableCoreEditorModule::AddBeamableButtons(FToolBarBuilder& Builder)
 }
 void FBeamableCoreEditorModule::AddPIEBeamableComboBox(FToolBarBuilder& Builder)
 {
-	
+	if (!GetDefault<UBeamCoreSettings>()->bEnableBeamPIE)
+	{
+		return;
+	}
 	TSharedRef<SComboButton> PIEPerMapSelectionComboButton = SNew(SComboButton)
 		.OnGetMenuContent_Lambda([]()
 		{
