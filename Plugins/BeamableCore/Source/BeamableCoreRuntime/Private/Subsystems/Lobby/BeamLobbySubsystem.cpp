@@ -535,6 +535,38 @@ void UBeamLobbySubsystem::PrepareDeleteGlobalData(FUserSlot Slot, const TArray<F
 	UpdateCommands[Slot]->GlobalDataDeletes = FOptionalArrayOfString(GlobalDataToRemove);
 }
 
+bool UBeamLobbySubsystem::TryOpenLevelFromLobby(FUserSlot Slot, FString UrlKey, FString PortKey, FString AdditionalOptions)
+{
+	ensureAlwaysMsgf(Runtime->IsClient(), TEXT("This can only be called on clients!"));
+		
+	ULobby* CurrLobby;
+	if (!TryGetCurrentLobby(Slot, CurrLobby))
+	{
+		UE_LOG(LogBeamLobby, Warning, TEXT("User trying to travel to a lobby's level is not in a lobby. USER_SLOT=%s"), *Slot.Name)
+		return false;
+	}
+
+	FString ServerIPAddress, ServerPort;
+	TryGetGlobalLobbyDataById(FGuid(CurrLobby->LobbyId.Val),
+	                          UrlKey.IsEmpty() ? Reserved_Game_Server_URL : UrlKey,
+	                          "127.0.0.1",
+	                          ServerIPAddress
+	);
+		
+	TryGetGlobalLobbyDataById(FGuid(CurrLobby->LobbyId.Val),
+	                          PortKey.IsEmpty() ? Reserved_Game_Server_Port : PortKey,
+	                          "17777",
+	                          ServerPort
+	);
+
+	FString Url = FString::Printf(TEXT("%s:%s"), *ServerIPAddress, *ServerPort);
+	Url = PrepareLoginOptions(Slot, Url);
+	Url += AdditionalOptions;
+		
+	UGameplayStatics::OpenLevel(GetWorld(), FName(Url), true);
+	return true;
+}
+
 FString UBeamLobbySubsystem::PrepareLoginOptions(const FUserSlot& Slot, const FString Options)
 {
 	ensureAlwaysMsgf(!Runtime->IsDedicatedGameServer(), TEXT("This cannot be called on the server!"));

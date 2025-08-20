@@ -584,6 +584,24 @@ class UK2BeamNode_GetLocalStateForeach_PrepareDeleteGlobalData : public UK2BeamN
 
 #undef LOCTEXT_NAMESPACE
 
+#define LOCTEXT_NAMESPACE "K2BeamNode_GetLocalState_TryOpenLevelFromLobby"
+
+UCLASS(meta=(BeamGetLocalState))
+class UK2BeamNode_GetLocalState_TryOpenLevelFromLobby : public UK2BeamNode_GetLocalState
+{
+	GENERATED_BODY()
+
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Local State - Lobby - Open Level"); }
+
+	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLobbySubsystem, GetSelf); }
+
+	virtual FName GetFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLobbySubsystem, TryOpenLevelFromLobby); }
+
+	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamLobbySubsystem::StaticClass(); }
+};
+
+#undef LOCTEXT_NAMESPACE
+
 //   ___                       _   _                 
 //  / _ \ _ __   ___ _ __ __ _| |_(_) ___  _ __  ___ 
 // | | | | '_ \ / _ \ '__/ _` | __| |/ _ \| '_ \/ __|

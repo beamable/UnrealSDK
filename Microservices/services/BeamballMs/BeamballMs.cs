@@ -29,28 +29,27 @@ namespace Beamable.BeamballMs
     [Microservice("BeamballMs")]
     public partial class BeamballMs : Microservice, IFederatedPlayerInit<DefaultFederation>, IFederatedGameServer<BeamballFederation>
     {
-        private const string EmailKey = "__beam_user_email__";
-
         public async Promise<PlayerInitResult> CreatePlayer(Account account, Dictionary<string, string> properties)
         {
-            string name = "GuestUser";
+            string name = "Guest User";
 
             var gamerTag = account.gamerTags[0].gamerTag;
 
             var userAPI = AssumeNewUser(gamerTag);
 
-            var emailSplited = account.email.GetOrElse("No Email@").Split("@");
-            if (emailSplited.Length > 0)
-            {
-                name = emailSplited[0];
-            }
+            var emailSplited = account.email.GetOrElse($"{name}@").Split("@");
+            if (emailSplited.Length > 0) name = emailSplited[0];
 
             // Add Initial Currency and Skin
-            await userAPI.Services.Stats.SetStats(StatsDomainType.Client, StatsAccessType.Public, gamerTag, new Dictionary<string, string>() { { "player_name", name } });
-
-            await userAPI.Services.Inventory.AddCurrency("currency.coins", 100);
-
-            await userAPI.Services.Inventory.AddItem("items.itemskin.skin1", new Dictionary<string, string>() { });
+            const string defaultSkin = "items.itemskin.skin1";
+            const string coinsCurrency = "currency.coins";
+            await userAPI.Services.Inventory.AddCurrency(coinsCurrency, 195);
+            await userAPI.Services.Inventory.AddItem(defaultSkin, new Dictionary<string, string>() { });
+            await userAPI.Services.Stats.SetStats(StatsDomainType.Client, StatsAccessType.Public, gamerTag, new Dictionary<string, string>()
+            {
+                { "player_name", name },
+                { "beamable.selected_skin", defaultSkin }
+            });
 
             return new PlayerInitResult();
         }
@@ -71,6 +70,28 @@ namespace Beamable.BeamballMs
 
                         // Create the Hathora Room
                         var hathoraRoom = await CreateHathoraGameServer(realmConfig, l.lobbyId.Value);
+
+                        // Start polling until its active or the initialization timed out.
+                        var pollingInterval = TimeSpan.FromSeconds(1);
+                        var startedAt = DateTime.Now;
+
+                        // MaxWaitTime cannot be more than 2 minutes as the current Beamable-enforced timeout is set to 2 minutes.
+                        var maxWaitTime = TimeSpan.FromSeconds(60);
+
+                        // Spin for up-to-2-minutes and checking every "PollingInterval" for the connection to become active.
+                        while (hathoraRoom.status != "active" && (DateTime.Now - startedAt).TotalSeconds < (maxWaitTime).TotalSeconds)
+                        {
+                            BeamableLogger.Log($"Room {l.lobbyId.Value} status: {hathoraRoom.status}");
+                            await Task.Delay(pollingInterval);
+                            hathoraRoom = await PollHathoraGameServer(realmConfig, l.lobbyId.Value);
+                        }
+
+                        // It took to long to provision the server.
+                        if (hathoraRoom.status != "active")
+                        {
+                            BeamableLogger.LogError($"Failed to provision game server in time for room. ROOM_ID={l.lobbyId.Value}, LAST_HATHORA_CONN_UPDATE={JsonUtility.ToJson(hathoraRoom)}");
+                            throw new MicroserviceException(503, "FAILED_TO_PROVISION_GAME_SERVER_BEFORE_TIMEOUT", JsonUtility.ToJson(hathoraRoom));
+                        }
 
                         // Set the hathora room information as the connection string for this lobby --- the Unreal SDK has utilities to read these properties.
                         // You can always pass them via your own properties.
@@ -203,6 +224,27 @@ namespace Beamable.BeamballMs
             var response = await http.PostAsync(createUri, requestContent);
             var content = await response.Content.ReadAsStringAsync();
             BeamableLogger.Log("Create Room Hathora Response: " + content);
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new Exception(content);
+            }
+
+            return JsonUtility.FromJson<HathoraConnectionInfo>(content);
+        }
+
+        /// <summary>
+        /// Takes in the roomId (in our case, the LobbyId) and calls the Hathora API to get their room's connection information/state.
+        /// We use this to wait until the server is provisioned before notifying players that the match is ready.
+        /// </summary>
+        private static async Task<HathoraConnectionInfo> PollHathoraGameServer(RealmConfig config, string roomId)
+        {
+            var hathoraRealmConfig = GetHathoraRealmConfig(config);
+            var getUri = new Uri(hathoraRealmConfig.HathoraURL, $"/rooms/v2/{hathoraRealmConfig.AppId}/connectioninfo/{roomId}");
+
+            var http = new HttpClient() { DefaultRequestHeaders = { { "Authorization", $"Bearer {hathoraRealmConfig.DeveloperToken}" } } };
+            var response = await http.GetAsync(getUri);
+            var content = await response.Content.ReadAsStringAsync();
+            BeamableLogger.Log("Get ConnectionInfo Hathora Response: " + content);
             if (!response.IsSuccessStatusCode)
             {
                 throw new Exception(content);

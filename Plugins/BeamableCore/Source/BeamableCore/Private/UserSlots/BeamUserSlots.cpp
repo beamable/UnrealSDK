@@ -251,7 +251,7 @@ void UBeamUserSlots::SetAccountIdAtSlot(FUserSlot SlotId, const FBeamAccountId& 
 	auto& ExistingRealmUser = AuthenticatedUsers[UserSlotIdx];
 	ExistingRealmUser.AccountId = AccountId;
 
-	UE_LOG(LogBeamUserSlots, Verbose, TEXT("Updated GamerTag at slot!\nUSER_SLOT=%s, GAMERTAG=%llu"), *NamespacedSlotId, AccountId.AsLong);
+	UE_LOG(LogBeamUserSlots, Verbose, TEXT("Updated AccountId at slot!\nUSER_SLOT=%s, AccountId=%llu"), *NamespacedSlotId, AccountId.AsLong);
 }
 
 

@@ -13,6 +13,7 @@ USER unreal
 WORKDIR /home/unreal
 COPY --chown=unreal:unreal . .
 
+RUN chmod +x ServerInit.sh
 RUN chmod +x BeamableUnrealServer.sh
 RUN chmod +x BeamableUnreal/Binaries/Linux/BeamableUnrealServer
 
@@ -20,4 +21,4 @@ RUN chmod +x BeamableUnreal/Binaries/Linux/BeamableUnrealServer
 EXPOSE 7777/udp
 
 # Start init script (passing any parameters you need)
-ENTRYPOINT [ "./BeamableUnrealServer.sh", "-hostname=$HATHORA_PROCESS_ID" ]
+CMD [ "sh", "./ServerInit.sh" ]

@@ -15,6 +15,7 @@
 #include "AutoGen/SubSystems/Lobby/PutPasscodeRequest.h"
 #include "AutoGen/SubSystems/Lobby/PutTagsRequest.h"
 #include "BeamNotifications/SubSystems/BeamLobbyNotifications.h"
+#include "Kismet/GameplayStatics.h"
 #include "Runtime/BeamRuntimeSubsystem.h"
 #include "BeamLobbySubsystem.generated.h"
 
@@ -161,8 +162,8 @@ public:
 	inline static const FString Reserved_Lobby_From_Editor_Play_Mode_Property = "__beam_lobby_from_editor_play_mode_settings__";
 
 	inline static const FString Reserved_Game_Server_Ready_Property = TEXT("__beam_game_server_ready_lobby__");
-	inline static const FString Reserved_Game_Server_url = TEXT("__beam_game_server_url_lobby__");
-	inline static const FString Reserved_Game_Server_port = TEXT("__beam_game_server_port_lobby__");
+	inline static const FString Reserved_Game_Server_URL = TEXT("__beam_game_server_url_lobby__");
+	inline static const FString Reserved_Game_Server_Port = TEXT("__beam_game_server_port_lobby__");
 
 	inline static const FString Reserved_Dedicated_Server_Property = TEXT("__beam_game_server_lobby__");
 	inline static const FString Reserved_Listen_Server_Property = TEXT("__beam_listen_server_lobby__");
@@ -433,6 +434,12 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable)
 	void PrepareDeleteGlobalData(FUserSlot Slot, const TArray<FString>& GlobalDataToRemove);
+
+	/**
+	 *  If a lobby has information in its @link ULobby::Data @endlink map for a URL and Port, you can use this node to call OpenLevel with that information in the lobby.
+	 */
+	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue", AdvancedDisplay="UrlKey,PortKey,AdditionalOptions"))
+	bool TryOpenLevelFromLobby(FUserSlot Slot, FString UrlKey = TEXT(""), FString PortKey = TEXT(""), FString AdditionalOptions = TEXT(""));
 
 	/**
 	 * Use this to create to add to an OpenLevel URL all the options required to use CPP_AcceptUserIntoGameServerOperation in your UGameModeBase::PreLoginAsync call. 

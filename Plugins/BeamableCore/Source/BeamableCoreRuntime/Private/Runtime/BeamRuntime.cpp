@@ -410,7 +410,7 @@ void UBeamRuntime::InitSDK(FBeamRuntimeHandler OnStartedHandler, FRuntimeError S
 	}
 	else
 	{
-		FString ErrMsg = TEXT("Trying to call InitSDK while the SDK is already initialized");
+		FString ErrMsg = TEXT("Trying to call InitSDK while the SDK is initializing.");
 		SDKInitializationErrorHandler.ExecuteIfBound(ErrMsg);
 		UE_LOG(LogBeamRuntime, Warning, TEXT("%s"), *ErrMsg);
 	}

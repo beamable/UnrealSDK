@@ -150,9 +150,11 @@ void UBeamUserDeveloperManagerEditor::TriggerOnPreBeginPIE(ULevelEditorPlaySetti
 	{
 		auto DeveloperUser = LocalUserDeveloperCache[AssignedUser.Value.GamerTag.AsLong];
 		if (DeveloperUser->Cid != BeamCoreSettings->TargetRealm.Cid || DeveloperUser->Pid != BeamCoreSettings->TargetRealm.Pid)
-		{
 			return true;
-		}
+
+		if (DeveloperUser->DeveloperUserType == EBeamDeveloperUserType::BEAM_SHARED)
+			return true;
+		
 		return AssignedUser.Key.CreateCopyOnPIE;
 	};
 
