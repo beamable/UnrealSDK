@@ -56,11 +56,13 @@ Usage:
   Beamable.Tools developer-user-manager save-user [options]
 
 Options:
-  --access-token <access-token>          The access token to be saved
-  --refresh-token <refresh-token>        The refresh token to be saved
+  --user-type <user-type>                The user type of the user
   --pid <pid>                            The PID of the user
   --cid <cid>                            The CID of the user
   --gamer-tag <gamer-tag>                The Gamer Tag of the user
+  --access-token <access-token>          The access token to be saved
+  --refresh-token <refresh-token>        The refresh token to be saved
+  --expires-in <expires-in>              The expires to be saved
   --dryrun                               [DEPRECATED] Run as much of the command as possible without making any network calls
   --cid <cid>                            CID (CustomerId) to use (found in Portal->Account); defaults to whatever is in '.beamable/connection-configuration.json'
   --pid <pid>                            PID (Realm ID) to use (found in Portal -> Games -> Any Realm's details); defaults to whatever is in '.beamable/connection-configuration.json'

@@ -39,7 +39,7 @@ FBeamOperationHandle UBeamUserDeveloperManagerEditor::OnRealmInitialized(FBeamRe
 		UE_LOG(LogBeamCli, Error, TEXT("Editor Subsystem %s - Content depends on the CLI. It was not found locally. This system is not guaranteed to work because of this."), *GetName());
 		return RequestTracker->CPP_BeginSuccessfulOperation({}, GetName(), {}, {});
 	}
-	
+
 	// Start up the PS command for the current realm
 	const auto Op = RequestTracker->CPP_BeginOperation({}, GetName(), FBeamOperationEventHandlerCode::CreateLambda([this](FBeamOperationEvent Event)
 	{
@@ -56,7 +56,7 @@ void UBeamUserDeveloperManagerEditor::TriggerOnUserSlotAuthenticated(const FUser
 	if (Context)
 	{
 		const auto WorldContext = GEngine->GetWorldContextFromWorld(Context->GetWorld());
-		if (WorldContext && WorldContext->WorldType == EWorldType::PIE && !LocalUserDeveloperCache.Contains(BeamRealmUser.GamerTag))
+		if (WorldContext && WorldContext->WorldType == EWorldType::PIE)
 		{
 			TArray<FBeamRealmUser> RealmUsers = {BeamRealmUser};
 
@@ -81,9 +81,18 @@ void UBeamUserDeveloperManagerEditor::TriggerOnUserSlotAuthenticated(const FUser
 					RequestTracker->TriggerOperationError(Handler, TEXT(""));
 				}
 			};
+			// 0 - Captured
+			// 1 - Local
+			// 2 - Shared
+			int UserType = 0;
+			if (LocalUserDeveloperCache.Contains(BeamRealmUser.GamerTag))
+			{
+				UserType = LocalUserDeveloperCache[BeamRealmUser.GamerTag]->DeveloperUserType;
+			}
 
 			TArray<FString> AccessToken;
 			TArray<FString> RefreshToken;
+			TArray<FString> ExpiresIn;
 			TArray<FString> Pid;
 			TArray<FString> Cid;
 			TArray<FString> GamerTag;
@@ -93,6 +102,7 @@ void UBeamUserDeveloperManagerEditor::TriggerOnUserSlotAuthenticated(const FUser
 			{
 				AccessToken.Add(RealmUser.AuthToken.AccessToken);
 				RefreshToken.Add(RealmUser.AuthToken.RefreshToken);
+				ExpiresIn.Add(FString::Printf(TEXT("%lld"), RealmUser.AuthToken.ExpiresIn));
 				Pid.Add(RealmUser.RealmHandle.Pid.AsString);
 				Cid.Add(RealmUser.RealmHandle.Cid.AsString);
 				GamerTag.Add(RealmUser.GamerTag.AsString);
@@ -101,9 +111,11 @@ void UBeamUserDeveloperManagerEditor::TriggerOnUserSlotAuthenticated(const FUser
 			auto args = {
 				FString::Printf(TEXT("--access-token %s"), *FString::Join(AccessToken, TEXT(" "))),
 				FString::Printf(TEXT("--refresh-token %s"), *FString::Join(RefreshToken, TEXT(" "))),
+				FString::Printf(TEXT("--expires-in %s"), *FString::Join(ExpiresIn, TEXT(" "))),
 				FString::Printf(TEXT("--pid %s"), *FString::Join(Pid, TEXT(" "))),
 				FString::Printf(TEXT("--cid %s"), *FString::Join(Cid, TEXT(" "))),
 				FString::Printf(TEXT("--gamer-tag %s"), *FString::Join(GamerTag, TEXT(" "))),
+				FString::Printf(TEXT("--user-type %d"), UserType)
 			};
 
 			auto Handler = RequestTracker->CPP_BeginOperation({}, GetName(), {});
@@ -215,7 +227,7 @@ void UBeamUserDeveloperManagerEditor::TriggerOnPreBeginPIE(ULevelEditorPlaySetti
 			                        DeveloperUser->GamerTag,
 			                        DeveloperUser->AccessToken,
 			                        DeveloperUser->RefreshToken,
-			                        FDateTime::UtcNow().ToUnixTimestamp(),
+			                          DeveloperUser->IssuedAt,
 			                        DeveloperUser->ExpiresIn,
 			                        DeveloperUser->Cid,
 			                        DeveloperUser->Pid);
@@ -262,7 +274,7 @@ void UBeamUserDeveloperManagerEditor::TriggerOnPreBeginPIE(ULevelEditorPlaySetti
 		                        DeveloperUser->GamerTag,
 		                        DeveloperUser->AccessToken,
 		                        DeveloperUser->RefreshToken,
-		                        DeveloperUser->CreatedDate,
+		                        DeveloperUser->IssuedAt,
 		                        DeveloperUser->ExpiresIn,
 		                        DeveloperUser->Cid,
 		                        DeveloperUser->Pid);
@@ -362,7 +374,7 @@ void UBeamUserDeveloperManagerEditor::DeleteUsers(TArray<FBeamGamerTag> GamerTag
 	{
 		StringGamerTags.Add(GamerTag.AsString);
 	}
-	
+
 	auto args = {
 		FString::Printf(TEXT("--gamer-tag %s"), *FString::Join(StringGamerTags, TEXT(" "))),
 	};
@@ -409,7 +421,7 @@ void UBeamUserDeveloperManagerEditor::CreateNewUserOperation(FString Alias, EBea
 	UBeamCliDeveloperUserManagerCreateUserCommand* CreateUserCommand = NewObject<UBeamCliDeveloperUserManagerCreateUserCommand>();
 
 	CreateUserCommand->OnStreamOutput = [this](const TArray<UBeamCliDeveloperUserManagerCreateUserStreamData*>& Stream, const TArray<int64>&,
-											   const FBeamOperationHandle&)
+	                                           const FBeamOperationHandle&)
 	{
 	};
 	CreateUserCommand->OnCompleted = [this, OperationHandler](const int& Res, const FBeamOperationHandle&)
