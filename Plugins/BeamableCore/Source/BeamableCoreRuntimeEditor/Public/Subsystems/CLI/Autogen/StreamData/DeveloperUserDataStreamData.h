@@ -38,6 +38,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int64 ExpiresIn = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int64 IssuedAt = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int64 CreatedDate = {};
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
@@ -54,6 +56,7 @@ public:
 		UBeamJsonUtils::SerializeRawPrimitive(TEXT("Pid"), Pid, Serializer);
 		UBeamJsonUtils::SerializeRawPrimitive(TEXT("Cid"), Cid, Serializer);
 		UBeamJsonUtils::SerializeRawPrimitive(TEXT("ExpiresIn"), ExpiresIn, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("IssuedAt"), IssuedAt, Serializer);
 		UBeamJsonUtils::SerializeRawPrimitive(TEXT("CreatedDate"), CreatedDate, Serializer);	
 	}
 
@@ -71,6 +74,7 @@ public:
 		UBeamJsonUtils::SerializeRawPrimitive(TEXT("Pid"), Pid, Serializer);
 		UBeamJsonUtils::SerializeRawPrimitive(TEXT("Cid"), Cid, Serializer);
 		UBeamJsonUtils::SerializeRawPrimitive(TEXT("ExpiresIn"), ExpiresIn, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("IssuedAt"), IssuedAt, Serializer);
 		UBeamJsonUtils::SerializeRawPrimitive(TEXT("CreatedDate"), CreatedDate, Serializer);	
 	}
 
@@ -88,6 +92,7 @@ public:
 		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("Pid"), Bag, Pid);
 		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("Cid"), Bag, Cid);
 		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("ExpiresIn"), Bag, ExpiresIn);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("IssuedAt"), Bag, IssuedAt);
 		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("CreatedDate"), Bag, CreatedDate);	
 	}
 };

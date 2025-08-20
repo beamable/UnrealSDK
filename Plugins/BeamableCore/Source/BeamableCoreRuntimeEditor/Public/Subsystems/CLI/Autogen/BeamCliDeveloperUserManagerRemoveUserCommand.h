@@ -50,7 +50,7 @@ public:
 
 /**
  Description:
-  Remove a user from the local files, it will not remove it from the portal
+  Remove a user or a list from the local files, it will not remove it from the portal
 
 Usage:
   Beamable.Tools developer-user-manager remove-user [options]
