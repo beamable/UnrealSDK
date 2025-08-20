@@ -396,7 +396,10 @@ void UBeamUserDeveloperManagerEditor::DeleteAllOfSpecificType(EBeamDeveloperUser
 			GamerTags.Add(UserDeveloperKeyPair.Key);
 		}
 	}
-	DeleteUsers(GamerTags);
+	if (GamerTags.Num() > 0)
+	{
+		DeleteUsers(GamerTags);
+	}
 }
 
 FString UBeamUserDeveloperManagerEditor::GetNextNewUserAlias()
