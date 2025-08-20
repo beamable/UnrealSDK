@@ -28,6 +28,41 @@
 
 #include "BeamPIE.generated.h"
 
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORERUNTIME_API UBeamPIEProgressionStep : public UObject, public IBeamOperationEventData
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	FString StepName;
+	
+	static UBeamPIEProgressionStep* CreateProgressionStep(FString StepName)
+	{
+		auto ProgressionStep = NewObject<UBeamPIEProgressionStep>();
+		ProgressionStep->StepName = StepName;
+		return ProgressionStep;
+	}
+	static UBeamPIEProgressionStep* CreateLoginStep()
+	{
+		auto ProgressionStep = NewObject<UBeamPIEProgressionStep>();
+		ProgressionStep->StepName = "Login with Client!";
+		return ProgressionStep;
+	}
+	static UBeamPIEProgressionStep* CreateEnteringInLobbyStep()
+	{
+		auto ProgressionStep = NewObject<UBeamPIEProgressionStep>();
+		ProgressionStep->StepName = "Joining Lobby!";
+		return ProgressionStep;
+	}
+
+	static UBeamPIEProgressionStep* CreateWaitingForServerStep()
+	{
+		auto ProgressionStep = NewObject<UBeamPIEProgressionStep>();
+		ProgressionStep->StepName = "Waiting for the Server!";
+		return ProgressionStep;
+	}
+};
 
 /**
  * 
@@ -40,7 +75,7 @@ class BEAMABLECORERUNTIME_API UBeamPIE : public UEngineSubsystem
 	friend class UBeamRuntime;
 
 	const static inline FString WaitRoomLevel = TEXT("L_Beamable_PIEWaitRoom");
-
+	
 	static inline FBeamPIE_Settings DefaultSettingsPtr = {};
 
 	TMap<FBeamPIE_UserSlotHandle, FDelegateHandle> LobbyJoinedHandles;
@@ -113,6 +148,12 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable)
 	static inline FName GetOperationEventID_PIE_ClientLoggedIn() { return FName("ON_CLIENT_LOGGED_IN"); }
+
+	/**
+	 * @brief Get the operation event id for a sub-event that is triggered whenever the user advance a step in the PIE proccess.
+	 */
+	UFUNCTION(BlueprintCallable)
+	static inline FName GetOperationEventID_PIE_ProgressionStep() { return FName("PROGRESSION_PIE_STEP"); }
 
 	UPROPERTY()
 	UBeamUserSlots* UserSlots;
@@ -371,7 +412,11 @@ public:
 	UFUNCTION(BlueprintCallable, meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
 	FBeamOperationHandle PrepareThenTravelToPIEOperation(FUserSlot UserSlot, UObject* CallingContext, FBeamOperationEventHandler OnOperationEvent)
 	{
-		FBeamOperationHandle Op = RequestTracker->BeginOperation({}, CallingContext->GetName(), OnOperationEvent);
+		FBeamOperationHandle Op = RequestTracker->CPP_BeginOperation({}, CallingContext->GetName(), FBeamOperationEventHandlerCode::CreateLambda([=, this](const FBeamOperationEvent& Event)
+		{
+			TravelBackToStarterLevel(CallingContext);
+			OnOperationEvent.ExecuteIfBound(Event);
+		}));
 		PrepareThenTravelToPIE(CallingContext, Op);
 		return Op;
 	}
@@ -381,7 +426,11 @@ public:
 	 */
 	FBeamOperationHandle CPP_PrepareThenTravelToPIEOperation(FUserSlot UserSlot, UObject* CallingContext, FBeamOperationEventHandlerCode OnOperationEvent)
 	{
-		FBeamOperationHandle Op = RequestTracker->CPP_BeginOperation({}, CallingContext->GetName(), OnOperationEvent);
+		FBeamOperationHandle Op = RequestTracker->CPP_BeginOperation({}, CallingContext->GetName(), FBeamOperationEventHandlerCode::CreateLambda([=, this](const FBeamOperationEvent& Event)
+		{
+			TravelBackToStarterLevel(CallingContext);
+			OnOperationEvent.ExecuteIfBound(Event);
+		}));
 		PrepareThenTravelToPIE(CallingContext, Op);
 		return Op;
 	}
@@ -394,19 +443,17 @@ public:
 	FBeamOperationHandle PreparePIEOperation(FUserSlot UserSlot, UObject* CallingContext, FBeamOperationEventHandler OnOperationEvent)
 	{
 		FBeamOperationHandle Op = RequestTracker->BeginOperation({}, CallingContext->GetName(), OnOperationEvent);
-		if (!bCustomGameInstanceGuard) PreparePIE_EnsureInit(CallingContext, Op);
-		else WaitUntilInitPIE(CallingContext, Op);
+		PreparePIE(CallingContext, Op);
 		return Op;
 	}
-
+	
 	/**
 	 * @copydoc PreparePIEOperation
 	 */
 	FBeamOperationHandle CPP_PreparePIEOperation(FUserSlot UserSlot, UObject* CallingContext, FBeamOperationEventHandlerCode OnOperationEvent)
 	{
 		FBeamOperationHandle Op = RequestTracker->CPP_BeginOperation({}, CallingContext->GetName(), OnOperationEvent);
-		if (!bCustomGameInstanceGuard) PreparePIE_EnsureInit(CallingContext, Op);
-		else WaitUntilInitPIE(CallingContext, Op);
+		PreparePIE(CallingContext, Op);
 		return Op;
 	}
 
@@ -466,25 +513,36 @@ public:
 			return;
 		}
 
-		auto BeamPIE = GEngine->GetEngineSubsystem<UBeamPIE>();
+		PreparePIE(CallingContext, Op);
+	}
+
+	/**
+	 *  Prepare PIE for a operation
+	 */
+	void PreparePIE(UObject* CallingContext, FBeamOperationHandle Op)
+	{
+		if (!bCustomGameInstanceGuard) PreparePIE_EnsureInit(CallingContext, Op);
+		else WaitUntilInitPIE(CallingContext, Op);
+	}
+	/**
+	 *  Travel Back
+	 */
+	void TravelBackToStarterLevel(UObject* CallingContext)
+	{
+		const auto GI = CallingContext->GetWorld()->GetGameInstance();
+		
 		UBeamRuntime* BeamRuntime = GI->GetSubsystem<UBeamRuntime>();
-
-		auto InitHandler = FBeamOperationEventHandlerCode::CreateLambda([CallingContext, this, BeamRuntime, Op](const FBeamOperationEvent& Event)
+				
+		if (BeamRuntime->IsGameServer())
 		{
-			if (BeamRuntime->IsGameServer())
+			const auto Config = GetMutableDefault<UBeamPIEConfig>();
+			FString LevelToReload = Config->CurrPIEMap;
+			if (!FakeOptions.IsEmpty())
 			{
-				const auto Config = GetMutableDefault<UBeamPIEConfig>();
-				FString LevelToReload = Config->CurrPIEMap;
-				if (!FakeOptions.IsEmpty())
-				{
-					LevelToReload += "?" + FakeOptions;
-				}
-				CallingContext->GetWorld()->ServerTravel(LevelToReload);
-				RequestTracker->TriggerOperationSuccess(Op, TEXT(""));
+				LevelToReload += "?" + FakeOptions;
 			}
-		});
-
-		BeamPIE->CPP_PreparePIEOperation(GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot(), CallingContext, InitHandler);
+			CallingContext->GetWorld()->ServerTravel(LevelToReload);
+		}
 	}
 
 	/**
@@ -696,6 +754,8 @@ public:
 				UE_LOG(LogBeamEditor, Log, TEXT("%s Client - Logging in from Cache. USER_SLOT=%s, PIE=%d"),
 				       *GetLogArgs(TEXT("Beam PIE Prepare"), WorldContext), *CurrSlotHandle.Slot.Name, CurrSlotHandle.PIEIndex);
 
+				RequestTracker->TriggerOperationEventWithData(Op, OET_SUCCESS, GetOperationEventID_PIE_ProgressionStep(), TEXT(""), UBeamPIEProgressionStep::CreateLoginStep());
+				
 				Runtime->CPP_LoginFromCacheOperation(CurrSlotHandle.Slot, LoginLocalCacheHandler);
 
 				// This makes the lobby system initialize at the right
@@ -1169,6 +1229,12 @@ private:
 	 */
 	void WaitUntilClientIsLoggedIn(UBeamRuntime* Runtime, TArray<FBeamPIE_UserSlotHandle> PossibleSlotHandles, FBeamOperationHandle Op)
 	{
+		RequestTracker->TriggerOperationEventWithData(Op,
+			OET_SUCCESS,
+			GetOperationEventID_PIE_ProgressionStep(),
+			TEXT(""),
+			UBeamPIEProgressionStep::CreateWaitingForServerStep());
+				
 		const auto WorldContext = GEngine->GetWorldContextFromWorld(Runtime->GetWorld());
 		const auto PieInstance = FBeamPIE_Utilities::GetPIEInstance(WorldContext);
 
@@ -1229,6 +1295,8 @@ private:
 	 */
 	void WaitUntilClientIsInLobby(UBeamRuntime* Runtime, TArray<FBeamPIE_UserSlotHandle> PossibleSlotHandles, FBeamOperationHandle Op)
 	{
+		RequestTracker->TriggerOperationEventWithData(Op, OET_SUCCESS, GetOperationEventID_PIE_ProgressionStep(), TEXT(""), UBeamPIEProgressionStep::CreateEnteringInLobbyStep());
+				
 		const auto WorldContext = GEngine->GetWorldContextFromWorld(Runtime->GetWorld());
 		const auto PieInstance = FBeamPIE_Utilities::GetPIEInstance(WorldContext);
 
@@ -1273,6 +1341,8 @@ private:
 
 					if (bAreAllUsersInTheLobby)
 					{
+						RequestTracker->TriggerOperationEventWithData(Op, OET_SUCCESS, GetOperationEventID_PIE_ProgressionStep(), TEXT(""), UBeamPIEProgressionStep::CreateWaitingForServerStep());
+		
 						RequestTracker->TriggerOperationSuccess(Op, TEXT(""));
 						return false;
 					}

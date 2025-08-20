@@ -81,6 +81,46 @@ class UK2BeamNode_Operation_PrepareThenTravelToPIE : public UK2BeamNode_Operatio
 	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamPIE, PrepareThenTravelToPIEOperation); }
 
 	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamPIE::StaticClass(); }
+
+	virtual TArray<FName> GetOperationEventIds(EBeamOperationEventType Type) const override
+	{
+		TArray<FName> Ids = Super::GetOperationEventIds(Type);
+
+		switch (Type)
+		{
+		case OET_SUCCESS:
+			Ids.Add(UBeamPIE::GetOperationEventID_PIE_ProgressionStep());
+			return Ids;
+		}
+
+		return Ids;
+	};
+
+	virtual TArray<FString> GetOperationEventIdTooltips(EBeamOperationEventType Type) const override
+	{
+		TArray<FString> Ids = Super::GetOperationEventIdTooltips(Type);
+
+		switch (Type)
+		{
+		case OET_SUCCESS:
+			Ids.Add("Triggered for each step the PIE progress advance.");
+			return Ids;
+		}
+		return Ids;
+	}
+
+	virtual TMap<FName, UClass*> GetOperationEventCastClass(EBeamOperationEventType Type) const override
+	{
+		TMap<FName, UClass*> Casts = Super::GetOperationEventCastClass(Type);
+
+		switch (Type)
+		{
+		case OET_SUCCESS:
+			Casts.Add(UBeamPIE::GetOperationEventID_PIE_ProgressionStep(), UBeamPIEProgressionStep::StaticClass());
+			return Casts;
+		}
+		return Casts;
+	}
 };
 
 #undef LOCTEXT_NAMESPACE
