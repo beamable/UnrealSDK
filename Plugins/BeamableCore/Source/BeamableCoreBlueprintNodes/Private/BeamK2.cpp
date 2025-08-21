@@ -668,23 +668,6 @@ bool BeamK2::IsMacroOrEventGraph(const UEdGraph* Graph)
 	return bIsCompatible;
 }
 
-FString BeamK2::GetPinMetaData(FName InPinName, FName InKey, const UFunction* Function)
-{
-	FString MetaData;
-
-	// Find the corresponding property for the pin and search that first
-	if (FProperty* Property = Function->FindPropertyByName(InPinName))
-	{
-		MetaData = Property->GetMetaData(InKey);
-
-		if (MetaData.IsEmpty() && Property->HasMetaData(InKey))
-		{
-			return InKey.ToString();
-		}
-	}
-
-	return MetaData;
-}
 
 void BeamK2::RemoveAllPins(UEdGraphNode* CustomNode, const TArray<FName> PinsToRemove)
 {

@@ -1,6 +1,7 @@
 ﻿#include "Pins/BeamContentIdPin.h"
 
 #include "BeamK2.h"
+#include "K2Node_CallFunction.h"
 #include "EdGraph/EdGraphPin.h"
 #include "EdGraph/EdGraphSchema.h"
 #include "SNameComboBox.h"
@@ -43,8 +44,33 @@ TSharedRef<SWidget> SBeamContentIdPin::GetDefaultValueWidget()
 	// If the pin is connected with some other pin then we show only the category not the specific item
 	if (GraphPinObj->LinkedTo.Num() > 0)
 	{
+	
 		// We only shows the category if the beam target cast meta exists in tha node.
-		FString TargetMeta = GraphPinObj->GetOwningNode()->GetPinMetaData(GraphPinObj->PinName, FName(BeamK2::MD_BeamCastParameterName));
+		FString TargetMeta = "";
+		for (auto Pin : GraphPinObj->GetOwningNode()->Pins)
+		{
+			FName InPinName = Pin->PinName;
+			TargetMeta = GraphPinObj->GetOwningNode()->GetPinMetaData(InPinName, FName(BeamK2::MD_BeamCastParameterName));
+
+			// Fallback for when 
+			if (TargetMeta.IsEmpty())
+			{
+				if (UK2Node_CallFunction* FunctionNode = Cast<UK2Node_CallFunction>(GraphPinObj->GetOwningNode()))
+				{
+					if (const UFunction* Function = FunctionNode->GetTargetFunction())
+					{
+						// Use the function
+						TargetMeta = BeamK2::GetPinMetaData(InPinName, FName(BeamK2::MD_BeamCastParameterName), Function);
+					}
+				}
+			}
+			if (!TargetMeta.IsEmpty())
+			{
+				break;
+			}
+		}
+		
+		// if it contains any target property so we draw the type
 		if (!TargetMeta.IsEmpty())
 		{
 			return SAssignNew(WidgetContainer, SVerticalBox)

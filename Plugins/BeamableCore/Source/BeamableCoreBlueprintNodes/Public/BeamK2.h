@@ -215,7 +215,23 @@ namespace BeamK2
 	 */
 	bool IsMacroOrEventGraph(const UEdGraph* Graph);
 
-	FString GetPinMetaData(FName InPinName, FName InKey, const UFunction* Function);
+	static FString GetPinMetaData(FName InPinName, FName InKey, const UFunction* Function)
+	{
+		FString MetaData;
+
+		// Find the corresponding property for the pin and search that first
+		if (FProperty* Property = Function->FindPropertyByName(InPinName))
+		{
+			MetaData = Property->GetMetaData(InKey);
+
+			if (MetaData.IsEmpty() && Property->HasMetaData(InKey))
+			{
+				return InKey.ToString();
+			}
+		}
+
+		return MetaData;
+	}
 
 	/**
 	 * @brief Removes all pins (breaking their links). 
