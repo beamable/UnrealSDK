@@ -1395,8 +1395,10 @@ public:
 		return nullptr;
 #endif
 
+		// If Beam PIE is disabled we just return the default settings which means disabled.
+		if (!GetDefault<UBeamCoreSettings>()->bEnableBeamPIE) return DefaultSettings();
+		
 		const auto Config = GetDefault<UBeamPIEConfig>();
-
 		UE_LOG(LogTemp, Warning, TEXT("MAP NAME CHOOSE: %s"), *MapName);
 
 		for (auto MapSelection : Config->PerMapSelection)
