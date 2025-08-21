@@ -1,4 +1,0 @@
-{"federations":{
-  "steam":[{"interface":"IFederatedLogin"}],
-  "default":[{"interface":"IFederatedPlayerInit"}]
-}}

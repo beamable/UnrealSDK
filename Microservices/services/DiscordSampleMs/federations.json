@@ -1,6 +1,0 @@
-{
-  "federations":
-  {
-    "discord":[{"interface": "IFederatedLogin"}]
-  }
-}

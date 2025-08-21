@@ -178,6 +178,7 @@ void UBeamEditorContent::PublishManifest(FBeamContentManifestId ContentManifestI
 
 	TArray<FString> Params;
 	Params.Append({TEXT("--manifest-ids"), ContentManifestId.AsString});
+	Params.Append({TEXT("--auto-snapshot-type SharedOnly")});
 
 	Cli->RunCommandServer(PublishCommand, Params, {});
 	SlowTask->EnterProgressFrame();
