@@ -90,6 +90,11 @@ public:
 			ErrorReason += FString::Printf(TEXT("\nThe PIE config is not correct, you not able to have a \"Fake Lobby Settings\" enabled and start the game in a different settings than the \"Play As Client\""));
 		}
 
+		if (SelectedSetting.FakeLobby.bShouldAutoCreateLobby && SelectedSetting.FakeLobby.GameType.AsString.IsEmpty())
+		{
+			ErrorReason += FString::Printf(TEXT("\nThe PIE config is not correct, you not able to have a \"Fake Lobby Settings\" enabled and don't have a \"GameType\" setup for this lobby."));
+		}
+
 		if (!ErrorReason.IsEmpty())
 		{
 			OutReason = FString::Printf(TEXT("BeamPIE Setting Failed: %s"), *ErrorReason);
