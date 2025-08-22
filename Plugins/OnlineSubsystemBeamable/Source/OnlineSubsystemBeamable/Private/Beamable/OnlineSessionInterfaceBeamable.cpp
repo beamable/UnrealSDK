@@ -603,7 +603,7 @@ bool FOnlineSessionBeamable::StartSession(FName SessionName)
 			return false;
 		}
 
-		if (BeamableSubsystem->GetUserSlots()->GetUserDataWithGamerTag(LocalPlayerGamerTag, RealmUser, Slot, NamespacedSlot))
+		if (BeamableSubsystem->GetUserSlots()->GetUserDataWithGamerTag(LocalPlayerGamerTag, RealmUser, Slot, NamespacedSlot, GEngine->GetWorld()))
 		{
 			LobbySubsystem->CPP_ProvisionGameServerForLobbyOperation(Slot, FOptionalBeamContentId(QueueName), FBeamOperationEventHandlerCode::CreateLambda(
 				                                                         [this, SessionName, Session](FBeamOperationEvent Evt)
@@ -654,7 +654,7 @@ bool FOnlineSessionBeamable::UpdateSession(FName SessionName, FOnlineSessionSett
 
 		FUniqueNetIdRef MemberId = FUniqueNetIdBeamable::Create(LocalPlayerGamerTag.AsString);
 
-		if (BeamableSubsystem->GetUserSlots()->GetUserDataWithGamerTag(LocalPlayerGamerTag, RealmUser, Slot, NamespacedSlot))
+		if (BeamableSubsystem->GetUserSlots()->GetUserDataWithGamerTag(LocalPlayerGamerTag, RealmUser, Slot, NamespacedSlot, GEngine->GetWorld()))
 		{
 			TArray<FBeamTag> PlayerTags;
 
@@ -727,7 +727,7 @@ bool FOnlineSessionBeamable::EndSession(FName SessionName)
 	FBeamRealmUser RealmUser;
 	FUserSlot Slot;
 	FString NamespacedSlot;
-	if (BeamableSubsystem->GetUserSlots()->GetUserDataWithGamerTag(GamerTag, RealmUser, Slot, NamespacedSlot))
+	if (BeamableSubsystem->GetUserSlots()->GetUserDataWithGamerTag(GamerTag, RealmUser, Slot, NamespacedSlot, GEngine->GetWorld()))
 	{
 		UBeamLobbySubsystem* LobbySubsystem = BeamableSubsystem->GetGameInstance()->GetSubsystem<UBeamLobbySubsystem>();
 		LobbySubsystem->CPP_LeaveLobbyOperation(Slot, FBeamOperationEventHandlerCode::CreateLambda([this, SessionName](FBeamOperationEvent Evt)
