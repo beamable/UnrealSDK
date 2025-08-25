@@ -25,7 +25,6 @@ public class BeamableUnrealEditorTarget : TargetRules
 
 		Console.WriteLine($"Configuring editor project as beamproj={samplePluginName}.");
 		BeamableUnrealTarget.ConfigureIfBeamball(this, samplePluginName);
-		BeamableUnrealTarget.ConfigureIfHathoraDemo(this, samplePluginName);
 		BeamableUnrealTarget.ConfigureIfSteamDemo(this, samplePluginName);
 		BeamableUnrealTarget.ConfigureIfLiveOpsDemo(this, samplePluginName);
 		BeamableUnrealTarget.ConfigureIfDiscordDemo(this, samplePluginName);

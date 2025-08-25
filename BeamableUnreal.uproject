@@ -57,10 +57,6 @@
       "Enabled":false
     },
     {
-      "Name":"BEAMPROJ_HathoraDemo",
-      "Enabled":false
-    },
-    {
       "Name":"BEAMPROJ_LiveOpsDemo",
       "Enabled":false
     },

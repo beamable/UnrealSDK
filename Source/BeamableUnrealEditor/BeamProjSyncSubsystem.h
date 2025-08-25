@@ -15,8 +15,7 @@
  *
  * Practically this means that:
  *  - If your project is set to BEAMPROJ_Beamball, the Config folders will be mirrored to what's in the Plugins/BEAMPROJ_Beamball/Overrides directories.
- *  - If your project is set to BEAMPROJ_HathoraDemo, the Config folders will be mirrored to what's in the Plugins/BEAMPROJ_HathoraDemo/Overrides directories.
- *
+
  * For all intents and purposes, this makes it so that we effectively have "N- Unreal projects" inside this repo.
  * For more information on how this is applied, go look at BeamableUnreal.Target.cs's variours ConfigureIf functions.
  */

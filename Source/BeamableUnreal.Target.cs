@@ -28,7 +28,6 @@ public class BeamableUnrealTarget : TargetRules
 
 		ConfigureIfBeamball(this, samplePluginName);
 		ConfigureIfLiveOpsDemo(this, samplePluginName);
-		ConfigureIfHathoraDemo(this, samplePluginName);
 		ConfigureIfSteamDemo(this, samplePluginName);
 		ConfigureIfDiscordDemo(this, samplePluginName);
 	}
@@ -108,42 +107,7 @@ public class BeamableUnrealTarget : TargetRules
 			}
 		}
 	}
-
-	public const string kBeamProj_HathoraDemo = "BEAMPROJ_HathoraDemo";
-
-	public static void ConfigureIfHathoraDemo(TargetRules TargetRules, string beamProj)
-	{
-		if (beamProj == kBeamProj_HathoraDemo)
-		{
-			var oss = new Beam.OssConfig()
-			{
-				IsEnabled = true,
-
-				HooksEnabled = true,
-				HookSubsystemImplementation = "FOnlineSubsystemHathoraDemo",
-				HookSubsystemIncludePath = "Customer/OnlineSubsystemHathoraDemo.h",
-
-				AdditionalHookModules = new[] { "HathoraSDK" }
-			};
-
-			if (TargetRules.Type == UnrealBuildTool.TargetType.Game)
-			{
-				Beam.ConfigureGame(TargetRules, oss);
-			}
-			else if (TargetRules.Type == UnrealBuildTool.TargetType.Editor)
-			{
-				Beam.ConfigureEditor(TargetRules, oss);
-			}
-			else if (TargetRules.Type == UnrealBuildTool.TargetType.Server)
-			{
-				Beam.ConfigureServer(TargetRules, oss);
-			}
-			else
-			{
-				throw new ArgumentOutOfRangeException();
-			}
-		}
-	}
+	
 
 	public const string kBeamProj_SteamDemo = "BEAMPROJ_SteamDemo";
 

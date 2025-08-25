@@ -18,8 +18,8 @@ void UBeamBeamballMsApi::Deinitialize()
 }
 
 
-void UBeamBeamballMsApi::BP_CreateMatchResultImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, UBeamballMsCreateMatchResultRequest* RequestData,
-                                                  const FOnBeamballMsCreateMatchResultSuccess& OnSuccess, const FOnBeamballMsCreateMatchResultError& OnError, const FOnBeamballMsCreateMatchResultComplete& OnComplete,
+void UBeamBeamballMsApi::BP_ProcessMatchResultImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, UBeamballMsProcessMatchResultRequest* RequestData,
+                                                  const FOnBeamballMsProcessMatchResultSuccess& OnSuccess, const FOnBeamballMsProcessMatchResultError& OnError, const FOnBeamballMsProcessMatchResultComplete& OnComplete,
                                                   int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
 	// AUTO-GENERATED...	
@@ -33,22 +33,22 @@ void UBeamBeamballMsApi::BP_CreateMatchResultImpl(const FBeamRealmHandle& Target
 	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
 	{
 		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
-		Backend->RunBlueprintRequestProcessor<UBeamballMsCreateMatchResultRequest, UBeamPlainTextResponseBody, FOnBeamballMsCreateMatchResultSuccess, FOnBeamballMsCreateMatchResultError, FOnBeamballMsCreateMatchResultComplete>
+		Backend->RunBlueprintRequestProcessor<UBeamballMsProcessMatchResultRequest, UBeamballMsProcessMatchResultResponse, FOnBeamballMsProcessMatchResultSuccess, FOnBeamballMsProcessMatchResultError, FOnBeamballMsProcessMatchResultComplete>
 			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, RequestData, OnSuccess, OnError, OnComplete);		
 	}
 	// If not cached...
 	else
 	{			
 		// Binds the handler to the static response handler (pre-generated)
-		const auto BeamRequestProcessor = Backend->MakeBlueprintRequestProcessor<UBeamballMsCreateMatchResultRequest, UBeamPlainTextResponseBody, FOnBeamballMsCreateMatchResultSuccess, FOnBeamballMsCreateMatchResultError, FOnBeamballMsCreateMatchResultComplete>
+		const auto BeamRequestProcessor = Backend->MakeBlueprintRequestProcessor<UBeamballMsProcessMatchResultRequest, UBeamballMsProcessMatchResultResponse, FOnBeamballMsProcessMatchResultSuccess, FOnBeamballMsProcessMatchResultError, FOnBeamballMsProcessMatchResultComplete>
 			(OutRequestId, RequestData, OnSuccess, OnError, OnComplete);
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 		Backend->SendPreparedRequest(OutRequestId, CallingContext);		
 	}	
 }
 
-void UBeamBeamballMsApi::CPP_CreateMatchResultImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig,
-                                               UBeamballMsCreateMatchResultRequest* RequestData, const FOnBeamballMsCreateMatchResultFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
+void UBeamBeamballMsApi::CPP_ProcessMatchResultImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig,
+                                               UBeamballMsProcessMatchResultRequest* RequestData, const FOnBeamballMsProcessMatchResultFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
 	// AUTO-GENERATED...	
 	const auto Request = Backend->CreateMicroserviceRequest(OutRequestId, TargetRealm, RetryConfig, RequestData, Prefix);
@@ -61,14 +61,14 @@ void UBeamBeamballMsApi::CPP_CreateMatchResultImpl(const FBeamRealmHandle& Targe
 	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
 	{
 		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
-		Backend->RunCodeRequestProcessor<UBeamballMsCreateMatchResultRequest, UBeamPlainTextResponseBody>
+		Backend->RunCodeRequestProcessor<UBeamballMsProcessMatchResultRequest, UBeamballMsProcessMatchResultResponse>
 			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, RequestData, Handler);			
 	}
 	// If not cached...
 	else
 	{
 		// Binds the handler to the static response handler (pre-generated)	
-		auto ResponseProcessor = Backend->MakeCodeRequestProcessor<UBeamballMsCreateMatchResultRequest, UBeamPlainTextResponseBody>
+		auto ResponseProcessor = Backend->MakeCodeRequestProcessor<UBeamballMsProcessMatchResultRequest, UBeamballMsProcessMatchResultResponse>
 			(OutRequestId, RequestData, Handler);
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
@@ -82,13 +82,13 @@ void UBeamBeamballMsApi::CPP_CreateMatchResultImpl(const FBeamRealmHandle& Targe
 
 
 
-void UBeamBeamballMsApi::CPP_CreateMatchResult(UBeamballMsCreateMatchResultRequest* Request, const FOnBeamballMsCreateMatchResultFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
+void UBeamBeamballMsApi::CPP_ProcessMatchResult(UBeamballMsProcessMatchResultRequest* Request, const FOnBeamballMsProcessMatchResultFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
 	FBeamRetryConfig RetryConfig;
-	Backend->GetRetryConfigForRequestType(UBeamballMsCreateMatchResultRequest::StaticClass()->GetName(), RetryConfig);
+	Backend->GetRetryConfigForRequestType(UBeamballMsProcessMatchResultRequest::StaticClass()->GetName(), RetryConfig);
 	
     int64 OutRequestId;
-	CPP_CreateMatchResultImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Request, Handler, OutRequestId, OpHandle, CallingContext);
+	CPP_ProcessMatchResultImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Request, Handler, OutRequestId, OpHandle, CallingContext);
 	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), AS_None};
 }
 
@@ -97,14 +97,14 @@ void UBeamBeamballMsApi::CPP_CreateMatchResult(UBeamballMsCreateMatchResultReque
 
 
 
-void UBeamBeamballMsApi::CreateMatchResult(UBeamballMsCreateMatchResultRequest* Request, const FOnBeamballMsCreateMatchResultSuccess& OnSuccess, const FOnBeamballMsCreateMatchResultError& OnError, const FOnBeamballMsCreateMatchResultComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext)
+void UBeamBeamballMsApi::ProcessMatchResult(UBeamballMsProcessMatchResultRequest* Request, const FOnBeamballMsProcessMatchResultSuccess& OnSuccess, const FOnBeamballMsProcessMatchResultError& OnError, const FOnBeamballMsProcessMatchResultComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext)
 {
 	// AUTO-GENERATED...	
 	FBeamRetryConfig RetryConfig;
-	Backend->GetRetryConfigForRequestType(UBeamballMsCreateMatchResultRequest::StaticClass()->GetName(), RetryConfig);	
+	Backend->GetRetryConfigForRequestType(UBeamballMsProcessMatchResultRequest::StaticClass()->GetName(), RetryConfig);	
 	
 	int64 OutRequestId = 0;
-	BP_CreateMatchResultImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);
+	BP_ProcessMatchResultImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);
 	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), AS_None};
 }
 
