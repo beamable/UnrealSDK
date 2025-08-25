@@ -98,12 +98,6 @@ public:
 			}
 		}));
 	}
-
-	virtual void Logout(AController* Exiting) override
-	{
-		Super::Logout(Exiting);
-		// TODO: Cleanup UserSlots that are registered when a controller leaves.
-	}
 };
 
 

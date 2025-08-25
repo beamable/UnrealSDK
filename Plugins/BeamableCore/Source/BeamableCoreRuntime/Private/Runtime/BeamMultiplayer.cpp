@@ -21,7 +21,7 @@ namespace BeamMultiplayer
 			auto LobbySubsystem = GI->GetSubsystem<UBeamLobbySubsystem>();
 			if (!LobbySubsystem) return FGuid{};
 
-			return LobbySubsystem->GetLobbyIdFromCLArgs();			
+			return LobbySubsystem->GetLobbyIdFromCLArgs();
 		}
 
 		FBeamOperationHandle RegisterLobbyWithServer(const UObject* CallingContext, const FGuid LobbyId, const FBeamOperationEventHandlerCode& Handler)
@@ -69,11 +69,14 @@ namespace BeamMultiplayer
 		const auto Lobby = GameMode->GetGameInstance()->GetSubsystem<UBeamLobbySubsystem>();
 		const auto ServerSlot = GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot();
 
-		if (UniqueId.IsValid())
+		if (!ensureAlwaysMsgf(
+			UniqueId.IsValid(),
+			TEXT("Failed to received a valid UniqueId --- please ensure that you have UBeamRuntimeSettings::bUseBeamableGamerTagsAsUniqueNetIds set to 'true' OR have another UniqueId set up correctly.")))
 		{
-			UE_BEAM_LOG(GEngine->GetWorldContextFromWorld(GameMode->GetWorld()), LogBeamEditor, Warning, TEXT("GetPreferredUniqueNetId %s"), *UniqueId.GetUniqueNetId().Get()->ToString())
+			UE_BEAM_LOG(GEngine->GetWorldContextFromWorld(GameMode->GetWorld()), LogBeamLobby, Error,
+			            TEXT("Failed to binding UniqueId for user. OPTIONS=%s, Address=%s"), *Options, *Address);
 		}
-		
+
 		Lobby->CPP_AcceptUserIntoGameServerOperation(ServerSlot, Options, Address, UniqueId, OperationHandler);
 	}
 }

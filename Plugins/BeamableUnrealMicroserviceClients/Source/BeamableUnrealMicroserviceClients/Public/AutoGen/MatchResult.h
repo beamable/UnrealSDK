@@ -3,18 +3,18 @@
 #include "CoreMinimal.h"
 #include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
+#include "BeamableUnrealMicroserviceClients/Public/AutoGen/PerPlayerMatchResult.h"
 
-
-#include "BeamballMsProcessMatchResultResponse.generated.h"
+#include "MatchResult.generated.h"
 
 UCLASS(BlueprintType, Category="Beam", DefaultToInstanced, EditInlineNew)
-class BEAMABLEUNREALMICROSERVICECLIENTS_API UBeamballMsProcessMatchResultResponse : public UObject, public IBeamJsonSerializableUObject, public IBeamBaseResponseBodyInterface
+class BEAMABLEUNREALMICROSERVICECLIENTS_API UMatchResult : public UObject, public IBeamJsonSerializableUObject, public IBeamBaseResponseBodyInterface
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Value", Category="Beam")
-	TMap<FString, FString> Value = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Per Player Match Results", Category="Beam")
+	TMap<FString, UPerPlayerMatchResult*> PerPlayerMatchResults = {};
 
 	virtual void DeserializeRequestResponse(UObject* RequestData, FString ResponseContent) override;
 

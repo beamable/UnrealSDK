@@ -748,7 +748,7 @@ public:
 
 	FBeamOperationHandle CPP_NotifyLobbyReadyForClientsOperation(FUserSlot UserSlot, const FGuid& LobbyId, FBeamOperationEventHandlerCode OnOperationEvent);
 
-	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Lobby", meta=(AutoCreateRefTerm="NewGameType"))
+	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Lobby")
 	FBeamOperationHandle AcceptUserIntoGameServerOperation(FUserSlot UserSlot, const FString& Options, const FString& Address, const FUniqueNetIdRepl& UniqueId, FBeamOperationEventHandler OnOperationEvent);
 
 	FBeamOperationHandle CPP_AcceptUserIntoGameServerOperation(FUserSlot UserSlot, const FString& Options, const FString& Address, const FUniqueNetIdRepl& UniqueId, FBeamOperationEventHandlerCode OnOperationEvent);
@@ -774,6 +774,7 @@ private:
 	// Dedicated Server API
 	void RegisterLobbyWithServer(const FUserSlot& Slot, const FGuid& LobbyId, FBeamOperationHandle Op);
 	void AcceptUserIntoGameServer(const FUserSlot& Slot, const FString& Options, const FString& Address, const FUniqueNetIdRepl& UniqueId, FBeamOperationHandle Op);
+	void ManuallyMapNetIdToGamerTag(const FUniqueNetIdRepl& UniqueId, const FBeamGamerTag& GamerTag);
 
 	// Request Helper Functions
 	FBeamRequestContext RequestJoin(const FUserSlot& UserSlot, FGuid LobbyId, TArray<FBeamTag> PlayerTags, FBeamOperationHandle Op, FOnPutLobbyFullResponse Handler) const;

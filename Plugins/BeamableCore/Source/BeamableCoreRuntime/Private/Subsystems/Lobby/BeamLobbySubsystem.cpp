@@ -538,7 +538,7 @@ void UBeamLobbySubsystem::PrepareDeleteGlobalData(FUserSlot Slot, const TArray<F
 bool UBeamLobbySubsystem::TryOpenLevelFromLobby(FUserSlot Slot, FString UrlKey, FString PortKey, FString AdditionalOptions)
 {
 	ensureAlwaysMsgf(Runtime->IsClient(), TEXT("This can only be called on clients!"));
-		
+
 	ULobby* CurrLobby;
 	if (!TryGetCurrentLobby(Slot, CurrLobby))
 	{
@@ -552,7 +552,7 @@ bool UBeamLobbySubsystem::TryOpenLevelFromLobby(FUserSlot Slot, FString UrlKey, 
 	                          "127.0.0.1",
 	                          ServerIPAddress
 	);
-		
+
 	TryGetGlobalLobbyDataById(FGuid(CurrLobby->LobbyId.Val),
 	                          PortKey.IsEmpty() ? Reserved_Game_Server_Port : PortKey,
 	                          "17777",
@@ -562,7 +562,7 @@ bool UBeamLobbySubsystem::TryOpenLevelFromLobby(FUserSlot Slot, FString UrlKey, 
 	FString Url = FString::Printf(TEXT("%s:%s"), *ServerIPAddress, *ServerPort);
 	Url = PrepareLoginOptions(Slot, Url);
 	Url += AdditionalOptions;
-		
+
 	UGameplayStatics::OpenLevel(GetWorld(), FName(Url), true);
 	return true;
 }
@@ -2026,12 +2026,7 @@ void UBeamLobbySubsystem::AcceptUserIntoGameServer(const FUserSlot& Slot, const 
 					// TODO: Expose hook here, after hook redesign.
 
 					// We also map this gamertag to this net id.
-					if (UniqueId.IsValid())
-					{
-						const auto& Str = UniqueId.GetUniqueNetId()->ToString();
-						Server_NetIdToGamerTag.Add(Str, RequestingGamerTag);
-						Server_GamerTagToNetId.Add(RequestingGamerTag, Str);
-					}
+					ManuallyMapNetIdToGamerTag(UniqueId, RequestingGamerTag);
 
 					RequestTracker->TriggerOperationSuccess(Op, TEXT(""));
 				}
@@ -2040,6 +2035,16 @@ void UBeamLobbySubsystem::AcceptUserIntoGameServer(const FUserSlot& Slot, const 
 
 
 	PIE->CPP_WaitForBeamPIEOperation(Slot, this, PostBeamPIE);
+}
+
+void UBeamLobbySubsystem::ManuallyMapNetIdToGamerTag(const FUniqueNetIdRepl& UniqueId, const FBeamGamerTag& GamerTag)
+{
+	if (ensureAlwaysMsgf(UniqueId.IsValid(), TEXT("Invalid UniqueId cannot be mapped to the given GamerTag. GAMER_TAG=%s"), *GamerTag.AsString))
+	{
+		const auto& Str = UniqueId.GetUniqueNetId()->ToString();
+		Server_NetIdToGamerTag.Add(Str, GamerTag);
+		Server_GamerTagToNetId.Add(GamerTag, Str);
+	}
 }
 
 // REQUEST HELPERS

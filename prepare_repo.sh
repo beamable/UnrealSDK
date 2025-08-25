@@ -14,9 +14,6 @@ ARGS=("$@")
 # HELP_ARG: Will show all the commands available for this SH.
 HELP=$([[ " ${ARGS[@]} " =~ " $HELP_ARG " ]] && echo true || echo false)
 
-# CLEAN_SANDOBOX_ARG: Will clean up all the sandboxes
-CLEAN_SANDBOXES=$([[ " ${ARGS[@]} " =~ " $CLEAN_SANDOBOX_ARG " ]] && echo true || echo false)
-
 # SKIP_WAITING_ARG: Will not keep the shell open after the script finishes running.
 SKIP_WAITING=$([[ " ${ARGS[@]} " =~ " $SKIP_WAITING_ARG " ]] && echo true || echo false)
 

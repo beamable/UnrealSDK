@@ -6,7 +6,7 @@
 
 #include "BeamableUnrealMicroserviceClients/Public/AutoGen/SubSystems/BeamBeamballMsApi.h"
 #include "BeamableUnrealMicroserviceClients/Public/AutoGen/SubSystems/BeamballMs/BeamballMsProcessMatchResultRequest.h"
-#include "BeamableUnrealMicroserviceClients/Public/AutoGen/BeamballMsProcessMatchResultResponse.h"
+#include "BeamableUnrealMicroserviceClients/Public/AutoGen/MatchResult.h"
 
 #define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_BeamballMsProcessMatchResult"
 
@@ -49,7 +49,7 @@ UClass* UK2BeamNode_ApiRequest_BeamballMsProcessMatchResult::GetRequestClass() c
 
 UClass* UK2BeamNode_ApiRequest_BeamballMsProcessMatchResult::GetResponseClass() const
 {
-	return UBeamballMsProcessMatchResultResponse::StaticClass();
+	return UMatchResult::StaticClass();
 }
 
 FString UK2BeamNode_ApiRequest_BeamballMsProcessMatchResult::GetRequestSuccessDelegateName() const

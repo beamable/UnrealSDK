@@ -602,6 +602,96 @@ class UK2BeamNode_GetLocalState_TryOpenLevelFromLobby : public UK2BeamNode_GetLo
 
 #undef LOCTEXT_NAMESPACE
 
+#define LOCTEXT_NAMESPACE "K2BeamNode_GetLocalState_Lobby_GetGamerTagByPlayerController"
+
+UCLASS(meta=(BeamGetLocalState))
+class UK2BeamNode_GetLocalState_Lobby_GetGamerTagByPlayerController : public UK2BeamNode_GetLocalState
+{
+	GENERATED_BODY()
+
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Local State - Lobby - Get Gamer Tag (by Player Controller)"); }
+
+	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLobbySubsystem, GetSelf); }
+
+	virtual FName GetFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLobbySubsystem, GetGamerTagByPlayerController); }
+
+	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamLobbySubsystem::StaticClass(); }
+};
+
+#undef LOCTEXT_NAMESPACE
+
+#define LOCTEXT_NAMESPACE "K2BeamNode_GetLocalState_Lobby_GetGamerTagByPlayerState"
+
+UCLASS(meta=(BeamGetLocalState))
+class UK2BeamNode_GetLocalState_Lobby_GetGamerTagByPlayerState : public UK2BeamNode_GetLocalState
+{
+	GENERATED_BODY()
+
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Local State - Lobby - Get Gamer Tag (by Player State)"); }
+
+	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLobbySubsystem, GetSelf); }
+
+	virtual FName GetFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLobbySubsystem, GetGamerTagByPlayerState); }
+
+	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamLobbySubsystem::StaticClass(); }
+};
+
+#undef LOCTEXT_NAMESPACE
+
+#define LOCTEXT_NAMESPACE "K2BeamNode_GetLocalState_Lobby_GetUserSlotByPlayerController"
+
+UCLASS(meta=(BeamGetLocalState))
+class UK2BeamNode_GetLocalState_Lobby_GetUserSlotByPlayerController : public UK2BeamNode_GetLocalState
+{
+	GENERATED_BODY()
+
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Local State - Lobby - Get User Slot (by Player Controller)"); }
+
+	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLobbySubsystem, GetSelf); }
+
+	virtual FName GetFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLobbySubsystem, GetUserSlotByPlayerController); }
+
+	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamLobbySubsystem::StaticClass(); }
+};
+
+#undef LOCTEXT_NAMESPACE
+
+#define LOCTEXT_NAMESPACE "K2BeamNode_GetLocalState_Lobby_GetUserSlotByPlayerState"
+
+UCLASS(meta=(BeamGetLocalState))
+class UK2BeamNode_GetLocalState_Lobby_GetUserSlotByPlayerState : public UK2BeamNode_GetLocalState
+{
+	GENERATED_BODY()
+
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Local State - Lobby - Get User Slot (by Player State)"); }
+
+	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLobbySubsystem, GetSelf); }
+
+	virtual FName GetFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLobbySubsystem, GetUserSlotByPlayerState); }
+
+	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamLobbySubsystem::StaticClass(); }
+};
+
+#undef LOCTEXT_NAMESPACE
+
+#define LOCTEXT_NAMESPACE "K2BeamNode_GetLocalState_Lobby_GetLobbyIdByGamerTag"
+
+UCLASS(meta=(BeamGetLocalState))
+class UK2BeamNode_GetLocalState_Lobby_GetLobbyIdByGamerTag : public UK2BeamNode_GetLocalState
+{
+	GENERATED_BODY()
+
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Local State - Lobby - Get Lobby Id (by Gamer Tag)"); }
+
+	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLobbySubsystem, GetSelf); }
+
+	virtual FName GetFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLobbySubsystem, GetLobbyIdByGamerTag); }
+
+	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamLobbySubsystem::StaticClass(); }
+};
+
+#undef LOCTEXT_NAMESPACE
+
 //   ___                       _   _                 
 //  / _ \ _ __   ___ _ __ __ _| |_(_) ___  _ __  ___ 
 // | | | | '_ \ / _ \ '__/ _` | __| |/ _ \| '_ \/ __|
