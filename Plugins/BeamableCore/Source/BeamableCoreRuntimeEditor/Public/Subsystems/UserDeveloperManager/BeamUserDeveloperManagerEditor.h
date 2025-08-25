@@ -147,7 +147,58 @@ public:
 		return A == B;
 	}
 
-	
+	UFUNCTION(BlueprintCallable)
+	static TArray<FBeamPIE_UserSlotHandle> GetSortedKeysAssignedUsers(TMap<FBeamPIE_UserSlotHandle, FBeamPIE_PerUserSetting> AssignedUsers)
+	{
+		TArray<FBeamPIE_UserSlotHandle> AssignedUserArray;
+		AssignedUsers.GenerateKeyArray(AssignedUserArray);
+
+		AssignedUserArray.Sort([](const FBeamPIE_UserSlotHandle& A, const  FBeamPIE_UserSlotHandle& B)
+		{
+			if (A.PIEIndex != B.PIEIndex)
+			{
+				return A.PIEIndex < B.PIEIndex;
+			}
+
+			return A.Slot.Name.Compare(B.Slot.Name) < 0;
+		});
+		
+		return AssignedUserArray;
+	}
+
+
+	UFUNCTION(BlueprintCallable)
+	static bool TryGetValidUserSlotHandle(int SelectedPIEIndex, bool CreateCopyOnPIE, FString SelectedSlotName, TMap<FBeamPIE_UserSlotHandle, FBeamPIE_PerUserSetting> AssignedUsers, FBeamPIE_UserSlotHandle& UserSlotHandle)
+	{
+		auto UserSlots = GetDefault<UBeamCoreSettings>()->RuntimeUserSlots;
+
+		TArray<FBeamPIE_UserSlotHandle> UserSlotHandles;
+
+		for (auto AssignedUser : AssignedUsers)
+		{
+			if (AssignedUser.Key.PIEIndex == SelectedPIEIndex)
+			{
+				UserSlotHandles.Add(AssignedUser.Key);
+				UserSlots.Remove(AssignedUser.Key.Slot);
+			}
+		}
+
+		if (UserSlotHandles.Num() == 0)
+		{
+			UserSlotHandle = FBeamPIE_UserSlotHandle(SelectedPIEIndex, CreateCopyOnPIE, FUserSlot(SelectedSlotName));
+			return true;
+		}
+
+		// There's no remaining user slot
+		if (UserSlots.Num() == 0)
+		{
+			return false;
+		}
+		
+		
+		UserSlotHandle = FBeamPIE_UserSlotHandle(SelectedPIEIndex, CreateCopyOnPIE, UserSlots[0]);
+		return true;
+	}
 
 protected:
 	void RunPsCommand(FBeamOperationHandle OperationHandle);
