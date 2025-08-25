@@ -33,14 +33,14 @@ void UBeamBeamballMsApi::BP_ProcessMatchResultImpl(const FBeamRealmHandle& Targe
 	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
 	{
 		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
-		Backend->RunBlueprintRequestProcessor<UBeamballMsProcessMatchResultRequest, UBeamballMsProcessMatchResultResponse, FOnBeamballMsProcessMatchResultSuccess, FOnBeamballMsProcessMatchResultError, FOnBeamballMsProcessMatchResultComplete>
+		Backend->RunBlueprintRequestProcessor<UBeamballMsProcessMatchResultRequest, UMatchResult, FOnBeamballMsProcessMatchResultSuccess, FOnBeamballMsProcessMatchResultError, FOnBeamballMsProcessMatchResultComplete>
 			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, RequestData, OnSuccess, OnError, OnComplete);		
 	}
 	// If not cached...
 	else
 	{			
 		// Binds the handler to the static response handler (pre-generated)
-		const auto BeamRequestProcessor = Backend->MakeBlueprintRequestProcessor<UBeamballMsProcessMatchResultRequest, UBeamballMsProcessMatchResultResponse, FOnBeamballMsProcessMatchResultSuccess, FOnBeamballMsProcessMatchResultError, FOnBeamballMsProcessMatchResultComplete>
+		const auto BeamRequestProcessor = Backend->MakeBlueprintRequestProcessor<UBeamballMsProcessMatchResultRequest, UMatchResult, FOnBeamballMsProcessMatchResultSuccess, FOnBeamballMsProcessMatchResultError, FOnBeamballMsProcessMatchResultComplete>
 			(OutRequestId, RequestData, OnSuccess, OnError, OnComplete);
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 		Backend->SendPreparedRequest(OutRequestId, CallingContext);		
@@ -61,14 +61,14 @@ void UBeamBeamballMsApi::CPP_ProcessMatchResultImpl(const FBeamRealmHandle& Targ
 	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
 	{
 		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
-		Backend->RunCodeRequestProcessor<UBeamballMsProcessMatchResultRequest, UBeamballMsProcessMatchResultResponse>
+		Backend->RunCodeRequestProcessor<UBeamballMsProcessMatchResultRequest, UMatchResult>
 			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, RequestData, Handler);			
 	}
 	// If not cached...
 	else
 	{
 		// Binds the handler to the static response handler (pre-generated)	
-		auto ResponseProcessor = Backend->MakeCodeRequestProcessor<UBeamballMsProcessMatchResultRequest, UBeamballMsProcessMatchResultResponse>
+		auto ResponseProcessor = Backend->MakeCodeRequestProcessor<UBeamballMsProcessMatchResultRequest, UMatchResult>
 			(OutRequestId, RequestData, Handler);
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 

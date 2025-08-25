@@ -10,6 +10,7 @@ using Beamable.Common;
 using Beamable.Common.Api.Stats;
 using Beamable.Common.Content;
 using Beamable.Server;
+using Beamable.Server.Api.Leaderboards;
 using Beamable.Server.Api.RealmConfig;
 using Newtonsoft.Json;
 using UnityEngine;
@@ -117,15 +118,16 @@ namespace Beamable.BeamballMs
                     //   - for most cases, this is a fine trade-off to make; but, think about your own case's specifics as you decided.
                     var data = new Dictionary<string, string>();
                     var existingSkinData = lp.tags.GetOrElse([]).FirstOrDefault(t => t.name.GetOrElse("") == "beamable.selected_skin");
-                    if(existingSkinData == null)
+                    if (existingSkinData == null)
                     {
                         var gamerTag = long.Parse(lp.playerId.Value);
                         var selectedSkin = await Services.Stats.GetStat(StatsDomainType.Client, StatsAccessType.Public, gamerTag, "beamable.selected_skin");
-                        if(!string.IsNullOrEmpty(selectedSkin))
+                        if (!string.IsNullOrEmpty(selectedSkin))
                         {
                             data["beamable.selected_skin"] = selectedSkin;
                         }
                     }
+
                     return data;
                 });
 
@@ -145,7 +147,7 @@ namespace Beamable.BeamballMs
         {
             // get the gamer tags of the players in the lobby
             var gamerTags = lobby.players.Value.Select(p => long.Parse(p.playerId)).ToArray();
-            
+
             // This is here to fix an issue that exists in the beamable backend --- the fix should go out "Soon TM".
             // Until this is fixed, every request made from this federated endpoint to "Services.WhateverService" needs to be made through the assumedFakeLeader.
             var assumedFakeLeader = AssumeNewUser(gamerTags.First());
@@ -154,7 +156,7 @@ namespace Beamable.BeamballMs
             var tasks = new List<Promise<Dictionary<string, string>>>(gamerTags.Length);
             tasks.AddRange(gamerTags.Select(tag => assumedFakeLeader.Services.Stats.GetStats("client", "public", "player", tag, new string[] { Stats.HathoraPings })));
             var pingStats = await Promise.Sequence(tasks);
-            
+
             if (pingStats.Count != 0)
             {
                 List<HathoraPingTimes> pings = new List<HathoraPingTimes>();
@@ -165,7 +167,7 @@ namespace Beamable.BeamballMs
                         pings.Add(JsonUtility.FromJson<HathoraPingTimes>(value));
                     }
                 }
-                
+
                 // Find the best region for this match based on the players in it.
                 return GetBestRegion(pings.ToArray());
             }
@@ -174,7 +176,7 @@ namespace Beamable.BeamballMs
         }
 
         [ServerCallable]
-        public async Task<Dictionary<string, string>> ProcessMatchResult(string winnerId, string lobbyId)
+        public async Task<MatchResult> ProcessMatchResult(string winnerId, string lobbyId)
         {
             BeamableLogger.Log("Creating match result for lobby " + lobbyId);
 
@@ -192,23 +194,39 @@ namespace Beamable.BeamballMs
             }
 
             // Create the fake match result and set it in the lobby data
-            var properties = new Dictionary<string, string>();
+            var result = new MatchResult()
+            {
+                PerPlayerMatchResults = new Dictionary<string, PerPlayerMatchResult>()
+            }; 
             var updates = new List<Task>();
             foreach (var player in lobbyPlayers)
             {
+                // Only the winner will get rewards --- obviously, in games where there is a in-match ranking (1st, 2nd, etc...) this would look different.
                 var gamerTag = long.Parse(player.playerId.Value);
-                var newUser = AssumeNewUser(gamerTag);
-                var beamLeaderboardService = newUser.Services.Leaderboards;
+                var wasWinner = gamerTag.ToString().Equals(winnerId);
+                if (wasWinner)
+                {
+                    // Compute the amount of rewards to give
+                    // This would usually be defined in a subclass of the "game_types" content type.
+                    var rng = new Random();
+                    var rankedPoints = rng.Next(50, 100);
+                    var coins = rng.Next(10, 25);
 
-                var matchContentId = lobby.matchType.Value.id.Value;
-                var matchContent = await Services.Content.GetContent(new ContentRef<SimGameType>(matchContentId));
-                var rewards = matchContent.rewards.FirstOrDefault() ?? new RewardsPerRank() { rewards = new() };
-                var currencyReward = rewards.rewards.FirstOrDefault() ?? new Reward() { name = "currency.coins", amount = 100 };
-                var scoreReward = rewards.rewards.Skip(1).FirstOrDefault() ?? new Reward() { name = "leaderboards.global", amount = 100 };
+                    // Effectively give the rewards to the winning player.
+                    using (var newUser = AssumeNewUser(gamerTag))
+                    {
+                        updates.Add(newUser.Services.Leaderboards.SetScore("leaderboards.global", rankedPoints).TaskFromPromise());
+                        updates.Add(newUser.Services.Inventory.AddCurrency("currency.coins", coins).TaskFromPromise());
+                    }
 
-                properties.Add(player.playerId, scoreReward.amount.ToString());
-                updates.Add(beamLeaderboardService.SetScore("leaderboards.global", scoreReward.amount).TaskFromPromise());
-                updates.Add(Services.Inventory.SendCurrency(new() { { currencyReward.name, currencyReward.amount } }, gamerTag).TaskFromPromise());
+                    // Add this to the return object of this callable --- this is used in clients to display who wins and what.
+                    result.PerPlayerMatchResults.Add(player.playerId.Value, new PerPlayerMatchResult() { Won = true, RankEarned = rankedPoints, CoinsEarned = coins, });
+                }
+                else
+                {
+                    // Add this to the return object of this callable --- this is used in clients to display who wins and what.
+                    result.PerPlayerMatchResults.Add(player.playerId.Value, new PerPlayerMatchResult() { Won = false, RankEarned = 0, CoinsEarned = 0, });
+                }
             }
 
             // Wait for all the score setting and inventory updating requests to finish.
@@ -223,7 +241,7 @@ namespace Beamable.BeamballMs
             }
 
             // We also set the resulting properties into the lobby so that the game server can replicate these out to clients once it gets the response from this call.
-            return properties;
+            return result;
         }
 
         /// <summary>
@@ -299,7 +317,7 @@ namespace Beamable.BeamballMs
 
             return JsonUtility.FromJson<HathoraConnectionInfo>(content);
         }
-        
+
         private static string GetBestRegion(IReadOnlyCollection<HathoraPingTimes> pings)
         {
             if (pings == null || !pings.Any())
@@ -310,8 +328,8 @@ namespace Beamable.BeamballMs
 
             return sortedPings.First().Key;
         }
-
     }
+
     public static class Stats
     {
         public const string HathoraPings = "hathora.pings";
@@ -351,8 +369,8 @@ namespace Beamable.BeamballMs
         public HathoraPortInfo exposedPort;
         public List<HathoraPortInfo> additionalExposedPorts;
     }
-    
-     [Serializable]
+
+    [Serializable]
     public class HathoraPingTimes
     {
         [JsonProperty("Los_Angeles")] public int LosAngeles;
@@ -436,5 +454,19 @@ namespace Beamable.BeamballMs
 
             return pings;
         }
+    }
+
+    [Serializable]
+    public class MatchResult
+    {
+        public Dictionary<string, PerPlayerMatchResult> PerPlayerMatchResults;
+    }
+
+    [Serializable]
+    public class PerPlayerMatchResult
+    {
+        public bool Won;
+        public int RankEarned;
+        public int CoinsEarned;
     }
 }

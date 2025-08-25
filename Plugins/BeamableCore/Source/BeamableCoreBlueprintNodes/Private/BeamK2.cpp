@@ -351,7 +351,7 @@ void BeamK2::ReplaceConnectionsOnBeamFlow(const TArray<UEdGraphNode*>& NodesToCo
 					       *GraphNode->GetDescriptiveCompiledName(), *GraphPin->PinName.ToString(), *RelevantPin->PinName.ToString())
 					GraphPin->BreakLinkTo(RelevantPin);
 					const auto bConnectedEventPins = K2Schema->TryCreateConnection(GraphPin, To[i]);
-					checkf(bConnectedEventPins, TEXT("FROM_PIN_NAME=%s, TO_PIN_NAME= %s"), *GraphPin->GetName(), *To[i]->GetName());
+					ensureAlwaysMsgf(bConnectedEventPins, TEXT("FROM_PIN_NAME=%s, TO_PIN_NAME= %s"), *GraphPin->GetName(), *To[i]->GetName());
 				}
 			}
 		}
@@ -368,7 +368,7 @@ UK2Node_BreakStruct* BeamK2::CreateBreakStructNode(UEdGraphNode* CustomNode, FKi
 
 	// Connect the Result pin to the break pin	
 	const auto bConnectedBreakPins = K2Schema->TryCreateConnection(StructInputPin, BreakStructNode->FindPin(StructToBreak->GetFName()));
-	check(bConnectedBreakPins)
+	ensureAlways(bConnectedBreakPins);
 
 	return BreakStructNode;
 }
@@ -455,7 +455,7 @@ UK2Node_EnumEquality* BeamK2::CreateEnumEqualityAgainstDefault(UEdGraphNode* Cus
 	EnumEquality->AllocateDefaultPins();
 	// Connect the Result pin to the break pin
 	const auto bConnected = K2Schema->TryCreateConnection(CompareAgainstPin, EnumEquality->FindPin(TEXT("A")));
-	check(bConnected)
+	ensureAlways(bConnected);
 
 	// Set the default value of this one to success
 	EnumEquality->FindPin(TEXT("B"))->DefaultValue = EnumToCompareType->GetNameStringByValue(EnumToCompareAgainst);
@@ -470,10 +470,10 @@ UK2Node_IfThenElse* BeamK2::CreateIfThenElseNodeAgainstCondition(UEdGraphNode* C
 	IfThenElseNode->AllocateDefaultPins();
 	{
 		const auto bConnectedEnumEqualityToCondition = K2Schema->TryCreateConnection(ConditionPin, IfThenElseNode->GetConditionPin());
-		check(bConnectedEnumEqualityToCondition)
+		ensureAlways(bConnectedEnumEqualityToCondition);
 
 		const auto bConnectedEvent = K2Schema->TryCreateConnection(ExecPin, IfThenElseNode->GetExecPin());
-		check(bConnectedEvent)
+		ensureAlways(bConnectedEvent);
 	}
 
 	return IfThenElseNode;
@@ -556,18 +556,18 @@ void BeamK2::MoveWrappedPin(const UEdGraphNode* CustomNode, FKismetCompilerConte
 	const auto WrapperPin = CustomNode->FindPinChecked(PinName);
 	const auto TargetPin = TargetNode->FindPinChecked(PinName);
 	const auto Moved = CompilerContext.MovePinLinksToIntermediate(*WrapperPin, *TargetPin);
-	check(!Moved.IsFatal());
+	ensureAlways(!Moved.IsFatal());
 }
 
 void BeamK2::ConnectIfThenElseNodeOutputs(FKismetCompilerContext& CompilerContext, UEdGraphPin* const TruePin, UEdGraphPin* const FalsePin, const UK2Node_IfThenElse* IfThenElseNode)
 {
 	const auto IntermediateSuccessPin = IfThenElseNode->GetThenPin();
 	const auto SuccessFlowMoved = CompilerContext.MovePinLinksToIntermediate(*TruePin, *IntermediateSuccessPin);
-	check(!SuccessFlowMoved.IsFatal());
+	ensureAlways(!SuccessFlowMoved.IsFatal());
 
 	const auto IntermediateOthersPin = IfThenElseNode->GetElsePin();
 	const auto NonSuccessFlowMoved = CompilerContext.MovePinLinksToIntermediate(*FalsePin, *IntermediateOthersPin);
-	check(!NonSuccessFlowMoved.IsFatal());
+	ensureAlways(!NonSuccessFlowMoved.IsFatal());
 }
 
 UK2Node_AddDelegate* BeamK2::CreateAddDelegateNode(UEdGraphNode* Node, FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph, FMulticastDelegateProperty* MulticastDelegateProperty)
@@ -794,7 +794,7 @@ void BeamK2::SetUpPinsFunctionToOwnerSubsystem(const UK2Node_CallFunction* CallG
 	const auto SubsystemReturnPin = CallGetSubsystem->GetReturnValuePin();
 	const auto RequestFunctionSelfPin = K2Schema->FindSelfPin(*CallRequestFunction, EGPD_Input);
 	const auto bConnectedSubsystemToFunctionCall = K2Schema->TryCreateConnection(SubsystemReturnPin, RequestFunctionSelfPin);
-	check(bConnectedSubsystemToFunctionCall)
+	ensureAlways(bConnectedSubsystemToFunctionCall);
 }
 
 

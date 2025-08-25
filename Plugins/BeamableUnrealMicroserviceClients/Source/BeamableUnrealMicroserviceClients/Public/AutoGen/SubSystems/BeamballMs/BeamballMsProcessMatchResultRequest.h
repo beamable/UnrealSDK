@@ -8,7 +8,7 @@
 #include "BeamBackend/BeamFullResponse.h"
 
 #include "BeamableUnrealMicroserviceClients/Public/AutoGen/ProcessMatchResultRequestArgs.h"
-#include "BeamableUnrealMicroserviceClients/Public/AutoGen/BeamballMsProcessMatchResultResponse.h"
+#include "BeamableUnrealMicroserviceClients/Public/AutoGen/MatchResult.h"
 
 #include "BeamballMsProcessMatchResultRequest.generated.h"
 
@@ -41,7 +41,7 @@ public:
 };
 
 UDELEGATE(BlueprintAuthorityOnly)
-DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnBeamballMsProcessMatchResultSuccess, FBeamRequestContext, Context, UBeamballMsProcessMatchResultRequest*, Request, UBeamballMsProcessMatchResultResponse*, Response);
+DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnBeamballMsProcessMatchResultSuccess, FBeamRequestContext, Context, UBeamballMsProcessMatchResultRequest*, Request, UMatchResult*, Response);
 
 UDELEGATE(BlueprintAuthorityOnly)
 DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnBeamballMsProcessMatchResultError, FBeamRequestContext, Context, UBeamballMsProcessMatchResultRequest*, Request, FBeamErrorResponse, Error);
@@ -49,5 +49,5 @@ DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnBeamballMsProcessMatchResultError, FBeam
 UDELEGATE(BlueprintAuthorityOnly)
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FOnBeamballMsProcessMatchResultComplete, FBeamRequestContext, Context, UBeamballMsProcessMatchResultRequest*, Request);
 
-using FBeamballMsProcessMatchResultFullResponse = FBeamFullResponse<UBeamballMsProcessMatchResultRequest*, UBeamballMsProcessMatchResultResponse*>;
+using FBeamballMsProcessMatchResultFullResponse = FBeamFullResponse<UBeamballMsProcessMatchResultRequest*, UMatchResult*>;
 DECLARE_DELEGATE_OneParam(FOnBeamballMsProcessMatchResultFullResponse, FBeamballMsProcessMatchResultFullResponse);
