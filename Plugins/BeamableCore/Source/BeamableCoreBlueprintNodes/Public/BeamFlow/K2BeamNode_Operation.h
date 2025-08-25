@@ -97,7 +97,7 @@ class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_Operation : public UK2BeamNode_
 
 		return Super::GetTooltipText();
 	}
-
+	 
 
 	//UK2Node impl
 	virtual void AllocateDefaultPins() override;

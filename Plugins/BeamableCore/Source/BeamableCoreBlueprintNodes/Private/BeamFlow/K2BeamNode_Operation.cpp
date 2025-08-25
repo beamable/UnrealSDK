@@ -108,6 +108,13 @@ TArray<FString> UK2BeamNode_Operation::GetOperationEventIdTooltips(EBeamOperatio
 
 void UK2BeamNode_Operation::AllocateDefaultPins()
 {
+	if (GetOperationEventIds(OET_SUCCESS).Num() > 1 ||
+		GetOperationEventIds(OET_ERROR).Num() > 1	 ||
+		GetOperationEventIds(OET_CANCELLED).Num() > 1)
+	{
+		CurrentExpandedMode = OnSubEvents;
+	}
+	
 	Super::AllocateDefaultPins();
 
 	AdvancedPinDisplay = ENodeAdvancedPins::Hidden;
@@ -689,17 +696,33 @@ void UK2BeamNode_Operation::SetUpPinsForSuccessErrorCancelledBeamFlow(FKismetCom
 
 	// Move the execution flow from the Custom Node's flow pins to the intermediate ones
 	{
-		// Get the flow pins
-		const auto IntermediateSuccessFlowPin = SwitchEnum->FindPin(StaticEnum<EBeamOperationEventType>()->GetNameByValue(EBeamOperationEventType::OET_SUCCESS));
-		const auto IntermediateErrorFlowPin = SwitchEnum->FindPin(StaticEnum<EBeamOperationEventType>()->GetNameByValue(EBeamOperationEventType::OET_ERROR));
-		const auto IntermediateCancelledFlowPin = SwitchEnum->FindPin(StaticEnum<EBeamOperationEventType>()->GetNameByValue(EBeamOperationEventType::OET_CANCELLED));
+		const auto SubTypeCodePin = BreakOperationResultNode->FindPin(GET_MEMBER_NAME_CHECKED(FBeamOperationEvent, EventId));
 
+		// Switch on it out of the EventIds pin of the EventType switch
+		// We will just ignore anything related to sub events.
+		const auto SuccessEventIdSwitch = CreateSwitchNameNode(this, CompilerContext, SourceGraph, K2Schema, GetOperationEventIds(OET_SUCCESS),
+			SwitchEnum->FindPin(StaticEnum<EBeamOperationEventType>()->GetNameByValue(OET_SUCCESS)), SubTypeCodePin);
+		
+		auto IntermediateSuccessFlowPin = SuccessEventIdSwitch->FindPin(NAME_None);
+		
 		const auto SuccessFlowMoved = CompilerContext.MovePinLinksToIntermediate(*SuccessFlowPin, *IntermediateSuccessFlowPin);
 		check(!SuccessFlowMoved.IsFatal());
-
+		
+		
+		const auto ErrorEventIdSwitch = CreateSwitchNameNode(this, CompilerContext, SourceGraph, K2Schema, GetOperationEventIds(OET_ERROR),
+	SwitchEnum->FindPin(StaticEnum<EBeamOperationEventType>()->GetNameByValue(OET_ERROR)), SubTypeCodePin);
+		
+		auto IntermediateErrorFlowPin = ErrorEventIdSwitch->FindPin(NAME_None);
+		
 		const auto ErrorFlowMoved = CompilerContext.MovePinLinksToIntermediate(*ErrorFlowPin, *IntermediateErrorFlowPin);
 		check(!ErrorFlowMoved.IsFatal());
 
+
+		const auto CancelledEventIdSwitch = CreateSwitchNameNode(this, CompilerContext, SourceGraph, K2Schema, GetOperationEventIds(OET_CANCELLED),
+SwitchEnum->FindPin(StaticEnum<EBeamOperationEventType>()->GetNameByValue(OET_CANCELLED)), SubTypeCodePin);
+		
+		auto IntermediateCancelledFlowPin = CancelledEventIdSwitch->FindPin(NAME_None);
+		
 		const auto CancelledFlowMoved = CompilerContext.MovePinLinksToIntermediate(*CancelledFlowPin, *IntermediateCancelledFlowPin);
 		check(!CancelledFlowMoved.IsFatal());
 	}
@@ -780,6 +803,7 @@ void UK2BeamNode_Operation::ExpandBeamFlowSubEvents(FKismetCompilerContext& Comp
 
 		
 		auto IntermediateSubEventFlowPin = SubEventSwitch->FindPin(SubEventValue);
+		
 
 		// Create the cast node and link the success and fail to the subevent execute
 		if (EventDataCasts.Contains(SubEventValue))
