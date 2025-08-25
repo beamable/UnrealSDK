@@ -60,6 +60,8 @@ class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_Operation : public UK2BeamNode_
 	UPROPERTY(VisibleAnywhere, Category="Beam|Operations")
 	bool bIsMultiUser;
 
+	UPROPERTY()
+	bool bIsAlreadyAllocated;
 
 	UPROPERTY(EditAnywhere, Category="Beam|Operations")
 	TEnumAsByte<EOperationNodeModes> CurrentExpandedMode{Success_Error_Cancelled};

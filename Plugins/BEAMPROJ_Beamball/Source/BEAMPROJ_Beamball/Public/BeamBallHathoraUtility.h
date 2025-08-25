@@ -11,23 +11,23 @@ struct FHathoraRegionPings;
 class BeamBallHathoraUtility
 {
 public:
-	void HathoraPingsOperation(FUserSlot UserSlot, UBeamRuntime* Runtime, UBeamStatsSubsystem* Stats, FBeamOperationHandle Op)
+	static void HathoraPingsOperation(FUserSlot UserSlot, UBeamRuntime* Runtime, UBeamStatsSubsystem* Stats, FBeamOperationHandle Op)
 	{
 		FBeamRealmUser PlayerAccount;
 		if (Runtime->TryGetSlotUserData(UserSlot, PlayerAccount))
 		{
-			FHathoraSDK::Instance()->GetRegionalPings(FHathoraOnGetRegionalPings::CreateLambda([this, UserSlot, Op, Stats, Runtime](const FHathoraRegionPings& Result)
+			FHathoraSDK::Instance()->GetRegionalPings(FHathoraOnGetRegionalPings::CreateLambda([UserSlot, Op, Stats, Runtime](const FHathoraRegionPings& Result)
 			{
 				const FString PingsJson = ConvertHathoraRegionPingsToJson(Result);
 
 				TMap<FString, FString> StatsMap;
-				StatsMap.Add("hathora_demo.pings", PingsJson);
+				StatsMap.Add("hathora.pings", PingsJson);
 
 				UBeamStatUpdateCommand* Command;
 				if (Stats->TryCreateUpdateCommand(UserSlot, StatsMap, Command))
 				{
 					FBeamOperationEventHandlerCode Handler;
-					Handler.BindLambda([this, Op, Runtime](FBeamOperationEvent Evt)
+					Handler.BindLambda([Op, Runtime](FBeamOperationEvent Evt)
 					{
 						UE_LOG(LogTemp, Display, TEXT("Updated Hathora Pings"));
 
@@ -58,7 +58,7 @@ public:
 		}
 	}
 
-	FString ConvertHathoraRegionPingsToJson(const FHathoraRegionPings& RegionPings)
+	static FString ConvertHathoraRegionPingsToJson(const FHathoraRegionPings& RegionPings)
 	{
 		// Create a new JSON object
 		TSharedPtr<FJsonObject> JsonObject = MakeShareable(new FJsonObject);

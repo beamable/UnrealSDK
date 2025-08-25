@@ -108,12 +108,17 @@ TArray<FString> UK2BeamNode_Operation::GetOperationEventIdTooltips(EBeamOperatio
 
 void UK2BeamNode_Operation::AllocateDefaultPins()
 {
-	if (GetOperationEventIds(OET_SUCCESS).Num() > 1 ||
+	if (!bIsAlreadyAllocated)
+	{
+		if (GetOperationEventIds(OET_SUCCESS).Num() > 1 ||
 		GetOperationEventIds(OET_ERROR).Num() > 1	 ||
 		GetOperationEventIds(OET_CANCELLED).Num() > 1)
-	{
-		CurrentExpandedMode = OnSubEvents;
+		{
+			CurrentExpandedMode = OnSubEvents;
+		}
+		bIsAlreadyAllocated = true;
 	}
+	
 	
 	Super::AllocateDefaultPins();
 
