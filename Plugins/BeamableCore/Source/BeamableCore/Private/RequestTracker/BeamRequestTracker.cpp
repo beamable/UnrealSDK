@@ -242,7 +242,7 @@ void UBeamRequestTracker::CleanUpOperations()
 
 		// If they are completed, we need to figure out if anyone depends on it.
 		const auto OpState = ActiveOperationState.FindChecked(OpId);
-		const auto bIsDependedOn = OpState->WaitedBy.Num() > 0;;
+		const auto bIsDependedOn = OpState->WaitedBy.Num() > 0;
 		auto bDependenciesAreFinished = !bIsDependedOn;
 		if (bIsDependedOn)
 		{
