@@ -46,7 +46,7 @@ public class WithdrawalService : IService
         return new GameCoinTransferMessage(contentId, contract.PackageId, contract.Module, "transfer", playerAccount.Address, playerAccount.PrivateKey, gamerTag, toAddress, amount);
     }
 
-    public async Task Withdraw(string transaction, GameCoinTransferMessage request, UserRequestDataHandler user)
+    public async Task Withdraw(string transaction, GameCoinTransferMessage request)
     {
         var transactionManager = _transactionManagerFactory.Create(transaction);
         try

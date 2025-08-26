@@ -3,10 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Beamable.Common;
+using Beamable.Common.Api.Auth;
 using Beamable.Common.Content;
+using Beamable.Common.Inventory;
 using Beamable.Server;
 using Beamable.SuiFederation.Features.LockManager;
 using Beamable.Server.Content;
+using Beamable.SuiFederation.Caching;
+using Beamable.SuiFederation.Extensions;
 using Beamable.SuiFederation.Features.Contract.Exceptions;
 using Beamable.SuiFederation.Features.Contract.Handlers;
 using Beamable.SuiFederation.Features.Contract.Storage;
@@ -23,6 +27,7 @@ public class ContractService : IService
     private readonly ContentContractHandlerResolver _contractHandlerResolver;
     private readonly ContractCollection _contractCollection;
     private readonly SuiClient _suiClient;
+    private readonly MemoryCache<List<IContentObject>> _contentCache = new(TimeSpan.FromDays(1));
 
     public ContractService(SocketRequesterContext socketRequesterContext, LockManagerService lockManagerService, ContentService contentService, ContentContractHandlerResolver contentContractHandlerResolver, ContractCollection contractCollection, SuiClient suiClient)
     {
@@ -36,6 +41,7 @@ public class ContractService : IService
 
     private void SubscribeContentUpdateEvent(SocketRequesterContext socketRequesterContext)
     {
+#if !DEBUG
         socketRequesterContext.Subscribe<object>(Constants.Features.Services.CONTENT_UPDATE_EVENT, _ =>
         {
             Task.Run(async () =>
@@ -43,6 +49,7 @@ public class ContractService : IService
                 try
                 {
                     BeamableLogger.Log("Content was updated");
+                    _contentCache.RemoveAll();
                     await InitializeContentContracts();
                 }
                 catch (Exception ex)
@@ -51,6 +58,7 @@ public class ContractService : IService
                 }
             });
         });
+#endif
     }
 
     public async Task InitializeContentContracts()
@@ -127,5 +135,48 @@ public class ContractService : IService
             var contentRef = await clientContentInfo.Resolve();
             yield return contentRef;
         }
+    }
+
+    public async Task<IEnumerable<IContentObject>> FetchFederationContentForState(ExternalIdentity externalIdentity)
+    {
+        var federationContent = await FetchFederationContentLocal();
+        var currencies = federationContent
+            .Where(item => item is CurrencyContent coin && coin.federation.Matches(externalIdentity));
+
+        var groupsByPath = federationContent
+            .Where(item => item is ItemContent)
+            .GroupBy(item => {
+                var idParts = item.Id.Split('.');
+                return string.Join(".", idParts.Take(idParts.Length - 1));
+            })
+            .ToDictionary(g => g.Key, g => g.ToList());
+
+        var matchingItems = groupsByPath
+            .Select(kvp => kvp.Value.FirstOrDefault(co => co is ItemContent item && item.federation.Matches(externalIdentity)))
+            .Where(co => co is not null)
+            .Cast<IContentObject>();
+        return matchingItems.Concat(currencies);
+    }
+
+    private async Task<List<IContentObject>> FetchFederationContentLocal()
+    {
+        return await _contentCache.GetOrAddAsync(nameof(FetchFederationContentLocal), async () =>
+        {
+            var federatedTypes = SuiFederationCommonHelper.GetFederationTypes();
+            var manifest = await _contentService.GetManifest(new ContentQuery
+            {
+                TypeConstraints = federatedTypes
+            });
+
+            var result = new List<IContentObject>();
+            foreach (var clientContentInfo in manifest.entries.Where(
+                         item => item.contentId.StartsWith("currency") ||
+                                 item.contentId.StartsWith("items")))
+            {
+                var contentRef = await clientContentInfo.Resolve();
+                result.Add(contentRef);
+            }
+            return result;
+        }) ?? new List<IContentObject>();
     }
 }

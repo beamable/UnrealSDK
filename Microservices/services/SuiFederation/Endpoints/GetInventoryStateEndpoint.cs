@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Beamable.Common;
+using Beamable.Common.Api.Auth;
 using Beamable.SuiFederation.Extensions;
 using Beamable.SuiFederation.Features.Content;
 using Beamable.SuiFederation.Features.Content.Models;
@@ -22,7 +23,7 @@ public class GetInventoryStateEndpoint : IEndpoint
         _contentHandlerFactory = contentHandlerFactory;
     }
 
-    public async Promise<FederatedInventoryProxyState> GetInventoryState(string id)
+    public async Promise<FederatedInventoryProxyState> GetInventoryState(string id, ExternalIdentity externalIdentity)
     {
         var resultState = new FederatedInventoryProxyState
         {
@@ -30,7 +31,7 @@ public class GetInventoryStateEndpoint : IEndpoint
             items = new Dictionary<string, List<FederatedItemProxy>>(),
         };
 
-        await foreach (var contentObject in _contractService.FetchFederationContent())
+        foreach (var contentObject in await _contractService.FetchFederationContentForState(externalIdentity))
         {
             var handler = _contentHandlerFactory.GetHandler(contentObject);
             var state = await handler.GetState(id, contentObject.Id);

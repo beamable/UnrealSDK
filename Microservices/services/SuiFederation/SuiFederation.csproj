@@ -2,7 +2,7 @@
   <PropertyGroup Label="Beamable Settings">
     <!-- All Microservices must have the value, "service" -->
     <BeamProjectType>service</BeamProjectType>
-    <GenerateClientCode>true</GenerateClientCode>
+    <GenerateClientCode>false</GenerateClientCode>
     <Nullable>enable</Nullable>
     <BeamEnabled>true</BeamEnabled>
     <BeamServiceGroup>BEAMPROJ_LiveOpsDemo</BeamServiceGroup>
@@ -38,9 +38,6 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Features\SuiApi\sui_config\**\*">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Features\SuiApi\sui_config\move_setup.sh">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

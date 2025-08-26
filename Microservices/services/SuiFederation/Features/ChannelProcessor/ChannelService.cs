@@ -13,7 +13,7 @@ public static class ChannelService
     private static int _queueLength;
     private static bool _isStarted;
 
-    public static async Task Enqueue(UserRequestDataHandler handler, Func<UserRequestDataHandler, Task> input)
+    public static async Task Enqueue(long gamerTag, Func<long, Task> input)
     {
         var tcs = new TaskCompletionSource();
         Interlocked.Increment(ref _queueLength);
@@ -35,7 +35,7 @@ public static class ChannelService
                     Interlocked.Decrement(ref _queueLength);
                 }
             },
-            handler
+            gamerTag
         ));
     }
 
@@ -49,7 +49,7 @@ public static class ChannelService
             {
                 try
                 {
-                    await workItem.Work(workItem.Handler);
+                    await workItem.Work(workItem.GamerTag);
                 }
                 catch (Exception ex)
                 {
@@ -63,4 +63,4 @@ public static class ChannelService
     public static int GetQueueLength() => _queueLength;
 }
 
-public record ChannelWorkItem(Func<UserRequestDataHandler, Task> Work, UserRequestDataHandler Handler);
+public record ChannelWorkItem(Func<long, Task> Work, long GamerTag);

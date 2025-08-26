@@ -2,6 +2,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Reflection;
 using Beamable.Common;
+using Beamable.Common.Api.Auth;
 using Beamable.Server;
 
 namespace Beamable.SuiFederation.Extensions;
@@ -14,7 +15,7 @@ public static class MicroserviceMetadataExtensions
         where TService : Microservice, IFederatedLogin<TIdentity>, new()
         where TIdentity : IFederationId, new()
     {
-        return Cache.GetOrAdd(typeof(TService), _ =>
+        return Cache.GetOrAdd(typeof(TIdentity), _ =>
         {
             var microservice = new TService();
             var microserviceName = microservice.GetType().GetCustomAttribute<MicroserviceAttribute>()!.MicroserviceName;
@@ -23,6 +24,13 @@ public static class MicroserviceMetadataExtensions
             return new MicroserviceInfo(microserviceName, microserviceNamespace);
         });
     }
+
+    public static ExternalIdentity ToExternalIdentity(this MicroserviceInfo microserviceInfo)
+        => new()
+        {
+            providerService = microserviceInfo.MicroserviceName,
+            providerNamespace = microserviceInfo.MicroserviceNamespace
+        };
 }
 
 public record MicroserviceInfo(string MicroserviceName, string MicroserviceNamespace);

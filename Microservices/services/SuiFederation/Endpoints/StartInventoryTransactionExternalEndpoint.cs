@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Beamable.Common;
 using Beamable.Common.Api.Inventory;
-using Beamable.Server;
 using Beamable.SuiFederation.Extensions;
 using Beamable.SuiFederation.Features.ChannelProcessor;
 using Beamable.SuiFederation.Features.Content.Models;
@@ -13,14 +12,14 @@ using Beamable.SuiFederation.Features.Transactions;
 
 namespace Beamable.SuiFederation.Endpoints;
 
-public class StartInventoryTransactionEndpoint : IEndpoint
+public class StartInventoryTransactionExternalEndpoint : IEndpoint
 {
     private readonly TransactionManager _transactionManager;
     private readonly InventoryService _inventoryService;
     private readonly UpdatePlayerStateService _updatePlayerStateService;
     private readonly GetInventoryStateEndpoint _inventoryStateEndpoint;
 
-    public StartInventoryTransactionEndpoint(TransactionManager transactionManager, InventoryService inventoryService, UpdatePlayerStateService updatePlayerStateService, GetInventoryStateEndpoint inventoryStateEndpoint)
+    public StartInventoryTransactionExternalEndpoint(TransactionManager transactionManager, InventoryService inventoryService, UpdatePlayerStateService updatePlayerStateService, GetInventoryStateEndpoint inventoryStateEndpoint)
     {
         _transactionManager = transactionManager;
         _inventoryService = inventoryService;
@@ -39,23 +38,6 @@ public class StartInventoryTransactionEndpoint : IEndpoint
             var itemsRequest = newItems.Select(i => new InventoryRequest(gamerTag, i.contentId, 1, i.properties));
             await ChannelService.Enqueue(gamerTag, async (_) =>
                 await _inventoryService.NewItems(transactionId.ToString(), id, currencyRequest.Union(itemsRequest), gamerTag)
-            );
-
-            // UPDATE ITEMS
-            var updateItemsRequest = updateItems.Select(i => new InventoryRequestUpdate(gamerTag,
-                i.contentId, i.proxyId,
-                i.properties
-                    .Where(kvp => !NftContentItemExtensions.FixedProperties().Contains(kvp.Key))
-                    .ToDictionary(kvp => kvp.Key, kvp => kvp.Value)));
-            await ChannelService.Enqueue(gamerTag, async (_) =>
-                await _inventoryService.UpdateItems(transactionId.ToString(), id, updateItemsRequest, gamerTag)
-            );
-
-            // DELETE ITEMS
-            var deleteItemsRequest = deleteItems.Select(i => new InventoryRequestDelete(gamerTag,
-                i.contentId, i.proxyId));
-            await ChannelService.Enqueue(gamerTag, async (_) =>
-                await _inventoryService.DeleteItems(transactionId.ToString(), id, deleteItemsRequest, gamerTag)
             );
 
             await ChannelService.Enqueue(gamerTag, async (_) =>

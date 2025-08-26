@@ -12,7 +12,6 @@ using Beamable.SuiFederation.Features.Transactions.Storage;
 using Beamable.SuiFederation.Features.Transactions.Storage.Models;
 using Beamable.SuiFederation.Features.Withdrawal.Models;
 using MongoDB.Bson;
-using Serilog;
 
 namespace Beamable.SuiFederation.Features.Transactions;
 
@@ -39,19 +38,15 @@ public class TransactionManager
 
     public static void SetupShutdownHook()
     {
-        Log.Debug("Registering transaction shutdown hook");
         AppDomain.CurrentDomain.ProcessExit += (_, _) =>
         {
-            Log.Debug("Waiting for inflight transactions");
             var inflightTransactions = _inflightTransactions;
 
             while (inflightTransactions > 0)
             {
-                Log.Debug("{InflightTransactions} inflight transactions, waiting for 500ms", inflightTransactions);
                 Thread.Sleep(500);
                 inflightTransactions = _inflightTransactions;
             }
-            Log.Debug("Done waiting for inflight transactions");
         };
     }
 

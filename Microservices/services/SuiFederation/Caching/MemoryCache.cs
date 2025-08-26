@@ -108,6 +108,11 @@ public class MemoryCache<T> : IDisposable
         AppDomain.CurrentDomain.ProcessExit -= OnProcessExit;
     }
 
+    public void RemoveAll()
+    {
+        _cache.Clear();
+    }
+
     public void Dispose()
     {
         Dispose(true);

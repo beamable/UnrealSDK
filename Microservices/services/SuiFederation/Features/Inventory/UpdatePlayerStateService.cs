@@ -6,6 +6,7 @@ using Beamable.Common;
 using Beamable.Common.Api;
 using Beamable.Server;
 using Beamable.SuiFederation.Endpoints;
+using Beamable.SuiFederation.Extensions;
 using Beamable.SuiFederation.Features.Accounts;
 using Beamable.SuiFederation.Features.Notifications;
 using Beamable.SuiFederation.Features.Notifications.Models;
@@ -17,20 +18,18 @@ public class UpdatePlayerStateService : IService
 {
     private readonly AccountsService _accountsService;
     private readonly IBeamableRequester _beamableRequester;
-    private readonly GetInventoryStateEndpoint _inventoryStateEndpoint;
     private readonly TransactionLogCollection _transactionLogCollection;
     private readonly PlayerNotificationService _playerNotificationService;
 
-    public UpdatePlayerStateService(AccountsService accountsService, IBeamableRequester beamableRequester, GetInventoryStateEndpoint inventoryStateEndpoint, TransactionLogCollection transactionLogCollection, PlayerNotificationService playerNotificationService)
+    public UpdatePlayerStateService(AccountsService accountsService, IBeamableRequester beamableRequester, TransactionLogCollection transactionLogCollection, PlayerNotificationService playerNotificationService)
     {
         _accountsService = accountsService;
         _beamableRequester = beamableRequester;
-        _inventoryStateEndpoint = inventoryStateEndpoint;
         _transactionLogCollection = transactionLogCollection;
         _playerNotificationService = playerNotificationService;
     }
 
-    public async Task Update(IPlayerNotification notification, UserRequestDataHandler user)
+    public async Task Update(IPlayerNotification notification, GetInventoryStateEndpoint inventoryStateEndpoint, MicroserviceInfo microserviceInfo)
     {
         try
         {
@@ -41,7 +40,7 @@ public class UpdatePlayerStateService : IService
                 var gamerTag = await GetGamerTag(transactionLog.Wallet);
                 if (gamerTag == 0)
                     gamerTag = transactionLog.RequesterUserId;
-                await SynchronizeState(gamerTag, transactionLog.Wallet);
+                await SynchronizeState(gamerTag, transactionLog.Wallet, inventoryStateEndpoint, microserviceInfo);
                 await _playerNotificationService.SendPlayerNotification(gamerTag, notification);
             }
         }
@@ -51,11 +50,12 @@ public class UpdatePlayerStateService : IService
         }
     }
 
-    private async Task SynchronizeState(long gamerTag, string walletAddress)
+    private async Task SynchronizeState(long gamerTag, string walletAddress, GetInventoryStateEndpoint inventoryStateEndpoint, MicroserviceInfo microserviceInfo)
     {
         try
         {
-            var newState = await _inventoryStateEndpoint.GetInventoryState(walletAddress);
+            var existingExternalIdentity = microserviceInfo.ToExternalIdentity();
+            var newState = await inventoryStateEndpoint.GetInventoryState(walletAddress, existingExternalIdentity);
             BeamableLogger.Log("Reporting back state for user {gamerTag}", gamerTag);
             await _beamableRequester.Request<CommonResponse>(Method.PUT, $"/object/inventory/{gamerTag}/proxy/state", newState, includeAuthHeader: false);
         }

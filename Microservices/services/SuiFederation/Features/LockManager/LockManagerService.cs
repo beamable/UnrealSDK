@@ -12,7 +12,7 @@ public class LockManagerService : IService
         _lockCollection = lockCollection;
     }
 
-    public async Task<bool> AcquireLock(string lockName, int lockTimeoutSeconds = 0)
+    public async Task<bool> AcquireLock(string lockName, int lockTimeoutSeconds = 10 * 60)
     {
         return await _lockCollection.AcquireLock(lockName, lockTimeoutSeconds);
     }

@@ -103,16 +103,19 @@ namespace Beamable.SuiFederation
 
 		async Promise<FederatedInventoryProxyState> IFederatedInventory<SuiWeb3Identity>.GetInventoryState(string id)
 		{
+			var microserviceInfo = MicroserviceMetadataExtensions.GetMetadata<SuiFederation, SuiWeb3Identity>();
+			var existingExternalIdentity = microserviceInfo.ToExternalIdentity();
 			return await Provider.GetService<GetInventoryStateEndpoint>()
-				.GetInventoryState(id);
+				.GetInventoryState(id, existingExternalIdentity);
 		}
 
 		async Promise<FederatedInventoryProxyState> IFederatedInventory<SuiWeb3Identity>.StartInventoryTransaction(string id, string transaction, Dictionary<string, long> currencies, List<FederatedItemCreateRequest> newItems, List<FederatedItemDeleteRequest> deleteItems,
 			List<FederatedItemUpdateRequest> updateItems)
 		{
-			var user = AssumeNewUser(Context.UserId, null, false);
+			var gamerTag = await Provider.GetService<AccountsService>().GetGamerTag(id);
+			var microserviceInfo = MicroserviceMetadataExtensions.GetMetadata<SuiFederation, SuiWeb3Identity>();
 			return await Provider.GetService<StartInventoryTransactionEndpoint>()
-				.StartInventoryTransaction(id, transaction, currencies, newItems, deleteItems, updateItems, user);
+				.StartInventoryTransaction(id, transaction, currencies, newItems, deleteItems, updateItems, gamerTag, microserviceInfo);
 		}
 
 		[Callable]
@@ -125,8 +128,7 @@ namespace Beamable.SuiFederation
 		[ClientCallable]
 		public async Promise Withdraw(string contentId, long amount)
 		{
-			var user = AssumeNewUser(Context.UserId, null, false);
-			await Provider.GetService<WithdrawalEndpoint>().Withdraw(contentId, amount, user);
+			await Provider.GetService<WithdrawalEndpoint>().Withdraw(contentId, amount);
 		}
 	}
 }

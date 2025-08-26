@@ -23,7 +23,7 @@ public class InventoryService : IService
         _contentService = contentService;
     }
 
-    public async Task NewItems(string transaction, string wallet, IEnumerable<InventoryRequest> mintRequests, UserRequestDataHandler user)
+    public async Task NewItems(string transaction, string wallet, IEnumerable<InventoryRequest> mintRequests, long gamerTag)
     {
         var messageRequests = await mintRequests.ParallelGroupByAsync(
             async request =>
@@ -41,7 +41,7 @@ public class InventoryService : IService
         }
     }
 
-    public async Task UpdateItems(string transaction, string wallet, IEnumerable<InventoryRequestUpdate> updateItemsRequest, UserRequestDataHandler user)
+    public async Task UpdateItems(string transaction, string wallet, IEnumerable<InventoryRequestUpdate> updateItemsRequest, long gamerTag)
     {
         var messageRequests = await updateItemsRequest.ParallelGroupByAsync(
             async request =>
@@ -59,7 +59,7 @@ public class InventoryService : IService
         }
     }
 
-    public async Task DeleteItems(string transaction, string wallet, IEnumerable<InventoryRequestDelete> deleteItemsRequest, UserRequestDataHandler user)
+    public async Task DeleteItems(string transaction, string wallet, IEnumerable<InventoryRequestDelete> deleteItemsRequest, long gamerTag)
     {
         var messageRequests = await deleteItemsRequest.ParallelGroupByAsync(
             async request =>

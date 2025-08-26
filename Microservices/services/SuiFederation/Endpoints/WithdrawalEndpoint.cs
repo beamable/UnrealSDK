@@ -21,17 +21,19 @@ public class WithdrawalEndpoint : IEndpoint
     private readonly TransactionManager _transactionManager;
     private readonly UpdatePlayerStateService _updatePlayerStateService;
     private readonly InventoryService _inventoryService;
+    private readonly GetInventoryStateEndpoint _getInventoryStateEndpoint;
 
-    public WithdrawalEndpoint(RequestContext requestContext, WithdrawalService withdrawalService, TransactionManager transactionManager, UpdatePlayerStateService updatePlayerStateService, InventoryService inventoryService)
+    public WithdrawalEndpoint(RequestContext requestContext, WithdrawalService withdrawalService, TransactionManager transactionManager, UpdatePlayerStateService updatePlayerStateService, InventoryService inventoryService, GetInventoryStateEndpoint getInventoryStateEndpoint)
     {
         _requestContext = requestContext;
         _withdrawalService = withdrawalService;
         _transactionManager = transactionManager;
         _updatePlayerStateService = updatePlayerStateService;
         _inventoryService = inventoryService;
+        _getInventoryStateEndpoint = getInventoryStateEndpoint;
     }
 
-    public async Task<FederatedInventoryProxyState> Withdraw(string contentId, long amount, UserRequestDataHandler user)
+    public async Task<FederatedInventoryProxyState> Withdraw(string contentId, long amount)
     {
         var microserviceInfo = MicroserviceMetadataExtensions.GetMetadata<SuiFederation, SuiWeb3ExternalIdentity>();
         var existingExternalIdentity = _requestContext.GetExternalIdentity(microserviceInfo);
@@ -42,7 +44,7 @@ public class WithdrawalEndpoint : IEndpoint
         var transaction = $"Withdraw-{Guid.NewGuid().ToString()}";
         var withdrawalRequest = new WithdrawalRequest
         {
-            GamerTag = user.Context.UserId,
+            GamerTag = _requestContext.UserId,
             ContentId = contentId,
             Amount = amount
         };
@@ -50,15 +52,15 @@ public class WithdrawalEndpoint : IEndpoint
         _transactionManager.SetCurrentTransactionContext(transactionId);
         _ = _transactionManager.RunAsyncBlock(transactionId, transaction, async () =>
         {
-            await ChannelService.Enqueue(user, async (_) =>
-                await _withdrawalService.Withdraw(transactionId.ToString(), request, user)
+            await ChannelService.Enqueue(_requestContext.UserId, async (_) =>
+                await _withdrawalService.Withdraw(transactionId.ToString(), request)
             );
 
-            await ChannelService.Enqueue(user, async (_) =>
+            await ChannelService.Enqueue(_requestContext.UserId, async (_) =>
                 await _updatePlayerStateService.Update(new InventoryTransactionNotification
                 {
                     InventoryTransactionId = transaction
-                }, user)
+                }, _getInventoryStateEndpoint, microserviceInfo)
             );
         });
         return await _inventoryService.GetLastKnownState(request.PlayerWalletAddress);
