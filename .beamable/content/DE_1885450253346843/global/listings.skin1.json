@@ -2,7 +2,7 @@
   "properties": {
     "clientData": {
       "data": {
-        "path": "/Script/BEAMPROJ_Beamball.BeamBallListingDataAsset\u0027/BEAMPROJ_Beamball/Database/Listing/Skin1.Skin1\u0027"
+        "path": "/Script/BEAMPROJ_Beamball.BeamBallListingDataAsset'/BEAMPROJ_Beamball/Database/Listing/Skin1.Skin1'"
       }
     },
     "offer": {
@@ -27,5 +27,5 @@
     }
   },
   "tags": [],
-  "referenceManifestId": "68505398101302335c771cbb"
+  "referenceManifestId": "68adddfcd169d25ebc4e1e5f"
 }

@@ -2,7 +2,7 @@
   "properties": {
     "clientData": {
       "data": {
-        "path": "/Script/BEAMPROJ_Beamball.BeamBallListingDataAsset'/BEAMPROJ_Beamball/Database/Listing/Skin2.Skin2'"
+        "icon": ""
       }
     },
     "offer": {
@@ -12,7 +12,7 @@
         "obtainCurrency": [],
         "obtainItems": [
           {
-            "contentId": "items.itemskin.skin2",
+            "contentId": "itemskin.skin1",
             "properties": []
           }
         ]
@@ -22,10 +22,10 @@
       "data": {
         "type": "currency",
         "symbol": "currency.coins",
-        "amount": 50
+        "amount": 0
       }
     }
   },
   "tags": [],
-  "referenceManifestId": "68adddfcd169d25ebc4e1e5f"
+  "referenceManifestId": "680fb37b5f3e964191516a6a"
 }

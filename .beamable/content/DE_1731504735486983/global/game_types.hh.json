@@ -1,11 +1,5 @@
 {
   "properties": {
-    "FederatedGameServerNamespace": {
-      "data": "beamball"
-    },
-    "MaxWaitDurationSecs": {
-      "data": 60
-    },
     "NumericRules": {
       "data": []
     },
@@ -15,7 +9,7 @@
     "Teams": {
       "data": [
         {
-          "Name": "TeamA",
+          "Name": "Team",
           "MinPlayers": 2,
           "MaxPlayers": 2
         }
@@ -23,5 +17,5 @@
     }
   },
   "tags": [],
-  "referenceManifestId": "68adddfcd169d25ebc4e1e5f"
+  "referenceManifestId": "6825e960464e6d63ea3ac178"
 }

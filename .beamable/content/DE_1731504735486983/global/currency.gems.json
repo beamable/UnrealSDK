@@ -2,7 +2,7 @@
   "properties": {
     "clientPermission": {
       "data": {
-        "write_self": false
+        "write_self": true
       }
     },
     "startingAmount": {
@@ -10,5 +10,5 @@
     }
   },
   "tags": [],
-  "referenceManifestId": "68adddfcd169d25ebc4e1e5f"
+  "referenceManifestId": "6825e960464e6d63ea3ac178"
 }

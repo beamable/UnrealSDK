@@ -2,13 +2,13 @@
   "properties": {
     "clientPermission": {
       "data": {
-        "write_self": false
+        "write_self": true
       }
     },
     "startingAmount": {
-      "data": 0
+      "data": 250
     }
   },
   "tags": [],
-  "referenceManifestId": "68adddfcd169d25ebc4e1e5f"
+  "referenceManifestId": "6848252127de046890af833a"
 }
