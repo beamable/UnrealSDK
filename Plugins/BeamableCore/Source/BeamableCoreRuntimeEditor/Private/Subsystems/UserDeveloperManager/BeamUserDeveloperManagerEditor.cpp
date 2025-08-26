@@ -85,36 +85,33 @@ void UBeamUserDeveloperManagerEditor::TriggerOnUserSlotAuthenticated(const FUser
 			// 1 - Local
 			// 2 - Shared
 			int UserType = 0;
+			
+			FString Alias = "";
+			FString Description = "";
+			FString Tags = "";
+
 			if (LocalUserDeveloperCache.Contains(BeamRealmUser.GamerTag))
 			{
-				UserType = LocalUserDeveloperCache[BeamRealmUser.GamerTag]->DeveloperUserType;
+				UDeveloperUserDataStreamData* DeveloperUserDataStreamData = LocalUserDeveloperCache[BeamRealmUser.GamerTag];
+		
+				Tags = *FString::Join(DeveloperUserDataStreamData->Tags, TEXT("@@"));
+				Alias = DeveloperUserDataStreamData->Alias;
+				Description = DeveloperUserDataStreamData->Description;
+				UserType = DeveloperUserDataStreamData->DeveloperUserType;
 			}
+			
 
-			TArray<FString> AccessToken;
-			TArray<FString> RefreshToken;
-			TArray<FString> ExpiresIn;
-			TArray<FString> Pid;
-			TArray<FString> Cid;
-			TArray<FString> GamerTag;
-
-
-			for (auto RealmUser : RealmUsers)
-			{
-				AccessToken.Add(RealmUser.AuthToken.AccessToken);
-				RefreshToken.Add(RealmUser.AuthToken.RefreshToken);
-				ExpiresIn.Add(FString::Printf(TEXT("%lld"), RealmUser.AuthToken.ExpiresIn));
-				Pid.Add(RealmUser.RealmHandle.Pid.AsString);
-				Cid.Add(RealmUser.RealmHandle.Cid.AsString);
-				GamerTag.Add(RealmUser.GamerTag.AsString);
-			}
 
 			auto args = {
-				FString::Printf(TEXT("--access-token %s"), *FString::Join(AccessToken, TEXT(" "))),
-				FString::Printf(TEXT("--refresh-token %s"), *FString::Join(RefreshToken, TEXT(" "))),
-				FString::Printf(TEXT("--expires-in %s"), *FString::Join(ExpiresIn, TEXT(" "))),
-				FString::Printf(TEXT("--pid %s"), *FString::Join(Pid, TEXT(" "))),
-				FString::Printf(TEXT("--cid %s"), *FString::Join(Cid, TEXT(" "))),
-				FString::Printf(TEXT("--gamer-tag %s"), *FString::Join(GamerTag, TEXT(" "))),
+				FString::Printf(TEXT("--alias \"%s\""), *Alias),
+				FString::Printf(TEXT("--description \"%s\""), *Description),
+				FString::Printf(TEXT("--tags \"%s\""), *Tags),
+				FString::Printf(TEXT("--access-token %s"), *BeamRealmUser.AuthToken.AccessToken),
+				FString::Printf(TEXT("--refresh-token %s"), *BeamRealmUser.AuthToken.RefreshToken),
+				FString::Printf(TEXT("--expires-in %s"), *FString::Printf(TEXT("%lld"), BeamRealmUser.AuthToken.ExpiresIn)),
+				FString::Printf(TEXT("--pid %s"), *BeamRealmUser.RealmHandle.Pid.AsString),
+				FString::Printf(TEXT("--cid %s"), *BeamRealmUser.RealmHandle.Cid.AsString),
+				FString::Printf(TEXT("--gamer-tag %s"), *BeamRealmUser.GamerTag.AsString),
 				FString::Printf(TEXT("--user-type %d"), UserType)
 			};
 

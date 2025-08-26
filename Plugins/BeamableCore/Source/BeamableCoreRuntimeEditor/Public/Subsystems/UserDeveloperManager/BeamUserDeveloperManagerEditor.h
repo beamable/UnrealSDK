@@ -200,6 +200,12 @@ public:
 		return true;
 	}
 
+	UFUNCTION(BlueprintCallable)
+	static FBeamPIE_UserSlotHandle TryGetUserSlotHandle(int SelectedPIEIndex, bool CreateCopyOnPIE, FString SelectedSlotName)
+	{
+		return FBeamPIE_UserSlotHandle(SelectedPIEIndex, CreateCopyOnPIE, SelectedSlotName);
+	}
+
 protected:
 	void RunPsCommand(FBeamOperationHandle OperationHandle);
 
