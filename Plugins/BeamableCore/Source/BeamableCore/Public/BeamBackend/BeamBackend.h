@@ -239,11 +239,6 @@ public:
 	static const FString HEADER_ENGINE_TYPE;
 	static const FString HEADER_APPLICATION_VERSION;
 
-	static const FString HEADER_BEAMABLE_VERSION;
-	static const FString HEADER_UNREAL_VERSION;
-	static const FString HEADER_ENGINE_TYPE;
-	static const FString HEADER_APPLICATION_VERSION;
-
 	/**
 	 * @brief List of error codes that mean we should re-auth and automatically make the request again.
 	 */
