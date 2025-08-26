@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/CurrencyPreviewLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UCurrencyPreviewLibrary::CurrencyPreviewToJsonString(const UCurrencyPreview* Serializable, const bool Pretty)
@@ -34,9 +35,12 @@ UCurrencyPreview* UCurrencyPreviewLibrary::Make(FString Id, int64 Amount, int64 
 
 void UCurrencyPreviewLibrary::Break(const UCurrencyPreview* Serializable, FString& Id, int64& Amount, int64& OriginalAmount)
 {
-	Id = Serializable->Id;
-	Amount = Serializable->Amount;
-	OriginalAmount = Serializable->OriginalAmount;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Id = Serializable->Id;
+		Amount = Serializable->Amount;
+		OriginalAmount = Serializable->OriginalAmount;
+	}
 		
 }
 

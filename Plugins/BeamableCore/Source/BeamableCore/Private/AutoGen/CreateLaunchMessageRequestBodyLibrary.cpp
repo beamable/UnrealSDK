@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/CreateLaunchMessageRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UCreateLaunchMessageRequestBodyLibrary::CreateLaunchMessageRequestBodyToJsonString(const UCreateLaunchMessageRequestBody* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ UCreateLaunchMessageRequestBody* UCreateLaunchMessageRequestBodyLibrary::Make(FS
 
 void UCreateLaunchMessageRequestBodyLibrary::Break(const UCreateLaunchMessageRequestBody* Serializable, FString& Name, FString& Body)
 {
-	Name = Serializable->Name;
-	Body = Serializable->Body;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Name = Serializable->Name;
+		Body = Serializable->Body;
+	}
 		
 }
 

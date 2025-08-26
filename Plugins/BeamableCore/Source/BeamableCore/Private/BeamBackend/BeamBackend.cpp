@@ -22,6 +22,12 @@ const FString UBeamBackend::HEADER_AUTHORIZATION = FString(TEXT("Authorization")
 const FString UBeamBackend::HEADER_VALUE_AUTHORIZATION = FString(TEXT("Bearer {0}"));
 const FString UBeamBackend::HEADER_REQUEST_SCOPE = FString(TEXT("X-BEAM-SCOPE"));
 const FString UBeamBackend::HEADER_ROUTING_KEY_MAP = FString(TEXT("X-BEAM-SERVICE-ROUTING-KEY"));
+const FString UBeamBackend::HEADER_CLIENT_ID = FString(TEXT("X-KS-CLIENTID"));
+const FString UBeamBackend::HEADER_PROJECT_ID = FString(TEXT("X-KS-PROJECTID"));
+const FString UBeamBackend::HEADER_GAMERTAG = FString(TEXT("X-BEAM-GAMERTAG"));
+const FString UBeamBackend::HEADER_SIGNATURE = FString(TEXT("X-BEAM-SIGNATURE"));
+const FString UBeamBackend::HEADER_TIMEOUT = FString(TEXT("X-BEAM-TIMEOUT"));
+
 
 const FString UBeamBackend::HEADER_BEAMABLE_VERSION = FString(TEXT("X-BEAM-SDK-VERSION"));
 const FString UBeamBackend::HEADER_UNREAL_VERSION = FString(TEXT("X-BEAM-USER-AGENT-VERSION"));
@@ -64,28 +70,6 @@ void UBeamBackend::Initialize(FSubsystemCollectionBase& Collection)
 	AlwaysLogSuccessResponses = GetDefault<UBeamCoreSettings>()->AlwaysLogSuccessResponses;
 	AlwaysLogErrorResponses = GetDefault<UBeamCoreSettings>()->AlwaysLogErrorResponses;
 	AlwaysLogCompleteResponses = GetDefault<UBeamCoreSettings>()->AlwaysLogCompletedResponses;
-
-	// There are some things you can't test in PIE-mode and instead you must run as a Standalone Game.
-	// There is no way for us to programatically set the routing key map like we do for regular PIE so...
-	// In order to work with locally running microservices in this mode, this needs to be set via CommandLine or EnvVar.
-	// See our docs for more information on how to configure this.
-#if !UE_BUILD_SHIPPING
-	FString RoutingKeyMap;
-	if (!FParse::Value(FCommandLine::Get(), TEXT("beamable-routing-key-map="), RoutingKeyMap, false))
-	{
-		RoutingKeyMap = FPlatformMisc::GetEnvironmentVariable(TEXT("BEAMABLE_ROUTING_KEY_MAP"));
-		if (!RoutingKeyMap.IsEmpty())
-		{
-			SetRoutingKeyMap(RoutingKeyMap);
-			UE_LOG(LogBeamBackend, Display, TEXT("Parsed Routing Key from EnvVar | ROUTING_KEY_MAP=%s, NUM=%d"), *RoutingKeyMap, CurrentRoutingKeyMaps.Num());						
-		}
-	}
-	else
-	{
-		SetRoutingKeyMap(RoutingKeyMap);
-		UE_LOG(LogBeamBackend, Display, TEXT("Parsed Routing Key from CLArgs | ROUTING_KEY_MAP=%s, NUM=%d, FOR_OWNER=%s"), *RoutingKeyMap, CurrentRoutingKeyMaps.Num(), *CurrentRoutingKeyMaps[GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot()]);		
-	}
-#endif
 }
 
 void UBeamBackend::Deinitialize()
@@ -167,21 +151,17 @@ TUnrealRequestPtr UBeamBackend::CreateUnpreparedRequest(int64& OutRequestId, con
 	// We set the activity timeout to the requested timeout since the regular timeout was deprecated in UE 5.4
 	// In UE 5.4, the regular timeout will prevent the request object from being reused after a timeout.
 	// Using ActivityTimeout makes it possible to reuse this request object (which is important for our retry logic --- see TickRetryQueue)
-	Req->SetActivityTimeout(RetryConfig.Timeout);
+	Req->SetActivityTimeout(RetryConfig.Timeout * 2);
 
 	// Set the timeout header so that Beamable's Gateway itself knows how long
 	long long timeoutInMilliseconds = RetryConfig.Timeout * 1000;
 	// the value should not be lower than 10_000
 	if (timeoutInMilliseconds >= 10000)
 	{
-		Req->SetHeader(FString(TEXT("X-BEAM-TIMEOUT")), FString::Printf(TEXT("%lld"), timeoutInMilliseconds));
+		Req->SetHeader(FString(HEADER_TIMEOUT), FString::Printf(TEXT("%lld"), timeoutInMilliseconds));
 	}
 
 	UE_LOG(LogBeamBackend, Verbose, TEXT("Request Preparation: TIMEOUT_HEADER=%lld"), RetryConfig.Timeout);
-
-	// So we know this request comes from Unreal or an UnrealServer (dedicated server builds).
-	if (IsRunningDedicatedServer()) Req->SetHeader(TEXT("X-KS-USER-AGENT"), FString::Printf(TEXT("UnrealServer-%s"), *UGameplayStatics::GetPlatformName()));
-	else Req->SetHeader(TEXT("X-KS-USER-AGENT"), FString::Printf(TEXT("Unreal-%s"), *UGameplayStatics::GetPlatformName()));
 
 	// Prepares the Backend system to handle this request.
 	InFlightRequests.Add(OutRequestId, Req);
@@ -227,12 +207,14 @@ void UBeamBackend::PrepareBeamableRequestToRealm(const TUnrealRequestPtr& Unreal
 
 	// Checking if it's running in a packing build or in the editor.
 	if (FApp::IsGame())
-	{
-		UnrealRequest->SetHeader(HEADER_ENGINE_TYPE, "Unreal");
+	{		
+		// So we know this request comes from Unreal or an UnrealServer (dedicated server builds).
+		if (IsRunningDedicatedServer()) UnrealRequest->SetHeader(HEADER_ENGINE_TYPE, FString::Printf(TEXT("UnrealServer-%s"), *UGameplayStatics::GetPlatformName()));
+		else UnrealRequest->SetHeader(HEADER_ENGINE_TYPE, FString::Printf(TEXT("Unreal-%s"), *UGameplayStatics::GetPlatformName()));
 	}
 	else
 	{
-		UnrealRequest->SetHeader(HEADER_ENGINE_TYPE, "UnrealEditor");
+		UnrealRequest->SetHeader(HEADER_ENGINE_TYPE, FString::Printf(TEXT("UnrealEditor-%s"), *UGameplayStatics::GetPlatformName()));
 	}
 
 	UnrealRequest->SetHeader(HEADER_BEAMABLE_VERSION, BeamEnvironment->Data->Version.ToString());
@@ -342,9 +324,9 @@ bool UBeamBackend::HandlePIESessionRequestGuard(TUnrealRequestPtr Request, int64
 	return false;
 }
 
-void UBeamBackend::DefaultExecuteRequestImpl(int64 ActiveRequestId)
+void UBeamBackend::DefaultExecuteRequestImpl(int64 ActiveRequestId, const UObject* CallingContext)
 {
-	UE_LOG(LogBeamBackend, Display, TEXT("Sending Request via Unreal HttpRequest's ProcessRequest. REQUEST_ID=%llu"),
+	UE_LOG(LogBeamBackend, Verbose, TEXT("Sending Request via Unreal HttpRequest's ProcessRequest. REQUEST_ID=%llu"),
 	       ActiveRequestId);
 	if (InFlightRequests[ActiveRequestId]->ProcessRequest())
 	{
@@ -361,54 +343,6 @@ void UBeamBackend::ExtractUrlForSignature(const FString& FullUrl, FString& Url)
 	                                     FullUrl.Find(TEXT(".")) - 1)
 	);
 }
-
-void UBeamBackend::DedicatedServerExecuteRequestImpl(int64 ActiveRequestId)
-{
-	UE_LOG(LogBeamBackend, Verbose,
-	       TEXT("Sending Signed Request via Unreal HttpRequest's ProcessRequest . REQUEST_ID=%llu"), ActiveRequestId);
-
-	const auto HttpRequest = InFlightRequests[ActiveRequestId];
-
-	// Build and set the signature prior to sending the request along.
-	const auto Version = TEXT("1");
-	const auto Pid = GetDefault<UBeamCoreSettings>()->TargetRealm.Pid.AsString;
-	const auto Secret = RealmSecret;
-	// A full URL looks like this: https://dev.api.beamable.com/object/stats/game.public.player.1595037680985091/
-	// We are just getting the route (minus the domain) by finding the first forward slash after the '.' character.	
-	const auto FullUrl = HttpRequest->GetURL();
-
-	FString Url;
-	ExtractUrlForSignature(FullUrl, Url);
-
-	// Get the body as a UTF16 string so we can compose the signature 
-	const auto BodyUTF8 = reinterpret_cast<const UTF8CHAR*>(HttpRequest->GetContent().GetData());
-	const auto Body = FString(TStringConversion<FUTF8ToTCHAR_Convert>(BodyUTF8, HttpRequest->GetContentLength()));
-
-	// Create an MD5 Hash of the UTF-8 representation of this string. 
-	const auto SigPartsUTF16 = Secret + Pid + Version + Url + Body;
-	const auto SigParts = TStringConversion<FTCHARToUTF8_Convert>(*SigPartsUTF16);
-	uint8 Digest[16];
-	FMD5 Md5Gen;
-	Md5Gen.Update(reinterpret_cast<const unsigned char*>(SigParts.Get()), SigParts.Length());
-	Md5Gen.Final(Digest);
-
-	// Encode it into a Base64 string and set it as the signature header.
-	const auto Signature = FBase64::Encode(Digest, 16);
-	HttpRequest->SetHeader(TEXT("X-BEAM-SIGNATURE"), Signature);
-
-	UE_LOG(LogBeamBackend, Verbose, TEXT(
-		       "Sending Signed Request via Unreal HttpRequest's ProcessRequest."
-		       " REQUEST_ID=%llu, PID=%s, URL=%s, BODY=%s, REALM_SECRET=%s, SIG_PARTS=%s, SIGNATURE=%s"
-	       ), ActiveRequestId, *Pid, *Url, *Body, *Secret, *SigPartsUTF16, *Signature)
-
-	if (HttpRequest->ProcessRequest())
-	{
-		auto Context = InFlightRequestContexts.FindRef(ActiveRequestId);
-		Context.BeamStatus = AS_InFlight;
-		InFlightRequestContexts[ActiveRequestId] = Context;
-	}
-}
-
 
 bool UBeamBackend::TickRetryQueue(float DeltaTime)
 {
@@ -744,6 +678,89 @@ bool UBeamBackend::ExtractDataFromResponse(const FHttpRequestPtr Request, const 
 	}
 	return true;
 }
+
+
+
+/**
+	____           ___            __           __   _____                               
+   / __ \___  ____/ (_)________ _/ /____  ____/ /  / ___/___  ______   _____  __________
+  / / / / _ \/ __  / / ___/ __ `/ __/ _ \/ __  /   \__ \/ _ \/ ___/ | / / _ \/ ___/ ___/
+ / /_/ /  __/ /_/ / / /__/ /_/ / /_/  __/ /_/ /   ___/ /  __/ /   | |/ /  __/ /  (__  ) 
+/_____/\___/\__,_/_/\___/\__,_/\__/\___/\__,_/   /____/\___/_/    |___/\___/_/  /____/  
+																						
+*/
+
+
+void UBeamBackend::DedicatedServerExecuteRequestImpl(int64 ActiveRequestId, const UObject* CallingContext)
+{
+	UE_LOG(LogBeamBackend, Verbose,
+	       TEXT("Sending Signed Request via Unreal HttpRequest's ProcessRequest . REQUEST_ID=%llu"), ActiveRequestId);
+
+	const auto HttpRequest = InFlightRequests[ActiveRequestId];
+
+	// Build and set the signature prior to sending the request along.
+	const auto Version = TEXT("1");
+	const auto Pid = GetDefault<UBeamCoreSettings>()->TargetRealm.Pid.AsString;
+	const auto Secret = RealmSecret;
+	// A full URL looks like this: https://dev.api.beamable.com/object/stats/game.public.player.1595037680985091/
+	// We are just getting the route (minus the domain) by finding the first forward slash after the '.' character.	
+	const auto FullUrl = HttpRequest->GetURL();
+
+	FString Url;
+	ExtractUrlForSignature(FullUrl, Url);
+
+	// Get the body as a UTF16 string so we can compose the signature 
+	const auto BodyUTF8 = reinterpret_cast<const UTF8CHAR*>(HttpRequest->GetContent().GetData());
+	const auto Body = FString(TStringConversion<FUTF8ToTCHAR_Convert>(BodyUTF8, HttpRequest->GetContentLength()));
+
+	// Create an MD5 Hash of the UTF-8 representation of this string. 
+	const auto SigPartsUTF16 = Secret + Pid + Version + Url + Body;
+	const auto SigParts = TStringConversion<FTCHARToUTF8_Convert>(*SigPartsUTF16);
+	uint8 Digest[16];
+	FMD5 Md5Gen;
+	Md5Gen.Update(reinterpret_cast<const unsigned char*>(SigParts.Get()), SigParts.Length());
+	Md5Gen.Final(Digest);
+
+	// Encode it into a Base64 string and set it as the signature header.
+	const auto Signature = FBase64::Encode(Digest, 16);
+	HttpRequest->SetHeader(HEADER_SIGNATURE, Signature);
+
+	UE_LOG(LogBeamBackend, Verbose, TEXT(
+		       "Sending Signed Request via Unreal HttpRequest's ProcessRequest."
+		       " REQUEST_ID=%llu, SCOPE=%s, PID=%s, URL=%s, BODY=%s, REALM_SECRET=%s, SIG_PARTS=%s, SIGNATURE=%s"
+	       ), ActiveRequestId, *HttpRequest->GetHeader(HEADER_REQUEST_SCOPE), *Pid, *Url, *Body, *Secret, *SigPartsUTF16, *Signature)
+
+	if (HttpRequest->ProcessRequest())
+	{
+		auto Context = InFlightRequestContexts.FindRef(ActiveRequestId);
+		Context.BeamStatus = AS_InFlight;
+		InFlightRequestContexts[ActiveRequestId] = Context;
+	}
+}
+
+void UBeamBackend::OverrideRequestAuthorization(TScriptInterface<IBeamBaseRequestInterface> Interface, FString AccessToken)
+{
+	const auto AuthTokenHeader = FString::Format(*HEADER_VALUE_AUTHORIZATION, {AccessToken});
+	Interface->CustomHeaders.Add(HEADER_AUTHORIZATION, AuthTokenHeader);
+}
+
+void UBeamBackend::OverrideRequestGamerTag(TScriptInterface<IBeamBaseRequestInterface> Interface, FBeamGamerTag GamerTag)
+{
+	Interface->CustomHeaders.Add(HEADER_GAMERTAG, GamerTag.AsString);
+}
+
+/*
+	 
+  _____      _                 _____             __ _       
+ |  __ \    | |               / ____|           / _(_)      
+ | |__) |___| |_ _ __ _   _  | |     ___  _ __ | |_ _  __ _ 
+ |  _  // _ \ __| '__| | | | | |    / _ \| '_ \|  _| |/ _` |
+ | | \ \  __/ |_| |  | |_| | | |___| (_) | | | | | | | (_| |
+ |_|  \_\___|\__|_|   \__, |  \_____\___/|_| |_|_| |_|\__, |
+					   __/ |                           __/ |
+					  |___/                           |___/ 
+
+*/
 
 bool UBeamBackend::IsRetryingTimeout(FBeamRequestContext Ctx)
 {

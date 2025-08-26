@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/RoleChangeRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString URoleChangeRequestBodyLibrary::RoleChangeRequestBodyToJsonString(const URoleChangeRequestBody* Serializable, const bool Pretty)
@@ -34,9 +35,12 @@ URoleChangeRequestBody* URoleChangeRequestBodyLibrary::Make(int64 GamerTag, FStr
 
 void URoleChangeRequestBodyLibrary::Break(const URoleChangeRequestBody* Serializable, int64& GamerTag, FString& Role, FOptionalInt64& SubGroup)
 {
-	GamerTag = Serializable->GamerTag;
-	Role = Serializable->Role;
-	SubGroup = Serializable->SubGroup;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		GamerTag = Serializable->GamerTag;
+		Role = Serializable->Role;
+		SubGroup = Serializable->SubGroup;
+	}
 		
 }
 

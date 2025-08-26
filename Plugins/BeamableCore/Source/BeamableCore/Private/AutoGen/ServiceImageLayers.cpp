@@ -20,7 +20,7 @@ void UServiceImageLayers::BeamSerializeProperties(TUnrealPrettyJsonSerializer& S
 void UServiceImageLayers::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	UBeamJsonUtils::DeserializeUObject<UBeamoBasicReference*>("service", Bag, Service, OuterOwner);
-	UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("layers")), Layers, OuterOwner);
+	UBeamJsonUtils::DeserializeArray<FString>(TEXT("layers"), Bag, Layers, OuterOwner);
 }
 
 

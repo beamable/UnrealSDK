@@ -19,8 +19,8 @@ void UCloudsavingBasicURLResponse::BeamSerializeProperties(TUnrealPrettyJsonSeri
 
 void UCloudsavingBasicURLResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("url")), Url);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("objectKey")), ObjectKey);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("url"), Bag, Url);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("objectKey"), Bag, ObjectKey);
 }
 
 

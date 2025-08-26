@@ -23,10 +23,10 @@ void ULocalizedPrice::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Seria
 
 void ULocalizedPrice::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("to")), To);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("price")), Price);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("priceLocalized")), PriceLocalized);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("priceLocalizedString")), PriceLocalizedString);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("to"), Bag, To);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("price"), Bag, Price);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("priceLocalized"), Bag, PriceLocalized);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("priceLocalizedString"), Bag, PriceLocalizedString);
 }
 
 

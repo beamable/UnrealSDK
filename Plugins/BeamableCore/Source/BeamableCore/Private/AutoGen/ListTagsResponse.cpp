@@ -22,7 +22,7 @@ void UListTagsResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Ser
 
 void UListTagsResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("tags")), Tags, OuterOwner);
+	UBeamJsonUtils::DeserializeArray<FString>(TEXT("tags"), Bag, Tags, OuterOwner);
 }
 
 

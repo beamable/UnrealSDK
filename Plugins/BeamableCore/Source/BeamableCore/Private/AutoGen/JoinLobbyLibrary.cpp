@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/JoinLobbyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UJoinLobbyLibrary::JoinLobbyToJsonString(const UJoinLobby* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ UJoinLobby* UJoinLobbyLibrary::Make(FOptionalString Passcode, FOptionalArrayOfBe
 
 void UJoinLobbyLibrary::Break(const UJoinLobby* Serializable, FOptionalString& Passcode, FOptionalArrayOfBeamTag& Tags)
 {
-	Passcode = Serializable->Passcode;
-	Tags = Serializable->Tags;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Passcode = Serializable->Passcode;
+		Tags = Serializable->Tags;
+	}
 		
 }
 

@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/GetManifestHistoryRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UGetManifestHistoryRequestBodyLibrary::GetManifestHistoryRequestBodyToJsonString(const UGetManifestHistoryRequestBody* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ UGetManifestHistoryRequestBody* UGetManifestHistoryRequestBodyLibrary::Make(FOpt
 
 void UGetManifestHistoryRequestBodyLibrary::Break(const UGetManifestHistoryRequestBody* Serializable, FOptionalBeamContentManifestId& Id, FOptionalInt32& Limit)
 {
-	Id = Serializable->Id;
-	Limit = Serializable->Limit;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Id = Serializable->Id;
+		Limit = Serializable->Limit;
+	}
 		
 }
 

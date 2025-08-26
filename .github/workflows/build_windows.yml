@@ -4,9 +4,9 @@ on:
   workflow_dispatch:
     inputs:
       beamProj:
-        description: "The BEAMPROJ we are building. Ie: BEAMPROJ_Sandbox or BEAMPROJ_HathoraDemo."
+        description: "The BEAMPROJ we are building. Ie: BEAMPROJ_Beamball or BEAMPROJ_HathoraDemo."
         required: true
-        default: "BEAMPROJ_Sandbox"
+        default: "BEAMPROJ_Beamball"
         type: string
       buildType:
         type: choice
@@ -32,9 +32,9 @@ on:
   workflow_call:
     inputs:
       beamProj:
-        description: "The BEAMPROJ we are building. Ie: BEAMPROJ_Sandbox or BEAMPROJ_HathoraDemo."
+        description: "The BEAMPROJ we are building. Ie: BEAMPROJ_Beamball or BEAMPROJ_HathoraDemo."
         required: true
-        default: "BEAMPROJ_Sandbox"
+        default: "BEAMPROJ_Beamball"
         type: string
       buildType:
         type: string

@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/TransferRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UTransferRequestBodyLibrary::TransferRequestBodyToJsonString(const UTransferRequestBody* Serializable, const bool Pretty)
@@ -34,9 +35,12 @@ UTransferRequestBody* UTransferRequestBodyLibrary::Make(FBeamGamerTag RecipientP
 
 void UTransferRequestBodyLibrary::Break(const UTransferRequestBody* Serializable, FBeamGamerTag& RecipientPlayer, FOptionalString& Transaction, FOptionalMapOfInt64& Currencies)
 {
-	RecipientPlayer = Serializable->RecipientPlayer;
-	Transaction = Serializable->Transaction;
-	Currencies = Serializable->Currencies;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		RecipientPlayer = Serializable->RecipientPlayer;
+		Transaction = Serializable->Transaction;
+		Currencies = Serializable->Currencies;
+	}
 		
 }
 

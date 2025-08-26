@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "AutoGen/InventoryView.h"
+#include "Content/BeamContentTypes/BeamCurrencyContent.h"
+#include "Content/BeamContentTypes/BeamItemContent.h"
 #include "Runtime/BeamRuntimeSubsystem.h"
 #include "Subsystems/Content/BeamContentSubsystem.h"
 #include "BeamInventorySubsystem.generated.h"
@@ -144,7 +146,56 @@ struct BEAMABLECORERUNTIME_API FBeamInventoryUpdateCommand
 	void GetAllCreatedItems(FOptionalArrayOfItemCreateRequestBody& NewItems, UObject* Owner = GetTransientPackage()) const;
 };
 
+template <typename TContent, typename TState>
+struct FFilterInventoryCache
+{
+	static_assert(std::is_base_of_v<UBeamContentObject, TContent>, "T must inherit from UBeamContentObject");
+
+	TArray<TContent*> Contents;
+
+	TArray<TState> States;
+
+	FFilterInventoryCache() {  }
+
+	FFilterInventoryCache(TArray<TContent*> Contents, TArray<TState> States)
+		: Contents(Contents),
+		  States(States)
+	{
+	}
+};
+
+USTRUCT()
+struct FFilterInventoryCacheHandler
+{
+	UClass* Class;
+	FBeamGamerTag GamerTag;
+
+	GENERATED_BODY()
+
+	friend bool operator==(const FFilterInventoryCacheHandler& Lhs, const FFilterInventoryCacheHandler& RHS)
+	{
+		return Lhs.Class == RHS.Class && Lhs.GamerTag == RHS.GamerTag;
+	}
+
+	friend bool operator!=(const FFilterInventoryCacheHandler& Lhs, const FFilterInventoryCacheHandler& RHS)
+	{
+		return !(Lhs == RHS);
+	}
+};
+
+FORCEINLINE uint32 GetTypeHash(const FFilterInventoryCacheHandler& Context) { return HashCombine(GetTypeHash(Context.Class), GetTypeHash(Context.GamerTag)); }
+
+
+UENUM(BlueprintType)
+enum EBeamFilterType
+{
+	BEAM_INCLUDE_SUBTYPES,
+	BEAM_EXACTLY_TYPE,
+};
+
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnInventoryRefreshed, FBeamGamerTag, GamerTag, FUserSlot, UserSlot);
+
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnInventoryRefreshedCode, FBeamGamerTag, FUserSlot);
 
 /**
@@ -168,6 +219,10 @@ class BEAMABLECORERUNTIME_API UBeamInventorySubsystem : public UBeamRuntimeSubsy
 	UPROPERTY()
 	UBeamContentSubsystem* ContentSubsystem;
 
+	TMap<FFilterInventoryCacheHandler, FFilterInventoryCache<UBeamItemContent, FBeamItemState>> FilterItemCache;
+
+	TMap<FFilterInventoryCacheHandler, FFilterInventoryCache<UBeamCurrencyContent, FBeamPlayerCurrency>> FilterCurrencyCache;
+
 
 	virtual void InitializeWhenUnrealReady_Implementation(FBeamOperationHandle& ResultOp) override;
 
@@ -178,7 +233,7 @@ class BEAMABLECORERUNTIME_API UBeamInventorySubsystem : public UBeamRuntimeSubsy
 public:
 	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, meta=(DefaultToSelf="CallingContext"))
 	static UBeamInventorySubsystem* GetSelf(const UObject* CallingContext) { return CallingContext->GetWorld()->GetGameInstance()->GetSubsystem<UBeamInventorySubsystem>(); }
-	
+
 	/**
 	 * This gets called in three cases:
 	 *  - Whenever a FetchAllInventoryOperation for a given UserSlot is about to be completed.
@@ -194,7 +249,7 @@ public:
 	 * @copybrief OnInventoryRefreshed
 	 */
 	FOnInventoryRefreshedCode OnInventoryRefreshedCode;
-	
+
 	/**
 	 * @brief Gets the list of all inventory items and currencies from the backend and updates the local inventory state.  
 	 */
@@ -211,7 +266,7 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Inventory", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
 	FBeamOperationHandle FetchPlayerInventoryOperation(FUserSlot UserSlot, FBeamGamerTag GamerTag, FBeamOperationEventHandler OnOperationEvent);
-	
+
 	/**
 	 * @copydoc FetchPlayerInventoryOperation 
 	 */
@@ -245,11 +300,11 @@ public:
 	 * @brief Given a currency FBeamContentId, gets the amount the player has. Returns false if no player is signed into th given slot.
 	 */
 	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
-	bool TryGetCurrencyAmount(FUserSlot Player, FBeamContentId CurrencyId, int64& Amount);
+	bool TryGetCurrencyAmount(FUserSlot Player, UPARAM(meta=(BeamFilter="currency"))FBeamContentId CurrencyId, int64& Amount);
 
 	/**
-	 * @brief Gets the list of all currencies the given player has. Returns false if no player is signed into th given slot.
-	 */
+ * @brief Gets the list of all currencies the given player has. Returns false if no player is signed into th given slot.
+ */
 	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
 	bool TryGetAllCurrencies(FUserSlot Player, TArray<FBeamPlayerCurrency>& Currencies);
 
@@ -258,6 +313,37 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue", AutoCreateRefTerm="ItemStates"))
 	bool TryGetAllItems(FUserSlot Player, TArray<FBeamItemState>& ItemStates);
+
+	/**
+	 * @brief Gets the list of all currencies the given player has. Returns false if no player is signed into th given slot.
+	 */
+	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
+	bool TryGetAllCurrenciesFilter(FUserSlot Player, EBeamFilterType FilterType, UPARAM(meta=(BeamCastType))TSubclassOf<UBeamCurrencyContent> Filter, TArray<FBeamPlayerCurrency>& CurrencyStates,
+	                               UPARAM(meta=(BeamCastTarget))TArray<UBeamCurrencyContent*>& Contents);
+
+	/**
+	 * @brief Gets all items for the given player. 
+	 */
+	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue", AutoCreateRefTerm="ItemStates"))
+	bool TryGetAllItemsFilter(FUserSlot Player, EBeamFilterType FilterType, UPARAM(meta=(BeamCastType))TSubclassOf<UBeamItemContent> Filter, TArray<FBeamItemState>& ItemStates,
+	                          UPARAM(meta=(BeamCastTarget))TArray<UBeamItemContent*>& Contents);
+
+	/**
+	 * @brief Gets the list of all currencies the given player has. Returns false if no player is signed into th given slot.
+	 * @param RegexContentName: The regex param will be used to filter in the id using a regex expression after the filter been applied.
+	 */
+	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
+	bool TryGetAllCurrenciesRegex(FUserSlot Player, EBeamFilterType FilterType, UPARAM(meta=(BeamCastType))TSubclassOf<UBeamCurrencyContent> Filter, TArray<FBeamPlayerCurrency>& CurrencyStates,
+	                              UPARAM(meta=(BeamCastTarget))TArray<UBeamCurrencyContent*>& Contents, FString RegexContentName = "*");
+
+	/**
+	 * @brief Gets all items for the given player.
+	 * @param RegexContentName: The regex param will be used to filter in the id using a regex expression after the filter been applied.
+	 */
+	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue", AutoCreateRefTerm="ItemStates"))
+	bool TryGetAllItemsRegex(FUserSlot Player, EBeamFilterType FilterType, UPARAM(meta=(BeamCastType))TSubclassOf<UBeamItemContent> Filter, TArray<FBeamItemState>& ItemStates,
+	                         UPARAM(meta=(BeamCastTarget))TArray<UBeamItemContent*>& Contents, FString RegexContentName = "*");
+
 
 	/**
 	 * @brief Given a currency FBeamContentId, gets the amount the player has. Returns false if no player is signed into th given slot.
@@ -276,7 +362,7 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue", AutoCreateRefTerm="ItemStates"))
 	bool TryGetAllItemsByGamerTag(const FBeamGamerTag& GamerTag, TArray<FBeamItemState>& ItemStates);
-	
+
 	/**
 	 * @brief Begins constructing an FBeamInventoryUpdateCommand for a particular player. Can force reset any update already in construction for the given player. 
 	 */
@@ -288,27 +374,27 @@ public:
 	 * Gain is a positive number here (how much you want to add?).
 	 */
 	UFUNCTION(BlueprintCallable)
-	void PrepareAddCurrency(FUserSlot Player, FBeamContentId CurrencyId, int64 Gain);
+	void PrepareAddCurrency(FUserSlot Player, UPARAM(meta=(BeamFilter="currency"))FBeamContentId CurrencyId, int64 Gain);
 
 	/**
 	 * @brief Adds an "Remove Currency" change to the FBeamInventoryUpdateCommand of the given player. Must be called between BeginInventoryUpdate and CommitInventoryUpdate.
 	 * Loss is a positive number here (how much you want to remove?).
 	 */
 	UFUNCTION(BlueprintCallable)
-	void PrepareRemoveCurrency(FUserSlot Player, FBeamContentId CurrencyId, int64 Loss);
+	void PrepareRemoveCurrency(FUserSlot Player, UPARAM(meta=(BeamFilter="currency"))FBeamContentId CurrencyId, int64 Loss);
 
 	/**
 	 * @brief Adds an "Modify Currency" change to the FBeamInventoryUpdateCommand of the given player. Must be called between BeginInventoryUpdate and CommitInventoryUpdate.
 	 * Amount is a positive OR negative number here (what's the delta you want to apply?).
 	 */
 	UFUNCTION(BlueprintCallable)
-	void PrepareModifyCurrency(FUserSlot Player, FBeamContentId CurrencyId, int64 Amount);
+	void PrepareModifyCurrency(FUserSlot Player, UPARAM(meta=(BeamFilter="currency"))FBeamContentId CurrencyId, int64 Amount);
 
 	/**
 	 * @brief Adds an "Create Item" change to the FBeamInventoryUpdateCommand of the given player. Must be called between BeginInventoryUpdate and CommitInventoryUpdate.	 
 	 */
 	UFUNCTION(BlueprintCallable, meta=(AutoCreateRefTerm="Properties"))
-	void PrepareCreateItem(FUserSlot Player, FBeamContentId ItemId, TMap<FString, FString> Properties);
+	void PrepareCreateItem(FUserSlot Player, UPARAM(meta=(BeamFilter="items"))FBeamContentId ItemId, TMap<FString, FString> Properties);
 
 
 	/**
@@ -321,7 +407,7 @@ public:
 	 * @brief Adds an "Remove Item" change to the FBeamInventoryUpdateCommand of the given player. Must be called between BeginInventoryUpdate and CommitInventoryUpdate.
 	 */
 	UFUNCTION(BlueprintCallable)
-	void PrepareRemoveItemWithId(FUserSlot Player, FBeamContentId ContentId, int64 InstanceId);
+	void PrepareRemoveItemWithId(FUserSlot Player, UPARAM(meta=(BeamFilter="items"))FBeamContentId ContentId, int64 InstanceId);
 
 	/**
 	 * @brief Adds an "Modify Item" change to the FBeamInventoryUpdateCommand of the given player. Must be called between BeginInventoryUpdate and CommitInventoryUpdate.
@@ -334,7 +420,7 @@ public:
 	 * @brief Adds an "Modify Item" change to the FBeamInventoryUpdateCommand of the given player. Must be called between BeginInventoryUpdate and CommitInventoryUpdate.	 
 	 */
 	UFUNCTION(BlueprintCallable)
-	void PrepareModifyItemById(FUserSlot Player, FBeamContentId ContentId, int64 InstanceId, TMap<FString, FString> Properties);
+	void PrepareModifyItemById(FUserSlot Player, UPARAM(meta=(BeamFilter="items"))FBeamContentId ContentId, int64 InstanceId, TMap<FString, FString> Properties);
 
 private:
 	UFUNCTION()
@@ -344,11 +430,14 @@ private:
 	bool FetchInventoryForPlayer(FUserSlot RequestingSlot, FBeamGamerTag GamerTag, FBeamOperationHandle Op);
 
 	UFUNCTION()
-	bool CommitInventoryUpdate(FUserSlot Player, FBeamOperationHandle Op);	
+	bool CommitInventoryUpdate(FUserSlot Player, FBeamOperationHandle Op);
 
 	UFUNCTION()
 	void MergeInventoryViewIntoState(const UInventoryView* InventoryView, FBeamInventoryState& Inventory, TArray<FString> Scopes);
-	
+
 	UFUNCTION()
 	void InvokeOnInventoryRefreshed(const FBeamGamerTag& GamerTag, const FUserSlot OwnerPlayer);
+
+	UFUNCTION()
+	void OnManifestRefreshed(TArray<FBeamContentManifestId> ManifestIds);
 };

@@ -24,8 +24,8 @@ void ULocalizedPriceMap::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Se
 
 void ULocalizedPriceMap::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("currency")), Currency);
-	UBeamJsonUtils::DeserializeArray<ULocalizedPrice*>(Bag->GetArrayField(TEXT("prices")), Prices, OuterOwner);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("currency"), Bag, Currency);
+	UBeamJsonUtils::DeserializeArray<ULocalizedPrice*>(TEXT("prices"), Bag, Prices, OuterOwner);
 }
 
 

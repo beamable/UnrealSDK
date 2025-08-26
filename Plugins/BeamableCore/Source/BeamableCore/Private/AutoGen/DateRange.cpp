@@ -19,8 +19,8 @@ void UDateRange::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer
 
 void UDateRange::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("from")), From);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("to")), To);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("from"), Bag, From);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("to"), Bag, To);
 }
 
 

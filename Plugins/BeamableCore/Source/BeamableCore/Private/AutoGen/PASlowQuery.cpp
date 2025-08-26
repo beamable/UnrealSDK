@@ -19,8 +19,8 @@ void UPASlowQuery::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializ
 
 void UPASlowQuery::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("line")), Line);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("namespace")), Namespace);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("line"), Bag, Line);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("namespace"), Bag, Namespace);
 }
 
 

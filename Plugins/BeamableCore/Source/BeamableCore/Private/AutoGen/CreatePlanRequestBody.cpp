@@ -35,13 +35,13 @@ void UCreatePlanRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer
 
 void UCreatePlanRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("mongoSSL")), bMongoSSL);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("sharded")), bSharded);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("name")), Name);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("memcachedHosts")), MemcachedHosts);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("platformJBDC")), PlatformJBDC);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("mongoHosts")), MongoHosts);
-	UBeamJsonUtils::DeserializeArray<URedisShardRequestBody*>(Bag->GetArrayField(TEXT("redisShards")), RedisShards, OuterOwner);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("mongoSSL"), Bag, bMongoSSL);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("sharded"), Bag, bSharded);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("name"), Bag, Name);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("memcachedHosts"), Bag, MemcachedHosts);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("platformJBDC"), Bag, PlatformJBDC);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("mongoHosts"), Bag, MongoHosts);
+	UBeamJsonUtils::DeserializeArray<URedisShardRequestBody*>(TEXT("redisShards"), Bag, RedisShards, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("mongoSrvAddress", Bag, MongoSrvAddress, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<TArray<FString>, FString>("messageBusAnalytics", Bag, MessageBusAnalytics, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<TArray<FString>, FString>("messageBusCommon", Bag, MessageBusCommon, OuterOwner);

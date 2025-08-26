@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/ExternalIdentityAvailableApiRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UExternalIdentityAvailableApiRequestBodyLibrary::ExternalIdentityAvailableApiRequestBodyToJsonString(const UExternalIdentityAvailableApiRequestBody* Serializable, const bool Pretty)
@@ -34,9 +35,12 @@ UExternalIdentityAvailableApiRequestBody* UExternalIdentityAvailableApiRequestBo
 
 void UExternalIdentityAvailableApiRequestBodyLibrary::Break(const UExternalIdentityAvailableApiRequestBody* Serializable, FString& ProviderService, FString& UserId, FOptionalString& ProviderNamespace)
 {
-	ProviderService = Serializable->ProviderService;
-	UserId = Serializable->UserId;
-	ProviderNamespace = Serializable->ProviderNamespace;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		ProviderService = Serializable->ProviderService;
+		UserId = Serializable->UserId;
+		ProviderNamespace = Serializable->ProviderNamespace;
+	}
 		
 }
 

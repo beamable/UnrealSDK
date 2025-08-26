@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/ResultResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UResultResponseLibrary::ResultResponseToJsonString(const UResultResponse* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UResultResponse* UResultResponseLibrary::Make(bool bResult, UObject* Outer)
 
 void UResultResponseLibrary::Break(const UResultResponse* Serializable, bool& bResult)
 {
-	bResult = Serializable->bResult;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		bResult = Serializable->bResult;
+	}
 		
 }
 

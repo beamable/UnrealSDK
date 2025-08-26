@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/RouteParametersLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString URouteParametersLibrary::RouteParametersToJsonString(const URouteParameters* Serializable, const bool Pretty)
@@ -34,9 +35,12 @@ URouteParameters* URouteParametersLibrary::Make(TArray<URouteParameter*> Paramet
 
 void URouteParametersLibrary::Break(const URouteParameters* Serializable, TArray<URouteParameter*>& Parameters, FOptionalString& Payload, FOptionalString& ObjectId)
 {
-	Parameters = Serializable->Parameters;
-	Payload = Serializable->Payload;
-	ObjectId = Serializable->ObjectId;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Parameters = Serializable->Parameters;
+		Payload = Serializable->Payload;
+		ObjectId = Serializable->ObjectId;
+	}
 		
 }
 

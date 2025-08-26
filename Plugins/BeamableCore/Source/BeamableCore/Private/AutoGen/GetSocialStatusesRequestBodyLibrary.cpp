@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/GetSocialStatusesRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UGetSocialStatusesRequestBodyLibrary::GetSocialStatusesRequestBodyToJsonString(const UGetSocialStatusesRequestBody* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UGetSocialStatusesRequestBody* UGetSocialStatusesRequestBodyLibrary::Make(TArray
 
 void UGetSocialStatusesRequestBodyLibrary::Break(const UGetSocialStatusesRequestBody* Serializable, TArray<FString>& PlayerIds)
 {
-	PlayerIds = Serializable->PlayerIds;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		PlayerIds = Serializable->PlayerIds;
+	}
 		
 }
 

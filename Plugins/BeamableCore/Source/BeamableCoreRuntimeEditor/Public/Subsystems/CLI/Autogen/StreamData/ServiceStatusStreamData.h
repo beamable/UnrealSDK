@@ -7,6 +7,7 @@
 #include "Subsystems/CLI/Autogen/StreamData/FederationInstanceStreamData.h"
 #include "Subsystems/CLI/Autogen/StreamData/HostServiceDescriptorStreamData.h"
 #include "Subsystems/CLI/Autogen/StreamData/RemoteServiceDescriptorStreamData.h"
+#include "Subsystems/CLI/Autogen/StreamData/RemoteStorageDescriptorStreamData.h"
 #include "Serialization/BeamJsonUtils.h"
 #include "ServiceStatusStreamData.generated.h"
 
@@ -45,10 +46,10 @@ public:
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("service")), Service);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("serviceType")), ServiceType);
-		UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("groups")), Groups, OuterOwner);
-		UBeamJsonUtils::DeserializeArray<UServicesForRouteCollectionStreamData*>(Bag->GetArrayField(TEXT("availableRoutes")), AvailableRoutes, OuterOwner);	
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("service"), Bag, Service);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("serviceType"), Bag, ServiceType);
+		UBeamJsonUtils::DeserializeArray<FString>(TEXT("groups"), Bag, Groups, OuterOwner);
+		UBeamJsonUtils::DeserializeArray<UServicesForRouteCollectionStreamData*>(TEXT("availableRoutes"), Bag, AvailableRoutes, OuterOwner);	
 	}
 };
 

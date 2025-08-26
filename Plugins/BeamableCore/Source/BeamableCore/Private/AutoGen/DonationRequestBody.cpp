@@ -25,11 +25,11 @@ void UDonationRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer& 
 
 void UDonationRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("satisfied")), bSatisfied);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("timeRequested")), TimeRequested);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("playerId")), PlayerId);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("satisfied"), Bag, bSatisfied);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("timeRequested"), Bag, TimeRequested);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("playerId"), Bag, PlayerId);
 	UBeamJsonUtils::DeserializeUObject<UCurrency*>("currency", Bag, Currency, OuterOwner);
-	UBeamJsonUtils::DeserializeArray<UDonationEntry*>(Bag->GetArrayField(TEXT("progress")), Progress, OuterOwner);
+	UBeamJsonUtils::DeserializeArray<UDonationEntry*>(TEXT("progress"), Bag, Progress, OuterOwner);
 }
 
 

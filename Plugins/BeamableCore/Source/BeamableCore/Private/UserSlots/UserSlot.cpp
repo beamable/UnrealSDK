@@ -9,7 +9,7 @@ FUserSlot::FUserSlot()
 FUserSlot::FUserSlot(const FString& x)
 {
 	// We allow setting a user slot as empty or as any Test slot. Other than those, it must be registered in the core settings. 
-	if (!x.IsEmpty() && !x.Contains("Test"))
+	if (!x.IsEmpty() && !x.Contains("Test") && !x.Contains("BeamServerUserMapping"))
 	{
 		if (x.StartsWith("PIE_"))
 		{
@@ -34,7 +34,7 @@ FUserSlot::FUserSlot(const FString& x)
 FUserSlot& FUserSlot::operator=(const FString& x)
 {
 	// We allow setting a user slot as empty or as any Test slot. Other than those, it must be registered in the core settings.
-	if (!x.IsEmpty() && !x.Contains("Test"))
+	if (!x.IsEmpty() && !x.Contains("Test") && !x.Contains("BeamServerUserMapping"))
 	{
 		if (x.StartsWith("PIE_"))
 		{
@@ -71,3 +71,12 @@ FUserSlot::operator FString()
 {
 	return Name;
 }
+
+bool FUserSlot::IsTestSlot() const
+{ return Name.Contains("Test"); }
+
+bool FUserSlot::IsServerMappingSlot() const
+{ return Name.Contains("BeamServerUserMapping"); }
+
+FUserSlot FUserSlot::MakeServerMappingSlot(int64 MappingIdx)
+{ return FUserSlot{FString::Printf(TEXT("BeamServerUserMapping₢%lld"), MappingIdx)}; }

@@ -17,7 +17,7 @@ void UGetSocialStatusesRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSer
 
 void UGetSocialStatusesRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("playerIds")), PlayerIds, OuterOwner);
+	UBeamJsonUtils::DeserializeArray<FString>(TEXT("playerIds"), Bag, PlayerIds, OuterOwner);
 }
 
 

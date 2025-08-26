@@ -17,7 +17,7 @@ void USteamAuthRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer&
 
 void USteamAuthRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("ticket")), Ticket);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("ticket"), Bag, Ticket);
 }
 
 

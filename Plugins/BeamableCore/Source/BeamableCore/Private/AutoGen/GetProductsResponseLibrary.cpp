@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/GetProductsResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UGetProductsResponseLibrary::GetProductsResponseToJsonString(const UGetProductsResponse* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UGetProductsResponse* UGetProductsResponseLibrary::Make(TArray<UProductView*> Pr
 
 void UGetProductsResponseLibrary::Break(const UGetProductsResponse* Serializable, TArray<UProductView*>& Products)
 {
-	Products = Serializable->Products;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Products = Serializable->Products;
+	}
 		
 }
 

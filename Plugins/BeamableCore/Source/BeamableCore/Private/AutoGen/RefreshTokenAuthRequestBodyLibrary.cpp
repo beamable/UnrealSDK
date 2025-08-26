@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/RefreshTokenAuthRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString URefreshTokenAuthRequestBodyLibrary::RefreshTokenAuthRequestBodyToJsonString(const URefreshTokenAuthRequestBody* Serializable, const bool Pretty)
@@ -35,10 +36,13 @@ URefreshTokenAuthRequestBody* URefreshTokenAuthRequestBodyLibrary::Make(FOptiona
 
 void URefreshTokenAuthRequestBodyLibrary::Break(const URefreshTokenAuthRequestBody* Serializable, FOptionalString& RefreshToken, FOptionalBeamCid& CustomerId, FOptionalBeamPid& RealmId, FOptionalContextInfo& Context)
 {
-	RefreshToken = Serializable->RefreshToken;
-	CustomerId = Serializable->CustomerId;
-	RealmId = Serializable->RealmId;
-	Context = Serializable->Context;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		RefreshToken = Serializable->RefreshToken;
+		CustomerId = Serializable->CustomerId;
+		RealmId = Serializable->RealmId;
+		Context = Serializable->Context;
+	}
 		
 }
 

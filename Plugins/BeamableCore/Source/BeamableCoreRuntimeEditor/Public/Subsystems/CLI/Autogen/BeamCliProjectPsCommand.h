@@ -9,6 +9,7 @@
 #include "Subsystems/CLI/Autogen/StreamData/FederationInstanceStreamData.h"
 #include "Subsystems/CLI/Autogen/StreamData/HostServiceDescriptorStreamData.h"
 #include "Subsystems/CLI/Autogen/StreamData/RemoteServiceDescriptorStreamData.h"
+#include "Subsystems/CLI/Autogen/StreamData/RemoteStorageDescriptorStreamData.h"
 #include "BeamCliProjectPsCommand.generated.h"
 
 
@@ -42,9 +43,9 @@ public:
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("cid")), Cid);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("pid")), Pid);
-		UBeamJsonUtils::DeserializeArray<UServiceStatusStreamData*>(Bag->GetArrayField(TEXT("services")), Services, OuterOwner);	
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("cid"), Bag, Cid);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("pid"), Bag, Pid);
+		UBeamJsonUtils::DeserializeArray<UServiceStatusStreamData*>(TEXT("services"), Bag, Services, OuterOwner);	
 	}
 };
 
@@ -58,7 +59,8 @@ Usage:
 
 Options:
   -w, --watch                                        When true, the command will run forever and watch the state of the program
-  --ids <ids>                                        The list of services to include, defaults to all local services (separated by whitespace)
+  --ids <ids>                                        The list of services to include, defaults to all local services (separated by whitespace). To use NO services, use the --exact-ids flag
+  --exact-ids                                        By default, a blank --ids option maps to ALL available ids. When the --exact-ids flag is given, a blank --ids option maps to NO ids
   --without-group, --without-groups <without-group>  A set of BeamServiceGroup tags that will exclude the associated services. Exclusion takes precedence over inclusion
   --with-group, --with-groups <with-group>           A set of BeamServiceGroup tags that will include the associated services
   --require-process-id <require-process-id>          Listens to the given process id. Terminates this long-running command when the it no longer is running

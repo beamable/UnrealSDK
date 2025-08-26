@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/JoinRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UJoinRequestBodyLibrary::JoinRequestBodyToJsonString(const UJoinRequestBody* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ UJoinRequestBody* UJoinRequestBodyLibrary::Make(FString TournamentId, FOptionalS
 
 void UJoinRequestBodyLibrary::Break(const UJoinRequestBody* Serializable, FString& TournamentId, FOptionalString& ContentId)
 {
-	TournamentId = Serializable->TournamentId;
-	ContentId = Serializable->ContentId;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		TournamentId = Serializable->TournamentId;
+		ContentId = Serializable->ContentId;
+	}
 		
 }
 

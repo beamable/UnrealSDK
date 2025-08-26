@@ -28,10 +28,10 @@ void UGetSignedUrlResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer&
 
 void UGetSignedUrlResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("url")), Url);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("body")), Body);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("method")), Method);
-	UBeamJsonUtils::DeserializeArray<UGetLogsUrlHeader*>(Bag->GetArrayField(TEXT("headers")), Headers, OuterOwner);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("url"), Bag, Url);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("body"), Bag, Body);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("method"), Bag, Method);
+	UBeamJsonUtils::DeserializeArray<UGetLogsUrlHeader*>(TEXT("headers"), Bag, Headers, OuterOwner);
 }
 
 

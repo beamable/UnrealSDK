@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/LeavePartyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString ULeavePartyLibrary::LeavePartyToJsonString(const ULeaveParty* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ ULeaveParty* ULeavePartyLibrary::Make(FOptionalBeamGamerTag PlayerId, UObject* O
 
 void ULeavePartyLibrary::Break(const ULeaveParty* Serializable, FOptionalBeamGamerTag& PlayerId)
 {
-	PlayerId = Serializable->PlayerId;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		PlayerId = Serializable->PlayerId;
+	}
 		
 }
 

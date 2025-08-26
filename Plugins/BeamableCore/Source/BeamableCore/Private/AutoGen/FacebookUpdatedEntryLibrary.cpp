@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/FacebookUpdatedEntryLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UFacebookUpdatedEntryLibrary::FacebookUpdatedEntryToJsonString(const UFacebookUpdatedEntry* Serializable, const bool Pretty)
@@ -34,9 +35,12 @@ UFacebookUpdatedEntry* UFacebookUpdatedEntryLibrary::Make(FString Id, int64 Time
 
 void UFacebookUpdatedEntryLibrary::Break(const UFacebookUpdatedEntry* Serializable, FString& Id, int64& Time, TArray<FString>& ChangedFields)
 {
-	Id = Serializable->Id;
-	Time = Serializable->Time;
-	ChangedFields = Serializable->ChangedFields;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Id = Serializable->Id;
+		Time = Serializable->Time;
+		ChangedFields = Serializable->ChangedFields;
+	}
 		
 }
 

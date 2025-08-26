@@ -2,6 +2,7 @@
 #include "BeamableUnrealMicroserviceClients/Public/AutoGen/DiscordWhitelistedInfoLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UDiscordWhitelistedInfoLibrary::DiscordWhitelistedInfoToJsonString(const UDiscordWhitelistedInfo* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UDiscordWhitelistedInfo* UDiscordWhitelistedInfoLibrary::Make(bool bMatchmakingD
 
 void UDiscordWhitelistedInfoLibrary::Break(const UDiscordWhitelistedInfo* Serializable, bool& bMatchmakingDiscordWhitelisted)
 {
-	bMatchmakingDiscordWhitelisted = Serializable->bMatchmakingDiscordWhitelisted;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		bMatchmakingDiscordWhitelisted = Serializable->bMatchmakingDiscordWhitelisted;
+	}
 		
 }
 

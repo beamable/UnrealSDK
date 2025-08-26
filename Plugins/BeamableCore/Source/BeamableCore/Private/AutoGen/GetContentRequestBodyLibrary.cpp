@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/GetContentRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UGetContentRequestBodyLibrary::GetContentRequestBodyToJsonString(const UGetContentRequestBody* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ UGetContentRequestBody* UGetContentRequestBodyLibrary::Make(FBeamContentId Conte
 
 void UGetContentRequestBodyLibrary::Break(const UGetContentRequestBody* Serializable, FBeamContentId& ContentId, FString& Version)
 {
-	ContentId = Serializable->ContentId;
-	Version = Serializable->Version;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		ContentId = Serializable->ContentId;
+		Version = Serializable->Version;
+	}
 		
 }
 

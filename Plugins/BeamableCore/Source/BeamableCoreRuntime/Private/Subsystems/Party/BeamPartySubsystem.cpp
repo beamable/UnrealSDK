@@ -1006,7 +1006,7 @@ void UBeamPartySubsystem::InvitePlayerToParty(FUserSlot UserSlot, FGuid PartyId,
 				FUserSlot OtherUserSlot;
 				FString NamespacedSlotId;
 				if (Runtime->UserSlotSystem->
-				             GetUserDataWithGamerTag(PlayerGamerTag, RealmUser, OtherUserSlot, NamespacedSlotId))
+				             GetUserDataWithGamerTag(PlayerGamerTag, RealmUser, OtherUserSlot, NamespacedSlotId, this))
 				{
 					InvokePartyEventUpdate(UserSlot, PartyId, EBeamPartyEvent::BEAM_PlayerInvited);
 				}
@@ -1318,7 +1318,7 @@ void UBeamPartySubsystem::KickPlayer(FUserSlot UserSlot, FGuid PartyId, FBeamGam
 				FString NamespacedSlotId;
 
 				if (Runtime->UserSlotSystem->
-				             GetUserDataWithGamerTag(PlayerGamerTag, RealmUser, OtherUserSlot, NamespacedSlotId))
+				             GetUserDataWithGamerTag(PlayerGamerTag, RealmUser, OtherUserSlot, NamespacedSlotId, this))
 				{
 					//Local Notification
 					InvokePartyEventUpdate(OtherUserSlot, PartyId, EBeamPartyEvent::BEAM_PlayerKicked);
@@ -1470,7 +1470,7 @@ void UBeamPartySubsystem::CancelSentPartyInvite(FUserSlot UserSlot, FGuid PartyI
 				FUserSlot OtherUserSlot;
 				FString NamespacedSlotId;
 				if (Runtime->UserSlotSystem->
-				             GetUserDataWithGamerTag(PlayerGamerTag, RealmUser, OtherUserSlot, NamespacedSlotId))
+				             GetUserDataWithGamerTag(PlayerGamerTag, RealmUser, OtherUserSlot, NamespacedSlotId, this))
 				{
 					//Local Notification
 					InvokePartyEventUpdate(UserSlot, PartyId, EBeamPartyEvent::BEAM_PlayerInviteCanceled);

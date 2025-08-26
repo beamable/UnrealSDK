@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/CommerceLootRollLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UCommerceLootRollLibrary::CommerceLootRollToJsonString(const UCommerceLootRoll* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ UCommerceLootRoll* UCommerceLootRollLibrary::Make(bool bPreroll, FOptionalArrayO
 
 void UCommerceLootRollLibrary::Break(const UCommerceLootRoll* Serializable, bool& bPreroll, FOptionalArrayOfString& ExternalTables)
 {
-	bPreroll = Serializable->bPreroll;
-	ExternalTables = Serializable->ExternalTables;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		bPreroll = Serializable->bPreroll;
+		ExternalTables = Serializable->ExternalTables;
+	}
 		
 }
 

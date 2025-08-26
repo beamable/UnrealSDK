@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/PerformanceResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UPerformanceResponseLibrary::PerformanceResponseToJsonString(const UPerformanceResponse* Serializable, const bool Pretty)
@@ -35,10 +36,13 @@ UPerformanceResponse* UPerformanceResponseLibrary::Make(UDatabaseMeasurements* D
 
 void UPerformanceResponseLibrary::Break(const UPerformanceResponse* Serializable, UDatabaseMeasurements*& DatabaseMeasurements, TArray<UPANamespace*>& Namespaces, TArray<UPASuggestedIndex*>& Indexes, TArray<UPASlowQuery*>& Queries)
 {
-	DatabaseMeasurements = Serializable->DatabaseMeasurements;
-	Namespaces = Serializable->Namespaces;
-	Indexes = Serializable->Indexes;
-	Queries = Serializable->Queries;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		DatabaseMeasurements = Serializable->DatabaseMeasurements;
+		Namespaces = Serializable->Namespaces;
+		Indexes = Serializable->Indexes;
+		Queries = Serializable->Queries;
+	}
 		
 }
 

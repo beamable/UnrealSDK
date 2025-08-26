@@ -19,8 +19,8 @@ void ULocalizedValue::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Seria
 
 void ULocalizedValue::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("language")), Language);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("value")), Value);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("language"), Bag, Language);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("value"), Bag, Value);
 }
 
 

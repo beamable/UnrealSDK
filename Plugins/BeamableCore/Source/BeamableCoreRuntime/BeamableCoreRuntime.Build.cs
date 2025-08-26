@@ -19,7 +19,9 @@ public class BeamableCoreRuntime : ModuleRules
 				"Json",
 				"JsonUtilities",
 				"DeveloperSettings",
-				"HTTP"
+				"HTTP", 
+				"OnlineSubsystem",
+				"CoreOnline"
 			}
 		);
 

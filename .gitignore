@@ -78,9 +78,6 @@ PackagedProject
 ArchivedBuilds
 
 # Per-Developer ignored directories by Beamable Workflows
-Plugins/BEAMPROJ_Sandbox/*
-Microservices/services/MSPlayground/*
-Microservices/services/DBPlayground/*
 Microservices/services/**/obj/*
 Microservices/services/**/bin/*
 BeamableSource/**

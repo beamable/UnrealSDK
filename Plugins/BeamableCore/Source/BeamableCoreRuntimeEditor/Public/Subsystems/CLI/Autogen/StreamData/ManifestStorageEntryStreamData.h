@@ -40,10 +40,10 @@ public:
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("beamoId")), BeamoId);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("csprojPath")), CsprojPath);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("shouldBeEnabledOnRemote")), ShouldBeEnabledOnRemote);
-		UBeamJsonUtils::DeserializeArray<UUnityAssemblyReferenceDataStreamData*>(Bag->GetArrayField(TEXT("unityReferences")), UnityReferences, OuterOwner);	
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("beamoId"), Bag, BeamoId);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("csprojPath"), Bag, CsprojPath);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("shouldBeEnabledOnRemote"), Bag, ShouldBeEnabledOnRemote);
+		UBeamJsonUtils::DeserializeArray<UUnityAssemblyReferenceDataStreamData*>(TEXT("unityReferences"), Bag, UnityReferences, OuterOwner);	
 	}
 };
 

@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/FindAccountRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UFindAccountRequestBodyLibrary::FindAccountRequestBodyToJsonString(const UFindAccountRequestBody* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UFindAccountRequestBody* UFindAccountRequestBodyLibrary::Make(FString Query, UOb
 
 void UFindAccountRequestBodyLibrary::Break(const UFindAccountRequestBody* Serializable, FString& Query)
 {
-	Query = Serializable->Query;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Query = Serializable->Query;
+	}
 		
 }
 

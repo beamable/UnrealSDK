@@ -23,7 +23,7 @@ void UAvailabilityRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializ
 
 void UAvailabilityRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("type")), Type);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("type"), Bag, Type);
 	UBeamJsonUtils::DeserializeOptional<bool>("subGroup", Bag, bSubGroup, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("name", Bag, Name, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("tag", Bag, Tag, OuterOwner);

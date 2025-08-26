@@ -4,12 +4,13 @@
 
 void FBeamableCoreRuntimeEditorModule::StartupModule()
 {
-    
+	PIEAuthorizer = UBeamPIEModularFeature();
+	IModularFeatures::Get().RegisterModularFeature(UBeamPIEModularFeature::GetModularFeatureName(), &PIEAuthorizer);
 }
 
 void FBeamableCoreRuntimeEditorModule::ShutdownModule()
 {
-    
+	IModularFeatures::Get().UnregisterModularFeature(UBeamPIEModularFeature::GetModularFeatureName(), &PIEAuthorizer);
 }
 
 #undef LOCTEXT_NAMESPACE

@@ -19,8 +19,8 @@ void UItemGroup::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer
 
 void UItemGroup::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("id")), Id);
-	UBeamJsonUtils::DeserializeArray<UItem*>(Bag->GetArrayField(TEXT("items")), Items, OuterOwner);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("id"), Bag, Id);
+	UBeamJsonUtils::DeserializeArray<UItem*>(TEXT("items"), Bag, Items, OuterOwner);
 }
 
 

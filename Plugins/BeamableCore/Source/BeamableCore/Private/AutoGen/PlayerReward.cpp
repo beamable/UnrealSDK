@@ -29,8 +29,8 @@ void UPlayerReward::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Seriali
 
 void UPlayerReward::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeArray<UItemCreateRequestBody*>(Bag->GetArrayField(TEXT("addItemRequests")), AddItemRequests, OuterOwner);
-	UBeamJsonUtils::DeserializeMap<FString>(Bag->GetObjectField(TEXT("addCurrencyMap")), AddCurrencyMap, OuterOwner);
+	UBeamJsonUtils::DeserializeArray<UItemCreateRequestBody*>(TEXT("addItemRequests"), Bag, AddItemRequests, OuterOwner);
+	UBeamJsonUtils::DeserializeMap<FString>(TEXT("addCurrencyMap"), Bag, AddCurrencyMap, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<bool>("applyVipBonus", Bag, bApplyVipBonus, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("description", Bag, Description, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<TArray<UCurrencyChangeReward*>, UCurrencyChangeReward*>("changeCurrencies", Bag, ChangeCurrencies, OuterOwner);

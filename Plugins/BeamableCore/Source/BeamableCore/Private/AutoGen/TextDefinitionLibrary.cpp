@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/TextDefinitionLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UTextDefinitionLibrary::TextDefinitionToJsonString(const UTextDefinition* Serializable, const bool Pretty)
@@ -35,10 +36,13 @@ UTextDefinition* UTextDefinitionLibrary::Make(FBeamContentId Id, FString Checksu
 
 void UTextDefinitionLibrary::Break(const UTextDefinition* Serializable, FBeamContentId& Id, FString& Checksum, TMap<FString, FString>& Properties, FOptionalArrayOfString& Tags)
 {
-	Id = Serializable->Id;
-	Checksum = Serializable->Checksum;
-	Properties = Serializable->Properties;
-	Tags = Serializable->Tags;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Id = Serializable->Id;
+		Checksum = Serializable->Checksum;
+		Properties = Serializable->Properties;
+		Tags = Serializable->Tags;
+	}
 		
 }
 

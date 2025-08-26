@@ -53,16 +53,8 @@
       "Enabled":false
     },
     {
-      "Name":"BEAMPROJ_Sandbox",
-      "Enabled":false
-    },
-    {
       "Name":"BEAMPROJ_SteamDemo",
       "Enabled":false
-    },
-    {
-      "Name":"BEAMPROJ_HathoraDemo",
-      "Enabled":true
     },
     {
       "Name":"BEAMPROJ_LiveOpsDemo",
@@ -74,7 +66,7 @@
     },
     {
       "Name":"BEAMPROJ_Beamball",
-      "Enabled":false
+      "Enabled":true
     },
     {
       "Name":"OpenImageDenoise",

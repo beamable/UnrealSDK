@@ -108,6 +108,18 @@ TArray<FString> UK2BeamNode_Operation::GetOperationEventIdTooltips(EBeamOperatio
 
 void UK2BeamNode_Operation::AllocateDefaultPins()
 {
+	if (!bIsAlreadyAllocated)
+	{
+		if (GetOperationEventIds(OET_SUCCESS).Num() > 1 ||
+		GetOperationEventIds(OET_ERROR).Num() > 1	 ||
+		GetOperationEventIds(OET_CANCELLED).Num() > 1)
+		{
+			CurrentExpandedMode = OnSubEvents;
+		}
+		bIsAlreadyAllocated = true;
+	}
+	
+	
 	Super::AllocateDefaultPins();
 
 	AdvancedPinDisplay = ENodeAdvancedPins::Hidden;
@@ -196,15 +208,26 @@ void UK2BeamNode_Operation::ExpandNode(FKismetCompilerContext& CompilerContext, 
 	BreakAllNodeLinks();
 }
 
-UObject* UK2BeamNode_Operation::GetJumpTargetForDoubleClick() const
+void UK2BeamNode_Operation::JumpToDefinition() const
 {
 	const auto Function = GetRuntimeSubsystemClass()->FindFunctionByName(GetOperationFunctionName());
 
-	if (!Function) return nullptr;
+	if (!Function) return;
 
 	FSourceCodeNavigation::NavigateToFunction(Function);
+}
 
-	return Super::GetJumpTargetForDoubleClick();
+FString UK2BeamNode_Operation::GetPinMetaData(FName InPinName, FName InKey)
+{
+	FString MetaData = Super::GetPinMetaData(InPinName, InKey);
+
+	// If there's no metadata directly on the pin then check for metadata on the function
+	if (MetaData.IsEmpty())
+	{
+		return BeamK2::GetPinMetaData(InPinName, InKey, GetRuntimeSubsystemClass()->FindFunctionByName(GetOperationFunctionName()));
+	}
+
+	return MetaData;
 }
 
 FName UK2BeamNode_Operation::GetCornerIcon() const
@@ -267,17 +290,17 @@ void UK2BeamNode_Operation::EnforceBeamFlowModePins()
 				const TArray AllowedPins{
 					UEdGraphSchema_K2::PN_Then,
 					OP_Operation_Handle,
-					OP_Operation_UserSlots,
 
 					OP_Operation_OnOperationEvent,
-					OP_Operation_Event
+					OP_Operation_Event,
+					OP_Operation_UserSlots,
 				};
 				return Pin->Direction == EGPD_Input || AllowedPins.Contains(Pin->PinName);
 			});
 
-			EnforcePinExistence(this, EGPD_Output, UEdGraphSchema_K2::PC_Struct, OP_Operation_UserSlots, PinTooltipMap[OP_Operation_UserSlots], Params, FUserSlot::StaticStruct());
 			EnforcePinExistence(this, EGPD_Output, UEdGraphSchema_K2::PC_Exec, OP_Operation_OnOperationEvent, PinTooltipMap[OP_Operation_OnOperationEvent]);
 			EnforcePinExistence(this, EGPD_Output, UEdGraphSchema_K2::PC_Struct, OP_Operation_Event, PinTooltipMap[OP_Operation_Event], {}, FBeamOperationEvent::StaticStruct());
+			EnforcePinExistence(this, EGPD_Output, UEdGraphSchema_K2::PC_Struct, OP_Operation_UserSlots, PinTooltipMap[OP_Operation_UserSlots], Params, FUserSlot::StaticStruct());
 			break;
 		}
 	case Success_Error_Cancelled:
@@ -289,20 +312,20 @@ void UK2BeamNode_Operation::EnforceBeamFlowModePins()
 
 					UEdGraphSchema_K2::PN_Then,
 					OP_Operation_Handle,
-					OP_Operation_UserSlots,
 					OP_Operation_Expanded_OnSuccess,
 					OP_Operation_Expanded_OnError,
 					OP_Operation_Expanded_OnCancelled,
 					OP_Operation_Event,
+					OP_Operation_UserSlots,
 				};
 				return Pin->Direction == EGPD_Input || AllowedPins.Contains(Pin->PinName);
 			});
 
-			EnforcePinExistence(this, EGPD_Output, UEdGraphSchema_K2::PC_Struct, OP_Operation_UserSlots, PinTooltipMap[OP_Operation_UserSlots], Params, FUserSlot::StaticStruct());
 			EnforcePinExistence(this, EGPD_Output, UEdGraphSchema_K2::PC_Exec, OP_Operation_Expanded_OnSuccess, PinTooltipMap[OP_Operation_Expanded_OnSuccess]);
 			EnforcePinExistence(this, EGPD_Output, UEdGraphSchema_K2::PC_Exec, OP_Operation_Expanded_OnError, PinTooltipMap[OP_Operation_Expanded_OnError]);
 			EnforcePinExistence(this, EGPD_Output, UEdGraphSchema_K2::PC_Exec, OP_Operation_Expanded_OnCancelled, PinTooltipMap[OP_Operation_Expanded_OnCancelled]);
 			EnforcePinExistence(this, EGPD_Output, UEdGraphSchema_K2::PC_Struct, OP_Operation_Event, PinTooltipMap[OP_Operation_Event], {}, FBeamOperationEvent::StaticStruct());
+			EnforcePinExistence(this, EGPD_Output, UEdGraphSchema_K2::PC_Struct, OP_Operation_UserSlots, PinTooltipMap[OP_Operation_UserSlots], Params, FUserSlot::StaticStruct());
 			break;
 		}
 	case OnSubEvents:
@@ -316,8 +339,11 @@ void UK2BeamNode_Operation::EnforceBeamFlowModePins()
 
 			// Get the sub-events that are related to each higher event type.			
 			TArray<FName> SuccessTypeSubEvents = GetOperationEventIds(OET_SUCCESS);
+			SuccessTypeSubEvents.Sort([](const FName& A, const FName& B) { return A == NAME_None ? false : A.Compare(B) < 0; });
 			TArray<FName> ErrorTypeSubEvents = GetOperationEventIds(OET_ERROR);
+			ErrorTypeSubEvents.Sort([](const FName& A, const FName& B) { return A == NAME_None ? false : A.Compare(B) < 0; });
 			TArray<FName> CancelledTypeSubEvents = GetOperationEventIds(OET_CANCELLED);
+			CancelledTypeSubEvents.Sort([](const FName& A, const FName& B) { return A == NAME_None ? false : A.Compare(B) < 0; });
 
 			TMap<FName, UClass*> SuccessCastClass = GetOperationEventCastClass(OET_SUCCESS);
 			TMap<FName, UClass*> ErrorCastClass = GetOperationEventCastClass(OET_ERROR);
@@ -370,10 +396,6 @@ void UK2BeamNode_Operation::EnforceBeamFlowModePins()
 				PinsToKeep.Add(SuccessEventFlowPinNames[i]);
 			}
 
-
-			// Set up the UserSlot pins after the on success
-			EnforcePinExistence(this, EGPD_Output, UEdGraphSchema_K2::PC_Struct, OP_Operation_UserSlots, PinTooltipMap[OP_Operation_UserSlots], Params, FUserSlot::StaticStruct());
-
 			ErrorEventFlowPinNames.Empty();
 			EnforceRelevantEventPins(ErrorTypeSubEvents, OP_Operation_Expanded_OnError, RelevantEventsAdded, ErrorEventFlowPinNames, ErrorCastClass);
 			for (int i = 0; i < ErrorEventFlowPinNames.Num(); ++i)
@@ -391,6 +413,9 @@ void UK2BeamNode_Operation::EnforceBeamFlowModePins()
 			// We always expose the Event Data --- this is the entire `FBeamOperationEvent` struct and is valid in all flows here.
 			EnforcePinExistence(this, EGPD_Output, UEdGraphSchema_K2::PC_Struct, OP_Operation_Event, PinTooltipMap[OP_Operation_Event], {}, FBeamOperationEvent::StaticStruct());
 			PinsToKeep.Add(OP_Operation_Event);
+
+			// Set up the UserSlot pins after the on success
+			EnforcePinExistence(this, EGPD_Output, UEdGraphSchema_K2::PC_Struct, OP_Operation_UserSlots, PinTooltipMap[OP_Operation_UserSlots], Params, FUserSlot::StaticStruct());
 
 			// Remove all pins except the ones this mode cares about
 			RemoveAllPinsExcept(this, [this, PinsToKeep](const UEdGraphNode*, const UEdGraphPin* Pin)
@@ -676,17 +701,33 @@ void UK2BeamNode_Operation::SetUpPinsForSuccessErrorCancelledBeamFlow(FKismetCom
 
 	// Move the execution flow from the Custom Node's flow pins to the intermediate ones
 	{
-		// Get the flow pins
-		const auto IntermediateSuccessFlowPin = SwitchEnum->FindPin(StaticEnum<EBeamOperationEventType>()->GetNameByValue(EBeamOperationEventType::OET_SUCCESS));
-		const auto IntermediateErrorFlowPin = SwitchEnum->FindPin(StaticEnum<EBeamOperationEventType>()->GetNameByValue(EBeamOperationEventType::OET_ERROR));
-		const auto IntermediateCancelledFlowPin = SwitchEnum->FindPin(StaticEnum<EBeamOperationEventType>()->GetNameByValue(EBeamOperationEventType::OET_CANCELLED));
+		const auto SubTypeCodePin = BreakOperationResultNode->FindPin(GET_MEMBER_NAME_CHECKED(FBeamOperationEvent, EventId));
 
+		// Switch on it out of the EventIds pin of the EventType switch
+		// We will just ignore anything related to sub events.
+		const auto SuccessEventIdSwitch = CreateSwitchNameNode(this, CompilerContext, SourceGraph, K2Schema, GetOperationEventIds(OET_SUCCESS),
+			SwitchEnum->FindPin(StaticEnum<EBeamOperationEventType>()->GetNameByValue(OET_SUCCESS)), SubTypeCodePin);
+		
+		auto IntermediateSuccessFlowPin = SuccessEventIdSwitch->FindPin(NAME_None);
+		
 		const auto SuccessFlowMoved = CompilerContext.MovePinLinksToIntermediate(*SuccessFlowPin, *IntermediateSuccessFlowPin);
 		check(!SuccessFlowMoved.IsFatal());
-
+		
+		
+		const auto ErrorEventIdSwitch = CreateSwitchNameNode(this, CompilerContext, SourceGraph, K2Schema, GetOperationEventIds(OET_ERROR),
+	SwitchEnum->FindPin(StaticEnum<EBeamOperationEventType>()->GetNameByValue(OET_ERROR)), SubTypeCodePin);
+		
+		auto IntermediateErrorFlowPin = ErrorEventIdSwitch->FindPin(NAME_None);
+		
 		const auto ErrorFlowMoved = CompilerContext.MovePinLinksToIntermediate(*ErrorFlowPin, *IntermediateErrorFlowPin);
 		check(!ErrorFlowMoved.IsFatal());
 
+
+		const auto CancelledEventIdSwitch = CreateSwitchNameNode(this, CompilerContext, SourceGraph, K2Schema, GetOperationEventIds(OET_CANCELLED),
+SwitchEnum->FindPin(StaticEnum<EBeamOperationEventType>()->GetNameByValue(OET_CANCELLED)), SubTypeCodePin);
+		
+		auto IntermediateCancelledFlowPin = CancelledEventIdSwitch->FindPin(NAME_None);
+		
 		const auto CancelledFlowMoved = CompilerContext.MovePinLinksToIntermediate(*CancelledFlowPin, *IntermediateCancelledFlowPin);
 		check(!CancelledFlowMoved.IsFatal());
 	}
@@ -718,16 +759,16 @@ void UK2BeamNode_Operation::SetUpPinsForSubEventsBeamFlow(FKismetCompilerContext
 
 	// Expand the Success SubEvents
 	ExpandBeamFlowSubEvents(CompilerContext, SourceGraph, K2Schema, GetOperationEventIds(OET_SUCCESS), GetOperationEventCastClass(OET_SUCCESS), SuccessEventFlowPinNames, BreakOperationResultNode,
-	                        SwitchEnum->FindPin(StaticEnum<EBeamOperationEventType>()->GetNameByValue(OET_SUCCESS)));
+	                        SwitchEnum->FindPin(StaticEnum<EBeamOperationEventType>()->GetNameByValue(OET_SUCCESS)), OP_Operation_Expanded_OnSuccess);
 
 	// Expand the Error SubEvents
 	ExpandBeamFlowSubEvents(CompilerContext, SourceGraph, K2Schema, GetOperationEventIds(OET_ERROR), GetOperationEventCastClass(OET_ERROR), ErrorEventFlowPinNames, BreakOperationResultNode,
-	                        SwitchEnum->FindPin(StaticEnum<EBeamOperationEventType>()->GetNameByValue(OET_ERROR)));
+	                        SwitchEnum->FindPin(StaticEnum<EBeamOperationEventType>()->GetNameByValue(OET_ERROR)), OP_Operation_Expanded_OnError);
 
 
 	// Expand the Cancelled SubEvents
 	ExpandBeamFlowSubEvents(CompilerContext, SourceGraph, K2Schema, GetOperationEventIds(OET_CANCELLED), GetOperationEventCastClass(OET_CANCELLED), CancelledEventFlowPinNames, BreakOperationResultNode,
-	                        SwitchEnum->FindPin(StaticEnum<EBeamOperationEventType>()->GetNameByValue(OET_CANCELLED)));
+	                        SwitchEnum->FindPin(StaticEnum<EBeamOperationEventType>()->GetNameByValue(OET_CANCELLED)), OP_Operation_Expanded_OnCancelled);
 
 	for (int i = 0; i < PerFlowNodes.Num(); ++i)
 	{
@@ -749,7 +790,7 @@ void UK2BeamNode_Operation::SetUpPinsForSubEventsBeamFlow(FKismetCompilerContext
 
 void UK2BeamNode_Operation::ExpandBeamFlowSubEvents(FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph, const UEdGraphSchema_K2* K2Schema,
                                                     const TArray<FName>& EventIds, const TMap<FName, UClass*>& EventDataCasts, const TArray<FName>& EventsFlowPinNames,
-                                                    UK2Node_BreakStruct* const BreakOperationResultNode, UEdGraphPin* const SubEventSwitchExecPin)
+                                                    UK2Node_BreakStruct* const BreakOperationResultNode, UEdGraphPin* const SubEventSwitchExecPin, FName BaseExecPinName)
 {
 	const auto SubTypeCodePin = BreakOperationResultNode->FindPin(GET_MEMBER_NAME_CHECKED(FBeamOperationEvent, EventId));
 
@@ -757,13 +798,17 @@ void UK2BeamNode_Operation::ExpandBeamFlowSubEvents(FKismetCompilerContext& Comp
 	const auto SubEventSwitch = CreateSwitchNameNode(this, CompilerContext, SourceGraph, K2Schema, EventIds, SubEventSwitchExecPin, SubTypeCodePin);
 	for (int i = 0; i < EventsFlowPinNames.Num(); ++i)
 	{
-		const auto FlowPin = FindPin(EventsFlowPinNames[i]);
-
-		
 		// Get the intermediate pins we'll need to connect to all the places our custom node's output pins are connected to.
 		// If we expect a string, than we forward the raw event data string. Otherwise...
 		const auto SubEventValue = EventIds[i];
+		
+		const auto ExecPinName = SubEventValue == NAME_None ? BaseExecPinName : FName(FString::Printf(TEXT("%s - %s"), *BaseExecPinName.ToString(), *SubEventValue.ToString()));
+					
+		const auto FlowPin = FindPin(ExecPinName);
+
+		
 		auto IntermediateSubEventFlowPin = SubEventSwitch->FindPin(SubEventValue);
+		
 
 		// Create the cast node and link the success and fail to the subevent execute
 		if (EventDataCasts.Contains(SubEventValue))
@@ -771,13 +816,13 @@ void UK2BeamNode_Operation::ExpandBeamFlowSubEvents(FKismetCompilerContext& Comp
 			auto EventDataPin = BreakOperationResultNode->FindPin(GET_MEMBER_NAME_CHECKED(FBeamOperationEvent, EventData));
 			auto CastedOutputPin = FindPin(EventDataCasts[SubEventValue]->GetName());
 
-			auto CastNode = CreateDynamicCastNode(this, CompilerContext, SourceGraph, EventDataCasts[SubEventValue]);
-			
+			auto CastNode = CreateDynamicCastNode(this, CompilerContext, SourceGraph, EventDataCasts[SubEventValue], false);
+
 			K2Schema->TryCreateConnection(CastNode->GetCastSourcePin(), EventDataPin);
 
 			K2Schema->TryCreateConnection(CastNode->GetExecPin(), IntermediateSubEventFlowPin);
-			
-			const auto SuccessFlowCastObject =CompilerContext.MovePinLinksToIntermediate(*CastedOutputPin, *CastNode->GetCastResultPin());
+
+			const auto SuccessFlowCastObject = CompilerContext.MovePinLinksToIntermediate(*CastedOutputPin, *CastNode->GetCastResultPin());
 			check(!SuccessFlowCastObject.IsFatal());
 
 			const auto SuccessFlowMovedCastSuccess = CompilerContext.MovePinLinksToIntermediate(*FlowPin, *CastNode->GetValidCastPin());

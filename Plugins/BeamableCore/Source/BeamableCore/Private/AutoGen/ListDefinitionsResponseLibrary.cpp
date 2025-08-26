@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/ListDefinitionsResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UListDefinitionsResponseLibrary::ListDefinitionsResponseToJsonString(const UListDefinitionsResponse* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UListDefinitionsResponse* UListDefinitionsResponseLibrary::Make(TArray<UAnnounce
 
 void UListDefinitionsResponseLibrary::Break(const UListDefinitionsResponse* Serializable, TArray<UAnnouncementDto*>& Content)
 {
-	Content = Serializable->Content;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Content = Serializable->Content;
+	}
 		
 }
 

@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/GroupSearchRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UGroupSearchRequestBodyLibrary::GroupSearchRequestBodyToJsonString(const UGroupSearchRequestBody* Serializable, const bool Pretty)
@@ -43,18 +44,21 @@ UGroupSearchRequestBody* UGroupSearchRequestBodyLibrary::Make(EBeamGroupType Typ
 
 void UGroupSearchRequestBodyLibrary::Break(const UGroupSearchRequestBody* Serializable, EBeamGroupType& Type, FOptionalBool& bHasSlots, FOptionalBool& bSubGroup, FOptionalString& Name, FOptionalInt64& ScoreMin, FOptionalString& SortField, FOptionalInt64& UserScore, FOptionalString& EnrollmentTypes, FOptionalInt32& Offset, FOptionalInt64& ScoreMax, FOptionalInt32& SortValue, FOptionalInt32& Limit)
 {
-	Type = Serializable->Type;
-	bHasSlots = Serializable->bHasSlots;
-	bSubGroup = Serializable->bSubGroup;
-	Name = Serializable->Name;
-	ScoreMin = Serializable->ScoreMin;
-	SortField = Serializable->SortField;
-	UserScore = Serializable->UserScore;
-	EnrollmentTypes = Serializable->EnrollmentTypes;
-	Offset = Serializable->Offset;
-	ScoreMax = Serializable->ScoreMax;
-	SortValue = Serializable->SortValue;
-	Limit = Serializable->Limit;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Type = Serializable->Type;
+		bHasSlots = Serializable->bHasSlots;
+		bSubGroup = Serializable->bSubGroup;
+		Name = Serializable->Name;
+		ScoreMin = Serializable->ScoreMin;
+		SortField = Serializable->SortField;
+		UserScore = Serializable->UserScore;
+		EnrollmentTypes = Serializable->EnrollmentTypes;
+		Offset = Serializable->Offset;
+		ScoreMax = Serializable->ScoreMax;
+		SortValue = Serializable->SortValue;
+		Limit = Serializable->Limit;
+	}
 		
 }
 

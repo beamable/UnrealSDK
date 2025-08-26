@@ -50,12 +50,49 @@ public:
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("EventType")), EventType);
-		UBeamJsonUtils::DeserializeArray<ULocalContentManifestStreamData*>(Bag->GetArrayField(TEXT("RelevantManifestsAgainstLatest")), RelevantManifestsAgainstLatest, OuterOwner);
-		UBeamJsonUtils::DeserializeArray<ULocalContentManifestStreamData*>(Bag->GetArrayField(TEXT("ToRemoveLocalEntries")), ToRemoveLocalEntries, OuterOwner);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("PublisherEmail")), PublisherEmail);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("PublisherAccountId")), PublisherAccountId);
-		UBeamJsonUtils::DeserializeArray<UContentSyncReportStreamData*>(Bag->GetArrayField(TEXT("SyncReports")), SyncReports, OuterOwner);	
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("EventType"), Bag, EventType);
+		UBeamJsonUtils::DeserializeArray<ULocalContentManifestStreamData*>(TEXT("RelevantManifestsAgainstLatest"), Bag, RelevantManifestsAgainstLatest, OuterOwner);
+		UBeamJsonUtils::DeserializeArray<ULocalContentManifestStreamData*>(TEXT("ToRemoveLocalEntries"), Bag, ToRemoveLocalEntries, OuterOwner);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("PublisherEmail"), Bag, PublisherEmail);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("PublisherAccountId"), Bag, PublisherAccountId);
+		UBeamJsonUtils::DeserializeArray<UContentSyncReportStreamData*>(TEXT("SyncReports"), Bag, SyncReports, OuterOwner);	
+	}
+};
+
+
+UCLASS(BlueprintType)
+class UBeamCliContentPsProgressStreamStreamData : public UObject, public IBeamJsonSerializableUObject
+{
+	GENERATED_BODY()
+
+public:	
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 Total = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 Completed = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString Message = {};
+
+	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
+	{
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("total"), Total, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("completed"), Completed, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("message"), Message, Serializer);	
+	}
+
+	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
+	{
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("total"), Total, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("completed"), Completed, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("message"), Message, Serializer);	
+	}
+
+	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
+	{
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("total"), Bag, Total);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("completed"), Bag, Completed);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("message"), Bag, Message);	
 	}
 };
 
@@ -105,7 +142,12 @@ public:
 	inline static FString StreamType = FString(TEXT("stream"));
 	UPROPERTY() TArray<UBeamCliContentPsStreamData*> Stream;
 	UPROPERTY() TArray<int64> Timestamps;
-	TFunction<void (TArray<UBeamCliContentPsStreamData*>& StreamData, TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnStreamOutput;	
+	TFunction<void (TArray<UBeamCliContentPsStreamData*>& StreamData, TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnStreamOutput;
+
+	inline static FString StreamTypeProgressStream = FString(TEXT("progressStream"));
+	UPROPERTY() TArray<UBeamCliContentPsProgressStreamStreamData*> ProgressStreamStream;
+	UPROPERTY() TArray<int64> ProgressStreamTimestamps;
+	TFunction<void (TArray<UBeamCliContentPsProgressStreamStreamData*>& StreamData, TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnProgressStreamStreamOutput;	
 
 	TFunction<void (const int& ResCode, const FBeamOperationHandle& Op)> OnCompleted;
 	virtual bool HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer) override;

@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/AcceptMultipleAttachmentsLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UAcceptMultipleAttachmentsLibrary::AcceptMultipleAttachmentsToJsonString(const UAcceptMultipleAttachments* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UAcceptMultipleAttachments* UAcceptMultipleAttachmentsLibrary::Make(TArray<int64
 
 void UAcceptMultipleAttachmentsLibrary::Break(const UAcceptMultipleAttachments* Serializable, TArray<int64>& MailIds)
 {
-	MailIds = Serializable->MailIds;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		MailIds = Serializable->MailIds;
+	}
 		
 }
 

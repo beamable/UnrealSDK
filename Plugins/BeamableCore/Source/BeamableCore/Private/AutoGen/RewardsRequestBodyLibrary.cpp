@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/RewardsRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString URewardsRequestBodyLibrary::RewardsRequestBodyToJsonString(const URewardsRequestBody* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ URewardsRequestBody* URewardsRequestBodyLibrary::Make(FOptionalString Tournament
 
 void URewardsRequestBodyLibrary::Break(const URewardsRequestBody* Serializable, FOptionalString& TournamentId, FOptionalString& ContentId)
 {
-	TournamentId = Serializable->TournamentId;
-	ContentId = Serializable->ContentId;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		TournamentId = Serializable->TournamentId;
+		ContentId = Serializable->ContentId;
+	}
 		
 }
 

@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/LeaderboardGetMatchRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString ULeaderboardGetMatchRequestBodyLibrary::LeaderboardGetMatchRequestBodyToJsonString(const ULeaderboardGetMatchRequestBody* Serializable, const bool Pretty)
@@ -34,9 +35,12 @@ ULeaderboardGetMatchRequestBody* ULeaderboardGetMatchRequestBodyLibrary::Make(in
 
 void ULeaderboardGetMatchRequestBodyLibrary::Break(const ULeaderboardGetMatchRequestBody* Serializable, int32& PoolSize, int32& Windows, int32& WindowSize)
 {
-	PoolSize = Serializable->PoolSize;
-	Windows = Serializable->Windows;
-	WindowSize = Serializable->WindowSize;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		PoolSize = Serializable->PoolSize;
+		Windows = Serializable->Windows;
+		WindowSize = Serializable->WindowSize;
+	}
 		
 }
 

@@ -14,19 +14,19 @@
 #include "BeamableCore/Public/AutoGen/SubSystems/Realms/GetClientDefaultsRequest.h"
 #include "BeamableCore/Public/AutoGen/SubSystems/Realms/PostCustomerRequest.h"
 #include "BeamableCore/Public/AutoGen/SubSystems/Realms/GetIsCustomerRequest.h"
-#include "BeamableCore/Public/AutoGen/SubSystems/Realms/GetCustomersRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Realms/BasicRealmsGetCustomersRequest.h"
 #include "BeamableCore/Public/AutoGen/SubSystems/Realms/PostProjectBeamableRequest.h"
 #include "BeamableCore/Public/AutoGen/SubSystems/Realms/PostProjectRequest.h"
 #include "BeamableCore/Public/AutoGen/SubSystems/Realms/PutProjectRequest.h"
 #include "BeamableCore/Public/AutoGen/SubSystems/Realms/DeleteProjectRequest.h"
-#include "BeamableCore/Public/AutoGen/SubSystems/Realms/GetGamesRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Realms/BasicRealmsGetGamesRequest.h"
 #include "BeamableCore/Public/AutoGen/SubSystems/Realms/GetConfigRequest.h"
 #include "BeamableCore/Public/AutoGen/SubSystems/Realms/PostConfigRequest.h"
 #include "BeamableCore/Public/AutoGen/SubSystems/Realms/PutConfigRequest.h"
 #include "BeamableCore/Public/AutoGen/SubSystems/Realms/PutProjectRenameRequest.h"
 #include "BeamableCore/Public/AutoGen/SubSystems/Realms/GetPlansRequest.h"
 #include "BeamableCore/Public/AutoGen/SubSystems/Realms/PostPlansRequest.h"
-#include "BeamableCore/Public/AutoGen/SubSystems/Realms/GetCustomerRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Realms/BasicRealmsGetCustomerRequest.h"
 #include "BeamableCore/Public/AutoGen/SubSystems/Realms/GetAdminInflightFailuresRequest.h"
 #include "BeamableCore/Public/AutoGen/SubSystems/Realms/DeleteAdminInflightFailuresRequest.h"
 #include "BeamableCore/Public/AutoGen/SubSystems/Realms/GetLaunchMessageRequest.h"
@@ -52,7 +52,7 @@ class BEAMABLECORE_API UBeamRealmsApi : public UEngineSubsystem
 {
 private:
 	GENERATED_BODY()
-	/** @brief Initializes the auto-increment Id and binds the ExecuteRequestDelegate to DefaultExecuteRequestImpl  */
+	/** @brief Initializes the auto-increment Id */
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 
 	/** Cleans up the system.  */
@@ -162,14 +162,14 @@ private:
 	/**
 	 * @brief Private implementation that all overloaded BP UFunctions call.	  
 	 */
-	void BP_GetCustomersImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, UGetCustomersRequest* RequestData,
-	                                const FOnGetCustomersSuccess& OnSuccess, const FOnGetCustomersError& OnError, const FOnGetCustomersComplete& OnComplete,
+	void BP_GetCustomersImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, UBasicRealmsGetCustomersRequest* RequestData,
+	                                const FOnBasicRealmsGetCustomersSuccess& OnSuccess, const FOnBasicRealmsGetCustomersError& OnError, const FOnBasicRealmsGetCustomersComplete& OnComplete,
 	                                int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 	/**
 	 * @brief Overload version for binding lambdas when in C++ land. Prefer the BP version whenever possible, this is here mostly for quick experimentation purposes.	 
 	 */
-	void CPP_GetCustomersImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, UGetCustomersRequest* RequestData,
-	                                 const FOnGetCustomersFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
+	void CPP_GetCustomersImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, UBasicRealmsGetCustomersRequest* RequestData,
+	                                 const FOnBasicRealmsGetCustomersFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 
 
 	
@@ -224,14 +224,14 @@ private:
 	/**
 	 * @brief Private implementation for requests that require authentication that all overloaded BP UFunctions call.	  
 	 */
-	void BP_GetGamesImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, UGetGamesRequest* RequestData,
-	                  const FOnGetGamesSuccess& OnSuccess, const FOnGetGamesError& OnError, const FOnGetGamesComplete& OnComplete, 
+	void BP_GetGamesImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, UBasicRealmsGetGamesRequest* RequestData,
+	                  const FOnBasicRealmsGetGamesSuccess& OnSuccess, const FOnBasicRealmsGetGamesError& OnError, const FOnBasicRealmsGetGamesComplete& OnComplete, 
 					  int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 	/**
 	 * @brief Overload version for binding lambdas when in C++ land. Prefer the BP version whenever possible, this is here mostly for quick experimentation purposes.	 
 	 */
-	void CPP_GetGamesImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, UGetGamesRequest* RequestData,
-	                   const FOnGetGamesFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
+	void CPP_GetGamesImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, UBasicRealmsGetGamesRequest* RequestData,
+	                   const FOnBasicRealmsGetGamesFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 		
 	/**
 	 * @brief Private implementation for requests that require authentication that all overloaded BP UFunctions call.	  
@@ -308,14 +308,14 @@ private:
 	/**
 	 * @brief Private implementation for requests that require authentication that all overloaded BP UFunctions call.	  
 	 */
-	void BP_GetCustomerImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, UGetCustomerRequest* RequestData,
-	                  const FOnGetCustomerSuccess& OnSuccess, const FOnGetCustomerError& OnError, const FOnGetCustomerComplete& OnComplete, 
+	void BP_GetCustomerImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, UBasicRealmsGetCustomerRequest* RequestData,
+	                  const FOnBasicRealmsGetCustomerSuccess& OnSuccess, const FOnBasicRealmsGetCustomerError& OnError, const FOnBasicRealmsGetCustomerComplete& OnComplete, 
 					  int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 	/**
 	 * @brief Overload version for binding lambdas when in C++ land. Prefer the BP version whenever possible, this is here mostly for quick experimentation purposes.	 
 	 */
-	void CPP_GetCustomerImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, UGetCustomerRequest* RequestData,
-	                   const FOnGetCustomerFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
+	void CPP_GetCustomerImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, UBasicRealmsGetCustomerRequest* RequestData,
+	                   const FOnBasicRealmsGetCustomerFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 		
 	/**
 	 * @brief Private implementation for requests that require authentication that all overloaded BP UFunctions call.	  
@@ -597,7 +597,7 @@ public:
 	 * @param OpHandle When made as part of an Operation, you can pass this in and it'll register the request with the operation automatically.
 	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches. 
 	 */
-	void CPP_GetCustomers(UGetCustomersRequest* Request, const FOnGetCustomersFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
+	void CPP_GetCustomers(UBasicRealmsGetCustomersRequest* Request, const FOnBasicRealmsGetCustomersFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 
 
 	
@@ -678,7 +678,7 @@ public:
 	 * @param OpHandle When made as part of an Operation, you can pass this in and it'll register the request with the operation automatically.
 	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches. 
 	 */
-	void CPP_GetGames(const FUserSlot& UserSlot, UGetGamesRequest* Request, const FOnGetGamesFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
+	void CPP_GetGames(const FUserSlot& UserSlot, UBasicRealmsGetGamesRequest* Request, const FOnBasicRealmsGetGamesFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 
 		
 	/**
@@ -790,7 +790,7 @@ public:
 	 * @param OpHandle When made as part of an Operation, you can pass this in and it'll register the request with the operation automatically.
 	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches. 
 	 */
-	void CPP_GetCustomer(const FUserSlot& UserSlot, UGetCustomerRequest* Request, const FOnGetCustomerFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
+	void CPP_GetCustomer(const FUserSlot& UserSlot, UBasicRealmsGetCustomerRequest* Request, const FOnBasicRealmsGetCustomerFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 
 		
 	/**
@@ -1111,7 +1111,7 @@ public:
 	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches. 
 	 */
 	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Realms|Utils|Make/Break", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="OpHandle,CallingContext", AutoCreateRefTerm="OnSuccess,OnError,OnComplete,OpHandle", BeamFlowFunction))
-	void GetCustomers(UGetCustomersRequest* Request, const FOnGetCustomersSuccess& OnSuccess, const FOnGetCustomersError& OnError, const FOnGetCustomersComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr);
+	void GetCustomers(UBasicRealmsGetCustomersRequest* Request, const FOnBasicRealmsGetCustomersSuccess& OnSuccess, const FOnBasicRealmsGetCustomersError& OnError, const FOnBasicRealmsGetCustomersComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr);
 
 
 	
@@ -1187,7 +1187,7 @@ public:
 	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches.
 	 */
 	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Realms|Utils|Make/Break", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="OpHandle,CallingContext",AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete,OpHandle", BeamFlowFunction))
-	void GetGames(FUserSlot UserSlot, UGetGamesRequest* Request, const FOnGetGamesSuccess& OnSuccess, const FOnGetGamesError& OnError, const FOnGetGamesComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr);
+	void GetGames(FUserSlot UserSlot, UBasicRealmsGetGamesRequest* Request, const FOnBasicRealmsGetGamesSuccess& OnSuccess, const FOnBasicRealmsGetGamesError& OnError, const FOnBasicRealmsGetGamesComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr);
 
 		
 	/**
@@ -1292,7 +1292,7 @@ public:
 	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches.
 	 */
 	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Realms|Utils|Make/Break", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="OpHandle,CallingContext",AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete,OpHandle", BeamFlowFunction))
-	void GetCustomer(FUserSlot UserSlot, UGetCustomerRequest* Request, const FOnGetCustomerSuccess& OnSuccess, const FOnGetCustomerError& OnError, const FOnGetCustomerComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr);
+	void GetCustomer(FUserSlot UserSlot, UBasicRealmsGetCustomerRequest* Request, const FOnBasicRealmsGetCustomerSuccess& OnSuccess, const FOnBasicRealmsGetCustomerError& OnError, const FOnBasicRealmsGetCustomerComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr);
 
 		
 	/**

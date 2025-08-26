@@ -27,12 +27,12 @@ void UInFlightFailure::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Seri
 
 void UInFlightFailure::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("serviceObjectId")), ServiceObjectId);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("timestamp")), Timestamp);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("serviceName")), ServiceName);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("serviceObjectId"), Bag, ServiceObjectId);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("timestamp"), Bag, Timestamp);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("serviceName"), Bag, ServiceName);
 	UBeamJsonUtils::DeserializeUObject<UInFlightMessage*>("inFlightMessage", Bag, InFlightMessage, OuterOwner);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("lastError")), LastError);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("id")), Id);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("lastError"), Bag, LastError);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("id"), Bag, Id);
 }
 
 

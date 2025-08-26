@@ -22,7 +22,7 @@ void UEventsInDateRangeResponse::BeamSerializeProperties(TUnrealPrettyJsonSerial
 
 void UEventsInDateRangeResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeArray<UEventDateRanges*>(Bag->GetArrayField(TEXT("eventInDateRange")), EventInDateRange, OuterOwner);
+	UBeamJsonUtils::DeserializeArray<UEventDateRanges*>(TEXT("eventInDateRange"), Bag, EventInDateRange, OuterOwner);
 }
 
 

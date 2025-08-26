@@ -44,11 +44,11 @@ public:
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("id")), Id);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("storageType")), StorageType);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("enabled")), Enabled);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("templateId")), TemplateId);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("checksum")), Checksum);	
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("id"), Bag, Id);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("storageType"), Bag, StorageType);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("enabled"), Bag, Enabled);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("templateId"), Bag, TemplateId);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("checksum"), Bag, Checksum);	
 	}
 };
 

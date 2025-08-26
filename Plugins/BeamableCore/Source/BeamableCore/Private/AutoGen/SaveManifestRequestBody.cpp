@@ -19,8 +19,8 @@ void USaveManifestRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializ
 
 void USaveManifestRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeSemanticType<FString>(Bag->TryGetField(TEXT("id")), Id, OuterOwner);
-	UBeamJsonUtils::DeserializeArray<UReferenceSuperset*>(Bag->GetArrayField(TEXT("references")), References, OuterOwner);
+	UBeamJsonUtils::DeserializeSemanticType<FString>(TEXT("id"), Bag, Id, OuterOwner);
+	UBeamJsonUtils::DeserializeArray<UReferenceSuperset*>(TEXT("references"), Bag, References, OuterOwner);
 }
 
 

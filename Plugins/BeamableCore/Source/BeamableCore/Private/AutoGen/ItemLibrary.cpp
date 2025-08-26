@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/ItemLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UItemLibrary::ItemToJsonString(const UItem* Serializable, const bool Pretty)
@@ -37,12 +38,15 @@ UItem* UItemLibrary::Make(int64 Id, TArray<UItemProperty*> Properties, FOptional
 
 void UItemLibrary::Break(const UItem* Serializable, int64& Id, TArray<UItemProperty*>& Properties, FOptionalInt64& UpdatedAt, FOptionalString& ProxyId, FOptionalFederationInfo& Proxy, FOptionalInt64& CreatedAt)
 {
-	Id = Serializable->Id;
-	Properties = Serializable->Properties;
-	UpdatedAt = Serializable->UpdatedAt;
-	ProxyId = Serializable->ProxyId;
-	Proxy = Serializable->Proxy;
-	CreatedAt = Serializable->CreatedAt;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Id = Serializable->Id;
+		Properties = Serializable->Properties;
+		UpdatedAt = Serializable->UpdatedAt;
+		ProxyId = Serializable->ProxyId;
+		Proxy = Serializable->Proxy;
+		CreatedAt = Serializable->CreatedAt;
+	}
 		
 }
 

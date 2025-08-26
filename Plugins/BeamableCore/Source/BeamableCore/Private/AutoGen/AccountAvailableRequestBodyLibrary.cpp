@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/AccountAvailableRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UAccountAvailableRequestBodyLibrary::AccountAvailableRequestBodyToJsonString(const UAccountAvailableRequestBody* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UAccountAvailableRequestBody* UAccountAvailableRequestBodyLibrary::Make(FString 
 
 void UAccountAvailableRequestBodyLibrary::Break(const UAccountAvailableRequestBody* Serializable, FString& Email)
 {
-	Email = Serializable->Email;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Email = Serializable->Email;
+	}
 		
 }
 

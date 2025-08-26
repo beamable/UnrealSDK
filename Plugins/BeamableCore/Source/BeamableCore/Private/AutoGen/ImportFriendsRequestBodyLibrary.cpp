@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/ImportFriendsRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UImportFriendsRequestBodyLibrary::ImportFriendsRequestBodyToJsonString(const UImportFriendsRequestBody* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ UImportFriendsRequestBody* UImportFriendsRequestBodyLibrary::Make(FString Source
 
 void UImportFriendsRequestBodyLibrary::Break(const UImportFriendsRequestBody* Serializable, FString& Source, FString& Token)
 {
-	Source = Serializable->Source;
-	Token = Serializable->Token;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Source = Serializable->Source;
+		Token = Serializable->Token;
+	}
 		
 }
 

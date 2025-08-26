@@ -19,8 +19,8 @@ void UChallengeSolution::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Se
 
 void UChallengeSolution::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("challenge_token")), ChallengeToken);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("solution")), Solution);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("challenge_token"), Bag, ChallengeToken);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("solution"), Bag, Solution);
 }
 
 

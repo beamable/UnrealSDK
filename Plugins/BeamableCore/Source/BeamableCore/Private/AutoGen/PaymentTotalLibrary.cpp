@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/PaymentTotalLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UPaymentTotalLibrary::PaymentTotalToJsonString(const UPaymentTotal* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ UPaymentTotal* UPaymentTotalLibrary::Make(int64 TotalRevenue, FOptionalString Cu
 
 void UPaymentTotalLibrary::Break(const UPaymentTotal* Serializable, int64& TotalRevenue, FOptionalString& CurrencyCode)
 {
-	TotalRevenue = Serializable->TotalRevenue;
-	CurrencyCode = Serializable->CurrencyCode;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		TotalRevenue = Serializable->TotalRevenue;
+		CurrencyCode = Serializable->CurrencyCode;
+	}
 		
 }
 

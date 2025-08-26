@@ -13,16 +13,35 @@ bool UBeamCliContentPsCommand::HandleStreamReceived(FBeamOperationHandle Op, FSt
 	
 	if(ReceivedStreamType.Equals(StreamType) && OnStreamOutput)
 	{
-		UBeamCliContentPsStreamData* Data = NewObject<UBeamCliContentPsStreamData>(this);
-		Data->OuterOwner = this;
-		Data->BeamDeserializeProperties(DataJson);
-
-		Stream.Add(Data);
-		Timestamps.Add(Timestamp);
-		
-		AsyncTask(ENamedThreads::GameThread, [this, Op]
+		AsyncTask(ENamedThreads::GameThread, [this, DataJson, Timestamp, Op]
 		{
+			UBeamCliContentPsStreamData* Data = NewObject<UBeamCliContentPsStreamData>(this);
+			Data->OuterOwner = this;
+			Data->BeamDeserializeProperties(DataJson);
+
+			Stream.Add(Data);
+			Timestamps.Add(Timestamp);
+		
+		
 			OnStreamOutput(Stream, Timestamps, Op);
+		});
+		
+		return true;				
+	}
+
+	if(ReceivedStreamType.Equals(StreamTypeProgressStream) && OnProgressStreamStreamOutput)
+	{
+		AsyncTask(ENamedThreads::GameThread, [this, DataJson, Timestamp, Op]
+		{
+			UBeamCliContentPsProgressStreamStreamData* Data = NewObject<UBeamCliContentPsProgressStreamStreamData>(this);
+			Data->OuterOwner = this;
+			Data->BeamDeserializeProperties(DataJson);
+
+			ProgressStreamStream.Add(Data);
+			ProgressStreamTimestamps.Add(Timestamp);
+		
+		
+			OnProgressStreamStreamOutput(ProgressStreamStream, ProgressStreamTimestamps, Op);
 		});
 		
 		return true;				

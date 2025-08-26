@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/RealmConfigResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString URealmConfigResponseLibrary::RealmConfigResponseToJsonString(const URealmConfigResponse* Serializable, const bool Pretty)
@@ -22,7 +23,7 @@ FString URealmConfigResponseLibrary::RealmConfigResponseToJsonString(const UReal
 	return Result;
 }	
 
-URealmConfigResponse* URealmConfigResponseLibrary::Make(TMap<FString, FString> Config, UObject* Outer)
+URealmConfigResponse* URealmConfigResponseLibrary::Make(FOptionalMapOfString Config, UObject* Outer)
 {
 	auto Serializable = NewObject<URealmConfigResponse>(Outer);
 	Serializable->Config = Config;
@@ -30,9 +31,12 @@ URealmConfigResponse* URealmConfigResponseLibrary::Make(TMap<FString, FString> C
 	return Serializable;
 }
 
-void URealmConfigResponseLibrary::Break(const URealmConfigResponse* Serializable, TMap<FString, FString>& Config)
+void URealmConfigResponseLibrary::Break(const URealmConfigResponse* Serializable, FOptionalMapOfString& Config)
 {
-	Config = Serializable->Config;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Config = Serializable->Config;
+	}
 		
 }
 

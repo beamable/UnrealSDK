@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/BatchReadStatsRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UBatchReadStatsRequestBodyLibrary::BatchReadStatsRequestBodyToJsonString(const UBatchReadStatsRequestBody* Serializable, const bool Pretty)
@@ -34,9 +35,12 @@ UBatchReadStatsRequestBody* UBatchReadStatsRequestBodyLibrary::Make(FBeamStatsTy
 
 void UBatchReadStatsRequestBodyLibrary::Break(const UBatchReadStatsRequestBody* Serializable, FBeamStatsType& ObjectIds, FOptionalString& Stats, FOptionalString& Format)
 {
-	ObjectIds = Serializable->ObjectIds;
-	Stats = Serializable->Stats;
-	Format = Serializable->Format;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		ObjectIds = Serializable->ObjectIds;
+		Stats = Serializable->Stats;
+		Format = Serializable->Format;
+	}
 		
 }
 

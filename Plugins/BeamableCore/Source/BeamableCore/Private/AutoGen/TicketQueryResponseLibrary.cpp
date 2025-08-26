@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/TicketQueryResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UTicketQueryResponseLibrary::TicketQueryResponseToJsonString(const UTicketQueryResponse* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UTicketQueryResponse* UTicketQueryResponseLibrary::Make(FOptionalArrayOfTicket R
 
 void UTicketQueryResponseLibrary::Break(const UTicketQueryResponse* Serializable, FOptionalArrayOfTicket& Results)
 {
-	Results = Serializable->Results;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Results = Serializable->Results;
+	}
 		
 }
 

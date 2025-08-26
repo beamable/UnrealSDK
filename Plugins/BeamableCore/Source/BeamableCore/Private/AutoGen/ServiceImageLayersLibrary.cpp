@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/ServiceImageLayersLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UServiceImageLayersLibrary::ServiceImageLayersToJsonString(const UServiceImageLayers* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ UServiceImageLayers* UServiceImageLayersLibrary::Make(UBeamoBasicReference* Serv
 
 void UServiceImageLayersLibrary::Break(const UServiceImageLayers* Serializable, UBeamoBasicReference*& Service, TArray<FString>& Layers)
 {
-	Service = Serializable->Service;
-	Layers = Serializable->Layers;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Service = Serializable->Service;
+		Layers = Serializable->Layers;
+	}
 		
 }
 

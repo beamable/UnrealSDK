@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/ClientManifestJsonResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UClientManifestJsonResponseLibrary::ClientManifestJsonResponseToJsonString(const UClientManifestJsonResponse* Serializable, const bool Pretty)
@@ -22,21 +23,26 @@ FString UClientManifestJsonResponseLibrary::ClientManifestJsonResponseToJsonStri
 	return Result;
 }	
 
-UClientManifestJsonResponse* UClientManifestJsonResponseLibrary::Make(TArray<FBeamRemoteContentManifestEntry> Entries, FOptionalString Uid, FOptionalInt64 PublisherAccountId, UObject* Outer)
+UClientManifestJsonResponse* UClientManifestJsonResponseLibrary::Make(TArray<FBeamRemoteContentManifestEntry> Entries, FOptionalString Uid, FOptionalInt64 PublisherAccountId, FOptionalInt64 CreatedAt, UObject* Outer)
 {
 	auto Serializable = NewObject<UClientManifestJsonResponse>(Outer);
 	Serializable->Entries = Entries;
 	Serializable->Uid = Uid;
 	Serializable->PublisherAccountId = PublisherAccountId;
+	Serializable->CreatedAt = CreatedAt;
 	
 	return Serializable;
 }
 
-void UClientManifestJsonResponseLibrary::Break(const UClientManifestJsonResponse* Serializable, TArray<FBeamRemoteContentManifestEntry>& Entries, FOptionalString& Uid, FOptionalInt64& PublisherAccountId)
+void UClientManifestJsonResponseLibrary::Break(const UClientManifestJsonResponse* Serializable, TArray<FBeamRemoteContentManifestEntry>& Entries, FOptionalString& Uid, FOptionalInt64& PublisherAccountId, FOptionalInt64& CreatedAt)
 {
-	Entries = Serializable->Entries;
-	Uid = Serializable->Uid;
-	PublisherAccountId = Serializable->PublisherAccountId;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Entries = Serializable->Entries;
+		Uid = Serializable->Uid;
+		PublisherAccountId = Serializable->PublisherAccountId;
+		CreatedAt = Serializable->CreatedAt;
+	}
 		
 }
 

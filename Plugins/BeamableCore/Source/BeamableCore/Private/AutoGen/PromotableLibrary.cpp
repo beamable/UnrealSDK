@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/PromotableLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UPromotableLibrary::PromotableToJsonString(const UPromotable* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ UPromotable* UPromotableLibrary::Make(FString Checksum, int64 CreatedAt, UObject
 
 void UPromotableLibrary::Break(const UPromotable* Serializable, FString& Checksum, int64& CreatedAt)
 {
-	Checksum = Serializable->Checksum;
-	CreatedAt = Serializable->CreatedAt;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Checksum = Serializable->Checksum;
+		CreatedAt = Serializable->CreatedAt;
+	}
 		
 }
 

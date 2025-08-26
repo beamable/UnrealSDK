@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/GetLogsUrlHeaderLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UGetLogsUrlHeaderLibrary::GetLogsUrlHeaderToJsonString(const UGetLogsUrlHeader* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ UGetLogsUrlHeader* UGetLogsUrlHeaderLibrary::Make(FString Key, FString Value, UO
 
 void UGetLogsUrlHeaderLibrary::Break(const UGetLogsUrlHeader* Serializable, FString& Key, FString& Value)
 {
-	Key = Serializable->Key;
-	Value = Serializable->Value;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Key = Serializable->Key;
+		Value = Serializable->Value;
+	}
 		
 }
 

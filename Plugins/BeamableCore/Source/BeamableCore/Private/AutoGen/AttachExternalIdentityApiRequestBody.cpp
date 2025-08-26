@@ -23,8 +23,8 @@ void UAttachExternalIdentityApiRequestBody::BeamSerializeProperties(TUnrealPrett
 
 void UAttachExternalIdentityApiRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("provider_service")), ProviderService);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("external_token")), ExternalToken);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("provider_service"), Bag, ProviderService);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("external_token"), Bag, ExternalToken);
 	UBeamJsonUtils::DeserializeOptional<UChallengeSolution*>("challenge_solution", Bag, ChallengeSolution, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("provider_namespace", Bag, ProviderNamespace, OuterOwner);
 }

@@ -36,9 +36,9 @@ public:
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("isDaemonRunning")), IsDaemonRunning);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("isCliAccessible")), IsCliAccessible);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("cliLocation")), CliLocation);	
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("isDaemonRunning"), Bag, IsDaemonRunning);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("isCliAccessible"), Bag, IsCliAccessible);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("cliLocation"), Bag, CliLocation);	
 	}
 };
 

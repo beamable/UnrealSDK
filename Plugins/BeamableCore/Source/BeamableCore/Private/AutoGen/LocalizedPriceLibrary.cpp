@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/LocalizedPriceLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString ULocalizedPriceLibrary::LocalizedPriceToJsonString(const ULocalizedPrice* Serializable, const bool Pretty)
@@ -35,10 +36,13 @@ ULocalizedPrice* ULocalizedPriceLibrary::Make(int64 To, int64 Price, double Pric
 
 void ULocalizedPriceLibrary::Break(const ULocalizedPrice* Serializable, int64& To, int64& Price, double& PriceLocalized, FString& PriceLocalizedString)
 {
-	To = Serializable->To;
-	Price = Serializable->Price;
-	PriceLocalized = Serializable->PriceLocalized;
-	PriceLocalizedString = Serializable->PriceLocalizedString;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		To = Serializable->To;
+		Price = Serializable->Price;
+		PriceLocalized = Serializable->PriceLocalized;
+		PriceLocalizedString = Serializable->PriceLocalizedString;
+	}
 		
 }
 

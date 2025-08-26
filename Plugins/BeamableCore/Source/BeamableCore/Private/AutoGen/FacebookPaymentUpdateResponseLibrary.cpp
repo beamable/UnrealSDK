@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/FacebookPaymentUpdateResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UFacebookPaymentUpdateResponseLibrary::FacebookPaymentUpdateResponseToJsonString(const UFacebookPaymentUpdateResponse* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UFacebookPaymentUpdateResponse* UFacebookPaymentUpdateResponseLibrary::Make(FStr
 
 void UFacebookPaymentUpdateResponseLibrary::Break(const UFacebookPaymentUpdateResponse* Serializable, FString& Result)
 {
-	Result = Serializable->Result;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Result = Serializable->Result;
+	}
 		
 }
 

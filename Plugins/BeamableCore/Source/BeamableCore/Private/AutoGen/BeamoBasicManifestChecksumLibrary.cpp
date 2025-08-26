@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/BeamoBasicManifestChecksumLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UBeamoBasicManifestChecksumLibrary::BeamoBasicManifestChecksumToJsonString(const UBeamoBasicManifestChecksum* Serializable, const bool Pretty)
@@ -34,9 +35,12 @@ UBeamoBasicManifestChecksum* UBeamoBasicManifestChecksumLibrary::Make(FString Id
 
 void UBeamoBasicManifestChecksumLibrary::Break(const UBeamoBasicManifestChecksum* Serializable, FString& Id, FString& Checksum, int64& CreatedAt)
 {
-	Id = Serializable->Id;
-	Checksum = Serializable->Checksum;
-	CreatedAt = Serializable->CreatedAt;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Id = Serializable->Id;
+		Checksum = Serializable->Checksum;
+		CreatedAt = Serializable->CreatedAt;
+	}
 		
 }
 

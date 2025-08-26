@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/ScoreRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UScoreRequestBodyLibrary::ScoreRequestBodyToJsonString(const UScoreRequestBody* Serializable, const bool Pretty)
@@ -37,12 +38,15 @@ UScoreRequestBody* UScoreRequestBodyLibrary::Make(FString TournamentId, double S
 
 void UScoreRequestBodyLibrary::Break(const UScoreRequestBody* Serializable, FString& TournamentId, double& Score, int64& PlayerId, FOptionalBool& bIncrement, FOptionalString& ContentId, FOptionalMapOfString& Stats)
 {
-	TournamentId = Serializable->TournamentId;
-	Score = Serializable->Score;
-	PlayerId = Serializable->PlayerId;
-	bIncrement = Serializable->bIncrement;
-	ContentId = Serializable->ContentId;
-	Stats = Serializable->Stats;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		TournamentId = Serializable->TournamentId;
+		Score = Serializable->Score;
+		PlayerId = Serializable->PlayerId;
+		bIncrement = Serializable->bIncrement;
+		ContentId = Serializable->ContentId;
+		Stats = Serializable->Stats;
+	}
 		
 }
 

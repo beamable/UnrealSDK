@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/MicroserviceRegistrationsResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UMicroserviceRegistrationsResponseLibrary::MicroserviceRegistrationsResponseToJsonString(const UMicroserviceRegistrationsResponse* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UMicroserviceRegistrationsResponse* UMicroserviceRegistrationsResponseLibrary::M
 
 void UMicroserviceRegistrationsResponseLibrary::Break(const UMicroserviceRegistrationsResponse* Serializable, TArray<UMicroserviceRegistrations*>& Registrations)
 {
-	Registrations = Serializable->Registrations;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Registrations = Serializable->Registrations;
+	}
 		
 }
 

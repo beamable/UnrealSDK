@@ -2,7 +2,7 @@
 
 #include "BEAMPROJ_SteamDemo.h"
 
-#define LOCTEXT_NAMESPACE "FBEAMPROJ_SandboxModule"
+#define LOCTEXT_NAMESPACE "FBEAMPROJ_SteamDemoModule"
 
 void FBEAMPROJ_SteamDemoModule::StartupModule()
 {

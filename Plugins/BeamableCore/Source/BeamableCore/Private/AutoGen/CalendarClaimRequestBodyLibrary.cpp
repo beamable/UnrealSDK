@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/CalendarClaimRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UCalendarClaimRequestBodyLibrary::CalendarClaimRequestBodyToJsonString(const UCalendarClaimRequestBody* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UCalendarClaimRequestBody* UCalendarClaimRequestBodyLibrary::Make(FString Id, UO
 
 void UCalendarClaimRequestBodyLibrary::Break(const UCalendarClaimRequestBody* Serializable, FString& Id)
 {
-	Id = Serializable->Id;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Id = Serializable->Id;
+	}
 		
 }
 

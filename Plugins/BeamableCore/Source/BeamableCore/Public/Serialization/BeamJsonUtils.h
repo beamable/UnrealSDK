@@ -199,8 +199,7 @@ class BEAMABLECORE_API UBeamJsonUtils final : public UBlueprintFunctionLibrary
 				{
 					FString ValStr = EnumToSerializationName<TDataType>(Value);
 					Serializer->WriteValue(ValStr);
-				}
-				if constexpr (std::is_same_v<TDataType, FDateTime>)
+				}else if constexpr (std::is_same_v<TDataType, FDateTime>)
 				{
 					Serializer->WriteValue(Value.ToIso8601());
 				}
@@ -644,10 +643,10 @@ public:
 
 		return static_cast<TEnum>(Enum->GetValueByIndex(Value));
 	}
-
 	template <typename TSerializationType>
 	static void DeserializeSemanticType(const TSharedPtr<FJsonValue>& JsonField, FBeamSemanticType& ToDeserialize, TWeakObjectPtr<UObject> OuterOwner = (UObject*)GetTransientPackage())
 	{
+			
 		const auto SemanticTypeName = FString(TNameOf<TSerializationType>::GetName());
 		if constexpr (TIsPointer<TSerializationType>::Value)
 		{
@@ -655,7 +654,8 @@ public:
 		}
 		else if constexpr (std::is_same_v<TSerializationType, FString>)
 		{
-			const FString Val = JsonField->AsString();
+			FString Val;
+			JsonField->TryGetString(Val);
 			FBeamSemanticType::Set(&ToDeserialize, &Val, SemanticTypeName);
 		}
 		else if constexpr (TIsDerivedFrom<TSerializationType, FBeamMap>::Value)
@@ -672,7 +672,8 @@ public:
 		}
 		else if constexpr (std::is_same_v<TSerializationType, int8>)
 		{
-			const FString Val = JsonField->AsString();
+			FString Val;
+			JsonField->TryGetString(Val);
 			int32 Parsed;
 			FDefaultValueHelper::ParseInt(Val, Parsed);
 			const int8 Cast = static_cast<int8>(Parsed);
@@ -680,7 +681,8 @@ public:
 		}
 		else if constexpr (std::is_same_v<TSerializationType, int16>)
 		{
-			const FString Val = JsonField->AsString();
+			FString Val;
+			JsonField->TryGetString(Val);
 			int32 Parsed;
 			FDefaultValueHelper::ParseInt(Val, Parsed);
 			const int16 Cast = static_cast<int16>(Parsed);
@@ -688,37 +690,52 @@ public:
 		}
 		else if constexpr (std::is_same_v<TSerializationType, int32>)
 		{
-			const FString Val = JsonField->AsString();
+			FString Val;
+			JsonField->TryGetString(Val);
 			int32 Parsed;
 			FDefaultValueHelper::ParseInt(Val, Parsed);
 			FBeamSemanticType::Set(&ToDeserialize, &Parsed, SemanticTypeName);
 		}
 		else if constexpr (std::is_same_v<TSerializationType, int64>)
 		{
-			const FString Val = JsonField->AsString();
+			FString Val;
+			JsonField->TryGetString(Val);
 			int64 Parsed;
 			FDefaultValueHelper::ParseInt64(Val, Parsed);
 			FBeamSemanticType::Set(&ToDeserialize, &Parsed, SemanticTypeName);
 		}
 		else if constexpr (std::is_same_v<TSerializationType, float>)
 		{
-			const FString Val = JsonField->AsString();
+			FString Val;
+			JsonField->TryGetString(Val);
 			float Parsed;
 			FDefaultValueHelper::ParseFloat(Val, Parsed);
 			FBeamSemanticType::Set(&ToDeserialize, &Parsed, SemanticTypeName);
 		}
 		else if constexpr (std::is_same_v<TSerializationType, double>)
 		{
-			const FString Val = JsonField->AsString();
+			FString Val;
+			JsonField->TryGetString(Val);
 			double Parsed;
 			FDefaultValueHelper::ParseDouble(Val, Parsed);
 			FBeamSemanticType::Set(&ToDeserialize, &Parsed, SemanticTypeName);
 		}
 		else if constexpr (std::is_same_v<TSerializationType, bool>)
 		{
-			const FString Val = JsonField->AsString();
+			FString Val;
+			JsonField->TryGetString(Val);
 			const bool Parsed = Val.Equals(TEXT("true"), ESearchCase::IgnoreCase);
 			FBeamSemanticType::Set(&ToDeserialize, &Parsed, SemanticTypeName);
+		}
+	}
+	template <typename TSerializationType>
+	static void DeserializeSemanticType(const FString& Identifier, const TSharedPtr<FJsonObject>& OwnerBag, FBeamSemanticType& ToDeserialize, TWeakObjectPtr<UObject> OuterOwner = (UObject*)GetTransientPackage())
+	{
+		if (OwnerBag->HasField(Identifier))
+		{
+			const TSharedPtr<FJsonValue>& JsonField = OwnerBag->TryGetField(Identifier);
+
+			DeserializeSemanticType<TSerializationType>(JsonField, ToDeserialize, OuterOwner);
 		}
 	}
 
@@ -772,12 +789,14 @@ public:
 	{
 		if (JsonField->Type == EJson::String)
 		{
-			FString Parsed = JsonField->AsString();
-			ParsedEnum = SerializationNameToEnum<TDataType>(Parsed);
+			FString Val;
+			JsonField->TryGetString(Val);
+			ParsedEnum = SerializationNameToEnum<TDataType>(Val);
 		}
 		else if (JsonField->Type == EJson::Number)
 		{
-			int Parsed = JsonField->AsNumber();
+			int Parsed;
+			JsonField->TryGetNumber(Parsed);
 			ParsedEnum = SerializationIndexToEnum<TDataType>(Parsed);
 		}
 		else
@@ -804,6 +823,7 @@ public:
 		// If we did receive the field, let's set the optional value based on the types that we get.
 		else
 		{
+			
 			const auto JsonField = OwnerBag->TryGetField(Identifier);
 			if constexpr (TIsTMap<TOptionalType>::Value)
 			{
@@ -827,12 +847,14 @@ public:
 					}
 					else if constexpr (std::is_same_v<TDataType, FString>)
 					{
-						const FString Val = Item->AsString();
+						FString Val;
+						Item->TryGetString(Val);
 						ParsedMap.Add(Key, Val);
 					}
 					else if constexpr (std::is_same_v<TDataType, FDateTime>)
 					{
-						const FString Val = Item->AsString();
+						FString Val;
+						Item->TryGetString(Val);
 						FDateTime Parsed;
 						FDateTime::ParseIso8601(*Val, Parsed);
 						ParsedMap.Add(Key, Parsed);
@@ -872,49 +894,56 @@ public:
 					}
 					else if constexpr (std::is_same_v<TDataType, int8>)
 					{
-						const FString Val = Item->AsString();
+						FString Val;
+						Item->TryGetString(Val);
 						int32 Parsed;
 						FDefaultValueHelper::ParseInt(Val, Parsed);
 						ParsedMap.Add(Key, static_cast<int8>(Parsed));
 					}
 					else if constexpr (std::is_same_v<TDataType, int16>)
 					{
-						const FString Val = Item->AsString();
+						FString Val;
+						Item->TryGetString(Val);
 						int32 Parsed;
 						FDefaultValueHelper::ParseInt(Val, Parsed);
 						ParsedMap.Add(Key, static_cast<int16>(Parsed));
 					}
 					else if constexpr (std::is_same_v<TDataType, int32>)
 					{
-						const FString Val = Item->AsString();
+						FString Val;
+						Item->TryGetString(Val);
 						int32 Parsed;
 						FDefaultValueHelper::ParseInt(Val, Parsed);
 						ParsedMap.Add(Key, Parsed);
 					}
 					else if constexpr (std::is_same_v<TDataType, int64>)
 					{
-						const FString Val = Item->AsString();
+						FString Val;
+						Item->TryGetString(Val);
 						int64 Parsed;
 						FDefaultValueHelper::ParseInt64(Val, Parsed);
 						ParsedMap.Add(Key, Parsed);
 					}
 					else if constexpr (std::is_same_v<TDataType, float>)
 					{
-						const FString Val = Item->AsString();
+						FString Val;
+						Item->TryGetString(Val);
 						float Parsed;
 						FDefaultValueHelper::ParseFloat(Val, Parsed);
 						ParsedMap.Add(Key, Parsed);
 					}
 					else if constexpr (std::is_same_v<TDataType, double>)
 					{
-						const FString Val = Item->AsString();
+						FString Val;
+						Item->TryGetString(Val);
 						double Parsed;
 						FDefaultValueHelper::ParseDouble(Val, Parsed);
 						ParsedMap.Add(Key, Parsed);
 					}
 					else if constexpr (std::is_same_v<TDataType, bool>)
 					{
-						const FString Val = Item->AsString();
+						FString Val;
+						Item->TryGetString(Val);
 						bool Parsed = Val.Equals(TEXT("true"), ESearchCase::IgnoreCase);
 						ParsedMap.Add(Key, Parsed);
 					}
@@ -942,7 +971,8 @@ public:
 					}
 					else if constexpr (std::is_same_v<TDataType, FString>)
 					{
-						const FString Val = ArrayJsonItem->AsString();
+						FString Val;
+						ArrayJsonItem->TryGetString(Val);
 						ParsedArray.Add(Val);
 					}
 					else if constexpr (TIsDerivedFrom<TDataType, FBeamSemanticType>::Value)
@@ -980,55 +1010,63 @@ public:
 					}
 					else if constexpr (std::is_same_v<TDataType, int8>)
 					{
-						const FString Val = ArrayJsonItem->AsString();
+						FString Val;
+						ArrayJsonItem->TryGetString(Val);
 						int32 Parsed;
 						FDefaultValueHelper::ParseInt(Val, Parsed);
 						ParsedArray.Add(static_cast<int8>(Parsed));
 					}
 					else if constexpr (std::is_same_v<TDataType, int16>)
 					{
-						const FString Val = ArrayJsonItem->AsString();
+						FString Val;
+						ArrayJsonItem->TryGetString(Val);
 						int32 Parsed;
 						FDefaultValueHelper::ParseInt(Val, Parsed);
 						ParsedArray.Add(static_cast<int16>(Parsed));
 					}
 					else if constexpr (std::is_same_v<TDataType, int32>)
 					{
-						const FString Val = ArrayJsonItem->AsString();
+						FString Val;
+						ArrayJsonItem->TryGetString(Val);
 						int32 Parsed;
 						FDefaultValueHelper::ParseInt(Val, Parsed);
 						ParsedArray.Add(Parsed);
 					}
 					else if constexpr (std::is_same_v<TDataType, int64>)
 					{
-						const FString Val = ArrayJsonItem->AsString();
+						FString Val;
+						ArrayJsonItem->TryGetString(Val);
 						int64 Parsed;
 						FDefaultValueHelper::ParseInt64(Val, Parsed);
 						ParsedArray.Add(Parsed);
 					}
 					else if constexpr (std::is_same_v<TDataType, float>)
 					{
-						const FString Val = ArrayJsonItem->AsString();
+						FString Val;
+						ArrayJsonItem->TryGetString(Val);
 						float Parsed;
 						FDefaultValueHelper::ParseFloat(Val, Parsed);
 						ParsedArray.Add(Parsed);
 					}
 					else if constexpr (std::is_same_v<TDataType, double>)
 					{
-						const FString Val = ArrayJsonItem->AsString();
+						FString Val;
+						ArrayJsonItem->TryGetString(Val);
 						double Parsed;
 						FDefaultValueHelper::ParseDouble(Val, Parsed);
 						ParsedArray.Add(Parsed);
 					}
 					else if constexpr (std::is_same_v<TDataType, bool>)
 					{
-						const FString Val = ArrayJsonItem->AsString();
+						FString Val;
+						ArrayJsonItem->TryGetString(Val);
 						bool Parsed = Val.Equals(TEXT("true"), ESearchCase::IgnoreCase);
 						ParsedArray.Add(Parsed);
 					}
 					else if constexpr (std::is_same_v<TDataType, FDateTime>)
 					{
-						const FString Val = ArrayJsonItem->AsString();
+						FString Val;
+						ArrayJsonItem->TryGetString(Val);
 						FDateTime Parsed;
 						FDateTime::ParseIso8601(*Val, Parsed);
 						ParsedArray.Add(Parsed);
@@ -1053,18 +1091,21 @@ public:
 				else if constexpr (std::is_same_v<TOptionalType, FDateTime>)
 				{
 					FDateTime dateTime;
-					FDateTime::ParseIso8601(*JsonField->AsString(), dateTime);
+					FString Val;
+					JsonField->TryGetString(Val);
+					FDateTime::ParseIso8601(*Val, dateTime);
 					FBeamOptional::Set(&ToDeserialize, &dateTime);
 				}
 				else if constexpr (std::is_same_v<TOptionalType, FString>)
 				{
-					const FString val = JsonField->AsString();
-					FBeamOptional::Set(&ToDeserialize, &val);
+					FString Val;
+					JsonField->TryGetString(Val);
+					FBeamOptional::Set(&ToDeserialize, &Val);
 				}
 				else if constexpr (TIsDerivedFrom<TOptionalType, FBeamSemanticType>::Value)
 				{
 					TOptionalType val;
-					DeserializeSemanticType<TDataType>(JsonField, val);
+					DeserializeSemanticType<TDataType>(Identifier, OwnerBag, val);
 					FBeamOptional::Set(&ToDeserialize, &val);
 				}
 				else if constexpr (TIsDerivedFrom<TOptionalType, FBeamMap>::Value)
@@ -1093,7 +1134,8 @@ public:
 				}
 				else if constexpr (std::is_same_v<TDataType, int8>)
 				{
-					const FString Val = JsonField->AsString();
+					FString Val;
+					JsonField->TryGetString(Val);
 					int32 Parsed;
 					FDefaultValueHelper::ParseInt(Val, Parsed);
 					int8 cast = static_cast<int8>(Parsed);
@@ -1101,7 +1143,8 @@ public:
 				}
 				else if constexpr (std::is_same_v<TDataType, int16>)
 				{
-					const FString Val = JsonField->AsString();
+					FString Val;
+					JsonField->TryGetString(Val);
 					int32 Parsed;
 					FDefaultValueHelper::ParseInt(Val, Parsed);
 					int16 cast = static_cast<int16>(Parsed);
@@ -1109,56 +1152,63 @@ public:
 				}
 				else if constexpr (std::is_same_v<TOptionalType, int32>)
 				{
-					const FString val = JsonField->AsString();
+					FString Val;
+					JsonField->TryGetString(Val);
 					int32 Parsed;
-					FDefaultValueHelper::ParseInt(val, Parsed);
+					FDefaultValueHelper::ParseInt(Val, Parsed);
 					FBeamOptional::Set(&ToDeserialize, &Parsed);
 				}
 				else if constexpr (std::is_same_v<TOptionalType, int64>)
 				{
-					const FString val = JsonField->AsString();
+					FString Val;
+					JsonField->TryGetString(Val);
 					int64 Parsed;
-					FDefaultValueHelper::ParseInt64(val, Parsed);
+					FDefaultValueHelper::ParseInt64(Val, Parsed);
 					FBeamOptional::Set(&ToDeserialize, &Parsed);
 				}
 				else if constexpr (std::is_same_v<TOptionalType, float>)
 				{
-					const FString val = JsonField->AsString();
+					FString Val;
+					JsonField->TryGetString(Val);
 					float Parsed;
-					FDefaultValueHelper::ParseFloat(val, Parsed);
+					FDefaultValueHelper::ParseFloat(Val, Parsed);
 					FBeamOptional::Set(&ToDeserialize, &Parsed);
 				}
 				else if constexpr (std::is_same_v<TOptionalType, double>)
 				{
-					const FString val = JsonField->AsString();
+					FString Val;
+					JsonField->TryGetString(Val);
 					double Parsed;
-					FDefaultValueHelper::ParseDouble(val, Parsed);
+					FDefaultValueHelper::ParseDouble(Val, Parsed);
 					FBeamOptional::Set(&ToDeserialize, &Parsed);
 				}
 				else if constexpr (std::is_same_v<TOptionalType, bool>)
 				{
-					const FString val = JsonField->AsString();
-					bool Parsed = val.Equals(TEXT("true"), ESearchCase::IgnoreCase);
+					FString Val;
+					JsonField->TryGetString(Val);
+					bool Parsed = Val.Equals(TEXT("true"), ESearchCase::IgnoreCase);
 					FBeamOptional::Set(&ToDeserialize, &Parsed);
 				}
 			}
 		}
 	}
-
 	template <typename TDataType, typename TSemanticTypeRepresentation = TDataType>
-	static void DeserializeArray(const TArray<TSharedPtr<FJsonValue>>& JsonArray, TArray<TDataType>& Array, TWeakObjectPtr<UObject> OwnerOuter = (UObject*)GetTransientPackage())
+		static void DeserializeArray(const TArray<TSharedPtr<FJsonValue>>& JsonArray, TArray<TDataType>& Array, TWeakObjectPtr<UObject> OwnerOuter = (UObject*)GetTransientPackage())
 	{
+		
 		for (const TSharedPtr<FJsonValue>& JsonValue : JsonArray)
 		{
 			if constexpr (std::is_same_v<TDataType, FString>)
 			{
-				const FString val = JsonValue->AsString();
-				Array.Add(val);
+				FString Val;
+				JsonValue->TryGetString(Val);
+				Array.Add(Val);
 			}
 			else if constexpr (std::is_same_v<TDataType, TSoftObjectPtr<TSemanticTypeRepresentation>>)
 			{
-				const FString val = JsonValue->AsString();
-				const FSoftObjectPath SoftObjectPath = FSoftObjectPath(val);
+				FString Val;
+				JsonValue->TryGetString(Val);
+				const FSoftObjectPath SoftObjectPath = FSoftObjectPath(Val);
 				TSoftObjectPtr<TSemanticTypeRepresentation> Parsed(SoftObjectPath);
 				Array.Add(Parsed);
 			}
@@ -1209,43 +1259,49 @@ public:
 			}
 			else if constexpr (std::is_same_v<TDataType, FDateTime>)
 			{
-				const FString val = JsonValue->AsString();
+				FString Val;
+				JsonValue->TryGetString(Val);
 				FDateTime Parsed;
-				FDateTime::ParseIso8601(*val, Parsed);
+				FDateTime::ParseIso8601(*Val, Parsed);
 				Array.Add(Parsed);
 			}
 			else if constexpr (std::is_same_v<TDataType, int>)
 			{
-				const FString val = JsonValue->AsString();
+				FString Val;
+				JsonValue->TryGetString(Val);
 				int Parsed;
-				FDefaultValueHelper::ParseInt(val, Parsed);
+				FDefaultValueHelper::ParseInt(Val, Parsed);
 				Array.Add(Parsed);
 			}
 			else if constexpr (std::is_same_v<TDataType, int64>)
 			{
-				const FString val = JsonValue->AsString();
+				FString Val;
+				JsonValue->TryGetString(Val);
 				int64 Parsed;
-				FDefaultValueHelper::ParseInt64(val, Parsed);
+				FDefaultValueHelper::ParseInt64(Val, Parsed);
 				Array.Add(Parsed);
 			}
 			else if constexpr (std::is_same_v<TDataType, float>)
 			{
-				const FString val = JsonValue->AsString();
+				FString Val;
+				JsonValue->TryGetString(Val);
 				float Parsed;
-				FDefaultValueHelper::ParseFloat(val, Parsed);
+				FDefaultValueHelper::ParseFloat(Val, Parsed);
 				Array.Add(Parsed);
 			}
 			else if constexpr (std::is_same_v<TDataType, double>)
 			{
-				const FString val = JsonValue->AsString();
+				FString Val;
+				JsonValue->TryGetString(Val);
 				double Parsed;
-				FDefaultValueHelper::ParseDouble(val, Parsed);
+				FDefaultValueHelper::ParseDouble(Val, Parsed);
 				Array.Add(Parsed);
 			}
 			else if constexpr (std::is_same_v<TDataType, bool>)
 			{
-				const FString val = JsonValue->AsString();
-				bool Parsed = val.Equals(TEXT("true"), ESearchCase::IgnoreCase);
+				FString Val;
+				JsonValue->TryGetString(Val);
+				bool Parsed = Val.Equals(TEXT("true"), ESearchCase::IgnoreCase);
 				Array.Add(Parsed);
 			}
 			else
@@ -1254,10 +1310,21 @@ public:
 			}
 		}
 	}
+	template <typename TDataType, typename TSemanticTypeRepresentation = TDataType>
+	static void DeserializeArray(const FString& Identifier, const TSharedPtr<FJsonObject>& OwnerBag, TArray<TDataType>& Array, TWeakObjectPtr<UObject> OwnerOuter = (UObject*)GetTransientPackage())
+	{
+		if (OwnerBag->HasField(Identifier))
+		{
+			const TArray<TSharedPtr<FJsonValue>>& JsonArray = OwnerBag->GetArrayField(Identifier);
+
+			DeserializeArray(JsonArray, Array, OwnerOuter);
+		}
+	}
 
 	template <typename TMapType, typename TDataType = TMapType, typename TSemanticTypeRepresentation = TDataType>
-	static void DeserializeMap(const TSharedPtr<FJsonObject>& JsonMap, TMap<FString, TMapType>& Map, TWeakObjectPtr<UObject> OwnerOuter = (UObject*)GetTransientPackage())
+		static void DeserializeMap(const TSharedPtr<FJsonObject>& JsonMap, TMap<FString, TMapType>& Map, TWeakObjectPtr<UObject> OwnerOuter = (UObject*)GetTransientPackage())
 	{
+		
 		if constexpr (TIsTArray<TMapType>::Value)
 			static_assert(TIsTemplateParam<TDataType, TMapType>::value, "When TMapType is an array, TDataType must be the type for that array.");
 
@@ -1274,12 +1341,14 @@ public:
 
 			if constexpr (std::is_same_v<TMapType, FString>)
 			{
-				const auto Val = Value.Value->AsString();
+				FString Val;
+				Value.Value->TryGetString(Val);
 				Map.Add(Key, Val);
 			}
 			else if constexpr (std::is_same_v<TDataType, TSoftObjectPtr<TSemanticTypeRepresentation>>)
 			{
-				const auto ValStr = Value.Value->AsString();
+				FString ValStr;
+				Value.Value->TryGetString(ValStr);
 				const auto ValSoftObjPath = FSoftObjectPath(ValStr);
 				const auto Val = TSoftObjectPtr<TSemanticTypeRepresentation>(ValSoftObjPath);
 				Map.Add(Key, Val);
@@ -1332,42 +1401,48 @@ public:
 			}
 			else if constexpr (std::is_same_v<TMapType, FDateTime>)
 			{
-				const FString Val = Value.Value->AsString();
+				FString Val;
+				Value.Value->TryGetString(Val);
 				FDateTime Parsed;
 				FDateTime::ParseIso8601(*Val, Parsed);
 				Map.Add(Key, Parsed);
 			}
 			else if constexpr (std::is_same_v<TMapType, int>)
 			{
-				const auto Val = Value.Value->AsString();
+				FString Val;
+				Value.Value->TryGetString(Val);
 				int Parsed;
 				FDefaultValueHelper::ParseInt(Val, Parsed);
 				Map.Add(Key, Parsed);
 			}
 			else if constexpr (std::is_same_v<TMapType, int64>)
 			{
-				const auto Val = Value.Value->AsString();
+				FString Val;
+				Value.Value->TryGetString(Val);
 				int64 Parsed;
 				FDefaultValueHelper::ParseInt64(Val, Parsed);
 				Map.Add(Key, Parsed);
 			}
 			else if constexpr (std::is_same_v<TMapType, float>)
 			{
-				const auto Val = Value.Value->AsString();
+				FString Val;
+				Value.Value->TryGetString(Val);
 				float Parsed;
 				FDefaultValueHelper::ParseFloat(Val, Parsed);
 				Map.Add(Key, Parsed);
 			}
 			else if constexpr (std::is_same_v<TMapType, double>)
 			{
-				const auto Val = Value.Value->AsString();
+				FString Val;
+				Value.Value->TryGetString(Val);
 				double Parsed;
 				FDefaultValueHelper::ParseDouble(Val, Parsed);
 				Map.Add(Key, Parsed);
 			}
 			else if constexpr (std::is_same_v<TMapType, bool>)
 			{
-				const auto Val = Value.Value->AsString();
+				FString Val;
+				Value.Value->TryGetString(Val);
 				bool Parsed = Val.Equals(TEXT("true"), ESearchCase::IgnoreCase);
 				Map.Add(Key, Parsed);
 			}
@@ -1379,9 +1454,19 @@ public:
 			}
 		}
 	}
-
+	
+	template <typename TMapType, typename TDataType = TMapType, typename TSemanticTypeRepresentation = TDataType>
+	static void DeserializeMap(const FString& Identifier, const TSharedPtr<FJsonObject>& OwnerBag, TMap<FString, TMapType>& Map, TWeakObjectPtr<UObject> OwnerOuter = (UObject*)GetTransientPackage())
+	{
+		if (OwnerBag->HasField(Identifier))
+		{
+			const TSharedPtr<FJsonObject>& JsonMap = OwnerBag->GetObjectField(Identifier);
+			
+			DeserializeMap(JsonMap, Map, OwnerOuter);
+		}
+	}
 	template <typename TPrimitiveType>
-	static void DeserializeRawPrimitive(const FString& JsonField, TPrimitiveType& ToDeserialize, TWeakObjectPtr<UObject> OuterOwner = (UObject*)GetTransientPackage())
+		static void DeserializeRawPrimitive(const FString& JsonField, TPrimitiveType& ToDeserialize, TWeakObjectPtr<UObject> OuterOwner = (UObject*)GetTransientPackage())
 	{
 		if (TIsDerivedFrom<TPrimitiveType, FBeamSemanticType>::Value)
 		{
@@ -1493,9 +1578,22 @@ public:
 			FDateTime::ParseIso8601(*Val, ToDeserialize);
 		}
 	}
+	template <typename TPrimitiveType>
+	static void DeserializeRawPrimitive(const FString& Identifier, const TSharedPtr<FJsonObject>& OwnerBag, TPrimitiveType& ToDeserialize, TWeakObjectPtr<UObject> OuterOwner = (UObject*)GetTransientPackage())
+	{
+		if (OwnerBag->HasField(Identifier))
+		{
+			const FString& JsonField = OwnerBag->GetStringField(Identifier);
+
+			DeserializeRawPrimitive<TPrimitiveType>(JsonField, ToDeserialize, OuterOwner);
+		}
+	}
 
 	static void DeserializeJsonObject(const FString Identifier, const TSharedPtr<FJsonObject>& Bag, TSharedPtr<FJsonObject>& Settings, TWeakObjectPtr<UObject> OuterOwner)
 	{
-		Settings = Bag->GetObjectField(Identifier);
+		if (Bag->HasField(Identifier))
+		{
+			Settings = Bag->GetObjectField(Identifier);
+		}
 	}
 };

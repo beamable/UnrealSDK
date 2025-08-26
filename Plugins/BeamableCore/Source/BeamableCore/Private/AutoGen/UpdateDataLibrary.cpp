@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/UpdateDataLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UUpdateDataLibrary::UpdateDataToJsonString(const UUpdateData* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ UUpdateData* UUpdateDataLibrary::Make(FOptionalArrayOfString Deletes, FOptionalM
 
 void UUpdateDataLibrary::Break(const UUpdateData* Serializable, FOptionalArrayOfString& Deletes, FOptionalMapOfString& Updates)
 {
-	Deletes = Serializable->Deletes;
-	Updates = Serializable->Updates;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Deletes = Serializable->Deletes;
+		Updates = Serializable->Updates;
+	}
 		
 }
 

@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/RealmConfigSaveRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString URealmConfigSaveRequestBodyLibrary::RealmConfigSaveRequestBodyToJsonString(const URealmConfigSaveRequestBody* Serializable, const bool Pretty)
@@ -22,7 +23,7 @@ FString URealmConfigSaveRequestBodyLibrary::RealmConfigSaveRequestBodyToJsonStri
 	return Result;
 }	
 
-URealmConfigSaveRequestBody* URealmConfigSaveRequestBodyLibrary::Make(TMap<FString, FString> Config, UObject* Outer)
+URealmConfigSaveRequestBody* URealmConfigSaveRequestBodyLibrary::Make(FOptionalMapOfString Config, UObject* Outer)
 {
 	auto Serializable = NewObject<URealmConfigSaveRequestBody>(Outer);
 	Serializable->Config = Config;
@@ -30,9 +31,12 @@ URealmConfigSaveRequestBody* URealmConfigSaveRequestBodyLibrary::Make(TMap<FStri
 	return Serializable;
 }
 
-void URealmConfigSaveRequestBodyLibrary::Break(const URealmConfigSaveRequestBody* Serializable, TMap<FString, FString>& Config)
+void URealmConfigSaveRequestBodyLibrary::Break(const URealmConfigSaveRequestBody* Serializable, FOptionalMapOfString& Config)
 {
-	Config = Serializable->Config;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Config = Serializable->Config;
+	}
 		
 }
 

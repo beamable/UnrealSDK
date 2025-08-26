@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/RemoveFromLobbyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString URemoveFromLobbyLibrary::RemoveFromLobbyToJsonString(const URemoveFromLobby* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ URemoveFromLobby* URemoveFromLobbyLibrary::Make(FOptionalBeamGamerTag PlayerId, 
 
 void URemoveFromLobbyLibrary::Break(const URemoveFromLobby* Serializable, FOptionalBeamGamerTag& PlayerId)
 {
-	PlayerId = Serializable->PlayerId;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		PlayerId = Serializable->PlayerId;
+	}
 		
 }
 

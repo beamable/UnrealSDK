@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/EventPhaseRuntimeLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UEventPhaseRuntimeLibrary::EventPhaseRuntimeToJsonString(const UEventPhaseRuntime* Serializable, const bool Pretty)
@@ -35,10 +36,13 @@ UEventPhaseRuntime* UEventPhaseRuntimeLibrary::Make(FString Name, int64 StartTim
 
 void UEventPhaseRuntimeLibrary::Break(const UEventPhaseRuntime* Serializable, FString& Name, int64& StartTime, int64& EndTime, TArray<UEventRule*>& Rules)
 {
-	Name = Serializable->Name;
-	StartTime = Serializable->StartTime;
-	EndTime = Serializable->EndTime;
-	Rules = Serializable->Rules;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Name = Serializable->Name;
+		StartTime = Serializable->StartTime;
+		EndTime = Serializable->EndTime;
+		Rules = Serializable->Rules;
+	}
 		
 }
 

@@ -28,7 +28,7 @@ public:
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("outputsPaths")), OutputsPaths, OuterOwner);	
+		UBeamJsonUtils::DeserializeArray<FString>(TEXT("outputsPaths"), Bag, OutputsPaths, OuterOwner);	
 	}
 };
 
@@ -41,6 +41,8 @@ Usage:
   Beamable.Tools project generate-client-oapi [options]
 
 Options:
+  --ids <ids>                            The list of services to include, defaults to all local services (separated by whitespace). To use NO services, use the --exact-ids flag
+  --exact-ids                            By default, a blank --ids option maps to ALL available ids. When the --exact-ids flag is given, a blank --ids option maps to NO ids
   --output-dir <output-dir>              Directory to write the output client at
   --dryrun                               [DEPRECATED] Run as much of the command as possible without making any network calls
   --cid <cid>                            CID (CustomerId) to use (found in Portal->Account); defaults to whatever is in '.beamable/connection-configuration.json'

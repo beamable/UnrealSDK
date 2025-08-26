@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/ContentBasicManifestChecksumLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UContentBasicManifestChecksumLibrary::ContentBasicManifestChecksumToJsonString(const UContentBasicManifestChecksum* Serializable, const bool Pretty)
@@ -36,11 +37,14 @@ UContentBasicManifestChecksum* UContentBasicManifestChecksumLibrary::Make(FBeamC
 
 void UContentBasicManifestChecksumLibrary::Break(const UContentBasicManifestChecksum* Serializable, FBeamContentManifestId& Id, FString& Checksum, int64& CreatedAt, FOptionalBool& bArchived, FOptionalString& Uid)
 {
-	Id = Serializable->Id;
-	Checksum = Serializable->Checksum;
-	CreatedAt = Serializable->CreatedAt;
-	bArchived = Serializable->bArchived;
-	Uid = Serializable->Uid;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Id = Serializable->Id;
+		Checksum = Serializable->Checksum;
+		CreatedAt = Serializable->CreatedAt;
+		bArchived = Serializable->bArchived;
+		Uid = Serializable->Uid;
+	}
 		
 }
 

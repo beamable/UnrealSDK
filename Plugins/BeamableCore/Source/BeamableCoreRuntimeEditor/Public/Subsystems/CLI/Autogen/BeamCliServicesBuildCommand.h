@@ -36,9 +36,9 @@ public:
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("id")), Id);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("message")), Message);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("isFailure")), IsFailure);	
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("id"), Bag, Id);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("message"), Bag, Message);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("isFailure"), Bag, IsFailure);	
 	}
 };
 
@@ -73,9 +73,9 @@ public:
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("id")), Id);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("totalSteps")), TotalSteps);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("completedSteps")), CompletedSteps);	
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("id"), Bag, Id);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("totalSteps"), Bag, TotalSteps);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("completedSteps"), Bag, CompletedSteps);	
 	}
 };
 
@@ -88,7 +88,8 @@ Usage:
   Beamable.Tools services build [options]
 
 Options:
-  --ids <ids>                                        The list of services to include, defaults to all local services (separated by whitespace)
+  --ids <ids>                                        The list of services to include, defaults to all local services (separated by whitespace). To use NO services, use the --exact-ids flag
+  --exact-ids                                        By default, a blank --ids option maps to ALL available ids. When the --exact-ids flag is given, a blank --ids option maps to NO ids
   --without-group, --without-groups <without-group>  A set of BeamServiceGroup tags that will exclude the associated services. Exclusion takes precedence over inclusion
   --with-group, --with-groups <with-group>           A set of BeamServiceGroup tags that will include the associated services
   -fcpu, --force-cpu-arch                            When true, build an image for the Beamable Cloud architecture, amd64 [default: False]

@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/AnnouncementQueryLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UAnnouncementQueryLibrary::AnnouncementQueryToJsonString(const UAnnouncementQuery* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UAnnouncementQuery* UAnnouncementQueryLibrary::Make(FOptionalBool bIncludeDelete
 
 void UAnnouncementQueryLibrary::Break(const UAnnouncementQuery* Serializable, FOptionalBool& bIncludeDeleted)
 {
-	bIncludeDeleted = Serializable->bIncludeDeleted;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		bIncludeDeleted = Serializable->bIncludeDeleted;
+	}
 		
 }
 

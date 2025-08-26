@@ -21,8 +21,8 @@ void UMailRewards::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializ
 
 void UMailRewards::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeArray<UCurrencyChange*>(Bag->GetArrayField(TEXT("currencies")), Currencies, OuterOwner);
-	UBeamJsonUtils::DeserializeArray<UItemCreateRequestBody*>(Bag->GetArrayField(TEXT("items")), Items, OuterOwner);
+	UBeamJsonUtils::DeserializeArray<UCurrencyChange*>(TEXT("currencies"), Bag, Currencies, OuterOwner);
+	UBeamJsonUtils::DeserializeArray<UItemCreateRequestBody*>(TEXT("items"), Bag, Items, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<bool>("applyVipBonus", Bag, bApplyVipBonus, OuterOwner);
 }
 

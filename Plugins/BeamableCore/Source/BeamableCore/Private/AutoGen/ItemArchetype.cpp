@@ -21,7 +21,7 @@ void UItemArchetype::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serial
 
 void UItemArchetype::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("symbol")), Symbol);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("symbol"), Bag, Symbol);
 	UBeamJsonUtils::DeserializeOptional<UFederationInfo*>("external", Bag, External, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FBeamClientPermission>("clientPermission", Bag, ClientPermission, OuterOwner);
 }

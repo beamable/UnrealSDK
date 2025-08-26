@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/LocalizationRefLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString ULocalizationRefLibrary::LocalizationRefToJsonString(const ULocalizationRef* Serializable, const bool Pretty)
@@ -34,9 +35,12 @@ ULocalizationRef* ULocalizationRefLibrary::Make(bool bEmpty, FString Localizatio
 
 void ULocalizationRefLibrary::Break(const ULocalizationRef* Serializable, bool& bEmpty, FString& LocalizationId, FOptionalString& DefaultValue)
 {
-	bEmpty = Serializable->bEmpty;
-	LocalizationId = Serializable->LocalizationId;
-	DefaultValue = Serializable->DefaultValue;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		bEmpty = Serializable->bEmpty;
+		LocalizationId = Serializable->LocalizationId;
+		DefaultValue = Serializable->DefaultValue;
+	}
 		
 }
 

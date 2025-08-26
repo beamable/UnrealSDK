@@ -47,7 +47,7 @@ void UBeamPlayerTicketApi::BP_GetMatchmakingTicketsImpl(const FBeamRealmHandle& 
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 	    
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
-		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId);	
+		Backend->SendPreparedRequest(OutRequestId, CallingContext);	
 	}
 }
 
@@ -77,7 +77,7 @@ void UBeamPlayerTicketApi::CPP_GetMatchmakingTicketsImpl(const FBeamRealmHandle&
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
-		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId);	
+		Backend->SendPreparedRequest(OutRequestId, CallingContext);	
 	}
 }
 
@@ -96,8 +96,8 @@ void UBeamPlayerTicketApi::CPP_GetMatchmakingTickets(const FUserSlot& UserSlot, 
 	Backend->GetRetryConfigForUserSlotAndRequestType(UGetMatchmakingTicketsRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
 
     int64 OutRequestId;
-	CPP_GetMatchmakingTicketsImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Request, Handler, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
+	CPP_GetMatchmakingTicketsImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, AuthenticatedUser.AuthToken, Request, Handler, OutRequestId, OpHandle, CallingContext);
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, UserSlot, AS_None};
 }
 
 
@@ -115,7 +115,7 @@ void UBeamPlayerTicketApi::GetMatchmakingTickets(FUserSlot UserSlot, UGetMatchma
 	Backend->GetRetryConfigForUserSlotAndRequestType(UGetMatchmakingTicketsRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
 
 	int64 OutRequestId;
-	BP_GetMatchmakingTicketsImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
+	BP_GetMatchmakingTicketsImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, AuthenticatedUser.AuthToken, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, UserSlot, AS_None};
 }
 

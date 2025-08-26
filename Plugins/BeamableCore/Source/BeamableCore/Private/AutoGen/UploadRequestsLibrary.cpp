@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/UploadRequestsLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UUploadRequestsLibrary::UploadRequestsToJsonString(const UUploadRequests* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ UUploadRequests* UUploadRequestsLibrary::Make(TArray<UUploadRequestBody*> Reques
 
 void UUploadRequestsLibrary::Break(const UUploadRequests* Serializable, TArray<UUploadRequestBody*>& Request, FOptionalInt64& PlayerId)
 {
-	Request = Serializable->Request;
-	PlayerId = Serializable->PlayerId;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Request = Serializable->Request;
+		PlayerId = Serializable->PlayerId;
+	}
 		
 }
 

@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/GetMetricsUrlRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UGetMetricsUrlRequestBodyLibrary::GetMetricsUrlRequestBodyToJsonString(const UGetMetricsUrlRequestBody* Serializable, const bool Pretty)
@@ -36,11 +37,14 @@ UGetMetricsUrlRequestBody* UGetMetricsUrlRequestBodyLibrary::Make(FString Servic
 
 void UGetMetricsUrlRequestBodyLibrary::Break(const UGetMetricsUrlRequestBody* Serializable, FString& ServiceName, FString& MetricName, FOptionalInt64& StartTime, FOptionalInt64& EndTime, FOptionalInt32& Period)
 {
-	ServiceName = Serializable->ServiceName;
-	MetricName = Serializable->MetricName;
-	StartTime = Serializable->StartTime;
-	EndTime = Serializable->EndTime;
-	Period = Serializable->Period;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		ServiceName = Serializable->ServiceName;
+		MetricName = Serializable->MetricName;
+		StartTime = Serializable->StartTime;
+		EndTime = Serializable->EndTime;
+		Period = Serializable->Period;
+	}
 		
 }
 

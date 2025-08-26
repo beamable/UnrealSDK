@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/CreateProjectRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UCreateProjectRequestBodyLibrary::CreateProjectRequestBodyToJsonString(const UCreateProjectRequestBody* Serializable, const bool Pretty)
@@ -35,10 +36,13 @@ UCreateProjectRequestBody* UCreateProjectRequestBodyLibrary::Make(FString Name, 
 
 void UCreateProjectRequestBodyLibrary::Break(const UCreateProjectRequestBody* Serializable, FString& Name, FOptionalBool& bSharded, FOptionalString& Plan, FOptionalString& Parent)
 {
-	Name = Serializable->Name;
-	bSharded = Serializable->bSharded;
-	Plan = Serializable->Plan;
-	Parent = Serializable->Parent;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Name = Serializable->Name;
+		bSharded = Serializable->bSharded;
+		Plan = Serializable->Plan;
+		Parent = Serializable->Parent;
+	}
 		
 }
 

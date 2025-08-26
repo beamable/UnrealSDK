@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/EventsInDateRangeResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UEventsInDateRangeResponseLibrary::EventsInDateRangeResponseToJsonString(const UEventsInDateRangeResponse* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UEventsInDateRangeResponse* UEventsInDateRangeResponseLibrary::Make(TArray<UEven
 
 void UEventsInDateRangeResponseLibrary::Break(const UEventsInDateRangeResponse* Serializable, TArray<UEventDateRanges*>& EventInDateRange)
 {
-	EventInDateRange = Serializable->EventInDateRange;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		EventInDateRange = Serializable->EventInDateRange;
+	}
 		
 }
 

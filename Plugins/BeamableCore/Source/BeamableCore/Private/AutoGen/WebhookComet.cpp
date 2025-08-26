@@ -27,9 +27,9 @@ void UWebhookComet::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Seriali
 
 void UWebhookComet::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("method")), Method);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("method"), Bag, Method);
 	UBeamJsonUtils::DeserializeUObject<URouteVariables*>("variables", Bag, Variables, OuterOwner);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("symbol")), Symbol);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("symbol"), Bag, Symbol);
 	UBeamJsonUtils::DeserializeUObject<UServiceRoute*>("route", Bag, Route, OuterOwner);
 	UBeamJsonUtils::DeserializeUObject<URouteParameters*>("parameters", Bag, Parameters, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("description", Bag, Description, OuterOwner);

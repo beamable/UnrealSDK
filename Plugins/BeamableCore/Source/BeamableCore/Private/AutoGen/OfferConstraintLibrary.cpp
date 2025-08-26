@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/OfferConstraintLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UOfferConstraintLibrary::OfferConstraintToJsonString(const UOfferConstraint* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ UOfferConstraint* UOfferConstraintLibrary::Make(FString Constraint, int32 Value,
 
 void UOfferConstraintLibrary::Break(const UOfferConstraint* Serializable, FString& Constraint, int32& Value)
 {
-	Constraint = Serializable->Constraint;
-	Value = Serializable->Value;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Constraint = Serializable->Constraint;
+		Value = Serializable->Value;
+	}
 		
 }
 

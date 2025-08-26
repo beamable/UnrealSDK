@@ -21,7 +21,7 @@ void URouteParameters::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Seri
 
 void URouteParameters::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeArray<URouteParameter*>(Bag->GetArrayField(TEXT("parameters")), Parameters, OuterOwner);
+	UBeamJsonUtils::DeserializeArray<URouteParameter*>(TEXT("parameters"), Bag, Parameters, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("payload", Bag, Payload, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("objectId", Bag, ObjectId, OuterOwner);
 }

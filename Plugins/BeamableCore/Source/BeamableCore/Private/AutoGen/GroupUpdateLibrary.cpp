@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/GroupUpdateLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UGroupUpdateLibrary::GroupUpdateToJsonString(const UGroupUpdate* Serializable, const bool Pretty)
@@ -39,14 +40,17 @@ UGroupUpdate* UGroupUpdateLibrary::Make(FOptionalString Name, FOptionalString En
 
 void UGroupUpdateLibrary::Break(const UGroupUpdate* Serializable, FOptionalString& Name, FOptionalString& EnrollmentType, FOptionalString& Tag, FOptionalString& Slogan, FOptionalInt64& Requirement, FOptionalString& Motd, FOptionalString& ClientData, FOptionalInt64& SubGroup)
 {
-	Name = Serializable->Name;
-	EnrollmentType = Serializable->EnrollmentType;
-	Tag = Serializable->Tag;
-	Slogan = Serializable->Slogan;
-	Requirement = Serializable->Requirement;
-	Motd = Serializable->Motd;
-	ClientData = Serializable->ClientData;
-	SubGroup = Serializable->SubGroup;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Name = Serializable->Name;
+		EnrollmentType = Serializable->EnrollmentType;
+		Tag = Serializable->Tag;
+		Slogan = Serializable->Slogan;
+		Requirement = Serializable->Requirement;
+		Motd = Serializable->Motd;
+		ClientData = Serializable->ClientData;
+		SubGroup = Serializable->SubGroup;
+	}
 		
 }
 

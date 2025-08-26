@@ -3,6 +3,7 @@
 #include "Subsystems/CLI/BeamCliCommand.h"
 #include "Serialization/BeamJsonUtils.h"
 #include "Subsystems/CLI/Autogen/StreamData/AccountMeExternalIdentityStreamData.h"
+#include "Subsystems/CLI/Autogen/StreamData/RealmRoleStreamData.h"
 #include "BeamCliMeCommand.generated.h"
 
 
@@ -28,6 +29,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<UAccountMeExternalIdentityStreamData*> External = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString RoleString = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<URealmRoleStreamData*> Roles = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString TokenCid = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString TokenPid = {};
@@ -51,6 +56,8 @@ public:
 		UBeamJsonUtils::SerializeArray<FString>(TEXT("thirdPartyAppAssociations"), ThirdPartyAppAssociations, Serializer);
 		UBeamJsonUtils::SerializeArray<FString>(TEXT("deviceIds"), DeviceIds, Serializer);
 		UBeamJsonUtils::SerializeArray<UAccountMeExternalIdentityStreamData*>(TEXT("external"), External, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("roleString"), RoleString, Serializer);
+		UBeamJsonUtils::SerializeArray<URealmRoleStreamData*>(TEXT("roles"), Roles, Serializer);
 		UBeamJsonUtils::SerializeRawPrimitive(TEXT("tokenCid"), TokenCid, Serializer);
 		UBeamJsonUtils::SerializeRawPrimitive(TEXT("tokenPid"), TokenPid, Serializer);
 		UBeamJsonUtils::SerializeRawPrimitive(TEXT("accessToken"), AccessToken, Serializer);
@@ -69,6 +76,8 @@ public:
 		UBeamJsonUtils::SerializeArray<FString>(TEXT("thirdPartyAppAssociations"), ThirdPartyAppAssociations, Serializer);
 		UBeamJsonUtils::SerializeArray<FString>(TEXT("deviceIds"), DeviceIds, Serializer);
 		UBeamJsonUtils::SerializeArray<UAccountMeExternalIdentityStreamData*>(TEXT("external"), External, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("roleString"), RoleString, Serializer);
+		UBeamJsonUtils::SerializeArray<URealmRoleStreamData*>(TEXT("roles"), Roles, Serializer);
 		UBeamJsonUtils::SerializeRawPrimitive(TEXT("tokenCid"), TokenCid, Serializer);
 		UBeamJsonUtils::SerializeRawPrimitive(TEXT("tokenPid"), TokenPid, Serializer);
 		UBeamJsonUtils::SerializeRawPrimitive(TEXT("accessToken"), AccessToken, Serializer);
@@ -80,20 +89,131 @@ public:
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("id")), Id);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("email")), Email);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("language")), Language);
-		UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("scopes")), Scopes, OuterOwner);
-		UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("thirdPartyAppAssociations")), ThirdPartyAppAssociations, OuterOwner);
-		UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("deviceIds")), DeviceIds, OuterOwner);
-		UBeamJsonUtils::DeserializeArray<UAccountMeExternalIdentityStreamData*>(Bag->GetArrayField(TEXT("external")), External, OuterOwner);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("tokenCid")), TokenCid);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("tokenPid")), TokenPid);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("accessToken")), AccessToken);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("refreshToken")), RefreshToken);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("tokenExpiration")), TokenExpiration);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("tokenIssuedAt")), TokenIssuedAt);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("tokenExpiresIn")), TokenExpiresIn);	
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("id"), Bag, Id);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("email"), Bag, Email);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("language"), Bag, Language);
+		UBeamJsonUtils::DeserializeArray<FString>(TEXT("scopes"), Bag, Scopes, OuterOwner);
+		UBeamJsonUtils::DeserializeArray<FString>(TEXT("thirdPartyAppAssociations"), Bag, ThirdPartyAppAssociations, OuterOwner);
+		UBeamJsonUtils::DeserializeArray<FString>(TEXT("deviceIds"), Bag, DeviceIds, OuterOwner);
+		UBeamJsonUtils::DeserializeArray<UAccountMeExternalIdentityStreamData*>(TEXT("external"), Bag, External, OuterOwner);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("roleString"), Bag, RoleString);
+		UBeamJsonUtils::DeserializeArray<URealmRoleStreamData*>(TEXT("roles"), Bag, Roles, OuterOwner);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("tokenCid"), Bag, TokenCid);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("tokenPid"), Bag, TokenPid);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("accessToken"), Bag, AccessToken);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("refreshToken"), Bag, RefreshToken);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("tokenExpiration"), Bag, TokenExpiration);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("tokenIssuedAt"), Bag, TokenIssuedAt);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("tokenExpiresIn"), Bag, TokenExpiresIn);	
+	}
+};
+
+
+UCLASS(BlueprintType)
+class UBeamCliMeErrorNoTokenErrorStreamData : public UObject, public IBeamJsonSerializableUObject
+{
+	GENERATED_BODY()
+
+public:	
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString Message = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString Invocation = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 ExitCode = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString TypeName = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString FullTypeName = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString StackTrace = {};
+
+	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
+	{
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("message"), Message, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("invocation"), Invocation, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("exitCode"), ExitCode, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("typeName"), TypeName, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("fullTypeName"), FullTypeName, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("stackTrace"), StackTrace, Serializer);	
+	}
+
+	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
+	{
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("message"), Message, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("invocation"), Invocation, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("exitCode"), ExitCode, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("typeName"), TypeName, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("fullTypeName"), FullTypeName, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("stackTrace"), StackTrace, Serializer);	
+	}
+
+	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
+	{
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("message"), Bag, Message);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("invocation"), Bag, Invocation);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("exitCode"), Bag, ExitCode);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("typeName"), Bag, TypeName);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("fullTypeName"), Bag, FullTypeName);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("stackTrace"), Bag, StackTrace);	
+	}
+};
+
+
+UCLASS(BlueprintType)
+class UBeamCliMeErrorInvalidTokenErrorStreamData : public UObject, public IBeamJsonSerializableUObject
+{
+	GENERATED_BODY()
+
+public:	
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString ServerError = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString Message = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString Invocation = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 ExitCode = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString TypeName = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString FullTypeName = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString StackTrace = {};
+
+	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
+	{
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("serverError"), ServerError, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("message"), Message, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("invocation"), Invocation, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("exitCode"), ExitCode, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("typeName"), TypeName, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("fullTypeName"), FullTypeName, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("stackTrace"), StackTrace, Serializer);	
+	}
+
+	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
+	{
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("serverError"), ServerError, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("message"), Message, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("invocation"), Invocation, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("exitCode"), ExitCode, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("typeName"), TypeName, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("fullTypeName"), FullTypeName, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("stackTrace"), StackTrace, Serializer);	
+	}
+
+	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
+	{
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("serverError"), Bag, ServerError);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("message"), Bag, Message);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("invocation"), Bag, Invocation);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("exitCode"), Bag, ExitCode);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("typeName"), Bag, TypeName);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("fullTypeName"), Bag, FullTypeName);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("stackTrace"), Bag, StackTrace);	
 	}
 };
 
@@ -140,7 +260,17 @@ public:
 	inline static FString StreamType = FString(TEXT("stream"));
 	UPROPERTY() TArray<UBeamCliMeStreamData*> Stream;
 	UPROPERTY() TArray<int64> Timestamps;
-	TFunction<void (TArray<UBeamCliMeStreamData*>& StreamData, TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnStreamOutput;	
+	TFunction<void (TArray<UBeamCliMeStreamData*>& StreamData, TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnStreamOutput;
+
+	inline static FString StreamTypeErrorNoTokenError = FString(TEXT("errorNoTokenError"));
+	UPROPERTY() TArray<UBeamCliMeErrorNoTokenErrorStreamData*> ErrorNoTokenErrorStream;
+	UPROPERTY() TArray<int64> ErrorNoTokenErrorTimestamps;
+	TFunction<void (TArray<UBeamCliMeErrorNoTokenErrorStreamData*>& StreamData, TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnErrorNoTokenErrorStreamOutput;
+
+	inline static FString StreamTypeErrorInvalidTokenError = FString(TEXT("errorInvalidTokenError"));
+	UPROPERTY() TArray<UBeamCliMeErrorInvalidTokenErrorStreamData*> ErrorInvalidTokenErrorStream;
+	UPROPERTY() TArray<int64> ErrorInvalidTokenErrorTimestamps;
+	TFunction<void (TArray<UBeamCliMeErrorInvalidTokenErrorStreamData*>& StreamData, TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnErrorInvalidTokenErrorStreamOutput;	
 
 	TFunction<void (const int& ResCode, const FBeamOperationHandle& Op)> OnCompleted;
 	virtual bool HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer) override;

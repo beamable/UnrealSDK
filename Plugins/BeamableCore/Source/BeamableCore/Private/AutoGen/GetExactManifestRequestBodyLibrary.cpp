@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/GetExactManifestRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UGetExactManifestRequestBodyLibrary::GetExactManifestRequestBodyToJsonString(const UGetExactManifestRequestBody* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UGetExactManifestRequestBody* UGetExactManifestRequestBodyLibrary::Make(FString 
 
 void UGetExactManifestRequestBodyLibrary::Break(const UGetExactManifestRequestBody* Serializable, FString& Uid)
 {
-	Uid = Serializable->Uid;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Uid = Serializable->Uid;
+	}
 		
 }
 

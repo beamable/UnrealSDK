@@ -32,8 +32,8 @@ public:
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("path")), Path);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("configPath")), ConfigPath);	
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("path"), Bag, Path);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("configPath"), Bag, ConfigPath);	
 	}
 };
 
@@ -48,7 +48,6 @@ Usage:
 Options:
   --platform <platform>                  The platform for the collector executable. [osx, win, lin] or defaults to system
   --arch <arch>                          The architecture for the collector executable. [arm64, x64] or defaults to system
-  --override-version <override-version>  The collector version to download, or defaults to current install
   --dryrun                               [DEPRECATED] Run as much of the command as possible without making any network calls
   --cid <cid>                            CID (CustomerId) to use (found in Portal->Account); defaults to whatever is in '.beamable/connection-configuration.json'
   --pid <pid>                            PID (Realm ID) to use (found in Portal -> Games -> Any Realm's details); defaults to whatever is in '.beamable/connection-configuration.json'

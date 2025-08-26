@@ -32,8 +32,8 @@ void UTokenResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serial
 
 void UTokenResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("expires_in")), ExpiresIn);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("token_type")), TokenType);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("expires_in"), Bag, ExpiresIn);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("token_type"), Bag, TokenType);
 	UBeamJsonUtils::DeserializeOptional<FString>("access_token", Bag, AccessToken, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("refresh_token", Bag, RefreshToken, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("challenge_token", Bag, ChallengeToken, OuterOwner);

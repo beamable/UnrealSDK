@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/CompletePurchaseRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UCompletePurchaseRequestBodyLibrary::CompletePurchaseRequestBodyToJsonString(const UCompletePurchaseRequestBody* Serializable, const bool Pretty)
@@ -35,10 +36,13 @@ UCompletePurchaseRequestBody* UCompletePurchaseRequestBodyLibrary::Make(int64 Tx
 
 void UCompletePurchaseRequestBodyLibrary::Break(const UCompletePurchaseRequestBody* Serializable, int64& Txid, FString& Receipt, FString& PriceInLocalCurrency, FString& IsoCurrencySymbol)
 {
-	Txid = Serializable->Txid;
-	Receipt = Serializable->Receipt;
-	PriceInLocalCurrency = Serializable->PriceInLocalCurrency;
-	IsoCurrencySymbol = Serializable->IsoCurrencySymbol;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Txid = Serializable->Txid;
+		Receipt = Serializable->Receipt;
+		PriceInLocalCurrency = Serializable->PriceInLocalCurrency;
+		IsoCurrencySymbol = Serializable->IsoCurrencySymbol;
+	}
 		
 }
 

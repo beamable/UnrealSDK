@@ -36,9 +36,9 @@ void UAccountPortalView::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Se
 
 void UAccountPortalView::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeSemanticType<int64>(Bag->TryGetField(TEXT("id")), Id, OuterOwner);
-	UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("scopes")), Scopes, OuterOwner);
-	UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("thirdPartyAppAssociations")), ThirdPartyAppAssociations, OuterOwner);
+	UBeamJsonUtils::DeserializeSemanticType<int64>(TEXT("id"), Bag, Id, OuterOwner);
+	UBeamJsonUtils::DeserializeArray<FString>(TEXT("scopes"), Bag, Scopes, OuterOwner);
+	UBeamJsonUtils::DeserializeArray<FString>(TEXT("thirdPartyAppAssociations"), Bag, ThirdPartyAppAssociations, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("email", Bag, Email, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("roleString", Bag, RoleString, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("language", Bag, Language, OuterOwner);

@@ -27,7 +27,7 @@ void UPostSearchExtendedRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostSearchExtendedRequest* UPostSearchExtendedRequest::Make(FString _Domain, FString _ObjectType, FString _Access, TArray<UStatsSearchCriteria*> _Criteria, TArray<FString> _StatKeys, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
+UPostSearchExtendedRequest* UPostSearchExtendedRequest::Make(FString _Domain, FString _ObjectType, FString _Access, TArray<UStatsSearchCriteria*> _Criteria, TArray<FString> _StatKeys, FOptionalInt32 _Offset, FOptionalInt32 _Limit, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPostSearchExtendedRequest* Req = NewObject<UPostSearchExtendedRequest>(RequestOwner);
 	Req->CustomHeaders = TMap{CustomHeaders};
@@ -42,6 +42,8 @@ UPostSearchExtendedRequest* UPostSearchExtendedRequest::Make(FString _Domain, FS
 	Req->Body->Access = _Access;
 	Req->Body->Criteria = _Criteria;
 	Req->Body->StatKeys = _StatKeys;
+	Req->Body->Offset = _Offset;
+	Req->Body->Limit = _Limit;
 	
 
 	return Req;

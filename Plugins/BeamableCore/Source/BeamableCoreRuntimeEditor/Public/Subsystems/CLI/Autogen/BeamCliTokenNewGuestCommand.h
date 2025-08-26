@@ -48,12 +48,12 @@ public:
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("accessToken")), AccessToken);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("challengeToken")), ChallengeToken);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("expiresIn")), ExpiresIn);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("refreshToken")), RefreshToken);
-		UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("scopes")), Scopes, OuterOwner);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("tokenType")), TokenType);	
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("accessToken"), Bag, AccessToken);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("challengeToken"), Bag, ChallengeToken);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("expiresIn"), Bag, ExpiresIn);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("refreshToken"), Bag, RefreshToken);
+		UBeamJsonUtils::DeserializeArray<FString>(TEXT("scopes"), Bag, Scopes, OuterOwner);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("tokenType"), Bag, TokenType);	
 	}
 };
 

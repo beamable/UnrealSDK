@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/SupportedFederationsResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString USupportedFederationsResponseLibrary::SupportedFederationsResponseToJsonString(const USupportedFederationsResponse* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ USupportedFederationsResponse* USupportedFederationsResponseLibrary::Make(TArray
 
 void USupportedFederationsResponseLibrary::Break(const USupportedFederationsResponse* Serializable, TArray<USupportedFederationRegistration*>& Registrations)
 {
-	Registrations = Serializable->Registrations;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Registrations = Serializable->Registrations;
+	}
 		
 }
 

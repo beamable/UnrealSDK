@@ -19,8 +19,8 @@ void UGamerTagAssociation::BeamSerializeProperties(TUnrealPrettyJsonSerializer& 
 
 void UGamerTagAssociation::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeSemanticType<FString>(Bag->TryGetField(TEXT("projectId")), ProjectId, OuterOwner);
-	UBeamJsonUtils::DeserializeSemanticType<int64>(Bag->TryGetField(TEXT("gamerTag")), GamerTag, OuterOwner);
+	UBeamJsonUtils::DeserializeSemanticType<FString>(TEXT("projectId"), Bag, ProjectId, OuterOwner);
+	UBeamJsonUtils::DeserializeSemanticType<int64>(TEXT("gamerTag"), Bag, GamerTag, OuterOwner);
 }
 
 

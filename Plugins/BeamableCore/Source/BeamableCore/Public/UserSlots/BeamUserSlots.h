@@ -101,7 +101,8 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FUserSlotClearedHandler, const EUs
                                               TriggeringContext);
 
 DECLARE_MULTICAST_DELEGATE_FourParams(FUserSlotAuthenticatedCodeHandler, const FUserSlot&, const FBeamRealmUser&, const FBeamOperationHandle&, const UObject*);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FUserSlotAuthenticatedHandler, const FUserSlot&, SlotId, const FBeamRealmUser&, AuthenticatedUser, const FBeamOperationHandle&, OperationHandle, const UObject*, TriggeringContext);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FUserSlotAuthenticatedHandler, const FUserSlot&, SlotId, const FBeamRealmUser&, AuthenticatedUser, const FBeamOperationHandle&, OperationHandle, const UObject*,
+                                              TriggeringContext);
 
 /**
  * 
@@ -117,6 +118,9 @@ class BEAMABLECORE_API UBeamUserSlots : public UEngineSubsystem
 
 	friend class UBeamRuntime;
 	friend class UBeamEditor;
+	friend class UBeamPIE;
+
+	friend class UBeamUserDeveloperManagerEditor;
 
 private:
 	/**
@@ -149,7 +153,7 @@ public:
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 
 	/** Cleans up the system.  */
-	virtual void Deinitialize() override;	
+	virtual void Deinitialize() override;
 
 
 	static FString GetSavedSlotsDirectory();
@@ -182,7 +186,7 @@ public:
 	 */
 	UFUNCTION(BlueprintPure, Category="Beam", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
 	TArray<FUserSlot> GetKnownSlots();
-	
+
 	/**
 	 * @brief Tries to get the user currently  mapped to the given slot.	  
 	 * @return True, if there is a user mapped. False, if no user mapped was found. 
@@ -194,8 +198,7 @@ public:
 	 * @brief Tries to find the a FUserSlot, and its data, that contains the user with the given FBeamGamerTag.	  
 	 * @return True, if there is a user mapped. False, if no user mapped was found. 
 	 */
-	bool GetUserDataWithGamerTag(const FBeamGamerTag& GamerTag, FBeamRealmUser& OutUserData, FUserSlot& OutUserSlot, FString& NamespacedSlotId) const;
-
+	bool GetUserDataWithGamerTag(const FBeamGamerTag& GamerTag, FBeamRealmUser& OutUserData, FUserSlot& OutUserSlot, FString& NamespacedSlotId, const UObject* CallingContext) const;
 
 	/**
 	 * @brief Tries to get the user currently  mapped to the given slot.	  
@@ -277,6 +280,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Beam")
 	void ClearAllCachedUserDataAtSlot(FUserSlot SlotId);
 
+	void ClearAllCachedUserDataAtNamespacedSlot(FString NamespacedSlot);
+
 	/**
 		 * @brief Attempts to quickly authenticate a user with locally stored, serialized data.	  
 		 * @return True, if there was a user authenticated at that slot. False, if no serialized user slot file was found or if the file does not contain a refresh token.  
@@ -285,25 +290,11 @@ public:
 	bool IsUserSlotAuthenticated(FUserSlot SlotId, const UObject* CallingContext);
 
 	/**
-	 * @brief Attempts to load data locally stored in association to a given slot by another subsystem. T must be a UStruct	  
-	 * @return True, if there was a user authenticated at that slot. False, if no serialized user slot file was found or if the file does not contain a refresh token.  
-	 */
-	template <class T>
-	bool TryLoadSlotData(FString SlotDataTypeName, FUserSlot SlotId, T& OutSlotData, UObject* CallingContext) const;
-
-	/**
-	 * @brief Saves an arbitrary UStruct associated with that given slot. 
-	 * @returns TRUE, if the UserSlot was authenticated. FALSE, otherwise.
-	 */
-	template <class T>
-	bool SaveSlotData(FString SlotDataTypeName, FUserSlot SlotId, T SlotData, const UObject* CallingContext);
-
-	/**
 	 * Call to clear all slots that have the "PIE_" string in them. 
 	 */
 	UFUNCTION(BlueprintCallable)
 	void DeleteUserSlotCacheForPIE();
-	
+
 	/**
 	 * Returned by TryLoadSavedUserAtSlot when no slot was found.
 	 */
@@ -324,7 +315,25 @@ public:
 	 * @return True, if there was a user authenticated at that slot. False, if no serialized user slot file was found or if the file does not contain a refresh token.  
 	 */
 	UFUNCTION(BlueprintCallable, Category="Beam", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext", ExpandBoolAsExecs="ReturnValue"))
-	int32 TryLoadSavedUserAtSlot(FUserSlot SlotId, UObject* CallingContext);
+	int32 TryLoadSavedUserAtSlotAndAuth(FUserSlot SlotId, UObject* CallingContext);
+
+	/**
+ * @brief Attempts to quickly authenticate a user with locally stored, serialized data.	  
+ * @return True, if there was a user authenticated at that slot. False, if no serialized user slot file was found or if the file does not contain a refresh token.  
+ */
+	UFUNCTION(BlueprintCallable, Category="Beam", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext", ExpandBoolAsExecs="ReturnValue"))
+	int32 TryLoadSavedUserAtSlotAndAuthWithNamespace(FUserSlot SlotId, FString NamespacedSlotId, UObject* CallingContext);
+
+	/**
+	 * @copydoc @link TryLoadSavedUserAtSlotAndAuth @endlink 
+	 */
+	UFUNCTION(BlueprintCallable, Category="Beam", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext", ExpandBoolAsExecs="ReturnValue"))
+	int32 TryGetSavedUserDataAtSlot(FUserSlot SlotId, FUserSlotAuthData& OutAuthData, FUserSlotAccountData& OutAccountData, UObject* CallingContext);
+
+	/**
+	 * @copydoc @link TryLoadSavedUserAtSlotAndAuth @endlink 
+	 */
+	int32 TryGetSavedUserDataAtNamespacedSlot(FString NamespacedSlotId, FUserSlotAuthData& OutAuthData, FUserSlotAccountData& OutAccountData);
 
 
 	/**
@@ -340,7 +349,8 @@ public:
 	 */
 	static FString GetNamespacedSlotId(FUserSlot SlotId, const UObject* CallingContext);
 
-	
+	static FString GetNamespacedSlotId(FUserSlot SlotId, int32 PIEInstance);
+
 #if WITH_EDITOR
 	/**
 	 * Extracts the PIE Prefix (PIE_N_) from any given string. This is used to support Multiplayer PIE modes. 
@@ -353,6 +363,7 @@ public:
 	static void RemovePiePrefix(const FString& Str, FString& WithoutPiePrefix);
 #endif
 
+
 	/**
 	 
   _    _                  _____ _       _      _____      _ _ _                _        
@@ -364,6 +375,9 @@ public:
 																						
 	 */
 private:
+	void SaveSlot(FUserSlot SlotId, int32 PIEInstance, int64 GamerTag, const FString& AccessToken, const FString& RefreshToken, const int64& IssuedAt, const int64& ExpiresIn, const FBeamCid& Cid,
+	              const FBeamPid& Pid);
+
 	/**	 
 	 * @brief A global handler delegate that'll be called when a UserSlot gets cleared.
 	 * It'll have access to the data associated with that slot at the time when it was cleared out but the slot itself will be empty

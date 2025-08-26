@@ -29,3 +29,9 @@ BEAMABLECORE_API DECLARE_LOG_CATEGORY_EXTERN(LogBeamParty, Log, All);
 BEAMABLECORE_API DECLARE_LOG_CATEGORY_EXTERN(LogBeamFriend, Log, All);
 
 BEAMABLECORE_API DECLARE_LOG_CATEGORY_EXTERN(LogBeamCli, Log, All);
+
+#define UE_BEAM_LOG(Context, CategoryName, Verbosity, Format, ...) \
+{ \
+	UE_LOG(CategoryName, Verbosity, TEXT("%s - %s"), \
+		*FBeamPIE_Utilities::BeamLogFormat(Context), *FString::Printf(Format, ##__VA_ARGS__)); \
+}

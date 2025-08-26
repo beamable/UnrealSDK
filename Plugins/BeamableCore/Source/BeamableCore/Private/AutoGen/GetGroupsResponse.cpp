@@ -24,7 +24,7 @@ void UGetGroupsResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Se
 
 void UGetGroupsResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeArray<UTournamentGroupEntry*>(Bag->GetArrayField(TEXT("entries")), Entries, OuterOwner);
+	UBeamJsonUtils::DeserializeArray<UTournamentGroupEntry*>(TEXT("entries"), Bag, Entries, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<UTournamentGroupEntry*>("focus", Bag, Focus, OuterOwner);
 }
 

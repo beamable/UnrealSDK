@@ -26,9 +26,8 @@ public class BeamableUnrealTarget : TargetRules
 		var samplePluginName = GetCurrBeamProj(Target);
 		Console.WriteLine($"Configuring standalone project as beamproj={samplePluginName}.");
 
-		ConfigureIfSandbox(this, samplePluginName);
+		ConfigureIfBeamball(this, samplePluginName);
 		ConfigureIfLiveOpsDemo(this, samplePluginName);
-		ConfigureIfHathoraDemo(this, samplePluginName);
 		ConfigureIfSteamDemo(this, samplePluginName);
 		ConfigureIfDiscordDemo(this, samplePluginName);
 	}
@@ -52,14 +51,14 @@ public class BeamableUnrealTarget : TargetRules
 			}
 		}
 
-		return kBeamProj_Sandbox;
+		return kBeamProj_Beamball;
 	}
+	
+	public const string kBeamProj_Beamball = "BEAMPROJ_Beamball";
 
-	public const string kBeamProj_Sandbox = "BEAMPROJ_Sandbox";
-
-	public static void ConfigureIfSandbox(TargetRules TargetRules, string beamProj)
+	public static void ConfigureIfBeamball(TargetRules TargetRules, string beamProj)
 	{
-		if (beamProj == kBeamProj_Sandbox)
+		if (beamProj == kBeamProj_Beamball)
 		{
 			var oss = Beam.OssConfig.Disabled();
 
@@ -81,7 +80,7 @@ public class BeamableUnrealTarget : TargetRules
 			}
 		}
 	}
-
+	
 	public const string kBeamProj_LiveOpsDemo = "BEAMPROJ_LiveOpsDemo";
 
 	public static void ConfigureIfLiveOpsDemo(TargetRules TargetRules, string beamProj)
@@ -108,36 +107,7 @@ public class BeamableUnrealTarget : TargetRules
 			}
 		}
 	}
-
-	public const string kBeamProj_HathoraDemo = "BEAMPROJ_HathoraDemo";
-
-	public static void ConfigureIfHathoraDemo(TargetRules TargetRules, string beamProj)
-	{
-		if (beamProj == kBeamProj_HathoraDemo)
-		{
-			var oss = new Beam.OssConfig()
-			{
-				IsEnabled = true,
-			};
-
-			if (TargetRules.Type == UnrealBuildTool.TargetType.Game)
-			{
-				Beam.ConfigureGame(TargetRules, oss);
-			}
-			else if (TargetRules.Type == UnrealBuildTool.TargetType.Editor)
-			{
-				Beam.ConfigureEditor(TargetRules, oss);
-			}
-			else if (TargetRules.Type == UnrealBuildTool.TargetType.Server)
-			{
-				Beam.ConfigureServer(TargetRules, oss);
-			}
-			else
-			{
-				throw new ArgumentOutOfRangeException();
-			}
-		}
-	}
+	
 
 	public const string kBeamProj_SteamDemo = "BEAMPROJ_SteamDemo";
 
@@ -442,10 +412,6 @@ public static class Beam
 
 			// Pass down, to the OnlineSubsystemBeamable plugin, a list of Module names that it'll also depend on
 			AdditionalData.OssAdditionalModules = OssConfig.AdditionalHookModules;
-		}
-		else
-		{
-			TargetRules.ProjectDefinitions.Add("BEAM_ENABLE_OSS_HOOKS=0");
 		}
 	}
 

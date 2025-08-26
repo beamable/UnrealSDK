@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/PutLocalizationsRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UPutLocalizationsRequestBodyLibrary::PutLocalizationsRequestBodyToJsonString(const UPutLocalizationsRequestBody* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UPutLocalizationsRequestBody* UPutLocalizationsRequestBodyLibrary::Make(TMap<FSt
 
 void UPutLocalizationsRequestBodyLibrary::Break(const UPutLocalizationsRequestBody* Serializable, TMap<FString, FArrayOfLocalizedValue>& Localizations)
 {
-	Localizations = Serializable->Localizations;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Localizations = Serializable->Localizations;
+	}
 		
 }
 

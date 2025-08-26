@@ -33,11 +33,11 @@ void UOfferDefinition::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Seri
 
 void UOfferDefinition::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("symbol")), Symbol);
-	UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("titles")), Titles, OuterOwner);
-	UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("images")), Images, OuterOwner);
-	UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("descriptions")), Descriptions, OuterOwner);
-	UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("obtain")), Obtain, OuterOwner);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("symbol"), Bag, Symbol);
+	UBeamJsonUtils::DeserializeArray<FString>(TEXT("titles"), Bag, Titles, OuterOwner);
+	UBeamJsonUtils::DeserializeArray<FString>(TEXT("images"), Bag, Images, OuterOwner);
+	UBeamJsonUtils::DeserializeArray<FString>(TEXT("descriptions"), Bag, Descriptions, OuterOwner);
+	UBeamJsonUtils::DeserializeArray<FString>(TEXT("obtain"), Bag, Obtain, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<UCommerceLootRoll*>("lootRoll", Bag, LootRoll, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("metadata", Bag, Metadata, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<TArray<UItemCreateRequestBody*>, UItemCreateRequestBody*>("obtainItems", Bag, ObtainItems, OuterOwner);

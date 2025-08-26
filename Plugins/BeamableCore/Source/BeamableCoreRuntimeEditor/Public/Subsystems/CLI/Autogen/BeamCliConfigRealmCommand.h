@@ -28,7 +28,7 @@ public:
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		UBeamJsonUtils::DeserializeMap<FString>(Bag->GetObjectField(TEXT("Config")), Config, OuterOwner);	
+		UBeamJsonUtils::DeserializeMap<FString>(TEXT("Config"), Bag, Config, OuterOwner);	
 	}
 };
 

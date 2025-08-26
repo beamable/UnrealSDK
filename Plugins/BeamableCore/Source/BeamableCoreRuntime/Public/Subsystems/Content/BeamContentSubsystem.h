@@ -9,7 +9,6 @@
 #include "GameFramework/SaveGame.h"
 #include "Runtime/BeamRuntimeSubsystem.h"
 #include "UObject/Object.h"
-#include "AutoGen/Rows/ClientContentInfoTableRow.h"
 #include "BeamBackend/BeamGenericApi.h"
 #include "Content/DownloadContentState.h"
 
@@ -117,13 +116,14 @@ public:
 	 * Tries to get a UBeamContentObject with the given Id from the 'global' (default) manifest.
 	 */
 	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
-	bool TryGetContent(FBeamContentId ContentId, UBeamContentObject*& OutContent);
+	bool TryGetContent(FBeamContentId ContentId, UPARAM(meta=(BeamCastTarget))UBeamContentObject*& OutContent);
+
 
 	/**
 	 * Tries to get a UBeamContentObject with the given Id from the manifest with the given Id.
 	 */
 	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
-	bool TryGetContentFromManifest(FBeamContentManifestId ManifestId, FBeamContentId ContentId, UBeamContentObject*& OutContent);
+	bool TryGetContentFromManifest(FBeamContentManifestId ManifestId, FBeamContentId ContentId, UPARAM(meta=(BeamCastTarget))UBeamContentObject*& OutContent);
 
 	/**
 	 * Checks if the in-memory content caches of the 'global' manfist have the content with the given id.
@@ -141,13 +141,13 @@ public:
 	 * Tries to get a UBeamContentObject with the given Id from the 'global' (default) manifest. This will always return the most recent baked content (either the cooked one or a downloaded and saved one). 
 	 */
 	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
-	bool TryGetBakedContent(FBeamContentId ContentId, UBeamContentObject*& OutContent);
+	bool TryGetBakedContent(FBeamContentId ContentId, UPARAM(meta=(BeamCastTarget))UBeamContentObject*& OutContent);
 
 	/**
 	* Tries to get a UBeamContentObject with the given Id from the manifest with the given Id. This will always return the most recent baked content (either the cooked one or a downloaded and saved one).
 	 */
 	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
-	bool TryGetBakedContentFromManifest(FBeamContentManifestId ManifestId, FBeamContentId ContentId, UBeamContentObject*& OutContent);
+	bool TryGetBakedContentFromManifest(FBeamContentManifestId ManifestId, FBeamContentId ContentId, UPARAM(meta=(BeamCastTarget))UBeamContentObject*& OutContent);
 
 	/**
 	 * Tries to get a UBeamContentObject with the given Id from the 'global' (default) manifest.

@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/BatchReadStatsResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UBatchReadStatsResponseLibrary::BatchReadStatsResponseToJsonString(const UBatchReadStatsResponse* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UBatchReadStatsResponse* UBatchReadStatsResponseLibrary::Make(TArray<UNetworkSer
 
 void UBatchReadStatsResponseLibrary::Break(const UBatchReadStatsResponse* Serializable, TArray<UNetworkSerializable*>& Results)
 {
-	Results = Serializable->Results;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Results = Serializable->Results;
+	}
 		
 }
 

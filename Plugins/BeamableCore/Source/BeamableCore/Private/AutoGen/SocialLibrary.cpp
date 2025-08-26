@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/SocialLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString USocialLibrary::SocialToJsonString(const USocial* Serializable, const bool Pretty)
@@ -35,10 +36,13 @@ USocial* USocialLibrary::Make(FBeamGamerTag PlayerId, TArray<UFriend*> Friends, 
 
 void USocialLibrary::Break(const USocial* Serializable, FBeamGamerTag& PlayerId, TArray<UFriend*>& Friends, TArray<UPlayerId*>& Blocked, TArray<UInvite*>& Invites)
 {
-	PlayerId = Serializable->PlayerId;
-	Friends = Serializable->Friends;
-	Blocked = Serializable->Blocked;
-	Invites = Serializable->Invites;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		PlayerId = Serializable->PlayerId;
+		Friends = Serializable->Friends;
+		Blocked = Serializable->Blocked;
+		Invites = Serializable->Invites;
+	}
 		
 }
 

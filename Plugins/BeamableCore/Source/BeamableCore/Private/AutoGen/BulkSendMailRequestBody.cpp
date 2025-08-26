@@ -17,7 +17,7 @@ void UBulkSendMailRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializ
 
 void UBulkSendMailRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeArray<USendMailRequestBody*>(Bag->GetArrayField(TEXT("sendMailRequests")), SendMailRequests, OuterOwner);
+	UBeamJsonUtils::DeserializeArray<USendMailRequestBody*>(TEXT("sendMailRequests"), Bag, SendMailRequests, OuterOwner);
 }
 
 

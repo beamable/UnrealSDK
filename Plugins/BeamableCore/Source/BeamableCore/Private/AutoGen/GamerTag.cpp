@@ -27,8 +27,8 @@ void UGamerTag::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer)
 
 void UGamerTag::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("tag")), Tag);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("platform")), Platform);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("tag"), Bag, Tag);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("platform"), Bag, Platform);
 	UBeamJsonUtils::DeserializeOptional<FString>("alias", Bag, Alias, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<int64>("added", Bag, Added, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<USessionUser*>("user", Bag, User, OuterOwner);

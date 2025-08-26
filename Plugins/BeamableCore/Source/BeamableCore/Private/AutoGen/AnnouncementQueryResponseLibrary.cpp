@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/AnnouncementQueryResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UAnnouncementQueryResponseLibrary::AnnouncementQueryResponseToJsonString(const UAnnouncementQueryResponse* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UAnnouncementQueryResponse* UAnnouncementQueryResponseLibrary::Make(TArray<UAnno
 
 void UAnnouncementQueryResponseLibrary::Break(const UAnnouncementQueryResponse* Serializable, TArray<UAnnouncementView*>& Announcements)
 {
-	Announcements = Serializable->Announcements;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Announcements = Serializable->Announcements;
+	}
 		
 }
 

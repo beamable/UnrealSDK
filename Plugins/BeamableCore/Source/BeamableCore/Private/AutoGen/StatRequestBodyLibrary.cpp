@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/StatRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UStatRequestBodyLibrary::StatRequestBodyToJsonString(const UStatRequestBody* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UStatRequestBody* UStatRequestBodyLibrary::Make(FOptionalString Stats, UObject* 
 
 void UStatRequestBodyLibrary::Break(const UStatRequestBody* Serializable, FOptionalString& Stats)
 {
-	Stats = Serializable->Stats;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Stats = Serializable->Stats;
+	}
 		
 }
 

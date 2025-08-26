@@ -6,7 +6,7 @@
 
 #include "BeamableCore/Public/AutoGen/SubSystems/BeamRealmsApi.h"
 #include "BeamableCore/Public/AutoGen/SubSystems/Realms/GetClientDefaultsRequest.h"
-#include "BeamableCore/Public/AutoGen/RealmConfiguration.h"
+#include "BeamableCore/Public/AutoGen/RealmsBasicRealmConfiguration.h"
 
 #define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_GetClientDefaults"
 
@@ -49,7 +49,7 @@ UClass* UK2BeamNode_ApiRequest_GetClientDefaults::GetRequestClass() const
 
 UClass* UK2BeamNode_ApiRequest_GetClientDefaults::GetResponseClass() const
 {
-	return URealmConfiguration::StaticClass();
+	return URealmsBasicRealmConfiguration::StaticClass();
 }
 
 FString UK2BeamNode_ApiRequest_GetClientDefaults::GetRequestSuccessDelegateName() const

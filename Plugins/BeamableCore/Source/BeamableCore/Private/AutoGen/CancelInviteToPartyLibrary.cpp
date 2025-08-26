@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/CancelInviteToPartyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UCancelInviteToPartyLibrary::CancelInviteToPartyToJsonString(const UCancelInviteToParty* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UCancelInviteToParty* UCancelInviteToPartyLibrary::Make(FOptionalBeamGamerTag Pl
 
 void UCancelInviteToPartyLibrary::Break(const UCancelInviteToParty* Serializable, FOptionalBeamGamerTag& PlayerId)
 {
-	PlayerId = Serializable->PlayerId;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		PlayerId = Serializable->PlayerId;
+	}
 		
 }
 

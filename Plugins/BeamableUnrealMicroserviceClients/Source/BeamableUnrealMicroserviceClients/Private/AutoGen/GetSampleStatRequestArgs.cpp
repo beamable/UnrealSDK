@@ -17,7 +17,7 @@ void UGetSampleStatRequestArgs::BeamSerializeProperties(TUnrealPrettyJsonSeriali
 
 void UGetSampleStatRequestArgs::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("gamerTag")), GamerTag);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("gamerTag"), Bag, GamerTag);
 }
 
 

@@ -13,15 +13,16 @@ bool UBeamCliServicesRunCommand::HandleStreamReceived(FBeamOperationHandle Op, F
 	
 	if(ReceivedStreamType.Equals(StreamType) && OnStreamOutput)
 	{
-		UBeamCliServicesRunStreamData* Data = NewObject<UBeamCliServicesRunStreamData>(this);
-		Data->OuterOwner = this;
-		Data->BeamDeserializeProperties(DataJson);
-
-		Stream.Add(Data);
-		Timestamps.Add(Timestamp);
-		
-		AsyncTask(ENamedThreads::GameThread, [this, Op]
+		AsyncTask(ENamedThreads::GameThread, [this, DataJson, Timestamp, Op]
 		{
+			UBeamCliServicesRunStreamData* Data = NewObject<UBeamCliServicesRunStreamData>(this);
+			Data->OuterOwner = this;
+			Data->BeamDeserializeProperties(DataJson);
+
+			Stream.Add(Data);
+			Timestamps.Add(Timestamp);
+		
+		
 			OnStreamOutput(Stream, Timestamps, Op);
 		});
 		
@@ -30,15 +31,16 @@ bool UBeamCliServicesRunCommand::HandleStreamReceived(FBeamOperationHandle Op, F
 
 	if(ReceivedStreamType.Equals(StreamTypeLocalProgress) && OnLocalProgressStreamOutput)
 	{
-		UBeamCliServicesRunLocalProgressStreamData* Data = NewObject<UBeamCliServicesRunLocalProgressStreamData>(this);
-		Data->OuterOwner = this;
-		Data->BeamDeserializeProperties(DataJson);
-
-		LocalProgressStream.Add(Data);
-		LocalProgressTimestamps.Add(Timestamp);
-		
-		AsyncTask(ENamedThreads::GameThread, [this, Op]
+		AsyncTask(ENamedThreads::GameThread, [this, DataJson, Timestamp, Op]
 		{
+			UBeamCliServicesRunLocalProgressStreamData* Data = NewObject<UBeamCliServicesRunLocalProgressStreamData>(this);
+			Data->OuterOwner = this;
+			Data->BeamDeserializeProperties(DataJson);
+
+			LocalProgressStream.Add(Data);
+			LocalProgressTimestamps.Add(Timestamp);
+		
+		
 			OnLocalProgressStreamOutput(LocalProgressStream, LocalProgressTimestamps, Op);
 		});
 		

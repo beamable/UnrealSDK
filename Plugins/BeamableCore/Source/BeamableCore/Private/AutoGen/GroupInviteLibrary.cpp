@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/GroupInviteLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UGroupInviteLibrary::GroupInviteToJsonString(const UGroupInvite* Serializable, const bool Pretty)
@@ -34,9 +35,12 @@ UGroupInvite* UGroupInviteLibrary::Make(int64 GamerTag, FOptionalInt64 SubGroup,
 
 void UGroupInviteLibrary::Break(const UGroupInvite* Serializable, int64& GamerTag, FOptionalInt64& SubGroup, FOptionalBool& bUseNewRewardsSystem)
 {
-	GamerTag = Serializable->GamerTag;
-	SubGroup = Serializable->SubGroup;
-	bUseNewRewardsSystem = Serializable->bUseNewRewardsSystem;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		GamerTag = Serializable->GamerTag;
+		SubGroup = Serializable->SubGroup;
+		bUseNewRewardsSystem = Serializable->bUseNewRewardsSystem;
+	}
 		
 }
 

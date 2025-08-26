@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/PreviewVipBonusResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UPreviewVipBonusResponseLibrary::PreviewVipBonusResponseToJsonString(const UPreviewVipBonusResponse* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UPreviewVipBonusResponse* UPreviewVipBonusResponseLibrary::Make(TArray<UCurrency
 
 void UPreviewVipBonusResponseLibrary::Break(const UPreviewVipBonusResponse* Serializable, TArray<UCurrencyPreview*>& Currencies)
 {
-	Currencies = Serializable->Currencies;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Currencies = Serializable->Currencies;
+	}
 		
 }
 

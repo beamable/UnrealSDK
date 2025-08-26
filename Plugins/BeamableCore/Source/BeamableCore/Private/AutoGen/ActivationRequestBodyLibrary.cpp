@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/ActivationRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UActivationRequestBodyLibrary::ActivationRequestBodyToJsonString(const UActivationRequestBody* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ UActivationRequestBody* UActivationRequestBodyLibrary::Make(FString Token, int64
 
 void UActivationRequestBodyLibrary::Break(const UActivationRequestBody* Serializable, FString& Token, int64& Cid)
 {
-	Token = Serializable->Token;
-	Cid = Serializable->Cid;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Token = Serializable->Token;
+		Cid = Serializable->Cid;
+	}
 		
 }
 

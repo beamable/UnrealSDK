@@ -43,7 +43,7 @@ void UBeamCloudsavingApi::BP_GetCloudsavingImpl(const FBeamRealmHandle& TargetRe
 		const auto BeamRequestProcessor = Backend->MakeBlueprintRequestProcessor<UGetCloudsavingRequest, UCloudsavingBasicManifest, FOnGetCloudsavingSuccess, FOnGetCloudsavingError, FOnGetCloudsavingComplete>
 			(OutRequestId, RequestData, OnSuccess, OnError, OnComplete);
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
-		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId);		
+		Backend->SendPreparedRequest(OutRequestId, CallingContext);		
 	}	
 }
 
@@ -73,7 +73,7 @@ void UBeamCloudsavingApi::CPP_GetCloudsavingImpl(const FBeamRealmHandle& TargetR
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
-		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId);	
+		Backend->SendPreparedRequest(OutRequestId, CallingContext);	
 	}
 }
 
@@ -106,7 +106,7 @@ void UBeamCloudsavingApi::BP_PostDataReplaceImpl(const FBeamRealmHandle& TargetR
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 	    
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
-		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId);	
+		Backend->SendPreparedRequest(OutRequestId, CallingContext);	
 	}
 }
 
@@ -136,7 +136,7 @@ void UBeamCloudsavingApi::CPP_PostDataReplaceImpl(const FBeamRealmHandle& Target
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
-		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId);	
+		Backend->SendPreparedRequest(OutRequestId, CallingContext);	
 	}
 }
 
@@ -168,7 +168,7 @@ void UBeamCloudsavingApi::BP_DeleteDataImpl(const FBeamRealmHandle& TargetRealm,
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 	    
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
-		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId);	
+		Backend->SendPreparedRequest(OutRequestId, CallingContext);	
 	}
 }
 
@@ -198,7 +198,7 @@ void UBeamCloudsavingApi::CPP_DeleteDataImpl(const FBeamRealmHandle& TargetRealm
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
-		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId);	
+		Backend->SendPreparedRequest(OutRequestId, CallingContext);	
 	}
 }
 
@@ -230,7 +230,7 @@ void UBeamCloudsavingApi::BP_PostDataDownloadURLImpl(const FBeamRealmHandle& Tar
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 	    
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
-		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId);	
+		Backend->SendPreparedRequest(OutRequestId, CallingContext);	
 	}
 }
 
@@ -260,7 +260,7 @@ void UBeamCloudsavingApi::CPP_PostDataDownloadURLImpl(const FBeamRealmHandle& Ta
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
-		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId);	
+		Backend->SendPreparedRequest(OutRequestId, CallingContext);	
 	}
 }
 
@@ -292,7 +292,7 @@ void UBeamCloudsavingApi::BP_PostDataDownloadURLFromPortalImpl(const FBeamRealmH
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 	    
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
-		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId);	
+		Backend->SendPreparedRequest(OutRequestId, CallingContext);	
 	}
 }
 
@@ -322,7 +322,7 @@ void UBeamCloudsavingApi::CPP_PostDataDownloadURLFromPortalImpl(const FBeamRealm
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
-		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId);	
+		Backend->SendPreparedRequest(OutRequestId, CallingContext);	
 	}
 }
 
@@ -354,7 +354,7 @@ void UBeamCloudsavingApi::BP_PutDataMoveImpl(const FBeamRealmHandle& TargetRealm
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 	    
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
-		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId);	
+		Backend->SendPreparedRequest(OutRequestId, CallingContext);	
 	}
 }
 
@@ -384,7 +384,7 @@ void UBeamCloudsavingApi::CPP_PutDataMoveImpl(const FBeamRealmHandle& TargetReal
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
-		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId);	
+		Backend->SendPreparedRequest(OutRequestId, CallingContext);	
 	}
 }
 
@@ -416,7 +416,7 @@ void UBeamCloudsavingApi::BP_PutDataMoveFromPortalImpl(const FBeamRealmHandle& T
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 	    
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
-		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId);	
+		Backend->SendPreparedRequest(OutRequestId, CallingContext);	
 	}
 }
 
@@ -446,7 +446,7 @@ void UBeamCloudsavingApi::CPP_PutDataMoveFromPortalImpl(const FBeamRealmHandle& 
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
-		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId);	
+		Backend->SendPreparedRequest(OutRequestId, CallingContext);	
 	}
 }
 
@@ -478,7 +478,7 @@ void UBeamCloudsavingApi::BP_PostDataUploadURLFromPortalImpl(const FBeamRealmHan
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 	    
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
-		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId);	
+		Backend->SendPreparedRequest(OutRequestId, CallingContext);	
 	}
 }
 
@@ -508,7 +508,7 @@ void UBeamCloudsavingApi::CPP_PostDataUploadURLFromPortalImpl(const FBeamRealmHa
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
-		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId);	
+		Backend->SendPreparedRequest(OutRequestId, CallingContext);	
 	}
 }
 
@@ -540,7 +540,7 @@ void UBeamCloudsavingApi::BP_PutDataCommitManifestImpl(const FBeamRealmHandle& T
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 	    
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
-		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId);	
+		Backend->SendPreparedRequest(OutRequestId, CallingContext);	
 	}
 }
 
@@ -570,7 +570,7 @@ void UBeamCloudsavingApi::CPP_PutDataCommitManifestImpl(const FBeamRealmHandle& 
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
-		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId);	
+		Backend->SendPreparedRequest(OutRequestId, CallingContext);	
 	}
 }
 
@@ -602,7 +602,7 @@ void UBeamCloudsavingApi::BP_PostDataUploadURLImpl(const FBeamRealmHandle& Targe
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 	    
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
-		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId);	
+		Backend->SendPreparedRequest(OutRequestId, CallingContext);	
 	}
 }
 
@@ -632,7 +632,7 @@ void UBeamCloudsavingApi::CPP_PostDataUploadURLImpl(const FBeamRealmHandle& Targ
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
-		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId);	
+		Backend->SendPreparedRequest(OutRequestId, CallingContext);	
 	}
 }
 
@@ -661,8 +661,8 @@ void UBeamCloudsavingApi::CPP_PostDataReplace(const FUserSlot& UserSlot, UPostDa
 	Backend->GetRetryConfigForUserSlotAndRequestType(UPostDataReplaceRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
 
     int64 OutRequestId;
-	CPP_PostDataReplaceImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Request, Handler, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
+	CPP_PostDataReplaceImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, AuthenticatedUser.AuthToken, Request, Handler, OutRequestId, OpHandle, CallingContext);
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, UserSlot, AS_None};
 }
 
 		
@@ -676,8 +676,8 @@ void UBeamCloudsavingApi::CPP_DeleteData(const FUserSlot& UserSlot, UDeleteDataR
 	Backend->GetRetryConfigForUserSlotAndRequestType(UDeleteDataRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
 
     int64 OutRequestId;
-	CPP_DeleteDataImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Request, Handler, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
+	CPP_DeleteDataImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, AuthenticatedUser.AuthToken, Request, Handler, OutRequestId, OpHandle, CallingContext);
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, UserSlot, AS_None};
 }
 
 		
@@ -691,8 +691,8 @@ void UBeamCloudsavingApi::CPP_PostDataDownloadURL(const FUserSlot& UserSlot, UPo
 	Backend->GetRetryConfigForUserSlotAndRequestType(UPostDataDownloadURLRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
 
     int64 OutRequestId;
-	CPP_PostDataDownloadURLImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Request, Handler, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
+	CPP_PostDataDownloadURLImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, AuthenticatedUser.AuthToken, Request, Handler, OutRequestId, OpHandle, CallingContext);
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, UserSlot, AS_None};
 }
 
 		
@@ -706,8 +706,8 @@ void UBeamCloudsavingApi::CPP_PostDataDownloadURLFromPortal(const FUserSlot& Use
 	Backend->GetRetryConfigForUserSlotAndRequestType(UPostDataDownloadURLFromPortalRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
 
     int64 OutRequestId;
-	CPP_PostDataDownloadURLFromPortalImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Request, Handler, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
+	CPP_PostDataDownloadURLFromPortalImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, AuthenticatedUser.AuthToken, Request, Handler, OutRequestId, OpHandle, CallingContext);
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, UserSlot, AS_None};
 }
 
 		
@@ -721,8 +721,8 @@ void UBeamCloudsavingApi::CPP_PutDataMove(const FUserSlot& UserSlot, UPutDataMov
 	Backend->GetRetryConfigForUserSlotAndRequestType(UPutDataMoveRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
 
     int64 OutRequestId;
-	CPP_PutDataMoveImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Request, Handler, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
+	CPP_PutDataMoveImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, AuthenticatedUser.AuthToken, Request, Handler, OutRequestId, OpHandle, CallingContext);
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, UserSlot, AS_None};
 }
 
 		
@@ -736,8 +736,8 @@ void UBeamCloudsavingApi::CPP_PutDataMoveFromPortal(const FUserSlot& UserSlot, U
 	Backend->GetRetryConfigForUserSlotAndRequestType(UPutDataMoveFromPortalRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
 
     int64 OutRequestId;
-	CPP_PutDataMoveFromPortalImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Request, Handler, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
+	CPP_PutDataMoveFromPortalImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, AuthenticatedUser.AuthToken, Request, Handler, OutRequestId, OpHandle, CallingContext);
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, UserSlot, AS_None};
 }
 
 		
@@ -751,8 +751,8 @@ void UBeamCloudsavingApi::CPP_PostDataUploadURLFromPortal(const FUserSlot& UserS
 	Backend->GetRetryConfigForUserSlotAndRequestType(UPostDataUploadURLFromPortalRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
 
     int64 OutRequestId;
-	CPP_PostDataUploadURLFromPortalImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Request, Handler, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
+	CPP_PostDataUploadURLFromPortalImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, AuthenticatedUser.AuthToken, Request, Handler, OutRequestId, OpHandle, CallingContext);
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, UserSlot, AS_None};
 }
 
 		
@@ -766,8 +766,8 @@ void UBeamCloudsavingApi::CPP_PutDataCommitManifest(const FUserSlot& UserSlot, U
 	Backend->GetRetryConfigForUserSlotAndRequestType(UPutDataCommitManifestRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
 
     int64 OutRequestId;
-	CPP_PutDataCommitManifestImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Request, Handler, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
+	CPP_PutDataCommitManifestImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, AuthenticatedUser.AuthToken, Request, Handler, OutRequestId, OpHandle, CallingContext);
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, UserSlot, AS_None};
 }
 
 		
@@ -781,8 +781,8 @@ void UBeamCloudsavingApi::CPP_PostDataUploadURL(const FUserSlot& UserSlot, UPost
 	Backend->GetRetryConfigForUserSlotAndRequestType(UPostDataUploadURLRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
 
     int64 OutRequestId;
-	CPP_PostDataUploadURLImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Request, Handler, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
+	CPP_PostDataUploadURLImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, AuthenticatedUser.AuthToken, Request, Handler, OutRequestId, OpHandle, CallingContext);
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, UserSlot, AS_None};
 }
 
 
@@ -811,8 +811,8 @@ void UBeamCloudsavingApi::PostDataReplace(FUserSlot UserSlot, UPostDataReplaceRe
 	Backend->GetRetryConfigForUserSlotAndRequestType(UPostDataReplaceRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
 
 	int64 OutRequestId;
-	BP_PostDataReplaceImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
+	BP_PostDataReplaceImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, AuthenticatedUser.AuthToken, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, UserSlot, AS_None};
 }
 
 		
@@ -826,8 +826,8 @@ void UBeamCloudsavingApi::DeleteData(FUserSlot UserSlot, UDeleteDataRequest* Req
 	Backend->GetRetryConfigForUserSlotAndRequestType(UDeleteDataRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
 
 	int64 OutRequestId;
-	BP_DeleteDataImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
+	BP_DeleteDataImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, AuthenticatedUser.AuthToken, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, UserSlot, AS_None};
 }
 
 		
@@ -841,8 +841,8 @@ void UBeamCloudsavingApi::PostDataDownloadURL(FUserSlot UserSlot, UPostDataDownl
 	Backend->GetRetryConfigForUserSlotAndRequestType(UPostDataDownloadURLRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
 
 	int64 OutRequestId;
-	BP_PostDataDownloadURLImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
+	BP_PostDataDownloadURLImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, AuthenticatedUser.AuthToken, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, UserSlot, AS_None};
 }
 
 		
@@ -856,8 +856,8 @@ void UBeamCloudsavingApi::PostDataDownloadURLFromPortal(FUserSlot UserSlot, UPos
 	Backend->GetRetryConfigForUserSlotAndRequestType(UPostDataDownloadURLFromPortalRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
 
 	int64 OutRequestId;
-	BP_PostDataDownloadURLFromPortalImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
+	BP_PostDataDownloadURLFromPortalImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, AuthenticatedUser.AuthToken, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, UserSlot, AS_None};
 }
 
 		
@@ -871,8 +871,8 @@ void UBeamCloudsavingApi::PutDataMove(FUserSlot UserSlot, UPutDataMoveRequest* R
 	Backend->GetRetryConfigForUserSlotAndRequestType(UPutDataMoveRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
 
 	int64 OutRequestId;
-	BP_PutDataMoveImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
+	BP_PutDataMoveImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, AuthenticatedUser.AuthToken, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, UserSlot, AS_None};
 }
 
 		
@@ -886,8 +886,8 @@ void UBeamCloudsavingApi::PutDataMoveFromPortal(FUserSlot UserSlot, UPutDataMove
 	Backend->GetRetryConfigForUserSlotAndRequestType(UPutDataMoveFromPortalRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
 
 	int64 OutRequestId;
-	BP_PutDataMoveFromPortalImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
+	BP_PutDataMoveFromPortalImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, AuthenticatedUser.AuthToken, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, UserSlot, AS_None};
 }
 
 		
@@ -901,8 +901,8 @@ void UBeamCloudsavingApi::PostDataUploadURLFromPortal(FUserSlot UserSlot, UPostD
 	Backend->GetRetryConfigForUserSlotAndRequestType(UPostDataUploadURLFromPortalRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
 
 	int64 OutRequestId;
-	BP_PostDataUploadURLFromPortalImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
+	BP_PostDataUploadURLFromPortalImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, AuthenticatedUser.AuthToken, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, UserSlot, AS_None};
 }
 
 		
@@ -916,8 +916,8 @@ void UBeamCloudsavingApi::PutDataCommitManifest(FUserSlot UserSlot, UPutDataComm
 	Backend->GetRetryConfigForUserSlotAndRequestType(UPutDataCommitManifestRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
 
 	int64 OutRequestId;
-	BP_PutDataCommitManifestImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
+	BP_PutDataCommitManifestImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, AuthenticatedUser.AuthToken, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, UserSlot, AS_None};
 }
 
 		
@@ -931,7 +931,7 @@ void UBeamCloudsavingApi::PostDataUploadURL(FUserSlot UserSlot, UPostDataUploadU
 	Backend->GetRetryConfigForUserSlotAndRequestType(UPostDataUploadURLRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
 
 	int64 OutRequestId;
-	BP_PostDataUploadURLImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
+	BP_PostDataUploadURLImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, AuthenticatedUser.AuthToken, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, UserSlot, AS_None};
 }
 

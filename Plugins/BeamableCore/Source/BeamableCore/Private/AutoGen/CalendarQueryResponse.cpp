@@ -22,7 +22,7 @@ void UCalendarQueryResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer
 
 void UCalendarQueryResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeArray<UCalendarView*>(Bag->GetArrayField(TEXT("calendars")), Calendars, OuterOwner);
+	UBeamJsonUtils::DeserializeArray<UCalendarView*>(TEXT("calendars"), Bag, Calendars, OuterOwner);
 }
 
 

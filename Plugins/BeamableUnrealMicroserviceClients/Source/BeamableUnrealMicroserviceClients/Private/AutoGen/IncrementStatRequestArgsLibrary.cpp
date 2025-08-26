@@ -2,6 +2,7 @@
 #include "BeamableUnrealMicroserviceClients/Public/AutoGen/IncrementStatRequestArgsLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UIncrementStatRequestArgsLibrary::IncrementStatRequestArgsToJsonString(const UIncrementStatRequestArgs* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UIncrementStatRequestArgs* UIncrementStatRequestArgsLibrary::Make(int64 GamerTag
 
 void UIncrementStatRequestArgsLibrary::Break(const UIncrementStatRequestArgs* Serializable, int64& GamerTag)
 {
-	GamerTag = Serializable->GamerTag;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		GamerTag = Serializable->GamerTag;
+	}
 		
 }
 

@@ -3,7 +3,6 @@
 #include "JsonDomBuilder.h"
 #include "Interfaces/IHttpResponse.h"
 
-const FString UBeamCliCommand::PathToLocalCli = FString(TEXT("dotnet"));
 
 void UBeamCliLogEntry::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
@@ -54,6 +53,20 @@ void FBeamCliError::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag
 	TypeName = Bag->GetStringField(TEXT("typeName"));
 	FullTypeName = Bag->GetStringField(TEXT("fullTypeName"));
 	StackTrace = Bag->GetStringField(TEXT("stackTrace"));
+}
+
+FString UBeamCliCommand::GetDotnetPath()
+{
+	const auto& path  = GetDefault<UBeamEditorSettings>()->DotnetExecutablePath;
+	if (path.IsEmpty())
+	{
+#if PLATFORM_MAC
+		return TEXT("/usr/local/share/dotnet/dotnet");
+#else
+		return TEXT("dotnet");
+#endif
+	}
+	return path;
 }
 
 FString UBeamCliCommand::PrepareParams(FString Params)
@@ -249,6 +262,7 @@ void UBeamCliCommand::PrepareCommandProcess(const TArray<FString>& CommandParams
 	RequestTracker = GEngine->GetEngineSubsystem<UBeamRequestTracker>();
 	Editor = GEditor->GetEditorSubsystem<UBeamEditor>();
 	Cli = GEditor->GetEditorSubsystem<UBeamCli>();
+	const auto& path = GetDotnetPath();
 
 	if (!Cli->IsInstalled())
 	{
@@ -260,7 +274,7 @@ void UBeamCliCommand::PrepareCommandProcess(const TArray<FString>& CommandParams
 	for (const auto& CommandParam : CommandParams)
 		Params.Appendf(TEXT(" %s"), *CommandParam);
 	Params = PrepareParams(Params);
-	UE_LOG(LogBeamCli, Verbose, TEXT("BeamCli Command Invocation: %s %s"), *PathToLocalCli, *Params)
+	UE_LOG(LogBeamCli, Verbose, TEXT("BeamCli Command Invocation: %s %s"), *path, *Params)
 
 	const auto CliPath = Cli->GetPathToCli();
 	CmdProcess = MakeShared<FMonitoredProcess>(CliPath, Params, FPaths::ProjectDir(), true, true);
@@ -275,7 +289,7 @@ void UBeamCliCommand::PrepareCommandProcess(const TArray<FString>& CommandParams
 			if (Bag.FromJson(MessageJson))
 			{
 				UE_LOG(LogBeamCli, Display, TEXT("BeamCli Command - Message Received. CMD=%s, MESSAGE=%s"), *Params, *MessageJson);
-
+				
 				const auto ReceivedStreamType = Bag.GetString(TEXT("type"));
 				const auto Timestamp = static_cast<int64>(Bag.GetField(TEXT("ts"))->AsNumber());
 				const auto DataJson = Bag.JsonObject->GetObjectField(TEXT("data")).ToSharedRef();

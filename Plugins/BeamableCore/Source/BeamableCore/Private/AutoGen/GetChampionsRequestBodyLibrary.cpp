@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/GetChampionsRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UGetChampionsRequestBodyLibrary::GetChampionsRequestBodyToJsonString(const UGetChampionsRequestBody* Serializable, const bool Pretty)
@@ -34,9 +35,12 @@ UGetChampionsRequestBody* UGetChampionsRequestBodyLibrary::Make(FString Tourname
 
 void UGetChampionsRequestBodyLibrary::Break(const UGetChampionsRequestBody* Serializable, FString& TournamentId, int32& Cycles, FOptionalString& ContentId)
 {
-	TournamentId = Serializable->TournamentId;
-	Cycles = Serializable->Cycles;
-	ContentId = Serializable->ContentId;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		TournamentId = Serializable->TournamentId;
+		Cycles = Serializable->Cycles;
+		ContentId = Serializable->ContentId;
+	}
 		
 }
 

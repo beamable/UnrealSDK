@@ -17,7 +17,7 @@ void USaveBinaryRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer
 
 void USaveBinaryRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeArray<UBinaryDefinition*>(Bag->GetArrayField(TEXT("binary")), Binary, OuterOwner);
+	UBeamJsonUtils::DeserializeArray<UBinaryDefinition*>(TEXT("binary"), Bag, Binary, OuterOwner);
 }
 
 

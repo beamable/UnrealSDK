@@ -1,5 +1,7 @@
 ﻿#include "Pins/BeamContentIdPin.h"
 
+#include "BeamK2.h"
+#include "K2Node_CallFunction.h"
 #include "EdGraph/EdGraphPin.h"
 #include "EdGraph/EdGraphSchema.h"
 #include "SNameComboBox.h"
@@ -12,8 +14,21 @@ void SBeamContentIdPin::Construct(const FArguments& InArgs, UEdGraphPin* InGraph
 
 TSharedRef<SWidget> SBeamContentIdPin::GetDefaultValueWidget()
 {
+	if (GraphPinObj->PinType.IsArray())
+	{
+		return SGraphPin::GetDefaultValueWidget();
+	}
+
 	Content = GEditor->GetEditorSubsystem<UBeamEditorContent>();
-	GetContentOptions(ContentTypeNames, ContentTypeToIdsMap);
+	FString Meta = GraphPinObj->GetOwningNode()->GetPinMetaData(GraphPinObj->PinName, BeamK2::MD_BeamFilterParameterName);
+	TArray<FString> Filter;
+	// Check if have any cast parameter filter for this pin
+	if (!Meta.IsEmpty())
+	{
+		Meta.ParseIntoArray(Filter, TEXT(";"));
+	}
+	GetContentOptions(Filter, ContentTypeNames, ContentTypeToIdsMap);
+
 
 	// retrieve the previous value selected (or the first value as default)	
 	const auto InitialSelectedId = GetSelectedId();
@@ -21,32 +36,78 @@ TSharedRef<SWidget> SBeamContentIdPin::GetDefaultValueWidget()
 	{
 		SetPropertyWithName(*InitialSelectedId.Get());
 	}
-
-	if (GraphPinObj->LinkedTo.Num() > 0)
-		return SGraphPin::GetDefaultValueWidget();
-
-	if(const auto InitialIds = GetIdsForSelectedType())
+	if (const auto InitialIds = GetIdsForSelectedType())
 		Ids = TArray(*InitialIds);
-	
+
 	const auto InitialSelectedType = GetSelectedType();
-	return SAssignNew(WidgetContainer, SVerticalBox) + SVerticalBox::Slot()
-		[
-			SAssignNew(TypeComboBox, SNameComboBox) // you can display any widget here
-		.ContentPadding(FMargin(6.0f, 2.0f)) // you can stylize how you want by the way, check Slate library
-		.OptionsSource(&ContentTypeNames) // this to create all possibilities
-		.InitiallySelectedItem(InitialSelectedType) // the default or previous selected value
-		.OnComboBoxOpening(this, &SBeamContentIdPin::OnTypeComboBoxOpening) // this event is defined by the SNameComboBox
-		.OnSelectionChanged(this, &SBeamContentIdPin::OnTypeSelected) // dito
-		]
-		+ SVerticalBox::Slot()
-		[
-			SAssignNew(IdComboBox, SNameComboBox) // you can display any widget here
-		.ContentPadding(FMargin(6.0f, 2.0f)) // you can stylize how you want by the way, check Slate library
-		.OptionsSource(&Ids) // this to create all possibilities
-		.InitiallySelectedItem(InitialSelectedId) // the default or previous selected value
-		.OnComboBoxOpening(this, &SBeamContentIdPin::OnIdComboBoxOpening) // this event is defined by the SNameComboBox
-		.OnSelectionChanged(this, &SBeamContentIdPin::OnIdSelected) // dito
-		];
+
+	// If the pin is connected with some other pin then we show only the category not the specific item
+	if (GraphPinObj->LinkedTo.Num() > 0)
+	{
+	
+		// We only shows the category if the beam target cast meta exists in tha node.
+		FString TargetMeta = "";
+		for (auto Pin : GraphPinObj->GetOwningNode()->Pins)
+		{
+			FName InPinName = Pin->PinName;
+			TargetMeta = GraphPinObj->GetOwningNode()->GetPinMetaData(InPinName, FName(BeamK2::MD_BeamCastParameterName));
+
+			// Fallback for when 
+			if (TargetMeta.IsEmpty())
+			{
+				if (UK2Node_CallFunction* FunctionNode = Cast<UK2Node_CallFunction>(GraphPinObj->GetOwningNode()))
+				{
+					if (const UFunction* Function = FunctionNode->GetTargetFunction())
+					{
+						// Use the function
+						TargetMeta = BeamK2::GetPinMetaData(InPinName, FName(BeamK2::MD_BeamCastParameterName), Function);
+					}
+				}
+			}
+			if (!TargetMeta.IsEmpty())
+			{
+				break;
+			}
+		}
+		
+		// if it contains any target property so we draw the type
+		if (!TargetMeta.IsEmpty())
+		{
+			return SAssignNew(WidgetContainer, SVerticalBox)
+			+ SVerticalBox::Slot()
+				[
+					SAssignNew(TypeComboBox, SNameComboBox) // you can display any widget here
+														   .ContentPadding(FMargin(6.0f, 2.0f)) // you can stylize how you want by the way, check Slate library
+														   .OptionsSource(&ContentTypeNames) // this to create all possibilities
+														   .InitiallySelectedItem(InitialSelectedType) // the default or previous selected value
+														   .OnComboBoxOpening(this, &SBeamContentIdPin::OnTypeComboBoxOpening) // this event is defined by the SNameComboBox
+														   .OnSelectionChanged(this, &SBeamContentIdPin::OnTypeSelected) // dito
+				];
+		}
+	}
+	else
+	{
+		return SAssignNew(WidgetContainer, SVerticalBox)
+			+ SVerticalBox::Slot()
+			[
+				SAssignNew(TypeComboBox, SNameComboBox) // you can display any widget here
+				                                       .ContentPadding(FMargin(6.0f, 2.0f)) // you can stylize how you want by the way, check Slate library
+				                                       .OptionsSource(&ContentTypeNames) // this to create all possibilities
+				                                       .InitiallySelectedItem(InitialSelectedType) // the default or previous selected value
+				                                       .OnComboBoxOpening(this, &SBeamContentIdPin::OnTypeComboBoxOpening) // this event is defined by the SNameComboBox
+				                                       .OnSelectionChanged(this, &SBeamContentIdPin::OnTypeSelected) // dito
+			]
+			+ SVerticalBox::Slot()
+			[
+				SAssignNew(IdComboBox, SNameComboBox) // you can display any widget here
+				                                     .ContentPadding(FMargin(6.0f, 2.0f)) // you can stylize how you want by the way, check Slate library
+				                                     .OptionsSource(&Ids) // this to create all possibilities
+				                                     .InitiallySelectedItem(InitialSelectedId) // the default or previous selected value
+				                                     .OnComboBoxOpening(this, &SBeamContentIdPin::OnIdComboBoxOpening) // this event is defined by the SNameComboBox
+				                                     .OnSelectionChanged(this, &SBeamContentIdPin::OnIdSelected) // dito
+			];
+	}
+	return SGraphPin::GetDefaultValueWidget();
 }
 
 void SBeamContentIdPin::OnIdSelected(TSharedPtr<FName> ItemSelected, ESelectInfo::Type SelectInfo)
@@ -57,16 +118,72 @@ void SBeamContentIdPin::OnIdSelected(TSharedPtr<FName> ItemSelected, ESelectInfo
 	}
 }
 
+void SBeamContentIdPin::UpdateNodeMetadata(TSharedPtr<FName> ItemSelected) const
+{
+	auto PropertyName = FName("NodeMetaData");
+	// Find the property in the object class
+	FProperty* Property = GraphPinObj->GetOwningNode()->GetClass()->FindPropertyByName(PropertyName);
+	if (!Property)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("SetPropertyValueByName: Property '%s' not found."), *PropertyName.ToString());
+		return;
+	}
+	FMapProperty* MapProp = CastField<FMapProperty>(Property);
+	if (!MapProp)
+	{
+		UE_LOG(LogTemp, Error, TEXT("Property is not a map!"));
+		return;
+	}
+	void* MapPtr = MapProp->ContainerPtrToValuePtr<void>(GraphPinObj->GetOwningNode());
+
+	// Cast the memory to the correct TMap type
+	TMap<FString, FString>* Dict = reinterpret_cast<TMap<FString, FString>*>(MapPtr);
+
+	if (Dict)
+	{
+		const FString Key = BeamK2::MD_BeamCastTypeName;
+		const FString Value = *ItemSelected.Get()->ToString();
+
+		if (Value != "None")
+		{
+			auto ReferenceClass = FindObject<UClass>(reinterpret_cast<UPackage*>(-1), *Value);
+			
+			Dict->Add(Key, FSoftClassPath{ReferenceClass}.GetAssetPath().ToString()); // Works even if the key exists (it replaces)
+		}
+		else
+		{
+			Dict->Remove(Key);
+		}
+	}
+
+
+	UE_LOG(LogTemp, Log, TEXT("Property '%s' set successfully."), *PropertyName.ToString());
+
+	GraphPinObj->GetOwningNode()->ReconstructNode();
+}
+
 void SBeamContentIdPin::OnTypeSelected(TSharedPtr<FName> ItemSelected, ESelectInfo::Type SelectInfo)
 {
 	if (ItemSelected.IsValid())
 	{
-		if (const auto NewIds = ContentTypeToIdsMap.Find(*ItemSelected); NewIds && (NewIds->Num() > 0))
+		if (ItemSelected.Get()->ToString() == "None")
 		{
-			SetPropertyWithName(*(*NewIds)[0]);
-			this->Ids = TArray(*NewIds);
-			IdComboBox->RefreshOptions();
-			IdComboBox->SetSelectedItem(GetSelectedId());
+			SetPropertyWithName(*ItemSelected.Get());
+			UpdateNodeMetadata(ItemSelected);
+		}
+		else
+		{
+			if (const auto NewIds = ContentTypeToIdsMap.Find(*ItemSelected); NewIds && (NewIds->Num() > 0))
+			{
+				SetPropertyWithName(*(*NewIds)[0]);
+				this->Ids = TArray(*NewIds);
+				if (IdComboBox)
+				{
+					IdComboBox->RefreshOptions();
+					IdComboBox->SetSelectedItem(GetSelectedId());
+				}
+				UpdateNodeMetadata(ItemSelected);
+			}
 		}
 	}
 }
@@ -236,13 +353,27 @@ EVisibility SBeamContentIdPin::GetDefaultValueVisibility() const
 	return SGraphPin::GetDefaultValueVisibility();
 }
 
-void SBeamContentIdPin::GetContentOptions(TArray<TSharedPtr<FName>>& TypeNames, TMap<FName, TArray<TSharedPtr<FName>>>& PerTypeNameIds) const
+void SBeamContentIdPin::GetContentOptions(TArray<FString> Filter, TArray<TSharedPtr<FName>>& TypeNames, TMap<FName, TArray<TSharedPtr<FName>>>& PerTypeNameIds) const
 {
 	Content->GetContentTypeToIdMaps(PerTypeNameIds);
 	TArray<FName> Names;
 	PerTypeNameIds.GetKeys(Names);
+
+	TypeNames.Add(MakeShareable(new FName("None")));
+
 	for (const auto& Name : Names)
 	{
+		if (Filter.Num() > 0)
+		{
+			auto Id = PerTypeNameIds[Name][0].Get();
+			FString Category;
+			FString _;
+			Id->ToString().Split(".", &Category, &_);
+			if (!Filter.Contains(Category))
+			{
+				continue;
+			}
+		}
 		TypeNames.Add(MakeShareable(new FName(Name)));
 	}
 }

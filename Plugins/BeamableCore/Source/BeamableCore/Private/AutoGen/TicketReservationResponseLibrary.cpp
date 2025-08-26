@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/TicketReservationResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UTicketReservationResponseLibrary::TicketReservationResponseToJsonString(const UTicketReservationResponse* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UTicketReservationResponse* UTicketReservationResponseLibrary::Make(FOptionalArr
 
 void UTicketReservationResponseLibrary::Break(const UTicketReservationResponse* Serializable, FOptionalArrayOfTicket& Tickets)
 {
-	Tickets = Serializable->Tickets;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Tickets = Serializable->Tickets;
+	}
 		
 }
 

@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/PaymentResultResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UPaymentResultResponseLibrary::PaymentResultResponseToJsonString(const UPaymentResultResponse* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UPaymentResultResponse* UPaymentResultResponseLibrary::Make(FString Result, UObj
 
 void UPaymentResultResponseLibrary::Break(const UPaymentResultResponse* Serializable, FString& Result)
 {
-	Result = Serializable->Result;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Result = Serializable->Result;
+	}
 		
 }
 

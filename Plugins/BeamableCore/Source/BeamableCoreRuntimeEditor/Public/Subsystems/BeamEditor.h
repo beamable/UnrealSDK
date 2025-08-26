@@ -9,12 +9,8 @@
 #include "RequestTracker/BeamRequestTracker.h"
 
 #include "AutoGen/SubSystems/Accounts/GetAdminMeRequest.h"
-#include "AutoGen/SubSystems/Auth/AuthenticateRequest.h"
-#include "AutoGen/SubSystems/Realms/GetCustomerAliasAvailableRequest.h"
-#include "AutoGen/SubSystems/Realms/GetCustomerRequest.h"
-#include "AutoGen/SubSystems/Realms/GetGamesRequest.h"
-#include "AutoGen/SubSystems/Realms/PostCustomerRequest.h"
 #include "EditorSubsystem.h"
+#include "CLI/Autogen/StreamData/DeveloperUserDataStreamData.h"
 
 #include "UObject/Object.h"
 
@@ -155,6 +151,9 @@ public:
 	 */
 	UFUNCTION()
 	void Run_TrySignIntoMainEditorSlot(FBeamWaitCompleteEvent Evt);
+
+	
+	bool SetDefaultBeamPIEConfig() const;
 };
 
 /**
@@ -185,7 +184,7 @@ class BEAMABLECORERUNTIMEEDITOR_API UBeamEditor : public UEditorSubsystem
 	 * @brief Stored lambda delegate handle for what this subsystem does when a user slot is cleared.
 	 */
 	FDelegateHandle UserSlotClearedHandler;
-
+	
 	/**
 	 * @brief Stored lambda delegate handle for what this subsystem does when we enter PIE mode (mostly just trigger a callback).
 	 */
@@ -256,6 +255,9 @@ public:
 
 	UPROPERTY(BlueprintReadOnly, Category="Beam")
 	bool bEditorReady;
+
+	UPROPERTY(BlueprintReadOnly, Category="Beam")
+	TArray<FString> EditorInitializationError;
 
 	UPROPERTY(BlueprintReadOnly, Category="Beam")
 	UBeamableWindowMessage* WindowMessage;
@@ -398,6 +400,13 @@ private:
 	UFUNCTION(BlueprintCallable, Category="Beam")
 	void OpenPortal(EPortalPage page);
 
+	/**
+	 * @brief Opens the Beamable Portal for a specific user data.
+	 */
+	
+	UFUNCTION(BlueprintCallable, Category="Beam")
+	void OpenPortalOnUserData(UDeveloperUserDataStreamData *UserData);
+
 	// Utility Functions
 private:
 	/**
@@ -417,4 +426,5 @@ private:
 	 */
 	UFUNCTION(BlueprintCallable, Category="Beam")
 	void ApplyCurrentSettingsToBuild();
+
 };

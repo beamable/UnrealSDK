@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/SKUDefinitionsLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString USKUDefinitionsLibrary::SKUDefinitionsToJsonString(const USKUDefinitions* Serializable, const bool Pretty)
@@ -34,9 +35,12 @@ USKUDefinitions* USKUDefinitionsLibrary::Make(int64 Version, int64 Created, TArr
 
 void USKUDefinitionsLibrary::Break(const USKUDefinitions* Serializable, int64& Version, int64& Created, TArray<USKU*>& Definitions)
 {
-	Version = Serializable->Version;
-	Created = Serializable->Created;
-	Definitions = Serializable->Definitions;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Version = Serializable->Version;
+		Created = Serializable->Created;
+		Definitions = Serializable->Definitions;
+	}
 		
 }
 

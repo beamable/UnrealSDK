@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/AccountUpdateLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UAccountUpdateLibrary::AccountUpdateToJsonString(const UAccountUpdate* Serializable, const bool Pretty)
@@ -40,15 +41,18 @@ UAccountUpdate* UAccountUpdateLibrary::Make(bool bHasThirdPartyToken, FOptionalS
 
 void UAccountUpdateLibrary::Break(const UAccountUpdate* Serializable, bool& bHasThirdPartyToken, FOptionalString& ThirdParty, FOptionalString& Country, FOptionalString& Language, FOptionalGamerTagAssociation& GamerTagAssoc, FOptionalString& Token, FOptionalString& DeviceId, FOptionalString& UserName, FOptionalArrayOfBeamExternalIdentity& External)
 {
-	bHasThirdPartyToken = Serializable->bHasThirdPartyToken;
-	ThirdParty = Serializable->ThirdParty;
-	Country = Serializable->Country;
-	Language = Serializable->Language;
-	GamerTagAssoc = Serializable->GamerTagAssoc;
-	Token = Serializable->Token;
-	DeviceId = Serializable->DeviceId;
-	UserName = Serializable->UserName;
-	External = Serializable->External;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		bHasThirdPartyToken = Serializable->bHasThirdPartyToken;
+		ThirdParty = Serializable->ThirdParty;
+		Country = Serializable->Country;
+		Language = Serializable->Language;
+		GamerTagAssoc = Serializable->GamerTagAssoc;
+		Token = Serializable->Token;
+		DeviceId = Serializable->DeviceId;
+		UserName = Serializable->UserName;
+		External = Serializable->External;
+	}
 		
 }
 

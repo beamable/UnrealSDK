@@ -21,8 +21,8 @@ void ULocalizationRef::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Seri
 
 void ULocalizationRef::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("empty")), bEmpty);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("localizationId")), LocalizationId);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("empty"), Bag, bEmpty);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("localizationId"), Bag, LocalizationId);
 	UBeamJsonUtils::DeserializeOptional<FString>("defaultValue", Bag, DefaultValue, OuterOwner);
 }
 

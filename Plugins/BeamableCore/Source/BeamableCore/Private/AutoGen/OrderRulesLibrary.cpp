@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/OrderRulesLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UOrderRulesLibrary::OrderRulesToJsonString(const UOrderRules* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UOrderRules* UOrderRulesLibrary::Make(TArray<UOrderRule*> Orules, UObject* Outer
 
 void UOrderRulesLibrary::Break(const UOrderRules* Serializable, TArray<UOrderRule*>& Orules)
 {
-	Orules = Serializable->Orules;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Orules = Serializable->Orules;
+	}
 		
 }
 

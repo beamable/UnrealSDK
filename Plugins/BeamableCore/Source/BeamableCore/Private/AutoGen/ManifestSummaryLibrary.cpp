@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/ManifestSummaryLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UManifestSummaryLibrary::ManifestSummaryToJsonString(const UManifestSummary* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ UManifestSummary* UManifestSummaryLibrary::Make(FString Uid, UContentBasicManife
 
 void UManifestSummaryLibrary::Break(const UManifestSummary* Serializable, FString& Uid, UContentBasicManifestChecksum*& Manifest)
 {
-	Uid = Serializable->Uid;
-	Manifest = Serializable->Manifest;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Uid = Serializable->Uid;
+		Manifest = Serializable->Manifest;
+	}
 		
 }
 

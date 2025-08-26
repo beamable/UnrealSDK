@@ -40,10 +40,10 @@ public:
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		UBeamJsonUtils::DeserializeArray<UGetLogsUrlHeaderStreamData*>(Bag->GetArrayField(TEXT("headers")), Headers, OuterOwner);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("url")), Url);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("body")), Body);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("method")), Method);	
+		UBeamJsonUtils::DeserializeArray<UGetLogsUrlHeaderStreamData*>(TEXT("headers"), Bag, Headers, OuterOwner);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("url"), Bag, Url);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("body"), Bag, Body);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("method"), Bag, Method);	
 	}
 };
 

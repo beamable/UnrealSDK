@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/SessionUserLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString USessionUserLibrary::SessionUserToJsonString(const USessionUser* Serializable, const bool Pretty)
@@ -42,17 +43,20 @@ USessionUser* USessionUserLibrary::Make(FString Name, FString Email, int64 Gamer
 
 void USessionUserLibrary::Break(const USessionUser* Serializable, FString& Name, FString& Email, int64& GamerTag, FString& Username, FString& LastName, FString& FirstName, int64& Id, FString& Lang, FOptionalString& Cid, FOptionalInt64& Heartbeat, FOptionalString& Password)
 {
-	Name = Serializable->Name;
-	Email = Serializable->Email;
-	GamerTag = Serializable->GamerTag;
-	Username = Serializable->Username;
-	LastName = Serializable->LastName;
-	FirstName = Serializable->FirstName;
-	Id = Serializable->Id;
-	Lang = Serializable->Lang;
-	Cid = Serializable->Cid;
-	Heartbeat = Serializable->Heartbeat;
-	Password = Serializable->Password;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Name = Serializable->Name;
+		Email = Serializable->Email;
+		GamerTag = Serializable->GamerTag;
+		Username = Serializable->Username;
+		LastName = Serializable->LastName;
+		FirstName = Serializable->FirstName;
+		Id = Serializable->Id;
+		Lang = Serializable->Lang;
+		Cid = Serializable->Cid;
+		Heartbeat = Serializable->Heartbeat;
+		Password = Serializable->Password;
+	}
 		
 }
 

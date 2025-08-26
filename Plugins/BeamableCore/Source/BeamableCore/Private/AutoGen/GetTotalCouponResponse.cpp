@@ -22,7 +22,7 @@ void UGetTotalCouponResponse::BeamSerializeProperties(TUnrealPrettyJsonSerialize
 
 void UGetTotalCouponResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("count")), Count);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("count"), Bag, Count);
 }
 
 

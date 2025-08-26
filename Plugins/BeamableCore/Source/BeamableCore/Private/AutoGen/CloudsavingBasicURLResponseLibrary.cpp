@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/CloudsavingBasicURLResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UCloudsavingBasicURLResponseLibrary::CloudsavingBasicURLResponseToJsonString(const UCloudsavingBasicURLResponse* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ UCloudsavingBasicURLResponse* UCloudsavingBasicURLResponseLibrary::Make(FString 
 
 void UCloudsavingBasicURLResponseLibrary::Break(const UCloudsavingBasicURLResponse* Serializable, FString& Url, FString& ObjectKey)
 {
-	Url = Serializable->Url;
-	ObjectKey = Serializable->ObjectKey;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Url = Serializable->Url;
+		ObjectKey = Serializable->ObjectKey;
+	}
 		
 }
 

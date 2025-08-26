@@ -40,10 +40,10 @@ public:
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("versionString")), VersionString);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("versionPrefix")), VersionPrefix);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("versionSuffix")), VersionSuffix);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("exists")), Exists);	
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("versionString"), Bag, VersionString);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("versionPrefix"), Bag, VersionPrefix);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("versionSuffix"), Bag, VersionSuffix);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("exists"), Bag, Exists);	
 	}
 };
 

@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/UploadURLLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UUploadURLLibrary::UploadURLToJsonString(const UUploadURL* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ UUploadURL* UUploadURLLibrary::Make(FString Key, FString Url, UObject* Outer)
 
 void UUploadURLLibrary::Break(const UUploadURL* Serializable, FString& Key, FString& Url)
 {
-	Key = Serializable->Key;
-	Url = Serializable->Url;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Key = Serializable->Key;
+		Url = Serializable->Url;
+	}
 		
 }
 

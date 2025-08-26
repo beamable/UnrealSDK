@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/EventInventoryRewardItemLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UEventInventoryRewardItemLibrary::EventInventoryRewardItemToJsonString(const UEventInventoryRewardItem* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ UEventInventoryRewardItem* UEventInventoryRewardItemLibrary::Make(FString Id, FO
 
 void UEventInventoryRewardItemLibrary::Break(const UEventInventoryRewardItem* Serializable, FString& Id, FOptionalMapOfString& Properties)
 {
-	Id = Serializable->Id;
-	Properties = Serializable->Properties;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Id = Serializable->Id;
+		Properties = Serializable->Properties;
+	}
 		
 }
 

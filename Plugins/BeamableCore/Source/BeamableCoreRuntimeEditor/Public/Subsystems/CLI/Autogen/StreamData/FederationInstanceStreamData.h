@@ -36,9 +36,9 @@ public:
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("FederationId")), FederationId);
-		UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("FederationTypes")), FederationTypes, OuterOwner);
-		UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("LocalSettings")), LocalSettings, OuterOwner);	
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("FederationId"), Bag, FederationId);
+		UBeamJsonUtils::DeserializeArray<FString>(TEXT("FederationTypes"), Bag, FederationTypes, OuterOwner);
+		UBeamJsonUtils::DeserializeArray<FString>(TEXT("LocalSettings"), Bag, LocalSettings, OuterOwner);	
 	}
 };
 

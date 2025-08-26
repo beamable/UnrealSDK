@@ -12,17 +12,17 @@ void UServicePlansResponse::DeserializeRequestResponse(UObject* RequestData, FSt
 
 void UServicePlansResponse::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	UBeamJsonUtils::SerializeArray<UServicePlan*>(TEXT("result"), Result, Serializer);
+	UBeamJsonUtils::SerializeOptional<TArray<UServicePlanActorServicePlan*>, UServicePlanActorServicePlan*>(TEXT("result"), &Result, Serializer);
 }
 
 void UServicePlansResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	UBeamJsonUtils::SerializeArray<UServicePlan*>(TEXT("result"), Result, Serializer);		
+	UBeamJsonUtils::SerializeOptional<TArray<UServicePlanActorServicePlan*>, UServicePlanActorServicePlan*>(TEXT("result"), &Result, Serializer);		
 }
 
 void UServicePlansResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeArray<UServicePlan*>(Bag->GetArrayField(TEXT("result")), Result, OuterOwner);
+	UBeamJsonUtils::DeserializeOptional<TArray<UServicePlanActorServicePlan*>, UServicePlanActorServicePlan*>("result", Bag, Result, OuterOwner);
 }
 
 

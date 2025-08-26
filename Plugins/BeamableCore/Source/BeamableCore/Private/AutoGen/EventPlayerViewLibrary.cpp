@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/EventPlayerViewLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UEventPlayerViewLibrary::EventPlayerViewToJsonString(const UEventPlayerView* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ UEventPlayerView* UEventPlayerViewLibrary::Make(TArray<UEventPlayerStateView*> R
 
 void UEventPlayerViewLibrary::Break(const UEventPlayerView* Serializable, TArray<UEventPlayerStateView*>& Running, TArray<UEventPlayerStateView*>& Done)
 {
-	Running = Serializable->Running;
-	Done = Serializable->Done;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Running = Serializable->Running;
+		Done = Serializable->Done;
+	}
 		
 }
 

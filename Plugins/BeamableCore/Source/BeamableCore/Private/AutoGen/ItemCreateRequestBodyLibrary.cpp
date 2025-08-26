@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/ItemCreateRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UItemCreateRequestBodyLibrary::ItemCreateRequestBodyToJsonString(const UItemCreateRequestBody* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ UItemCreateRequestBody* UItemCreateRequestBodyLibrary::Make(FString ContentId, T
 
 void UItemCreateRequestBodyLibrary::Break(const UItemCreateRequestBody* Serializable, FString& ContentId, TArray<UItemProperty*>& Properties)
 {
-	ContentId = Serializable->ContentId;
-	Properties = Serializable->Properties;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		ContentId = Serializable->ContentId;
+		Properties = Serializable->Properties;
+	}
 		
 }
 

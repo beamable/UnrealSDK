@@ -47,14 +47,14 @@ void UListing::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) 
 
 void UListing::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("offerSymbol")), OfferSymbol);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("offerSymbol"), Bag, OfferSymbol);
 	UBeamJsonUtils::DeserializeUObject<UPrice*>("price", Bag, Price, OuterOwner);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("symbol")), Symbol);
-	UBeamJsonUtils::DeserializeArray<UCohortRequirement*>(Bag->GetArrayField(TEXT("cohortRequirements")), CohortRequirements, OuterOwner);
-	UBeamJsonUtils::DeserializeArray<UPlayerStatRequirement*>(Bag->GetArrayField(TEXT("playerStatRequirements")), PlayerStatRequirements, OuterOwner);
-	UBeamJsonUtils::DeserializeArray<UEntitlementRequirement*>(Bag->GetArrayField(TEXT("entitlementRequirements")), EntitlementRequirements, OuterOwner);
-	UBeamJsonUtils::DeserializeArray<UOfferRequirement*>(Bag->GetArrayField(TEXT("offerRequirements")), OfferRequirements, OuterOwner);
-	UBeamJsonUtils::DeserializeMap<FString>(Bag->GetObjectField(TEXT("clientData")), ClientData, OuterOwner);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("symbol"), Bag, Symbol);
+	UBeamJsonUtils::DeserializeArray<UCohortRequirement*>(TEXT("cohortRequirements"), Bag, CohortRequirements, OuterOwner);
+	UBeamJsonUtils::DeserializeArray<UPlayerStatRequirement*>(TEXT("playerStatRequirements"), Bag, PlayerStatRequirements, OuterOwner);
+	UBeamJsonUtils::DeserializeArray<UEntitlementRequirement*>(TEXT("entitlementRequirements"), Bag, EntitlementRequirements, OuterOwner);
+	UBeamJsonUtils::DeserializeArray<UOfferRequirement*>(TEXT("offerRequirements"), Bag, OfferRequirements, OuterOwner);
+	UBeamJsonUtils::DeserializeMap<FString>(TEXT("clientData"), Bag, ClientData, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<int32>("purchaseLimit", Bag, PurchaseLimit, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<int32>("scheduleInstancePurchaseLimit", Bag, ScheduleInstancePurchaseLimit, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<USchedule*>("schedule", Bag, Schedule, OuterOwner);

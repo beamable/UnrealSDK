@@ -12,6 +12,7 @@ public class BEAMPROJ_Beamball : ModuleRules
 			new string[]
 			{
 				"Core",
+				"HathoraSDK"
 			}
 		);
 		

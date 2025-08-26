@@ -38,6 +38,11 @@ struct BEAMABLECORE_API FUserSlot
 	bool Equals(const FUserSlot& Other) const;
 
 	operator FString();
+
+	bool IsTestSlot() const;
+	bool IsServerMappingSlot() const;
+
+	static FUserSlot MakeServerMappingSlot(int64 MappingIdx);
 };
 
 FORCEINLINE uint32 GetTypeHash(const FUserSlot& UserSlot) { return GetTypeHash(UserSlot.Name); }
@@ -85,5 +90,4 @@ struct FBeamRealmUser
 	 */
 	UPROPERTY(BlueprintReadOnly, Category="Beam")
 	TArray<FBeamExternalIdentity> ExternalIdentities;
-	
 };

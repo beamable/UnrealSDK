@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/SearchExtendedRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString USearchExtendedRequestBodyLibrary::SearchExtendedRequestBodyToJsonString(const USearchExtendedRequestBody* Serializable, const bool Pretty)
@@ -22,7 +23,7 @@ FString USearchExtendedRequestBodyLibrary::SearchExtendedRequestBodyToJsonString
 	return Result;
 }	
 
-USearchExtendedRequestBody* USearchExtendedRequestBodyLibrary::Make(FString Domain, FString ObjectType, FString Access, TArray<UStatsSearchCriteria*> Criteria, TArray<FString> StatKeys, UObject* Outer)
+USearchExtendedRequestBody* USearchExtendedRequestBodyLibrary::Make(FString Domain, FString ObjectType, FString Access, TArray<UStatsSearchCriteria*> Criteria, TArray<FString> StatKeys, FOptionalInt32 Offset, FOptionalInt32 Limit, UObject* Outer)
 {
 	auto Serializable = NewObject<USearchExtendedRequestBody>(Outer);
 	Serializable->Domain = Domain;
@@ -30,17 +31,24 @@ USearchExtendedRequestBody* USearchExtendedRequestBodyLibrary::Make(FString Doma
 	Serializable->Access = Access;
 	Serializable->Criteria = Criteria;
 	Serializable->StatKeys = StatKeys;
+	Serializable->Offset = Offset;
+	Serializable->Limit = Limit;
 	
 	return Serializable;
 }
 
-void USearchExtendedRequestBodyLibrary::Break(const USearchExtendedRequestBody* Serializable, FString& Domain, FString& ObjectType, FString& Access, TArray<UStatsSearchCriteria*>& Criteria, TArray<FString>& StatKeys)
+void USearchExtendedRequestBodyLibrary::Break(const USearchExtendedRequestBody* Serializable, FString& Domain, FString& ObjectType, FString& Access, TArray<UStatsSearchCriteria*>& Criteria, TArray<FString>& StatKeys, FOptionalInt32& Offset, FOptionalInt32& Limit)
 {
-	Domain = Serializable->Domain;
-	ObjectType = Serializable->ObjectType;
-	Access = Serializable->Access;
-	Criteria = Serializable->Criteria;
-	StatKeys = Serializable->StatKeys;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Domain = Serializable->Domain;
+		ObjectType = Serializable->ObjectType;
+		Access = Serializable->Access;
+		Criteria = Serializable->Criteria;
+		StatKeys = Serializable->StatKeys;
+		Offset = Serializable->Offset;
+		Limit = Serializable->Limit;
+	}
 		
 }
 

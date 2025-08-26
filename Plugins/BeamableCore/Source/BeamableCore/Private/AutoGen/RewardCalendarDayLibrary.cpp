@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/RewardCalendarDayLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString URewardCalendarDayLibrary::RewardCalendarDayToJsonString(const URewardCalendarDay* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ URewardCalendarDay* URewardCalendarDayLibrary::Make(TArray<UEntitlementGenerator
 
 void URewardCalendarDayLibrary::Break(const URewardCalendarDay* Serializable, TArray<UEntitlementGenerator*>& Obtain)
 {
-	Obtain = Serializable->Obtain;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Obtain = Serializable->Obtain;
+	}
 		
 }
 

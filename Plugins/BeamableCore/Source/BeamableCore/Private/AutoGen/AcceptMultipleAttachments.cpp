@@ -17,7 +17,7 @@ void UAcceptMultipleAttachments::BeamSerializeProperties(TUnrealPrettyJsonSerial
 
 void UAcceptMultipleAttachments::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeArray<int64>(Bag->GetArrayField(TEXT("mailIds")), MailIds, OuterOwner);
+	UBeamJsonUtils::DeserializeArray<int64>(TEXT("mailIds"), Bag, MailIds, OuterOwner);
 }
 
 

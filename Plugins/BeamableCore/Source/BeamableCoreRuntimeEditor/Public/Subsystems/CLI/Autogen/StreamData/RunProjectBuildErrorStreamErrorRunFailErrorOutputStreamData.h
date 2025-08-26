@@ -33,7 +33,7 @@ public:
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("serviceId")), ServiceId);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("serviceId"), Bag, ServiceId);
 		UBeamJsonUtils::DeserializeUObject<UProjectErrorReportErrorRunFailErrorOutputStreamData*>("report", Bag, Report, OuterOwner);	
 	}
 };

@@ -22,7 +22,7 @@ void UAccountAvailableResponse::BeamSerializeProperties(TUnrealPrettyJsonSeriali
 
 void UAccountAvailableResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("available")), bAvailable);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("available"), Bag, bAvailable);
 }
 
 

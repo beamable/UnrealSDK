@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/ObjectRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UObjectRequestBodyLibrary::ObjectRequestBodyToJsonString(const UObjectRequestBody* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UObjectRequestBody* UObjectRequestBodyLibrary::Make(FString ObjectKey, UObject* 
 
 void UObjectRequestBodyLibrary::Break(const UObjectRequestBody* Serializable, FString& ObjectKey)
 {
-	ObjectKey = Serializable->ObjectKey;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		ObjectKey = Serializable->ObjectKey;
+	}
 		
 }
 

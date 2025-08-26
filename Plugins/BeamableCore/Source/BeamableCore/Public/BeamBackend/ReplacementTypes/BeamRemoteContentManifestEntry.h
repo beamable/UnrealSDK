@@ -47,8 +47,8 @@ struct BEAMABLECORE_API FBeamRemoteContentManifestEntry : public FBeamJsonSerial
 	{
 		Uri = Bag->GetStringField(TEXT("uri"));
 		Version = Bag->GetStringField(TEXT("version"));
-		UBeamJsonUtils::DeserializeSemanticType<FString>(Bag->TryGetField(TEXT("contentId")), ContentId, OuterOwner);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("type")), Type);
-		UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("tags")), Tags, OuterOwner);
+		UBeamJsonUtils::DeserializeSemanticType<FString>(TEXT("contentId"), Bag, ContentId, OuterOwner);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("type"), Bag, Type);
+		UBeamJsonUtils::DeserializeArray<FString>(TEXT("tags"), Bag, Tags, OuterOwner);
 	}
 };

@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/UploadRequestFromPortalLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UUploadRequestFromPortalLibrary::UploadRequestFromPortalToJsonString(const UUploadRequestFromPortal* Serializable, const bool Pretty)
@@ -35,10 +36,13 @@ UUploadRequestFromPortal* UUploadRequestFromPortalLibrary::Make(FString ObjectKe
 
 void UUploadRequestFromPortalLibrary::Break(const UUploadRequestFromPortal* Serializable, FString& ObjectKey, int64& SizeInBytes, FOptionalInt64& LastModified, FOptionalArrayOfMetadataPair& Metadata)
 {
-	ObjectKey = Serializable->ObjectKey;
-	SizeInBytes = Serializable->SizeInBytes;
-	LastModified = Serializable->LastModified;
-	Metadata = Serializable->Metadata;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		ObjectKey = Serializable->ObjectKey;
+		SizeInBytes = Serializable->SizeInBytes;
+		LastModified = Serializable->LastModified;
+		Metadata = Serializable->Metadata;
+	}
 		
 }
 

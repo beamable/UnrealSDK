@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/PASuggestedIndexLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UPASuggestedIndexLibrary::PASuggestedIndexToJsonString(const UPASuggestedIndex* Serializable, const bool Pretty)
@@ -36,11 +37,14 @@ UPASuggestedIndex* UPASuggestedIndexLibrary::Make(FString Weight, FString Id, FS
 
 void UPASuggestedIndexLibrary::Break(const UPASuggestedIndex* Serializable, FString& Weight, FString& Id, FString& Namespace, TArray<FString>& Impact, TArray<FString>& Index)
 {
-	Weight = Serializable->Weight;
-	Id = Serializable->Id;
-	Namespace = Serializable->Namespace;
-	Impact = Serializable->Impact;
-	Index = Serializable->Index;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Weight = Serializable->Weight;
+		Id = Serializable->Id;
+		Namespace = Serializable->Namespace;
+		Impact = Serializable->Impact;
+		Index = Serializable->Index;
+	}
 		
 }
 

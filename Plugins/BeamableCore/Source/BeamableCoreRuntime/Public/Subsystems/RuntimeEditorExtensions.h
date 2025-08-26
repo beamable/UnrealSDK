@@ -51,4 +51,22 @@ public:
 	{
 		return GetContentFromManifest({"global"}, ContentId, OutContentObject, CallingContext);
 	}
+
+	/**
+	 * Utility that will auto-cast @link FUniqueNetIdRepl @endlink to @link FBeamGamerTag @endlink when @link UBeamRuntimeSettings::bUseBeamableGamerTagsAsUniqueNetIds @endlink is true.
+	 */
+	UFUNCTION(BlueprintPure, meta = (DisplayName = "Convert UniqueNetId to GamerTag", CompactNodeTitle = "->", BlueprintAutocast), Category = "Beam|Lobby|Utils")
+	static FBeamGamerTag Conv_UniqueNetIdReplToBeamGamerTag(const FUniqueNetIdRepl& UniqueNetId)
+	{
+		if (ensureAlwaysMsgf(GetDefault<UBeamRuntimeSettings>()->bUseBeamableGamerTagsAsUniqueNetIds, TEXT("This casting utility only works if you're using GamerTags as UniqueNetIds."
+			                     "If not, please use the 'Local State - Lobby' nodes to convert it.")))
+		{
+			if (!UniqueNetId.IsValid()) return FBeamGamerTag{};
+
+			const auto& UniqueNetIdAsStr = UniqueNetId.GetUniqueNetId()->ToString();
+			return FBeamGamerTag{UniqueNetIdAsStr};
+		}
+
+		return FBeamGamerTag{};
+	}
 };

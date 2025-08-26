@@ -36,7 +36,7 @@ UPostCustomerRequest* UPostCustomerRequest::Make(FString _ProjectName, FString _
 	
 	
 	// Makes a body and fill up with parameters (Blank if no body parameters exist)
-	Req->Body = NewObject<UNewCustomerRequestBody>(Req);
+	Req->Body = NewObject<URealmsBasicNewCustomerRequestBody>(Req);
 	Req->Body->ProjectName = _ProjectName;
 	Req->Body->Email = _Email;
 	Req->Body->Password = _Password;

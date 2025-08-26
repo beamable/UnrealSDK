@@ -17,7 +17,7 @@ void UGetGameRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer& S
 
 void UGetGameRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeSemanticType<FString>(Bag->TryGetField(TEXT("rootPID")), RootPID, OuterOwner);
+	UBeamJsonUtils::DeserializeSemanticType<FString>(TEXT("rootPID"), Bag, RootPID, OuterOwner);
 }
 
 

@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/GroupApplicationLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UGroupApplicationLibrary::GroupApplicationToJsonString(const UGroupApplication* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UGroupApplication* UGroupApplicationLibrary::Make(FOptionalInt64 SubGroup, UObje
 
 void UGroupApplicationLibrary::Break(const UGroupApplication* Serializable, FOptionalInt64& SubGroup)
 {
-	SubGroup = Serializable->SubGroup;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		SubGroup = Serializable->SubGroup;
+	}
 		
 }
 

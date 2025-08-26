@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/ServicePlansResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UServicePlansResponseLibrary::ServicePlansResponseToJsonString(const UServicePlansResponse* Serializable, const bool Pretty)
@@ -22,7 +23,7 @@ FString UServicePlansResponseLibrary::ServicePlansResponseToJsonString(const USe
 	return Result;
 }	
 
-UServicePlansResponse* UServicePlansResponseLibrary::Make(TArray<UServicePlan*> Result, UObject* Outer)
+UServicePlansResponse* UServicePlansResponseLibrary::Make(FOptionalArrayOfServicePlanActorServicePlan Result, UObject* Outer)
 {
 	auto Serializable = NewObject<UServicePlansResponse>(Outer);
 	Serializable->Result = Result;
@@ -30,9 +31,12 @@ UServicePlansResponse* UServicePlansResponseLibrary::Make(TArray<UServicePlan*> 
 	return Serializable;
 }
 
-void UServicePlansResponseLibrary::Break(const UServicePlansResponse* Serializable, TArray<UServicePlan*>& Result)
+void UServicePlansResponseLibrary::Break(const UServicePlansResponse* Serializable, FOptionalArrayOfServicePlanActorServicePlan& Result)
 {
-	Result = Serializable->Result;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Result = Serializable->Result;
+	}
 		
 }
 

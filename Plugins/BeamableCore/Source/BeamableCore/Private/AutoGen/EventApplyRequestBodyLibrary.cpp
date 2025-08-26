@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/EventApplyRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UEventApplyRequestBodyLibrary::EventApplyRequestBodyToJsonString(const UEventApplyRequestBody* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UEventApplyRequestBody* UEventApplyRequestBodyLibrary::Make(UEvent* Content, UOb
 
 void UEventApplyRequestBodyLibrary::Break(const UEventApplyRequestBody* Serializable, UEvent*& Content)
 {
-	Content = Serializable->Content;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Content = Serializable->Content;
+	}
 		
 }
 

@@ -9,7 +9,7 @@
 
 #include "BeamBackend/SemanticTypes/BeamPid.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfString.h"
-#include "BeamableCore/Public/AutoGen/PromoteRealmResponse.h"
+#include "BeamableCore/Public/AutoGen/RealmsBasicPromoteRealmResponse.h"
 
 #include "GetPromotionRequest.generated.h"
 
@@ -46,7 +46,7 @@ public:
 };
 
 UDELEGATE(BlueprintAuthorityOnly)
-DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnGetPromotionSuccess, FBeamRequestContext, Context, UGetPromotionRequest*, Request, UPromoteRealmResponse*, Response);
+DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnGetPromotionSuccess, FBeamRequestContext, Context, UGetPromotionRequest*, Request, URealmsBasicPromoteRealmResponse*, Response);
 
 UDELEGATE(BlueprintAuthorityOnly)
 DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnGetPromotionError, FBeamRequestContext, Context, UGetPromotionRequest*, Request, FBeamErrorResponse, Error);
@@ -54,5 +54,5 @@ DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnGetPromotionError, FBeamRequestContext, 
 UDELEGATE(BlueprintAuthorityOnly)
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FOnGetPromotionComplete, FBeamRequestContext, Context, UGetPromotionRequest*, Request);
 
-using FGetPromotionFullResponse = FBeamFullResponse<UGetPromotionRequest*, UPromoteRealmResponse*>;
+using FGetPromotionFullResponse = FBeamFullResponse<UGetPromotionRequest*, URealmsBasicPromoteRealmResponse*>;
 DECLARE_DELEGATE_OneParam(FOnGetPromotionFullResponse, FGetPromotionFullResponse);

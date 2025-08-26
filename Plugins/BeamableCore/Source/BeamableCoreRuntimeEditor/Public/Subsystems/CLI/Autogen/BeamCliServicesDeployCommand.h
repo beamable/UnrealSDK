@@ -32,8 +32,8 @@ public:
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("Success")), Success);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("FailureReason")), FailureReason);	
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("Success"), Bag, Success);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("FailureReason"), Bag, FailureReason);	
 	}
 };
 
@@ -68,9 +68,9 @@ public:
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("BeamoId")), BeamoId);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("BuildAndTestProgress")), BuildAndTestProgress);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("ContainerUploadProgress")), ContainerUploadProgress);	
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("BeamoId"), Bag, BeamoId);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("BuildAndTestProgress"), Bag, BuildAndTestProgress);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("ContainerUploadProgress"), Bag, ContainerUploadProgress);	
 	}
 };
 

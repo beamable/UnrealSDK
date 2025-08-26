@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/ObjectRequestsLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UObjectRequestsLibrary::ObjectRequestsToJsonString(const UObjectRequests* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ UObjectRequests* UObjectRequestsLibrary::Make(FOptionalInt64 PlayerId, FOptional
 
 void UObjectRequestsLibrary::Break(const UObjectRequests* Serializable, FOptionalInt64& PlayerId, FOptionalArrayOfObjectRequestBody& Request)
 {
-	PlayerId = Serializable->PlayerId;
-	Request = Serializable->Request;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		PlayerId = Serializable->PlayerId;
+		Request = Serializable->Request;
+	}
 		
 }
 

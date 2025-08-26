@@ -32,8 +32,8 @@ public:
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("beamoId")), BeamoId);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("filePath")), FilePath);	
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("beamoId"), Bag, BeamoId);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("filePath"), Bag, FilePath);	
 	}
 };
 
@@ -49,12 +49,13 @@ Arguments:
   <source>  The .dll filepath for the built microservice
 
 Options:
-  --ids <ids>                                          The list of services to include, defaults to all local services (separated by whitespace)
+  --ids <ids>                                          The list of services to include, defaults to all local services (separated by whitespace). To use NO services, use the --exact-ids flag
+  --exact-ids                                          By default, a blank --ids option maps to ALL available ids. When the --exact-ids flag is given, a blank --ids option maps to NO ids
   --without-group, --without-groups <without-group>    A set of BeamServiceGroup tags that will exclude the associated services. Exclusion takes precedence over inclusion
   --with-group, --with-groups <with-group>             A set of BeamServiceGroup tags that will include the associated services
   --output-dir <output-dir>                            Directory to write the output client at
   --output-links                                       When true, generate the source client files to all associated projects [default: True]
-  --output-unity-projects <output-unity-projects>      Paths to unity projects to generate clients in
+  --output-unity-projects <output-unity-projects>      Paths to unity projects to generate clients in []
   --existing-fed-ids <existing-fed-ids>                A set of existing federation ids
   --existing-fed-type-names <existing-fed-type-names>  A set of existing class names for federations (Obsolete)
   --output-path-hints <output-path-hints>              A special format, BEAMOID=PATH, that tells the generator where to place the client. The path should be relative to the linked project root (Obsolete)

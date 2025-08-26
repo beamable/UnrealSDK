@@ -115,7 +115,7 @@ struct FProcessingRequestRetry
 };
 
 
-DECLARE_DELEGATE_OneParam(FBeamMakeRequestDelegate, int64 /*ActiveRequestId*/);
+DECLARE_DELEGATE_TwoParams(FBeamMakeRequestDelegate, int64 /*ActiveRequestId*/, const UObject* /* CallingContext */);
 
 DECLARE_DELEGATE_TwoParams(FGlobalRequestErrorCodeHandler, const FBeamRequestContext&, const FBeamErrorResponse&);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FGlobalRequestErrorHandler, const FBeamRequestContext&, RequestContext,
@@ -229,6 +229,15 @@ public:
 	static const FString HEADER_CLIENT_ID;
 	static const FString HEADER_PROJECT_ID;
 	static const FString HEADER_ROUTING_KEY_MAP;
+	static const FString HEADER_GAMERTAG;
+	static const FString HEADER_SIGNATURE;
+	static const FString HEADER_TIMEOUT;
+	
+
+	static const FString HEADER_BEAMABLE_VERSION;
+	static const FString HEADER_UNREAL_VERSION;
+	static const FString HEADER_ENGINE_TYPE;
+	static const FString HEADER_APPLICATION_VERSION;
 
 	static const FString HEADER_BEAMABLE_VERSION;
 	static const FString HEADER_UNREAL_VERSION;
@@ -281,17 +290,15 @@ public:
 					|_|                                             |_|                         	                                                                               
 	*/
 
+	/**
+	 * @brief Function called by the auto-generated API to send over a request. 
+	 */
+	void SendPreparedRequest(int64 ActiveRequest, const UObject* CallingContext) const { ExecuteRequestDelegate.ExecuteIfBound(ActiveRequest, CallingContext); }
 
 	/**
 	 * @brief A delegate wrapper so we can easily replace the code that sends the request by assertions over the request data. 
 	 */
 	FBeamMakeRequestDelegate ExecuteRequestDelegate;
-
-	/**
-	 * @brief This must be set if DedicatedServerExecuteRequestImpl will be used (it'll use this to sign requests). When running in insecure devices (non-dedicated servers),
-	 * this must always be empty.
-	 */
-	FString RealmSecret;
 
 	/**
 	 * @brief When set to true, the Global Request Error Handlers will run IN ADDITION to the one provided at the callsite. 
@@ -406,18 +413,12 @@ public:
 	 *  
 	 */
 	UFUNCTION()
-	void DefaultExecuteRequestImpl(int64 ActiveRequestId);
+	void DefaultExecuteRequestImpl(int64 ActiveRequestId, const UObject* CallingContext);
 
 	/**
 	 * Takes in a fully formed URL from a TUnrealRequest (ie: https://dev.api.beamable.com/object/stats/game.public.player.1595037680985091/) and generates the correct form of it for the signature.
 	 */
 	void ExtractUrlForSignature(const FString& FullUrl, FString& Url);
-
-	/**
-	 * @brief Used as delegate set in ExecuteRequestDelegate when running as a dedicated server. 
-	 */
-	UFUNCTION()
-	void DedicatedServerExecuteRequestImpl(int64 ActiveRequestId);
 
 	/**
 	 * @brief Creates a request and prepares it to be sent out. This does not bind the lambda --- see any auto-generated API to understand how to manually make
@@ -1852,7 +1853,39 @@ private:
 	static bool ExtractDataFromResponse(const FHttpRequestPtr Request, const FHttpResponsePtr Response, const bool bWasRequestCompleted, EHttpRequestStatus::Type& OutRequestStatus,
 	                                    int32& OutResponseCode, FString& OutResponseBody);
 
+	/**
+    ____           ___            __           __   _____                               
+   / __ \___  ____/ (_)________ _/ /____  ____/ /  / ___/___  ______   _____  __________
+  / / / / _ \/ __  / / ___/ __ `/ __/ _ \/ __  /   \__ \/ _ \/ ___/ | / / _ \/ ___/ ___/
+ / /_/ /  __/ /_/ / / /__/ /_/ / /_/  __/ /_/ /   ___/ /  __/ /   | |/ /  __/ /  (__  ) 
+/_____/\___/\__,_/_/\___/\__,_/\__/\___/\__,_/   /____/\___/_/    |___/\___/_/  /____/  
+                                                                                        
+	 */
 public:
+	/**
+	 * @brief This must be set if DedicatedServerExecuteRequestImpl will be used (it'll use this to sign requests). When running in insecure devices (non-dedicated servers),
+	 * this must always be empty.
+	 */
+	FString RealmSecret;
+
+	/**
+	 * @brief Used as delegate set in ExecuteRequestDelegate when running as a dedicated server. 
+	 */
+	UFUNCTION()
+	void DedicatedServerExecuteRequestImpl(int64 ActiveRequestId, const UObject* CallingContext);
+
+	/**
+	 * Overrides the @link HEADER_AUTHORIZATION @endlink for the given request.
+	 */
+	UFUNCTION(BlueprintCallable, Category="Beam")
+	static void OverrideRequestAuthorization(TScriptInterface<IBeamBaseRequestInterface> Interface, FString AccessToken);
+
+	/**
+	 * Overrides the @link HEADER_GAMERTAG @endlink for the given request.
+	 */
+	UFUNCTION(BlueprintCallable, Category="Beam")
+	static void OverrideRequestGamerTag(TScriptInterface<IBeamBaseRequestInterface> Interface, FBeamGamerTag GamerTag);
+
 	/*
 	 
   _____      _                 _____             __ _       
@@ -1865,7 +1898,7 @@ public:
 					  |___/                           |___/ 
 
 	 */
-
+public:
 	/**
 	* @brief Retry configuration data. Can be overriden at the request level. 
 	*/

@@ -48,12 +48,12 @@ public:
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("port")), Port);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("pid")), Pid);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("inflightRequests")), InflightRequests);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("url")), Url);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("owner")), Owner);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("version")), Version);	
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("port"), Bag, Port);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("pid"), Bag, Pid);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("inflightRequests"), Bag, InflightRequests);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("url"), Bag, Url);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("owner"), Bag, Owner);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("version"), Bag, Version);	
 	}
 };
 

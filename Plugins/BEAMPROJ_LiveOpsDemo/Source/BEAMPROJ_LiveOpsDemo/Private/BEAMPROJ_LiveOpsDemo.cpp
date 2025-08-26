@@ -2,7 +2,7 @@
 
 #include "BEAMPROJ_LiveOpsDemo.h"
 
-#define LOCTEXT_NAMESPACE "FBEAMPROJ_SandboxModule"
+#define LOCTEXT_NAMESPACE "FBEAMPROJ_LiveOpsDemoModule"
 
 void FBEAMPROJ_LiveOpsDemoModule::StartupModule()
 {

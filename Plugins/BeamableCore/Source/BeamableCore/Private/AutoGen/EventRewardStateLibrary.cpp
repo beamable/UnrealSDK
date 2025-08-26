@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/EventRewardStateLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UEventRewardStateLibrary::EventRewardStateToJsonString(const UEventRewardState* Serializable, const bool Pretty)
@@ -42,17 +43,20 @@ UEventRewardState* UEventRewardStateLibrary::Make(bool bClaimed, bool bEarned, U
 
 void UEventRewardStateLibrary::Break(const UEventRewardState* Serializable, bool& bClaimed, bool& bEarned, UEventInventoryPendingRewards*& PendingInventoryRewards, double& Min, FOptionalDouble& Max, FOptionalArrayOfEventInventoryRewardCurrency& Currencies, FOptionalArrayOfItemCreateRequestBody& PendingItemRewards, FOptionalArrayOfEventInventoryRewardItem& Items, FOptionalArrayOfEventRewardObtain& Obtain, FOptionalMapOfString& PendingCurrencyRewards, FOptionalMapOfString& PendingEntitlementRewards)
 {
-	bClaimed = Serializable->bClaimed;
-	bEarned = Serializable->bEarned;
-	PendingInventoryRewards = Serializable->PendingInventoryRewards;
-	Min = Serializable->Min;
-	Max = Serializable->Max;
-	Currencies = Serializable->Currencies;
-	PendingItemRewards = Serializable->PendingItemRewards;
-	Items = Serializable->Items;
-	Obtain = Serializable->Obtain;
-	PendingCurrencyRewards = Serializable->PendingCurrencyRewards;
-	PendingEntitlementRewards = Serializable->PendingEntitlementRewards;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		bClaimed = Serializable->bClaimed;
+		bEarned = Serializable->bEarned;
+		PendingInventoryRewards = Serializable->PendingInventoryRewards;
+		Min = Serializable->Min;
+		Max = Serializable->Max;
+		Currencies = Serializable->Currencies;
+		PendingItemRewards = Serializable->PendingItemRewards;
+		Items = Serializable->Items;
+		Obtain = Serializable->Obtain;
+		PendingCurrencyRewards = Serializable->PendingCurrencyRewards;
+		PendingEntitlementRewards = Serializable->PendingEntitlementRewards;
+	}
 		
 }
 

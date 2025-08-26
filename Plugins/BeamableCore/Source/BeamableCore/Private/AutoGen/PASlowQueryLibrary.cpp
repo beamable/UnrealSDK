@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/PASlowQueryLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UPASlowQueryLibrary::PASlowQueryToJsonString(const UPASlowQuery* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ UPASlowQuery* UPASlowQueryLibrary::Make(FString Line, FString Namespace, UObject
 
 void UPASlowQueryLibrary::Break(const UPASlowQuery* Serializable, FString& Line, FString& Namespace)
 {
-	Line = Serializable->Line;
-	Namespace = Serializable->Namespace;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Line = Serializable->Line;
+		Namespace = Serializable->Namespace;
+	}
 		
 }
 

@@ -16,12 +16,15 @@
 
 #include "Subsystems/BeamEditorSubsystem.h"
 #include "Misc/MessageDialog.h"
+#include "PIE/BeamPIEConfig.h"
+#include "PIE/BeamPIE_Settings.h"
 #include "Subsystems/CLI/BeamCli.h"
 #include "Subsystems/CLI/Autogen/BeamCliConfigCommand.h"
 #include "Subsystems/CLI/Autogen/BeamCliInitCommand.h"
 #include "Subsystems/CLI/Autogen/BeamCliLogoutCommand.h"
 #include "Subsystems/CLI/Autogen/BeamCliMeCommand.h"
 #include "Subsystems/CLI/Autogen/BeamCliOrgRealmsCommand.h"
+#include "Subsystems/CLI/Autogen/StreamData/DeveloperUserDataStreamData.h"
 
 const FBeamRealmHandle UBeamEditor::Signed_Out_Realm_Handle = FBeamRealmHandle{FString(""), FString("")};
 
@@ -67,7 +70,7 @@ void UBeamEditor::OpenDocsPage(FDocsPageItem item)
 
 void UBeamEditor::Initialize(FSubsystemCollectionBase& Collection)
 {
-	UE_LOG(LogTemp, Log, TEXT("Initializing BeamEditor Subsystem!"));
+	UE_LOG(LogBeamEditor, Verbose, TEXT("Initializing BeamEditor Subsystem!"));
 
 	// Set us up to track whether we are running PIE
 	BeginPIEHandler = FEditorDelegates::BeginPIE.AddLambda([this](const bool)
@@ -161,54 +164,28 @@ void UBeamEditorBootstrapper::Run_DelayedInitialize()
 		bEditorSettingsChanged = true;
 	}
 
-	// Set up Status Icons
-	if (EditorSettings->LocalContentStatusIcons.IsEmpty())
-	{
-		const auto CreatedIconPath = TSoftObjectPtr<UTexture2D>(FSoftObjectPath(TEXT("/Script/Engine.Texture2D'/BeamableCore/Editor/Icons/IconStatus_Added.IconStatus_Added'")));
-		const auto DeletedIconPath = TSoftObjectPtr<UTexture2D>(FSoftObjectPath(TEXT("/Script/Engine.Texture2D'/BeamableCore/Editor/Icons/IconStatus_Deleted.IconStatus_Deleted'")));
-		const auto ModifiedIconPath = TSoftObjectPtr<UTexture2D>(FSoftObjectPath(TEXT("/Script/Engine.Texture2D'/BeamableCore/Editor/Icons/IconStatus_Modified.IconStatus_Modified'")));
-		const auto UpToDateIconPath = TSoftObjectPtr<UTexture2D>(FSoftObjectPath(TEXT("/Script/Engine.Texture2D'/BeamableCore/Editor/Icons/IconStatus_NC.IconStatus_NC'")));
-		EditorSettings->LocalContentStatusIcons.Add(EBeamLocalContentStatus::Beam_LocalContentCreated, CreatedIconPath);
-		EditorSettings->LocalContentStatusIcons.Add(EBeamLocalContentStatus::Beam_LocalContentDeleted, DeletedIconPath);
-		EditorSettings->LocalContentStatusIcons.Add(EBeamLocalContentStatus::Beam_LocalContentModified, ModifiedIconPath);
-		EditorSettings->LocalContentStatusIcons.Add(EBeamLocalContentStatus::Beam_LocalContentUpToDate, UpToDateIconPath);
-		bEditorSettingsChanged = true;
-	}
-	// Set up the conflicted status icon
-	if (!EditorSettings->ConflictedStatusIcon)
-	{
-		const auto ConflictedIconPath = TSoftObjectPtr<UTexture2D>(FSoftObjectPath(TEXT("/Script/Engine.Texture2D'/BeamableCore/Editor/Icons/IconLogs_WarningMsg.IconLogs_WarningMsg'")));
-		EditorSettings->ConflictedStatusIcon = ConflictedIconPath;
-		bEditorSettingsChanged = true;
-	}
-
-	// Set up Content Icons
-	if (EditorSettings->LocalContentViewConfigs.IsEmpty())
-	{
-		const auto BeamableColor = FColor::FromHex(TEXT("9176BCFF"));
-
-		FBeamContentViewConfig ItemConfig;
-		ItemConfig.BorderColor = BeamableColor;
-		ItemConfig.TypeForContentObject = TSoftObjectPtr<UTexture2D>(FSoftObjectPath(TEXT("/Script/Engine.Texture2D'/BeamableCore/Editor/Icons/IconBeam_Item.IconBeam_Item'")));
-
-		FBeamContentViewConfig CurrencyConfig;
-		CurrencyConfig.BorderColor = BeamableColor;
-		CurrencyConfig.TypeForContentObject = TSoftObjectPtr<UTexture2D>(FSoftObjectPath(TEXT("/Script/Engine.Texture2D'/BeamableCore/Editor/Icons/IconBeam_Currency.IconBeam_Currency'")));
-
-		FBeamContentViewConfig GameTypeConfig;
-		GameTypeConfig.BorderColor = BeamableColor;
-		GameTypeConfig.TypeForContentObject = TSoftObjectPtr<UTexture2D>(FSoftObjectPath(TEXT("/Script/Engine.Texture2D'/BeamableCore/Editor/Icons/IconBeam_GameType.IconBeam_GameType'")));
-
-		EditorSettings->LocalContentViewConfigs.Add(UBeamItemContent::StaticClass(), ItemConfig);
-		EditorSettings->LocalContentViewConfigs.Add(UBeamCurrencyContent::StaticClass(), CurrencyConfig);
-		EditorSettings->LocalContentViewConfigs.Add(UBeamGameTypeContent::StaticClass(), GameTypeConfig);
-		bEditorSettingsChanged = true;
-	}
-
 	if (bEditorSettingsChanged)
 	{
 		EditorSettings->SaveConfig(CPF_Config, *EditorSettings->GetDefaultConfigFilename());
 	}
+
+	// Ensure a DefaultBeamPIE.ini exists (otherwise the one in saved will not work)
+	auto PIESettings = GetMutableDefault<UBeamPIEConfig>();
+	const auto PIESettingsPath = PIESettings->GetDefaultConfigFilename();
+	
+	// We have to create an empty "DefaultBeamPIE.ini" with the section for the BeamableCore.BeamPIEConfig object.
+	// If we don't have the "Default____.ini" file, UE's config system will not correctly apply the diffs stored in the Saved/Config directory.
+	// So we make sure one of these exist.		
+	const auto bResult = SetDefaultBeamPIEConfig();
+	UE_LOG(LogBeamEditor, Display, TEXT("Created default BeamPIE config at %s. RES=%d"), *PIESettingsPath, bResult);
+
+	
+	// Then, we get the path to the `BeamPIE.ini` file in the Saved directory and load it, if it already exists. 
+	FString SavedConfigPath = FPaths::ConvertRelativePathToFull(FPaths::Combine(FPaths::ProjectSavedDir(), TEXT("Config"), FPlatformProperties::PlatformName(), TEXT("BeamPIE.ini")));
+	GConfig->LoadFile(SavedConfigPath);
+
+	// Finally, we reload the config.
+	PIESettings->ReloadConfig();
 
 	const auto Subsystems = GEditor->GetEditorSubsystemArrayCopy<UBeamEditorSubsystem>();
 	BeamEditor->InitializeAfterEditorReadyOps.Reset(Subsystems.Num());
@@ -225,17 +202,8 @@ void UBeamEditorBootstrapper::Run_DelayedInitialize()
 void UBeamEditorBootstrapper::Run_TrySignIntoMainEditorSlot(FBeamWaitCompleteEvent Evt)
 {
 	const auto RequestTracker = GEngine->GetEngineSubsystem<UBeamRequestTracker>();
-	TArray<FString> Errs;
-	if (RequestTracker->IsWaitFailed(Evt, Errs))
-	{
-		for (FString Err : Errs)
-		{
-			UE_LOG(LogBeamEditor, Error, TEXT("Error initializing the Beamable SDK: %s"), *Err);
-		}
-		UE_LOG(LogBeamEditor, Error, TEXT("Please restart the editor to try again after fixing whatever issues the errors describe."));
-		return;
-	}
-
+	const auto BeamEditor = GEditor->GetEditorSubsystem<UBeamEditor>();
+	
 	// When the CLI is not installed, we DO NOT sign in the editor.
 	// Instead, we just use the TargetRealm that is configured in the .ini file in this branch. 
 	const auto Cli = GEditor->GetEditorSubsystem<UBeamCli>();
@@ -243,10 +211,26 @@ void UBeamEditorBootstrapper::Run_TrySignIntoMainEditorSlot(FBeamWaitCompleteEve
 	{
 		// TODO: Check that the Target Realm is set, if not log a big error that says the target realm is not set and therefore no beamable feature will work at runtime.
 		// Push out a notification that the CLI is not installed and therefore no beamable editor functionality will work (neither will local microservices).
-		return;
+		UE_LOG(LogBeamEditor, Error, TEXT("Error initializing the Beamable SDK: CLI is not installed!"));
+		BeamEditor->EditorInitializationError.Add(TEXT("Error initializing the Beamable SDK: CLI is not installed!"));
 	}
 
-	const auto BeamEditor = GEditor->GetEditorSubsystem<UBeamEditor>();
+	TArray<FString> Errs;
+	if (RequestTracker->IsWaitFailed(Evt, Errs))
+	{
+		for (FString Err : Errs)
+		{
+			UE_LOG(LogBeamEditor, Error, TEXT("Error initializing the Beamable SDK: %s"), *Err);
+			BeamEditor->EditorInitializationError.Add(Err);
+		}
+		UE_LOG(LogBeamEditor, Error, TEXT("Please restart the editor to try again after fixing whatever issues the errors describe."));
+	}
+
+	if (!BeamEditor->EditorInitializationError.IsEmpty())
+	{
+		return;
+	}
+		
 	auto Op = RequestTracker->CPP_BeginOperation({}, BeamEditor->GetName(), FBeamOperationEventHandlerCode::CreateLambda([this, BeamEditor](FBeamOperationEvent Evt)
 	{
 		if (Evt.EventType == OET_ERROR)
@@ -266,6 +250,72 @@ void UBeamEditorBootstrapper::Run_TrySignIntoMainEditorSlot(FBeamWaitCompleteEve
 		BeamEditor->bEditorReady = true;
 	}));
 	BeamEditor->SignInWithCliInfo(Op);
+}
+
+bool UBeamEditorBootstrapper::SetDefaultBeamPIEConfig() const
+{
+	
+	FString FilePathDefaultConfig = FPaths::ProjectConfigDir() / TEXT("DefaultBeamPIE.ini");
+
+	FString FilePathSavedConfig = FPaths::ConvertRelativePathToFull(FPaths::Combine(FPaths::ProjectSavedDir(), TEXT("Config"), FPlatformProperties::PlatformName(), TEXT("BeamPIE.ini")));
+
+	if (!FPaths::FileExists(FilePathSavedConfig))
+	{
+		FFileHelper::SaveStringToFile(TEXT(""), *FilePathSavedConfig);
+	}
+	
+	// We have to create the ini file if it don't exists
+	if (!FPaths::FileExists(FilePathDefaultConfig))
+	{
+		// This flags guarantee that the file will save all properties when we called the SaveConfig 
+		FString IniContent = TEXT("[SectionsToSave]\n");
+		IniContent += TEXT("bCanSaveAllSections=true\n\n");
+		IniContent += TEXT("[/Script/BeamableCore.BeamPIEConfig]\n");
+
+		if (!FFileHelper::SaveStringToFile(IniContent, *FilePathDefaultConfig))
+		{
+			UE_LOG(LogTemp, Error, TEXT("Failed BeamPIE to save the .ini file."));
+			return false;
+		}
+		
+		GConfig->LoadFile(FilePathDefaultConfig);
+	}
+	else
+	{
+		FString IniContent;
+		// If the file exists we try to find the reference for the sections that should have and if don't
+		if (FFileHelper::LoadFileToString(IniContent, *FilePathDefaultConfig))
+		{
+			FString FileContent = "";
+			if (!IniContent.Contains("[SectionsToSave]"))
+			{
+				FileContent += TEXT("[SectionsToSave]\n");
+				FileContent += TEXT("bCanSaveAllSections=true\n\n");
+			}
+			if (!IniContent.Contains("[/Script/BeamableCore.BeamPIEConfig]"))
+			{
+				FileContent += TEXT("[/Script/BeamableCore.BeamPIEConfig]\n");
+			}
+
+			FileContent.Append(IniContent);
+
+			if (!FFileHelper::SaveStringToFile(FileContent, *FilePathDefaultConfig))
+			{
+				UE_LOG(LogTemp, Error, TEXT("Failed BeamPIE to save the .ini file."));
+				return false;
+			}
+		
+			GConfig->LoadFile(FilePathDefaultConfig);
+		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("Failed BeamPIE to load the .ini file."));
+			return false;
+		}
+	}
+
+	return true;
+	
 }
 
 
@@ -298,7 +348,7 @@ bool UBeamEditor::GetActiveProjectAndRealmData(FBeamCustomerProjectData& Project
 	{
 		for (const auto& R : CurrentProjectData.AllRealms)
 		{
-			if (R.PID.AsString == MainEditorDeveloper.RealmHandle.Pid.AsString)
+			if (R.PID.AsString == GetDefault<UBeamCoreSettings>()->TargetRealm.Pid.AsString)
 			{
 				RealmData = R;
 				return true;
@@ -441,18 +491,13 @@ void UBeamEditor::SignIn(FString OrgName, FString Email, FString Password, const
 
 void UBeamEditor::SignInWithCliInfo(const FBeamOperationHandle Op)
 {
-	// Make sure that the CLI is correctly targeting some realm
-	FString PathToConfigJson = FPaths::ProjectDir() / TEXT(".beamable") / TEXT("connection-configuration.json");
-	FString ConfigJson;
-
-	// Read out the config file
-	const auto bCliIsTargetingRealm = FFileHelper::LoadFileToString(ConfigJson, *PathToConfigJson);
-	
 	// When the CLI is not installed, we should not do anything. 
 	const auto Cli = GEditor->GetEditorSubsystem<UBeamCli>();
 	if (!Cli->IsInstalled())
 	{
-		if (bCliIsTargetingRealm)
+		FString ConfigJson;
+		FString PathToConfigJson = FPaths::ProjectDir() / TEXT(".beamable") / TEXT("connection-configuration.json");
+		if (FFileHelper::LoadFileToString(ConfigJson, *PathToConfigJson))
 		{
 			FJsonDataBag ConfigJsonBag;
 			if (ConfigJsonBag.FromJson(ConfigJson))
@@ -484,15 +529,9 @@ void UBeamEditor::SignInWithCliInfo(const FBeamOperationHandle Op)
 		return;
 	}
 
-	if (!bCliIsTargetingRealm)
-	{
-		RequestTracker->TriggerOperationError(Op, TEXT("Beamable not configured with any CID/PID. Please Sign-In."));
-		return;
-	}
-
 	// Start the CLI server manually skipping the pre-warm 
 	Cli->StartCliServer(true);
-	
+
 	// If the CLI is installed, we use it to get the data around the current organization
 	const auto RealmsCommandOp = RequestTracker->CPP_BeginOperation({}, GetName(), {});
 	auto RealmsCommand = NewObject<UBeamCliOrgRealmsCommand>();
@@ -651,6 +690,14 @@ void UBeamEditor::SelectRealm_OnReadyForChange(FBeamWaitCompleteEvent, FBeamReal
 			UserSlots->SetPIDAtSlot(MainEditorSlot, NewRealmHandle.Pid, this);
 			SetActiveTargetRealmUnsafe(NewRealmHandle);
 
+			// Sets the realm secret
+			FBeamCustomerProjectData _;
+			FBeamProjectRealmData RealmData;
+			if (GetActiveProjectAndRealmData(_, RealmData))
+			{
+				GEngine->GetEngineSubsystem<UBeamBackend>()->RealmSecret = RealmData.RealmSecret;
+			}
+
 			// Using the new Post endpoint that allows for Upsert to ensure that all Unreal games are using our custom notification pipeline instead of our legacy PubNub stuff.
 			const auto UpdateConfigReq = UPostConfigRequest::Make(FOptionalArrayOfString{}, FOptionalMapOfString{{{TEXT("notification|publisher"), TEXT("beamable")}}}, GetTransientPackage(), {});
 			const auto Handler = FOnPostConfigFullResponse::CreateLambda([this, CmdOp, NewRealmHandle](FPostConfigFullResponse PutResp)
@@ -783,6 +830,40 @@ void UBeamEditor::OpenPortal(EPortalPage PortalPage)
 	}
 }
 
+void UBeamEditor::OpenPortalOnUserData(UDeveloperUserDataStreamData* UserData)
+{
+	FUserSlot MainEditorSlot;
+	FBeamRealmUser Data;
+	if (TryGetMainEditorSlot(MainEditorSlot, Data))
+	{
+		FBeamCustomerProjectData Proj;
+		FBeamProjectRealmData RealmData;
+		GetActiveProjectAndRealmData(Proj, RealmData);
+
+		const auto PortalUrl = GetDefault<UBeamCoreSettings>()->BeamableEnvironment->PortalUrl;
+		const auto RealmCid = Data.RealmHandle.Cid.AsString;
+		const auto ProductionPid = Proj.AllRealms.FindByPredicate([](FBeamProjectRealmData d) { return d.bIsProduction; })->PID.AsString;
+		const auto Pid = UserData->Pid;
+		const auto GamerTag = UserData->GamerTag;
+		const auto RefreshToken = Data.AuthToken.RefreshToken;
+		FString Page;
+		TArray<FString> AdditionalQueryArgs = {};
+		
+		const auto URL = FString::Format(TEXT("{0}/{1}/games/{2}/realms/{3}/players/{4}?refresh_token={5}"),
+										 {
+											 PortalUrl,
+											 RealmCid,
+											 ProductionPid,
+											 Pid,
+											 GamerTag,
+										 	 RefreshToken,
+											 FString::Join(AdditionalQueryArgs, TEXT(""))
+										 });
+
+		FPlatformProcess::LaunchURL(*URL, nullptr, nullptr);
+	}
+}
+
 void UBeamEditor::SetActiveTargetRealmUnsafe(const FBeamRealmHandle& NewRealmHandle)
 {
 	auto Settings = GetMutableDefault<UBeamCoreSettings>();
@@ -801,13 +882,17 @@ void UBeamEditor::ApplyCurrentSettingsToBuild()
 
 	const auto ConfigSetCmd = NewObject<UBeamCliConfigCommand>();
 
-	ConfigSetCmd->OnCompleted = [this](const int& ResCode, const FBeamOperationHandle& CmdOp)
+	ConfigSetCmd->OnCompleted = [this, RealmData](const int& ResCode, const FBeamOperationHandle& CmdOp)
 	{
 		if (ResCode == 0)
 		{
 			// auto set = UEditorDialogLibrary::ShowMessage("Apply realm to build", "It will apply realm to build", EAppMsgType::YesNoCancel, "", EAppMsgCategory::Info);
 			auto Settings = GetMutableDefault<UBeamCoreSettings>();
-			Settings->SaveConfig(CPF_Config, *Settings->GetDefaultConfigFilename());
+			Settings->TargetRealm = FBeamRealmHandle{
+				RealmData.CID,
+				RealmData.PID
+			};
+			Settings->TryUpdateDefaultConfigFile(*Settings->GetDefaultConfigFilename());
 
 			// Notify other systems that
 			if (OnAppliedSettingsToBuild.IsBound()) OnAppliedSettingsToBuild.Broadcast();
@@ -823,3 +908,4 @@ void UBeamEditor::ApplyCurrentSettingsToBuild()
 	const auto Params = TArray<FString>{TEXT("--cid"), RealmData.CID.AsString, TEXT("--pid"), RealmData.PID.AsString, TEXT("--set"), TEXT("--no-overrides")};
 	Cli->RunCommandServer(ConfigSetCmd, Params, {});
 }
+

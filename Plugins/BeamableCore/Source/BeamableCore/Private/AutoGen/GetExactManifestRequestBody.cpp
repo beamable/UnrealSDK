@@ -17,7 +17,7 @@ void UGetExactManifestRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSeri
 
 void UGetExactManifestRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("uid")), Uid);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("uid"), Bag, Uid);
 }
 
 

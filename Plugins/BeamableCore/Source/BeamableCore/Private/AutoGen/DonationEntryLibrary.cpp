@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/DonationEntryLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UDonationEntryLibrary::DonationEntryToJsonString(const UDonationEntry* Serializable, const bool Pretty)
@@ -35,10 +36,13 @@ UDonationEntry* UDonationEntryLibrary::Make(int64 PlayerId, int64 Amount, int64 
 
 void UDonationEntryLibrary::Break(const UDonationEntry* Serializable, int64& PlayerId, int64& Amount, int64& Time, FOptionalBool& bClaimed)
 {
-	PlayerId = Serializable->PlayerId;
-	Amount = Serializable->Amount;
-	Time = Serializable->Time;
-	bClaimed = Serializable->bClaimed;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		PlayerId = Serializable->PlayerId;
+		Amount = Serializable->Amount;
+		Time = Serializable->Time;
+		bClaimed = Serializable->bClaimed;
+	}
 		
 }
 

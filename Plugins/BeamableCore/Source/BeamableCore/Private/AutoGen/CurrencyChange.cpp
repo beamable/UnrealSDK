@@ -21,8 +21,8 @@ void UCurrencyChange::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Seria
 
 void UCurrencyChange::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("symbol")), Symbol);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("amount")), Amount);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("symbol"), Bag, Symbol);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("amount"), Bag, Amount);
 	UBeamJsonUtils::DeserializeOptional<int64>("originalAmount", Bag, OriginalAmount, OuterOwner);
 }
 

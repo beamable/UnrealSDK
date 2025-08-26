@@ -40,9 +40,9 @@ public:
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("serviceId")), ServiceId);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("message")), Message);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("progressRatio")), ProgressRatio);	
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("serviceId"), Bag, ServiceId);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("message"), Bag, Message);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("progressRatio"), Bag, ProgressRatio);	
 	}
 };
 
@@ -73,7 +73,7 @@ public:
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("serviceId")), ServiceId);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("serviceId"), Bag, ServiceId);
 		UBeamJsonUtils::DeserializeUObject<UProjectErrorReportBuildErrorsStreamData*>("report", Bag, Report, OuterOwner);	
 	}
 };
@@ -125,13 +125,13 @@ public:
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		UBeamJsonUtils::DeserializeArray<URunProjectBuildErrorStreamErrorRunFailErrorOutputStreamData*>(Bag->GetArrayField(TEXT("compilerErrors")), CompilerErrors, OuterOwner);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("message")), Message);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("invocation")), Invocation);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("exitCode")), ExitCode);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("typeName")), TypeName);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("fullTypeName")), FullTypeName);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("stackTrace")), StackTrace);	
+		UBeamJsonUtils::DeserializeArray<URunProjectBuildErrorStreamErrorRunFailErrorOutputStreamData*>(TEXT("compilerErrors"), Bag, CompilerErrors, OuterOwner);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("message"), Bag, Message);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("invocation"), Bag, Invocation);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("exitCode"), Bag, ExitCode);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("typeName"), Bag, TypeName);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("fullTypeName"), Bag, FullTypeName);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("stackTrace"), Bag, StackTrace);	
 	}
 };
 
@@ -145,7 +145,8 @@ Usage:
 
 Options:
   -w, --watch                                        When true, the command will run forever and watch the state of the program
-  --ids <ids>                                        The list of services to include, defaults to all local services (separated by whitespace)
+  --ids <ids>                                        The list of services to include, defaults to all local services (separated by whitespace). To use NO services, use the --exact-ids flag
+  --exact-ids                                        By default, a blank --ids option maps to ALL available ids. When the --exact-ids flag is given, a blank --ids option maps to NO ids
   --without-group, --without-groups <without-group>  A set of BeamServiceGroup tags that will exclude the associated services. Exclusion takes precedence over inclusion
   --with-group, --with-groups <with-group>           A set of BeamServiceGroup tags that will include the associated services
   --force                                            With this flag, we restart any running services. Without it, we skip running services

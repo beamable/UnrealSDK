@@ -23,7 +23,7 @@ void UPostManifestRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializ
 
 void UPostManifestRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeArray<UServiceReference*>(Bag->GetArrayField(TEXT("manifest")), Manifest, OuterOwner);
+	UBeamJsonUtils::DeserializeArray<UServiceReference*>(TEXT("manifest"), Bag, Manifest, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<bool>("autoDeploy", Bag, bAutoDeploy, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("comments", Bag, Comments, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<TArray<UServiceStorageReference*>, UServiceStorageReference*>("storageReferences", Bag, StorageReferences, OuterOwner);

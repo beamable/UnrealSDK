@@ -17,7 +17,7 @@ void UGiveCouponReq::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serial
 
 void UGiveCouponReq::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("listing")), Listing);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("listing"), Bag, Listing);
 }
 
 

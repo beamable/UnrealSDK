@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/VerifyPurchaseRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UVerifyPurchaseRequestBodyLibrary::VerifyPurchaseRequestBodyToJsonString(const UVerifyPurchaseRequestBody* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UVerifyPurchaseRequestBody* UVerifyPurchaseRequestBodyLibrary::Make(FString Rece
 
 void UVerifyPurchaseRequestBodyLibrary::Break(const UVerifyPurchaseRequestBody* Serializable, FString& Receipt)
 {
-	Receipt = Serializable->Receipt;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Receipt = Serializable->Receipt;
+	}
 		
 }
 

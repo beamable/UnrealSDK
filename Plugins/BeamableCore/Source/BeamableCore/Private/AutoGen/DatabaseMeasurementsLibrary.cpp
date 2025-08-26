@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/DatabaseMeasurementsLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UDatabaseMeasurementsLibrary::DatabaseMeasurementsToJsonString(const UDatabaseMeasurements* Serializable, const bool Pretty)
@@ -40,15 +41,18 @@ UDatabaseMeasurements* UDatabaseMeasurementsLibrary::Make(FString DatabaseName, 
 
 void UDatabaseMeasurementsLibrary::Break(const UDatabaseMeasurements* Serializable, FString& DatabaseName, TArray<ULink*>& Links, FOptionalString& GroupId, FOptionalString& HostId, FOptionalString& Granularity, FOptionalString& End, FOptionalString& Start, FOptionalString& ProcessId, FOptionalArrayOfDatabaseMeasurement& Measurements)
 {
-	DatabaseName = Serializable->DatabaseName;
-	Links = Serializable->Links;
-	GroupId = Serializable->GroupId;
-	HostId = Serializable->HostId;
-	Granularity = Serializable->Granularity;
-	End = Serializable->End;
-	Start = Serializable->Start;
-	ProcessId = Serializable->ProcessId;
-	Measurements = Serializable->Measurements;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		DatabaseName = Serializable->DatabaseName;
+		Links = Serializable->Links;
+		GroupId = Serializable->GroupId;
+		HostId = Serializable->HostId;
+		Granularity = Serializable->Granularity;
+		End = Serializable->End;
+		Start = Serializable->Start;
+		ProcessId = Serializable->ProcessId;
+		Measurements = Serializable->Measurements;
+	}
 		
 }
 

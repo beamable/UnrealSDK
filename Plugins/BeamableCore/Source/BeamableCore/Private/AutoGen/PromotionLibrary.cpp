@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/PromotionLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UPromotionLibrary::PromotionToJsonString(const UPromotion* Serializable, const bool Pretty)
@@ -34,9 +35,12 @@ UPromotion* UPromotionLibrary::Make(FString Id, UPromotable* Source, UPromotable
 
 void UPromotionLibrary::Break(const UPromotion* Serializable, FString& Id, UPromotable*& Source, UPromotable*& Destination)
 {
-	Id = Serializable->Id;
-	Source = Serializable->Source;
-	Destination = Serializable->Destination;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Id = Serializable->Id;
+		Source = Serializable->Source;
+		Destination = Serializable->Destination;
+	}
 		
 }
 

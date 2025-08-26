@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/DateRangeLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UDateRangeLibrary::DateRangeToJsonString(const UDateRange* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ UDateRange* UDateRangeLibrary::Make(FString From, FString To, UObject* Outer)
 
 void UDateRangeLibrary::Break(const UDateRange* Serializable, FString& From, FString& To)
 {
-	From = Serializable->From;
-	To = Serializable->To;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		From = Serializable->From;
+		To = Serializable->To;
+	}
 		
 }
 

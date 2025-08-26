@@ -2,7 +2,7 @@
 
 #include "BEAMPROJ_DiscordDemo.h"
 
-#define LOCTEXT_NAMESPACE "FBEAMPROJ_SandboxModule"
+#define LOCTEXT_NAMESPACE "FBEAMPROJ_DiscordDemoModule"
 
 void FBEAMPROJ_DiscordDemoModule::StartupModule()
 {

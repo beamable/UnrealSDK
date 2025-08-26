@@ -21,6 +21,8 @@ public:
 	FOptionalString Uid = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Publisher Account Id", Category="Beam")
 	FOptionalInt64 PublisherAccountId = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Created At", Category="Beam")
+	FOptionalInt64 CreatedAt = {};
 
 	virtual void DeserializeRequestResponse(UObject* RequestData, FString ResponseContent) override;
 

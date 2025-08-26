@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/LeaderboardRemoveEntryRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString ULeaderboardRemoveEntryRequestBodyLibrary::LeaderboardRemoveEntryRequestBodyToJsonString(const ULeaderboardRemoveEntryRequestBody* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ ULeaderboardRemoveEntryRequestBody* ULeaderboardRemoveEntryRequestBodyLibrary::M
 
 void ULeaderboardRemoveEntryRequestBodyLibrary::Break(const ULeaderboardRemoveEntryRequestBody* Serializable, int64& Id)
 {
-	Id = Serializable->Id;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Id = Serializable->Id;
+	}
 		
 }
 

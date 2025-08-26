@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/TournamentGroupEntryLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UTournamentGroupEntryLibrary::TournamentGroupEntryToJsonString(const UTournamentGroupEntry* Serializable, const bool Pretty)
@@ -36,11 +37,14 @@ UTournamentGroupEntry* UTournamentGroupEntryLibrary::Make(int64 Rank, double Sco
 
 void UTournamentGroupEntryLibrary::Break(const UTournamentGroupEntry* Serializable, int64& Rank, double& Score, int64& GroupId, int32& StageChange, TArray<UTournamentCurrencyReward*>& CurrencyRewards)
 {
-	Rank = Serializable->Rank;
-	Score = Serializable->Score;
-	GroupId = Serializable->GroupId;
-	StageChange = Serializable->StageChange;
-	CurrencyRewards = Serializable->CurrencyRewards;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Rank = Serializable->Rank;
+		Score = Serializable->Score;
+		GroupId = Serializable->GroupId;
+		StageChange = Serializable->StageChange;
+		CurrencyRewards = Serializable->CurrencyRewards;
+	}
 		
 }
 

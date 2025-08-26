@@ -6,11 +6,16 @@
 #include "HttpModule.h"
 
 #include "BeamLogging.h"
+#include "OnlineSubsystemTypes.h"
 #include "AutoGen/SubSystems/BeamRealmsApi.h"
 #include "AutoGen/SubSystems/Realms/GetClientDefaultsRequest.h"
 #include "BeamNotifications/BeamNotifications.h"
+#include "GameFramework/GameModeBase.h"
+#include "GameFramework/GameStateBase.h"
+#include "GameFramework/PlayerState.h"
 #include "GenericPlatform/GenericPlatformHttp.h"
 #include "Kismet/GameplayStatics.h"
+#include "PIE/BeamPIE_Utilities.h"
 #include "Runtime/BeamRuntimeSubsystem.h"
 #include "Subsystems/Content/BeamContentSubsystem.h"
 
@@ -40,7 +45,7 @@ void UBeamMultiFactorLoginData::SetChallengeSolution(UChallengeSolution* Challen
 	ChallengeToken = ChallengeSolution->ChallengeToken;
 }
 
-void UBeamConnectivityManager::ConnectionHandler(const FNotificationEvent& Evt, FBeamRealmUser BeamRealmUser, FBeamOperationHandle Op)
+void UBeamConnectivityManager::ConnectionHandler(const FNotificationEvent& Evt, bool TriggerAuthenticatedSlot, FBeamOperationHandle Op)
 {
 	// If the operation is active so that is happening during a login.
 	auto IsDuringLogin = RequestTracker->IsOperationActive(Op);
@@ -58,8 +63,33 @@ void UBeamConnectivityManager::ConnectionHandler(const FNotificationEvent& Evt, 
 
 			Runtime->DefaultNotificationChannels.Add(UserSlot, Evt.ConnectedData.ConnectedHandle);
 
-			UserSlots->SaveSlot(UserSlot, this);
-			UserSlots->TriggerUserAuthenticatedIntoSlot(UserSlot, Op, this);
+			if (TriggerAuthenticatedSlot)
+			{
+				UserSlots->SaveSlot(UserSlot, this);				
+
+				// If we are mapping the UniqueNetIds to Beamable GamerTags, we do so whenever we log in (mapping done implicitly by order of UBeamCoreSettings::RuntimeUserSlots).
+				if (GetDefault<UBeamRuntimeSettings>()->bUseBeamableGamerTagsAsUniqueNetIds)
+				{
+					auto LocalPlayerForSlot = Runtime->GetLocalPlayerForSlot(UserSlot);
+					if (!LocalPlayerForSlot)
+					{
+						FString Err;					
+						LocalPlayerForSlot = Runtime->GetGameInstance()->CreateLocalPlayer({}, Err, Runtime->GetGameInstance()->GetNumLocalPlayers() == 0);
+						if (!Err.IsEmpty())
+						{
+							RequestTracker->TriggerOperationError(Op, TEXT("FAILED_TO_ASSOCIATE_LOCAL_PLAYER_WITH_SLOT"));							
+							return; 
+						}
+					}
+					FBeamGamerTag GamerTag;
+					Runtime->TryGetSlotGamerTag(UserSlot, GamerTag);
+					auto UnitNetId = FUniqueNetIdString::Create(GamerTag.AsString, NAME_None);
+					FUniqueNetIdRepl UniqueNetRepl(UnitNetId.Get());
+					LocalPlayerForSlot->SetCachedUniqueNetId(UniqueNetRepl);
+				}
+
+				UserSlots->TriggerUserAuthenticatedIntoSlot(UserSlot, Op, this);
+			}
 		}
 		// This only runs during reconnection...
 		else
@@ -172,6 +202,32 @@ void UBeamRuntime::Initialize(FSubsystemCollectionBase& Collection)
 	CurrentSdkState = NotInitialized;
 	AutomaticallyInitializedSubsystems = {};
 
+	GetGameInstance()->OnLocalPlayerAddedEvent.AddLambda([this](ULocalPlayer* Lp)
+	{
+		// If we are mapping the UniqueNetIds to Beamable GamerTags, we do so whenever we log in (mapping done implicitly by order of UBeamCoreSettings::RuntimeUserSlots).
+		if (GetDefault<UBeamRuntimeSettings>()->bUseBeamableGamerTagsAsUniqueNetIds)
+		{
+			const auto LpIdx = Lp->GetLocalPlayerIndex();
+
+			// Make sure the user correctly configured beamable to support multiple local players.
+			if (!ensureAlwaysMsgf(LpIdx < GetDefault<UBeamCoreSettings>()->RuntimeUserSlots.Num(),
+			                      TEXT("You have more spawned LocalPlayers than configured in UBeamCoreSettings::RuntimeSlots")))
+			{
+				return;
+			}
+
+			// If that slot is already signed in, we set the unique id as the gamertag.
+			const auto PairedSlot = GetDefault<UBeamCoreSettings>()->RuntimeUserSlots[LpIdx];
+			FBeamGamerTag GamerTag;
+			if (TryGetSlotGamerTag(PairedSlot, GamerTag))
+			{
+				auto UnitNetId = FUniqueNetIdString::Create(GamerTag.AsString, NAME_None);
+				FUniqueNetIdRepl UniqueNetRepl(UnitNetId.Get());
+				Lp->SetCachedUniqueNetId(UniqueNetRepl);
+			}
+		}
+	});
+
 	// We do some initialization for dedicated servers... 
 	if (GetGameInstance()->IsDedicatedServerInstance())
 	{
@@ -264,9 +320,7 @@ void UBeamRuntime::Initialize(FSubsystemCollectionBase& Collection)
 	if (EngineSubsystem->IsInPIE())
 	{
 		// When running as a dedicated server instance, swap out the execute request delegate
-		const FName ExecuteRequestImpl = GET_FUNCTION_NAME_CHECKED(UBeamRuntime, PIEExecuteRequestImpl);
-
-		EngineSubsystem->ExecuteRequestDelegate.BindUFunction(this, ExecuteRequestImpl);
+		EngineSubsystem->ExecuteRequestDelegate.BindStatic(&UBeamRuntime::PIEExecuteRequestImpl);
 		UE_LOG(LogBeamRuntime, Verbose, TEXT("Initializing UBeamRuntime Subsystem - FROM PIE INSTANCE %d!"), GetGameInstance()->GetWorldContext()->PIEInstance);
 	}
 	else
@@ -280,9 +334,15 @@ void UBeamRuntime::Initialize(FSubsystemCollectionBase& Collection)
 		UE_LOG(LogBeamRuntime, Verbose, TEXT("Initializing UBeamRuntime Subsystem - FROM BUILD!"));
 	}
 
-	// Initialize user ConnectivityState for each slot
+	// Initialize state for each configured RuntimeUserSlots
+	int32 LocalPlayerIdx = 0;
 	for (FString RuntimeUserSlot : GetDefault<UBeamCoreSettings>()->RuntimeUserSlots)
 	{
+		// In the client, map the RuntimeUserSlots to LocalPlayers
+		// In the server, this mapping is done by UBeamLobbySubsystem::AcceptUserIntoGameServer
+		if (!IsDedicatedGameServer()) LocalPlayerIndexToUserSlotMapping.Add(LocalPlayerIdx++, FUserSlot{RuntimeUserSlot});
+
+		// Initialize user ConnectivityState for each slot 
 		EnsureConnectivityManagerForSlot({RuntimeUserSlot});
 	}
 }
@@ -340,9 +400,17 @@ void UBeamRuntime::InitSDK(FBeamRuntimeHandler OnStartedHandler, FRuntimeError S
 		});
 		CurrentSdkState = ESDKState::Initializing;
 	}
+	else if (CurrentSdkState == Initialized)
+	{
+		// Everything is fine so let's continue initializing Beamable by firing off the OnStarted callback.
+		UE_LOG(LogBeamRuntime, Log, TEXT("SDK is already initializing. Calling OnStarted Handler."));
+		OnStartedCode.Broadcast();
+		OnStarted.Broadcast();
+		OnStartedHandler.ExecuteIfBound();
+	}
 	else
 	{
-		FString ErrMsg = TEXT("Trying to call InitSDK while the SDK is already initialized");
+		FString ErrMsg = TEXT("Trying to call InitSDK while the SDK is initializing.");
 		SDKInitializationErrorHandler.ExecuteIfBound(ErrMsg);
 		UE_LOG(LogBeamRuntime, Warning, TEXT("%s"), *ErrMsg);
 	}
@@ -378,19 +446,15 @@ void UBeamRuntime::Deinitialize()
 	CurrentSdkState = ESDKState::NotInitialized;
 }
 
-void UBeamRuntime::PIEExecuteRequestImpl(int64 ActiveRequestId)
+void UBeamRuntime::PIEExecuteRequestImpl(int64 ActiveRequestId, const UObject* CallingContext)
 {
 	UBeamBackend* BeamBackend = GEngine->GetEngineSubsystem<UBeamBackend>();
-
-	// TODO: We'll need to change the code-gen to be able to detect whether or not the request is actually coming from the PIE session.
-	// TODO: Basically, we need to have one delegate for build and another for editor. And the Beam___API classes need to not care about this other than forwarding the calling context to a function of BeamBackend.
-	// TODO: That function should decide which to use based on who is making the request ('Runtime' source PIE/Build or 'Editor' source).
 	const TUnrealRequestPtr Req = BeamBackend->InFlightRequests.FindRef(ActiveRequestId);
 	BeamBackend->InFlightPIERequests.Add(Req);
 
-	GetGameInstance()->IsDedicatedServerInstance()
-		? BeamBackend->DedicatedServerExecuteRequestImpl(ActiveRequestId)
-		: BeamBackend->DefaultExecuteRequestImpl(ActiveRequestId);
+	CallingContext->GetWorld()->GetGameInstance()->IsDedicatedServerInstance()
+		? BeamBackend->DedicatedServerExecuteRequestImpl(ActiveRequestId, CallingContext)
+		: BeamBackend->DefaultExecuteRequestImpl(ActiveRequestId, CallingContext);
 }
 
 // On Start Flow
@@ -530,7 +594,14 @@ void UBeamRuntime::TriggerOnBeamableStarting(FBeamWaitCompleteEvent Evt, bool bA
 		if (!FParse::Value(FCommandLine::Get(), TEXT("beamable-realm-secret="), RealmSecret))
 		{
 			RealmSecret = FPlatformMisc::GetEnvironmentVariable(TEXT("BEAMABLE_REALM_SECRET"));
-			if (!GIsEditor)
+		}
+
+		// Set the realm secret outside of the editor
+		// In the editor, this is set by the UBeamEditor subsystem whenever you change realms. 
+		if (!GIsEditor)
+		{
+			// If something else already set the Realm Secret (BeamPIE, for example) we just ignore this. 
+			if (GEngine->GetEngineSubsystem<UBeamBackend>()->RealmSecret.IsEmpty())
 			{
 				checkf(!RealmSecret.IsEmpty(), TEXT("To run a dedicated server that communicates with Beamable, either:\n"
 					       "- Start it with the command line \'-beamable-realm-secret <realm_secret>\'\n"
@@ -538,9 +609,9 @@ void UBeamRuntime::TriggerOnBeamableStarting(FBeamWaitCompleteEvent Evt, bool bA
 					       "To find your realm secret for your realms, look into your Project Settings => Editor => Beamable Editor => PerSlotDeveloperProjectData => All Realms\n"
 					       "Remember to set this command line argument in your Networking settings for playmode in Editor Settings => Level Editor => Play => Multiplayer Options => Server => Additional Server Launch Parameters."
 				       ))
+				GEngine->GetEngineSubsystem<UBeamBackend>()->RealmSecret = RealmSecret;
 			}
 		}
-		GEngine->GetEngineSubsystem<UBeamBackend>()->RealmSecret = RealmSecret;
 	}
 
 	if (const UWorld* World = GetWorld())
@@ -798,6 +869,9 @@ void UBeamRuntime::TriggerSubsystemPostUserSignIn(FBeamWaitCompleteEvent Evt, FU
 						Subsystem->CurrentUserState[UserSlot] = BeamInitializedWithUserData;
 					}
 				}
+
+				GetSlotConnectivity(UserSlot)->bIsUserReady = true;
+				
 				RequestTrackerSystem->TriggerOperationSuccess(AuthOpHandle, {});
 
 				OnUserReadyCode.Broadcast(UserSlot);
@@ -828,6 +902,7 @@ void UBeamRuntime::TriggerOnUserSlotCleared(const EUserSlotClearedReason& Reason
 		ConnectivityManager->CurrentConnectionLostTime = FDateTime::UtcNow();
 		ConnectivityManager->ConnectionLostCountInSession = 0;
 		ConnectivityManager->CurrentReconnectionCount = 0;
+		ConnectivityManager->bIsUserReady = false;
 	}
 
 	const auto Connectivity = ConnectivityState.FindRef(UserSlot);
@@ -1466,6 +1541,144 @@ FBeamOperationHandle UBeamRuntime::CPP_LogoutOperation(FUserSlot UserSlot, EUser
 	return Handle;
 }
 
+/**
+   ______                           __               ______                                             __  
+  / ____/___ _____ ___  ___  ____  / /___ ___  __   / ____/________ _____ ___  ___ _      ______  _____/ /__
+ / / __/ __ `/ __ `__ \/ _ \/ __ \/ / __ `/ / / /  / /_  / ___/ __ `/ __ `__ \/ _ \ | /| / / __ \/ ___/ //_/
+/ /_/ / /_/ / / / / / /  __/ /_/ / / /_/ / /_/ /  / __/ / /  / /_/ / / / / / /  __/ |/ |/ / /_/ / /  / ,<   
+\____/\__,_/_/ /_/ /_/\___/ .___/_/\__,_/\__, /  /_/   /_/   \__,_/_/ /_/ /_/\___/|__/|__/\____/_/  /_/|_|  
+					     /_/            /____/                                                              
+ */
+
+FUniqueNetIdRepl UBeamRuntime::GetUniqueNetIdForSlot(FUserSlot Slot)
+{
+	if (ensureAlwaysMsgf(IsClient(), TEXT("Not supported in the server.")))
+	{
+		if (const auto& LocalPlayer = GetLocalPlayerForSlot(Slot))
+			return LocalPlayer->GetPreferredUniqueNetId();
+	}
+
+	return FUniqueNetIdRepl::Invalid();
+}
+
+APlayerController* UBeamRuntime::GetPlayerControllerForSlot(FUserSlot Slot)
+{
+	if (ensureAlwaysMsgf(IsClient(), TEXT("Not supported in the server. Please use the similar APIs from UBeamLobbySubsystem instead.")))
+	{
+		if (const auto& LocalPlayer = GetLocalPlayerForSlot(Slot))
+			return LocalPlayer->GetPlayerController(GetWorld());
+	}
+	return nullptr;
+}
+
+ULocalPlayer* UBeamRuntime::GetLocalPlayerForSlot(FUserSlot Slot)
+{
+	if (ensureAlwaysMsgf(IsClient(), TEXT("Not supported in the server.")))
+	{
+		const auto MappedIdx = GetDefault<UBeamCoreSettings>()->RuntimeUserSlots.Find(Slot.Name);
+		if (ensureAlwaysMsgf(MappedIdx != INDEX_NONE, TEXT("On clients, Local Players must mirror RuntimeUserSlots. PLAYER_IDX=%d"), MappedIdx))
+		{
+			if (const auto& LocalPlayer = GetGameInstance()->GetLocalPlayerByIndex(MappedIdx))
+				return LocalPlayer;
+		}
+	}
+
+	return nullptr;
+}
+
+FUserSlot UBeamRuntime::GetUserSlotByPlayerIndex(int32 PlayerIdx)
+{
+	if (ensureAlwaysMsgf(IsClient(), TEXT("Not supported in the server.")))
+	{
+		if (ensureAlwaysMsgf(PlayerIdx < GetDefault<UBeamCoreSettings>()->RuntimeUserSlots.Num(), TEXT("On clients, Local Players must mirror RuntimeUserSlots. PLAYER_IDX=%d"), PlayerIdx))
+		{
+			return GetDefault<UBeamCoreSettings>()->RuntimeUserSlots[PlayerIdx];
+		}
+
+		return FUserSlot{};
+	}
+
+	return FUserSlot{};
+}
+
+FUserSlot UBeamRuntime::GetUserSlotByPlayerController(const AController* Controller)
+{
+	if (Controller->IsPlayerController())
+	{
+		if (ensureAlwaysMsgf(Controller->IsLocalController(), TEXT("Not supported for non-locally controlled objects. Please use the similar APIs from UBeamLobbySubsystem instead.")))
+		{
+			if (const auto PlayerCtrl = Cast<APlayerController>(Controller))
+			{
+				return GetUserSlotByPlayerIndex(PlayerCtrl->GetLocalPlayer()->GetLocalPlayerIndex());
+			}
+		}
+	}
+	return FUserSlot{};
+}
+
+FUserSlot UBeamRuntime::GetUserSlotByPlayerState(const APlayerState* State)
+{
+	const auto PlayerCtrl = State->GetPlayerController();
+	if (ensureAlwaysMsgf(PlayerCtrl, TEXT("Not supported for non-locally controlled objects. Please use the similar APIs from UBeamLobbySubsystem instead.")))
+	{
+		return GetUserSlotByPlayerIndex(PlayerCtrl->GetLocalPlayer()->GetLocalPlayerIndex());
+	}
+	return FUserSlot{};
+}
+
+FBeamGamerTag UBeamRuntime::GetGamerTagByPlayerIndex(int32 PlayerIdx)
+{
+	if (ensureAlwaysMsgf(IsClient(), TEXT("Not supported in the server. Please use the similar APIs from UBeamLobbySubsystem instead.")))
+	{
+		if (ensureAlwaysMsgf(PlayerIdx < GetDefault<UBeamCoreSettings>()->RuntimeUserSlots.Num(), TEXT("On clients, Local Players must mirror RuntimeUserSlots. PLAYER_IDX=%d"), PlayerIdx))
+		{
+			const auto Slot = GetDefault<UBeamCoreSettings>()->RuntimeUserSlots[PlayerIdx];
+			FBeamRealmUser UserData;
+			if (UserSlotSystem->GetUserDataAtSlot(Slot, UserData, this))
+				return UserData.GamerTag;
+		}
+		return FBeamGamerTag{};
+	}
+
+	return FBeamGamerTag{};
+}
+
+FBeamGamerTag UBeamRuntime::GetGamerTagByPlayerController(const AController* Controller)
+{
+	if (ensureAlwaysMsgf(IsClient(), TEXT("Not supported in the server. Please use the similar APIs from UBeamLobbySubsystem instead.")))
+	{
+		if (Controller->IsLocalController())
+		{
+			if (auto PlayerCtrl = Cast<APlayerController>(Controller))
+			{
+				return GetGamerTagByPlayerIndex(PlayerCtrl->GetLocalPlayer()->GetLocalPlayerIndex());
+			}
+		}
+	}
+
+	return FBeamGamerTag{};
+}
+
+FBeamGamerTag UBeamRuntime::GetGamerTagByPlayerState(const APlayerState* State)
+{
+	if (State)
+	{
+		if (ensureAlwaysMsgf(IsClient(), TEXT("Not supported in the server. Please use the similar APIs from UBeamLobbySubsystem instead.")))
+		{
+			auto Controller = State->GetOwningController();
+			if (Controller->IsLocalController())
+			{
+				if (auto PlayerCtrl = Cast<APlayerController>(Controller))
+				{
+					return GetGamerTagByPlayerIndex(PlayerCtrl->GetLocalPlayer()->GetLocalPlayerIndex());
+				}
+			}
+		}
+	}
+	return FBeamGamerTag{};
+}
+
+
 void UBeamRuntime::LoginFromCache(FUserSlot UserSlot, FBeamOperationHandle Op)
 {
 	// Try to load the user at a specific slot and if it fails throws an exception.
@@ -1525,10 +1738,11 @@ void UBeamRuntime::LoginFederated(FUserSlot UserSlot, FString MicroserviceId, FS
 		UserSlotClearedEnqueuedHandle = OnUserClearedCode.AddLambda(
 			[this, AuthSubsystem](FUserSlot UserSlot, FBeamOperationHandle OpHandle, UAuthenticateRequest* AuthReq, FString MicroserviceId, FString FederationId, FString FederatedAuthToken)
 			{
-				const auto AuthenticateHandler = FOnAuthenticateFullResponse::CreateUObject(this, &UBeamRuntime::OnAuthenticated, UserSlot, OpHandle, FDelayedOperation{}, MicroserviceId, FederationId,
-				                                                                            FederatedAuthToken);
+				const auto AuthenticateHandler = FOnAuthenticateFullResponse::CreateUObject(this, &UBeamRuntime::OnAuthenticated,
+				                                                                            UserSlot, OpHandle, MicroserviceId, FederationId, FederatedAuthToken);
+
 				FBeamRequestContext RequestContext;
-				AuthSubsystem->CPP_Authenticate(AuthReq, AuthenticateHandler, RequestContext, OpHandle);
+				AuthSubsystem->CPP_Authenticate(AuthReq, AuthenticateHandler, RequestContext, OpHandle, this);
 
 				// Clean Up handle
 				OnUserClearedCode.Remove(UserSlotClearedEnqueuedHandle);
@@ -1538,9 +1752,11 @@ void UBeamRuntime::LoginFederated(FUserSlot UserSlot, FString MicroserviceId, FS
 	}
 	else
 	{
-		const auto AuthenticateHandler = FOnAuthenticateFullResponse::CreateUObject(this, &UBeamRuntime::OnAuthenticated, UserSlot, Op, FDelayedOperation{}, MicroserviceId, FederationId, FederatedAuthToken);
+		const auto AuthenticateHandler = FOnAuthenticateFullResponse::CreateUObject(this, &UBeamRuntime::OnAuthenticated, UserSlot, Op,
+		                                                                            MicroserviceId, FederationId, FederatedAuthToken);
+
 		FBeamRequestContext RequestContext;
-		AuthSubsystem->CPP_Authenticate(Req, AuthenticateHandler, RequestContext, Op);
+		AuthSubsystem->CPP_Authenticate(Req, AuthenticateHandler, RequestContext, Op, this);
 	}
 }
 
@@ -1569,7 +1785,8 @@ void UBeamRuntime::CommitLoginFederated(FUserSlot UserSlot, UBeamMultiFactorLogi
 				RequestTrackerSystem->TriggerOperationError(Op, Response.ErrorData.message);
 			}
 			// Triggers the on authenticated after with the challenge operation.
-			OnAuthenticated(Response, UserSlot, ChallengeSolution->OperationHandler, FDelayedOperation{}, ChallengeSolution->MicroserviceId, ChallengeSolution->FederationId, ChallengeSolution->FederatedUserAuthToken);
+			OnAuthenticated(Response, UserSlot, ChallengeSolution->OperationHandler,
+			                ChallengeSolution->MicroserviceId, ChallengeSolution->FederationId, ChallengeSolution->FederatedUserAuthToken);
 		});
 
 	// If we are already authenticated (we had a saved user in this slot), we sign out of the user at that slot, wait for all runtime systems to clean up the user and then sign back into the given user.
@@ -1580,7 +1797,7 @@ void UBeamRuntime::CommitLoginFederated(FUserSlot UserSlot, UBeamMultiFactorLogi
 		UserSlotClearedEnqueuedHandle = OnUserClearedCode.AddLambda([this, AuthSubsystem](FUserSlot UserSlot, FBeamOperationHandle OpHandle, UAuthenticateRequest* AuthReq, const FOnAuthenticateFullResponse& Handler)
 		{
 			FBeamRequestContext RequestContext;
-			AuthSubsystem->CPP_Authenticate(AuthReq, Handler, RequestContext, OpHandle);
+			AuthSubsystem->CPP_Authenticate(AuthReq, Handler, RequestContext, OpHandle, this);
 
 			// Clean Up handle
 			OnUserClearedCode.Remove(UserSlotClearedEnqueuedHandle);
@@ -1591,7 +1808,7 @@ void UBeamRuntime::CommitLoginFederated(FUserSlot UserSlot, UBeamMultiFactorLogi
 	else
 	{
 		FBeamRequestContext RequestContext;
-		AuthSubsystem->CPP_Authenticate(Req, Handler, RequestContext, Op);
+		AuthSubsystem->CPP_Authenticate(Req, Handler, RequestContext, Op, this);
 	}
 }
 
@@ -1614,8 +1831,8 @@ void UBeamRuntime::LoginEmailAndPassword(FUserSlot UserSlot, FString Email, FStr
 		UserSlotClearedEnqueuedHandle = OnUserClearedCode.AddLambda(
 			[this, AuthSubsystem](FUserSlot UserSlot, FBeamOperationHandle OpHandle, UAuthenticateRequest* AuthReq, FString MicroserviceId, FString FederationId, FString FederatedAuthToken)
 			{
-				const auto AuthenticateHandler = FOnAuthenticateFullResponse::CreateUObject(this, &UBeamRuntime::OnAuthenticated, UserSlot, OpHandle, FDelayedOperation{}, MicroserviceId, FederationId,
-				                                                                            FederatedAuthToken);
+				const auto AuthenticateHandler = FOnAuthenticateFullResponse::CreateUObject(this, &UBeamRuntime::OnAuthenticated, UserSlot, OpHandle,
+				                                                                            MicroserviceId, FederationId, FederatedAuthToken);
 
 				FBeamRequestContext RequestContext;
 				AuthSubsystem->CPP_Authenticate(AuthReq, AuthenticateHandler, RequestContext, OpHandle, this);
@@ -1629,9 +1846,11 @@ void UBeamRuntime::LoginEmailAndPassword(FUserSlot UserSlot, FString Email, FStr
 	}
 	else
 	{
-		const auto AuthenticateHandler = FOnAuthenticateFullResponse::CreateUObject(this, &UBeamRuntime::OnAuthenticated, UserSlot, Op, FDelayedOperation{}, FString{}, FString{}, FString{});
+		const auto AuthenticateHandler = FOnAuthenticateFullResponse::CreateUObject(this, &UBeamRuntime::OnAuthenticated, UserSlot, Op,
+		                                                                            FString{}, FString{}, FString{});
+
 		FBeamRequestContext RequestContext;
-		AuthSubsystem->CPP_Authenticate(Req, AuthenticateHandler, RequestContext, Op);
+		AuthSubsystem->CPP_Authenticate(Req, AuthenticateHandler, RequestContext, Op, this);
 	}
 }
 
@@ -1737,7 +1956,7 @@ void UBeamRuntime::AttachLocalIdentity(FUserSlot UserSlot, FString FederatedUser
 {
 	// Update the local list of external ids if the IdentityUserId was provided
 	// There are cases of external identities where the Ids are created automatically for the user (Web3 Wallets, for example).
-	// In those cases, the IdentityUserId is null and we cannot automatically update the local state here.
+	// In those cases, the IdentityUserId is null/empty, and we cannot automatically update the local state here.
 	// For those cases, the user should call make an UBeamAccountsApi::CPP_GetMe request, find the newly added identity in the response of that API call and
 	// add it to the local state manually like the code below does. 
 	if (!FederatedUserId.IsEmpty())
@@ -1759,6 +1978,13 @@ void UBeamRuntime::AttachLocalIdentity(FUserSlot UserSlot, FString FederatedUser
 
 void UBeamRuntime::AttachFederated(FUserSlot UserSlot, FString MicroserviceId, FString FederationId, FString FederatedUserId, FString FederatedAuthToken, FBeamOperationHandle Op)
 {
+	// If we are NOT already authenticated (we had a saved user in this slot), we fail the attach.
+	if (!UserSlotSystem->IsUserSlotAuthenticated(UserSlot, this))
+	{
+		RequestTrackerSystem->TriggerOperationError(Op, TEXT("NO_SIGNED_IN_USER_AT_SLOT"));
+		return;
+	}
+
 	const auto CheckIdentityAvailableHandler = FOnGetAvailableExternalIdentityFullResponse::CreateLambda(
 		[this,UserSlot, Op, MicroserviceId, FederationId, FederatedUserId, FederatedAuthToken](FGetAvailableExternalIdentityFullResponse Resp)
 		{
@@ -1823,6 +2049,11 @@ void UBeamRuntime::AttachFederated(FUserSlot UserSlot, FString MicroserviceId, F
 			GEngine->GetEngineSubsystem<UBeamRequestTracker>()->TriggerOperationError(Op, Resp.ErrorData.message);
 		});
 
+	const auto _ = CheckFederatedIdentityAvailable(MicroserviceId, FederationId, FederatedUserId, Op, CheckIdentityAvailableHandler);
+}
+
+void UBeamRuntime::AttachEmailAndPassword(FUserSlot UserSlot, FString Email, FString Password, FBeamOperationHandle Op)
+{
 	// If we are NOT already authenticated (we had a saved user in this slot), we fail the attach.
 	if (!UserSlotSystem->IsUserSlotAuthenticated(UserSlot, this))
 	{
@@ -1830,11 +2061,6 @@ void UBeamRuntime::AttachFederated(FUserSlot UserSlot, FString MicroserviceId, F
 		return;
 	}
 
-	const auto _ = CheckFederatedIdentityAvailable(MicroserviceId, FederationId, FederatedUserId, Op, CheckIdentityAvailableHandler);
-}
-
-void UBeamRuntime::AttachEmailAndPassword(FUserSlot UserSlot, FString Email, FString Password, FBeamOperationHandle Op)
-{
 	const auto CheckIdentityAvailableHandler = FOnGetAvailableFullResponse::CreateLambda([this,UserSlot, Op, Email, Password](FGetAvailableFullResponse Resp)
 	{
 		if (Resp.State == RS_Retrying) return;
@@ -1877,96 +2103,14 @@ void UBeamRuntime::AttachEmailAndPassword(FUserSlot UserSlot, FString Email, FSt
 		GEngine->GetEngineSubsystem<UBeamRequestTracker>()->TriggerOperationError(Op, Resp.ErrorData.message);
 	});
 
-	// If we are NOT already authenticated (we had a saved user in this slot), we fail the attach.
-	if (!UserSlotSystem->IsUserSlotAuthenticated(UserSlot, this))
-	{
-		RequestTrackerSystem->TriggerOperationError(Op, TEXT("NO_SIGNED_IN_USER_AT_SLOT"));
-		return;
-	}
 
-	const auto _ = CheckEmailAvailable(Email, Op, CheckIdentityAvailableHandler);
+	const auto EncodedEmail = FGenericPlatformHttp::UrlEncode(Email);
+	const auto _ = CheckEmailAvailable(EncodedEmail, Op, CheckIdentityAvailableHandler);
 }
 
-void UBeamRuntime::SignUpFederated(FUserSlot UserSlot, FString MicroserviceId, FString FederationId, FString FederatedUserId, FString FederatedAuthToken, bool bAutoLoginOnUnavailable,
-                                   TMap<FString, FString> InitProperties,
-                                   FBeamOperationHandle Op)
+void UBeamRuntime::SignUpFederated(FUserSlot UserSlot, FString MicroserviceId, FString FederationId, FString FederatedUserId, FString FederatedAuthToken,
+                                   bool bAutoLoginOnUnavailable, TMap<FString, FString> InitProperties, FBeamOperationHandle Op)
 {
-	const auto CheckIdentityAvailableHandler = FOnGetAvailableExternalIdentityFullResponse::CreateLambda(
-		[this,UserSlot, Op, MicroserviceId, FederationId, FederatedUserId, FederatedAuthToken, InitProperties, bAutoLoginOnUnavailable](FGetAvailableExternalIdentityFullResponse Resp)
-		{
-			if (Resp.State == RS_Retrying) return;
-
-			if (Resp.State == RS_Success)
-			{
-				const auto bIsAvailable = Resp.SuccessData->bAvailable;
-				UE_LOG(LogTemp, Warning, TEXT("Is Available Identity Id: %s, %s"), *FederatedUserId, bIsAvailable ? TEXT("true") : TEXT("false"));
-
-				// If the Federated Identity has never been assigned in this realm, we create a guest account and then immediately attach this identity to it. 
-				if (bIsAvailable)
-				{
-					// Prepare Init Properties
-					auto Props{InitProperties};
-					FillDefaultSignUpInitProperties(Props);
-					Props.Add(TEXT("__beam_3rd_party_user_id__"), FederatedUserId);
-					Props.Add(TEXT("__beam_3rd_party_auth_token__"), FederatedAuthToken);
-					LoginGuest(UserSlot, Op, Props, FDelayedOperation::CreateLambda([this, Op, UserSlot, MicroserviceId, FederationId, FederatedUserId, FederatedAuthToken]
-					{
-						// Begin an operation that'll only succeed if the attachment is successful
-						const auto DelayedOp =
-							CPP_AttachFederatedOperation(UserSlot,
-							                             MicroserviceId,
-							                             FederationId,
-							                             FederatedUserId,
-							                             FederatedAuthToken,
-							                             FBeamOperationEventHandlerCode::CreateLambda([this, Op](FBeamOperationEvent Evt)
-							                             {
-								                             if (Evt.EventType == OET_SUCCESS && Evt.EventId == GetOperationEventID_MultiFactorAuthTriggered())
-									                             RequestTrackerSystem->TriggerOperationEventWithData(Op,
-									                                                                                 OET_SUCCESS,
-									                                                                                 GetOperationEventID_MultiFactorAuthTriggered(),
-									                                                                                 TEXT("2FA_AUTH"),
-									                                                                                 Evt.EventData);
-							                             }));
-						return DelayedOp;
-					}));
-				}
-				// If it has been assigned in this realm (a user exists in this realm for this Federated Identity id), we log in with that user account into the requesting slot.			 
-				else
-				{
-					// If this external id is already in use we try to log in if asked to do so. Otherwise, we error out.				
-					if (bAutoLoginOnUnavailable)
-					{
-						const auto _ =
-							CPP_LoginFederatedOperation(UserSlot,
-							                            MicroserviceId,
-							                            FederationId,
-							                            FederatedAuthToken,
-							                            FBeamOperationEventHandlerCode::CreateLambda([this, Op](FBeamOperationEvent Evt)
-							                            {
-								                            if (Evt.EventType == OET_SUCCESS && Evt.EventId == GetOperationEventID_MultiFactorAuthTriggered())
-									                            RequestTrackerSystem->TriggerOperationEventWithData(Op,
-									                                                                                OET_SUCCESS,
-									                                                                                GetOperationEventID_MultiFactorAuthTriggered(),
-									                                                                                TEXT("2FA_AUTH"),
-									                                                                                Evt.EventData);
-								                            else if (Evt.EventType == OET_SUCCESS)
-									                            RequestTrackerSystem->TriggerOperationSuccess(Op, Evt.EventCode);
-								                            else if (Evt.EventType == OET_ERROR)
-									                            RequestTrackerSystem->TriggerOperationError(Op, Evt.EventCode);
-								                            else if (Evt.EventType == OET_CANCELLED)
-									                            RequestTrackerSystem->TriggerOperationCancelled(Op, Evt.EventCode);
-							                            }));
-					}
-					else
-					{
-						GEngine->GetEngineSubsystem<UBeamRequestTracker>()->TriggerOperationError(Op, TEXT("EXTERNAL_IDENTITY_IN_USE"));
-					}
-				}
-				return;
-			}
-			GEngine->GetEngineSubsystem<UBeamRequestTracker>()->TriggerOperationError(Op, Resp.ErrorData.message);
-		});
-
 	// If we are already authenticated (we had a saved user in this slot), we fail the sign up.
 	if (UserSlotSystem->IsUserSlotAuthenticated(UserSlot, this))
 	{
@@ -1974,71 +2118,96 @@ void UBeamRuntime::SignUpFederated(FUserSlot UserSlot, FString MicroserviceId, F
 		return;
 	}
 
-	const auto _ = CheckFederatedIdentityAvailable(MicroserviceId, FederationId, FederatedUserId, Op, CheckIdentityAvailableHandler);
+	const auto SignUpEmailReqHandler =
+		FOnPostSignupFullResponse::CreateLambda([this, UserSlot, Op, MicroserviceId, FederationId, FederatedAuthToken, bAutoLoginOnUnavailable]
+		(FPostSignupFullResponse Resp)
+			{
+				if (Resp.State == RS_Retrying)
+				{
+					UE_LOG(LogBeamRuntime, Display, TEXT("Retrying sign up...."))
+					return;
+				}
+
+				if (Resp.State == RS_Error)
+				{
+					// If the federated identity returned by a federation implementation is already in use in this CID-scope,
+					// this tries to create a GamerTag in this PID tied to this Account. 
+					if (Resp.ErrorData.error == TEXT("InvalidCredentialsError"))
+					{
+						GEngine->GetEngineSubsystem<UBeamRequestTracker>()->TriggerOperationError(Op, TEXT("INVALID_TOKEN_FOR_IN_USE_EXTERNAL_IDENTITY"));
+					}
+					else if (Resp.ErrorData.error == TEXT("ExternalIdentityAlreadyRegisteredError"))
+					{
+						// If this external id is already in use we try to log in if asked to do so. Otherwise, we error out.				
+						if (bAutoLoginOnUnavailable)
+						{
+							const auto _ =
+								CPP_LoginFederatedOperation(
+									UserSlot, MicroserviceId, FederationId, FederatedAuthToken,
+									FBeamOperationEventHandlerCode::CreateLambda([this, Op](FBeamOperationEvent Evt)
+									{
+										if (Evt.EventType == OET_SUCCESS && Evt.EventId == GetOperationEventID_MultiFactorAuthTriggered())
+											RequestTrackerSystem->TriggerOperationEventWithData(Op,
+											                                                    OET_SUCCESS,
+											                                                    GetOperationEventID_MultiFactorAuthTriggered(),
+											                                                    TEXT("2FA_AUTH"),
+											                                                    Evt.EventData);
+										else if (Evt.EventType == OET_SUCCESS)
+											RequestTrackerSystem->TriggerOperationSuccess(Op, Evt.EventCode);
+										else if (Evt.EventType == OET_ERROR)
+											RequestTrackerSystem->TriggerOperationError(Op, Evt.EventCode);
+										else if (Evt.EventType == OET_CANCELLED)
+											RequestTrackerSystem->TriggerOperationCancelled(Op, Evt.EventCode);
+									})
+								);
+						}
+						else
+						{
+							GEngine->GetEngineSubsystem<UBeamRequestTracker>()->TriggerOperationError(Op, TEXT("EXTERNAL_IDENTITY_IN_USE"));
+						}
+					}
+					else
+					{
+						GEngine->GetEngineSubsystem<UBeamRequestTracker>()->TriggerOperationError(Op, Resp.ErrorData.message);
+					}
+				}
+
+				if (Resp.State == RS_Success)
+				{
+					const auto TargetRealmPid = GetDefault<UBeamCoreSettings>()->TargetRealm.Pid;
+					const auto GamerTag = Resp.SuccessData->Account.Val->Id;
+					UE_LOG(LogTemp, Display, TEXT("Successfully Signed Up with Federated Identity! GAMERTAG = %s, FEDERATION_ID = %s"),
+					       *GamerTag.AsString,
+					       *FederationId);
+
+
+					OnSignedUp(Resp, UserSlot, Op, MicroserviceId, FederationId, FederatedAuthToken);
+				}
+			});
+
+	auto Req = NewObject<UPostSignupRequest>();
+	Req->Body = NewObject<UCreateAccountWithCredsRequestBody>();
+	Req->Body->ProviderService = FOptionalString{MicroserviceId};
+	Req->Body->ProviderNamespace = FOptionalString{FederationId};
+	Req->Body->ExternalToken = FOptionalString{FederatedAuthToken};
+
+	// Init the dictionary of init properties
+	auto Props{InitProperties};
+	FillDefaultSignUpInitProperties(Props);
+	Props.Add(TEXT("__beam_3rd_party_user_id__"), FederatedUserId);
+	Props.Add(TEXT("__beam_3rd_party_auth_token__"), FederatedAuthToken);
+	Req->Body->InitProperties = FOptionalMapOfString{Props};
+
+	// Kick off the process for sign up
+	const auto AccountAPI = GEngine->GetEngineSubsystem<UBeamAccountsApi>();
+	FBeamRequestContext Ctx;
+	AccountAPI->CPP_PostSignup(Req, SignUpEmailReqHandler, Ctx, Op, this);
+	UE_LOG(LogBeamRuntime, Display, TEXT("Sending sign up. ID=%s, FED_ID=%s, TOKEN=%s"),
+	       *MicroserviceId, *FederationId, *FederatedAuthToken)
 }
 
 void UBeamRuntime::SignUpEmailAndPassword(FUserSlot UserSlot, FString Email, FString Password, bool bAutoLoginOnUnavailable, TMap<FString, FString> InitProperties, FBeamOperationHandle Op)
 {
-	const auto EncodedEmail = FGenericPlatformHttp::UrlEncode(Email);
-
-	const auto CheckIdentityAvailableHandler = FOnGetAvailableFullResponse::CreateLambda([this,UserSlot, Op, Email, Password, bAutoLoginOnUnavailable, InitProperties](FGetAvailableFullResponse Resp)
-	{
-		if (Resp.State == RS_Retrying) return;
-
-		if (Resp.State == RS_Success)
-		{
-			const auto bIsAvailable = Resp.SuccessData->bAvailable;
-			UE_LOG(LogTemp, Warning, TEXT("Is Available Email: %s, %s"), *Email, bIsAvailable ? TEXT("true") : TEXT("false"));
-
-			// If this email has never been assigned in this realm, we create a guest account and then immediately attach this email and password to that account. 
-			if (bIsAvailable)
-			{
-				// Prepare Init Properties
-				auto Props{InitProperties};
-				FillDefaultSignUpInitProperties(Props);
-				Props.Add(TEXT("__beam_user_email__"), Email);
-				Props.Add(TEXT("__beam_user_password__"), Password);
-
-				LoginGuest(UserSlot, Op, Props, FDelayedOperation::CreateLambda([this, Op, UserSlot, Email, Password]
-				{
-					// Begin an operation that'll only succeed if the attachment is successful
-					const auto DelayedOp = RequestTrackerSystem->CPP_BeginOperation({UserSlot}, GetName(), {});
-
-					// Attach email/password to the new guest user BEFORE notifying the SDK's runtime systems.
-					// If fail to attach, will fail the DelayedOp and error out the entire sign up operation and clear the slots auth state.
-					const auto RegisterEmailHandler = FOnBasicAccountsPostRegisterFullResponse::CreateLambda([this, DelayedOp](FBasicAccountsPostRegisterFullResponse Resp)
-					{
-						if (Resp.State == RS_Retrying) return;
-
-						if (Resp.State == RS_Success)
-						{
-							UE_LOG(LogTemp, Warning, TEXT("Successfully Attached Email! GAMERTAG = %s, EMAIL = %s"), *Resp.SuccessData->Id.AsString, *Resp.SuccessData->Email.Val);
-							RequestTrackerSystem->TriggerOperationSuccess(DelayedOp, "");
-						}
-
-						if (Resp.State == RS_Error)
-						{
-							UE_LOG(LogTemp, Error, TEXT("Failed to Attach Email! Result = %s"), *Resp.ErrorData.message);
-							RequestTrackerSystem->TriggerOperationError(DelayedOp, Resp.ErrorData.message);
-						}
-					});
-					const auto AttachCtx = AttachEmailAndPasswordToUser(UserSlot, Email, Password, DelayedOp, RegisterEmailHandler);
-
-					return DelayedOp;
-				}));
-			}
-			// If it has been assigned in this realm (a user exists in this realm for this Federated Identity id), we log in with that user account into the requesting slot.			 
-			else
-			{
-				// If this email is already in use we try to log in if asked to do so. Otherwise, we error out.				
-				if (bAutoLoginOnUnavailable) LoginEmailAndPassword(UserSlot, Email, Password, Op);
-				else GEngine->GetEngineSubsystem<UBeamRequestTracker>()->TriggerOperationError(Op, TEXT("EMAIL_IN_USE"));
-			}
-			return;
-		}
-		GEngine->GetEngineSubsystem<UBeamRequestTracker>()->TriggerOperationError(Op, Resp.ErrorData.message);
-	});
-
 	// If we are already authenticated (we had a saved user in this slot), we fail the sign up
 	if (UserSlotSystem->IsUserSlotAuthenticated(UserSlot, this))
 	{
@@ -2046,8 +2215,63 @@ void UBeamRuntime::SignUpEmailAndPassword(FUserSlot UserSlot, FString Email, FSt
 		return;
 	}
 
-	// Kick off the process for sign up 
-	const auto _ = CheckEmailAvailable(EncodedEmail, Op, CheckIdentityAvailableHandler);
+	const auto SignUpEmailReqHandler =
+		FOnPostSignupFullResponse::CreateLambda([this, UserSlot, Op, Email, Password, bAutoLoginOnUnavailable](FPostSignupFullResponse Resp)
+		{
+			if (Resp.State == RS_Retrying) return;
+
+			if (Resp.State == RS_Error)
+			{
+				// If the Email/Password is already in use within this CID-scope, this tries to use the given password to create a GamerTag in this PID tied to this Account.
+				// If the provided password is incorrect, this is the error we give back.
+				// Unless a game-maker are running multiple games within a single organization (CID), this error is unlikely to ever hit players.
+				// It can be hit during development since developers may try to signup with their own email/password into multiple realms. 
+				if (Resp.ErrorData.error == TEXT("InvalidCredentialsError"))
+				{
+					GEngine->GetEngineSubsystem<UBeamRequestTracker>()->TriggerOperationError(Op, TEXT("INVALID_PASSWORD_FOR_IN_USE_EMAIL"));
+				}
+				// If this email is already in use AND there's already a GamerTag for this PID tied to this account, we can simply log in automatically if the user wants to.
+				// Otherwise, we error out.
+				else if (Resp.ErrorData.error == TEXT("EmailAlreadyRegisteredError"))
+				{
+					if (bAutoLoginOnUnavailable) LoginEmailAndPassword(UserSlot, Email, Password, Op);
+					else GEngine->GetEngineSubsystem<UBeamRequestTracker>()->TriggerOperationError(Op, TEXT("EMAIL_IN_USE"));
+				}
+				// Any other error is simply bubbled up as-is.
+				else
+				{
+					GEngine->GetEngineSubsystem<UBeamRequestTracker>()->TriggerOperationError(Op, Resp.ErrorData.error);
+				}
+			}
+
+			if (Resp.State == RS_Success)
+			{
+				const auto TargetRealmPid = GetDefault<UBeamCoreSettings>()->TargetRealm.Pid;
+				const auto GamerTag = Resp.SuccessData->Account.Val->Id;
+				UE_LOG(LogTemp, Display, TEXT("Successfully Signed Up with Federated Identity! GAMERTAG = %s, EMAIL = %s"),
+				       *GamerTag.AsString,
+				       *Resp.SuccessData->Account.Val->Email.Val);
+
+				OnSignedUp(Resp, UserSlot, Op, {}, {}, {});
+			}
+		});
+
+	auto Req = NewObject<UPostSignupRequest>();
+	Req->Body = NewObject<UCreateAccountWithCredsRequestBody>();
+	Req->Body->Username = FOptionalString{Email};
+	Req->Body->Password = FOptionalString{Password};
+
+	// Init the dictionary of init properties
+	auto Props{InitProperties};
+	FillDefaultSignUpInitProperties(Props);
+	Props.Add(TEXT("__beam_user_email__"), Email);
+	Props.Add(TEXT("__beam_user_password__"), Password);
+	Req->Body->InitProperties = FOptionalMapOfString{Props};
+
+	// Kick off the process for sign up
+	const auto AccountAPI = GEngine->GetEngineSubsystem<UBeamAccountsApi>();
+	FBeamRequestContext Ctx;
+	AccountAPI->CPP_PostSignup(Req, SignUpEmailReqHandler, Ctx, Op, this);
 }
 
 void UBeamRuntime::Logout(FUserSlot UserSlot, EUserSlotClearedReason Reason, bool bRemoveLocalData, FBeamOperationHandle Op)
@@ -2074,31 +2298,13 @@ void UBeamRuntime::Logout(FUserSlot UserSlot, EUserSlotClearedReason Reason, boo
 }
 
 
-void UBeamRuntime::OnAuthenticated(FAuthenticateFullResponse Resp, FUserSlot UserSlot, FBeamOperationHandle Op, FDelayedOperation BeforeUserNotifyOperation, FString MicroserviceId, FString FederationId,
-                                   FString FederatedAuthToken)
+void UBeamRuntime::OnAuthenticated(FAuthenticateFullResponse Resp, FUserSlot UserSlot, FBeamOperationHandle Op, FString MicroserviceId, FString FederationId, FString FederatedAuthToken)
 {
 	if (Resp.State == RS_Retrying) return;
 
 	if (Resp.State == RS_Success)
 	{
-		// If the ChallengeToken is set that means the authentication is happening with a 2FA
-		if (Resp.SuccessData->ChallengeToken.IsSet)
-		{
-			UBeamMultiFactorLoginData* ChallengeSolution = NewObject<UBeamMultiFactorLoginData>(GetTransientPackage());
-
-			ChallengeSolution->MicroserviceId = MicroserviceId;
-			ChallengeSolution->FederationId = FederationId;
-			ChallengeSolution->FederatedUserAuthToken = FederatedAuthToken;
-			ChallengeSolution->ChallengeToken = Resp.SuccessData->ChallengeToken.Val;
-			ChallengeSolution->OperationHandler = Op;
-
-			RequestTrackerSystem->TriggerOperationEventWithData(Op, OET_SUCCESS, GetOperationEventID_MultiFactorAuthTriggered(), TEXT("2FA_AUTH"), ChallengeSolution);
-		}
-		else
-		{
-			const UTokenResponse* Token = Resp.SuccessData;
-			AuthenticateWithToken(UserSlot, Token, Op, BeforeUserNotifyOperation);
-		}
+		HandleSuccessfulAuthentication(UserSlot, Op, MicroserviceId, FederationId, FederatedAuthToken, Resp.SuccessData, nullptr);
 	}
 	else
 	{
@@ -2107,29 +2313,44 @@ void UBeamRuntime::OnAuthenticated(FAuthenticateFullResponse Resp, FUserSlot Use
 	}
 }
 
-void UBeamRuntime::OnGetBeginTwoFactorResponse(FAuthenticateFullResponse Resp, FUserSlot UserSlot, FBeamOperationHandle Op)
+void UBeamRuntime::OnSignedUp(FPostSignupFullResponse Resp, FUserSlot UserSlot, FBeamOperationHandle Op, FString MicroserviceId, FString FederationId, FString FederatedAuthToken)
 {
 	if (Resp.State == RS_Retrying) return;
 
 	if (Resp.State == RS_Success)
+	{
+		HandleSuccessfulAuthentication(UserSlot, Op, MicroserviceId, FederationId, FederatedAuthToken, Resp.SuccessData->Token.Val, Resp.SuccessData->Account.Val);
+	}
+	else
+	{
+		UserSlotSystem->ClearUserAtSlot(UserSlot, USCR_FailedAuthentication, true, this);
+		RequestTrackerSystem->TriggerOperationError(Op, Resp.ErrorData.message);
+	}
+}
+
+void UBeamRuntime::HandleSuccessfulAuthentication(FUserSlot Slot, FBeamOperationHandle Op, FString MicroserviceId, FString FederationId, FString FederatedAuthToken,
+                                                  const UTokenResponse* TokenResponse, const UAccountPlayerView* AccountPlayerView)
+{
+	// If the ChallengeToken is set that means the authentication is happening with a 2FA
+	if (TokenResponse->ChallengeToken.IsSet)
 	{
 		UBeamMultiFactorLoginData* ChallengeSolution = NewObject<UBeamMultiFactorLoginData>(GetTransientPackage());
-		if (ensureAlways(Resp.SuccessData->ChallengeToken.IsSet))
-		{
-			ChallengeSolution->ChallengeToken = Resp.SuccessData->ChallengeToken.Val;
-		}
 
-		RequestTrackerSystem->TriggerOperationSuccessWithData(Op, TEXT(""), ChallengeSolution);
-		// Call the event on get begin two factor
+		ChallengeSolution->MicroserviceId = MicroserviceId;
+		ChallengeSolution->FederationId = FederationId;
+		ChallengeSolution->FederatedUserAuthToken = FederatedAuthToken;
+		ChallengeSolution->ChallengeToken = TokenResponse->ChallengeToken.Val;
+		ChallengeSolution->OperationHandler = Op;
+
+		RequestTrackerSystem->TriggerOperationEventWithData(Op, OET_SUCCESS, GetOperationEventID_MultiFactorAuthTriggered(), TEXT("2FA_AUTH"), ChallengeSolution);
 	}
 	else
 	{
-		UserSlotSystem->ClearUserAtSlot(UserSlot, USCR_FailedAuthentication, true, this);
-		RequestTrackerSystem->TriggerOperationError(Op, Resp.ErrorData.message);
+		AuthenticateWithToken(Slot, TokenResponse, AccountPlayerView, Op);
 	}
 }
 
-void UBeamRuntime::AuthenticateWithToken(FUserSlot UserSlot, const UTokenResponse* Token, FBeamOperationHandle Op, FDelayedOperation BeforeUserNotifyOperation)
+void UBeamRuntime::AuthenticateWithToken(FUserSlot UserSlot, const UTokenResponse* Token, const UAccountPlayerView* OptionalAccountData, FBeamOperationHandle Op)
 {
 	const FBeamCid Cid = GetDefault<UBeamCoreSettings>()->TargetRealm.Cid;
 	const FBeamPid Pid = GetDefault<UBeamCoreSettings>()->TargetRealm.Pid;
@@ -2139,78 +2360,57 @@ void UBeamRuntime::AuthenticateWithToken(FUserSlot UserSlot, const UTokenRespons
 	const int64 ExpiresIn = Token->ExpiresIn;
 
 	UserSlotSystem->SetAuthenticationDataAtSlot(UserSlot, AccessToken, RefreshToken, FDateTime::UtcNow().ToUnixTimestamp(), ExpiresIn, Cid, Pid, this);
-
-	// If I'm given a function that returns an Operation, run and wait for that operation before continuing this one.
-	// We use this to provide much better semantics for SignUp with Email/Password or ThirdParty/Federated identities.
-	// This is because the sign up/in operation will result in success only if the attachment is successful.
-	// This also means that the [Post]UserSignIn and UserReady callbacks are only invoked after the attach/register stuff has ran.
-	// This is a much better flow for PC/Console games where we can disable frictionless auth and instead call SignUpOrLoginWith_____.
-	FBeamWaitHandle WaitHandle;
-	const auto BeforeAuthSetupWaitHandler = FOnWaitCompleteCode::CreateLambda([this, UserSlot, Op](const FBeamWaitCompleteEvent& Evt)
-	{
-		// If any request here failed
-		if (!RequestTrackerSystem->IsWaitSuccessful(Evt))
-		{
-			FString Errs;
-			for (FBeamErrorResponse Error : Evt.Errors)
-				Errs += FString::Printf(TEXT("%s, "), *Error.message);
-
-			UE_LOG(LogBeamRuntime, Error, TEXT("Errors during Login Delayed Operation: %s"), *Errs)
-
-			UserSlotSystem->ClearUserAtSlot(UserSlot, USCR_FailedAuthentication, true, this);
-			RequestTrackerSystem->TriggerOperationError(Op, TEXT("FAILED_LOGIN_DELAYED_OPERATION"));
-			return;
-		}
-
-		// Only run the auth setup if the operation above completed successfully.
-		RunPostAuthenticationSetup(UserSlot, Op);
-	});
-	RequestTrackerSystem->InvokeAndWaitForHooks(WaitHandle, BeforeUserNotifyOperation, BeforeAuthSetupWaitHandler);
+	RunPostAuthenticationSetup(UserSlot, OptionalAccountData, Op);
 }
 
-void UBeamRuntime::RunPostAuthenticationSetup(FUserSlot UserSlot, FBeamOperationHandle Op)
+void UBeamRuntime::RunPostAuthenticationSetup(FUserSlot UserSlot, const UAccountPlayerView* OptionalAccountData, FBeamOperationHandle Op)
 {
-	// Makes a GetMe request to get the updated account data.
-	FBeamRequestContext RequestContext;
-	const UBeamAccountsApi* AccountSubsystem = GEngine->GetEngineSubsystem<UBeamAccountsApi>();
-	const FOnBasicAccountsGetMeFullResponse GetMeHandler = FOnBasicAccountsGetMeFullResponse::CreateUObject(this, &UBeamRuntime::RunPostAuthenticationSetup_OnGetMe, UserSlot, Op);
-	UBasicAccountsGetMeRequest* MeReq = UBasicAccountsGetMeRequest::Make(this, {});
-	AccountSubsystem->CPP_GetMe(UserSlot, MeReq, GetMeHandler, RequestContext, Op, this);
-}
-
-void UBeamRuntime::RunPostAuthenticationSetup_OnGetMe(FBasicAccountsGetMeFullResponse Resp, FUserSlot UserSlot, FBeamOperationHandle Op)
-{
-	if (Resp.State == RS_Retrying) return;
-
-	if (Resp.State == RS_Success)
+	if (OptionalAccountData)
 	{
-		const auto GamerTag = Resp.SuccessData->Id;
-		const auto Email = Resp.SuccessData->Email;
-		const auto ExternalIds = Resp.SuccessData->External;
-		UserSlotSystem->SetGamerTagAtSlot(UserSlot, GamerTag, this);
-		if (Email.IsSet) UserSlotSystem->SetEmailAtSlot(UserSlot, Email.Val, this);
-		if (ExternalIds.IsSet) UserSlotSystem->SetExternalIdsAtSlot(UserSlot, ExternalIds.Val, this);
-
-		FBeamRealmUser BeamRealmUser;
-		if (UserSlotSystem->GetUserDataAtSlot(UserSlot, BeamRealmUser, this))
-		{
-			const FOnGetClientDefaultsFullResponse HandlerConfig = FOnGetClientDefaultsFullResponse::CreateUObject(this, &UBeamRuntime::RunPostAuthenticationSetup_PrepareNotificationService, UserSlot,
-			                                                                                                       BeamRealmUser, Op);
-
-			UGetClientDefaultsRequest* GetClientDefaultsReq = UGetClientDefaultsRequest::Make(this, {});
-			FBeamRequestContext GetClientDefaultsCtx;
-			GEngine->GetEngineSubsystem<UBeamRealmsApi>()->CPP_GetClientDefaults(GetClientDefaultsReq, HandlerConfig, GetClientDefaultsCtx, Op, this);
-		}
-		else
-		{
-			UserSlotSystem->ClearUserAtSlot(UserSlot, USCR_FailedAuthentication, true, this);
-			RequestTrackerSystem->TriggerOperationError(Op, TEXT("Failed to find user data. This should never be seen."));
-		}
+		RunPostAuthenticationSetup_CacheLocalAccountInfo(OptionalAccountData, UserSlot, Op);
 	}
 	else
 	{
-		UserSlotSystem->ClearUserAtSlot(UserSlot, USCR_FailedAuthentication, true, this);
-		RequestTrackerSystem->TriggerOperationError(Op, Resp.ErrorData.message);
+		// Makes a GetMe request to get the updated account data.
+		FBeamRequestContext RequestContext;
+		const UBeamAccountsApi* AccountSubsystem = GEngine->GetEngineSubsystem<UBeamAccountsApi>();
+		const FOnBasicAccountsGetMeFullResponse GetMeHandler = FOnBasicAccountsGetMeFullResponse::CreateLambda([this, UserSlot, Op](FBasicAccountsGetMeFullResponse Resp)
+		{
+			if (Resp.State == RS_Retrying) return;
+
+			if (Resp.State == RS_Success)
+			{
+				RunPostAuthenticationSetup_CacheLocalAccountInfo(Resp.SuccessData, UserSlot, Op);
+			}
+			else
+			{
+				UserSlotSystem->ClearUserAtSlot(UserSlot, USCR_FailedAuthentication, true, this);
+				RequestTrackerSystem->TriggerOperationError(Op, Resp.ErrorData.message);
+			}
+		});
+		UBasicAccountsGetMeRequest* MeReq = UBasicAccountsGetMeRequest::Make(this, {});
+		AccountSubsystem->CPP_GetMe(UserSlot, MeReq, GetMeHandler, RequestContext, Op, this);
+	}
+}
+
+void UBeamRuntime::RunPostAuthenticationSetup_CacheLocalAccountInfo(const UAccountPlayerView* AccountPlayerView, FUserSlot UserSlot, FBeamOperationHandle Op)
+{
+	const auto GamerTag = AccountPlayerView->Id.AsString;
+	const auto Email = AccountPlayerView->Email;
+	const auto ExternalIds = AccountPlayerView->External;
+	UserSlotSystem->SetGamerTagAtSlot(UserSlot, GamerTag, this);
+	if (Email.IsSet) UserSlotSystem->SetEmailAtSlot(UserSlot, Email.Val, this);
+	if (ExternalIds.IsSet) UserSlotSystem->SetExternalIdsAtSlot(UserSlot, ExternalIds.Val, this);
+
+	FBeamRealmUser BeamRealmUser;
+	if (ensureAlways(UserSlotSystem->GetUserDataAtSlot(UserSlot, BeamRealmUser, this)))
+	{
+		const FOnGetClientDefaultsFullResponse HandlerConfig = FOnGetClientDefaultsFullResponse::CreateUObject(this, &UBeamRuntime::RunPostAuthenticationSetup_PrepareNotificationService, UserSlot,
+		                                                                                                       BeamRealmUser, Op);
+
+		UGetClientDefaultsRequest* GetClientDefaultsReq = UGetClientDefaultsRequest::Make(this, {});
+		FBeamRequestContext GetClientDefaultsCtx;
+		GEngine->GetEngineSubsystem<UBeamRealmsApi>()->CPP_GetClientDefaults(GetClientDefaultsReq, HandlerConfig, GetClientDefaultsCtx, Op, this);
 	}
 }
 
@@ -2223,10 +2423,10 @@ void UBeamRuntime::RunPostAuthenticationSetup_PrepareNotificationService(FGetCli
 		EnsureConnectivityManagerForSlot(UserSlot);
 
 		const auto Connectivity = ConnectivityState.FindRef(UserSlot);
-		const auto ConnHandler = FOnNotificationEvent::CreateUObject(Connectivity, &UBeamConnectivityManager::ConnectionHandler, BeamRealmUser, Op);
+		const auto ConnHandler = FOnNotificationEvent::CreateUObject(Connectivity, &UBeamConnectivityManager::ConnectionHandler, true, Op);
 
 		const FString Uri = Resp.SuccessData->WebsocketConfig->Uri.Val / TEXT("connect");
-		UE_LOG(LogBeamRuntime, Verbose, TEXT("WebSocket URI=%s, Setting=%s"), *Resp.SuccessData->WebsocketConfig->Uri.Val, *Resp.SuccessData->WebsocketConfig->Provider)
+		UE_LOG(LogBeamRuntime, Verbose, TEXT("WebSocket URI=%s, Setting=%s"), *Resp.SuccessData->WebsocketConfig->Uri.Val, *Resp.SuccessData->WebsocketConfig->Provider.Val)
 
 		TMap<FString, FString> Headers;
 		FillDefaultSessionHeaders(Headers);
@@ -2245,7 +2445,7 @@ void UBeamRuntime::RunPostAuthenticationSetup_PrepareNotificationService(FGetCli
 void UBeamRuntime::LoadCachedUserAtSlot(FUserSlot UserSlot, FBeamOperationHandle AuthOp, FSimpleDelegate RunIfNoUser)
 {
 	// Try to load the user at a specific slot
-	const int32 Result = UserSlotSystem->TryLoadSavedUserAtSlot(UserSlot, this);
+	const int32 Result = UserSlotSystem->TryLoadSavedUserAtSlotAndAuth(UserSlot, this);
 	if (Result != UBeamUserSlots::LoadSavedUserResult_Failed)
 	{
 		// If expired, let's make a request to get a new token through the auto-refresh for expired tokens and then trigger the auth.
@@ -2255,8 +2455,9 @@ void UBeamRuntime::LoadCachedUserAtSlot(FUserSlot UserSlot, FBeamOperationHandle
 			{
 				if (Resp.State == EBeamFullResponseState::RS_Success)
 				{
-					RunPostAuthenticationSetup(UserSlot, AuthOp);
-					UE_LOG(LogBeamRuntime, Display, TEXT("Authenticated User at Slot! SLOT=%s"), *UserSlot.Name);
+					RunPostAuthenticationSetup(UserSlot, Resp.SuccessData, AuthOp);
+
+					UE_LOG(LogBeamRuntime, Display, TEXT("Authenticated User at Slot! SLOT=%s GAMER TAG=%s"), *UserSlot.Name, *Resp.SuccessData->Id.AsString);
 				}
 				// If this request failed entirely (all retries)... 
 				else if (Resp.State == EBeamFullResponseState::RS_Error)
@@ -2275,8 +2476,20 @@ void UBeamRuntime::LoadCachedUserAtSlot(FUserSlot UserSlot, FBeamOperationHandle
 		// If we loaded and the token wasn't expired. Let's continue the auth setup flow.
 		if (Result == UBeamUserSlots::LoadSavedUserResult_Success)
 		{
-			RunPostAuthenticationSetup(UserSlot, AuthOp);
-			UE_LOG(LogBeamRuntime, Display, TEXT("Authenticated User at Slot! SLOT=%s"), *UserSlot.Name);
+			FBeamRealmUser LoadedUserData;
+			if (UserSlotSystem->GetUserDataAtSlot(UserSlot, LoadedUserData, this))
+			{
+				const auto PlayerView = NewObject<UAccountPlayerView>();
+				PlayerView->Id = LoadedUserData.GamerTag;
+				PlayerView->Email = LoadedUserData.Email.IsEmpty() ? FOptionalString{} : FOptionalString{LoadedUserData.Email};
+				PlayerView->External = FOptionalArrayOfBeamExternalIdentity{LoadedUserData.ExternalIdentities};
+				RunPostAuthenticationSetup(UserSlot, PlayerView, AuthOp);
+				UE_LOG(LogBeamRuntime, Display, TEXT("Authenticated User at Slot! SLOT=%s"), *UserSlot.Name);
+			}
+			else
+			{
+				RequestTrackerSystem->TriggerOperationError(AuthOp, TEXT("INTERNAL_ERROR"));
+			}
 		}
 	}
 	else
@@ -2285,10 +2498,10 @@ void UBeamRuntime::LoadCachedUserAtSlot(FUserSlot UserSlot, FBeamOperationHandle
 	}
 }
 
-FBeamRequestContext UBeamRuntime::LoginGuest(FUserSlot UserSlot, FBeamOperationHandle Op, TMap<FString, FString> InitProperties, FDelayedOperation OnBeforePostAuthentication)
+FBeamRequestContext UBeamRuntime::LoginGuest(FUserSlot UserSlot, FBeamOperationHandle Op, TMap<FString, FString> InitProperties)
 {
 	const UBeamAuthApi* AuthSubsystem = GEngine->GetEngineSubsystem<UBeamAuthApi>();
-	const FOnAuthenticateFullResponse AuthenticateHandler = FOnAuthenticateFullResponse::CreateUObject(this, &UBeamRuntime::OnAuthenticated, UserSlot, Op, OnBeforePostAuthentication, FString{}, FString{}, FString{});
+	const FOnAuthenticateFullResponse AuthenticateHandler = FOnAuthenticateFullResponse::CreateUObject(this, &UBeamRuntime::OnAuthenticated, UserSlot, Op, FString{}, FString{}, FString{});
 
 	UAuthenticateRequest* Req = NewObject<UAuthenticateRequest>(GetTransientPackage());
 	Req->Body = NewObject<UTokenRequestWrapper>(Req);

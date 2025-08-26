@@ -22,7 +22,7 @@ void UGetGameResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Seri
 
 void UGetGameResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeArray<UProjectView*>(Bag->GetArrayField(TEXT("projects")), Projects, OuterOwner);
+	UBeamJsonUtils::DeserializeArray<UProjectView*>(TEXT("projects"), Bag, Projects, OuterOwner);
 }
 
 

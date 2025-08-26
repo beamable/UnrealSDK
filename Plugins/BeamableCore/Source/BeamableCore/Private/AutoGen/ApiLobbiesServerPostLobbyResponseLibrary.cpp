@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/ApiLobbiesServerPostLobbyResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UApiLobbiesServerPostLobbyResponseLibrary::ApiLobbiesServerPostLobbyResponseToJsonString(const UApiLobbiesServerPostLobbyResponse* Serializable, const bool Pretty)

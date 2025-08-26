@@ -95,15 +95,17 @@ class BEAMABLECORERUNTIME_API UBeamConnectivityManager : public UObject
 	GENERATED_BODY()
 
 	friend class UBeamRuntime;
+	friend class UBeamPIE;
 
 	EBeamRuntimeConnectivityState CurrentState;
 	FTSTicker::FDelegateHandle FixupUpdateHandle;
 	FTSTicker::FDelegateHandle ReconnectingUpdateHandle;
+	bool bIsUserReady;
 
 	/**
 	 * Websocket notifications connection handler. 
 	 */
-	void ConnectionHandler(const FNotificationEvent& Evt, FBeamRealmUser BeamRealmUser, FBeamOperationHandle Op);
+	void ConnectionHandler(const FNotificationEvent& Evt, bool TriggerAuthenticatedSlot, FBeamOperationHandle Op);
 
 public:
 	UPROPERTY()
@@ -199,6 +201,12 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable)
 	bool IsDisconnected() const { return IsAuthenticated() && CurrentState == CONN_Offline && ConnectionLostCountInSession; }
+	
+	/**
+	 * @return If we are authenticated and the current state is ONLINE. 
+	 */
+	UFUNCTION(BlueprintCallable)
+	bool IsOnline() const { return IsAuthenticated() && CurrentState == CONN_Online; }
 
 	/**
 	 * @return If we are authenticated, lost our websocket connection and then recovered it; we are now in Fixup. 
@@ -272,9 +280,22 @@ UCLASS(BlueprintType, meta=(Namespace="Beam"))
 class BEAMABLECORERUNTIME_API UBeamRuntime : public UGameInstanceSubsystem
 {
 	friend class UBeamConnectivityManager;
+	friend class UBeamLobbySubsystem;
+
+	friend class UBeamPIE;
 
 	GENERATED_BODY()
 
+
+	UFUNCTION(BlueprintPure)
+	FString PrintIsso(const FUniqueNetIdRepl& Repl)
+	{
+		if (Repl.IsValid())
+			return Repl.GetUniqueNetId().Get()->ToString();
+
+		return FString(TEXT("BUGADO"));
+	}
+	
 	/** @brief Initializes the subsystem.  */
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 
@@ -449,6 +470,12 @@ class BEAMABLECORERUNTIME_API UBeamRuntime : public UGameInstanceSubsystem
 	 */
 	TMap<FUserSlot, FBeamWebSocketHandle> DefaultNotificationChannels;
 
+	/**
+	 * We use this to map between user slots and LocalPlayerIndex.
+	 * This mapping happens implicitly in the client and is handled by @link UBeamLobbySubsystem::CPP_AcceptUserIntoGameServerOperation @endlink in the game server.
+	 */
+	TMap<int32, FUserSlot> LocalPlayerIndexToUserSlotMapping;
+
 public:
 	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, meta=(DefaultToSelf="CallingContext"))
 	static UBeamRuntime* GetSelf(const UObject* CallingContext) { return CallingContext->GetWorld()->GetGameInstance()->GetSubsystem<UBeamRuntime>(); }
@@ -459,8 +486,7 @@ public:
 	 * @brief Function that replaces UBeamBackend::DefaultExecuteRequestImpl when running in PIE mode.
 	 * 
 	 */
-	UFUNCTION()
-	void PIEExecuteRequestImpl(int64 ActiveRequestId);
+	static void PIEExecuteRequestImpl(int64 ActiveRequestId, const UObject* CallingContext);
 
 	/** @brief an enum that represents the state of the sdk if it is currently initialized and ready to be used or not */
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, DisplayName="SDK State")
@@ -501,6 +527,12 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable)
 	bool IsInitialized() { return CurrentSdkState == Initialized; }
+
+	/**
+	 * Returns true when the SDK was initialized.  
+	 */
+	UFUNCTION(BlueprintCallable)
+	bool IsInitializing() { return CurrentSdkState == Initializing; }
 
 	/**
 	 * For cases where you want to de-register all the callbacks to the various runtime events:
@@ -1067,9 +1099,67 @@ public:
 	 */
 	FBeamOperationHandle CPP_LogoutOperation(FUserSlot UserSlot, EUserSlotClearedReason Reason, bool bRemoveLocalData, FBeamOperationEventHandlerCode OnOperationEvent);
 
+
+	/**
+______                           __               ______                                             __  
+/ ____/___ _____ ___  ___  ____  / /___ ___  __   / ____/________ _____ ___  ___ _      ______  _____/ /__
+/ / __/ __ `/ __ `__ \/ _ \/ __ \/ / __ `/ / / /  / /_  / ___/ __ `/ __ `__ \/ _ \ | /| / / __ \/ ___/ //_/
+/ /_/ / /_/ / / / / / /  __/ /_/ / / /_/ / /_/ /  / __/ / /  / /_/ / / / / / /  __/ |/ |/ / /_/ / /  / ,<   
+\____/\__,_/_/ /_/ /_/\___/ .___/_/\__,_/\__, /  /_/   /_/   \__,_/_/ /_/ /_/\___/|__/|__/\____/_/  /_/|_|  
+					 /_/            /____/                                                              
+ */
+
+	/**
+	 * For integration with other implementations of Unreal's Gameplay Framework --- this maps the indices of the array of @link UBeamCoreSettings::RuntimeUserSlots @endlink to
+	 * Unreal's @link FUniqueNetIdRepl @endlink, @link ULocalPlayer @endlink and @link APlayerController @endlink objects.
+	 */
+	UFUNCTION(BlueprintCallable)
+	FUniqueNetIdRepl GetUniqueNetIdForSlot(FUserSlot Slot);
+
+	/**
+	 * For integration with other implementations of Unreal's Gameplay Framework --- this maps the indices of the array of @link UBeamCoreSettings::RuntimeUserSlots @endlink to
+	 * Unreal's @link FUniqueNetIdRepl @endlink, @link ULocalPlayer @endlink and @link APlayerController @endlink objects.
+	 */
+	UFUNCTION(BlueprintCallable)
+	APlayerController* GetPlayerControllerForSlot(FUserSlot Slot);
+
+	/**
+	 * For integration with other implementations of Unreal's Gameplay Framework --- this maps the indices of the array of @link UBeamCoreSettings::RuntimeUserSlots @endlink to
+	 * Unreal's @link FUniqueNetIdRepl @endlink, @link ULocalPlayer @endlink and @link APlayerController @endlink objects.
+	 */
+	UFUNCTION(BlueprintCallable)
+	ULocalPlayer* GetLocalPlayerForSlot(FUserSlot Slot);
+
+	/**
+	 * For integration with other implementations of Unreal's Gameplay Framework.
+	 *
+	 * In the client, this maps the UE's LocalPlayerIndex to the array of @link UBeamCoreSettings::RuntimeUserSlots @endlink.
+	 * In dedicated servers, this maps the UE's LocalPlayerIndex to a ServerMapping slot and is handled by @link UBeamLobbySubsystem::AcceptUserIntoGameServer @endlink.
+	 */
+	UFUNCTION(BlueprintCallable)
+	FUserSlot GetUserSlotByPlayerIndex(int32 PlayerIdx);
+	UFUNCTION(BlueprintCallable)
+	FUserSlot GetUserSlotByPlayerController(const AController* Controller);
+	UFUNCTION(BlueprintCallable)
+	FUserSlot GetUserSlotByPlayerState(const APlayerState* State);
+
+	/**
+	 * For integration with other implementations of Unreal's Gameplay Framework.
+	 *
+	 * In the client, this maps the UE's LocalPlayerIndex to the array of @link UBeamCoreSettings::RuntimeUserSlots @endlink. This returns an empty Gamertag if the user is not authenticated.
+	 * In dedicated servers, this maps the UE's LocalPlayerIndex to a ServerMapping slot and is handled by @link UBeamLobbySubsystem::AcceptUserIntoGameServer @endlink. This returns an empty GamerTag if the user was not accepted into the game server yet.
+	 */
+	UFUNCTION(BlueprintCallable)
+	FBeamGamerTag GetGamerTagByPlayerIndex(int32 PlayerIdx);
+	UFUNCTION(BlueprintCallable)
+	FBeamGamerTag GetGamerTagByPlayerController(const AController* Controller);
+	UFUNCTION(BlueprintCallable)
+	FBeamGamerTag GetGamerTagByPlayerState(const APlayerState* State);
+
 private:
 	// BP/CPP Independent Operation Implementations
 	void LoginFromCache(FUserSlot UserSlot, FBeamOperationHandle Op);
+
 	void LoginFrictionless(FUserSlot UserSlot, TMap<FString, FString> InitProperties, FBeamOperationHandle Op);
 	void LoginFederated(FUserSlot UserSlot, FString MicroserviceId, FString FederationId, FString FederatedAuthToken, FBeamOperationHandle Op);
 	void CommitLoginFederated(FUserSlot UserSlot, UBeamMultiFactorLoginData* ChallengeSolution, FBeamOperationHandle Op);
@@ -1088,18 +1178,20 @@ private:
 
 	void Logout(FUserSlot UserSlot, EUserSlotClearedReason Reason, bool bRemoveLocalData, FBeamOperationHandle Op);
 
-	// Reusable Operation Callbacks
-	void OnAuthenticated(FAuthenticateFullResponse Resp, FUserSlot UserSlot, FBeamOperationHandle Op, FDelayedOperation BeforeUserNotifyOperation, FString MicroserviceId, FString FederationId,
-	                     FString FederatedAuthToken);
-	void OnGetBeginTwoFactorResponse(FAuthenticateFullResponse Resp, FUserSlot UserSlot, FBeamOperationHandle Op);
-	void AuthenticateWithToken(FUserSlot UserSlot, const UTokenResponse* Token, FBeamOperationHandle Op, FDelayedOperation BeforeUserNotifyOperation);
-	void RunPostAuthenticationSetup(FUserSlot UserSlot, FBeamOperationHandle Op);
-	void RunPostAuthenticationSetup_OnGetMe(FBasicAccountsGetMeFullResponse Resp, FUserSlot UserSlot, FBeamOperationHandle Op);
+
+	// Reusable Operation Callbacks	
+	void OnAuthenticated(FAuthenticateFullResponse Resp, FUserSlot UserSlot, FBeamOperationHandle Op, FString MicroserviceId, FString FederationId, FString FederatedAuthToken);
+	void OnSignedUp(FPostSignupFullResponse Resp, FUserSlot UserSlot, FBeamOperationHandle Op, FString MicroserviceId, FString FederationId, FString FederatedAuthToken);
+	void HandleSuccessfulAuthentication(FUserSlot Slot, FBeamOperationHandle Op, FString MicroserviceId, FString FederationId, FString FederatedAuthToken, const UTokenResponse* TokenResponse,
+	                                    const UAccountPlayerView* AccountPlayerView);
+	void AuthenticateWithToken(FUserSlot UserSlot, const UTokenResponse* Token, const UAccountPlayerView* OptionalAccountData, FBeamOperationHandle Op);
+	void RunPostAuthenticationSetup(FUserSlot UserSlot, const UAccountPlayerView* OptionalAccountData, FBeamOperationHandle Op);
+	void RunPostAuthenticationSetup_CacheLocalAccountInfo(const UAccountPlayerView* AccountPlayerView, FUserSlot UserSlot, FBeamOperationHandle Op);
 	void RunPostAuthenticationSetup_PrepareNotificationService(FGetClientDefaultsFullResponse Resp, FUserSlot UserSlot, FBeamRealmUser BeamRealmUser, FBeamOperationHandle Op);
 
 	// Reusable Helper Functions
 	void LoadCachedUserAtSlot(FUserSlot UserSlot, FBeamOperationHandle AuthOp, FSimpleDelegate RunIfNoUser);
-	FBeamRequestContext LoginGuest(FUserSlot UserSlot, FBeamOperationHandle Op, TMap<FString, FString> InitProperties, FDelayedOperation OnBeforePostAuthentication = {});
+	FBeamRequestContext LoginGuest(FUserSlot UserSlot, FBeamOperationHandle Op, TMap<FString, FString> InitProperties);
 	FBeamRequestContext CheckFederatedIdentityAvailable(FString MicroserviceId, FString FederationId, FString FederatedUserId, FBeamOperationHandle Op,
 	                                                    FOnGetAvailableExternalIdentityFullResponse Handler) const;
 	FBeamRequestContext CheckEmailAvailable(FString Email, FBeamOperationHandle Op, FOnGetAvailableFullResponse Handler) const;
@@ -1149,7 +1241,23 @@ public:
 	 */
 	void SendAnalyticsEvent(const FUserSlot& Slot, const FString& EventOpCode, const FString& EventCategory, const FString& EventName, const TArray<TSharedRef<FJsonObject>>& EventParamsObj) const;
 
+	// Game Server Utilities
+public:
+	UFUNCTION(BlueprintPure)
+	bool IsGameServer() const { return GetWorld()->GetNetMode() < NM_Client && GetWorld()->GetNetMode() != NM_Standalone; }
 
+	UFUNCTION(BlueprintPure)
+	bool IsDedicatedGameServer() const { return GetWorld()->IsNetMode(NM_DedicatedServer); }
+
+	UFUNCTION(BlueprintPure)
+	bool IsListenGameServer() const { return GetWorld()->IsNetMode(NM_ListenServer); }
+
+	UFUNCTION(BlueprintPure)
+	bool IsClient() const { return GetWorld()->IsNetMode(NM_Client) || GetWorld()->IsNetMode(NM_Standalone); }
+
+
+	// Notification Utilities
+public:
 	/**
 	 * Utility that can be used to subscribe to custom Notifications in an easier way than with UBeamNotifications::TrySubscribeForMessage.
 	 * @tparam THandler Type of the Notification Handler. Its signature should be "void (TMessage)".

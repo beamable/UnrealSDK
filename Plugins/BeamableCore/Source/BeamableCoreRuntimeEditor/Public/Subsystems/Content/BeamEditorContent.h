@@ -185,6 +185,9 @@ public:
 	bool CreateNewContent(const FBeamContentManifestId& ManifestId, const FString& ContentName, TSubclassOf<UBeamContentObject> ContentObjectSubType, TArray<FString> Tags,
 	                      UBeamContentObject*& ContentObject, FString& ErrMsg);
 
+	UFUNCTION(BlueprintCallable)
+	bool DuplicateContent(const FBeamContentManifestId& ManifestId, FBeamContentId Id,FString& ErrMsg);
+	
 	/**
 	 * Tries to get the in-memory deserialized @link UBeamContentObject @endlink instance for the given manifest/content id pair.
 	 *
@@ -264,6 +267,12 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Beam|Content|Utils", meta=(ExpandBoolAsExecs="ReturnValue"))
 	bool IsValidContentName(const FString& ContentName, FText& Err);
 
+	/**
+	 * Fills the map with each content id for each content type. It respects the hierarchy. 
+	 */	
+	[[deprecated("We'll replace this function with a better version of it in the next release (versions that returns FBeamContentId from TSubclassOf<UBeamContentObject>) --- this function will become private.")]]
+	void GetContentTypeToIdMaps(TMap<FName, TArray<TSharedPtr<FName>>>& Map);
+	
 private:
 	void RebuildLocalManifestCache(const TArray<ULocalContentManifestStreamData*>& Data);
 	void UpdateLocalManifestCache(ULocalContentManifestStreamData* ToUpdate, ULocalContentManifestStreamData* ToClear);
@@ -279,7 +288,6 @@ private:
 	bool LoadContentObjectInstance(const ULocalContentManifestStreamData* Manifest, const FBeamContentId& ContentId, UBeamContentObject*& OutNewContentObject, UObject* Outer);
 
 
-	void GetContentTypeToIdMaps(TMap<FName, TArray<TSharedPtr<FName>>>& Map);
 	bool GetContentTypeFromId(FBeamContentId Id, FString& TypeName);
 };
 

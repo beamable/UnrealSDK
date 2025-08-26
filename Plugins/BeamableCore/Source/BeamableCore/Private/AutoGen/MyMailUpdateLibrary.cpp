@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/MyMailUpdateLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UMyMailUpdateLibrary::MyMailUpdateToJsonString(const UMyMailUpdate* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ UMyMailUpdate* UMyMailUpdateLibrary::Make(int64 Id, UUpdateMailRequestBody* Upda
 
 void UMyMailUpdateLibrary::Break(const UMyMailUpdate* Serializable, int64& Id, UUpdateMailRequestBody*& Update)
 {
-	Id = Serializable->Id;
-	Update = Serializable->Update;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Id = Serializable->Id;
+		Update = Serializable->Update;
+	}
 		
 }
 

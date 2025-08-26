@@ -60,6 +60,8 @@ class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_Operation : public UK2BeamNode_
 	UPROPERTY(VisibleAnywhere, Category="Beam|Operations")
 	bool bIsMultiUser;
 
+	UPROPERTY()
+	bool bIsAlreadyAllocated;
 
 	UPROPERTY(EditAnywhere, Category="Beam|Operations")
 	TEnumAsByte<EOperationNodeModes> CurrentExpandedMode{Success_Error_Cancelled};
@@ -97,18 +99,21 @@ class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_Operation : public UK2BeamNode_
 
 		return Super::GetTooltipText();
 	}
-
-	virtual FText GetKeywords() const override { return FText::FromString(FString::Printf(TEXT("Beam %s"), *GetServiceName())); };
+	 
 
 	//UK2Node impl
 	virtual void AllocateDefaultPins() override;
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
 	virtual void ExpandNode(FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph) override;
-	virtual UObject* GetJumpTargetForDoubleClick() const override;
+	virtual bool CanJumpToDefinition() const override { return true; };
+	virtual void JumpToDefinition() const override;
+	virtual FString GetPinMetaData(FName InPinName, FName InKey) override;
 	//BeamFlowNode impl
 
 
 protected:
+	virtual FText GetKeywords() const override { return FText::FromString(FString::Printf(TEXT("Beam %s"), *GetServiceName())); };
+	
 	virtual FName GetCornerIcon() const override;
 
 	/**
@@ -192,7 +197,7 @@ protected:
 	                                   const TArray<TArray<UEdGraphNode*>>& PerFlowEventNodes);
 
 	void ExpandBeamFlowSubEvents(FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph, const UEdGraphSchema_K2* K2Schema,
-	                             const TArray<FName>& EventIds, const TMap<FName, UClass*>& EventDataCasts, const TArray<FName>& EventsFlowPinNames, UK2Node_BreakStruct* BreakOperationResultNode, UEdGraphPin* SubEventSwitchExecPin);
+	                             const TArray<FName>& EventIds, const TMap<FName, UClass*>& EventDataCasts, const TArray<FName>& EventsFlowPinNames, UK2Node_BreakStruct* BreakOperationResultNode, UEdGraphPin* SubEventSwitchExecPin, FName BaseExecPinName);
 };
 
 #undef LOCTEXT_NAMESPACE

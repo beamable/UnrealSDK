@@ -39,7 +39,7 @@ public:
 		StatType.Split(TEXT("."), &DomainAsStr, &Remainder);
 		Remainder.Split(TEXT("."), &VisibilityAsStr, &Remainder);
 		Remainder.Split(TEXT("."), &LegacyTypeAsStr, &Remainder);
-		Remainder.Split(TEXT("."), &GamerTagAsStr, &Remainder);
+		GamerTagAsStr = Remainder;
 
 		Domain = static_cast<EBeamStatsDomain>(StaticEnum<EBeamStatsDomain>()->GetValueByNameString(DomainAsStr));
 		Visibility = static_cast<EBeamStatsVisibility>(StaticEnum<EBeamStatsVisibility>()->GetValueByNameString(VisibilityAsStr));

@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/GetTemplateRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UGetTemplateRequestBodyLibrary::GetTemplateRequestBodyToJsonString(const UGetTemplateRequestBody* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ UGetTemplateRequestBody* UGetTemplateRequestBodyLibrary::Make(FString TemplateNa
 
 void UGetTemplateRequestBodyLibrary::Break(const UGetTemplateRequestBody* Serializable, FString& TemplateName, int64& GamerTag)
 {
-	TemplateName = Serializable->TemplateName;
-	GamerTag = Serializable->GamerTag;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		TemplateName = Serializable->TemplateName;
+		GamerTag = Serializable->GamerTag;
+	}
 		
 }
 

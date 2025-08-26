@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/GetChampionsResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UGetChampionsResponseLibrary::GetChampionsResponseToJsonString(const UGetChampionsResponse* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UGetChampionsResponse* UGetChampionsResponseLibrary::Make(TArray<UChampionScore*
 
 void UGetChampionsResponseLibrary::Break(const UGetChampionsResponse* Serializable, TArray<UChampionScore*>& Entries)
 {
-	Entries = Serializable->Entries;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Entries = Serializable->Entries;
+	}
 		
 }
 

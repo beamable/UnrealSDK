@@ -42,7 +42,8 @@ Usage:
 Options:
   --sln <sln>                                        Relative path to the .sln file to use for the new project. If the .sln file does not exist, it will be created. When no option is configured, if this command is executing inside a .beamable folder, then the first .sln found in .beamable/.. will be used. If no .sln is found, the .sln path will be <name>.sln. If no .beamable folder exists, then the <project>/<project>.sln will be used [default: BeamableUnreal.sln]
   --service-directory <service-directory>            Relative path to directory where project should be created. Defaults to "SOLUTION_DIR/services"
-  --ids <ids>                                        The list of services to include, defaults to all local services (separated by whitespace)
+  --ids <ids>                                        The list of services to include, defaults to all local services (separated by whitespace). To use NO services, use the --exact-ids flag
+  --exact-ids                                        By default, a blank --ids option maps to ALL available ids. When the --exact-ids flag is given, a blank --ids option maps to NO ids
   --without-group, --without-groups <without-group>  A set of BeamServiceGroup tags that will exclude the associated services. Exclusion takes precedence over inclusion
   --with-group, --with-groups <with-group>           A set of BeamServiceGroup tags that will include the associated services
   --dryrun                                           [DEPRECATED] Run as much of the command as possible without making any network calls

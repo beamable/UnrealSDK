@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/UpdateListingCooldownRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UUpdateListingCooldownRequestBodyLibrary::UpdateListingCooldownRequestBodyToJsonString(const UUpdateListingCooldownRequestBody* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ UUpdateListingCooldownRequestBody* UUpdateListingCooldownRequestBodyLibrary::Mak
 
 void UUpdateListingCooldownRequestBodyLibrary::Break(const UUpdateListingCooldownRequestBody* Serializable, FString& Symbol, int32& CooldownReduction)
 {
-	Symbol = Serializable->Symbol;
-	CooldownReduction = Serializable->CooldownReduction;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Symbol = Serializable->Symbol;
+		CooldownReduction = Serializable->CooldownReduction;
+	}
 		
 }
 

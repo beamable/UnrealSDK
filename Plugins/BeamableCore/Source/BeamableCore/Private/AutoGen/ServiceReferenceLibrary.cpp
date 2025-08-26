@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/ServiceReferenceLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UServiceReferenceLibrary::ServiceReferenceToJsonString(const UServiceReference* Serializable, const bool Pretty)
@@ -43,18 +44,21 @@ UServiceReference* UServiceReferenceLibrary::Make(bool bArchived, bool bArm, boo
 
 void UServiceReferenceLibrary::Break(const UServiceReference* Serializable, bool& bArchived, bool& bArm, bool& bEnabled, FString& ServiceName, FString& Checksum, FString& TemplateId, FString& ImageId, FOptionalInt64& ContainerHealthCheckPort, FOptionalString& ImageCpuArch, FOptionalString& Comments, FOptionalArrayOfServiceComponent& Components, FOptionalArrayOfServiceDependencyReference& Dependencies)
 {
-	bArchived = Serializable->bArchived;
-	bArm = Serializable->bArm;
-	bEnabled = Serializable->bEnabled;
-	ServiceName = Serializable->ServiceName;
-	Checksum = Serializable->Checksum;
-	TemplateId = Serializable->TemplateId;
-	ImageId = Serializable->ImageId;
-	ContainerHealthCheckPort = Serializable->ContainerHealthCheckPort;
-	ImageCpuArch = Serializable->ImageCpuArch;
-	Comments = Serializable->Comments;
-	Components = Serializable->Components;
-	Dependencies = Serializable->Dependencies;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		bArchived = Serializable->bArchived;
+		bArm = Serializable->bArm;
+		bEnabled = Serializable->bEnabled;
+		ServiceName = Serializable->ServiceName;
+		Checksum = Serializable->Checksum;
+		TemplateId = Serializable->TemplateId;
+		ImageId = Serializable->ImageId;
+		ContainerHealthCheckPort = Serializable->ContainerHealthCheckPort;
+		ImageCpuArch = Serializable->ImageCpuArch;
+		Comments = Serializable->Comments;
+		Components = Serializable->Components;
+		Dependencies = Serializable->Dependencies;
+	}
 		
 }
 

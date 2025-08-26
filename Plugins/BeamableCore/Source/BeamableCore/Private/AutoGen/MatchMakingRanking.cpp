@@ -23,10 +23,10 @@ void UMatchMakingRanking::BeamSerializeProperties(TUnrealPrettyJsonSerializer& S
 
 void UMatchMakingRanking::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("isUnranked")), bIsUnranked);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("gt")), Gt);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("rank")), Rank);
-	UBeamJsonUtils::DeserializeMap<FString>(Bag->GetObjectField(TEXT("variables")), Variables, OuterOwner);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("isUnranked"), Bag, bIsUnranked);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("gt"), Bag, Gt);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("rank"), Bag, Rank);
+	UBeamJsonUtils::DeserializeMap<FString>(TEXT("variables"), Bag, Variables, OuterOwner);
 }
 
 

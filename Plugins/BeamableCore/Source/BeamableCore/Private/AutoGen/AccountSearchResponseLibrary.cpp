@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/AccountSearchResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UAccountSearchResponseLibrary::AccountSearchResponseToJsonString(const UAccountSearchResponse* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UAccountSearchResponse* UAccountSearchResponseLibrary::Make(TArray<UAccountsBasi
 
 void UAccountSearchResponseLibrary::Break(const UAccountSearchResponse* Serializable, TArray<UAccountsBasicAccount*>& Accounts)
 {
-	Accounts = Serializable->Accounts;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Accounts = Serializable->Accounts;
+	}
 		
 }
 

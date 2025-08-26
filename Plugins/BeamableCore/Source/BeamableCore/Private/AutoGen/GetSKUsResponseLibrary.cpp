@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/GetSKUsResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UGetSKUsResponseLibrary::GetSKUsResponseToJsonString(const UGetSKUsResponse* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UGetSKUsResponse* UGetSKUsResponseLibrary::Make(USKUDefinitions* Skus, UObject* 
 
 void UGetSKUsResponseLibrary::Break(const UGetSKUsResponse* Serializable, USKUDefinitions*& Skus)
 {
-	Skus = Serializable->Skus;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Skus = Serializable->Skus;
+	}
 		
 }
 

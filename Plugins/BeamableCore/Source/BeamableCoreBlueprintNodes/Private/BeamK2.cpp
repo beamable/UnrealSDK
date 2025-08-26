@@ -12,6 +12,8 @@
 #include "K2Node_SwitchName.h"
 #include "K2Node_SwitchString.h"
 #include "KismetCompiler.h"
+#include "BeamFlow/K2BeamNode_GetLocalState.h"
+#include "BeamFlow/K2BeamNode_GetLocalStateForeach.h"
 
 #define BEAM_K2_LOG_VERBOSITY Verbose
 //#define BEAM_K2_ADD_NOTES_TO_FLOW_NODES
@@ -349,7 +351,7 @@ void BeamK2::ReplaceConnectionsOnBeamFlow(const TArray<UEdGraphNode*>& NodesToCo
 					       *GraphNode->GetDescriptiveCompiledName(), *GraphPin->PinName.ToString(), *RelevantPin->PinName.ToString())
 					GraphPin->BreakLinkTo(RelevantPin);
 					const auto bConnectedEventPins = K2Schema->TryCreateConnection(GraphPin, To[i]);
-					checkf(bConnectedEventPins, TEXT("FROM_PIN_NAME=%s, TO_PIN_NAME= %s"), *GraphPin->GetName(), *To[i]->GetName());
+					ensureAlwaysMsgf(bConnectedEventPins, TEXT("FROM_PIN_NAME=%s, TO_PIN_NAME= %s"), *GraphPin->GetName(), *To[i]->GetName());
 				}
 			}
 		}
@@ -366,7 +368,7 @@ UK2Node_BreakStruct* BeamK2::CreateBreakStructNode(UEdGraphNode* CustomNode, FKi
 
 	// Connect the Result pin to the break pin	
 	const auto bConnectedBreakPins = K2Schema->TryCreateConnection(StructInputPin, BreakStructNode->FindPin(StructToBreak->GetFName()));
-	check(bConnectedBreakPins)
+	ensureAlways(bConnectedBreakPins);
 
 	return BreakStructNode;
 }
@@ -437,9 +439,10 @@ UK2Node_SwitchName* BeamK2::CreateSwitchNameNode(UEdGraphNode* CustomNode, FKism
 	return Switch;
 }
 
-UK2Node_DynamicCast* BeamK2::CreateDynamicCastNode(UEdGraphNode* CustomNode, FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph, UClass* TargetClass)
+UK2Node_DynamicCast* BeamK2::CreateDynamicCastNode(UEdGraphNode* CustomNode, FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph, UClass* TargetClass, bool IsPure)
 {
 	UK2Node_DynamicCast* CastNode = CompilerContext.SpawnIntermediateNode<UK2Node_DynamicCast>(CustomNode, SourceGraph);
+	CastNode->SetPurity(IsPure);
 	CastNode->TargetType = TargetClass;
 	CastNode->AllocateDefaultPins();
 	return CastNode;
@@ -452,7 +455,7 @@ UK2Node_EnumEquality* BeamK2::CreateEnumEqualityAgainstDefault(UEdGraphNode* Cus
 	EnumEquality->AllocateDefaultPins();
 	// Connect the Result pin to the break pin
 	const auto bConnected = K2Schema->TryCreateConnection(CompareAgainstPin, EnumEquality->FindPin(TEXT("A")));
-	check(bConnected)
+	ensureAlways(bConnected);
 
 	// Set the default value of this one to success
 	EnumEquality->FindPin(TEXT("B"))->DefaultValue = EnumToCompareType->GetNameStringByValue(EnumToCompareAgainst);
@@ -467,10 +470,10 @@ UK2Node_IfThenElse* BeamK2::CreateIfThenElseNodeAgainstCondition(UEdGraphNode* C
 	IfThenElseNode->AllocateDefaultPins();
 	{
 		const auto bConnectedEnumEqualityToCondition = K2Schema->TryCreateConnection(ConditionPin, IfThenElseNode->GetConditionPin());
-		check(bConnectedEnumEqualityToCondition)
+		ensureAlways(bConnectedEnumEqualityToCondition);
 
 		const auto bConnectedEvent = K2Schema->TryCreateConnection(ExecPin, IfThenElseNode->GetExecPin());
-		check(bConnectedEvent)
+		ensureAlways(bConnectedEvent);
 	}
 
 	return IfThenElseNode;
@@ -553,18 +556,18 @@ void BeamK2::MoveWrappedPin(const UEdGraphNode* CustomNode, FKismetCompilerConte
 	const auto WrapperPin = CustomNode->FindPinChecked(PinName);
 	const auto TargetPin = TargetNode->FindPinChecked(PinName);
 	const auto Moved = CompilerContext.MovePinLinksToIntermediate(*WrapperPin, *TargetPin);
-	check(!Moved.IsFatal());
+	ensureAlways(!Moved.IsFatal());
 }
 
 void BeamK2::ConnectIfThenElseNodeOutputs(FKismetCompilerContext& CompilerContext, UEdGraphPin* const TruePin, UEdGraphPin* const FalsePin, const UK2Node_IfThenElse* IfThenElseNode)
 {
 	const auto IntermediateSuccessPin = IfThenElseNode->GetThenPin();
 	const auto SuccessFlowMoved = CompilerContext.MovePinLinksToIntermediate(*TruePin, *IntermediateSuccessPin);
-	check(!SuccessFlowMoved.IsFatal());
+	ensureAlways(!SuccessFlowMoved.IsFatal());
 
 	const auto IntermediateOthersPin = IfThenElseNode->GetElsePin();
 	const auto NonSuccessFlowMoved = CompilerContext.MovePinLinksToIntermediate(*FalsePin, *IntermediateOthersPin);
-	check(!NonSuccessFlowMoved.IsFatal());
+	ensureAlways(!NonSuccessFlowMoved.IsFatal());
 }
 
 UK2Node_AddDelegate* BeamK2::CreateAddDelegateNode(UEdGraphNode* Node, FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph, FMulticastDelegateProperty* MulticastDelegateProperty)
@@ -664,6 +667,7 @@ bool BeamK2::IsMacroOrEventGraph(const UEdGraph* Graph)
 	const bool bIsCompatible = (GraphType == EGraphType::GT_Ubergraph) || GraphType == GT_Macro;
 	return bIsCompatible;
 }
+
 
 void BeamK2::RemoveAllPins(UEdGraphNode* CustomNode, const TArray<FName> PinsToRemove)
 {
@@ -790,7 +794,7 @@ void BeamK2::SetUpPinsFunctionToOwnerSubsystem(const UK2Node_CallFunction* CallG
 	const auto SubsystemReturnPin = CallGetSubsystem->GetReturnValuePin();
 	const auto RequestFunctionSelfPin = K2Schema->FindSelfPin(*CallRequestFunction, EGPD_Input);
 	const auto bConnectedSubsystemToFunctionCall = K2Schema->TryCreateConnection(SubsystemReturnPin, RequestFunctionSelfPin);
-	check(bConnectedSubsystemToFunctionCall)
+	ensureAlways(bConnectedSubsystemToFunctionCall);
 }
 
 
@@ -850,20 +854,50 @@ void BeamK2::ParseFunctionForNodePins(UEdGraphNode* CustomNode, const UFunction*
 
 		// We filter out all output pins because we create them by hand after we get all the input ones.
 		EEdGraphPinDirection Direction = bIsOutputParam ? EGPD_Output : EGPD_Input;
+		UEdGraphPin* Pin = nullptr;
+
+		bool IsDynamicCast = false;
+		if (Param->HasMetaData(*MD_BeamCastParameterName))
+		{
+			if (HasMetaData(CustomNode, MD_BeamCastTypeName))
+			{
+				auto CastType = GetMetaData(CustomNode, MD_BeamCastTypeName);
+
+				if (CastType.IsEmpty())
+				{
+					UE_LOG(LogTemp, Error, TEXT("Empty Metadata. The case of meta data of cast type existing for a node and be empty should be impossible."))
+				}
+				UClass* MyClass = FSoftClassPath{CastType}.ResolveClass();
+				if (!MyClass)
+				{
+					UE_LOG(LogTemp, Error, TEXT("Not found class [%s] for the node. That could means the class has been deleted and you still have some references for it."), *CastType)
+				}
+				Pin = CustomNode->CreatePin(EGPD_Output, UEdGraphSchema_K2::PC_Object, MyClass, Param->GetFName());
+				IsDynamicCast = true;
+			}
+		}
 
 		// Create, store and configure the pin to be the correct type.
-		UEdGraphPin* Pin = CustomNode->CreatePin(Direction, NAME_None, Param->GetFName());
+		if (!IsDynamicCast)
+		{
+			Pin = CustomNode->CreatePin(Direction, NAME_None, Param->GetFName());
 
-		// Make sure it's a hide-able pin here, if it is a hide-able pin in the given function
-		Pin->bAdvancedView = Function->GetMetaData("AdvancedDisplay").Contains(Param->GetFName().ToString());
 
-		// Set up the pin type based on the parameter's property type.
-		const bool _ = K2Schema->ConvertPropertyToPinType(Param, /*out*/ Pin->PinType);
-		K2Schema->SetPinAutogeneratedDefaultValueBasedOnType(Pin);
+			// Make sure it's a hide-able pin here, if it is a hide-able pin in the given function
+			Pin->bAdvancedView = Function->GetMetaData("AdvancedDisplay").Contains(Param->GetFName().ToString());
+
+			// Set up the pin type based on the parameter's property type.
+			const bool _ = K2Schema->ConvertPropertyToPinType(Param, /*out*/ Pin->PinType);
+			K2Schema->SetPinAutogeneratedDefaultValueBasedOnType(Pin);
+		}
 
 		// Generate the pin's tooltip from the function docs.
 		UK2Node_CallFunction::GeneratePinTooltipFromFunction(*Pin, Function);
 
+		if (Param->HasMetaData(BeamK2::MD_NotConnectableParameterName))
+		{
+			Pin->bNotConnectable = true;
+		}
 		// Keep track of the pins that come from the Request Function
 		if (bIsOutputParam)
 		{
@@ -883,16 +917,16 @@ void BeamK2::ParseFunctionForNodeOutputPinsArrayElement(UEdGraphNode* CustomNode
 	// Create the outputs for the array elements	
 	for (TFieldIterator<FProperty> PropIt(Function); PropIt && (PropIt->PropertyFlags & CPF_Parm); ++PropIt)
 	{
-		const FProperty* Param = *PropIt;
+		const FProperty* ArrayParam = *PropIt;
 
-		if (!Param)
+		if (!ArrayParam)
 			continue;
 
 		// We ignore all Output parameters because we create these by hand.
-		const bool bIsOutputParam = !(!Param->HasAnyPropertyFlags(CPF_OutParm) || Param->HasAnyPropertyFlags(CPF_ReferenceParm));
+		const bool bIsOutputParam = !(!ArrayParam->HasAnyPropertyFlags(CPF_OutParm) || ArrayParam->HasAnyPropertyFlags(CPF_ReferenceParm));
 
 		// if it's not a output or a array we should ignore
-		if (!bIsOutputParam || !Param->IsA(FArrayProperty::StaticClass()))
+		if (!bIsOutputParam || !ArrayParam->IsA(FArrayProperty::StaticClass()))
 		{
 			continue;
 		}
@@ -901,26 +935,124 @@ void BeamK2::ParseFunctionForNodeOutputPinsArrayElement(UEdGraphNode* CustomNode
 		EEdGraphPinDirection Direction = EGPD_Output;
 
 		FArrayProperty* InnerArrayProperty = CastField<FArrayProperty>(*PropIt);
-		Param = InnerArrayProperty->Inner;
+		auto Param = InnerArrayProperty->Inner;
 		FString PinFriendlyName = Param->GetName() + " - Element";
 
+		UEdGraphPin* Pin = nullptr;
 
-		// Create, store and configure the pin to be the correct type.
-		UEdGraphPin* Pin = CustomNode->CreatePin(Direction, NAME_None, *(Param->GetName() + "Element"));
-		Pin->PinFriendlyName = FText::FromString(PinFriendlyName);
+		bool IsDynamicCast = false;
+		if (ArrayParam->HasMetaData(*MD_BeamCastParameterName))
+		{
+			if (HasMetaData(CustomNode, MD_BeamCastTypeName))
+			{
+				auto CastType = GetMetaData(CustomNode, MD_BeamCastTypeName);
 
-		// Make sure it's a hide-able pin here, if it is a hide-able pin in the given function
-		Pin->bAdvancedView = Function->GetMetaData("AdvancedDisplay").Contains(Param->GetFName().ToString());
+				UClass* MyClass = FSoftClassPath{CastType}.ResolveClass();
+				Pin = CustomNode->CreatePin(Direction, UEdGraphSchema_K2::PC_Object, MyClass, *(Param->GetName() + "Element"));
+				Pin->PinFriendlyName = FText::FromString(PinFriendlyName);
+				IsDynamicCast = true;
+			}
+		}
 
-		// Set up the pin type based on the parameter's property type.
-		const bool _ = K2Schema->ConvertPropertyToPinType(Param, /*out*/ Pin->PinType);
-		K2Schema->SetPinAutogeneratedDefaultValueBasedOnType(Pin);
+		if (!IsDynamicCast)
+		{
+			// Create, store and configure the pin to be the correct type.
+			Pin = CustomNode->CreatePin(Direction, NAME_None, *(Param->GetName() + "Element"));
+			Pin->PinFriendlyName = FText::FromString(PinFriendlyName);
+
+			// Make sure it's a hide-able pin here, if it is a hide-able pin in the given function
+			Pin->bAdvancedView = Function->GetMetaData("AdvancedDisplay").Contains(Param->GetFName().ToString());
+
+			// Set up the pin type based on the parameter's property type.
+			const bool _ = K2Schema->ConvertPropertyToPinType(Param, /*out*/ Pin->PinType);
+			K2Schema->SetPinAutogeneratedDefaultValueBasedOnType(Pin);
+		}
+
 
 		// Generate the pin's tooltip from the function docs.
 		UK2Node_CallFunction::GeneratePinTooltipFromFunction(*Pin, Function);
 
 		OutputWrappedPinNames.Add(Param->GetName());
 	}
+}
+
+FString BeamK2::GetMetaData(UEdGraphNode* CustomNode, FString Key)
+{
+	if (CustomNode->IsA(UK2BeamNode_GetLocalState::StaticClass()))
+	{
+		UK2BeamNode_GetLocalState* Node = dynamic_cast<UK2BeamNode_GetLocalState*>(CustomNode);
+		if (Node->NodeMetaData.Contains(Key))
+		{
+			return Node->NodeMetaData[Key];
+		}
+	}
+	else if (CustomNode->IsA(UK2BeamNode_GetLocalStateForeach::StaticClass()))
+	{
+		UK2BeamNode_GetLocalStateForeach* Node = dynamic_cast<UK2BeamNode_GetLocalStateForeach*>(CustomNode);
+		if (Node->NodeMetaData.Contains(Key))
+		{
+			return Node->NodeMetaData[Key];
+		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("Wasn't possible to convert the custom node %s into a supported node for metadata"), *CustomNode->GetName());
+	}
+
+	return TEXT("");
+}
+
+void BeamK2::SetMetaData(UEdGraphNode* CustomNode, FString Key, FString Value)
+{
+	if (CustomNode->IsA(UK2BeamNode_GetLocalState::StaticClass()))
+	{
+		UK2BeamNode_GetLocalState* Node = dynamic_cast<UK2BeamNode_GetLocalState*>(CustomNode);
+		if (Node->NodeMetaData.Contains(Key))
+		{
+			Node->NodeMetaData[Key] = Value;
+		}
+		else
+		{
+			Node->NodeMetaData.Add(Key, Value);
+		}
+	}
+	else if (CustomNode->IsA(UK2BeamNode_GetLocalStateForeach::StaticClass()))
+	{
+		UK2BeamNode_GetLocalStateForeach* Node = dynamic_cast<UK2BeamNode_GetLocalStateForeach*>(CustomNode);
+		if (Node->NodeMetaData.Contains(Key))
+		{
+			Node->NodeMetaData[Key] = Value;
+		}
+		else
+		{
+			Node->NodeMetaData.Add(Key, Value);
+		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("Wasn't possible to convert the custom node %s into a supported node for metadata"), *CustomNode->GetName());
+	}
+}
+
+bool BeamK2::HasMetaData(UEdGraphNode* CustomNode, FString Key)
+{
+	if (CustomNode->IsA(UK2BeamNode_GetLocalState::StaticClass()))
+	{
+		UK2BeamNode_GetLocalState* Node = dynamic_cast<UK2BeamNode_GetLocalState*>(CustomNode);
+		return Node->NodeMetaData.Contains(Key);
+	}
+	else if (CustomNode->IsA(UK2BeamNode_GetLocalStateForeach::StaticClass()))
+	{
+		UK2BeamNode_GetLocalStateForeach* Node = dynamic_cast<UK2BeamNode_GetLocalStateForeach*>(CustomNode);
+
+		return Node->NodeMetaData.Contains(Key);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("Wasn't possible to convert the custom node %s into a supported node for metadata"), *CustomNode->GetName());
+	}
+
+	return false;
 }
 
 void BeamK2::ParseFunctionForNodeInputPins(UEdGraphNode* CustomNode, const UFunction* Function, const TArray<FName> PinsToAdd, bool bFailIfNotFound)

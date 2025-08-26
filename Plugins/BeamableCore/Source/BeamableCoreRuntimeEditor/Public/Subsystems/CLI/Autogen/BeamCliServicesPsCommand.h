@@ -88,22 +88,22 @@ public:
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		UBeamJsonUtils::DeserializeArray<bool>(Bag->GetArrayField(TEXT("ExistInLocal")), ExistInLocal, OuterOwner);
-		UBeamJsonUtils::DeserializeArray<bool>(Bag->GetArrayField(TEXT("ExistInRemote")), ExistInRemote, OuterOwner);
-		UBeamJsonUtils::DeserializeArray<bool>(Bag->GetArrayField(TEXT("IsRunningRemotely")), IsRunningRemotely, OuterOwner);
-		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("IsDockerRunning")), IsDockerRunning);
-		UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("BeamoIds")), BeamoIds, OuterOwner);
-		UBeamJsonUtils::DeserializeArray<bool>(Bag->GetArrayField(TEXT("ShouldBeEnabledOnRemote")), ShouldBeEnabledOnRemote, OuterOwner);
-		UBeamJsonUtils::DeserializeArray<bool>(Bag->GetArrayField(TEXT("IsRunningLocally")), IsRunningLocally, OuterOwner);
-		UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("ProtocolTypes")), ProtocolTypes, OuterOwner);
-		UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("ImageIds")), ImageIds, OuterOwner);
-		UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("ContainerNames")), ContainerNames, OuterOwner);
-		UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("ContainerIds")), ContainerIds, OuterOwner);
-		UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("LocalHostPorts")), LocalHostPorts, OuterOwner);
-		UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("LocalContainerPorts")), LocalContainerPorts, OuterOwner);
-		UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("Dependencies")), Dependencies, OuterOwner);
-		UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("ProjectPath")), ProjectPath, OuterOwner);
-		UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("UnityAssemblyDefinitions")), UnityAssemblyDefinitions, OuterOwner);	
+		UBeamJsonUtils::DeserializeArray<bool>(TEXT("ExistInLocal"), Bag, ExistInLocal, OuterOwner);
+		UBeamJsonUtils::DeserializeArray<bool>(TEXT("ExistInRemote"), Bag, ExistInRemote, OuterOwner);
+		UBeamJsonUtils::DeserializeArray<bool>(TEXT("IsRunningRemotely"), Bag, IsRunningRemotely, OuterOwner);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("IsDockerRunning"), Bag, IsDockerRunning);
+		UBeamJsonUtils::DeserializeArray<FString>(TEXT("BeamoIds"), Bag, BeamoIds, OuterOwner);
+		UBeamJsonUtils::DeserializeArray<bool>(TEXT("ShouldBeEnabledOnRemote"), Bag, ShouldBeEnabledOnRemote, OuterOwner);
+		UBeamJsonUtils::DeserializeArray<bool>(TEXT("IsRunningLocally"), Bag, IsRunningLocally, OuterOwner);
+		UBeamJsonUtils::DeserializeArray<FString>(TEXT("ProtocolTypes"), Bag, ProtocolTypes, OuterOwner);
+		UBeamJsonUtils::DeserializeArray<FString>(TEXT("ImageIds"), Bag, ImageIds, OuterOwner);
+		UBeamJsonUtils::DeserializeArray<FString>(TEXT("ContainerNames"), Bag, ContainerNames, OuterOwner);
+		UBeamJsonUtils::DeserializeArray<FString>(TEXT("ContainerIds"), Bag, ContainerIds, OuterOwner);
+		UBeamJsonUtils::DeserializeArray<FString>(TEXT("LocalHostPorts"), Bag, LocalHostPorts, OuterOwner);
+		UBeamJsonUtils::DeserializeArray<FString>(TEXT("LocalContainerPorts"), Bag, LocalContainerPorts, OuterOwner);
+		UBeamJsonUtils::DeserializeArray<FString>(TEXT("Dependencies"), Bag, Dependencies, OuterOwner);
+		UBeamJsonUtils::DeserializeArray<FString>(TEXT("ProjectPath"), Bag, ProjectPath, OuterOwner);
+		UBeamJsonUtils::DeserializeArray<FString>(TEXT("UnityAssemblyDefinitions"), Bag, UnityAssemblyDefinitions, OuterOwner);	
 	}
 };
 

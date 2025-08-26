@@ -12,6 +12,7 @@
 #include "BeamBackend/BeamMicroserviceClientSubsystem.h"
 #include "Containers/CircularQueue.h"
 #include "Containers/SpscQueue.h"
+#include "PIE/BeamPIE_Settings.h"
 #include "Subsystems/BeamEditor.h"
 #include "Subsystems/CLI/BeamCli.h"
 #include "Subsystems/CLI/Autogen/BeamCliFederationLocalKeyCommand.h"
@@ -341,5 +342,5 @@ protected:
 	void SetupLogTail(FLocalMicroserviceData* RunningService);
 	void AppendToLogs(FLocalMicroserviceData* RunningService, const TArray<UBeamCliLogEntry*>& Log);
 	void StopLogTail(FLocalMicroserviceData* RunningService);
-	void SplitByHostOrDocker(const TArray<FString>& BeamoIds, TArray<FString>& DockerBeamoIds, TArray<FString>& HostBeamoIds);
+	void SplitByHostOrDocker(const TArray<FString>& BeamoIds, TArray<FString>& DockerBeamoIds, TArray<FString>& HostBeamoIds);	
 };

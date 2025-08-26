@@ -7,7 +7,7 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-#include "BeamableCore/Public/AutoGen/RealmConfiguration.h"
+#include "BeamableCore/Public/AutoGen/RealmsBasicRealmConfiguration.h"
 
 #include "GetClientDefaultsRequest.generated.h"
 
@@ -39,7 +39,7 @@ public:
 };
 
 UDELEGATE(BlueprintAuthorityOnly)
-DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnGetClientDefaultsSuccess, FBeamRequestContext, Context, UGetClientDefaultsRequest*, Request, URealmConfiguration*, Response);
+DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnGetClientDefaultsSuccess, FBeamRequestContext, Context, UGetClientDefaultsRequest*, Request, URealmsBasicRealmConfiguration*, Response);
 
 UDELEGATE(BlueprintAuthorityOnly)
 DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnGetClientDefaultsError, FBeamRequestContext, Context, UGetClientDefaultsRequest*, Request, FBeamErrorResponse, Error);
@@ -47,5 +47,5 @@ DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnGetClientDefaultsError, FBeamRequestCont
 UDELEGATE(BlueprintAuthorityOnly)
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FOnGetClientDefaultsComplete, FBeamRequestContext, Context, UGetClientDefaultsRequest*, Request);
 
-using FGetClientDefaultsFullResponse = FBeamFullResponse<UGetClientDefaultsRequest*, URealmConfiguration*>;
+using FGetClientDefaultsFullResponse = FBeamFullResponse<UGetClientDefaultsRequest*, URealmsBasicRealmConfiguration*>;
 DECLARE_DELEGATE_OneParam(FOnGetClientDefaultsFullResponse, FGetClientDefaultsFullResponse);

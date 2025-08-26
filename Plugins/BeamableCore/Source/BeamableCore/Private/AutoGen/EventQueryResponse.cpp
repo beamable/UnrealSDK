@@ -22,7 +22,7 @@ void UEventQueryResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer& S
 
 void UEventQueryResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeArray<UEventObjectData*>(Bag->GetArrayField(TEXT("events")), Events, OuterOwner);
+	UBeamJsonUtils::DeserializeArray<UEventObjectData*>(TEXT("events"), Bag, Events, OuterOwner);
 }
 
 

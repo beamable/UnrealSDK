@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/RewardsResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString URewardsResponseLibrary::RewardsResponseToJsonString(const URewardsResponse* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ URewardsResponse* URewardsResponseLibrary::Make(TArray<UTournamentCurrencyReward
 
 void URewardsResponseLibrary::Break(const URewardsResponse* Serializable, TArray<UTournamentCurrencyReward*>& RewardCurrencies)
 {
-	RewardCurrencies = Serializable->RewardCurrencies;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		RewardCurrencies = Serializable->RewardCurrencies;
+	}
 		
 }
 

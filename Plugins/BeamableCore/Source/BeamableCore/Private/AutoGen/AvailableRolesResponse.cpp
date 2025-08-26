@@ -22,7 +22,7 @@ void UAvailableRolesResponse::BeamSerializeProperties(TUnrealPrettyJsonSerialize
 
 void UAvailableRolesResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("roles")), Roles, OuterOwner);
+	UBeamJsonUtils::DeserializeArray<FString>(TEXT("roles"), Bag, Roles, OuterOwner);
 }
 
 

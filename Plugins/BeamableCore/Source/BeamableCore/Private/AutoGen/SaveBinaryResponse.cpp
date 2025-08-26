@@ -22,7 +22,7 @@ void USaveBinaryResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer& S
 
 void USaveBinaryResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeArray<UBinaryReference*>(Bag->GetArrayField(TEXT("binary")), Binary, OuterOwner);
+	UBeamJsonUtils::DeserializeArray<UBinaryReference*>(TEXT("binary"), Bag, Binary, OuterOwner);
 }
 
 

@@ -24,7 +24,7 @@ void UGetStandingsResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer&
 
 void UGetStandingsResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeArray<UTournamentEntry*>(Bag->GetArrayField(TEXT("entries")), Entries, OuterOwner);
+	UBeamJsonUtils::DeserializeArray<UTournamentEntry*>(TEXT("entries"), Bag, Entries, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<UTournamentEntry*>("me", Bag, Me, OuterOwner);
 }
 

@@ -28,10 +28,10 @@ void UMatchMakingMatchesPvpResponse::BeamSerializeProperties(TUnrealPrettyJsonSe
 
 void UMatchMakingMatchesPvpResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("result")), Result);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("totalEntries")), TotalEntries);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("result"), Bag, Result);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("totalEntries"), Bag, TotalEntries);
 	UBeamJsonUtils::DeserializeUObject<UMatchMakingRanking*>("playerRank", Bag, PlayerRank, OuterOwner);
-	UBeamJsonUtils::DeserializeArray<UMatchMakingWindowResp*>(Bag->GetArrayField(TEXT("windows")), Windows, OuterOwner);
+	UBeamJsonUtils::DeserializeArray<UMatchMakingWindowResp*>(TEXT("windows"), Bag, Windows, OuterOwner);
 }
 
 

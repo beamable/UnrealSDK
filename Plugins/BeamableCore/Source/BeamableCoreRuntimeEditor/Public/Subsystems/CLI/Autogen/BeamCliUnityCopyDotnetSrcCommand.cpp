@@ -13,15 +13,16 @@ bool UBeamCliUnityCopyDotnetSrcCommand::HandleStreamReceived(FBeamOperationHandl
 	
 	if(ReceivedStreamType.Equals(StreamType) && OnStreamOutput)
 	{
-		UBeamCliUnityCopyDotnetSrcStreamData* Data = NewObject<UBeamCliUnityCopyDotnetSrcStreamData>(this);
-		Data->OuterOwner = this;
-		Data->BeamDeserializeProperties(DataJson);
-
-		Stream.Add(Data);
-		Timestamps.Add(Timestamp);
-		
-		AsyncTask(ENamedThreads::GameThread, [this, Op]
+		AsyncTask(ENamedThreads::GameThread, [this, DataJson, Timestamp, Op]
 		{
+			UBeamCliUnityCopyDotnetSrcStreamData* Data = NewObject<UBeamCliUnityCopyDotnetSrcStreamData>(this);
+			Data->OuterOwner = this;
+			Data->BeamDeserializeProperties(DataJson);
+
+			Stream.Add(Data);
+			Timestamps.Add(Timestamp);
+		
+		
 			OnStreamOutput(Stream, Timestamps, Op);
 		});
 		

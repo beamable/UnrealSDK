@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/CommonResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UCommonResponseLibrary::CommonResponseToJsonString(const UCommonResponse* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ UCommonResponse* UCommonResponseLibrary::Make(FString Result, TMap<FString, FStr
 
 void UCommonResponseLibrary::Break(const UCommonResponse* Serializable, FString& Result, TMap<FString, FString>& Data)
 {
-	Result = Serializable->Result;
-	Data = Serializable->Data;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Result = Serializable->Result;
+		Data = Serializable->Data;
+	}
 		
 }
 

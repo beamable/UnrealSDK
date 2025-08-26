@@ -31,17 +31,21 @@ public:
 	//UK2Node impl
 	virtual void AllocateDefaultPins() override;
 	virtual void ExpandNode(FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph) override;
-	virtual UObject* GetJumpTargetForDoubleClick() const override;
+	virtual bool CanJumpToDefinition() const override { return false; };
+	virtual void JumpToDefinition() const override;
 	virtual FSlateIcon GetIconAndTint(FLinearColor& OutColor) const override;
 	virtual FLinearColor GetNodeTitleColor() const override;
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
 	virtual bool ShouldShowNodeProperties() const override { return true; }
+	virtual void NodeConnectionListChanged() override;
 	//BeamFlowNode impl
 
 	/**
 	 * @brief The UClass for a subsystem (GameInstanceSubsystem or BeamRuntimeSubsystem) that this function resides in. 
 	 */
 	virtual UClass* GetRuntimeSubsystemClass() const override;
+
+	UClass* GetClassFromObject() const;
 
 protected:
 	/**
@@ -53,3 +57,28 @@ protected:
 
 	virtual bool IsValidProperty(FMulticastDelegateProperty* DelegateProp) override;
 };
+
+/***
+ *      ______                          _         
+ *     |  ____|                        | |        
+ *     | |__    __   __   ___   _ __   | |_   ___ 
+ *     |  __|   \ \ / /  / _ \ | '_ \  | __| / __|
+ *     | |____   \ V /  |  __/ | | | | | |_  \__ \
+ *     |______|   \_/    \___| |_| |_|  \__| |___/
+ *                                                
+ *                                                
+ */
+
+#define LOCTEXT_NAMESPACE "K2BeamNode_EventRegister_Object"
+
+UCLASS(meta=(BeamEventUnregisterAll))
+class UK2BeamNode_EventUnregisterAll_Object : public UK2BeamNode_EventUnregisterAll
+{
+	GENERATED_BODY()
+
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return FText::FromString("Events - Object Unbind all Events"); }
+
+protected:
+	virtual bool ShouldUsesObject() override { return true; };
+};
+#undef LOCTEXT_NAMESPACE

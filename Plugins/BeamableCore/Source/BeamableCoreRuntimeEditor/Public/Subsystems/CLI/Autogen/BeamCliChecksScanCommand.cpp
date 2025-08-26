@@ -13,15 +13,16 @@ bool UBeamCliChecksScanCommand::HandleStreamReceived(FBeamOperationHandle Op, FS
 	
 	if(ReceivedStreamType.Equals(StreamType) && OnStreamOutput)
 	{
-		UBeamCliChecksScanStreamData* Data = NewObject<UBeamCliChecksScanStreamData>(this);
-		Data->OuterOwner = this;
-		Data->BeamDeserializeProperties(DataJson);
-
-		Stream.Add(Data);
-		Timestamps.Add(Timestamp);
-		
-		AsyncTask(ENamedThreads::GameThread, [this, Op]
+		AsyncTask(ENamedThreads::GameThread, [this, DataJson, Timestamp, Op]
 		{
+			UBeamCliChecksScanStreamData* Data = NewObject<UBeamCliChecksScanStreamData>(this);
+			Data->OuterOwner = this;
+			Data->BeamDeserializeProperties(DataJson);
+
+			Stream.Add(Data);
+			Timestamps.Add(Timestamp);
+		
+		
 			OnStreamOutput(Stream, Timestamps, Op);
 		});
 		
@@ -30,15 +31,16 @@ bool UBeamCliChecksScanCommand::HandleStreamReceived(FBeamOperationHandle Op, FS
 
 	if(ReceivedStreamType.Equals(StreamTypeFixedKey) && OnFixedKeyStreamOutput)
 	{
-		UBeamCliChecksScanFixedKeyStreamData* Data = NewObject<UBeamCliChecksScanFixedKeyStreamData>(this);
-		Data->OuterOwner = this;
-		Data->BeamDeserializeProperties(DataJson);
-
-		FixedKeyStream.Add(Data);
-		FixedKeyTimestamps.Add(Timestamp);
-		
-		AsyncTask(ENamedThreads::GameThread, [this, Op]
+		AsyncTask(ENamedThreads::GameThread, [this, DataJson, Timestamp, Op]
 		{
+			UBeamCliChecksScanFixedKeyStreamData* Data = NewObject<UBeamCliChecksScanFixedKeyStreamData>(this);
+			Data->OuterOwner = this;
+			Data->BeamDeserializeProperties(DataJson);
+
+			FixedKeyStream.Add(Data);
+			FixedKeyTimestamps.Add(Timestamp);
+		
+		
 			OnFixedKeyStreamOutput(FixedKeyStream, FixedKeyTimestamps, Op);
 		});
 		

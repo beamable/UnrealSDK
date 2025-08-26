@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/MessageRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UMessageRequestBodyLibrary::MessageRequestBodyToJsonString(const UMessageRequestBody* Serializable, const bool Pretty)
@@ -36,11 +37,14 @@ UMessageRequestBody* UMessageRequestBodyLibrary::Make(FOptionalString Body, FOpt
 
 void UMessageRequestBodyLibrary::Break(const UMessageRequestBody* Serializable, FOptionalString& Body, FOptionalBeamPid& Pid, FOptionalBeamGamerTag& PlayerId, FOptionalString& Channel, FOptionalBeamPid& RealmId)
 {
-	Body = Serializable->Body;
-	Pid = Serializable->Pid;
-	PlayerId = Serializable->PlayerId;
-	Channel = Serializable->Channel;
-	RealmId = Serializable->RealmId;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Body = Serializable->Body;
+		Pid = Serializable->Pid;
+		PlayerId = Serializable->PlayerId;
+		Channel = Serializable->Channel;
+		RealmId = Serializable->RealmId;
+	}
 		
 }
 

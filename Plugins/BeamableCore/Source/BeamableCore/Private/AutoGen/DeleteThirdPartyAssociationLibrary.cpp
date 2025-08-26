@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/DeleteThirdPartyAssociationLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UDeleteThirdPartyAssociationLibrary::DeleteThirdPartyAssociationToJsonString(const UDeleteThirdPartyAssociation* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ UDeleteThirdPartyAssociation* UDeleteThirdPartyAssociationLibrary::Make(FString 
 
 void UDeleteThirdPartyAssociationLibrary::Break(const UDeleteThirdPartyAssociation* Serializable, FString& ThirdParty, FString& UserAppId)
 {
-	ThirdParty = Serializable->ThirdParty;
-	UserAppId = Serializable->UserAppId;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		ThirdParty = Serializable->ThirdParty;
+		UserAppId = Serializable->UserAppId;
+	}
 		
 }
 

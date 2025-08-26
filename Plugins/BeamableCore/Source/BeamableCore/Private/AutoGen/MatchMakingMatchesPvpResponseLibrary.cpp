@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/MatchMakingMatchesPvpResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UMatchMakingMatchesPvpResponseLibrary::MatchMakingMatchesPvpResponseToJsonString(const UMatchMakingMatchesPvpResponse* Serializable, const bool Pretty)
@@ -35,10 +36,13 @@ UMatchMakingMatchesPvpResponse* UMatchMakingMatchesPvpResponseLibrary::Make(FStr
 
 void UMatchMakingMatchesPvpResponseLibrary::Break(const UMatchMakingMatchesPvpResponse* Serializable, FString& Result, int32& TotalEntries, UMatchMakingRanking*& PlayerRank, TArray<UMatchMakingWindowResp*>& Windows)
 {
-	Result = Serializable->Result;
-	TotalEntries = Serializable->TotalEntries;
-	PlayerRank = Serializable->PlayerRank;
-	Windows = Serializable->Windows;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Result = Serializable->Result;
+		TotalEntries = Serializable->TotalEntries;
+		PlayerRank = Serializable->PlayerRank;
+		Windows = Serializable->Windows;
+	}
 		
 }
 

@@ -25,11 +25,11 @@ void UCalendarView::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Seriali
 
 void UCalendarView::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("nextIndex")), NextIndex);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("nextClaimSeconds")), NextClaimSeconds);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("id")), Id);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("remainingSeconds")), RemainingSeconds);
-	UBeamJsonUtils::DeserializeArray<URewardCalendarDay*>(Bag->GetArrayField(TEXT("days")), Days, OuterOwner);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("nextIndex"), Bag, NextIndex);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("nextClaimSeconds"), Bag, NextClaimSeconds);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("id"), Bag, Id);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("remainingSeconds"), Bag, RemainingSeconds);
+	UBeamJsonUtils::DeserializeArray<URewardCalendarDay*>(TEXT("days"), Bag, Days, OuterOwner);
 }
 
 

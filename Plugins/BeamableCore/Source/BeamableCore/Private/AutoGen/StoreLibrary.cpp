@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/StoreLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UStoreLibrary::StoreToJsonString(const UStore* Serializable, const bool Pretty)
@@ -38,13 +39,16 @@ UStore* UStoreLibrary::Make(FString Symbol, TArray<UListing*> Listings, FOptiona
 
 void UStoreLibrary::Break(const UStore* Serializable, FString& Symbol, TArray<UListing*>& Listings, FOptionalBool& bShowInactiveListings, FOptionalInt32& ActiveListingLimit, FOptionalInt32& Choose, FOptionalInt32& RefreshTime, FOptionalString& Title)
 {
-	Symbol = Serializable->Symbol;
-	Listings = Serializable->Listings;
-	bShowInactiveListings = Serializable->bShowInactiveListings;
-	ActiveListingLimit = Serializable->ActiveListingLimit;
-	Choose = Serializable->Choose;
-	RefreshTime = Serializable->RefreshTime;
-	Title = Serializable->Title;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Symbol = Serializable->Symbol;
+		Listings = Serializable->Listings;
+		bShowInactiveListings = Serializable->bShowInactiveListings;
+		ActiveListingLimit = Serializable->ActiveListingLimit;
+		Choose = Serializable->Choose;
+		RefreshTime = Serializable->RefreshTime;
+		Title = Serializable->Title;
+	}
 		
 }
 

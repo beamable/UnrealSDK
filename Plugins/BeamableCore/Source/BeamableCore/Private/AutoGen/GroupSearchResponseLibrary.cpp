@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/GroupSearchResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UGroupSearchResponseLibrary::GroupSearchResponseToJsonString(const UGroupSearchResponse* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UGroupSearchResponse* UGroupSearchResponseLibrary::Make(TArray<UGroup*> Groups, 
 
 void UGroupSearchResponseLibrary::Break(const UGroupSearchResponse* Serializable, TArray<UGroup*>& Groups)
 {
-	Groups = Serializable->Groups;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Groups = Serializable->Groups;
+	}
 		
 }
 

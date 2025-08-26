@@ -17,7 +17,7 @@ void UFindAccountRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerialize
 
 void UFindAccountRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("query")), Query);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("query"), Bag, Query);
 }
 
 

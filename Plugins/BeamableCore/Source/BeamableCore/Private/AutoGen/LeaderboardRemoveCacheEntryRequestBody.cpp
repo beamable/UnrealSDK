@@ -17,7 +17,7 @@ void ULeaderboardRemoveCacheEntryRequestBody::BeamSerializeProperties(TUnrealPre
 
 void ULeaderboardRemoveCacheEntryRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("playerId")), PlayerId);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("playerId"), Bag, PlayerId);
 }
 
 

@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/ItemArchetypeLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UItemArchetypeLibrary::ItemArchetypeToJsonString(const UItemArchetype* Serializable, const bool Pretty)
@@ -34,9 +35,12 @@ UItemArchetype* UItemArchetypeLibrary::Make(FString Symbol, FOptionalFederationI
 
 void UItemArchetypeLibrary::Break(const UItemArchetype* Serializable, FString& Symbol, FOptionalFederationInfo& External, FOptionalBeamClientPermission& ClientPermission)
 {
-	Symbol = Serializable->Symbol;
-	External = Serializable->External;
-	ClientPermission = Serializable->ClientPermission;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Symbol = Serializable->Symbol;
+		External = Serializable->External;
+		ClientPermission = Serializable->ClientPermission;
+	}
 		
 }
 

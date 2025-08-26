@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/GetMailDetailsRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UGetMailDetailsRequestBodyLibrary::GetMailDetailsRequestBodyToJsonString(const UGetMailDetailsRequestBody* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UGetMailDetailsRequestBody* UGetMailDetailsRequestBodyLibrary::Make(int64 Mid, U
 
 void UGetMailDetailsRequestBodyLibrary::Break(const UGetMailDetailsRequestBody* Serializable, int64& Mid)
 {
-	Mid = Serializable->Mid;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Mid = Serializable->Mid;
+	}
 		
 }
 

@@ -13,26 +13,27 @@
 class BEAMABLECOREEDITOR_API SBeamContentIdPin : public SGraphPin
 {
 public:
-	SLATE_BEGIN_ARGS(SBeamContentIdPin) {}
+	SLATE_BEGIN_ARGS(SBeamContentIdPin)
+		{
+		}
+
 	SLATE_END_ARGS()
-	
+
 	void Construct(const FArguments& InArgs, UEdGraphPin* InGraphPinObj);
 
 protected:
-
 	UPROPERTY()
 	UBeamEditorContent* Content = nullptr;
 
-	
-	
+
 	// this override is used to display slate widget used for customization.
 	virtual TSharedRef<SWidget> GetDefaultValueWidget() override;
 	void OnIdSelected(TSharedPtr<FName> ItemSelected, ESelectInfo::Type SelectInfo);
 	void OnTypeSelected(TSharedPtr<FName> ItemSelected, ESelectInfo::Type SelectInfo);
-	
+
 	void OnTypeComboBoxOpening();
 	void OnIdComboBoxOpening();
-	
+
 	TSharedPtr<FName> GetSelectedId() const;
 	TSharedPtr<FName> GetSelectedType() const;
 	TArray<TSharedPtr<FName>>* GetIdsForSelectedType() const;
@@ -48,14 +49,19 @@ private:
 	TMap<FName, TArray<TSharedPtr<FName>>> ContentTypeToIdsMap;
 
 	TSharedPtr<SVerticalBox> WidgetContainer;
-	
+
 	TSharedPtr<SNameComboBox> TypeComboBox;
 	TSharedPtr<SNameComboBox> IdComboBox;
-	
+
 
 	/**
 	 * This function is allow to convert each setting name to
 	 * TSharedPtr which our Pin object can works on.
 	 */
-	void GetContentOptions(TArray<TSharedPtr<FName>>& TypeNames, TMap<FName, TArray<TSharedPtr<FName>>>& PerTypeNameIds) const;
+	void GetContentOptions(TArray<FString> Filter, TArray<TSharedPtr<FName>>& TypeNames, TMap<FName, TArray<TSharedPtr<FName>>>& PerTypeNameIds) const;
+
+	/**
+	 * Update the node metadata with the selected type from content
+	 */
+	void UpdateNodeMetadata(TSharedPtr<FName> ItemSelected) const;
 };

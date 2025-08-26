@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/PlayerListingViewLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UPlayerListingViewLibrary::PlayerListingViewToJsonString(const UPlayerListingView* Serializable, const bool Pretty)
@@ -41,16 +42,19 @@ UPlayerListingView* UPlayerListingViewLibrary::Make(bool bActive, bool bQueryAft
 
 void UPlayerListingViewLibrary::Break(const UPlayerListingView* Serializable, bool& bActive, bool& bQueryAfterPurchase, FString& Symbol, int64& SecondsActive, UPlayerOfferView*& Offer, TArray<UClientDataEntry*>& ClientDataList, TMap<FString, FString>& ClientData, FOptionalInt32& Cooldown, FOptionalInt32& PurchasesRemain, FOptionalInt64& SecondsRemain)
 {
-	bActive = Serializable->bActive;
-	bQueryAfterPurchase = Serializable->bQueryAfterPurchase;
-	Symbol = Serializable->Symbol;
-	SecondsActive = Serializable->SecondsActive;
-	Offer = Serializable->Offer;
-	ClientDataList = Serializable->ClientDataList;
-	ClientData = Serializable->ClientData;
-	Cooldown = Serializable->Cooldown;
-	PurchasesRemain = Serializable->PurchasesRemain;
-	SecondsRemain = Serializable->SecondsRemain;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		bActive = Serializable->bActive;
+		bQueryAfterPurchase = Serializable->bQueryAfterPurchase;
+		Symbol = Serializable->Symbol;
+		SecondsActive = Serializable->SecondsActive;
+		Offer = Serializable->Offer;
+		ClientDataList = Serializable->ClientDataList;
+		ClientData = Serializable->ClientData;
+		Cooldown = Serializable->Cooldown;
+		PurchasesRemain = Serializable->PurchasesRemain;
+		SecondsRemain = Serializable->SecondsRemain;
+	}
 		
 }
 

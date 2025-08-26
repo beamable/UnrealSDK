@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/AnnouncementStateLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UAnnouncementStateLibrary::AnnouncementStateToJsonString(const UAnnouncementState* Serializable, const bool Pretty)
@@ -34,9 +35,12 @@ UAnnouncementState* UAnnouncementStateLibrary::Make(bool bIsClaimed, bool bIsDel
 
 void UAnnouncementStateLibrary::Break(const UAnnouncementState* Serializable, bool& bIsClaimed, bool& bIsDeleted, bool& bIsRead)
 {
-	bIsClaimed = Serializable->bIsClaimed;
-	bIsDeleted = Serializable->bIsDeleted;
-	bIsRead = Serializable->bIsRead;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		bIsClaimed = Serializable->bIsClaimed;
+		bIsDeleted = Serializable->bIsDeleted;
+		bIsRead = Serializable->bIsRead;
+	}
 		
 }
 

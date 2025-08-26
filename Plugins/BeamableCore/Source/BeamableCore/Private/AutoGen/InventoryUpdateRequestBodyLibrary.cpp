@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/InventoryUpdateRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UInventoryUpdateRequestBodyLibrary::InventoryUpdateRequestBodyToJsonString(const UInventoryUpdateRequestBody* Serializable, const bool Pretty)
@@ -38,13 +39,16 @@ UInventoryUpdateRequestBody* UInventoryUpdateRequestBodyLibrary::Make(FOptionalB
 
 void UInventoryUpdateRequestBodyLibrary::Break(const UInventoryUpdateRequestBody* Serializable, FOptionalBool& bApplyVipBonus, FOptionalString& Transaction, FOptionalArrayOfItemUpdateRequestBody& UpdateItems, FOptionalArrayOfItemCreateRequestBody& NewItems, FOptionalArrayOfItemDeleteRequestBody& DeleteItems, FOptionalMapOfInt64& Currencies, FOptionalMapOfArrayOfCurrencyProperty& CurrencyProperties)
 {
-	bApplyVipBonus = Serializable->bApplyVipBonus;
-	Transaction = Serializable->Transaction;
-	UpdateItems = Serializable->UpdateItems;
-	NewItems = Serializable->NewItems;
-	DeleteItems = Serializable->DeleteItems;
-	Currencies = Serializable->Currencies;
-	CurrencyProperties = Serializable->CurrencyProperties;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		bApplyVipBonus = Serializable->bApplyVipBonus;
+		Transaction = Serializable->Transaction;
+		UpdateItems = Serializable->UpdateItems;
+		NewItems = Serializable->NewItems;
+		DeleteItems = Serializable->DeleteItems;
+		Currencies = Serializable->Currencies;
+		CurrencyProperties = Serializable->CurrencyProperties;
+	}
 		
 }
 

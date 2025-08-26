@@ -21,8 +21,8 @@ void UMakeDonationRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializ
 
 void UMakeDonationRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("recipientId")), RecipientId);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("amount")), Amount);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("recipientId"), Bag, RecipientId);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("amount"), Bag, Amount);
 	UBeamJsonUtils::DeserializeOptional<bool>("autoClaim", Bag, bAutoClaim, OuterOwner);
 }
 

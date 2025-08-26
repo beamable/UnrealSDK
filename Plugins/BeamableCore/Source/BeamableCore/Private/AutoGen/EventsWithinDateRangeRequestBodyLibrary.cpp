@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/EventsWithinDateRangeRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UEventsWithinDateRangeRequestBodyLibrary::EventsWithinDateRangeRequestBodyToJsonString(const UEventsWithinDateRangeRequestBody* Serializable, const bool Pretty)
@@ -35,10 +36,13 @@ UEventsWithinDateRangeRequestBody* UEventsWithinDateRangeRequestBodyLibrary::Mak
 
 void UEventsWithinDateRangeRequestBodyLibrary::Break(const UEventsWithinDateRangeRequestBody* Serializable, FOptionalString& From, FOptionalString& To, FOptionalString& Query, FOptionalInt32& Limit)
 {
-	From = Serializable->From;
-	To = Serializable->To;
-	Query = Serializable->Query;
-	Limit = Serializable->Limit;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		From = Serializable->From;
+		To = Serializable->To;
+		Query = Serializable->Query;
+		Limit = Serializable->Limit;
+	}
 		
 }
 

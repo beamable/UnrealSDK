@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/ListingLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UListingLibrary::ListingToJsonString(const UListing* Serializable, const bool Pretty)
@@ -47,22 +48,25 @@ UListing* UListingLibrary::Make(FString OfferSymbol, UPrice* Price, FString Symb
 
 void UListingLibrary::Break(const UListing* Serializable, FString& OfferSymbol, UPrice*& Price, FString& Symbol, TArray<UCohortRequirement*>& CohortRequirements, TArray<UPlayerStatRequirement*>& PlayerStatRequirements, TArray<UEntitlementRequirement*>& EntitlementRequirements, TArray<UOfferRequirement*>& OfferRequirements, TMap<FString, FString>& ClientData, FOptionalInt32& PurchaseLimit, FOptionalInt32& ScheduleInstancePurchaseLimit, FOptionalSchedule& Schedule, FOptionalInt32& ActiveDurationCoolDownSeconds, FOptionalInt32& ActiveDurationSeconds, FOptionalInt32& ActiveDurationPurchaseLimit, FOptionalPeriod& ActivePeriod, FOptionalMapOfString& ButtonText)
 {
-	OfferSymbol = Serializable->OfferSymbol;
-	Price = Serializable->Price;
-	Symbol = Serializable->Symbol;
-	CohortRequirements = Serializable->CohortRequirements;
-	PlayerStatRequirements = Serializable->PlayerStatRequirements;
-	EntitlementRequirements = Serializable->EntitlementRequirements;
-	OfferRequirements = Serializable->OfferRequirements;
-	ClientData = Serializable->ClientData;
-	PurchaseLimit = Serializable->PurchaseLimit;
-	ScheduleInstancePurchaseLimit = Serializable->ScheduleInstancePurchaseLimit;
-	Schedule = Serializable->Schedule;
-	ActiveDurationCoolDownSeconds = Serializable->ActiveDurationCoolDownSeconds;
-	ActiveDurationSeconds = Serializable->ActiveDurationSeconds;
-	ActiveDurationPurchaseLimit = Serializable->ActiveDurationPurchaseLimit;
-	ActivePeriod = Serializable->ActivePeriod;
-	ButtonText = Serializable->ButtonText;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		OfferSymbol = Serializable->OfferSymbol;
+		Price = Serializable->Price;
+		Symbol = Serializable->Symbol;
+		CohortRequirements = Serializable->CohortRequirements;
+		PlayerStatRequirements = Serializable->PlayerStatRequirements;
+		EntitlementRequirements = Serializable->EntitlementRequirements;
+		OfferRequirements = Serializable->OfferRequirements;
+		ClientData = Serializable->ClientData;
+		PurchaseLimit = Serializable->PurchaseLimit;
+		ScheduleInstancePurchaseLimit = Serializable->ScheduleInstancePurchaseLimit;
+		Schedule = Serializable->Schedule;
+		ActiveDurationCoolDownSeconds = Serializable->ActiveDurationCoolDownSeconds;
+		ActiveDurationSeconds = Serializable->ActiveDurationSeconds;
+		ActiveDurationPurchaseLimit = Serializable->ActiveDurationPurchaseLimit;
+		ActivePeriod = Serializable->ActivePeriod;
+		ButtonText = Serializable->ButtonText;
+	}
 		
 }
 

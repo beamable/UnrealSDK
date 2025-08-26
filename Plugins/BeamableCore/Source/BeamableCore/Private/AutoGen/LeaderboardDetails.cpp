@@ -32,9 +32,9 @@ void ULeaderboardDetails::BeamSerializeProperties(TUnrealPrettyJsonSerializer& S
 
 void ULeaderboardDetails::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("lbid")), Lbid);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("numberOfEntries")), NumberOfEntries);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("fullName")), FullName);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("lbid"), Bag, Lbid);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("numberOfEntries"), Bag, NumberOfEntries);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("fullName"), Bag, FullName);
 	UBeamJsonUtils::DeserializeUObject<ULeaderBoardView*>("view", Bag, View, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<UOrderRules*>("orules", Bag, Orules, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<UMetadataView*>("metaData", Bag, MetaData, OuterOwner);

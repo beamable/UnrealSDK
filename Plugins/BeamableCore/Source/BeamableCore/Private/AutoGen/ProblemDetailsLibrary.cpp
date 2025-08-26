@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/ProblemDetailsLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UProblemDetailsLibrary::ProblemDetailsToJsonString(const UProblemDetails* Serializable, const bool Pretty)
@@ -36,11 +37,14 @@ UProblemDetails* UProblemDetailsLibrary::Make(FOptionalString Type, FOptionalStr
 
 void UProblemDetailsLibrary::Break(const UProblemDetails* Serializable, FOptionalString& Type, FOptionalString& Title, FOptionalInt32& Status, FOptionalString& Detail, FOptionalString& Instance)
 {
-	Type = Serializable->Type;
-	Title = Serializable->Title;
-	Status = Serializable->Status;
-	Detail = Serializable->Detail;
-	Instance = Serializable->Instance;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Type = Serializable->Type;
+		Title = Serializable->Title;
+		Status = Serializable->Status;
+		Detail = Serializable->Detail;
+		Instance = Serializable->Instance;
+	}
 		
 }
 

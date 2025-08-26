@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/SaveSKUsRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString USaveSKUsRequestBodyLibrary::SaveSKUsRequestBodyToJsonString(const USaveSKUsRequestBody* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ USaveSKUsRequestBody* USaveSKUsRequestBodyLibrary::Make(TArray<USKU*> Definition
 
 void USaveSKUsRequestBodyLibrary::Break(const USaveSKUsRequestBody* Serializable, TArray<USKU*>& Definitions)
 {
-	Definitions = Serializable->Definitions;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Definitions = Serializable->Definitions;
+	}
 		
 }
 

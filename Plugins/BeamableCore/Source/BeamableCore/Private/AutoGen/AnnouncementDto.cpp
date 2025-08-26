@@ -40,8 +40,8 @@ void UAnnouncementDto::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Seri
 void UAnnouncementDto::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	UBeamJsonUtils::DeserializeUObject<ULocalizationRef*>("body", Bag, Body, OuterOwner);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("channel")), Channel);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("symbol")), Symbol);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("channel"), Bag, Channel);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("symbol"), Bag, Symbol);
 	UBeamJsonUtils::DeserializeUObject<ULocalizationRef*>("title", Bag, Title, OuterOwner);
 	UBeamJsonUtils::DeserializeUObject<ULocalizationRef*>("summary", Bag, Summary, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("start_date", Bag, StartDate, OuterOwner);

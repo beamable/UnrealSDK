@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/DatabaseMeasurementLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UDatabaseMeasurementLibrary::DatabaseMeasurementToJsonString(const UDatabaseMeasurement* Serializable, const bool Pretty)
@@ -34,9 +35,12 @@ UDatabaseMeasurement* UDatabaseMeasurementLibrary::Make(FString Name, FString Un
 
 void UDatabaseMeasurementLibrary::Break(const UDatabaseMeasurement* Serializable, FString& Name, FString& Units, TArray<UDataPoint*>& DataPoints)
 {
-	Name = Serializable->Name;
-	Units = Serializable->Units;
-	DataPoints = Serializable->DataPoints;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Name = Serializable->Name;
+		Units = Serializable->Units;
+		DataPoints = Serializable->DataPoints;
+	}
 		
 }
 

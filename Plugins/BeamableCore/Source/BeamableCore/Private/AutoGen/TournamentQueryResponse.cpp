@@ -22,7 +22,7 @@ void UTournamentQueryResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializ
 
 void UTournamentQueryResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeArray<UTournamentClientView*>(Bag->GetArrayField(TEXT("tournaments")), Tournaments, OuterOwner);
+	UBeamJsonUtils::DeserializeArray<UTournamentClientView*>(TEXT("tournaments"), Bag, Tournaments, OuterOwner);
 }
 
 

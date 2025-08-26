@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/RedisShardLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString URedisShardLibrary::RedisShardToJsonString(const URedisShard* Serializable, const bool Pretty)
@@ -22,7 +23,7 @@ FString URedisShardLibrary::RedisShardToJsonString(const URedisShard* Serializab
 	return Result;
 }	
 
-URedisShard* URedisShardLibrary::Make(int32 ShardId, FString MasterHost, TArray<FString> SlaveHosts, UObject* Outer)
+URedisShard* URedisShardLibrary::Make(FOptionalInt32 ShardId, FOptionalString MasterHost, FOptionalArrayOfString SlaveHosts, UObject* Outer)
 {
 	auto Serializable = NewObject<URedisShard>(Outer);
 	Serializable->ShardId = ShardId;
@@ -32,11 +33,14 @@ URedisShard* URedisShardLibrary::Make(int32 ShardId, FString MasterHost, TArray<
 	return Serializable;
 }
 
-void URedisShardLibrary::Break(const URedisShard* Serializable, int32& ShardId, FString& MasterHost, TArray<FString>& SlaveHosts)
+void URedisShardLibrary::Break(const URedisShard* Serializable, FOptionalInt32& ShardId, FOptionalString& MasterHost, FOptionalArrayOfString& SlaveHosts)
 {
-	ShardId = Serializable->ShardId;
-	MasterHost = Serializable->MasterHost;
-	SlaveHosts = Serializable->SlaveHosts;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		ShardId = Serializable->ShardId;
+		MasterHost = Serializable->MasterHost;
+		SlaveHosts = Serializable->SlaveHosts;
+	}
 		
 }
 

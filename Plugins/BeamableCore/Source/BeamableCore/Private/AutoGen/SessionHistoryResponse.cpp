@@ -33,10 +33,10 @@ void USessionHistoryResponse::BeamSerializeProperties(TUnrealPrettyJsonSerialize
 void USessionHistoryResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	UBeamJsonUtils::DeserializeUObject<ULocalDate*>("date", Bag, Date, OuterOwner);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("daysPlayed")), DaysPlayed);
-	UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("payments")), Payments, OuterOwner);
-	UBeamJsonUtils::DeserializeArray<UPaymentTotal*>(Bag->GetArrayField(TEXT("totalPaid")), TotalPaid, OuterOwner);
-	UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("sessions")), Sessions, OuterOwner);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("daysPlayed"), Bag, DaysPlayed);
+	UBeamJsonUtils::DeserializeArray<FString>(TEXT("payments"), Bag, Payments, OuterOwner);
+	UBeamJsonUtils::DeserializeArray<UPaymentTotal*>(TEXT("totalPaid"), Bag, TotalPaid, OuterOwner);
+	UBeamJsonUtils::DeserializeArray<FString>(TEXT("sessions"), Bag, Sessions, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("installDate", Bag, InstallDate, OuterOwner);
 }
 

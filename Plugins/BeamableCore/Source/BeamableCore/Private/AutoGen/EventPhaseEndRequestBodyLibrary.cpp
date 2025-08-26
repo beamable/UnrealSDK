@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/EventPhaseEndRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UEventPhaseEndRequestBodyLibrary::EventPhaseEndRequestBodyToJsonString(const UEventPhaseEndRequestBody* Serializable, const bool Pretty)
@@ -32,7 +33,10 @@ UEventPhaseEndRequestBody* UEventPhaseEndRequestBodyLibrary::Make(FOptionalStrin
 
 void UEventPhaseEndRequestBodyLibrary::Break(const UEventPhaseEndRequestBody* Serializable, FOptionalString& Time)
 {
-	Time = Serializable->Time;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Time = Serializable->Time;
+	}
 		
 }
 

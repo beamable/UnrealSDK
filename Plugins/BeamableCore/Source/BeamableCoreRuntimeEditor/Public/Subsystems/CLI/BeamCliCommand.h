@@ -55,7 +55,7 @@ protected:
 public:
 	UBeamCliCommand() = default;
 
-	const static FString PathToLocalCli;
+	static FString GetDotnetPath();
 
 	/**
 	 *  Appends global options we want to pass to every command.

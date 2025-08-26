@@ -2,6 +2,7 @@
 #include "BeamableCore/Public/AutoGen/GetGroupsResponseLibrary.h"
 
 #include "CoreMinimal.h"
+#include "BeamCoreSettings.h"
 
 
 FString UGetGroupsResponseLibrary::GetGroupsResponseToJsonString(const UGetGroupsResponse* Serializable, const bool Pretty)
@@ -33,8 +34,11 @@ UGetGroupsResponse* UGetGroupsResponseLibrary::Make(TArray<UTournamentGroupEntry
 
 void UGetGroupsResponseLibrary::Break(const UGetGroupsResponse* Serializable, TArray<UTournamentGroupEntry*>& Entries, FOptionalTournamentGroupEntry& Focus)
 {
-	Entries = Serializable->Entries;
-	Focus = Serializable->Focus;
+	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
+	{
+		Entries = Serializable->Entries;
+		Focus = Serializable->Focus;
+	}
 		
 }
 
