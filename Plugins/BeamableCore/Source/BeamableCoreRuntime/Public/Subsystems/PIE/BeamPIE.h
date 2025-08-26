@@ -83,6 +83,7 @@ class BEAMABLECORERUNTIME_API UBeamPIE : public UEngineSubsystem
 	TMap<FBeamPIE_UserSlotHandle, FBeamGamerTag> ServerGamerTags;
 
 	TMap<int32, FBeamOperationHandle> ClientDelayMapHandles;
+	TMap<int32, FDelegateHandle> PieClientInitSDKHandles;
 
 	/**
 	 * Basically, this allows us to know that a custom game instance implementation is being used to bootstrap Beamable.
@@ -644,14 +645,23 @@ public:
 		if (!Runtime->IsInitialized())
 		{
 			FBeamRuntimeHandlerCode Started;
-			Started.BindLambda([this, WorldContext, Op]()
+			Started.BindLambda([this, WorldContext, Op, Runtime]()
 			{
+				if (!IsValidContext(WorldContext)) return;
+				
 				// Find the name of the current map and compare
 				UE_BEAM_LOG(WorldContext, LogBeamEditor, Log, TEXT("Beamable SDK Initialized"));
 				PreparePIE_ApplySelectedSettings(WorldContext, Op);
+
+				// Clean up the OnStarted handle that triggers PIE things...
+				const auto& DelHandle = PieClientInitSDKHandles.FindAndRemoveChecked(FBeamPIE_Utilities::GetPIEInstance(WorldContext));
+				Runtime->CPP_UnregisterOnStarted(DelHandle);
 			});
 
-			Runtime->CPP_RegisterOnStarted(Started);
+			// Store the initialization handle so we can remove it after we are done.
+			const auto& DelHandle = Runtime->CPP_RegisterOnStarted(Started);
+			PieClientInitSDKHandles.Add(FBeamPIE_Utilities::GetPIEInstance(WorldContext), DelHandle);
+			
 
 			// If we are not already initializing it, trigger the initialization
 			if (!Runtime->IsInitializing())
@@ -888,6 +898,7 @@ public:
 			else
 			{
 				RequestTracker->TriggerOperationError(Op, TEXT("UNSUPPORTED_LISTEN_SERVER"));
+				return;
 			}
 
 			UE_LOG(LogBeamEditor, Log, TEXT("%s Server - Trying to Create the Fake Lobby"), *GetLogArgs(TEXT("Beam PIE Prepare"), WorldContext));
