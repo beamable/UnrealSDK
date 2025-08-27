@@ -23,7 +23,7 @@ FString UServicePlansResponseLibrary::ServicePlansResponseToJsonString(const USe
 	return Result;
 }	
 
-UServicePlansResponse* UServicePlansResponseLibrary::Make(FOptionalArrayOfServicePlanActorServicePlan Result, UObject* Outer)
+UServicePlansResponse* UServicePlansResponseLibrary::Make(TArray<UServicePlan*> Result, UObject* Outer)
 {
 	auto Serializable = NewObject<UServicePlansResponse>(Outer);
 	Serializable->Result = Result;
@@ -31,7 +31,7 @@ UServicePlansResponse* UServicePlansResponseLibrary::Make(FOptionalArrayOfServic
 	return Serializable;
 }
 
-void UServicePlansResponseLibrary::Break(const UServicePlansResponse* Serializable, FOptionalArrayOfServicePlanActorServicePlan& Result)
+void UServicePlansResponseLibrary::Break(const UServicePlansResponse* Serializable, TArray<UServicePlan*>& Result)
 {
 	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
 	{

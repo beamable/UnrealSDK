@@ -3,8 +3,8 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
-#include "BeamableCore/Public/AutoGen/Enums/BeamPromotableType.h"
-#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfPromotion.h"
+#include "Serialization/BeamJsonUtils.h"
+#include "BeamableCore/Public/AutoGen/Promotion.h"
 
 #include "PromotionScope.generated.h"
 
@@ -15,9 +15,9 @@ class BEAMABLECORE_API UPromotionScope : public UObject, public IBeamJsonSeriali
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Name", Category="Beam")
-	EBeamPromotableType Name = {};
+	FString Name = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Promotions", Category="Beam")
-	FOptionalArrayOfPromotion Promotions = {};
+	TArray<UPromotion*> Promotions = {};
 
 	
 

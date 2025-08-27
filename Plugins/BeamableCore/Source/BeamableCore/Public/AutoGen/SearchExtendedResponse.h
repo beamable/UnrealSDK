@@ -4,8 +4,6 @@
 #include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
 #include "BeamableCore/Public/AutoGen/Maps/MapOfString.h"
-#include "Serialization/BeamJsonUtils.h"
-#include "BeamableCore/Public/AutoGen/Optionals/OptionalInt64.h"
 
 #include "SearchExtendedResponse.generated.h"
 
@@ -15,14 +13,8 @@ class BEAMABLECORE_API USearchExtendedResponse : public UObject, public IBeamJso
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Offset", Category="Beam")
-	int32 Offset = {};
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Limit", Category="Beam")
-	int32 Limit = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Gamer Stats", Category="Beam")
 	TMap<FString, FMapOfString> GamerStats = {};
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Total", Category="Beam")
-	FOptionalInt64 Total = {};
 
 	virtual void DeserializeRequestResponse(UObject* RequestData, FString ResponseContent) override;
 

@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
+#include "Serialization/BeamJsonUtils.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
 
 #include "WebSocketConfiguration.generated.h"
@@ -14,7 +15,7 @@ class BEAMABLECORE_API UWebSocketConfiguration : public UObject, public IBeamJso
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Provider", Category="Beam")
-	FOptionalString Provider = {};
+	FString Provider = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Uri", Category="Beam")
 	FOptionalString Uri = {};
 

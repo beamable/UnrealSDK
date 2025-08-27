@@ -23,25 +23,19 @@ FString USearchExtendedResponseLibrary::SearchExtendedResponseToJsonString(const
 	return Result;
 }	
 
-USearchExtendedResponse* USearchExtendedResponseLibrary::Make(int32 Offset, int32 Limit, TMap<FString, FMapOfString> GamerStats, FOptionalInt64 Total, UObject* Outer)
+USearchExtendedResponse* USearchExtendedResponseLibrary::Make(TMap<FString, FMapOfString> GamerStats, UObject* Outer)
 {
 	auto Serializable = NewObject<USearchExtendedResponse>(Outer);
-	Serializable->Offset = Offset;
-	Serializable->Limit = Limit;
 	Serializable->GamerStats = GamerStats;
-	Serializable->Total = Total;
 	
 	return Serializable;
 }
 
-void USearchExtendedResponseLibrary::Break(const USearchExtendedResponse* Serializable, int32& Offset, int32& Limit, TMap<FString, FMapOfString>& GamerStats, FOptionalInt64& Total)
+void USearchExtendedResponseLibrary::Break(const USearchExtendedResponse* Serializable, TMap<FString, FMapOfString>& GamerStats)
 {
 	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
 	{
-		Offset = Serializable->Offset;
-		Limit = Serializable->Limit;
 		GamerStats = Serializable->GamerStats;
-		Total = Serializable->Total;
 	}
 		
 }

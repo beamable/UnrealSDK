@@ -17,8 +17,8 @@ public:
 	static FString CustomerViewResponseToJsonString(const UCustomerViewResponse* Serializable, const bool Pretty);
 
 	UFUNCTION(BlueprintPure, Category="Beam|Realms|Utils|Make/Break", DisplayName="Make CustomerViewResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
-	static UCustomerViewResponse* Make(URealmsBasicCustomerView* Customer, UObject* Outer);
+	static UCustomerViewResponse* Make(UCustomerView* Customer, UObject* Outer);
 
 	UFUNCTION(BlueprintPure, Category="Beam|Realms|Utils|Make/Break", DisplayName="Break CustomerViewResponse", meta=(NativeBreakFunc))
-	static void Break(const UCustomerViewResponse* Serializable, URealmsBasicCustomerView*& Customer);
+	static void Break(const UCustomerViewResponse* Serializable, UCustomerView*& Customer);
 };

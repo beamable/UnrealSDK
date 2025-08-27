@@ -23,7 +23,7 @@ FString URealmConfigResponseLibrary::RealmConfigResponseToJsonString(const UReal
 	return Result;
 }	
 
-URealmConfigResponse* URealmConfigResponseLibrary::Make(FOptionalMapOfString Config, UObject* Outer)
+URealmConfigResponse* URealmConfigResponseLibrary::Make(TMap<FString, FString> Config, UObject* Outer)
 {
 	auto Serializable = NewObject<URealmConfigResponse>(Outer);
 	Serializable->Config = Config;
@@ -31,7 +31,7 @@ URealmConfigResponse* URealmConfigResponseLibrary::Make(FOptionalMapOfString Con
 	return Serializable;
 }
 
-void URealmConfigResponseLibrary::Break(const URealmConfigResponse* Serializable, FOptionalMapOfString& Config)
+void URealmConfigResponseLibrary::Break(const URealmConfigResponse* Serializable, TMap<FString, FString>& Config)
 {
 	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
 	{

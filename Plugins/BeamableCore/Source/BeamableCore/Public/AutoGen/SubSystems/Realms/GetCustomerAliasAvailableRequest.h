@@ -8,7 +8,7 @@
 #include "BeamBackend/BeamFullResponse.h"
 
 #include "Serialization/BeamJsonUtils.h"
-#include "BeamableCore/Public/AutoGen/RealmsBasicAliasAvailableResponse.h"
+#include "BeamableCore/Public/AutoGen/AliasAvailableResponse.h"
 
 #include "GetCustomerAliasAvailableRequest.generated.h"
 
@@ -41,7 +41,7 @@ public:
 };
 
 UDELEGATE(BlueprintAuthorityOnly)
-DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnGetCustomerAliasAvailableSuccess, FBeamRequestContext, Context, UGetCustomerAliasAvailableRequest*, Request, URealmsBasicAliasAvailableResponse*, Response);
+DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnGetCustomerAliasAvailableSuccess, FBeamRequestContext, Context, UGetCustomerAliasAvailableRequest*, Request, UAliasAvailableResponse*, Response);
 
 UDELEGATE(BlueprintAuthorityOnly)
 DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnGetCustomerAliasAvailableError, FBeamRequestContext, Context, UGetCustomerAliasAvailableRequest*, Request, FBeamErrorResponse, Error);
@@ -49,5 +49,5 @@ DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnGetCustomerAliasAvailableError, FBeamReq
 UDELEGATE(BlueprintAuthorityOnly)
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FOnGetCustomerAliasAvailableComplete, FBeamRequestContext, Context, UGetCustomerAliasAvailableRequest*, Request);
 
-using FGetCustomerAliasAvailableFullResponse = FBeamFullResponse<UGetCustomerAliasAvailableRequest*, URealmsBasicAliasAvailableResponse*>;
+using FGetCustomerAliasAvailableFullResponse = FBeamFullResponse<UGetCustomerAliasAvailableRequest*, UAliasAvailableResponse*>;
 DECLARE_DELEGATE_OneParam(FOnGetCustomerAliasAvailableFullResponse, FGetCustomerAliasAvailableFullResponse);

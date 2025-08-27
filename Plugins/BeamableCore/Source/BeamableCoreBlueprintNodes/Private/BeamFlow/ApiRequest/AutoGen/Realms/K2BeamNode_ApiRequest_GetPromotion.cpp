@@ -6,7 +6,7 @@
 
 #include "BeamableCore/Public/AutoGen/SubSystems/BeamRealmsApi.h"
 #include "BeamableCore/Public/AutoGen/SubSystems/Realms/GetPromotionRequest.h"
-#include "BeamableCore/Public/AutoGen/RealmsBasicPromoteRealmResponse.h"
+#include "BeamableCore/Public/AutoGen/PromoteRealmResponse.h"
 
 #define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_GetPromotion"
 
@@ -49,7 +49,7 @@ UClass* UK2BeamNode_ApiRequest_GetPromotion::GetRequestClass() const
 
 UClass* UK2BeamNode_ApiRequest_GetPromotion::GetResponseClass() const
 {
-	return URealmsBasicPromoteRealmResponse::StaticClass();
+	return UPromoteRealmResponse::StaticClass();
 }
 
 FString UK2BeamNode_ApiRequest_GetPromotion::GetRequestSuccessDelegateName() const

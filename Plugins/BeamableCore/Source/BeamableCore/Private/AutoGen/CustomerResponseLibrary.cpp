@@ -23,7 +23,7 @@ FString UCustomerResponseLibrary::CustomerResponseToJsonString(const UCustomerRe
 	return Result;
 }	
 
-UCustomerResponse* UCustomerResponseLibrary::Make(URealmsBasicCustomer* Customer, UObject* Outer)
+UCustomerResponse* UCustomerResponseLibrary::Make(UCustomer* Customer, UObject* Outer)
 {
 	auto Serializable = NewObject<UCustomerResponse>(Outer);
 	Serializable->Customer = Customer;
@@ -31,7 +31,7 @@ UCustomerResponse* UCustomerResponseLibrary::Make(URealmsBasicCustomer* Customer
 	return Serializable;
 }
 
-void UCustomerResponseLibrary::Break(const UCustomerResponse* Serializable, URealmsBasicCustomer*& Customer)
+void UCustomerResponseLibrary::Break(const UCustomerResponse* Serializable, UCustomer*& Customer)
 {
 	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
 	{

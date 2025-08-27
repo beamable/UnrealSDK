@@ -23,7 +23,7 @@ FString UWebSocketConfigurationLibrary::WebSocketConfigurationToJsonString(const
 	return Result;
 }	
 
-UWebSocketConfiguration* UWebSocketConfigurationLibrary::Make(FOptionalString Provider, FOptionalString Uri, UObject* Outer)
+UWebSocketConfiguration* UWebSocketConfigurationLibrary::Make(FString Provider, FOptionalString Uri, UObject* Outer)
 {
 	auto Serializable = NewObject<UWebSocketConfiguration>(Outer);
 	Serializable->Provider = Provider;
@@ -32,7 +32,7 @@ UWebSocketConfiguration* UWebSocketConfigurationLibrary::Make(FOptionalString Pr
 	return Serializable;
 }
 
-void UWebSocketConfigurationLibrary::Break(const UWebSocketConfiguration* Serializable, FOptionalString& Provider, FOptionalString& Uri)
+void UWebSocketConfigurationLibrary::Break(const UWebSocketConfiguration* Serializable, FString& Provider, FOptionalString& Uri)
 {
 	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
 	{

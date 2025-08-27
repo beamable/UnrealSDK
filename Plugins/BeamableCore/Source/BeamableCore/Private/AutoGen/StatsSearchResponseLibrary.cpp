@@ -23,25 +23,19 @@ FString UStatsSearchResponseLibrary::StatsSearchResponseToJsonString(const UStat
 	return Result;
 }	
 
-UStatsSearchResponse* UStatsSearchResponseLibrary::Make(int32 Offset, int32 Limit, TArray<FBeamGamerTag> Ids, FOptionalInt64 Total, UObject* Outer)
+UStatsSearchResponse* UStatsSearchResponseLibrary::Make(TArray<FBeamGamerTag> Ids, UObject* Outer)
 {
 	auto Serializable = NewObject<UStatsSearchResponse>(Outer);
-	Serializable->Offset = Offset;
-	Serializable->Limit = Limit;
 	Serializable->Ids = Ids;
-	Serializable->Total = Total;
 	
 	return Serializable;
 }
 
-void UStatsSearchResponseLibrary::Break(const UStatsSearchResponse* Serializable, int32& Offset, int32& Limit, TArray<FBeamGamerTag>& Ids, FOptionalInt64& Total)
+void UStatsSearchResponseLibrary::Break(const UStatsSearchResponse* Serializable, TArray<FBeamGamerTag>& Ids)
 {
 	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
 	{
-		Offset = Serializable->Offset;
-		Limit = Serializable->Limit;
 		Ids = Serializable->Ids;
-		Total = Serializable->Total;
 	}
 		
 }

@@ -23,29 +23,25 @@ FString UStatsSearchRequestBodyLibrary::StatsSearchRequestBodyToJsonString(const
 	return Result;
 }	
 
-UStatsSearchRequestBody* UStatsSearchRequestBodyLibrary::Make(FString Domain, FString ObjectType, FString Access, TArray<UStatsSearchCriteria*> Criteria, FOptionalInt32 Offset, FOptionalInt32 Limit, UObject* Outer)
+UStatsSearchRequestBody* UStatsSearchRequestBodyLibrary::Make(FString Domain, FString Access, FString ObjectType, TArray<UStatsSearchCriteria*> Criteria, UObject* Outer)
 {
 	auto Serializable = NewObject<UStatsSearchRequestBody>(Outer);
 	Serializable->Domain = Domain;
-	Serializable->ObjectType = ObjectType;
 	Serializable->Access = Access;
+	Serializable->ObjectType = ObjectType;
 	Serializable->Criteria = Criteria;
-	Serializable->Offset = Offset;
-	Serializable->Limit = Limit;
 	
 	return Serializable;
 }
 
-void UStatsSearchRequestBodyLibrary::Break(const UStatsSearchRequestBody* Serializable, FString& Domain, FString& ObjectType, FString& Access, TArray<UStatsSearchCriteria*>& Criteria, FOptionalInt32& Offset, FOptionalInt32& Limit)
+void UStatsSearchRequestBodyLibrary::Break(const UStatsSearchRequestBody* Serializable, FString& Domain, FString& Access, FString& ObjectType, TArray<UStatsSearchCriteria*>& Criteria)
 {
 	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
 	{
 		Domain = Serializable->Domain;
-		ObjectType = Serializable->ObjectType;
 		Access = Serializable->Access;
+		ObjectType = Serializable->ObjectType;
 		Criteria = Serializable->Criteria;
-		Offset = Serializable->Offset;
-		Limit = Serializable->Limit;
 	}
 		
 }

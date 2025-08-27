@@ -5,7 +5,6 @@
 #include "Serialization/BeamJsonSerializable.h"
 #include "BeamableCore/Public/AutoGen/StatsSearchCriteria.h"
 #include "Serialization/BeamJsonUtils.h"
-#include "BeamableCore/Public/AutoGen/Optionals/OptionalInt32.h"
 
 #include "SearchExtendedRequestBody.generated.h"
 
@@ -25,10 +24,6 @@ public:
 	TArray<UStatsSearchCriteria*> Criteria = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Stat Keys", Category="Beam")
 	TArray<FString> StatKeys = {};
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Offset", Category="Beam")
-	FOptionalInt32 Offset = {};
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Limit", Category="Beam")
-	FOptionalInt32 Limit = {};
 
 	
 

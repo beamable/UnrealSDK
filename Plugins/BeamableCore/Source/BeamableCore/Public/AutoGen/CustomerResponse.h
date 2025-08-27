@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 #include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
-#include "BeamableCore/Public/AutoGen/RealmsBasicCustomer.h"
+#include "BeamableCore/Public/AutoGen/Customer.h"
 
 #include "CustomerResponse.generated.h"
 
@@ -14,7 +14,7 @@ class BEAMABLECORE_API UCustomerResponse : public UObject, public IBeamJsonSeria
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Customer", Category="Beam")
-	URealmsBasicCustomer* Customer = {};
+	UCustomer* Customer = {};
 
 	virtual void DeserializeRequestResponse(UObject* RequestData, FString ResponseContent) override;
 

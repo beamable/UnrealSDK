@@ -6,7 +6,7 @@
 
 #include "BeamableCore/Public/AutoGen/SubSystems/BeamRealmsApi.h"
 #include "BeamableCore/Public/AutoGen/SubSystems/Realms/GetCustomerAliasAvailableRequest.h"
-#include "BeamableCore/Public/AutoGen/RealmsBasicAliasAvailableResponse.h"
+#include "BeamableCore/Public/AutoGen/AliasAvailableResponse.h"
 
 #define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_GetCustomerAliasAvailable"
 
@@ -49,7 +49,7 @@ UClass* UK2BeamNode_ApiRequest_GetCustomerAliasAvailable::GetRequestClass() cons
 
 UClass* UK2BeamNode_ApiRequest_GetCustomerAliasAvailable::GetResponseClass() const
 {
-	return URealmsBasicAliasAvailableResponse::StaticClass();
+	return UAliasAvailableResponse::StaticClass();
 }
 
 FString UK2BeamNode_ApiRequest_GetCustomerAliasAvailable::GetRequestSuccessDelegateName() const

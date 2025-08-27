@@ -7,20 +7,20 @@
 
 void UPromotionScope::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("name"), UBeamJsonUtils::EnumToSerializationName(Name));
-	UBeamJsonUtils::SerializeOptional<TArray<UPromotion*>, UPromotion*>(TEXT("promotions"), &Promotions, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("name"), Name, Serializer);
+	UBeamJsonUtils::SerializeArray<UPromotion*>(TEXT("promotions"), Promotions, Serializer);
 }
 
 void UPromotionScope::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("name"), UBeamJsonUtils::EnumToSerializationName(Name));
-	UBeamJsonUtils::SerializeOptional<TArray<UPromotion*>, UPromotion*>(TEXT("promotions"), &Promotions, Serializer);		
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("name"), Name, Serializer);
+	UBeamJsonUtils::SerializeArray<UPromotion*>(TEXT("promotions"), Promotions, Serializer);		
 }
 
 void UPromotionScope::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("name"), Bag, Name);
-	UBeamJsonUtils::DeserializeOptional<TArray<UPromotion*>, UPromotion*>("promotions", Bag, Promotions, OuterOwner);
+	UBeamJsonUtils::DeserializeArray<UPromotion*>(TEXT("promotions"), Bag, Promotions, OuterOwner);
 }
 
 

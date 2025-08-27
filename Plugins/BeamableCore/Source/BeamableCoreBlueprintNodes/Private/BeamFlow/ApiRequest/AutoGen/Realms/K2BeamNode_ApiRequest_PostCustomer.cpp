@@ -6,7 +6,7 @@
 
 #include "BeamableCore/Public/AutoGen/SubSystems/BeamRealmsApi.h"
 #include "BeamableCore/Public/AutoGen/SubSystems/Realms/PostCustomerRequest.h"
-#include "BeamableCore/Public/AutoGen/RealmsBasicNewCustomerResponse.h"
+#include "BeamableCore/Public/AutoGen/NewCustomerResponse.h"
 
 #define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_PostCustomer"
 
@@ -49,7 +49,7 @@ UClass* UK2BeamNode_ApiRequest_PostCustomer::GetRequestClass() const
 
 UClass* UK2BeamNode_ApiRequest_PostCustomer::GetResponseClass() const
 {
-	return URealmsBasicNewCustomerResponse::StaticClass();
+	return UNewCustomerResponse::StaticClass();
 }
 
 FString UK2BeamNode_ApiRequest_PostCustomer::GetRequestSuccessDelegateName() const

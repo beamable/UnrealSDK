@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 #include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
-#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfServicePlanActorServicePlan.h"
+#include "BeamableCore/Public/AutoGen/ServicePlan.h"
 
 #include "ServicePlansResponse.generated.h"
 
@@ -14,7 +14,7 @@ class BEAMABLECORE_API UServicePlansResponse : public UObject, public IBeamJsonS
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Result", Category="Beam")
-	FOptionalArrayOfServicePlanActorServicePlan Result = {};
+	TArray<UServicePlan*> Result = {};
 
 	virtual void DeserializeRequestResponse(UObject* RequestData, FString ResponseContent) override;
 

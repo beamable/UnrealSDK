@@ -7,7 +7,7 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-#include "BeamableCore/Public/AutoGen/RealmsBasicPromoteRealmRequestBody.h"
+#include "BeamableCore/Public/AutoGen/PromoteRealmRequestBody.h"
 #include "BeamableCore/Public/AutoGen/PromoteRealmResponseOld.h"
 
 #include "PostProjectPromoteRequest.generated.h"
@@ -27,7 +27,7 @@ public:
 
 	// Body Params
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="", Category="Beam")
-	URealmsBasicPromoteRealmRequestBody* Body = {};
+	UPromoteRealmRequestBody* Body = {};
 
 	// Beam Base Request Declaration
 	UPostProjectPromoteRequest() = default;

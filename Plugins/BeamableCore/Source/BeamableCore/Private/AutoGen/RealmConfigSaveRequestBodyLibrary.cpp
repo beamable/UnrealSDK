@@ -23,7 +23,7 @@ FString URealmConfigSaveRequestBodyLibrary::RealmConfigSaveRequestBodyToJsonStri
 	return Result;
 }	
 
-URealmConfigSaveRequestBody* URealmConfigSaveRequestBodyLibrary::Make(FOptionalMapOfString Config, UObject* Outer)
+URealmConfigSaveRequestBody* URealmConfigSaveRequestBodyLibrary::Make(TMap<FString, FString> Config, UObject* Outer)
 {
 	auto Serializable = NewObject<URealmConfigSaveRequestBody>(Outer);
 	Serializable->Config = Config;
@@ -31,7 +31,7 @@ URealmConfigSaveRequestBody* URealmConfigSaveRequestBodyLibrary::Make(FOptionalM
 	return Serializable;
 }
 
-void URealmConfigSaveRequestBodyLibrary::Break(const URealmConfigSaveRequestBody* Serializable, FOptionalMapOfString& Config)
+void URealmConfigSaveRequestBodyLibrary::Break(const URealmConfigSaveRequestBody* Serializable, TMap<FString, FString>& Config)
 {
 	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
 	{

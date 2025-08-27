@@ -7,7 +7,7 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-#include "BeamableCore/Public/AutoGen/RealmsBasicUpdateGameHierarchyRequestBody.h"
+#include "BeamableCore/Public/AutoGen/UpdateGameHierarchyRequestBody.h"
 #include "BeamableCore/Public/AutoGen/CommonResponse.h"
 
 #include "PutGameRequest.generated.h"
@@ -27,7 +27,7 @@ public:
 
 	// Body Params
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="", Category="Beam")
-	URealmsBasicUpdateGameHierarchyRequestBody* Body = {};
+	UUpdateGameHierarchyRequestBody* Body = {};
 
 	// Beam Base Request Declaration
 	UPutGameRequest() = default;

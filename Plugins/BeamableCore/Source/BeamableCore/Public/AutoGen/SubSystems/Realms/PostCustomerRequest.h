@@ -7,8 +7,8 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-#include "BeamableCore/Public/AutoGen/RealmsBasicNewCustomerRequestBody.h"
-#include "BeamableCore/Public/AutoGen/RealmsBasicNewCustomerResponse.h"
+#include "BeamableCore/Public/AutoGen/NewCustomerRequestBody.h"
+#include "BeamableCore/Public/AutoGen/NewCustomerResponse.h"
 
 #include "PostCustomerRequest.generated.h"
 
@@ -27,7 +27,7 @@ public:
 
 	// Body Params
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="", Category="Beam")
-	URealmsBasicNewCustomerRequestBody* Body = {};
+	UNewCustomerRequestBody* Body = {};
 
 	// Beam Base Request Declaration
 	UPostCustomerRequest() = default;
@@ -41,7 +41,7 @@ public:
 };
 
 UDELEGATE(BlueprintAuthorityOnly)
-DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnPostCustomerSuccess, FBeamRequestContext, Context, UPostCustomerRequest*, Request, URealmsBasicNewCustomerResponse*, Response);
+DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnPostCustomerSuccess, FBeamRequestContext, Context, UPostCustomerRequest*, Request, UNewCustomerResponse*, Response);
 
 UDELEGATE(BlueprintAuthorityOnly)
 DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnPostCustomerError, FBeamRequestContext, Context, UPostCustomerRequest*, Request, FBeamErrorResponse, Error);
@@ -49,5 +49,5 @@ DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnPostCustomerError, FBeamRequestContext, 
 UDELEGATE(BlueprintAuthorityOnly)
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FOnPostCustomerComplete, FBeamRequestContext, Context, UPostCustomerRequest*, Request);
 
-using FPostCustomerFullResponse = FBeamFullResponse<UPostCustomerRequest*, URealmsBasicNewCustomerResponse*>;
+using FPostCustomerFullResponse = FBeamFullResponse<UPostCustomerRequest*, UNewCustomerResponse*>;
 DECLARE_DELEGATE_OneParam(FOnPostCustomerFullResponse, FPostCustomerFullResponse);

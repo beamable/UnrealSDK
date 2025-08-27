@@ -23,7 +23,7 @@ FString URedisShardRequestBodyLibrary::RedisShardRequestBodyToJsonString(const U
 	return Result;
 }	
 
-URedisShardRequestBody* URedisShardRequestBodyLibrary::Make(FOptionalInt32 ShardId, FOptionalString MasterHost, FOptionalString SlaveHosts, UObject* Outer)
+URedisShardRequestBody* URedisShardRequestBodyLibrary::Make(int32 ShardId, FString MasterHost, FString SlaveHosts, UObject* Outer)
 {
 	auto Serializable = NewObject<URedisShardRequestBody>(Outer);
 	Serializable->ShardId = ShardId;
@@ -33,7 +33,7 @@ URedisShardRequestBody* URedisShardRequestBodyLibrary::Make(FOptionalInt32 Shard
 	return Serializable;
 }
 
-void URedisShardRequestBodyLibrary::Break(const URedisShardRequestBody* Serializable, FOptionalInt32& ShardId, FOptionalString& MasterHost, FOptionalString& SlaveHosts)
+void URedisShardRequestBodyLibrary::Break(const URedisShardRequestBody* Serializable, int32& ShardId, FString& MasterHost, FString& SlaveHosts)
 {
 	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
 	{
