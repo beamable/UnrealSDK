@@ -713,7 +713,7 @@ FUserSlot UBeamLobbySubsystem::GetUserSlotByPlayerState(const APlayerState* Stat
 
 		// If we are using GamerTags as UniqueIds, then we can just check if accept user was called and created a servermapping slot for the user.
 		const auto& UniqueIdAsStr = UniqueId.GetUniqueNetId()->ToString();
-		if (GetDefault<UBeamRuntimeSettings>()->bUseBeamableGamerTagsAsUniqueNetIds)
+		if (GetDefault<UBeamRuntimeSettings>()->bEnableGameplayFrameworkIntegration)
 		{
 			FBeamRealmUser _;
 			FString _1;
@@ -772,7 +772,7 @@ FBeamGamerTag UBeamLobbySubsystem::GetGamerTagByPlayerState(const APlayerState* 
 
 		// If we are using GamerTags as UniqueIds, then we can just check if accept user was called and created a servermapping slot for the user.
 		const auto& UniqueIdAsStr = UniqueId.GetUniqueNetId()->ToString();
-		if (GetDefault<UBeamRuntimeSettings>()->bUseBeamableGamerTagsAsUniqueNetIds)
+		if (GetDefault<UBeamRuntimeSettings>()->bEnableGameplayFrameworkIntegration)
 		{
 			return FBeamGamerTag{UniqueIdAsStr};
 		}
@@ -1874,7 +1874,7 @@ void UBeamLobbySubsystem::AcceptUserIntoGameServer(const FUserSlot& Slot, const 
 
 		// Then, we can parse the options.
 		auto bHasGamerTag = UGameplayStatics::HasOption(Options, Reserved_LoginOpt_GamerTag_Required);
-		if (!bHasGamerTag && GetDefault<UBeamRuntimeSettings>()->bUseBeamableGamerTagsAsUniqueNetIds) { bHasGamerTag = true; }
+		if (!bHasGamerTag && GetDefault<UBeamRuntimeSettings>()->bEnableGameplayFrameworkIntegration) { bHasGamerTag = true; }
 		if (!bHasGamerTag) Errs.Add(TEXT("MISSING_GAMER_TAG_OPT"));
 
 		const auto bHasAccessToken = UGameplayStatics::HasOption(Options, Reserved_LoginOpt_AccessToken_Required);

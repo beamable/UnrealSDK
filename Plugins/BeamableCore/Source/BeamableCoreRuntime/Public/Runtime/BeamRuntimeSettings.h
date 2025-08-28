@@ -102,7 +102,9 @@ public:
 	 * We HIGHLY recommend keeping this enabled as this will make it so as the Beamable GamerTag is used as cross-platform UniqueNetId when developing Real-Time Multiplayer Games.
 	 * This does NOT prevent usage of other OnlineSubsystems (such as Steam or platform ones) --- it just enforces that the UniqueNetId clients send to game servers when connecting is the Beamable GamerTag.
 	 * In other words, this only affects your Replicated UniqueNetId for Real-Time Multiplayer purposes (@link ULocalPlayer::CachedUniqueNetId @endlink); it does not affect ANY ids you get through normal usage of Steam or other platform's OnlineSubsystems. 
-	 */
+	 *
+	 * When you enable this flag we do the mapping for the Unreal Local Player to the Beamable UserSlot automatically in the client.
+	*/
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Gameplay Framework")
-	bool bUseBeamableGamerTagsAsUniqueNetIds = true;
+	bool bEnableGameplayFrameworkIntegration = true;
 };
