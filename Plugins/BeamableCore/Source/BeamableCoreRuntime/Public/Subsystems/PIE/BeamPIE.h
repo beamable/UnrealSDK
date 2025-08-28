@@ -361,7 +361,7 @@ public:
 	/**
 	 * This enables BeamPIE for any gameplay level where you put this as the Level Blueprint's BeginPlay function.  
 	 */
-	UFUNCTION(BlueprintCallable, DisplayName="Easy Enable - Gameplay", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
+	UFUNCTION(BlueprintCallable, DisplayName="Easy Enable - Gameplay", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="InitWhenServerBuild,OnStarted,OnStartedFailedHandler,CallingContext"))
 	void EasyEnableBeamPIE_Gameplay(FString Options, bool InitWhenServerBuild,
 	                                UPARAM(DisplayName="Server Build - On Started")
 	                                FBeamRuntimeHandler OnStarted,
