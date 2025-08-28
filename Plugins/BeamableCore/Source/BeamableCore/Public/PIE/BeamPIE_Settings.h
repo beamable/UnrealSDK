@@ -9,8 +9,8 @@ USTRUCT(BlueprintType)
 struct BEAMABLECORE_API FBeamPIE_Settings
 {
 	static inline const FGuid DefaultPieSettingsGuid = FGuid::NewDeterministicGuid(TEXT("__BEAM_DEFAULT_PIE_SETTING__"));
-	
-	GENERATED_BODY()	
+
+	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FGuid SettingsId;
@@ -22,7 +22,7 @@ struct BEAMABLECORE_API FBeamPIE_Settings
 	TMap<FBeamPIE_UserSlotHandle, FBeamPIE_PerUserSetting> AssignedUsers;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FString AllowedMapNamePattern = TEXT(".*");
+	FString AllowedMapNamePattern = TEXT("");
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(AllowedClasses="/Script/Engine.World"))
 	TArray<TSoftObjectPtr<UWorld>> AllowedInMaps;
@@ -30,10 +30,9 @@ struct BEAMABLECORE_API FBeamPIE_Settings
 	// Lobby
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FBeamPIE_LobbySettings FakeLobby;
-	
-	
+
+
 	bool IsDefaultSettings() const { return SettingsId == DefaultPieSettingsGuid; }
 };
 
 FORCEINLINE uint32 GetTypeHash(const FBeamPIE_Settings& Context) { return GetTypeHash(Context.SettingsId); }
-
