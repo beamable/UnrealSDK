@@ -610,7 +610,7 @@ public:
 						Lp = GI->CreateLocalPlayer(LpIdx, Err, false);
 					}
 
-					if (GetDefault<UBeamRuntimeSettings>()->bUseBeamableGamerTagsAsUniqueNetIds)
+					if (GetDefault<UBeamRuntimeSettings>()->bEnableGameplayFrameworkIntegration)
 					{
 						UE_LOG(LogBeamEditor, Log, TEXT("%s Client - Found Assigned User. Creating mapped local player. USER_SLOT=%s, PIE=%d"),
 						       *GetLogArgs(TEXT("Beam PIE Prepare"), WorldContext), *AssignedUser.Key.Slot.Name, AssignedUser.Key.PIEIndex);
@@ -873,7 +873,7 @@ public:
 					LobbyPlayer->PlayerId = FOptionalBeamGamerTag{GamerTag};
 					LobbyPlayer->Joined = FOptionalDateTime{FDateTime::UtcNow()};
 					LobbyPlayer->Tags = bHasPlayerSettings ? FOptionalArrayOfBeamTag{Tags} : FOptionalArrayOfBeamTag{};
-					if (GetDefault<UBeamRuntimeSettings>()->bUseBeamableGamerTagsAsUniqueNetIds)
+					if (GetDefault<UBeamRuntimeSettings>()->bEnableGameplayFrameworkIntegration)
 					{
 						if (LobbyPlayer->Tags.IsSet) LobbyPlayer->Tags.Val.Add(FBeamTag{UBeamLobbySubsystem::Reserved_PlayerTag_UniqueNetId_Property, GamerTag.AsString});
 						else LobbyPlayer->Tags = FOptionalArrayOfBeamTag{TArray{FBeamTag{UBeamLobbySubsystem::Reserved_PlayerTag_UniqueNetId_Property, GamerTag.AsString}}};

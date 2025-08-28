@@ -68,7 +68,7 @@ void UBeamConnectivityManager::ConnectionHandler(const FNotificationEvent& Evt, 
 				UserSlots->SaveSlot(UserSlot, this);				
 
 				// If we are mapping the UniqueNetIds to Beamable GamerTags, we do so whenever we log in (mapping done implicitly by order of UBeamCoreSettings::RuntimeUserSlots).
-				if (GetDefault<UBeamRuntimeSettings>()->bUseBeamableGamerTagsAsUniqueNetIds)
+				if (GetDefault<UBeamRuntimeSettings>()->bEnableGameplayFrameworkIntegration)
 				{
 					auto LocalPlayerForSlot = Runtime->GetLocalPlayerForSlot(UserSlot);
 					if (!LocalPlayerForSlot)
@@ -205,7 +205,7 @@ void UBeamRuntime::Initialize(FSubsystemCollectionBase& Collection)
 	GetGameInstance()->OnLocalPlayerAddedEvent.AddLambda([this](ULocalPlayer* Lp)
 	{
 		// If we are mapping the UniqueNetIds to Beamable GamerTags, we do so whenever we log in (mapping done implicitly by order of UBeamCoreSettings::RuntimeUserSlots).
-		if (GetDefault<UBeamRuntimeSettings>()->bUseBeamableGamerTagsAsUniqueNetIds)
+		if (GetDefault<UBeamRuntimeSettings>()->bEnableGameplayFrameworkIntegration)
 		{
 			const auto LpIdx = Lp->GetLocalPlayerIndex();
 
