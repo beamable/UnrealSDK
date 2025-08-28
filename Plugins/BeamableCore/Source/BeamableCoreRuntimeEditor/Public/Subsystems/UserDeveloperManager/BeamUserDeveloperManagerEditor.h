@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "PropertyEditorClipboard.h"
 #include "PIE/BeamPIE_Settings.h"
 #include "Subsystems/BeamEditorSubsystem.h"
 #include "Subsystems/CLI/BeamCli.h"
@@ -205,6 +206,13 @@ public:
 	{
 		return FBeamPIE_UserSlotHandle(SelectedPIEIndex, CreateCopyOnPIE, SelectedSlotName);
 	}
+
+	UFUNCTION(BlueprintCallable)
+	static void CopyToClipBoard(FString CopyText)
+	{
+		FPropertyEditorClipboard::ClipboardCopy(*CopyText);
+	}
+
 
 protected:
 	void RunPsCommand(FBeamOperationHandle OperationHandle);
