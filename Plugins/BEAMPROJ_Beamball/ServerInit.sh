@@ -16,9 +16,4 @@ echo "COMMAND_LINE_ARGS : $COMMAND_LINE_ARGS"
 
 echo "Starting game server..."
 
-./BeamableUnrealServer.sh -beamable-realm-secret="$BEAMABLE_REALM_SECRET" \
-  -beamable-customer-override="$BEAMABLE_CUSTOMER_OVERRIDE" \
-  -beamable-realm-override="$BEAMABLE_REALM_OVERRIDE" \
-  -BeamableDedicatedServerInstanceLobbyId="$HATHORA_INITIAL_ROOM_ID" \
-  "$COMMAND_LINE_ARGS"
-  
+./BeamableUnrealServer.sh -beamable-realm-secret="$BEAMABLE_REALM_SECRET" -beamable-customer-override="$BEAMABLE_CUSTOMER_OVERRIDE" -beamable-realm-override="$BEAMABLE_REALM_OVERRIDE" -BeamableDedicatedServerInstanceLobbyId="$HATHORA_INITIAL_ROOM_ID" "$COMMAND_LINE_ARGS"
