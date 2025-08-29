@@ -505,7 +505,7 @@ void UBeamStatsSubsystem::CommitStats(FUserSlot UserSlot, FBeamOperationHandle O
 
 	// Get the stat key for this user
 	auto Stat = CommandBuffer->StatType;
-	checkf(UBeamStatsTypeLibrary::MakeStatsType(Client, Public, RealmUser.GamerTag) == Stat, TEXT("Make sure to call this with the same user slot."))
+	ensureAlwaysMsgf(UBeamStatsTypeLibrary::MakeStatsType(Client, Public, RealmUser.GamerTag) == Stat, TEXT("Make sure to call this with the same user slot."));
 
 	// Make the request and update the local cache if successful
 	const auto StatNames = TArray<FString>(CommandBuffer->StatNames);
@@ -701,7 +701,7 @@ void UBeamStatsSubsystem::IncrementStats(FUserSlot Slot, TMap<FString, int> Stat
 				{
 					const FString Curr = State->StringStats[StatIncrement.Key];
 					int32 CurrValue = 0;
-					checkf(FDefaultValueHelper::ParseInt(Curr, CurrValue), TEXT("You should never see this."))
+					ensureAlwaysMsgf(FDefaultValueHelper::ParseInt(Curr, CurrValue), TEXT("You should never see this."));
 					CurrValue += StatIncrement.Value;
 					State->StringStats[StatIncrement.Key] = FString::Printf(TEXT("%d"), CurrValue);
 				}
@@ -747,7 +747,7 @@ FBeamRequestContext UBeamStatsSubsystem::RequestGetStats(const FUserSlot& UserSl
 FBeamRequestContext UBeamStatsSubsystem::RequestSetStats(const FUserSlot& UserSlot, TMap<FString, FString> Stats, const FBeamOperationHandle Op, const FOnPostClientFullResponse Handler) const
 {
 	FBeamRealmUser RealmUser;
-	checkf(UserSlots->GetUserDataAtSlot(UserSlot, RealmUser, this), TEXT("You must only call this function with an authenticated UserSlot"));
+	ensureAlwaysMsgf(UserSlots->GetUserDataAtSlot(UserSlot, RealmUser, this), TEXT("You must only call this function with an authenticated UserSlot"));
 
 	const auto StatsType = UBeamStatsTypeLibrary::MakeStatsType(Client, Public, RealmUser.GamerTag);
 	const auto Req = UPostClientRequest::Make(StatsType, FOptionalBool{}, FOptionalBeamStatsType{}, FOptionalMapOfString{Stats}, FOptionalMapOfString{}, GetTransientPackage(), {});
@@ -759,7 +759,7 @@ FBeamRequestContext UBeamStatsSubsystem::RequestSetStats(const FUserSlot& UserSl
 FBeamRequestContext UBeamStatsSubsystem::RequestIncrementStats(const FUserSlot& UserSlot, TMap<FString, int32> StatsToAdd, const FBeamOperationHandle Op, const FOnPostClientFullResponse Handler) const
 {
 	FBeamRealmUser RealmUser;
-	checkf(UserSlots->GetUserDataAtSlot(UserSlot, RealmUser, this), TEXT("You must only call this function with an authenticated UserSlot"));
+	ensureAlwaysMsgf(UserSlots->GetUserDataAtSlot(UserSlot, RealmUser, this), TEXT("You must only call this function with an authenticated UserSlot"));
 
 	TMap<FString, FString> Stats;
 	Stats.Reserve(StatsToAdd.Num());
@@ -778,7 +778,7 @@ FBeamRequestContext UBeamStatsSubsystem::RequestIncrementStats(const FUserSlot& 
 FBeamRequestContext UBeamStatsSubsystem::RequestDeleteStats(const FUserSlot& UserSlot, FString StatName, const FBeamOperationHandle Op, const FOnDeleteStatsFullResponse Handler) const
 {
 	FBeamRealmUser RealmUser;
-	checkf(UserSlots->GetUserDataAtSlot(UserSlot, RealmUser, this), TEXT("You must only call this function with an authenticated UserSlot"));
+	ensureAlwaysMsgf(UserSlots->GetUserDataAtSlot(UserSlot, RealmUser, this), TEXT("You must only call this function with an authenticated UserSlot"));
 
 	const auto StatsType = UBeamStatsTypeLibrary::MakeStatsType(Client, Public, RealmUser.GamerTag);
 	const auto Req = UDeleteStatsRequest::Make(StatsType, FOptionalString{StatName}, GetTransientPackage(), {});

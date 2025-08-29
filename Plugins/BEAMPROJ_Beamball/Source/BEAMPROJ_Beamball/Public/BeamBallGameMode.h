@@ -84,7 +84,7 @@ public:
 		// BeamPIE guarantee's that happens for the lobbies it creats for PIE use.
 		BeamMultiplayer::Authentication::PreLoginAsync(this, BeamOptions, Address, UniqueId, FBeamOperationEventHandlerCode::CreateLambda([this, OnComplete, BeamOptions, Address, UniqueId](FBeamOperationEvent Evt)
 		{
-			if (Evt.EventType == OET_SUCCESS)
+			if (Evt.CompletedWithSuccess())
 			{
 				UE_BEAM_LOG(GEngine->GetWorldContextFromWorld(this->GetWorld()), LogBeamEditor, Warning, TEXT("GetPreferredUniqueNetId - 2 - %s"),
 				            *UniqueId.GetUniqueNetId().Get()->ToString())
@@ -92,7 +92,7 @@ public:
 			}
 
 			// If failed, deny entry into the server.
-			if (Evt.EventType == OET_ERROR)
+			if (Evt.CompletedWithError())
 			{
 				OnComplete.ExecuteIfBound(Evt.EventCode);
 			}
