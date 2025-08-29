@@ -400,14 +400,15 @@ void UBeamRuntime::InitSDK(FBeamRuntimeHandler OnStartedHandler, FRuntimeError S
 		});
 		CurrentSdkState = ESDKState::Initializing;
 	}
-	else if (CurrentSdkState == Initialized)
-	{
-		// Everything is fine so let's continue initializing Beamable by firing off the OnStarted callback.
-		UE_LOG(LogBeamRuntime, Log, TEXT("SDK is already initializing. Calling OnStarted Handler."));
-		OnStartedCode.Broadcast();
-		OnStarted.Broadcast();
-		OnStartedHandler.ExecuteIfBound();
-	}
+	// TODO: We'll want to review this for Q4 release instead
+	// else if (CurrentSdkState == Initialized)
+	// {
+	// 	// Everything is fine so let's continue initializing Beamable by firing off the OnStarted callback.
+	// 	UE_LOG(LogBeamRuntime, Log, TEXT("SDK is already initializing. Calling OnStarted Handler."));
+	// 	OnStartedCode.Broadcast();
+	// 	OnStarted.Broadcast();
+	// 	OnStartedHandler.ExecuteIfBound();
+	// }
 	else
 	{
 		FString ErrMsg = TEXT("Trying to call InitSDK while the SDK is initializing.");
