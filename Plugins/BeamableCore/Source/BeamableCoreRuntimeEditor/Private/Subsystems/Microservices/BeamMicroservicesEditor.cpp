@@ -391,6 +391,7 @@ void UBeamMicroservicesEditor::OnUpdateLocalStateReceived(const TArray<UBeamCliP
 					{
 					case EBeamFederationType::BEAM_IFederatedGameServer:
 						FedData.LocalSettings_FederatedGamerServer = NewObject<UBeamCliFederationLocalSettingsGetIFederatedGameServerStreamData>();
+						FedData.LocalSettings_FederatedGamerServer->OuterOwner = FedData.LocalSettings_FederatedGamerServer;
 						FedData.LocalSettings_FederatedGamerServer->BeamDeserialize(FederationLocalSettings);
 						break;
 					default:
