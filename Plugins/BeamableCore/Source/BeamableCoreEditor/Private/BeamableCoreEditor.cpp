@@ -207,6 +207,13 @@ void FBeamableCoreEditorModule::ShutdownModule()
 
 void FBeamableCoreEditorModule::AddBeamableButtons(FToolBarBuilder& Builder)
 {
+	// In UE 5.6 the settings section which it's used to anchor this menu buttons is disable by this console flag, so we just enabling it.
+	IConsoleVariable* ToolbarSettings = IConsoleManager::Get().FindConsoleVariable(TEXT("LevelEditorToolbarSettings"));
+
+	if (ToolbarSettings)
+	{
+		ToolbarSettings->Set(1); 
+	}
 	Builder.AddToolBarButton(FBeamableCoreEditorCommands::Get().OpenBeamableWindowCommand, NAME_None,
 	                         LOCTEXT("Beamable", "Beamable"), LOCTEXT("BeamableTooltip", "Opens the Beamable Window"),
 	                         FSlateIcon(FName(TEXT("BeamableCore")), FName(TEXT("BeamIcon"))));
