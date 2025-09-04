@@ -23,7 +23,7 @@ FString UCustomerViewResponseLibrary::CustomerViewResponseToJsonString(const UCu
 	return Result;
 }	
 
-UCustomerViewResponse* UCustomerViewResponseLibrary::Make(UCustomerView* Customer, UObject* Outer)
+UCustomerViewResponse* UCustomerViewResponseLibrary::Make(URealmsBasicCustomerView* Customer, UObject* Outer)
 {
 	auto Serializable = NewObject<UCustomerViewResponse>(Outer);
 	Serializable->Customer = Customer;
@@ -31,7 +31,7 @@ UCustomerViewResponse* UCustomerViewResponseLibrary::Make(UCustomerView* Custome
 	return Serializable;
 }
 
-void UCustomerViewResponseLibrary::Break(const UCustomerViewResponse* Serializable, UCustomerView*& Customer)
+void UCustomerViewResponseLibrary::Break(const UCustomerViewResponse* Serializable, URealmsBasicCustomerView*& Customer)
 {
 	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
 	{

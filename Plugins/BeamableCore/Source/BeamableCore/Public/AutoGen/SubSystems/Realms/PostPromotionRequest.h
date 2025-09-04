@@ -7,8 +7,8 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-#include "BeamableCore/Public/AutoGen/PromoteRealmRequestBody.h"
-#include "BeamableCore/Public/AutoGen/PromoteRealmResponse.h"
+#include "BeamableCore/Public/AutoGen/RealmsBasicPromoteRealmRequestBody.h"
+#include "BeamableCore/Public/AutoGen/RealmsBasicPromoteRealmResponse.h"
 
 #include "PostPromotionRequest.generated.h"
 
@@ -27,7 +27,7 @@ public:
 
 	// Body Params
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="", Category="Beam")
-	UPromoteRealmRequestBody* Body = {};
+	URealmsBasicPromoteRealmRequestBody* Body = {};
 
 	// Beam Base Request Declaration
 	UPostPromotionRequest() = default;
@@ -41,7 +41,7 @@ public:
 };
 
 UDELEGATE(BlueprintAuthorityOnly)
-DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnPostPromotionSuccess, FBeamRequestContext, Context, UPostPromotionRequest*, Request, UPromoteRealmResponse*, Response);
+DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnPostPromotionSuccess, FBeamRequestContext, Context, UPostPromotionRequest*, Request, URealmsBasicPromoteRealmResponse*, Response);
 
 UDELEGATE(BlueprintAuthorityOnly)
 DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnPostPromotionError, FBeamRequestContext, Context, UPostPromotionRequest*, Request, FBeamErrorResponse, Error);
@@ -49,5 +49,5 @@ DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnPostPromotionError, FBeamRequestContext,
 UDELEGATE(BlueprintAuthorityOnly)
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FOnPostPromotionComplete, FBeamRequestContext, Context, UPostPromotionRequest*, Request);
 
-using FPostPromotionFullResponse = FBeamFullResponse<UPostPromotionRequest*, UPromoteRealmResponse*>;
+using FPostPromotionFullResponse = FBeamFullResponse<UPostPromotionRequest*, URealmsBasicPromoteRealmResponse*>;
 DECLARE_DELEGATE_OneParam(FOnPostPromotionFullResponse, FPostPromotionFullResponse);

@@ -11,8 +11,6 @@
 #include "AutoGen/SubSystems/Accounts/GetAdminMeRequest.h"
 #include "AutoGen/SubSystems/Auth/AuthenticateRequest.h"
 #include "AutoGen/SubSystems/Realms/GetCustomerAliasAvailableRequest.h"
-#include "AutoGen/SubSystems/Realms/GetCustomerRequest.h"
-#include "AutoGen/SubSystems/Realms/GetGamesRequest.h"
 #include "AutoGen/SubSystems/Realms/PostCustomerRequest.h"
 #include "EditorSubsystem.h"
 #include "CLI/Autogen/StreamData/DeveloperUserDataStreamData.h"

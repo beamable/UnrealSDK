@@ -12,17 +12,17 @@ void UCustomerResponse::DeserializeRequestResponse(UObject* RequestData, FString
 
 void UCustomerResponse::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	UBeamJsonUtils::SerializeUObject<UCustomer*>("customer", Customer, Serializer);
+	UBeamJsonUtils::SerializeUObject<URealmsBasicCustomer*>("customer", Customer, Serializer);
 }
 
 void UCustomerResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	UBeamJsonUtils::SerializeUObject<UCustomer*>("customer", Customer, Serializer);		
+	UBeamJsonUtils::SerializeUObject<URealmsBasicCustomer*>("customer", Customer, Serializer);		
 }
 
 void UCustomerResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeUObject<UCustomer*>("customer", Bag, Customer, OuterOwner);
+	UBeamJsonUtils::DeserializeUObject<URealmsBasicCustomer*>("customer", Bag, Customer, OuterOwner);
 }
 
 

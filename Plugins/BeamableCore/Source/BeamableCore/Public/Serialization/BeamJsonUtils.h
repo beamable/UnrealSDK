@@ -199,8 +199,7 @@ class BEAMABLECORE_API UBeamJsonUtils final : public UBlueprintFunctionLibrary
 				{
 					FString ValStr = EnumToSerializationName<TDataType>(Value);
 					Serializer->WriteValue(ValStr);
-				}
-				if constexpr (std::is_same_v<TDataType, FDateTime>)
+				}else if constexpr (std::is_same_v<TDataType, FDateTime>)
 				{
 					Serializer->WriteValue(Value.ToIso8601());
 				}

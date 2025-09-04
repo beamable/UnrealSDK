@@ -27,7 +27,7 @@ void UPutConfigRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPutConfigRequest* UPutConfigRequest::Make(TMap<FString, FString> _Config, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
+UPutConfigRequest* UPutConfigRequest::Make(FOptionalMapOfString _Config, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPutConfigRequest* Req = NewObject<UPutConfigRequest>(RequestOwner);
 	Req->CustomHeaders = TMap{CustomHeaders};

@@ -12,17 +12,17 @@ void URealmConfigResponse::DeserializeRequestResponse(UObject* RequestData, FStr
 
 void URealmConfigResponse::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	UBeamJsonUtils::SerializeMap<FString>(TEXT("config"), Config, Serializer);
+	UBeamJsonUtils::SerializeOptional<TMap<FString, FString>, FString>(TEXT("config"), &Config, Serializer);
 }
 
 void URealmConfigResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	UBeamJsonUtils::SerializeMap<FString>(TEXT("config"), Config, Serializer);		
+	UBeamJsonUtils::SerializeOptional<TMap<FString, FString>, FString>(TEXT("config"), &Config, Serializer);		
 }
 
 void URealmConfigResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeMap<FString>(TEXT("config"), Bag, Config, OuterOwner);
+	UBeamJsonUtils::DeserializeOptional<TMap<FString, FString>, FString>("config", Bag, Config, OuterOwner);
 }
 
 

@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 #include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
-
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalMapOfString.h"
 
 #include "RealmConfigResponse.generated.h"
 
@@ -14,7 +14,7 @@ class BEAMABLECORE_API URealmConfigResponse : public UObject, public IBeamJsonSe
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Config", Category="Beam")
-	TMap<FString, FString> Config = {};
+	FOptionalMapOfString Config = {};
 
 	virtual void DeserializeRequestResponse(UObject* RequestData, FString ResponseContent) override;
 
