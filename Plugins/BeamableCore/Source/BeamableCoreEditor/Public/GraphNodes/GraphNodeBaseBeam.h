@@ -21,7 +21,7 @@ public:
 
 protected:
 	// SGraphNode interface	
-	virtual void GetOverlayBrushes(bool bSelected, const FVector2D WidgetSize, TArray<FOverlayBrushInfo>& Brushes) const override;
+	virtual void GetOverlayBrushes(bool bSelected, const FVector2f& WidgetSize, TArray<FOverlayBrushInfo>& Brushes) const override;
 	virtual void CreateOutputSideAddButton(TSharedPtr<SVerticalBox> OutputBox) override;
 	virtual FReply OnAddPin() override;
 	virtual EVisibility IsAddPinButtonVisible() const override;
