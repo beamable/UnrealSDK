@@ -3,7 +3,7 @@
 
 #include "BeamContentLocalView.generated.h"
 
-UENUM(BlueprintType, Flags, meta = (Bitflags, UseEnumValuesAsMaskValuesInEditor = "true"))
+UENUM(BlueprintType, meta = (Bitflags, UseEnumValuesAsMaskValuesInEditor = "true"))
 enum class EBeamLocalContentStatus : uint8
 {
 	Beam_Invalid = 0 UMETA(Hidden),

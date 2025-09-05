@@ -72,7 +72,7 @@ EVisibility SGraphNodeBaseBeam::IsAddPinButtonVisible() const
 	return ((AddPinNode && AddPinNode->CanAddPin()) ? EVisibility::Visible : EVisibility::Collapsed);
 }
 
-void SGraphNodeBaseBeam::GetOverlayBrushes(bool bSelected, const FVector2D WidgetSize, TArray<FOverlayBrushInfo>& Brushes) const
+void SGraphNodeBaseBeam::GetOverlayBrushes(bool bSelected, const FVector2f& WidgetSize, TArray<FOverlayBrushInfo>& Brushes) const
 {
 	UBlueprint* OwnerBlueprint = FBlueprintEditorUtils::FindBlueprintForNode(GraphNode);
 
