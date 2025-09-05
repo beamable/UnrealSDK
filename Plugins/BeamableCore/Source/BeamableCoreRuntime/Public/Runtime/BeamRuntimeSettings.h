@@ -17,7 +17,7 @@ class UBeamContentObject;
 /**
  * 
  */
-UCLASS(config=Game, defaultconfig, meta=(DisplayName="Beamable Runtime"))
+UCLASS(config=BeamGame, defaultconfig, meta=(DisplayName="Beamable Runtime"))
 class BEAMABLECORERUNTIME_API UBeamRuntimeSettings : public UDeveloperSettings
 {
 	GENERATED_BODY()

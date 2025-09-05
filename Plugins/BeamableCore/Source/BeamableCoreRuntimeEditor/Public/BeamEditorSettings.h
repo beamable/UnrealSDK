@@ -61,7 +61,7 @@ struct FBeamCustomerProjectData
 /**
  * 
  */
-UCLASS(Config=Editor, defaultconfig, meta=(DisplayName="Beamable Editor"))
+UCLASS(Config=BeamEditor, defaultconfig, meta=(DisplayName="Beamable Editor"))
 class BEAMABLECORERUNTIMEEDITOR_API UBeamEditorSettings : public UDeveloperSettings
 {
 	GENERATED_BODY()
