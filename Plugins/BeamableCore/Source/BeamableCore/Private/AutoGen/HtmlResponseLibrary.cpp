@@ -23,7 +23,7 @@ FString UHtmlResponseLibrary::HtmlResponseToJsonString(const UHtmlResponse* Seri
 	return Result;
 }	
 
-UHtmlResponse* UHtmlResponseLibrary::Make(FOptionalString Html, UObject* Outer)
+UHtmlResponse* UHtmlResponseLibrary::Make(FString Html, UObject* Outer)
 {
 	auto Serializable = NewObject<UHtmlResponse>(Outer);
 	Serializable->Html = Html;
@@ -31,7 +31,7 @@ UHtmlResponse* UHtmlResponseLibrary::Make(FOptionalString Html, UObject* Outer)
 	return Serializable;
 }
 
-void UHtmlResponseLibrary::Break(const UHtmlResponse* Serializable, FOptionalString& Html)
+void UHtmlResponseLibrary::Break(const UHtmlResponse* Serializable, FString& Html)
 {
 	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
 	{

@@ -23,35 +23,39 @@ FString URealmLibrary::RealmToJsonString(const URealm* Serializable, const bool 
 	return Result;
 }	
 
-URealm* URealmLibrary::Make(FOptionalBool bIsArchived, FOptionalBool bSharded, FOptionalString Name, FOptionalString Secret, FOptionalString Plan, FOptionalString DisplayName, FOptionalString Parent, FOptionalArrayOfString Children, FOptionalMapOfString Config, UObject* Outer)
+URealm* URealmLibrary::Make(FString Name, FString Plan, FOptionalBool bIsArchived, FOptionalBool bSharded, FOptionalString Secret, FOptionalString DisplayName, FOptionalString Parent, FOptionalDateTime Created, FOptionalArrayOfString Children, FOptionalMapOfString Config, FOptionalMapOfString CustomCharts, UObject* Outer)
 {
 	auto Serializable = NewObject<URealm>(Outer);
+	Serializable->Name = Name;
+	Serializable->Plan = Plan;
 	Serializable->bIsArchived = bIsArchived;
 	Serializable->bSharded = bSharded;
-	Serializable->Name = Name;
 	Serializable->Secret = Secret;
-	Serializable->Plan = Plan;
 	Serializable->DisplayName = DisplayName;
 	Serializable->Parent = Parent;
+	Serializable->Created = Created;
 	Serializable->Children = Children;
 	Serializable->Config = Config;
+	Serializable->CustomCharts = CustomCharts;
 	
 	return Serializable;
 }
 
-void URealmLibrary::Break(const URealm* Serializable, FOptionalBool& bIsArchived, FOptionalBool& bSharded, FOptionalString& Name, FOptionalString& Secret, FOptionalString& Plan, FOptionalString& DisplayName, FOptionalString& Parent, FOptionalArrayOfString& Children, FOptionalMapOfString& Config)
+void URealmLibrary::Break(const URealm* Serializable, FString& Name, FString& Plan, FOptionalBool& bIsArchived, FOptionalBool& bSharded, FOptionalString& Secret, FOptionalString& DisplayName, FOptionalString& Parent, FOptionalDateTime& Created, FOptionalArrayOfString& Children, FOptionalMapOfString& Config, FOptionalMapOfString& CustomCharts)
 {
 	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
 	{
+		Name = Serializable->Name;
+		Plan = Serializable->Plan;
 		bIsArchived = Serializable->bIsArchived;
 		bSharded = Serializable->bSharded;
-		Name = Serializable->Name;
 		Secret = Serializable->Secret;
-		Plan = Serializable->Plan;
 		DisplayName = Serializable->DisplayName;
 		Parent = Serializable->Parent;
+		Created = Serializable->Created;
 		Children = Serializable->Children;
 		Config = Serializable->Config;
+		CustomCharts = Serializable->CustomCharts;
 	}
 		
 }

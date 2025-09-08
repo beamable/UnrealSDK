@@ -455,6 +455,19 @@ bool UBeamLobbySubsystem::TryBeginUpdateLobby(FUserSlot Slot, bool bForce)
 	return true;
 }
 
+bool UBeamLobbySubsystem::TryRemoveLocalPlayerState(const AController* Controller)
+{
+	FUserSlot UserSlot = GetUserSlotByPlayerController(Controller);
+	
+	if (LocalPlayerLobbyInfo.Contains(UserSlot))
+	{
+		LocalPlayerLobbyInfo.Remove(UserSlot);
+		return true;
+	}
+	
+	return false;
+}
+
 void UBeamLobbySubsystem::PrepareUpdateName(const FUserSlot& Slot, const FString& NewName)
 {
 	UBeamLobbyState* LobbyState;

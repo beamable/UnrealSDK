@@ -23,23 +23,25 @@ FString UCreateAccountWithCredsApiResponseLibrary::CreateAccountWithCredsApiResp
 	return Result;
 }	
 
-UCreateAccountWithCredsApiResponse* UCreateAccountWithCredsApiResponseLibrary::Make(FOptionalAccountPlayerView Account, FOptionalString ChallengeToken, FOptionalTokenResponse Token, UObject* Outer)
+UCreateAccountWithCredsApiResponse* UCreateAccountWithCredsApiResponseLibrary::Make(FOptionalAccountPlayerView Account, FOptionalString ChallengeToken, FOptionalTokenResponse Token, FOptionalString VerificationRequired, UObject* Outer)
 {
 	auto Serializable = NewObject<UCreateAccountWithCredsApiResponse>(Outer);
 	Serializable->Account = Account;
 	Serializable->ChallengeToken = ChallengeToken;
 	Serializable->Token = Token;
+	Serializable->VerificationRequired = VerificationRequired;
 	
 	return Serializable;
 }
 
-void UCreateAccountWithCredsApiResponseLibrary::Break(const UCreateAccountWithCredsApiResponse* Serializable, FOptionalAccountPlayerView& Account, FOptionalString& ChallengeToken, FOptionalTokenResponse& Token)
+void UCreateAccountWithCredsApiResponseLibrary::Break(const UCreateAccountWithCredsApiResponse* Serializable, FOptionalAccountPlayerView& Account, FOptionalString& ChallengeToken, FOptionalTokenResponse& Token, FOptionalString& VerificationRequired)
 {
 	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
 	{
 		Account = Serializable->Account;
 		ChallengeToken = Serializable->ChallengeToken;
 		Token = Serializable->Token;
+		VerificationRequired = Serializable->VerificationRequired;
 	}
 		
 }

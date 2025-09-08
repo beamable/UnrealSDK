@@ -31,7 +31,7 @@ void UAccountsObjectAccount::BeamSerializeProperties(TUnrealJsonSerializer& Seri
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("heartbeat"), &Heartbeat, Serializer);
 	UBeamJsonUtils::SerializeOptional<TArray<URoleMapping*>, URoleMapping*>(TEXT("roles"), &Roles, Serializer);
 	UBeamJsonUtils::SerializeOptional<TArray<FString>, FString>(TEXT("deviceIds"), &DeviceIds, Serializer);
-	UBeamJsonUtils::SerializeOptional<TArray<UInFlightMessage*>, UInFlightMessage*>(TEXT("inFlight"), &InFlight, Serializer);
+	UBeamJsonUtils::SerializeOptional<TArray<UAccountsObjectInFlightMessage*>, UAccountsObjectInFlightMessage*>(TEXT("inFlight"), &InFlight, Serializer);
 }
 
 void UAccountsObjectAccount::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
@@ -55,7 +55,7 @@ void UAccountsObjectAccount::BeamSerializeProperties(TUnrealPrettyJsonSerializer
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("heartbeat"), &Heartbeat, Serializer);
 	UBeamJsonUtils::SerializeOptional<TArray<URoleMapping*>, URoleMapping*>(TEXT("roles"), &Roles, Serializer);
 	UBeamJsonUtils::SerializeOptional<TArray<FString>, FString>(TEXT("deviceIds"), &DeviceIds, Serializer);
-	UBeamJsonUtils::SerializeOptional<TArray<UInFlightMessage*>, UInFlightMessage*>(TEXT("inFlight"), &InFlight, Serializer);		
+	UBeamJsonUtils::SerializeOptional<TArray<UAccountsObjectInFlightMessage*>, UAccountsObjectInFlightMessage*>(TEXT("inFlight"), &InFlight, Serializer);		
 }
 
 void UAccountsObjectAccount::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
@@ -79,7 +79,7 @@ void UAccountsObjectAccount::BeamDeserializeProperties(const TSharedPtr<FJsonObj
 	UBeamJsonUtils::DeserializeOptional<int64>("heartbeat", Bag, Heartbeat, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<TArray<URoleMapping*>, URoleMapping*>("roles", Bag, Roles, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<TArray<FString>, FString>("deviceIds", Bag, DeviceIds, OuterOwner);
-	UBeamJsonUtils::DeserializeOptional<TArray<UInFlightMessage*>, UInFlightMessage*>("inFlight", Bag, InFlight, OuterOwner);
+	UBeamJsonUtils::DeserializeOptional<TArray<UAccountsObjectInFlightMessage*>, UAccountsObjectInFlightMessage*>("inFlight", Bag, InFlight, OuterOwner);
 }
 
 

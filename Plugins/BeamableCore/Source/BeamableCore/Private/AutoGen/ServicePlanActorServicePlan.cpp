@@ -15,13 +15,15 @@ void UServicePlanActorServicePlan::BeamSerializeProperties(TUnrealJsonSerializer
 	UBeamJsonUtils::SerializeRawPrimitive(TEXT("name"), Name, Serializer);
 	UBeamJsonUtils::SerializeUObject<UServicePlanActorDataDomain*>("dataDomain", DataDomain, Serializer);
 	UBeamJsonUtils::SerializeOptional<UServicePlanActorServiceLimits*>(TEXT("serviceLimits"), &ServiceLimits, Serializer);
+	UBeamJsonUtils::SerializeOptional<FDateTime>(TEXT("created"), &Created, Serializer);
 }
 
 void UServicePlanActorServicePlan::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeRawPrimitive(TEXT("name"), Name, Serializer);
 	UBeamJsonUtils::SerializeUObject<UServicePlanActorDataDomain*>("dataDomain", DataDomain, Serializer);
-	UBeamJsonUtils::SerializeOptional<UServicePlanActorServiceLimits*>(TEXT("serviceLimits"), &ServiceLimits, Serializer);		
+	UBeamJsonUtils::SerializeOptional<UServicePlanActorServiceLimits*>(TEXT("serviceLimits"), &ServiceLimits, Serializer);
+	UBeamJsonUtils::SerializeOptional<FDateTime>(TEXT("created"), &Created, Serializer);		
 }
 
 void UServicePlanActorServicePlan::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
@@ -29,6 +31,7 @@ void UServicePlanActorServicePlan::BeamDeserializeProperties(const TSharedPtr<FJ
 	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("name"), Bag, Name);
 	UBeamJsonUtils::DeserializeUObject<UServicePlanActorDataDomain*>("dataDomain", Bag, DataDomain, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<UServicePlanActorServiceLimits*>("serviceLimits", Bag, ServiceLimits, OuterOwner);
+	UBeamJsonUtils::DeserializeOptional<FDateTime>("created", Bag, Created, OuterOwner);
 }
 
 

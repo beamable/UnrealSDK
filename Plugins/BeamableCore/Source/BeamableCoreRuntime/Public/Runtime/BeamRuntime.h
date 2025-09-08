@@ -1012,6 +1012,18 @@ public:
 	                                                  FBeamOperationEventHandlerCode OnOperationEvent);
 
 	/**
+	 * If the given IdentityUserId is attached to an account in the current realm, we de-attach it to the account in the given slot.
+	 */
+	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Auth", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
+	FBeamOperationHandle DeAttachFederatedOperation(FUserSlot UserSlot, FString MicroserviceId, FString FederationId, FString FederatedUserId,
+												  FBeamOperationEventHandler OnOperationEvent);
+	/**
+	 * If the given IdentityUserId is attached to an account in the current realm, we de-attach it to the account in the given slot.
+	 */
+	FBeamOperationHandle CPP_DeAttachFederatedOperation(FUserSlot UserSlot, FString MicroserviceId, FString FederationId, FString FederatedUserId,
+													  FBeamOperationEventHandlerCode OnOperationEvent);
+
+	/**
 	 * Call this to submit a solved @link UBeamMultiFactorLoginData::ChallengeToken @endlink as part of the multi-factor login flows. 
 	 */
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Auth", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
@@ -1167,7 +1179,9 @@ private:
 	void CommitAttachFederated(FUserSlot UserSlot, UBeamMultiFactorLoginData* ChallengeSolution, FBeamOperationHandle Op);
 	void FetchExternalIdentities(FUserSlot UserSlot, FBeamOperationHandle Op);
 
+	void DeAttachLocalIdentity(FUserSlot UserSlot, FString FederatedUserId, FString MicroserviceId, FString FederationId);
 	void AttachLocalIdentity(FUserSlot UserSlot, FString FederatedUserId, FString MicroserviceId, FString FederationId);
+	
 	void AttachFederated(FUserSlot UserSlot, FString MicroserviceId, FString FederationId, FString FederatedUserId, FString FederatedAuthToken, FBeamOperationHandle Op);
 	void AttachEmailAndPassword(FUserSlot UserSlot, FString Email, FString Password, FBeamOperationHandle Op);
 
@@ -1200,8 +1214,8 @@ private:
 	FBeamRequestContext AttachIdentityToUserTwoFactor(FUserSlot UserSlot, FString MicroserviceId, FString FederationId, FString FederatedAuthToken, UChallengeSolution* ChallengeSolution, FBeamOperationHandle Op,
 	                                                  FOnPostExternalIdentityFullResponse Handler) const;
 	FBeamRequestContext AttachEmailAndPasswordToUser(FUserSlot UserSlot, FString Email, FString Password, FBeamOperationHandle Op, FOnBasicAccountsPostRegisterFullResponse Handler) const;
-	FBeamRequestContext RemoveIdentityFromUser(FUserSlot UserSlot, FString MicroserviceId, FString FederationId, FString FederatedAuthToken, FBeamOperationHandle Op,
-	                                           FOnDeleteExternalIdentityFullResponse Handler) const;
+	
+	void DeAttachIdentity(FUserSlot UserSlot, FString MicroserviceId, FString FederationId, FString FederatedUserId, FBeamOperationHandle Op);
 
 	// Runtime Notification Configuration and Automated Session Tracking 
 	static inline FString BEAM_SESSION_HEADER_PLATFORM = FString(TEXT("X-BEAM-SESSION-PLATFORM"));

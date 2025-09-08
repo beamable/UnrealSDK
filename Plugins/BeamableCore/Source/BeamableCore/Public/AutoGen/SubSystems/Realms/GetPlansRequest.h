@@ -7,7 +7,7 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-#include "BeamableCore/Public/AutoGen/ServicePlansResponse.h"
+#include "BeamableCore/Public/AutoGen/RealmsBasicServicePlansResponse.h"
 
 #include "GetPlansRequest.generated.h"
 
@@ -39,7 +39,7 @@ public:
 };
 
 UDELEGATE(BlueprintAuthorityOnly)
-DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnGetPlansSuccess, FBeamRequestContext, Context, UGetPlansRequest*, Request, UServicePlansResponse*, Response);
+DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnGetPlansSuccess, FBeamRequestContext, Context, UGetPlansRequest*, Request, URealmsBasicServicePlansResponse*, Response);
 
 UDELEGATE(BlueprintAuthorityOnly)
 DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnGetPlansError, FBeamRequestContext, Context, UGetPlansRequest*, Request, FBeamErrorResponse, Error);
@@ -47,5 +47,5 @@ DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnGetPlansError, FBeamRequestContext, Cont
 UDELEGATE(BlueprintAuthorityOnly)
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FOnGetPlansComplete, FBeamRequestContext, Context, UGetPlansRequest*, Request);
 
-using FGetPlansFullResponse = FBeamFullResponse<UGetPlansRequest*, UServicePlansResponse*>;
+using FGetPlansFullResponse = FBeamFullResponse<UGetPlansRequest*, URealmsBasicServicePlansResponse*>;
 DECLARE_DELEGATE_OneParam(FOnGetPlansFullResponse, FGetPlansFullResponse);

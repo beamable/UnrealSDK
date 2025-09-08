@@ -12,17 +12,17 @@ void UInFlightFailureResponse::DeserializeRequestResponse(UObject* RequestData, 
 
 void UInFlightFailureResponse::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	UBeamJsonUtils::SerializeArray<UInFlightFailure*>(TEXT("failures"), Failures, Serializer);
+	UBeamJsonUtils::SerializeArray<UAdminActorInFlightFailure*>(TEXT("failures"), Failures, Serializer);
 }
 
 void UInFlightFailureResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	UBeamJsonUtils::SerializeArray<UInFlightFailure*>(TEXT("failures"), Failures, Serializer);		
+	UBeamJsonUtils::SerializeArray<UAdminActorInFlightFailure*>(TEXT("failures"), Failures, Serializer);		
 }
 
 void UInFlightFailureResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeArray<UInFlightFailure*>(TEXT("failures"), Bag, Failures, OuterOwner);
+	UBeamJsonUtils::DeserializeArray<UAdminActorInFlightFailure*>(TEXT("failures"), Bag, Failures, OuterOwner);
 }
 
 

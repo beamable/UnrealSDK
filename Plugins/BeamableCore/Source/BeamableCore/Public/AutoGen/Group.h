@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 #include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
-#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfInFlightMessage.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfGroupUsersObjectInFlightMessage.h"
 #include "Serialization/BeamJsonUtils.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfDonationRequestBody.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalMapOfDonationRequestBody.h"
@@ -71,7 +71,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Roles", Category="Beam")
 	FOptionalArrayOfGroupRole Roles = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="In Flight", Category="Beam")
-	FOptionalArrayOfInFlightMessage InFlight = {};
+	FOptionalArrayOfGroupUsersObjectInFlightMessage InFlight = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Maybe Donations", Category="Beam")
 	FOptionalMapOfDonationRequestBody MaybeDonations = {};
 

@@ -9,6 +9,6 @@
 UENUM(BlueprintType, Category="Beam|Customer|Utils|Enums")
 enum class EBeamActivationStatus : uint8
 {
-	BEAM_Pending UMETA(DisplayName="Pending"),
-	BEAM_Activated UMETA(DisplayName="Activated")		
+	BEAM_PENDING UMETA(DisplayName="PENDING"),
+	BEAM_ACTIVATED UMETA(DisplayName="ACTIVATED")		
 };

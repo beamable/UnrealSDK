@@ -27,7 +27,7 @@ void UEventObjectData::BeamSerializeProperties(TUnrealJsonSerializer& Serializer
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("endTime"), &EndTime, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("origin"), &Origin, Serializer);
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("createdAt"), &CreatedAt, Serializer);
-	UBeamJsonUtils::SerializeOptional<TArray<UInFlightMessage*>, UInFlightMessage*>(TEXT("inFlight"), &InFlight, Serializer);
+	UBeamJsonUtils::SerializeOptional<TArray<UEventsBasicInFlightMessage*>, UEventsBasicInFlightMessage*>(TEXT("inFlight"), &InFlight, Serializer);
 	UBeamJsonUtils::SerializeOptional<TArray<UEventPhaseTime*>, UEventPhaseTime*>(TEXT("phaseTimes"), &PhaseTimes, Serializer);
 }
 
@@ -48,7 +48,7 @@ void UEventObjectData::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Seri
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("endTime"), &EndTime, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("origin"), &Origin, Serializer);
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("createdAt"), &CreatedAt, Serializer);
-	UBeamJsonUtils::SerializeOptional<TArray<UInFlightMessage*>, UInFlightMessage*>(TEXT("inFlight"), &InFlight, Serializer);
+	UBeamJsonUtils::SerializeOptional<TArray<UEventsBasicInFlightMessage*>, UEventsBasicInFlightMessage*>(TEXT("inFlight"), &InFlight, Serializer);
 	UBeamJsonUtils::SerializeOptional<TArray<UEventPhaseTime*>, UEventPhaseTime*>(TEXT("phaseTimes"), &PhaseTimes, Serializer);		
 }
 
@@ -69,7 +69,7 @@ void UEventObjectData::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& 
 	UBeamJsonUtils::DeserializeOptional<int64>("endTime", Bag, EndTime, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("origin", Bag, Origin, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<int64>("createdAt", Bag, CreatedAt, OuterOwner);
-	UBeamJsonUtils::DeserializeOptional<TArray<UInFlightMessage*>, UInFlightMessage*>("inFlight", Bag, InFlight, OuterOwner);
+	UBeamJsonUtils::DeserializeOptional<TArray<UEventsBasicInFlightMessage*>, UEventsBasicInFlightMessage*>("inFlight", Bag, InFlight, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<TArray<UEventPhaseTime*>, UEventPhaseTime*>("phaseTimes", Bag, PhaseTimes, OuterOwner);
 }
 

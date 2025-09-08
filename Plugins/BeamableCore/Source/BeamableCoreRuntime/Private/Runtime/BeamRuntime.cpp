@@ -1469,6 +1469,22 @@ FBeamOperationHandle UBeamRuntime::CPP_AttachFederatedOperation(FUserSlot UserSl
 	return Handle;
 }
 
+FBeamOperationHandle UBeamRuntime::DeAttachFederatedOperation(FUserSlot UserSlot, FString MicroserviceId, FString FederationId, FString FederatedUserId,
+	FBeamOperationEventHandler OnOperationEvent)
+{
+	const FBeamOperationHandle Handle = RequestTrackerSystem->BeginOperation({UserSlot}, GetClass()->GetFName().ToString(), OnOperationEvent);
+	DeAttachIdentity(UserSlot, MicroserviceId, FederationId, FederatedUserId, Handle);
+	return Handle;
+}
+
+FBeamOperationHandle UBeamRuntime::CPP_DeAttachFederatedOperation(FUserSlot UserSlot, FString MicroserviceId, FString FederationId, FString FederatedUserId,
+	FBeamOperationEventHandlerCode OnOperationEvent)
+{
+	const FBeamOperationHandle Handle = RequestTrackerSystem->CPP_BeginOperation({UserSlot}, GetClass()->GetFName().ToString(), OnOperationEvent);
+	DeAttachIdentity(UserSlot, MicroserviceId, FederationId, FederatedUserId, Handle);
+	return Handle;
+}
+
 FBeamOperationHandle UBeamRuntime::CommitAttachFederatedOperation(FUserSlot UserSlot, UBeamMultiFactorLoginData* MultiFactorData, FBeamOperationEventHandler OnOperationEvent)
 {
 	const FBeamOperationHandle Handle = RequestTrackerSystem->BeginOperation({UserSlot}, GetClass()->GetFName().ToString(), OnOperationEvent);
@@ -1951,6 +1967,33 @@ void UBeamRuntime::FetchExternalIdentities(FUserSlot UserSlot, FBeamOperationHan
 	UBasicAccountsGetMeRequest* MeReq = UBasicAccountsGetMeRequest::Make(this, {});
 
 	AccountSubsystem->CPP_GetMe(UserSlot, MeReq, Handler, RequestContext, Op, this);
+}
+
+void UBeamRuntime::DeAttachLocalIdentity(FUserSlot UserSlot, FString FederatedUserId, FString MicroserviceId, FString FederationId)
+{
+	// Update the local list of external ids if the IdentityUserId was provided
+	if (!FederatedUserId.IsEmpty())
+	{
+		FBeamRealmUser User;
+		if (UserSlotSystem->GetUserDataAtSlot(UserSlot, User, this))
+		{
+			for (auto index = 0; index < User.ExternalIdentities.Num(); index++)
+			{
+				auto BeamExternalIdentity = User.ExternalIdentities[index];
+				
+				if (BeamExternalIdentity.ProviderNamespace == FederationId &&
+					BeamExternalIdentity.ProviderService == MicroserviceId &&
+					BeamExternalIdentity.UserId == FederatedUserId)
+				{
+					User.ExternalIdentities.RemoveAt(index);
+					break;
+				}
+			
+			}
+			UserSlotSystem->SetExternalIdsAtSlot(UserSlot, User.ExternalIdentities, this);
+			UserSlotSystem->SaveSlot(UserSlot, this);
+		}
+	}
 }
 
 void UBeamRuntime::AttachLocalIdentity(FUserSlot UserSlot, FString FederatedUserId, FString MicroserviceId, FString FederationId)
@@ -2571,15 +2614,28 @@ FBeamRequestContext UBeamRuntime::AttachEmailAndPasswordToUser(FUserSlot UserSlo
 	return Ctx;
 }
 
-FBeamRequestContext UBeamRuntime::RemoveIdentityFromUser(FUserSlot UserSlot, FString MicroserviceId, FString FederationId, FString FederatedAuthToken, FBeamOperationHandle Op,
-                                                         FOnDeleteExternalIdentityFullResponse Handler) const
+void UBeamRuntime::DeAttachIdentity(FUserSlot UserSlot, FString MicroserviceId, FString FederationId, FString FederatedUserId, FBeamOperationHandle Op)
 {
+	auto Handler = FOnDeleteExternalIdentityFullResponse::CreateLambda([this, UserSlot, FederatedUserId, MicroserviceId, FederationId, Op](const FDeleteExternalIdentityFullResponse& Response)
+	{
+		if (Response.State == RS_Success)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Successfully Attached Id! Result = %s"), *Response.SuccessData->Result);
+
+			DeAttachLocalIdentity(UserSlot, FederatedUserId, MicroserviceId, FederationId);
+			
+			RequestTrackerSystem->TriggerOperationSuccess(Op, TEXT(""));
+		}else
+		{
+			RequestTrackerSystem->TriggerOperationError(Op, Response.ErrorData.message);
+		}
+	});
+	
 	const auto AccountAPI = GEngine->GetEngineSubsystem<UBeamAccountsApi>();
 
-	const auto Req = UDeleteExternalIdentityRequest::Make(MicroserviceId, FederatedAuthToken, FOptionalString{FederationId}, GetTransientPackage(), {});
+	const auto Req = UDeleteExternalIdentityRequest::Make(MicroserviceId, FederatedUserId, FOptionalString{FederationId}, GetTransientPackage(), {});
 	FBeamRequestContext Ctx;
-	AccountAPI->CPP_DeleteExternalIdentity(UserSlot, Req, Handler, Ctx, Op, this);
-	return Ctx;
+	AccountAPI->CPP_DeleteExternalIdentity(UserSlot, Req, {}, Ctx, Op, this);
 }
 
 

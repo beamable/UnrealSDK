@@ -16,7 +16,7 @@ void UGroupUser::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) cons
 	UBeamJsonUtils::SerializeRawPrimitive(TEXT("updated"), Updated, Serializer);
 	UBeamJsonUtils::SerializeUObject<UGroupMemberInfo*>("member", Member, Serializer);
 	UBeamJsonUtils::SerializeArray<UGroupUserMember*>(TEXT("allGroups"), AllGroups, Serializer);
-	UBeamJsonUtils::SerializeOptional<TArray<UInFlightMessage*>, UInFlightMessage*>(TEXT("inFlight"), &InFlight, Serializer);
+	UBeamJsonUtils::SerializeOptional<TArray<UGroupUsersObjectInFlightMessage*>, UGroupUsersObjectInFlightMessage*>(TEXT("inFlight"), &InFlight, Serializer);
 	UBeamJsonUtils::SerializeOptional<TArray<UGroupScoreBinding*>, UGroupScoreBinding*>(TEXT("scores"), &Scores, Serializer);
 }
 
@@ -26,7 +26,7 @@ void UGroupUser::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer
 	UBeamJsonUtils::SerializeRawPrimitive(TEXT("updated"), Updated, Serializer);
 	UBeamJsonUtils::SerializeUObject<UGroupMemberInfo*>("member", Member, Serializer);
 	UBeamJsonUtils::SerializeArray<UGroupUserMember*>(TEXT("allGroups"), AllGroups, Serializer);
-	UBeamJsonUtils::SerializeOptional<TArray<UInFlightMessage*>, UInFlightMessage*>(TEXT("inFlight"), &InFlight, Serializer);
+	UBeamJsonUtils::SerializeOptional<TArray<UGroupUsersObjectInFlightMessage*>, UGroupUsersObjectInFlightMessage*>(TEXT("inFlight"), &InFlight, Serializer);
 	UBeamJsonUtils::SerializeOptional<TArray<UGroupScoreBinding*>, UGroupScoreBinding*>(TEXT("scores"), &Scores, Serializer);		
 }
 
@@ -36,7 +36,7 @@ void UGroupUser::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("updated"), Bag, Updated);
 	UBeamJsonUtils::DeserializeUObject<UGroupMemberInfo*>("member", Bag, Member, OuterOwner);
 	UBeamJsonUtils::DeserializeArray<UGroupUserMember*>(TEXT("allGroups"), Bag, AllGroups, OuterOwner);
-	UBeamJsonUtils::DeserializeOptional<TArray<UInFlightMessage*>, UInFlightMessage*>("inFlight", Bag, InFlight, OuterOwner);
+	UBeamJsonUtils::DeserializeOptional<TArray<UGroupUsersObjectInFlightMessage*>, UGroupUsersObjectInFlightMessage*>("inFlight", Bag, InFlight, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<TArray<UGroupScoreBinding*>, UGroupScoreBinding*>("scores", Bag, Scores, OuterOwner);
 }
 

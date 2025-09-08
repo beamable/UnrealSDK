@@ -3,8 +3,8 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
-#include "Serialization/BeamJsonUtils.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalMapOfString.h"
 
 #include "ThirdPartyAssociation.generated.h"
 
@@ -15,17 +15,17 @@ class BEAMABLECORE_API UThirdPartyAssociation : public UObject, public IBeamJson
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Name", Category="Beam")
-	FString Name = {};
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="User App Id", Category="Beam")
-	FString UserAppId = {};
+	FOptionalString Name = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="App Id", Category="Beam")
-	FString AppId = {};
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Meta", Category="Beam")
-	TMap<FString, FString> Meta = {};
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Email", Category="Beam")
-	FOptionalString Email = {};
+	FOptionalString AppId = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="User App Id", Category="Beam")
+	FOptionalString UserAppId = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="User Business Id", Category="Beam")
 	FOptionalString UserBusinessId = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Email", Category="Beam")
+	FOptionalString Email = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Meta", Category="Beam")
+	FOptionalMapOfString Meta = {};
 
 	
 

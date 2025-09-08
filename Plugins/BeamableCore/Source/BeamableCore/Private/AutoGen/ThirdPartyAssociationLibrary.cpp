@@ -23,29 +23,29 @@ FString UThirdPartyAssociationLibrary::ThirdPartyAssociationToJsonString(const U
 	return Result;
 }	
 
-UThirdPartyAssociation* UThirdPartyAssociationLibrary::Make(FString Name, FString UserAppId, FString AppId, TMap<FString, FString> Meta, FOptionalString Email, FOptionalString UserBusinessId, UObject* Outer)
+UThirdPartyAssociation* UThirdPartyAssociationLibrary::Make(FOptionalString Name, FOptionalString AppId, FOptionalString UserAppId, FOptionalString UserBusinessId, FOptionalString Email, FOptionalMapOfString Meta, UObject* Outer)
 {
 	auto Serializable = NewObject<UThirdPartyAssociation>(Outer);
 	Serializable->Name = Name;
-	Serializable->UserAppId = UserAppId;
 	Serializable->AppId = AppId;
-	Serializable->Meta = Meta;
-	Serializable->Email = Email;
+	Serializable->UserAppId = UserAppId;
 	Serializable->UserBusinessId = UserBusinessId;
+	Serializable->Email = Email;
+	Serializable->Meta = Meta;
 	
 	return Serializable;
 }
 
-void UThirdPartyAssociationLibrary::Break(const UThirdPartyAssociation* Serializable, FString& Name, FString& UserAppId, FString& AppId, TMap<FString, FString>& Meta, FOptionalString& Email, FOptionalString& UserBusinessId)
+void UThirdPartyAssociationLibrary::Break(const UThirdPartyAssociation* Serializable, FOptionalString& Name, FOptionalString& AppId, FOptionalString& UserAppId, FOptionalString& UserBusinessId, FOptionalString& Email, FOptionalMapOfString& Meta)
 {
 	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
 	{
 		Name = Serializable->Name;
-		UserAppId = Serializable->UserAppId;
 		AppId = Serializable->AppId;
-		Meta = Serializable->Meta;
-		Email = Serializable->Email;
+		UserAppId = Serializable->UserAppId;
 		UserBusinessId = Serializable->UserBusinessId;
+		Email = Serializable->Email;
+		Meta = Serializable->Meta;
 	}
 		
 }

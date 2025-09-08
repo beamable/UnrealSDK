@@ -23,7 +23,7 @@ FString UGroupUserLibrary::GroupUserToJsonString(const UGroupUser* Serializable,
 	return Result;
 }	
 
-UGroupUser* UGroupUserLibrary::Make(int64 GamerTag, int64 Updated, UGroupMemberInfo* Member, TArray<UGroupUserMember*> AllGroups, FOptionalArrayOfInFlightMessage InFlight, FOptionalArrayOfGroupScoreBinding Scores, UObject* Outer)
+UGroupUser* UGroupUserLibrary::Make(int64 GamerTag, int64 Updated, UGroupMemberInfo* Member, TArray<UGroupUserMember*> AllGroups, FOptionalArrayOfGroupUsersObjectInFlightMessage InFlight, FOptionalArrayOfGroupScoreBinding Scores, UObject* Outer)
 {
 	auto Serializable = NewObject<UGroupUser>(Outer);
 	Serializable->GamerTag = GamerTag;
@@ -36,7 +36,7 @@ UGroupUser* UGroupUserLibrary::Make(int64 GamerTag, int64 Updated, UGroupMemberI
 	return Serializable;
 }
 
-void UGroupUserLibrary::Break(const UGroupUser* Serializable, int64& GamerTag, int64& Updated, UGroupMemberInfo*& Member, TArray<UGroupUserMember*>& AllGroups, FOptionalArrayOfInFlightMessage& InFlight, FOptionalArrayOfGroupScoreBinding& Scores)
+void UGroupUserLibrary::Break(const UGroupUser* Serializable, int64& GamerTag, int64& Updated, UGroupMemberInfo*& Member, TArray<UGroupUserMember*>& AllGroups, FOptionalArrayOfGroupUsersObjectInFlightMessage& InFlight, FOptionalArrayOfGroupScoreBinding& Scores)
 {
 	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
 	{

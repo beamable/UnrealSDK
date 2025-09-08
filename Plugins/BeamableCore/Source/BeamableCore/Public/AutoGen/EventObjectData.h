@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 #include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
-#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfInFlightMessage.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfEventsBasicInFlightMessage.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalInt64.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
 #include "BeamableCore/Public/AutoGen/Enums/BeamEventState.h"
@@ -52,7 +52,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Created At", Category="Beam")
 	FOptionalInt64 CreatedAt = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="In Flight", Category="Beam")
-	FOptionalArrayOfInFlightMessage InFlight = {};
+	FOptionalArrayOfEventsBasicInFlightMessage InFlight = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Phase Times", Category="Beam")
 	FOptionalArrayOfEventPhaseTime PhaseTimes = {};
 

@@ -6,7 +6,7 @@
 
 #include "BeamableCore/Public/AutoGen/SubSystems/BeamCustomerApi.h"
 #include "BeamableCore/Public/AutoGen/SubSystems/Customer/PutActivateRequest.h"
-#include "BeamableCore/Public/AutoGen/HtmlResponse.h"
+#include "BeamableCore/Public/AutoGen/ApiCustomersActivatePutCustomerResponse.h"
 
 #define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_PutActivate"
 
@@ -49,7 +49,7 @@ UClass* UK2BeamNode_ApiRequest_PutActivate::GetRequestClass() const
 
 UClass* UK2BeamNode_ApiRequest_PutActivate::GetResponseClass() const
 {
-	return UHtmlResponse::StaticClass();
+	return UApiCustomersActivatePutCustomerResponse::StaticClass();
 }
 
 FString UK2BeamNode_ApiRequest_PutActivate::GetRequestSuccessDelegateName() const

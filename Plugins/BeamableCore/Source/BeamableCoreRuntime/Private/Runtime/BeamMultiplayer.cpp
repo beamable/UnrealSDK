@@ -62,6 +62,12 @@ namespace BeamMultiplayer
 			const auto Lobby = This->GetGameInstance()->GetSubsystem<UBeamLobbySubsystem>();
 			return Lobby->PrepareLoginOptionsByLocalPlayer(This, Options);
 		}
+
+		void Logout(const AController* Controller)
+		{
+			const auto LobbySubsystem = Controller->GetGameInstance()->GetSubsystem<UBeamLobbySubsystem>();
+			LobbySubsystem->TryRemoveLocalPlayerState(Controller);
+		}
 	}
 
 	void Authentication::PreLoginAsync(const AGameModeBase* GameMode, const FString& Options, const FString& Address, const FUniqueNetIdRepl& UniqueId, const FBeamOperationEventHandlerCode& OperationHandler)

@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 #include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
-#include "BeamableCore/Public/AutoGen/InFlightFailure.h"
+#include "BeamableCore/Public/AutoGen/AdminActorInFlightFailure.h"
 
 #include "InFlightFailureResponse.generated.h"
 
@@ -14,7 +14,7 @@ class BEAMABLECORE_API UInFlightFailureResponse : public UObject, public IBeamJs
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Failures", Category="Beam")
-	TArray<UInFlightFailure*> Failures = {};
+	TArray<UAdminActorInFlightFailure*> Failures = {};
 
 	virtual void DeserializeRequestResponse(UObject* RequestData, FString ResponseContent) override;
 

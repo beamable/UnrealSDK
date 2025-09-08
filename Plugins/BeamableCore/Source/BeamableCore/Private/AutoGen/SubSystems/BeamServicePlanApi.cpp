@@ -35,14 +35,14 @@ void UBeamServicePlanApi::BP_GetServicePlansImpl(const FBeamRealmHandle& TargetR
 	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
 	{
 		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
-		Backend->RunAuthenticatedBlueprintRequestProcessor<UGetServicePlansRequest, UServicePlansResponse, FOnGetServicePlansSuccess, FOnGetServicePlansError, FOnGetServicePlansComplete>
+		Backend->RunAuthenticatedBlueprintRequestProcessor<UGetServicePlansRequest, UServicePlanActorServicePlansResponse, FOnGetServicePlansSuccess, FOnGetServicePlansError, FOnGetServicePlansComplete>
 			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);		
 	}
 	// If not cached...
 	else
 	{
 		// Binds the handler to the static response handler (pre-generated)
-		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UGetServicePlansRequest, UServicePlansResponse, FOnGetServicePlansSuccess, FOnGetServicePlansError, FOnGetServicePlansComplete>
+		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UGetServicePlansRequest, UServicePlanActorServicePlansResponse, FOnGetServicePlansSuccess, FOnGetServicePlansError, FOnGetServicePlansComplete>
 			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 	    
@@ -65,14 +65,14 @@ void UBeamServicePlanApi::CPP_GetServicePlansImpl(const FBeamRealmHandle& Target
 	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
 	{
 		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
-		Backend->RunAuthenticatedCodeRequestProcessor<UGetServicePlansRequest, UServicePlansResponse>
+		Backend->RunAuthenticatedCodeRequestProcessor<UGetServicePlansRequest, UServicePlanActorServicePlansResponse>
 			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, TargetRealm, AuthToken, RequestData, Handler);		
 	}
 	// If not cached...
 	else
 	{
 		// Binds the handler to the static response handler (pre-generated)	
-		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UGetServicePlansRequest, UServicePlansResponse>
+		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UGetServicePlansRequest, UServicePlanActorServicePlansResponse>
 			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler);
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 

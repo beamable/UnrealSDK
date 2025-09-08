@@ -3,9 +3,11 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
+#include "Serialization/BeamJsonUtils.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalBool.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfString.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalDateTime.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalMapOfString.h"
 
 #include "Realm.generated.h"
@@ -16,24 +18,28 @@ class BEAMABLECORE_API URealm : public UObject, public IBeamJsonSerializableUObj
 	GENERATED_BODY()
 
 public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Name", Category="Beam")
+	FString Name = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Plan", Category="Beam")
+	FString Plan = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Is Archived", Category="Beam")
 	FOptionalBool bIsArchived = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Sharded", Category="Beam")
 	FOptionalBool bSharded = {};
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Name", Category="Beam")
-	FOptionalString Name = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Secret", Category="Beam")
 	FOptionalString Secret = {};
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Plan", Category="Beam")
-	FOptionalString Plan = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Display Name", Category="Beam")
 	FOptionalString DisplayName = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Parent", Category="Beam")
 	FOptionalString Parent = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Created", Category="Beam")
+	FOptionalDateTime Created = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Children", Category="Beam")
 	FOptionalArrayOfString Children = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Config", Category="Beam")
 	FOptionalMapOfString Config = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Custom Charts", Category="Beam")
+	FOptionalMapOfString CustomCharts = {};
 
 	
 

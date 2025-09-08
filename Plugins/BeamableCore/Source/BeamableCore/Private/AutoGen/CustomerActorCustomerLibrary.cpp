@@ -23,7 +23,7 @@ FString UCustomerActorCustomerLibrary::CustomerActorCustomerToJsonString(const U
 	return Result;
 }	
 
-UCustomerActorCustomer* UCustomerActorCustomerLibrary::Make(int64 CustomerId, FString Name, FOptionalString Alias, FOptionalPaymentStatus PaymentStatus, FOptionalActivationStatus ActivationStatus, FOptionalString Contact, FOptionalInt64 Created, FOptionalInt64 Updated, FOptionalArrayOfRealm Realms, UObject* Outer)
+UCustomerActorCustomer* UCustomerActorCustomerLibrary::Make(int64 CustomerId, FString Name, FOptionalString Alias, FOptionalPaymentStatus PaymentStatus, FOptionalActivationStatus ActivationStatus, FOptionalString Contact, FOptionalDateTime Created, FOptionalDateTime Updated, FOptionalArrayOfRealm Realms, FOptionalArrayOfCustomerActorAccount Accounts, UObject* Outer)
 {
 	auto Serializable = NewObject<UCustomerActorCustomer>(Outer);
 	Serializable->CustomerId = CustomerId;
@@ -35,11 +35,12 @@ UCustomerActorCustomer* UCustomerActorCustomerLibrary::Make(int64 CustomerId, FS
 	Serializable->Created = Created;
 	Serializable->Updated = Updated;
 	Serializable->Realms = Realms;
+	Serializable->Accounts = Accounts;
 	
 	return Serializable;
 }
 
-void UCustomerActorCustomerLibrary::Break(const UCustomerActorCustomer* Serializable, int64& CustomerId, FString& Name, FOptionalString& Alias, FOptionalPaymentStatus& PaymentStatus, FOptionalActivationStatus& ActivationStatus, FOptionalString& Contact, FOptionalInt64& Created, FOptionalInt64& Updated, FOptionalArrayOfRealm& Realms)
+void UCustomerActorCustomerLibrary::Break(const UCustomerActorCustomer* Serializable, int64& CustomerId, FString& Name, FOptionalString& Alias, FOptionalPaymentStatus& PaymentStatus, FOptionalActivationStatus& ActivationStatus, FOptionalString& Contact, FOptionalDateTime& Created, FOptionalDateTime& Updated, FOptionalArrayOfRealm& Realms, FOptionalArrayOfCustomerActorAccount& Accounts)
 {
 	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
 	{
@@ -52,6 +53,7 @@ void UCustomerActorCustomerLibrary::Break(const UCustomerActorCustomer* Serializ
 		Created = Serializable->Created;
 		Updated = Serializable->Updated;
 		Realms = Serializable->Realms;
+		Accounts = Serializable->Accounts;
 	}
 		
 }

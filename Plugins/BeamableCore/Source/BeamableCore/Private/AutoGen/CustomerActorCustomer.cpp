@@ -4,6 +4,11 @@
 #include "Misc/DefaultValueHelper.h"
 
 
+void UCustomerActorCustomer::DeserializeRequestResponse(UObject* RequestData, FString ResponseContent)
+{
+	OuterOwner = RequestData;
+	BeamDeserialize(ResponseContent);	
+}
 
 void UCustomerActorCustomer::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
@@ -13,9 +18,10 @@ void UCustomerActorCustomer::BeamSerializeProperties(TUnrealJsonSerializer& Seri
 	UBeamJsonUtils::SerializeOptional<EBeamPaymentStatus>(TEXT("paymentStatus"), &PaymentStatus, Serializer);
 	UBeamJsonUtils::SerializeOptional<EBeamActivationStatus>(TEXT("activationStatus"), &ActivationStatus, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("contact"), &Contact, Serializer);
-	UBeamJsonUtils::SerializeOptional<int64>(TEXT("created"), &Created, Serializer);
-	UBeamJsonUtils::SerializeOptional<int64>(TEXT("updated"), &Updated, Serializer);
+	UBeamJsonUtils::SerializeOptional<FDateTime>(TEXT("created"), &Created, Serializer);
+	UBeamJsonUtils::SerializeOptional<FDateTime>(TEXT("updated"), &Updated, Serializer);
 	UBeamJsonUtils::SerializeOptional<TArray<URealm*>, URealm*>(TEXT("realms"), &Realms, Serializer);
+	UBeamJsonUtils::SerializeOptional<TArray<UCustomerActorAccount*>, UCustomerActorAccount*>(TEXT("accounts"), &Accounts, Serializer);
 }
 
 void UCustomerActorCustomer::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
@@ -26,9 +32,10 @@ void UCustomerActorCustomer::BeamSerializeProperties(TUnrealPrettyJsonSerializer
 	UBeamJsonUtils::SerializeOptional<EBeamPaymentStatus>(TEXT("paymentStatus"), &PaymentStatus, Serializer);
 	UBeamJsonUtils::SerializeOptional<EBeamActivationStatus>(TEXT("activationStatus"), &ActivationStatus, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("contact"), &Contact, Serializer);
-	UBeamJsonUtils::SerializeOptional<int64>(TEXT("created"), &Created, Serializer);
-	UBeamJsonUtils::SerializeOptional<int64>(TEXT("updated"), &Updated, Serializer);
-	UBeamJsonUtils::SerializeOptional<TArray<URealm*>, URealm*>(TEXT("realms"), &Realms, Serializer);		
+	UBeamJsonUtils::SerializeOptional<FDateTime>(TEXT("created"), &Created, Serializer);
+	UBeamJsonUtils::SerializeOptional<FDateTime>(TEXT("updated"), &Updated, Serializer);
+	UBeamJsonUtils::SerializeOptional<TArray<URealm*>, URealm*>(TEXT("realms"), &Realms, Serializer);
+	UBeamJsonUtils::SerializeOptional<TArray<UCustomerActorAccount*>, UCustomerActorAccount*>(TEXT("accounts"), &Accounts, Serializer);		
 }
 
 void UCustomerActorCustomer::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
@@ -39,9 +46,10 @@ void UCustomerActorCustomer::BeamDeserializeProperties(const TSharedPtr<FJsonObj
 	UBeamJsonUtils::DeserializeOptional<EBeamPaymentStatus>("paymentStatus", Bag, PaymentStatus, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<EBeamActivationStatus>("activationStatus", Bag, ActivationStatus, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("contact", Bag, Contact, OuterOwner);
-	UBeamJsonUtils::DeserializeOptional<int64>("created", Bag, Created, OuterOwner);
-	UBeamJsonUtils::DeserializeOptional<int64>("updated", Bag, Updated, OuterOwner);
+	UBeamJsonUtils::DeserializeOptional<FDateTime>("created", Bag, Created, OuterOwner);
+	UBeamJsonUtils::DeserializeOptional<FDateTime>("updated", Bag, Updated, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<TArray<URealm*>, URealm*>("realms", Bag, Realms, OuterOwner);
+	UBeamJsonUtils::DeserializeOptional<TArray<UCustomerActorAccount*>, UCustomerActorAccount*>("accounts", Bag, Accounts, OuterOwner);
 }
 
 
