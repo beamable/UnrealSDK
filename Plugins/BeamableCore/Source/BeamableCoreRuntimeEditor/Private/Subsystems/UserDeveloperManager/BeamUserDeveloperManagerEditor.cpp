@@ -341,6 +341,13 @@ void UBeamUserDeveloperManagerEditor::GetUsersWithFilter(FString NameFilter, FSt
 		});
 	}
 
+	Result.RemoveAll([NameFilter](UDeveloperUserDataStreamData* Data)
+	{
+		const auto coreSettings = GetDefault<UBeamCoreSettings>();
+		const auto IsSameCID = coreSettings->TargetRealm.Cid == Data->Cid;
+		return !IsSameCID;
+	});
+
 	Result.Sort([](const UDeveloperUserDataStreamData& A, const UDeveloperUserDataStreamData& B)
 	{
 		if (A.DeveloperUserType != B.DeveloperUserType)
