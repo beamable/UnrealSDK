@@ -7,6 +7,7 @@
 
 #include "BeamLogging.h"
 #include "OnlineSubsystemTypes.h"
+#include "AutoGen/SubSystems/BeamCustomerApi.h"
 #include "AutoGen/SubSystems/BeamRealmsApi.h"
 #include "AutoGen/SubSystems/Realms/GetClientDefaultsRequest.h"
 #include "BeamNotifications/BeamNotifications.h"
@@ -449,13 +450,30 @@ void UBeamRuntime::Deinitialize()
 
 void UBeamRuntime::PIEExecuteRequestImpl(int64 ActiveRequestId, const UObject* CallingContext)
 {
+
+#if WITH_EDITOR
+	// We are preventing to calling the delegate if the PIE is not running
+	if (!GEditor->IsPlaySessionInProgress() || !IsValid(CallingContext) || !CallingContext->IsValidLowLevel() )
+	{
+		return;
+	}
+#endif
+
+
 	UBeamBackend* BeamBackend = GEngine->GetEngineSubsystem<UBeamBackend>();
 	const TUnrealRequestPtr Req = BeamBackend->InFlightRequests.FindRef(ActiveRequestId);
 	BeamBackend->InFlightPIERequests.Add(Req);
-
-	CallingContext->GetWorld()->GetGameInstance()->IsDedicatedServerInstance()
-		? BeamBackend->DedicatedServerExecuteRequestImpl(ActiveRequestId, CallingContext)
-		: BeamBackend->DefaultExecuteRequestImpl(ActiveRequestId, CallingContext);
+	
+	class UWorld* World = CallingContext->GetWorld();
+	if (!World)
+	{
+		return;
+	}
+	
+	UGameInstance* GameInstance = World->GetGameInstance();
+	GameInstance->IsDedicatedServerInstance()
+		                                                       ? BeamBackend->DedicatedServerExecuteRequestImpl(ActiveRequestId, CallingContext)
+		                                                       : BeamBackend->DefaultExecuteRequestImpl(ActiveRequestId, CallingContext);
 }
 
 // On Start Flow
@@ -2449,16 +2467,17 @@ void UBeamRuntime::RunPostAuthenticationSetup_CacheLocalAccountInfo(const UAccou
 	FBeamRealmUser BeamRealmUser;
 	if (ensureAlways(UserSlotSystem->GetUserDataAtSlot(UserSlot, BeamRealmUser, this)))
 	{
-		const FOnGetClientDefaultsFullResponse HandlerConfig = FOnGetClientDefaultsFullResponse::CreateUObject(this, &UBeamRuntime::RunPostAuthenticationSetup_PrepareNotificationService, UserSlot,
+		const FOnGetRealmsClientDefaultsFullResponse HandlerConfig = FOnGetRealmsClientDefaultsFullResponse::CreateUObject(this, &UBeamRuntime::RunPostAuthenticationSetup_PrepareNotificationService, UserSlot,
 		                                                                                                       BeamRealmUser, Op);
 
-		UGetClientDefaultsRequest* GetClientDefaultsReq = UGetClientDefaultsRequest::Make(this, {});
+		UGetRealmsClientDefaultsRequest* GetClientDefaultsReq = UGetRealmsClientDefaultsRequest::Make(BeamRealmUser.RealmHandle.Cid.AsString, BeamRealmUser.RealmHandle.Pid.AsString,this, {});
 		FBeamRequestContext GetClientDefaultsCtx;
-		GEngine->GetEngineSubsystem<UBeamRealmsApi>()->CPP_GetClientDefaults(GetClientDefaultsReq, HandlerConfig, GetClientDefaultsCtx, Op, this);
+		
+		GEngine->GetEngineSubsystem<UBeamCustomerApi>()->CPP_GetRealmsClientDefaults(UserSlot, GetClientDefaultsReq, HandlerConfig, GetClientDefaultsCtx, Op, this);
 	}
 }
 
-void UBeamRuntime::RunPostAuthenticationSetup_PrepareNotificationService(FGetClientDefaultsFullResponse Resp, FUserSlot UserSlot, FBeamRealmUser BeamRealmUser, FBeamOperationHandle Op)
+void UBeamRuntime::RunPostAuthenticationSetup_PrepareNotificationService(FGetRealmsClientDefaultsFullResponse Resp, FUserSlot UserSlot, FBeamRealmUser BeamRealmUser, FBeamOperationHandle Op)
 {
 	if (Resp.State == RS_Retrying) return;
 

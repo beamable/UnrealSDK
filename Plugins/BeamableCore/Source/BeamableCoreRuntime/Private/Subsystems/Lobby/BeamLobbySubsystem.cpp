@@ -457,14 +457,16 @@ bool UBeamLobbySubsystem::TryBeginUpdateLobby(FUserSlot Slot, bool bForce)
 
 bool UBeamLobbySubsystem::TryRemoveLocalPlayerState(const AController* Controller)
 {
-	FUserSlot UserSlot = GetUserSlotByPlayerController(Controller);
-	
-	if (LocalPlayerLobbyInfo.Contains(UserSlot))
+	if (ensureAlwaysMsgf(!Runtime->IsClient(), TEXT("The TryRemoveLocalPlayerState only runs on Server!")))
 	{
-		LocalPlayerLobbyInfo.Remove(UserSlot);
-		return true;
-	}
+		FUserSlot UserSlot = GetUserSlotByPlayerController(Controller);
 	
+		if (LocalPlayerLobbyInfo.Contains(UserSlot))
+		{
+			LocalPlayerLobbyInfo.Remove(UserSlot);
+			return true;
+		}
+	}
 	return false;
 }
 
