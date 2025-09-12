@@ -4,6 +4,7 @@
 
 #include "Serialization/BeamJsonSerializable.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfString.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalInventoryFiltersDTO.h"
 
 #include "InventoryQueryRequestBody.generated.h"
 
@@ -13,6 +14,8 @@ class BEAMABLECORE_API UInventoryQueryRequestBody : public UObject, public IBeam
 	GENERATED_BODY()
 
 public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Filters", Category="Beam")
+	FOptionalInventoryFiltersDTO Filters = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Scopes", Category="Beam")
 	FOptionalArrayOfString Scopes = {};
 

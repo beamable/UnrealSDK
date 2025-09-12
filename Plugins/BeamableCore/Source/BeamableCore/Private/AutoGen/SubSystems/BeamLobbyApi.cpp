@@ -73,7 +73,7 @@ void UBeamLobbyApi::CPP_GetLobbiesImpl(const FBeamRealmHandle& TargetRealm, cons
 	{
 		// Binds the handler to the static response handler (pre-generated)	
 		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UApiLobbyGetLobbiesRequest, ULobbyQueryResponse>
-			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler);
+			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
@@ -135,7 +135,7 @@ void UBeamLobbyApi::CPP_PostLobbiesImpl(const FBeamRealmHandle& TargetRealm, con
 	{
 		// Binds the handler to the static response handler (pre-generated)	
 		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UPostLobbiesRequest, ULobby>
-			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler);
+			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
@@ -197,7 +197,7 @@ void UBeamLobbyApi::CPP_PutLobbiesImpl(const FBeamRealmHandle& TargetRealm, cons
 	{
 		// Binds the handler to the static response handler (pre-generated)	
 		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UPutLobbiesRequest, USetLobbyResponse>
-			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler);
+			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
@@ -259,7 +259,7 @@ void UBeamLobbyApi::CPP_GetLobbyImpl(const FBeamRealmHandle& TargetRealm, const 
 	{
 		// Binds the handler to the static response handler (pre-generated)	
 		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UGetLobbyRequest, ULobby>
-			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler);
+			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
@@ -321,7 +321,7 @@ void UBeamLobbyApi::CPP_PutLobbyImpl(const FBeamRealmHandle& TargetRealm, const 
 	{
 		// Binds the handler to the static response handler (pre-generated)	
 		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UPutLobbyRequest, ULobby>
-			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler);
+			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
@@ -383,7 +383,7 @@ void UBeamLobbyApi::CPP_DeleteLobbyImpl(const FBeamRealmHandle& TargetRealm, con
 	{
 		// Binds the handler to the static response handler (pre-generated)	
 		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UDeleteLobbyRequest, UAcknowledge>
-			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler);
+			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
@@ -445,7 +445,7 @@ void UBeamLobbyApi::CPP_PutPasscodeImpl(const FBeamRealmHandle& TargetRealm, con
 	{
 		// Binds the handler to the static response handler (pre-generated)	
 		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UPutPasscodeRequest, ULobby>
-			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler);
+			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
@@ -507,7 +507,7 @@ void UBeamLobbyApi::CPP_PutMetadataImpl(const FBeamRealmHandle& TargetRealm, con
 	{
 		// Binds the handler to the static response handler (pre-generated)	
 		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UApiLobbyPutMetadataByIdRequest, ULobby>
-			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler);
+			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
@@ -569,7 +569,7 @@ void UBeamLobbyApi::CPP_PutTagsImpl(const FBeamRealmHandle& TargetRealm, const F
 	{
 		// Binds the handler to the static response handler (pre-generated)	
 		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UPutTagsRequest, ULobby>
-			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler);
+			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
@@ -631,7 +631,7 @@ void UBeamLobbyApi::CPP_DeleteTagsImpl(const FBeamRealmHandle& TargetRealm, cons
 	{
 		// Binds the handler to the static response handler (pre-generated)	
 		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UDeleteTagsRequest, ULobby>
-			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler);
+			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
@@ -693,7 +693,7 @@ void UBeamLobbyApi::CPP_PostServerImpl(const FBeamRealmHandle& TargetRealm, cons
 	{
 		// Binds the handler to the static response handler (pre-generated)	
 		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UApiLobbyPostServerByIdRequest, UApiLobbiesServerPostLobbyResponse>
-			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler);
+			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	

@@ -41,7 +41,7 @@ void UBeamRealmsApi::BP_GetCustomerActivateImpl(const FBeamRealmHandle& TargetRe
 	{			
 		// Binds the handler to the static response handler (pre-generated)
 		const auto BeamRequestProcessor = Backend->MakeBlueprintRequestProcessor<UGetCustomerActivateRequest, UBeamPlainTextResponseBody, FOnGetCustomerActivateSuccess, FOnGetCustomerActivateError, FOnGetCustomerActivateComplete>
-			(OutRequestId, RequestData, OnSuccess, OnError, OnComplete);
+			(OutRequestId, RequestData, OnSuccess, OnError, OnComplete, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 		Backend->SendPreparedRequest(OutRequestId, CallingContext);		
 	}	
@@ -69,7 +69,7 @@ void UBeamRealmsApi::CPP_GetCustomerActivateImpl(const FBeamRealmHandle& TargetR
 	{
 		// Binds the handler to the static response handler (pre-generated)	
 		auto ResponseProcessor = Backend->MakeCodeRequestProcessor<UGetCustomerActivateRequest, UBeamPlainTextResponseBody>
-			(OutRequestId, RequestData, Handler);
+			(OutRequestId, RequestData, Handler, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
@@ -101,7 +101,7 @@ void UBeamRealmsApi::BP_GetCustomerAliasAvailableImpl(const FBeamRealmHandle& Ta
 	{			
 		// Binds the handler to the static response handler (pre-generated)
 		const auto BeamRequestProcessor = Backend->MakeBlueprintRequestProcessor<UGetCustomerAliasAvailableRequest, URealmsBasicAliasAvailableResponse, FOnGetCustomerAliasAvailableSuccess, FOnGetCustomerAliasAvailableError, FOnGetCustomerAliasAvailableComplete>
-			(OutRequestId, RequestData, OnSuccess, OnError, OnComplete);
+			(OutRequestId, RequestData, OnSuccess, OnError, OnComplete, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 		Backend->SendPreparedRequest(OutRequestId, CallingContext);		
 	}	
@@ -129,7 +129,7 @@ void UBeamRealmsApi::CPP_GetCustomerAliasAvailableImpl(const FBeamRealmHandle& T
 	{
 		// Binds the handler to the static response handler (pre-generated)	
 		auto ResponseProcessor = Backend->MakeCodeRequestProcessor<UGetCustomerAliasAvailableRequest, URealmsBasicAliasAvailableResponse>
-			(OutRequestId, RequestData, Handler);
+			(OutRequestId, RequestData, Handler, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
@@ -161,7 +161,7 @@ void UBeamRealmsApi::BP_GetProjectImpl(const FBeamRealmHandle& TargetRealm, cons
 	{			
 		// Binds the handler to the static response handler (pre-generated)
 		const auto BeamRequestProcessor = Backend->MakeBlueprintRequestProcessor<UGetProjectRequest, UProjectView, FOnGetProjectSuccess, FOnGetProjectError, FOnGetProjectComplete>
-			(OutRequestId, RequestData, OnSuccess, OnError, OnComplete);
+			(OutRequestId, RequestData, OnSuccess, OnError, OnComplete, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 		Backend->SendPreparedRequest(OutRequestId, CallingContext);		
 	}	
@@ -189,7 +189,7 @@ void UBeamRealmsApi::CPP_GetProjectImpl(const FBeamRealmHandle& TargetRealm, con
 	{
 		// Binds the handler to the static response handler (pre-generated)	
 		auto ResponseProcessor = Backend->MakeCodeRequestProcessor<UGetProjectRequest, UProjectView>
-			(OutRequestId, RequestData, Handler);
+			(OutRequestId, RequestData, Handler, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
@@ -221,7 +221,7 @@ void UBeamRealmsApi::BP_PostCustomerVerifyImpl(const FBeamRealmHandle& TargetRea
 	{			
 		// Binds the handler to the static response handler (pre-generated)
 		const auto BeamRequestProcessor = Backend->MakeBlueprintRequestProcessor<UPostCustomerVerifyRequest, URealmsBasicNewCustomerResponse, FOnPostCustomerVerifySuccess, FOnPostCustomerVerifyError, FOnPostCustomerVerifyComplete>
-			(OutRequestId, RequestData, OnSuccess, OnError, OnComplete);
+			(OutRequestId, RequestData, OnSuccess, OnError, OnComplete, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 		Backend->SendPreparedRequest(OutRequestId, CallingContext);		
 	}	
@@ -249,7 +249,7 @@ void UBeamRealmsApi::CPP_PostCustomerVerifyImpl(const FBeamRealmHandle& TargetRe
 	{
 		// Binds the handler to the static response handler (pre-generated)	
 		auto ResponseProcessor = Backend->MakeCodeRequestProcessor<UPostCustomerVerifyRequest, URealmsBasicNewCustomerResponse>
-			(OutRequestId, RequestData, Handler);
+			(OutRequestId, RequestData, Handler, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
@@ -281,7 +281,7 @@ void UBeamRealmsApi::BP_GetClientDefaultsImpl(const FBeamRealmHandle& TargetReal
 	{			
 		// Binds the handler to the static response handler (pre-generated)
 		const auto BeamRequestProcessor = Backend->MakeBlueprintRequestProcessor<UGetClientDefaultsRequest, URealmsBasicRealmConfiguration, FOnGetClientDefaultsSuccess, FOnGetClientDefaultsError, FOnGetClientDefaultsComplete>
-			(OutRequestId, RequestData, OnSuccess, OnError, OnComplete);
+			(OutRequestId, RequestData, OnSuccess, OnError, OnComplete, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 		Backend->SendPreparedRequest(OutRequestId, CallingContext);		
 	}	
@@ -309,7 +309,7 @@ void UBeamRealmsApi::CPP_GetClientDefaultsImpl(const FBeamRealmHandle& TargetRea
 	{
 		// Binds the handler to the static response handler (pre-generated)	
 		auto ResponseProcessor = Backend->MakeCodeRequestProcessor<UGetClientDefaultsRequest, URealmsBasicRealmConfiguration>
-			(OutRequestId, RequestData, Handler);
+			(OutRequestId, RequestData, Handler, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
@@ -341,7 +341,7 @@ void UBeamRealmsApi::BP_PostCustomerImpl(const FBeamRealmHandle& TargetRealm, co
 	{			
 		// Binds the handler to the static response handler (pre-generated)
 		const auto BeamRequestProcessor = Backend->MakeBlueprintRequestProcessor<UPostCustomerRequest, URealmsBasicNewCustomerResponse, FOnPostCustomerSuccess, FOnPostCustomerError, FOnPostCustomerComplete>
-			(OutRequestId, RequestData, OnSuccess, OnError, OnComplete);
+			(OutRequestId, RequestData, OnSuccess, OnError, OnComplete, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 		Backend->SendPreparedRequest(OutRequestId, CallingContext);		
 	}	
@@ -369,7 +369,7 @@ void UBeamRealmsApi::CPP_PostCustomerImpl(const FBeamRealmHandle& TargetRealm, c
 	{
 		// Binds the handler to the static response handler (pre-generated)	
 		auto ResponseProcessor = Backend->MakeCodeRequestProcessor<UPostCustomerRequest, URealmsBasicNewCustomerResponse>
-			(OutRequestId, RequestData, Handler);
+			(OutRequestId, RequestData, Handler, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
@@ -401,7 +401,7 @@ void UBeamRealmsApi::BP_GetIsCustomerImpl(const FBeamRealmHandle& TargetRealm, c
 	{			
 		// Binds the handler to the static response handler (pre-generated)
 		const auto BeamRequestProcessor = Backend->MakeBlueprintRequestProcessor<UGetIsCustomerRequest, UEmptyResponse, FOnGetIsCustomerSuccess, FOnGetIsCustomerError, FOnGetIsCustomerComplete>
-			(OutRequestId, RequestData, OnSuccess, OnError, OnComplete);
+			(OutRequestId, RequestData, OnSuccess, OnError, OnComplete, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 		Backend->SendPreparedRequest(OutRequestId, CallingContext);		
 	}	
@@ -429,7 +429,7 @@ void UBeamRealmsApi::CPP_GetIsCustomerImpl(const FBeamRealmHandle& TargetRealm, 
 	{
 		// Binds the handler to the static response handler (pre-generated)	
 		auto ResponseProcessor = Backend->MakeCodeRequestProcessor<UGetIsCustomerRequest, UEmptyResponse>
-			(OutRequestId, RequestData, Handler);
+			(OutRequestId, RequestData, Handler, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
@@ -461,7 +461,7 @@ void UBeamRealmsApi::BP_GetCustomersImpl(const FBeamRealmHandle& TargetRealm, co
 	{			
 		// Binds the handler to the static response handler (pre-generated)
 		const auto BeamRequestProcessor = Backend->MakeBlueprintRequestProcessor<UBasicRealmsGetCustomersRequest, URealmsBasicCustomersResponse, FOnBasicRealmsGetCustomersSuccess, FOnBasicRealmsGetCustomersError, FOnBasicRealmsGetCustomersComplete>
-			(OutRequestId, RequestData, OnSuccess, OnError, OnComplete);
+			(OutRequestId, RequestData, OnSuccess, OnError, OnComplete, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 		Backend->SendPreparedRequest(OutRequestId, CallingContext);		
 	}	
@@ -489,7 +489,7 @@ void UBeamRealmsApi::CPP_GetCustomersImpl(const FBeamRealmHandle& TargetRealm, c
 	{
 		// Binds the handler to the static response handler (pre-generated)	
 		auto ResponseProcessor = Backend->MakeCodeRequestProcessor<UBasicRealmsGetCustomersRequest, URealmsBasicCustomersResponse>
-			(OutRequestId, RequestData, Handler);
+			(OutRequestId, RequestData, Handler, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
@@ -552,7 +552,7 @@ void UBeamRealmsApi::CPP_PostProjectBeamableImpl(const FBeamRealmHandle& TargetR
 	{
 		// Binds the handler to the static response handler (pre-generated)	
 		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UPostProjectBeamableRequest, UCommonResponse>
-			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler);
+			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
@@ -614,7 +614,7 @@ void UBeamRealmsApi::CPP_PostProjectImpl(const FBeamRealmHandle& TargetRealm, co
 	{
 		// Binds the handler to the static response handler (pre-generated)	
 		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UPostProjectRequest, UCommonResponse>
-			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler);
+			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
@@ -676,7 +676,7 @@ void UBeamRealmsApi::CPP_PutProjectImpl(const FBeamRealmHandle& TargetRealm, con
 	{
 		// Binds the handler to the static response handler (pre-generated)	
 		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UPutProjectRequest, UCommonResponse>
-			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler);
+			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
@@ -738,7 +738,7 @@ void UBeamRealmsApi::CPP_DeleteProjectImpl(const FBeamRealmHandle& TargetRealm, 
 	{
 		// Binds the handler to the static response handler (pre-generated)	
 		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UDeleteProjectRequest, UCommonResponse>
-			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler);
+			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
@@ -800,7 +800,7 @@ void UBeamRealmsApi::CPP_GetGamesImpl(const FBeamRealmHandle& TargetRealm, const
 	{
 		// Binds the handler to the static response handler (pre-generated)	
 		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UBasicRealmsGetGamesRequest, UGetGameResponse>
-			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler);
+			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
@@ -862,7 +862,7 @@ void UBeamRealmsApi::CPP_GetConfigImpl(const FBeamRealmHandle& TargetRealm, cons
 	{
 		// Binds the handler to the static response handler (pre-generated)	
 		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UGetConfigRequest, URealmConfigResponse>
-			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler);
+			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
@@ -924,7 +924,7 @@ void UBeamRealmsApi::CPP_PostConfigImpl(const FBeamRealmHandle& TargetRealm, con
 	{
 		// Binds the handler to the static response handler (pre-generated)	
 		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UPostConfigRequest, UCommonResponse>
-			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler);
+			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
@@ -986,7 +986,7 @@ void UBeamRealmsApi::CPP_PutConfigImpl(const FBeamRealmHandle& TargetRealm, cons
 	{
 		// Binds the handler to the static response handler (pre-generated)	
 		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UPutConfigRequest, UCommonResponse>
-			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler);
+			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
@@ -1048,7 +1048,7 @@ void UBeamRealmsApi::CPP_PutProjectRenameImpl(const FBeamRealmHandle& TargetReal
 	{
 		// Binds the handler to the static response handler (pre-generated)	
 		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UPutProjectRenameRequest, UCommonResponse>
-			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler);
+			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
@@ -1110,7 +1110,7 @@ void UBeamRealmsApi::CPP_GetPlansImpl(const FBeamRealmHandle& TargetRealm, const
 	{
 		// Binds the handler to the static response handler (pre-generated)	
 		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UGetPlansRequest, URealmsBasicServicePlansResponse>
-			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler);
+			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
@@ -1172,7 +1172,7 @@ void UBeamRealmsApi::CPP_PostPlansImpl(const FBeamRealmHandle& TargetRealm, cons
 	{
 		// Binds the handler to the static response handler (pre-generated)	
 		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UPostPlansRequest, UCommonResponse>
-			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler);
+			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
@@ -1234,7 +1234,7 @@ void UBeamRealmsApi::CPP_GetCustomerImpl(const FBeamRealmHandle& TargetRealm, co
 	{
 		// Binds the handler to the static response handler (pre-generated)	
 		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UBasicRealmsGetCustomerRequest, UCustomerViewResponse>
-			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler);
+			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
@@ -1296,7 +1296,7 @@ void UBeamRealmsApi::CPP_GetAdminInflightFailuresImpl(const FBeamRealmHandle& Ta
 	{
 		// Binds the handler to the static response handler (pre-generated)	
 		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UGetAdminInflightFailuresRequest, UInFlightFailureResponse>
-			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler);
+			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
@@ -1358,7 +1358,7 @@ void UBeamRealmsApi::CPP_DeleteAdminInflightFailuresImpl(const FBeamRealmHandle&
 	{
 		// Binds the handler to the static response handler (pre-generated)	
 		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UDeleteAdminInflightFailuresRequest, UCommonResponse>
-			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler);
+			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
@@ -1420,7 +1420,7 @@ void UBeamRealmsApi::CPP_GetLaunchMessageImpl(const FBeamRealmHandle& TargetReal
 	{
 		// Binds the handler to the static response handler (pre-generated)	
 		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UGetLaunchMessageRequest, ULaunchMessageListResponse>
-			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler);
+			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
@@ -1482,7 +1482,7 @@ void UBeamRealmsApi::CPP_PostLaunchMessageImpl(const FBeamRealmHandle& TargetRea
 	{
 		// Binds the handler to the static response handler (pre-generated)	
 		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UPostLaunchMessageRequest, UCommonResponse>
-			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler);
+			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
@@ -1544,7 +1544,7 @@ void UBeamRealmsApi::CPP_DeleteLaunchMessageImpl(const FBeamRealmHandle& TargetR
 	{
 		// Binds the handler to the static response handler (pre-generated)	
 		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UDeleteLaunchMessageRequest, UCommonResponse>
-			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler);
+			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
@@ -1606,7 +1606,7 @@ void UBeamRealmsApi::CPP_GetAdminCustomerImpl(const FBeamRealmHandle& TargetReal
 	{
 		// Binds the handler to the static response handler (pre-generated)	
 		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UGetAdminCustomerRequest, UCustomerResponse>
-			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler);
+			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
@@ -1668,7 +1668,7 @@ void UBeamRealmsApi::CPP_GetGameImpl(const FBeamRealmHandle& TargetRealm, const 
 	{
 		// Binds the handler to the static response handler (pre-generated)	
 		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UGetGameRequest, UGetGameResponse>
-			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler);
+			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
@@ -1730,7 +1730,7 @@ void UBeamRealmsApi::CPP_PostGameImpl(const FBeamRealmHandle& TargetRealm, const
 	{
 		// Binds the handler to the static response handler (pre-generated)	
 		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UBasicRealmsPostGameRequest, UCommonResponse>
-			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler);
+			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
@@ -1792,7 +1792,7 @@ void UBeamRealmsApi::CPP_PutGameImpl(const FBeamRealmHandle& TargetRealm, const 
 	{
 		// Binds the handler to the static response handler (pre-generated)	
 		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UPutGameRequest, UCommonResponse>
-			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler);
+			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
@@ -1854,7 +1854,7 @@ void UBeamRealmsApi::CPP_GetProjectPromoteImpl(const FBeamRealmHandle& TargetRea
 	{
 		// Binds the handler to the static response handler (pre-generated)	
 		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UGetProjectPromoteRequest, UPromoteRealmResponseOld>
-			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler);
+			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
@@ -1916,7 +1916,7 @@ void UBeamRealmsApi::CPP_PostProjectPromoteImpl(const FBeamRealmHandle& TargetRe
 	{
 		// Binds the handler to the static response handler (pre-generated)	
 		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UPostProjectPromoteRequest, UPromoteRealmResponseOld>
-			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler);
+			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
@@ -1978,7 +1978,7 @@ void UBeamRealmsApi::CPP_GetPromotionImpl(const FBeamRealmHandle& TargetRealm, c
 	{
 		// Binds the handler to the static response handler (pre-generated)	
 		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UGetPromotionRequest, URealmsBasicPromoteRealmResponse>
-			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler);
+			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
@@ -2040,7 +2040,7 @@ void UBeamRealmsApi::CPP_PostPromotionImpl(const FBeamRealmHandle& TargetRealm, 
 	{
 		// Binds the handler to the static response handler (pre-generated)	
 		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UPostPromotionRequest, URealmsBasicPromoteRealmResponse>
-			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler);
+			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	

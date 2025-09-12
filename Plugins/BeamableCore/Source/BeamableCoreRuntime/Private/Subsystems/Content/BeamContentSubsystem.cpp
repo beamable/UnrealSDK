@@ -890,9 +890,10 @@ void UBeamContentSubsystem::DownloadContentObjects(const FBeamContentManifestId 
 
 	if (IndividualDownloadRequests.Num() > 0)
 	{
-		const auto WaitIndividualDownloadsHandler = FOnWaitCompleteCode::CreateLambda([this, Op,ManifestId](FBeamWaitCompleteEvent Evt)
+		FWeakObjectPtr WeakThis(this);
+		const auto WaitIndividualDownloadsHandler = FOnWaitCompleteCode::CreateLambda([this, Op,ManifestId, WeakThis](FBeamWaitCompleteEvent Evt)
 		{
-			if (this->Runtime)
+			if (WeakThis.IsValid() && this->Runtime)
 			{
 				if (this->Runtime->RequestTrackerSystem->IsWaitSuccessful(Evt))
 				{
@@ -1162,6 +1163,7 @@ FBeamOperationHandle UBeamContentSubsystem::CPP_FetchIndividualContentOperation(
 void UBeamContentSubsystem::FetchContentManifest(FBeamContentManifestId ManifestId, bool bDownloadIndividualContent, bool bIgnoreFilterMap, FBeamOperationHandle Op)
 {
 	const auto Request = UGetManifestPublicJsonRequest::Make(FOptionalBeamContentManifestId(ManifestId), {}, GetTransientPackage(), {});
+
 	const auto Handler = FOnGetManifestPublicJsonFullResponse::CreateLambda([this, ManifestId, Op, bDownloadIndividualContent, bIgnoreFilterMap](FGetManifestPublicJsonFullResponse Resp)
 	{
 		if (Resp.State == RS_Retrying) return;

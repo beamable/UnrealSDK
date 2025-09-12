@@ -23,7 +23,7 @@ FString UBeamoV2ServiceReferenceLibrary::BeamoV2ServiceReferenceToJsonString(con
 	return Result;
 }	
 
-UBeamoV2ServiceReference* UBeamoV2ServiceReferenceLibrary::Make(FOptionalBool bArchived, FOptionalBool bEnabled, FOptionalString ServiceName, FOptionalString ImageId, FOptionalString TemplateId, FOptionalString Comments, FOptionalInt32 ContainerHealthCheckPort, FOptionalString ImageCpuArch, FOptionalString Checksum, FOptionalArrayOfBeamoV2ServiceDependencyReference Dependencies, FOptionalArrayOfBeamoV2ServiceComponent Components, UObject* Outer)
+UBeamoV2ServiceReference* UBeamoV2ServiceReferenceLibrary::Make(FOptionalBool bArchived, FOptionalBool bEnabled, FOptionalString ServiceName, FOptionalString ImageId, FOptionalString TemplateId, FOptionalString Comments, FOptionalInt32 ContainerHealthCheckPort, FOptionalString ImageCpuArch, FOptionalBeamoV2LogProvider LogProvider, FOptionalString Checksum, FOptionalArrayOfBeamoV2ServiceDependencyReference Dependencies, FOptionalArrayOfBeamoV2ServiceComponent Components, UObject* Outer)
 {
 	auto Serializable = NewObject<UBeamoV2ServiceReference>(Outer);
 	Serializable->bArchived = bArchived;
@@ -34,6 +34,7 @@ UBeamoV2ServiceReference* UBeamoV2ServiceReferenceLibrary::Make(FOptionalBool bA
 	Serializable->Comments = Comments;
 	Serializable->ContainerHealthCheckPort = ContainerHealthCheckPort;
 	Serializable->ImageCpuArch = ImageCpuArch;
+	Serializable->LogProvider = LogProvider;
 	Serializable->Checksum = Checksum;
 	Serializable->Dependencies = Dependencies;
 	Serializable->Components = Components;
@@ -41,7 +42,7 @@ UBeamoV2ServiceReference* UBeamoV2ServiceReferenceLibrary::Make(FOptionalBool bA
 	return Serializable;
 }
 
-void UBeamoV2ServiceReferenceLibrary::Break(const UBeamoV2ServiceReference* Serializable, FOptionalBool& bArchived, FOptionalBool& bEnabled, FOptionalString& ServiceName, FOptionalString& ImageId, FOptionalString& TemplateId, FOptionalString& Comments, FOptionalInt32& ContainerHealthCheckPort, FOptionalString& ImageCpuArch, FOptionalString& Checksum, FOptionalArrayOfBeamoV2ServiceDependencyReference& Dependencies, FOptionalArrayOfBeamoV2ServiceComponent& Components)
+void UBeamoV2ServiceReferenceLibrary::Break(const UBeamoV2ServiceReference* Serializable, FOptionalBool& bArchived, FOptionalBool& bEnabled, FOptionalString& ServiceName, FOptionalString& ImageId, FOptionalString& TemplateId, FOptionalString& Comments, FOptionalInt32& ContainerHealthCheckPort, FOptionalString& ImageCpuArch, FOptionalBeamoV2LogProvider& LogProvider, FOptionalString& Checksum, FOptionalArrayOfBeamoV2ServiceDependencyReference& Dependencies, FOptionalArrayOfBeamoV2ServiceComponent& Components)
 {
 	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
 	{
@@ -53,6 +54,7 @@ void UBeamoV2ServiceReferenceLibrary::Break(const UBeamoV2ServiceReference* Seri
 		Comments = Serializable->Comments;
 		ContainerHealthCheckPort = Serializable->ContainerHealthCheckPort;
 		ImageCpuArch = Serializable->ImageCpuArch;
+		LogProvider = Serializable->LogProvider;
 		Checksum = Serializable->Checksum;
 		Dependencies = Serializable->Dependencies;
 		Components = Serializable->Components;

@@ -73,7 +73,7 @@ void UBeamBeamoOtelApi::CPP_GetOtelViewsImpl(const FBeamRealmHandle& TargetRealm
 	{
 		// Binds the handler to the static response handler (pre-generated)	
 		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UGetOtelViewsRequest, UOtelViewsResponse>
-			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler);
+			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
@@ -135,7 +135,7 @@ void UBeamBeamoOtelApi::CPP_PostOtelViewsImpl(const FBeamRealmHandle& TargetReal
 	{
 		// Binds the handler to the static response handler (pre-generated)	
 		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UPostOtelViewsRequest, UOtelView>
-			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler);
+			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
@@ -197,7 +197,7 @@ void UBeamBeamoOtelApi::CPP_DeleteOtelViewsImpl(const FBeamRealmHandle& TargetRe
 	{
 		// Binds the handler to the static response handler (pre-generated)	
 		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UDeleteOtelViewsRequest, UApiBeamoOtelViewsDeleteBeamoOtelResponse>
-			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler);
+			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
@@ -259,7 +259,7 @@ void UBeamBeamoOtelApi::CPP_PutOtelViewsImpl(const FBeamRealmHandle& TargetRealm
 	{
 		// Binds the handler to the static response handler (pre-generated)	
 		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UPutOtelViewsRequest, UOtelView>
-			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler);
+			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
@@ -321,7 +321,7 @@ void UBeamBeamoOtelApi::CPP_GetOtelAuthReaderConfigImpl(const FBeamRealmHandle& 
 	{
 		// Binds the handler to the static response handler (pre-generated)	
 		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UGetOtelAuthReaderConfigRequest, UOtelAuthConfig>
-			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler);
+			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
@@ -383,7 +383,7 @@ void UBeamBeamoOtelApi::CPP_GetOtelAuthWriterConfigImpl(const FBeamRealmHandle& 
 	{
 		// Binds the handler to the static response handler (pre-generated)	
 		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UGetOtelAuthWriterConfigRequest, UOtelAuthConfig>
-			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler);
+			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	

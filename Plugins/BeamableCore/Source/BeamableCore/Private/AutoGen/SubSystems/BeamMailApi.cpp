@@ -41,7 +41,7 @@ void UBeamMailApi::BP_GetTemplateImpl(const FBeamRealmHandle& TargetRealm, const
 	{			
 		// Binds the handler to the static response handler (pre-generated)
 		const auto BeamRequestProcessor = Backend->MakeBlueprintRequestProcessor<UGetTemplateRequest, UMailTemplate, FOnGetTemplateSuccess, FOnGetTemplateError, FOnGetTemplateComplete>
-			(OutRequestId, RequestData, OnSuccess, OnError, OnComplete);
+			(OutRequestId, RequestData, OnSuccess, OnError, OnComplete, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 		Backend->SendPreparedRequest(OutRequestId, CallingContext);		
 	}	
@@ -69,7 +69,7 @@ void UBeamMailApi::CPP_GetTemplateImpl(const FBeamRealmHandle& TargetRealm, cons
 	{
 		// Binds the handler to the static response handler (pre-generated)	
 		auto ResponseProcessor = Backend->MakeCodeRequestProcessor<UGetTemplateRequest, UMailTemplate>
-			(OutRequestId, RequestData, Handler);
+			(OutRequestId, RequestData, Handler, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
@@ -101,7 +101,7 @@ void UBeamMailApi::BP_BasicMailGetMailImpl(const FBeamRealmHandle& TargetRealm, 
 	{			
 		// Binds the handler to the static response handler (pre-generated)
 		const auto BeamRequestProcessor = Backend->MakeBlueprintRequestProcessor<UBasicMailGetMailRequest, UMailResponse, FOnBasicMailGetMailSuccess, FOnBasicMailGetMailError, FOnBasicMailGetMailComplete>
-			(OutRequestId, RequestData, OnSuccess, OnError, OnComplete);
+			(OutRequestId, RequestData, OnSuccess, OnError, OnComplete, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 		Backend->SendPreparedRequest(OutRequestId, CallingContext);		
 	}	
@@ -129,7 +129,7 @@ void UBeamMailApi::CPP_BasicMailGetMailImpl(const FBeamRealmHandle& TargetRealm,
 	{
 		// Binds the handler to the static response handler (pre-generated)	
 		auto ResponseProcessor = Backend->MakeCodeRequestProcessor<UBasicMailGetMailRequest, UMailResponse>
-			(OutRequestId, RequestData, Handler);
+			(OutRequestId, RequestData, Handler, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
@@ -192,7 +192,7 @@ void UBeamMailApi::CPP_PutAttachmentsImpl(const FBeamRealmHandle& TargetRealm, c
 	{
 		// Binds the handler to the static response handler (pre-generated)	
 		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UPutAttachmentsRequest, UMailSuccessResponse>
-			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler);
+			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
@@ -254,7 +254,7 @@ void UBeamMailApi::CPP_BasicMailPutMailImpl(const FBeamRealmHandle& TargetRealm,
 	{
 		// Binds the handler to the static response handler (pre-generated)	
 		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UBasicMailPutMailRequest, UMailSuccessResponse>
-			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler);
+			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
@@ -316,7 +316,7 @@ void UBeamMailApi::CPP_BasicMailPostBulkImpl(const FBeamRealmHandle& TargetRealm
 	{
 		// Binds the handler to the static response handler (pre-generated)	
 		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UBasicMailPostBulkRequest, UMailSuccessResponse>
-			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler);
+			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
@@ -378,7 +378,7 @@ void UBeamMailApi::CPP_GetDetailImpl(const FBeamRealmHandle& TargetRealm, const 
 	{
 		// Binds the handler to the static response handler (pre-generated)	
 		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UGetDetailRequest, UMailResponse>
-			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler);
+			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
@@ -440,7 +440,7 @@ void UBeamMailApi::CPP_GetCategoriesImpl(const FBeamRealmHandle& TargetRealm, co
 	{
 		// Binds the handler to the static response handler (pre-generated)	
 		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UGetCategoriesRequest, UListMailCategoriesResponse>
-			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler);
+			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
@@ -502,7 +502,7 @@ void UBeamMailApi::CPP_PostSearchImpl(const FBeamRealmHandle& TargetRealm, const
 	{
 		// Binds the handler to the static response handler (pre-generated)	
 		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UObjectMailPostSearchByObjectIdRequest, UMailSearchResponse>
-			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler);
+			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
@@ -564,7 +564,7 @@ void UBeamMailApi::CPP_ObjectMailPostBulkByObjectIdImpl(const FBeamRealmHandle& 
 	{
 		// Binds the handler to the static response handler (pre-generated)	
 		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UObjectMailPostBulkByObjectIdRequest, UMailSuccessResponse>
-			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler);
+			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
@@ -626,7 +626,7 @@ void UBeamMailApi::CPP_PutBulkImpl(const FBeamRealmHandle& TargetRealm, const FB
 	{
 		// Binds the handler to the static response handler (pre-generated)	
 		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UPutBulkRequest, UMailSuccessResponse>
-			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler);
+			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
@@ -688,7 +688,7 @@ void UBeamMailApi::CPP_PutAcceptManyImpl(const FBeamRealmHandle& TargetRealm, co
 	{
 		// Binds the handler to the static response handler (pre-generated)	
 		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UPutAcceptManyRequest, UMailSuccessResponse>
-			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler);
+			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
@@ -750,7 +750,7 @@ void UBeamMailApi::CPP_ObjectMailGetMailByObjectIdImpl(const FBeamRealmHandle& T
 	{
 		// Binds the handler to the static response handler (pre-generated)	
 		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UObjectMailGetMailByObjectIdRequest, UMailQueryResponse>
-			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler);
+			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
@@ -812,7 +812,7 @@ void UBeamMailApi::CPP_PostMailImpl(const FBeamRealmHandle& TargetRealm, const F
 	{
 		// Binds the handler to the static response handler (pre-generated)	
 		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UPostMailRequest, USendMailResponse>
-			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler);
+			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
@@ -874,7 +874,7 @@ void UBeamMailApi::CPP_ObjectMailPutMailByObjectIdImpl(const FBeamRealmHandle& T
 	{
 		// Binds the handler to the static response handler (pre-generated)	
 		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UObjectMailPutMailByObjectIdRequest, UMailSuccessResponse>
-			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler);
+			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	

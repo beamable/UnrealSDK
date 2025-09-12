@@ -15,15 +15,13 @@ void UCreateAccountWithCredsApiResponse::BeamSerializeProperties(TUnrealJsonSeri
 	UBeamJsonUtils::SerializeOptional<UAccountPlayerView*>(TEXT("account"), &Account, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("challenge_token"), &ChallengeToken, Serializer);
 	UBeamJsonUtils::SerializeOptional<UTokenResponse*>(TEXT("token"), &Token, Serializer);
-	UBeamJsonUtils::SerializeOptional<FString>(TEXT("verification_required"), &VerificationRequired, Serializer);
 }
 
 void UCreateAccountWithCredsApiResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeOptional<UAccountPlayerView*>(TEXT("account"), &Account, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("challenge_token"), &ChallengeToken, Serializer);
-	UBeamJsonUtils::SerializeOptional<UTokenResponse*>(TEXT("token"), &Token, Serializer);
-	UBeamJsonUtils::SerializeOptional<FString>(TEXT("verification_required"), &VerificationRequired, Serializer);		
+	UBeamJsonUtils::SerializeOptional<UTokenResponse*>(TEXT("token"), &Token, Serializer);		
 }
 
 void UCreateAccountWithCredsApiResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
@@ -31,7 +29,6 @@ void UCreateAccountWithCredsApiResponse::BeamDeserializeProperties(const TShared
 	UBeamJsonUtils::DeserializeOptional<UAccountPlayerView*>("account", Bag, Account, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("challenge_token", Bag, ChallengeToken, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<UTokenResponse*>("token", Bag, Token, OuterOwner);
-	UBeamJsonUtils::DeserializeOptional<FString>("verification_required", Bag, VerificationRequired, OuterOwner);
 }
 
 

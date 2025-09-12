@@ -7,6 +7,7 @@
 
 #include "BeamLogging.h"
 #include "OnlineSubsystemTypes.h"
+#include "AutoGen/SubSystems/BeamCustomerApi.h"
 #include "AutoGen/SubSystems/BeamRealmsApi.h"
 #include "AutoGen/SubSystems/Realms/GetClientDefaultsRequest.h"
 #include "BeamNotifications/BeamNotifications.h"
@@ -45,8 +46,12 @@ void UBeamMultiFactorLoginData::SetChallengeSolution(UChallengeSolution* Challen
 	ChallengeToken = ChallengeSolution->ChallengeToken;
 }
 
-void UBeamConnectivityManager::ConnectionHandler(const FNotificationEvent& Evt, bool TriggerAuthenticatedSlot, FBeamOperationHandle Op)
+void UBeamConnectivityManager::ConnectionHandler(const FNotificationEvent& Evt, bool TriggerAuthenticatedSlot, FBeamOperationHandle Op, FWeakObjectPtr WeakThis)
 {
+	if (!WeakThis.IsValid())
+	{
+		return;
+	}
 	// If the operation is active so that is happening during a login.
 	auto IsDuringLogin = RequestTracker->IsOperationActive(Op);
 
@@ -65,7 +70,7 @@ void UBeamConnectivityManager::ConnectionHandler(const FNotificationEvent& Evt, 
 
 			if (TriggerAuthenticatedSlot)
 			{
-				UserSlots->SaveSlot(UserSlot, this);				
+				UserSlots->SaveSlot(UserSlot, this);
 
 				// If we are mapping the UniqueNetIds to Beamable GamerTags, we do so whenever we log in (mapping done implicitly by order of UBeamCoreSettings::RuntimeUserSlots).
 				if (GetDefault<UBeamRuntimeSettings>()->bEnableGameplayFrameworkIntegration)
@@ -73,12 +78,12 @@ void UBeamConnectivityManager::ConnectionHandler(const FNotificationEvent& Evt, 
 					auto LocalPlayerForSlot = Runtime->GetLocalPlayerForSlot(UserSlot);
 					if (!LocalPlayerForSlot)
 					{
-						FString Err;					
+						FString Err;
 						LocalPlayerForSlot = Runtime->GetGameInstance()->CreateLocalPlayer({}, Err, Runtime->GetGameInstance()->GetNumLocalPlayers() == 0);
 						if (!Err.IsEmpty())
 						{
-							RequestTracker->TriggerOperationError(Op, TEXT("FAILED_TO_ASSOCIATE_LOCAL_PLAYER_WITH_SLOT"));							
-							return; 
+							RequestTracker->TriggerOperationError(Op, TEXT("FAILED_TO_ASSOCIATE_LOCAL_PLAYER_WITH_SLOT"));
+							return;
 						}
 					}
 					FBeamGamerTag GamerTag;
@@ -449,11 +454,25 @@ void UBeamRuntime::Deinitialize()
 
 void UBeamRuntime::PIEExecuteRequestImpl(int64 ActiveRequestId, const UObject* CallingContext)
 {
-	UBeamBackend* BeamBackend = GEngine->GetEngineSubsystem<UBeamBackend>();
-	const TUnrealRequestPtr Req = BeamBackend->InFlightRequests.FindRef(ActiveRequestId);
-	BeamBackend->InFlightPIERequests.Add(Req);
+#if WITH_EDITOR
+	// We are preventing to calling the delegate if the PIE is not running
+	if (!GEditor->IsPlaySessionInProgress() || !IsValid(CallingContext) || !CallingContext->IsValidLowLevel())
+	{
+		return;
+	}
+#endif
 
-	CallingContext->GetWorld()->GetGameInstance()->IsDedicatedServerInstance()
+
+	UBeamBackend* BeamBackend = GEngine->GetEngineSubsystem<UBeamBackend>();
+	
+	class UWorld* World = CallingContext->GetWorld();
+	if (!World)
+	{
+		return;
+	}
+
+	UGameInstance* GameInstance = World->GetGameInstance();
+	GameInstance->IsDedicatedServerInstance()
 		? BeamBackend->DedicatedServerExecuteRequestImpl(ActiveRequestId, CallingContext)
 		: BeamBackend->DefaultExecuteRequestImpl(ActiveRequestId, CallingContext);
 }
@@ -872,7 +891,7 @@ void UBeamRuntime::TriggerSubsystemPostUserSignIn(FBeamWaitCompleteEvent Evt, FU
 				}
 
 				GetSlotConnectivity(UserSlot)->bIsUserReady = true;
-				
+
 				RequestTrackerSystem->TriggerOperationSuccess(AuthOpHandle, {});
 
 				OnUserReadyCode.Broadcast(UserSlot);
@@ -1470,7 +1489,7 @@ FBeamOperationHandle UBeamRuntime::CPP_AttachFederatedOperation(FUserSlot UserSl
 }
 
 FBeamOperationHandle UBeamRuntime::DeAttachFederatedOperation(FUserSlot UserSlot, FString MicroserviceId, FString FederationId, FString FederatedUserId,
-	FBeamOperationEventHandler OnOperationEvent)
+                                                              FBeamOperationEventHandler OnOperationEvent)
 {
 	const FBeamOperationHandle Handle = RequestTrackerSystem->BeginOperation({UserSlot}, GetClass()->GetFName().ToString(), OnOperationEvent);
 	DeAttachIdentity(UserSlot, MicroserviceId, FederationId, FederatedUserId, Handle);
@@ -1478,7 +1497,7 @@ FBeamOperationHandle UBeamRuntime::DeAttachFederatedOperation(FUserSlot UserSlot
 }
 
 FBeamOperationHandle UBeamRuntime::CPP_DeAttachFederatedOperation(FUserSlot UserSlot, FString MicroserviceId, FString FederationId, FString FederatedUserId,
-	FBeamOperationEventHandlerCode OnOperationEvent)
+                                                                  FBeamOperationEventHandlerCode OnOperationEvent)
 {
 	const FBeamOperationHandle Handle = RequestTrackerSystem->CPP_BeginOperation({UserSlot}, GetClass()->GetFName().ToString(), OnOperationEvent);
 	DeAttachIdentity(UserSlot, MicroserviceId, FederationId, FederatedUserId, Handle);
@@ -1980,7 +1999,7 @@ void UBeamRuntime::DeAttachLocalIdentity(FUserSlot UserSlot, FString FederatedUs
 			for (auto index = 0; index < User.ExternalIdentities.Num(); index++)
 			{
 				auto BeamExternalIdentity = User.ExternalIdentities[index];
-				
+
 				if (BeamExternalIdentity.ProviderNamespace == FederationId &&
 					BeamExternalIdentity.ProviderService == MicroserviceId &&
 					BeamExternalIdentity.UserId == FederatedUserId)
@@ -1988,7 +2007,6 @@ void UBeamRuntime::DeAttachLocalIdentity(FUserSlot UserSlot, FString FederatedUs
 					User.ExternalIdentities.RemoveAt(index);
 					break;
 				}
-			
 			}
 			UserSlotSystem->SetExternalIdsAtSlot(UserSlot, User.ExternalIdentities, this);
 			UserSlotSystem->SaveSlot(UserSlot, this);
@@ -2449,16 +2467,17 @@ void UBeamRuntime::RunPostAuthenticationSetup_CacheLocalAccountInfo(const UAccou
 	FBeamRealmUser BeamRealmUser;
 	if (ensureAlways(UserSlotSystem->GetUserDataAtSlot(UserSlot, BeamRealmUser, this)))
 	{
-		const FOnGetClientDefaultsFullResponse HandlerConfig = FOnGetClientDefaultsFullResponse::CreateUObject(this, &UBeamRuntime::RunPostAuthenticationSetup_PrepareNotificationService, UserSlot,
-		                                                                                                       BeamRealmUser, Op);
+		const FOnGetRealmsClientDefaultsFullResponse HandlerConfig = FOnGetRealmsClientDefaultsFullResponse::CreateUObject(this, &UBeamRuntime::RunPostAuthenticationSetup_PrepareNotificationService, UserSlot,
+		                                                                                                                   BeamRealmUser, Op);
 
-		UGetClientDefaultsRequest* GetClientDefaultsReq = UGetClientDefaultsRequest::Make(this, {});
+		UGetRealmsClientDefaultsRequest* GetClientDefaultsReq = UGetRealmsClientDefaultsRequest::Make(BeamRealmUser.RealmHandle.Cid.AsString, BeamRealmUser.RealmHandle.Pid.AsString, this, {});
 		FBeamRequestContext GetClientDefaultsCtx;
-		GEngine->GetEngineSubsystem<UBeamRealmsApi>()->CPP_GetClientDefaults(GetClientDefaultsReq, HandlerConfig, GetClientDefaultsCtx, Op, this);
+
+		GEngine->GetEngineSubsystem<UBeamCustomerApi>()->CPP_GetRealmsClientDefaults(UserSlot, GetClientDefaultsReq, HandlerConfig, GetClientDefaultsCtx, Op, this);
 	}
 }
 
-void UBeamRuntime::RunPostAuthenticationSetup_PrepareNotificationService(FGetClientDefaultsFullResponse Resp, FUserSlot UserSlot, FBeamRealmUser BeamRealmUser, FBeamOperationHandle Op)
+void UBeamRuntime::RunPostAuthenticationSetup_PrepareNotificationService(FGetRealmsClientDefaultsFullResponse Resp, FUserSlot UserSlot, FBeamRealmUser BeamRealmUser, FBeamOperationHandle Op)
 {
 	if (Resp.State == RS_Retrying) return;
 
@@ -2467,7 +2486,8 @@ void UBeamRuntime::RunPostAuthenticationSetup_PrepareNotificationService(FGetCli
 		EnsureConnectivityManagerForSlot(UserSlot);
 
 		const auto Connectivity = ConnectivityState.FindRef(UserSlot);
-		const auto ConnHandler = FOnNotificationEvent::CreateUObject(Connectivity, &UBeamConnectivityManager::ConnectionHandler, true, Op);
+		FWeakObjectPtr WeakThis(this);
+		const auto ConnHandler = FOnNotificationEvent::CreateUObject(Connectivity, &UBeamConnectivityManager::ConnectionHandler, true, Op, WeakThis);
 
 		const FString Uri = Resp.SuccessData->WebsocketConfig->Uri.Val / TEXT("connect");
 		UE_LOG(LogBeamRuntime, Verbose, TEXT("WebSocket URI=%s, Setting=%s"), *Resp.SuccessData->WebsocketConfig->Uri.Val, *Resp.SuccessData->WebsocketConfig->Provider.Val)
@@ -2623,14 +2643,15 @@ void UBeamRuntime::DeAttachIdentity(FUserSlot UserSlot, FString MicroserviceId, 
 			UE_LOG(LogTemp, Warning, TEXT("Successfully Attached Id! Result = %s"), *Response.SuccessData->Result);
 
 			DeAttachLocalIdentity(UserSlot, FederatedUserId, MicroserviceId, FederationId);
-			
+
 			RequestTrackerSystem->TriggerOperationSuccess(Op, TEXT(""));
-		}else
+		}
+		else
 		{
 			RequestTrackerSystem->TriggerOperationError(Op, Response.ErrorData.message);
 		}
 	});
-	
+
 	const auto AccountAPI = GEngine->GetEngineSubsystem<UBeamAccountsApi>();
 
 	const auto Req = UDeleteExternalIdentityRequest::Make(MicroserviceId, FederatedUserId, FOptionalString{FederationId}, GetTransientPackage(), {});

@@ -379,7 +379,8 @@ public:
 	bool TryBeginUpdateLobby(FUserSlot Slot, bool bForce);
 
 	/**
-	 *  Try to remove the local player controller from the LocalPlayerLobbyInfo local state. 
+	 *  Try to remove the local player controller from the LocalPlayerLobbyInfo local state.
+	 *  IT ONLY CAN BE CALLED ON SERVER
 	 */
 	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
 	bool TryRemoveLocalPlayerState(const AController* Controller);

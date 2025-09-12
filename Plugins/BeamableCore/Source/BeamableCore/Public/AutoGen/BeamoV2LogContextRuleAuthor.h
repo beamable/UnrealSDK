@@ -5,18 +5,18 @@
 #include "Serialization/BeamJsonSerializable.h"
 #include "Serialization/BeamJsonUtils.h"
 
-#include "SignupVerificationRequestBody.generated.h"
+#include "BeamoV2LogContextRuleAuthor.generated.h"
 
 UCLASS(BlueprintType, Category="Beam", DefaultToInstanced, EditInlineNew)
-class BEAMABLECORE_API USignupVerificationRequestBody : public UObject, public IBeamJsonSerializableUObject
+class BEAMABLECORE_API UBeamoV2LogContextRuleAuthor : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Email", Category="Beam")
 	FString Email = {};
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Code", Category="Beam")
-	FString Code = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Account Id", Category="Beam")
+	FString AccountId = {};
 
 	
 

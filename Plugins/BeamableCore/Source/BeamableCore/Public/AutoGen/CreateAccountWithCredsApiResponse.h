@@ -21,8 +21,6 @@ public:
 	FOptionalString ChallengeToken = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Token", Category="Beam")
 	FOptionalTokenResponse Token = {};
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Verification Required", Category="Beam")
-	FOptionalString VerificationRequired = {};
 
 	virtual void DeserializeRequestResponse(UObject* RequestData, FString ResponseContent) override;
 
