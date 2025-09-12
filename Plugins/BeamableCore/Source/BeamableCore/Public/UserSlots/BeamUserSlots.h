@@ -277,6 +277,13 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Beam", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
 	void ClearUserAtSlot(FUserSlot SlotId, const EUserSlotClearedReason& Reason = USCR_Manual, const bool& bShouldRemoveSavedData = false, const UObject* CallingContext = nullptr);
 
+	/**
+	 * @brief Clears the user and realm data at the give slot id on server without triggers any callback.
+	 */
+	UFUNCTION(BlueprintCallable, Category="Beam", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
+	void ClearServerUserAtSlotSilent(FUserSlot SlotId, const UObject* CallingContext = nullptr);
+
+	
 	UFUNCTION(BlueprintCallable, Category="Beam")
 	void ClearAllCachedUserDataAtSlot(FUserSlot SlotId);
 

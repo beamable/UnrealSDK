@@ -75,6 +75,11 @@ class BEAMPROJ_BEAMBALL_API ABeamBallGameMode : public AGameMode
 
 
 public:
+	virtual void Logout(AController* Exiting) override
+	{
+		BeamMultiplayer::LocalPlayer::Logout(Exiting);
+	}
+
 	virtual void PreLoginAsync(const FString& Options, const FString& Address, const FUniqueNetIdRepl& UniqueId, const FOnPreLoginCompleteDelegate& OnComplete) override
 	{
 		// This enables us to test the Pre-Login in PIE correctly (it adds options in the expected deterministic order the PIE instances create and connect so that we can their users in order) 

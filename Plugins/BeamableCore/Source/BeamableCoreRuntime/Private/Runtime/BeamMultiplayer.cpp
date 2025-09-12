@@ -65,8 +65,20 @@ namespace BeamMultiplayer
 
 		void Logout(const AController* Controller)
 		{
+			
 			const auto LobbySubsystem = Controller->GetGameInstance()->GetSubsystem<UBeamLobbySubsystem>();
+
+			if (!IsValid(LobbySubsystem))
+			{
+				UE_LOG(LogBeamRuntime, Verbose, TEXT("The lobby system is invalid, you probably stop the game server with the client at same time."))
+				return;
+			}
+			auto UserSlot = LobbySubsystem->GetUserSlotByPlayerController(Controller);
+			
 			LobbySubsystem->TryRemoveLocalPlayerState(Controller);
+
+			const auto UserSlots = GEngine->GetEngineSubsystem<UBeamUserSlots>();
+			UserSlots->ClearServerUserAtSlotSilent(UserSlot, Controller);
 		}
 	}
 
