@@ -106,7 +106,7 @@ class BEAMABLECORERUNTIME_API UBeamConnectivityManager : public UObject
 	/**
 	 * Websocket notifications connection handler. 
 	 */
-	void ConnectionHandler(const FNotificationEvent& Evt, bool TriggerAuthenticatedSlot, FBeamOperationHandle Op);
+	void ConnectionHandler(const FNotificationEvent& Evt, bool TriggerAuthenticatedSlot, FBeamOperationHandle Op, FWeakObjectPtr WeakThis);
 
 public:
 	UPROPERTY()
@@ -202,7 +202,7 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable)
 	bool IsDisconnected() const { return IsAuthenticated() && CurrentState == CONN_Offline && ConnectionLostCountInSession; }
-	
+
 	/**
 	 * @return If we are authenticated and the current state is ONLINE. 
 	 */
@@ -296,7 +296,7 @@ class BEAMABLECORERUNTIME_API UBeamRuntime : public UGameInstanceSubsystem
 
 		return FString(TEXT("BUGADO"));
 	}
-	
+
 	/** @brief Initializes the subsystem.  */
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 
@@ -1017,12 +1017,12 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Auth", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
 	FBeamOperationHandle DeAttachFederatedOperation(FUserSlot UserSlot, FString MicroserviceId, FString FederationId, FString FederatedUserId,
-												  FBeamOperationEventHandler OnOperationEvent);
+	                                                FBeamOperationEventHandler OnOperationEvent);
 	/**
 	 * If the given IdentityUserId is attached to an account in the current realm, we de-attach it to the account in the given slot.
 	 */
 	FBeamOperationHandle CPP_DeAttachFederatedOperation(FUserSlot UserSlot, FString MicroserviceId, FString FederationId, FString FederatedUserId,
-													  FBeamOperationEventHandlerCode OnOperationEvent);
+	                                                    FBeamOperationEventHandlerCode OnOperationEvent);
 
 	/**
 	 * Call this to submit a solved @link UBeamMultiFactorLoginData::ChallengeToken @endlink as part of the multi-factor login flows. 
@@ -1182,7 +1182,7 @@ private:
 
 	void DeAttachLocalIdentity(FUserSlot UserSlot, FString FederatedUserId, FString MicroserviceId, FString FederationId);
 	void AttachLocalIdentity(FUserSlot UserSlot, FString FederatedUserId, FString MicroserviceId, FString FederationId);
-	
+
 	void AttachFederated(FUserSlot UserSlot, FString MicroserviceId, FString FederationId, FString FederatedUserId, FString FederatedAuthToken, FBeamOperationHandle Op);
 	void AttachEmailAndPassword(FUserSlot UserSlot, FString Email, FString Password, FBeamOperationHandle Op);
 
@@ -1215,7 +1215,7 @@ private:
 	FBeamRequestContext AttachIdentityToUserTwoFactor(FUserSlot UserSlot, FString MicroserviceId, FString FederationId, FString FederatedAuthToken, UChallengeSolution* ChallengeSolution, FBeamOperationHandle Op,
 	                                                  FOnPostExternalIdentityFullResponse Handler) const;
 	FBeamRequestContext AttachEmailAndPasswordToUser(FUserSlot UserSlot, FString Email, FString Password, FBeamOperationHandle Op, FOnBasicAccountsPostRegisterFullResponse Handler) const;
-	
+
 	void DeAttachIdentity(FUserSlot UserSlot, FString MicroserviceId, FString FederationId, FString FederatedUserId, FBeamOperationHandle Op);
 
 	// Runtime Notification Configuration and Automated Session Tracking 

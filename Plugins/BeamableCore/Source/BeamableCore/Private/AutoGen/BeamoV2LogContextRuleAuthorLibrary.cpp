@@ -1,11 +1,11 @@
 
-#include "BeamableCore/Public/AutoGen/SignupVerificationRequestBodyLibrary.h"
+#include "BeamableCore/Public/AutoGen/BeamoV2LogContextRuleAuthorLibrary.h"
 
 #include "CoreMinimal.h"
 #include "BeamCoreSettings.h"
 
 
-FString USignupVerificationRequestBodyLibrary::SignupVerificationRequestBodyToJsonString(const USignupVerificationRequestBody* Serializable, const bool Pretty)
+FString UBeamoV2LogContextRuleAuthorLibrary::BeamoV2LogContextRuleAuthorToJsonString(const UBeamoV2LogContextRuleAuthor* Serializable, const bool Pretty)
 {
 	FString Result = FString{};
 	if(Pretty)
@@ -23,21 +23,21 @@ FString USignupVerificationRequestBodyLibrary::SignupVerificationRequestBodyToJs
 	return Result;
 }	
 
-USignupVerificationRequestBody* USignupVerificationRequestBodyLibrary::Make(FString Email, FString Code, UObject* Outer)
+UBeamoV2LogContextRuleAuthor* UBeamoV2LogContextRuleAuthorLibrary::Make(FString Email, FString AccountId, UObject* Outer)
 {
-	auto Serializable = NewObject<USignupVerificationRequestBody>(Outer);
+	auto Serializable = NewObject<UBeamoV2LogContextRuleAuthor>(Outer);
 	Serializable->Email = Email;
-	Serializable->Code = Code;
+	Serializable->AccountId = AccountId;
 	
 	return Serializable;
 }
 
-void USignupVerificationRequestBodyLibrary::Break(const USignupVerificationRequestBody* Serializable, FString& Email, FString& Code)
+void UBeamoV2LogContextRuleAuthorLibrary::Break(const UBeamoV2LogContextRuleAuthor* Serializable, FString& Email, FString& AccountId)
 {
 	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
 	{
 		Email = Serializable->Email;
-		Code = Serializable->Code;
+		AccountId = Serializable->AccountId;
 	}
 		
 }

@@ -27,7 +27,7 @@ void UPostInventoryRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostInventoryRequest* UPostInventoryRequest::Make(FBeamGamerTag _ObjectId, FOptionalArrayOfString _Scopes, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
+UPostInventoryRequest* UPostInventoryRequest::Make(FBeamGamerTag _ObjectId, FOptionalInventoryFiltersDTO _Filters, FOptionalArrayOfString _Scopes, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPostInventoryRequest* Req = NewObject<UPostInventoryRequest>(RequestOwner);
 	Req->CustomHeaders = TMap{CustomHeaders};
@@ -38,6 +38,7 @@ UPostInventoryRequest* UPostInventoryRequest::Make(FBeamGamerTag _ObjectId, FOpt
 	
 	// Makes a body and fill up with parameters (Blank if no body parameters exist)
 	Req->Body = NewObject<UInventoryQueryRequestBody>(Req);
+	Req->Body->Filters = _Filters;
 	Req->Body->Scopes = _Scopes;
 	
 

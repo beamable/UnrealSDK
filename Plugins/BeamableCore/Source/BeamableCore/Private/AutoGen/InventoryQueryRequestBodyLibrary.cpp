@@ -23,18 +23,20 @@ FString UInventoryQueryRequestBodyLibrary::InventoryQueryRequestBodyToJsonString
 	return Result;
 }	
 
-UInventoryQueryRequestBody* UInventoryQueryRequestBodyLibrary::Make(FOptionalArrayOfString Scopes, UObject* Outer)
+UInventoryQueryRequestBody* UInventoryQueryRequestBodyLibrary::Make(FOptionalInventoryFiltersDTO Filters, FOptionalArrayOfString Scopes, UObject* Outer)
 {
 	auto Serializable = NewObject<UInventoryQueryRequestBody>(Outer);
+	Serializable->Filters = Filters;
 	Serializable->Scopes = Scopes;
 	
 	return Serializable;
 }
 
-void UInventoryQueryRequestBodyLibrary::Break(const UInventoryQueryRequestBody* Serializable, FOptionalArrayOfString& Scopes)
+void UInventoryQueryRequestBodyLibrary::Break(const UInventoryQueryRequestBody* Serializable, FOptionalInventoryFiltersDTO& Filters, FOptionalArrayOfString& Scopes)
 {
 	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
 	{
+		Filters = Serializable->Filters;
 		Scopes = Serializable->Scopes;
 	}
 		

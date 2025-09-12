@@ -805,7 +805,7 @@ void FBeamBackendSpec::Define()
 			// Binds the handler to the static response handler (pre-generated)	
 			auto ResponseProcessor = BeamBackendSystem->MakeBlueprintRequestProcessor
 				<UBeamMockGetRequest, UBeamMockGetRequestResponse>
-				(ReqId, FakeRequest, ResponseHandler, ResponseHandlerError, ResponseHandlerComplete);
+				(ReqId, FakeRequest, ResponseHandler, ResponseHandlerError, ResponseHandlerComplete, BeamBackendSystem);
 			Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 			// Send out the fake request knowing that it'll fail --- we don't care cause we are canceling it. 
@@ -873,7 +873,7 @@ void FBeamBackendSpec::Define()
 			// Binds the handler to the static response handler (pre-generated)	
 			auto ResponseProcessor = BeamBackendSystem->MakeCodeRequestProcessor
 				<UBeamMockGetRequest, UBeamMockGetRequestResponse>
-				(ReqId, FakeRequest, ResponseHandler);
+				(ReqId, FakeRequest, ResponseHandler, BeamBackendSystem);
 			Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 			// Send out the fake request knowing that it'll fail --- we don't care cause we are canceling it. 
@@ -907,7 +907,7 @@ void FBeamBackendSpec::Define()
 			// Binds the handler to the static response handler (pre-generated)	
 			auto ResponseProcessor = BeamBackendSystem->MakeAuthenticatedCodeRequestProcessor
 				<UBeamMockGetRequest, UBeamMockGetRequestResponse>
-				(ReqId, FakeRealmHandle, FakeAuthToken, FakeRequest, ResponseHandler);
+				(ReqId, FakeRealmHandle, FakeAuthToken, FakeRequest, ResponseHandler, BeamBackendSystem);
 			Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 			// Send out the fake request knowing that it'll fail --- we don't care cause we are canceling it. 
