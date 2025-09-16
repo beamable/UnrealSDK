@@ -516,7 +516,7 @@ bool UBeamEditorContent::DeleteContentObject(const FBeamContentManifestId& Manif
 	return false;
 }
 
-bool UBeamEditorContent::DuplicateContent(const FBeamContentManifestId& ManifestId, FBeamContentId Id, FString& ErrMsg)
+bool UBeamEditorContent::DuplicateContent(const FBeamContentManifestId& ManifestId, FBeamContentId Id, FString& ErrMsg, FString& CreatedId)
 {
 	const auto Entries = LocalManifestCache[ManifestId]->Entries;
 	if (const auto Entry = Entries.FindByPredicate([Id](ULocalContentManifestEntryStreamData* Data)
@@ -562,6 +562,7 @@ bool UBeamEditorContent::DuplicateContent(const FBeamContentManifestId& Manifest
        
 		// Copy the file
 		uint32 bCopied = FileManager.Copy(*DuplicateFilePath, *FilePath);
+		CreatedId = FPaths::GetBaseFilename(DuplicateFilePath);
 		if (bCopied == 0)
 		{
 			return true;

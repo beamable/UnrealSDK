@@ -186,7 +186,7 @@ public:
 	                      UBeamContentObject*& ContentObject, FString& ErrMsg);
 
 	UFUNCTION(BlueprintCallable)
-	bool DuplicateContent(const FBeamContentManifestId& ManifestId, FBeamContentId Id,FString& ErrMsg);
+	bool DuplicateContent(const FBeamContentManifestId& ManifestId, FBeamContentId Id,FString& ErrMsg, FString& CreatedId);
 	
 	/**
 	 * Tries to get the in-memory deserialized @link UBeamContentObject @endlink instance for the given manifest/content id pair.
