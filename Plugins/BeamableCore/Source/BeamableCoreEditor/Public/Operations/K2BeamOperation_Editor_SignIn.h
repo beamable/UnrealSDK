@@ -22,3 +22,22 @@ class UK2BeamOperation_Editor_SignIn : public UK2BeamNode_Operation
 };
 
 #undef LOCTEXT_NAMESPACE
+
+
+#define LOCTEXT_NAMESPACE "K2BeamOperation_Editor_FetchRealmOrgsOperation"
+
+UCLASS(meta=(BeamFlowNode))
+class UK2BeamOperation_Editor_FetchRealmOrgsOperation : public UK2BeamNode_Operation
+{
+	GENERATED_BODY()
+
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Editor Operation - Fetch Orgs for Realm"); }
+
+	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamEditor, GetSelf); }
+
+	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamEditor, FetchRealmOrgsOperation); }
+
+	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamEditor::StaticClass(); }	
+};
+
+#undef LOCTEXT_NAMESPACE

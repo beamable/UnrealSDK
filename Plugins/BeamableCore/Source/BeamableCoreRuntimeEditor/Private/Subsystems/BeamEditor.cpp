@@ -360,6 +360,46 @@ bool UBeamEditor::GetActiveProjectAndRealmData(FBeamCustomerProjectData& Project
 	return false;
 }
 
+bool UBeamEditor::TryGetAvailableProjects(TArray<FString>& Projects)
+{
+	if (CurrentProjectData.AllRealms.Num() == 0)
+	{
+		UE_LOG(LogTemp, Error, TEXT("No available realms."));
+		return false;
+	}
+	TArray<FString> ProjectsArray;
+	for (const auto& Realm : CurrentProjectData.AllRealms)
+	{
+		if (!ProjectsArray.Contains(Realm.ProjectName))
+		{
+			ProjectsArray.Add(Realm.ProjectName);
+		}
+	}
+	Projects = ProjectsArray;
+	
+	return true;
+}
+
+bool UBeamEditor::TryGetAvailableProjectRealms(FString Project, TArray<FBeamProjectRealmData>& Realms)
+{
+	if (CurrentProjectData.AllRealms.Num() == 0)
+	{
+		UE_LOG(LogTemp, Error, TEXT("No available realms."));
+		return false;
+	}
+	
+	Realms.Reset();
+	
+	for (const auto& Realm : CurrentProjectData.AllRealms)
+	{
+		if (Realm.ProjectName == Project)
+		{
+			Realms.Add(Realm);
+		}
+	}
+	return true;
+}
+
 void UBeamEditor::SignOut()
 {
 	// When the CLI is not installed, we should not do anything. 
@@ -419,17 +459,31 @@ void UBeamEditor::OnUserSlotCleared(const EUserSlotClearedReason& Reason, const 
 }
 
 
-FBeamOperationHandle UBeamEditor::SignInOperation(FString OrgName, FString Email, FString Password, const FBeamOperationEventHandler& OnOperationEvent)
+FBeamOperationHandle UBeamEditor::SignInOperation(FString OrgName, FString Pid, FString Email, FString Password, const FBeamOperationEventHandler& OnOperationEvent)
 {
 	const auto Op = RequestTracker->BeginOperation({GetMainEditorSlot()}, GetName(), OnOperationEvent);
-	SignIn(OrgName, Email, Password, Op);
+	SignIn(OrgName, Pid, Email, Password, Op);
 	return Op;
 }
 
-FBeamOperationHandle UBeamEditor::CPP_SignInOperation(FString OrgName, FString Email, FString Password, const FBeamOperationEventHandlerCode& OnOperationEvent)
+FBeamOperationHandle UBeamEditor::CPP_SignInOperation(FString OrgName, FString Pid, FString Email, FString Password, const FBeamOperationEventHandlerCode& OnOperationEvent)
 {
 	const auto Op = RequestTracker->CPP_BeginOperation({GetMainEditorSlot()}, GetName(), OnOperationEvent);
-	SignIn(OrgName, Email, Password, Op);
+	SignIn(OrgName, Pid, Email, Password, Op);
+	return Op;
+}
+
+FBeamOperationHandle UBeamEditor::FetchRealmOrgsOperation(FString OrgName, FString Email, FString Password, const FBeamOperationEventHandler& OnOperationEvent)
+{
+	const auto Op = RequestTracker->BeginOperation({GetMainEditorSlot()}, GetName(), OnOperationEvent);
+	FetchOrgRealms(OrgName, Email, Password, Op);
+	return Op;
+}
+
+FBeamOperationHandle UBeamEditor::CPP_FetchRealmOrgsOperation(FString OrgName, FString Email, FString Password, const FBeamOperationEventHandlerCode& OnOperationEvent)
+{
+	const auto Op = RequestTracker->CPP_BeginOperation({GetMainEditorSlot()}, GetName(), OnOperationEvent);
+	FetchOrgRealms(OrgName, Email, Password, Op);
 	return Op;
 }
 
@@ -449,7 +503,7 @@ FBeamOperationHandle UBeamEditor::CPP_SelectRealmOperation(const FBeamRealmHandl
 	return Op;
 }
 
-void UBeamEditor::SignIn(FString OrgName, FString Email, FString Password, const FBeamOperationHandle Op)
+void UBeamEditor::SignIn(FString OrgName, FString Pid, FString Email, FString Password, const FBeamOperationHandle Op)
 {
 	// When the CLI is not installed, we should not do anything. 
 	const auto Cli = GEditor->GetEditorSubsystem<UBeamCli>();
@@ -486,46 +540,47 @@ void UBeamEditor::SignIn(FString OrgName, FString Email, FString Password, const
 	};
 
 	const auto Host = GEngine->GetEngineSubsystem<UBeamEnvironment>()->GetAPIUrl();
-	Cli->RunCommand(InitCommand, {TEXT("--host"), Host, TEXT("-q"), TEXT("--cid"), OrgName, TEXT("--username"), Email, TEXT("--password"), Password}, Op);
+	Cli->RunCommand(InitCommand, {TEXT("--host"), Host, TEXT("-q"), TEXT("--cid"), OrgName, TEXT("--pid"), Pid, TEXT("--username"), Email, TEXT("--password"), Password}, Op);
 }
 
-void UBeamEditor::SignInWithCliInfo(const FBeamOperationHandle Op)
+void UBeamEditor::FetchOrgRealms(FString OrgName, FString Email, FString Password, FBeamOperationHandle Op)
 {
 	// When the CLI is not installed, we should not do anything. 
 	const auto Cli = GEditor->GetEditorSubsystem<UBeamCli>();
 	if (!Cli->IsInstalled())
 	{
-		FString ConfigJson;
-		FString PathToConfigJson = FPaths::ProjectDir() / TEXT(".beamable") / TEXT("connection-configuration.json");
-		if (FFileHelper::LoadFileToString(ConfigJson, *PathToConfigJson))
-		{
-			FJsonDataBag ConfigJsonBag;
-			if (ConfigJsonBag.FromJson(ConfigJson))
-			{
-				const auto Cid = ConfigJsonBag.GetString(TEXT("cid"));
-				const auto Pid = ConfigJsonBag.GetString(TEXT("pid"));
+		RequestTracker->TriggerOperationError(Op, TEXT("Cli is not installed. Cannot sign into the Beamable Editor."));
+		return;
+	}
 
-				GetMutableDefault<UBeamCoreSettings>()->TargetRealm.Cid.AsString = Cid;
-				GetMutableDefault<UBeamCoreSettings>()->TargetRealm.Pid.AsString = Pid;
-			}
-			else
-			{
-				const auto Err = FString::Printf(
-					TEXT("%s"),
-					TEXT(
-						"We found `.beamable/connection-configuration.json` file in your `.beamable` folder, but we couldn't parse it as JSON. When you don't have a CLI installed, you must have this file in your version control system so we know which realm you are targeting during PIE."));
-				RequestTracker->TriggerOperationError(Op, Err);
-			}
+	// Call init with the proper parameters
+	auto InitCommand = NewObject<UBeamCliInitCommand>();
+	InitCommand->OnStreamOutput = [this](const TArray<UBeamCliInitStreamData*>& Stream, const TArray<long long>&, const FBeamOperationHandle&)
+	{
+	};
+	InitCommand->OnCompleted = [this, Op](const int& ResCode, const FBeamOperationHandle& CmdOp)
+	{
+		if (ResCode != 0)
+		{
+			RequestTracker->TriggerOperationError(CmdOp, TEXT("Failed to fetch the realm orgs in."));
 		}
 		else
 		{
-			const auto Err = FString::Printf(
-				TEXT("%s"),
-				TEXT(
-					"We did not find a `.beamable/connection-configuration.json` file in your `.beamable` folder. When you don't have a CLI installed, you must have this file in your version control system so we know which realm you are targeting during PIE."));
-			RequestTracker->TriggerOperationError(Op, TEXT("Cli is not installed. Cannot sign into the Beamable Editor."));
+			UpdateCurrentProjectData(Op);
 		}
+	};
 
+	const auto Host = GEngine->GetEngineSubsystem<UBeamEnvironment>()->GetAPIUrl();
+	Cli->RunCommand(InitCommand, {TEXT("--host"), Host, TEXT("-q"), TEXT("--cid"), OrgName, TEXT("--username"), Email, TEXT("--password"), Password}, Op);
+}
+
+
+void UBeamEditor::SignInWithCliInfo(const FBeamOperationHandle Op)
+{
+	// When the CLI is not installed, we should not do anything. 
+	const auto Cli = GEditor->GetEditorSubsystem<UBeamCli>();
+	if (!VerifyCLIInstalled(Op))
+	{
 		return;
 	}
 
@@ -541,13 +596,13 @@ void UBeamEditor::SignInWithCliInfo(const FBeamOperationHandle Op)
 		{
 			const auto Data = Stream[0];
 
-			CurrentProjectData = {};
+			CurrentProjectData  = {};
 			CurrentProjectData.CustomerName = Data->CustomerAlias;
 			CurrentProjectData.CustomerAlias = Data->CustomerAlias;
 
 			TArray<FBeamProjectRealmData> RealmData = {};
 			RealmData.Reserve(Data->VisibleRealms.Num());
-
+			
 			for (const auto R : Data->VisibleRealms)
 			{
 				FBeamProjectRealmData Realm;
@@ -637,6 +692,103 @@ void UBeamEditor::SignInWithCliInfo(const FBeamOperationHandle Op)
 		UserSlots->GetUserDataAtSlot(GetMainEditorSlot(), EditorUser, this);
 		SelectRealm(EditorUser.RealmHandle, Op);
 	}));
+}
+
+bool UBeamEditor::VerifyCLIInstalled(FBeamOperationHandle Op)
+{
+	// When the CLI is not installed, we should not do anything. 
+	const auto Cli = GEditor->GetEditorSubsystem<UBeamCli>();
+	if (!Cli->IsInstalled())
+	{
+		FString ConfigJson;
+		FString PathToConfigJson = FPaths::ProjectDir() / TEXT(".beamable") / TEXT("connection-configuration.json");
+		if (FFileHelper::LoadFileToString(ConfigJson, *PathToConfigJson))
+		{
+			FJsonDataBag ConfigJsonBag;
+			if (ConfigJsonBag.FromJson(ConfigJson))
+			{
+				const auto Cid = ConfigJsonBag.GetString(TEXT("cid"));
+				const auto Pid = ConfigJsonBag.GetString(TEXT("pid"));
+
+				GetMutableDefault<UBeamCoreSettings>()->TargetRealm.Cid.AsString = Cid;
+				GetMutableDefault<UBeamCoreSettings>()->TargetRealm.Pid.AsString = Pid;
+			}
+			else
+			{
+				const auto Err = FString::Printf(
+					TEXT("%s"),
+					TEXT(
+						"We found `.beamable/connection-configuration.json` file in your `.beamable` folder, but we couldn't parse it as JSON. When you don't have a CLI installed, you must have this file in your version control system so we know which realm you are targeting during PIE."));
+				RequestTracker->TriggerOperationError(Op, Err);
+			}
+		}
+		else
+		{
+			const auto Err = FString::Printf(
+				TEXT("%s"),
+				TEXT(
+					"We did not find a `.beamable/connection-configuration.json` file in your `.beamable` folder. When you don't have a CLI installed, you must have this file in your version control system so we know which realm you are targeting during PIE."));
+			RequestTracker->TriggerOperationError(Op, TEXT("Cli is not installed. Cannot sign into the Beamable Editor."));
+		}
+
+		return false;
+	}
+	return true;
+}
+
+void UBeamEditor::UpdateCurrentProjectData(FBeamOperationHandle Op)
+{
+	if (!VerifyCLIInstalled(Op))
+	{
+		return;
+	}
+
+	auto RealmsCommand = NewObject<UBeamCliOrgRealmsCommand>();
+	RealmsCommand->OnStreamOutput = [this](const TArray<UBeamCliOrgRealmsStreamData*>& Stream, const TArray<long long>&, const FBeamOperationHandle&)
+	{
+		if (Stream.Num() > 0)
+		{
+			const auto Data = Stream[0];
+
+			CurrentProjectData  = {};
+			CurrentProjectData.CustomerName = Data->CustomerAlias;
+			CurrentProjectData.CustomerAlias = Data->CustomerAlias;
+
+			TArray<FBeamProjectRealmData> RealmData = {};
+			RealmData.Reserve(Data->VisibleRealms.Num());
+			
+			for (const auto R : Data->VisibleRealms)
+			{
+				FBeamProjectRealmData Realm;
+				Realm.CID = R->Cid;
+				Realm.PID = R->Pid;
+				Realm.ParentPID = FOptionalBeamPid{R->ParentPid};
+				Realm.ProjectName = R->ProjectName;
+				Realm.RealmName = R->RealmName;
+				Realm.RealmSecret = R->RealmSecret;
+				Realm.bIsDev = R->IsDev;
+				Realm.bIsStaging = R->IsStaging;
+				Realm.bIsProduction = R->IsProduction;
+				RealmData.Add(Realm);
+			}
+			CurrentProjectData.AllRealms = RealmData;
+		}
+	};
+	RealmsCommand->OnCompleted = [this, Op](const int& ResCode, const FBeamOperationHandle&)
+	{
+		if (ResCode != 0)
+		{
+			RequestTracker->TriggerOperationError(Op, TEXT("Failed to get realms data. Signing out. Please, ensure you are an developer or admin user and sign in again."));
+		}
+		else
+		{
+			RequestTracker->TriggerOperationSuccess(Op, TEXT(""));
+		}
+	};
+
+	const auto Cli = GEditor->GetEditorSubsystem<UBeamCli>();
+	
+	Cli->RunCommandServer(RealmsCommand, {}, Op);
 }
 
 
