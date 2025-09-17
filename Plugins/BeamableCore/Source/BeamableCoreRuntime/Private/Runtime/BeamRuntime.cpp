@@ -2640,7 +2640,7 @@ void UBeamRuntime::DeAttachIdentity(FUserSlot UserSlot, FString MicroserviceId, 
 	{
 		if (Response.State == RS_Success)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Successfully Attached Id! Result = %s"), *Response.SuccessData->Result);
+			UE_LOG(LogTemp, Warning, TEXT("Successfully De attached Id! Result = %s"), *Response.SuccessData->Result);
 
 			DeAttachLocalIdentity(UserSlot, FederatedUserId, MicroserviceId, FederationId);
 
