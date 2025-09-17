@@ -239,6 +239,13 @@ public:
 	void BakeManifest(FBeamContentManifestId Manifest);
 
 	/**
+	 * Destroys all local changes by re-downloading the remote manifest and content objects to the local cache. 
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Beam Editor Content", meta = (CallInEditor = "true"))
+	bool DeleteCachedContentFolder(FString& ErrorMessage);
+	
+
+	/**
 	 * @brief Downloads the remote manifest and content objects to the local cache. This destroys all local changes. 
 	 */
 	void PublishManifest(FBeamContentManifestId ContentManifestId, FBeamOperationHandle Op);
