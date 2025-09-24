@@ -5,6 +5,7 @@
 
 #include "EditorStyleSet.h"
 #include "Content/BeamContentCache.h"
+#include "Content/BeamContentCacheSerializer.h"
 #include "Content/DownloadContentState.h"
 #include "Framework/Notifications/NotificationManager.h"
 #include "Kismet/KismetStringLibrary.h"
@@ -521,21 +522,21 @@ bool UBeamEditorContent::DuplicateContent(const FBeamContentManifestId& Manifest
 	const auto Entries = LocalManifestCache[ManifestId]->Entries;
 	if (const auto Entry = Entries.FindByPredicate([Id](ULocalContentManifestEntryStreamData* Data)
 	{
-	   return Data->FullId.Equals(Id.AsString);
+		return Data->FullId.Equals(Id.AsString);
 	}))
 	{
 		const auto FilePath = (*Entry)->JsonFilePath;
 		IFileManager& FileManager = IFileManager::Get();
-       
+
 		// Extract file components
 		FString FileDirectory = FPaths::GetPath(FilePath);
 		FString FileName = FPaths::GetBaseFilename(FilePath);
 		FString FileExtension = FPaths::GetExtension(FilePath);
-       
+
 		// Parse existing suffix from filename
 		FString BaseFileName = FileName;
 		int32 ExistingSuffix = 0;
-		
+
 		// Check if filename ends with "_Number" pattern
 		int32 LastUnderscoreIndex;
 		if (FileName.FindLastChar(TEXT('_'), LastUnderscoreIndex))
@@ -547,19 +548,19 @@ bool UBeamEditorContent::DuplicateContent(const FBeamContentManifestId& Manifest
 				BaseFileName = FileName.Left(LastUnderscoreIndex);
 			}
 		}
-		
+
 		// Start with the next logical number
 		int32 CopyIndex = ExistingSuffix + 1;
 		FString DuplicateFilePath;
-		
-		do 
+
+		do
 		{
 			FString NewFileName = BaseFileName + FString::Printf(TEXT("_%d"), CopyIndex);
 			DuplicateFilePath = FPaths::Combine(FileDirectory, NewFileName + TEXT(".") + FileExtension);
 			CopyIndex++;
-		} 
+		}
 		while (FileManager.FileExists(*DuplicateFilePath));
-       
+
 		// Copy the file
 		uint32 bCopied = FileManager.Copy(*DuplicateFilePath, *FilePath);
 		CreatedId = FPaths::GetBaseFilename(DuplicateFilePath);
@@ -570,7 +571,7 @@ bool UBeamEditorContent::DuplicateContent(const FBeamContentManifestId& Manifest
 
 		ErrMsg = FString::Format(TEXT("Failed to duplicate the content object {0}"), {Id.AsString});
 		UE_LOG(LogBeamContent, Error, TEXT("%s"), *ErrMsg);
-       
+
 		return false;
 	}
 
@@ -717,10 +718,12 @@ void UBeamEditorContent::BakeManifest(FBeamContentManifestId Manifest)
 		CoreSettings->GlobalBakedContentFileName;
 
 	TArray<uint8> SerializedData;
-	FBeamMemoryWriter Writer(SerializedData, true);
 
-
-	Cache->SerializeToBinary(Writer, ContentTypeStringToContentClass, ContentClassToContentTypeString);
+	auto Serializer = NewObject<UBeamContentCacheSerializer>(GetTransientPackage(), GetDefault<UBeamCoreSettings>()->DefaultContentSerializer);
+	FArchive* Writer = Serializer->GetDefaultContentCacheSerializer(SerializedData, true);
+	FBeamContentCacheSerializationContext Ctx(nullptr, true, *Writer, ContentTypeStringToContentClass, ContentClassToContentTypeString);
+	Cache->SerializeToBinary(Ctx, Serializer);
+	delete Writer;
 
 	if (FFileHelper::SaveArrayToFile(SerializedData, *BakedContentPath))
 	{
