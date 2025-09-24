@@ -4,11 +4,15 @@
 bool UBeamContentCache::SerializeToBinary(FBeamContentCacheSerializationContext& Ctx, UBeamContentCacheSerializer* HeaderSerializer)
 {
 	if (Ctx.TargetAr.IsSaving())
-	{
+	{	
 		// First thing is we write the serializer so that we can invalidate caches that were written with different serializers.
 		auto SerializerName = HeaderSerializer->GetClass()->GetName();
 		Ctx.TargetAr << SerializerName;
 
+		// Hey --- if you change serialization before this point, please also change the location that we look for the cache in.
+		// This essentially forces a cache invalidation and avoids us having to deal with complex cases of backward compatibility in the binary layout of the cache between versions.
+		// This is ok since this cache being invalidated every between updates is expected. This is just a simple way of doing it that prevents us
+		// from having to figure out complicated but ultimately unnecessary things.
 		auto _ = HeaderSerializer->SerializeBeamContentCacheHeader(Ctx);
 		Ctx.TargetAr << ManifestId.AsString;
 

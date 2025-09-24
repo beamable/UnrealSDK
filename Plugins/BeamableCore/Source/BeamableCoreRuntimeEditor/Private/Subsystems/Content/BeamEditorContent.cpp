@@ -759,21 +759,20 @@ void UBeamEditorContent::BakeManifest(FBeamContentManifestId Manifest)
 }
 
 bool UBeamEditorContent::DeleteCachedContentFolder(FString& ErrorMessage)
-{
-	auto CoreSettings = GetMutableDefault<UBeamCoreSettings>();
-	const FString CachedContentPath = FPaths::ProjectSavedDir() / TEXT("CachedContent");
-    
+{	
+	const FString CachedContentPath = UBeamContentCache::CACHE_FOLDER;
+
 	// Check if the directory exists
 	if (!FPaths::DirectoryExists(CachedContentPath))
 	{
 		ErrorMessage = FString::Printf(TEXT("Failed to delete cached content folder, Directory does not exist: %s"), *CachedContentPath);
 		return false;
 	}
-    
+
 	// Delete the directory and all its contents
 	IFileManager& FileManager = IFileManager::Get();
 	const bool bDeleteSuccess = FileManager.DeleteDirectory(*CachedContentPath, false, true);
-    
+
 	if (bDeleteSuccess)
 	{
 		UE_LOG(LogBeamContent, Log, TEXT("Successfully deleted cached content folder: %s"), *CachedContentPath);

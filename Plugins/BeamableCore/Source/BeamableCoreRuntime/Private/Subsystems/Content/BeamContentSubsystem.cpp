@@ -644,8 +644,7 @@ void UBeamContentSubsystem::InitializeWhenUnrealReady_Implementation(FBeamOperat
 	FBeamOperationHandle Op = GEngine->GetEngineSubsystem<UBeamRequestTracker>()->CPP_BeginOperation({}, GetName(), {});
 
 	//Try to load the cached content first before the baked content
-	const FString CachedContentPath = FPaths::ProjectSavedDir() + CoreSettings->CachedContentFolderName + "/" +
-		CoreSettings->GlobalCachedContentFileName;
+	const FString CachedContentPath = GetCachedContentPath();
 
 	bool bFoundDataInCacheFile = false;
 	if (FPlatformFileManager::Get().GetPlatformFile().FileExists(*CachedContentPath))
@@ -681,8 +680,7 @@ void UBeamContentSubsystem::InitializeWhenUnrealReady_Implementation(FBeamOperat
 	//if we didn't find cached data use the baked data
 	if (!bFoundDataInCacheFile)
 	{
-		const FString BakedContentPath = FPaths::ProjectContentDir() + CoreSettings->BakedContentFolderName + "/" +
-			CoreSettings->GlobalBakedContentFileName;
+		const FString BakedContentPath = GetBakedContentPath(CoreSettings);
 
 		if (FPlatformFileManager::Get().GetPlatformFile().FileExists(*BakedContentPath))
 		{
@@ -911,13 +909,10 @@ void UBeamContentSubsystem::DownloadContentObjects(const FBeamContentManifestId 
 					this->Runtime->RequestTrackerSystem->TriggerOperationError(Op, FString::Join(Errs, TEXT("\n")));
 					return;
 				}
-				
+
 				if (this->Runtime->RequestTrackerSystem->IsWaitSuccessful(Evt))
-				{
-					auto CoreSettings = GetMutableDefault<UBeamCoreSettings>();
-
-					const FString CachedContentPath = FPaths::ProjectSavedDir() + CoreSettings->CachedContentFolderName + "/" + CoreSettings->GlobalCachedContentFileName;
-
+				{					
+					const FString CachedContentPath = GetCachedContentPath();
 					UBeamContentCache* SavedContent = LiveContent[ManifestId];
 
 
@@ -938,7 +933,7 @@ void UBeamContentSubsystem::DownloadContentObjects(const FBeamContentManifestId 
 						UE_LOG(LogBeamContent, Error, TEXT("Error while caching new content."));
 					}
 
-					this->Runtime->RequestTrackerSystem->TriggerOperationSuccess(Op, {});					
+					this->Runtime->RequestTrackerSystem->TriggerOperationSuccess(Op, {});
 				}
 			}
 		});
@@ -1352,4 +1347,14 @@ bool UBeamContentSubsystem::EnforceLinks(FBeamContentManifestId ManifestId, TArr
 	}
 
 	return OutLinksToFetch.Num() > 0;
+}
+
+FString UBeamContentSubsystem::GetCachedContentPath()
+{
+	return UBeamContentCache::CACHE_FOLDER / "CC_Global";
+}
+
+FString UBeamContentSubsystem::GetBakedContentPath(UBeamCoreSettings* CoreSettings)
+{
+	return FPaths::ProjectContentDir() + CoreSettings->BakedContentFolderName + "/" + CoreSettings->GlobalBakedContentFileName;
 }

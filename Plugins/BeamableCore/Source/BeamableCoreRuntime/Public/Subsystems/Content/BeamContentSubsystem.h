@@ -65,7 +65,7 @@ class BEAMABLECORERUNTIME_API UBeamContentSubsystem : public UBeamRuntimeSubsyst
 	TMap<UClass*, TArray<UClass*>> RecursivePropertyTypes;
 
 public:
-	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
+	virtual void Initialize(FSubsystemCollectionBase& Collection) override;	
 
 	/**
 	 * For every cooked content manifest tries to load either a local cache from the latest downloaded content (of previous runs) OR falls back to the cooked content with the build. 
@@ -247,4 +247,7 @@ public:
 	void FetchIndividualContent(FBeamContentManifestId ManifestId, TArray<FBeamContentId> ContentToDownloadFetch, FBeamOperationHandle Op);
 
 	bool EnforceLinks(FBeamContentManifestId ManifestId, TArray<FBeamRemoteContentManifestEntry> ManifestRows, TArray<FBeamContentId>& OutLinksToFetch);
+
+	static FString GetCachedContentPath();
+	static FString GetBakedContentPath(UBeamCoreSettings* CoreSettings);
 };
