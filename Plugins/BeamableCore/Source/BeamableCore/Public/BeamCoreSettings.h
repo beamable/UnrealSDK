@@ -8,8 +8,10 @@
 #include "BeamBackend/BeamRealmHandle.h"
 #include "BeamBackend/BeamRetryConfig.h"
 #include "BeamBackend/ResponseCache/BeamCacheConfig.h"
+#include "Content/BeamContentCacheSerializer.h"
 #include "BeamCoreSettings.generated.h"
 
+class UBeamContentCacheSerializer;
 /**
  * 
  */
@@ -153,6 +155,12 @@ public:
 	*/
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Content")
 	FString GlobalBakedContentFileName = "BCC_Global";
+
+	/**
+	* @brief A @link UBeamContentCacheSerializer @endlink type that the SDK is supposed to use when de/serializing @link UBeamContentCache @endlink.  
+	*/
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Content")
+	TSubclassOf<UBeamContentCacheSerializer> DefaultContentSerializer = UBeamContentCacheSerializer::StaticClass();
 
 	UFUNCTION(BlueprintCallable)
 	FUserSlot GetOwnerPlayerSlot() const { return FUserSlot{RuntimeUserSlots[0]}; }

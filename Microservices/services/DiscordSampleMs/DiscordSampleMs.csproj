@@ -2,10 +2,9 @@
   <PropertyGroup Label="Beamable Settings">
     <!-- All Microservices must have the value, "service" -->
     <BeamProjectType>service</BeamProjectType>
-    <BeamServiceGroup>BEAMPROJ_DiscordDemo</BeamServiceGroup>
-    <!-- When "true", this will auto-generate client code to any linked unity projects -->
-    <GenerateClientCode>true</GenerateClientCode>
+    <BeamServiceGroup>BEAMPROJ_DiscordDemo</BeamServiceGroup>    
     <BeamEnabled>false</BeamEnabled>
+    <EnableUnrealBlueprintCompatibility>true</EnableUnrealBlueprintCompatibility>
   </PropertyGroup>
   <!-- These are special Beamable parameters that we use to keep the beamable packages in-sync to the CLI version your project is using. -->
   <!-- This makes it so your microservices are auto-updated whenever you update the CLI installed in your project. -->

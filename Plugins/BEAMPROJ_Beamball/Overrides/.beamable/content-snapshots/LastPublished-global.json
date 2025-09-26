@@ -1,0 +1,155 @@
+{
+  "SnapshotTimestamp": 1755880522046,
+  "ManifestId": "global",
+  "ProjectData": {
+    "PID": "DE_1743192982278144",
+    "RealmName": "HathoraDemo"
+  },
+  "Author": {
+    "Email": "felipe@beamable.com",
+    "AccountId": 1868130854994944
+  },
+  "IsAutoSnapshot": true,
+  "contents": {
+    "currency.coins": {
+      "properties": {
+        "clientPermission": {
+          "data": {
+            "write_self": false
+          }
+        },
+        "startingAmount": {
+          "data": 250
+        }
+      },
+      "tags": [],
+      "Checksum": "7a0307469aa8de5c3792c1d716fa0e0b85234104"
+    },
+    "currency.gems": {
+      "properties": {
+        "clientPermission": {
+          "data": {
+            "write_self": false
+          }
+        },
+        "startingAmount": {
+          "data": 0
+        }
+      },
+      "tags": [],
+      "Checksum": "45a33a8eb77cccf05272cd3de381ef0d059a8089"
+    },
+    "currency.ss": {
+      "properties": {
+        "clientPermission": {
+          "data": {
+            "write_self": false
+          }
+        },
+        "startingAmount": {
+          "data": 0
+        }
+      },
+      "tags": [],
+      "Checksum": "45a33a8eb77cccf05272cd3de381ef0d059a8089"
+    },
+    "game_types.solo_queue": {
+      "properties": {
+        "FederatedGameServerNamespace": {
+          "data": "hathora"
+        },
+        "NumericRules": {
+          "data": []
+        },
+        "StringRules": {
+          "data": []
+        },
+        "Teams": {
+          "data": [
+            {
+              "Name": "Solo",
+              "MinPlayers": 2,
+              "MaxPlayers": 2
+            }
+          ]
+        }
+      },
+      "tags": [],
+      "Checksum": "5f032d35617810125fff861c1bced679b7cc8dd1"
+    },
+    "game_types.training": {
+      "properties": {
+        "FederatedGameServerNamespace": {
+          "data": "hathora"
+        },
+        "NumericRules": {
+          "data": []
+        },
+        "StringRules": {
+          "data": []
+        },
+        "Teams": {
+          "data": [
+            {
+              "Name": "Team",
+              "MinPlayers": 1,
+              "MaxPlayers": 5
+            }
+          ]
+        }
+      },
+      "tags": [],
+      "Checksum": "5469158f6c350a5ffb321a29fc5c9366d0e6baa8"
+    },
+    "items.gh": {
+      "properties": {
+        "clientPermission": {
+          "data": {
+            "write_self": false
+          }
+        }
+      },
+      "tags": [],
+      "Checksum": "de7dfe1595a9f502da413bfb60bd27adb9ff40b9"
+    },
+    "listings.xx": {
+      "properties": {
+        "clientData": {
+          "data": {}
+        },
+        "offer": {
+          "data": {
+            "titles": [],
+            "descriptions": [],
+            "obtainCurrency": [],
+            "obtainItems": []
+          }
+        },
+        "price": {
+          "data": {
+            "type": "sku",
+            "symbol": "currency.coins",
+            "amount": 0
+          }
+        }
+      },
+      "tags": [],
+      "Checksum": "b55a29328eadca13b9606725f9b4b815069c0439"
+    },
+    "stores.rrr": {
+      "properties": {
+        "listings": {
+          "links": []
+        },
+        "symbol": {
+          "data": "stores.rrr"
+        },
+        "title": {
+          "data": ""
+        }
+      },
+      "tags": [],
+      "Checksum": "b1d7cf47d3ae112374dd799bdedcf9cb69a8dd4d"
+    }
+  }
+}

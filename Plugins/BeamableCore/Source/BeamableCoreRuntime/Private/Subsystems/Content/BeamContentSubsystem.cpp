@@ -644,8 +644,7 @@ void UBeamContentSubsystem::InitializeWhenUnrealReady_Implementation(FBeamOperat
 	FBeamOperationHandle Op = GEngine->GetEngineSubsystem<UBeamRequestTracker>()->CPP_BeginOperation({}, GetName(), {});
 
 	//Try to load the cached content first before the baked content
-	const FString CachedContentPath = FPaths::ProjectSavedDir() + CoreSettings->CachedContentFolderName + "/" +
-		CoreSettings->GlobalCachedContentFileName;
+	const FString CachedContentPath = GetCachedContentPath();
 
 	bool bFoundDataInCacheFile = false;
 	if (FPlatformFileManager::Get().GetPlatformFile().FileExists(*CachedContentPath))
@@ -656,10 +655,11 @@ void UBeamContentSubsystem::InitializeWhenUnrealReady_Implementation(FBeamOperat
 		{
 			UBeamContentCache* LoadedCacheContent = NewObject<UBeamContentCache>();
 
-			// Create a memory reader to read the binary data			
-			FBeamMemoryReader Reader(FileData, true);
-
-			if (LoadedCacheContent->SerializeToBinary(Reader, ContentTypeStringToContentClass, ContentClassToContentTypeString))
+			// Create a memory reader to read the binary data
+			auto Serializer = NewObject<UBeamContentCacheSerializer>(GetTransientPackage(), GetDefault<UBeamCoreSettings>()->DefaultContentSerializer);
+			FArchive* Reader = Serializer->GetDefaultContentCacheSerializer(FileData, false);
+			FBeamContentCacheSerializationContext Ctx(GetGameInstance(), false, *Reader, ContentTypeStringToContentClass, ContentClassToContentTypeString);
+			if (LoadedCacheContent->SerializeToBinary(Ctx, Serializer))
 			{
 				bFoundDataInCacheFile = true;
 
@@ -671,6 +671,8 @@ void UBeamContentSubsystem::InitializeWhenUnrealReady_Implementation(FBeamOperat
 
 				GEngine->GetEngineSubsystem<UBeamRequestTracker>()->TriggerOperationSuccess(Op, {});
 			}
+
+			delete Reader;
 		}
 	}
 
@@ -678,8 +680,7 @@ void UBeamContentSubsystem::InitializeWhenUnrealReady_Implementation(FBeamOperat
 	//if we didn't find cached data use the baked data
 	if (!bFoundDataInCacheFile)
 	{
-		const FString BakedContentPath = FPaths::ProjectContentDir() + CoreSettings->BakedContentFolderName + "/" +
-			CoreSettings->GlobalBakedContentFileName;
+		const FString BakedContentPath = GetBakedContentPath(CoreSettings);
 
 		if (FPlatformFileManager::Get().GetPlatformFile().FileExists(*BakedContentPath))
 		{
@@ -689,9 +690,13 @@ void UBeamContentSubsystem::InitializeWhenUnrealReady_Implementation(FBeamOperat
 			{
 				UBeamContentCache* LoadedBakedContent = NewObject<UBeamContentCache>();
 
-				FBeamMemoryReader Reader(FileData, true);
+				// Get the reader
+				auto Serializer = NewObject<UBeamContentCacheSerializer>(GetTransientPackage(), GetDefault<UBeamCoreSettings>()->DefaultContentSerializer);
+				FArchive* Reader = Serializer->GetDefaultContentCacheSerializer(FileData, false);
 
-				if (LoadedBakedContent->SerializeToBinary(Reader, ContentTypeStringToContentClass, ContentClassToContentTypeString))
+				// Create the Serialization Ctx
+				FBeamContentCacheSerializationContext Ctx(GetGameInstance(), false, *Reader, ContentTypeStringToContentClass, ContentClassToContentTypeString);
+				if (LoadedBakedContent->SerializeToBinary(Ctx, Serializer))
 				{
 					BakedContent.Add(LoadedBakedContent->ManifestId, LoadedBakedContent);
 					LiveContent.Add(LoadedBakedContent->ManifestId, DuplicateObject<UBeamContentCache>(LoadedBakedContent, GetTransientPackage()));
@@ -702,13 +707,16 @@ void UBeamContentSubsystem::InitializeWhenUnrealReady_Implementation(FBeamOperat
 				}
 				else
 				{
-					GEngine->GetEngineSubsystem<UBeamRequestTracker>()->TriggerOperationError(Op,TEXT("Data found in the baked file was corrupted or inconsistent with current version"));
+					UE_LOG(LogBeamContent, Warning, TEXT("Data found in the baked file was corrupted or inconsistent with current version"));
 					GEngine->GetEngineSubsystem<UBeamRequestTracker>()->TriggerOperationSuccess(Op, {});
 				}
+
+				// Clean up the archive instance.
+				delete Reader;
 			}
 			else
 			{
-				GEngine->GetEngineSubsystem<UBeamRequestTracker>()->TriggerOperationError(Op,TEXT("Error while reading the baked content file"));
+				UE_LOG(LogBeamContent, Warning, TEXT("Failed to read the baked file"));
 				GEngine->GetEngineSubsystem<UBeamRequestTracker>()->TriggerOperationSuccess(Op, {});
 			}
 		}
@@ -895,18 +903,26 @@ void UBeamContentSubsystem::DownloadContentObjects(const FBeamContentManifestId 
 		{
 			if (WeakThis.IsValid() && this->Runtime)
 			{
-				if (this->Runtime->RequestTrackerSystem->IsWaitSuccessful(Evt))
+				TArray<FString> Errs;
+				if (this->Runtime->RequestTrackerSystem->IsWaitFailed(Evt, Errs))
 				{
-					auto CoreSettings = GetMutableDefault<UBeamCoreSettings>();
+					this->Runtime->RequestTrackerSystem->TriggerOperationError(Op, FString::Join(Errs, TEXT("\n")));
+					return;
+				}
 
-					const FString CachedContentPath = FPaths::ProjectSavedDir() + CoreSettings->CachedContentFolderName + "/" + CoreSettings->GlobalCachedContentFileName;
-
+				if (this->Runtime->RequestTrackerSystem->IsWaitSuccessful(Evt))
+				{					
+					const FString CachedContentPath = GetCachedContentPath();
 					UBeamContentCache* SavedContent = LiveContent[ManifestId];
 
-					TArray<uint8> SerializedData;
-					FBeamMemoryWriter Writer(SerializedData, true);
 
-					SavedContent->SerializeToBinary(Writer, ContentTypeStringToContentClass, ContentClassToContentTypeString);
+					// Create the Serialization Ctx, serialize and delete the serializer
+					auto Serializer = NewObject<UBeamContentCacheSerializer>(GetTransientPackage(), GetDefault<UBeamCoreSettings>()->DefaultContentSerializer);
+					TArray<uint8> SerializedData;
+					FArchive* Writer = Serializer->GetDefaultContentCacheSerializer(SerializedData, true);
+					FBeamContentCacheSerializationContext Ctx(GetGameInstance(), true, *Writer, ContentTypeStringToContentClass, ContentClassToContentTypeString);
+					SavedContent->SerializeToBinary(Ctx, Serializer);
+					delete Writer;
 
 					if (FFileHelper::SaveArrayToFile(SerializedData, *CachedContentPath))
 					{
@@ -918,13 +934,6 @@ void UBeamContentSubsystem::DownloadContentObjects(const FBeamContentManifestId 
 					}
 
 					this->Runtime->RequestTrackerSystem->TriggerOperationSuccess(Op, {});
-					return;
-				}
-				TArray<FString> Errs;
-				if (this->Runtime->RequestTrackerSystem->IsWaitFailed(Evt, Errs))
-				{
-					this->Runtime->RequestTrackerSystem->TriggerOperationError(Op, FString::Join(Errs, TEXT("\n")));
-					return;
 				}
 			}
 		});
@@ -1338,4 +1347,14 @@ bool UBeamContentSubsystem::EnforceLinks(FBeamContentManifestId ManifestId, TArr
 	}
 
 	return OutLinksToFetch.Num() > 0;
+}
+
+FString UBeamContentSubsystem::GetCachedContentPath()
+{
+	return UBeamContentCache::CACHE_FOLDER / "CC_Global";
+}
+
+FString UBeamContentSubsystem::GetBakedContentPath(UBeamCoreSettings* CoreSettings)
+{
+	return FPaths::ProjectContentDir() + CoreSettings->BakedContentFolderName + "/" + CoreSettings->GlobalBakedContentFileName;
 }
