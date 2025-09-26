@@ -73,7 +73,7 @@ void UBeamConnectivityManager::ConnectionHandler(const FNotificationEvent& Evt, 
 				UserSlots->SaveSlot(UserSlot, this);
 
 				// If we are mapping the UniqueNetIds to Beamable GamerTags, we do so whenever we log in (mapping done implicitly by order of UBeamCoreSettings::RuntimeUserSlots).
-				if (GetDefault<UBeamRuntimeSettings>()->bEnableGameplayFrameworkIntegration)
+				if (GetDefault<UBeamRuntimeSettings>()->bEnableGameplayFrameworkIntegration && Runtime->IsClient())
 				{
 					auto LocalPlayerForSlot = Runtime->GetLocalPlayerForSlot(UserSlot);
 					if (!LocalPlayerForSlot)
