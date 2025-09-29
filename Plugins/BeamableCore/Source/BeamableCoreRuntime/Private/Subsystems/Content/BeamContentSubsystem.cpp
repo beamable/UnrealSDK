@@ -1351,7 +1351,7 @@ bool UBeamContentSubsystem::EnforceLinks(FBeamContentManifestId ManifestId, TArr
 
 FString UBeamContentSubsystem::GetCachedContentPath()
 {
-	return UBeamContentCache::CACHE_FOLDER / "CC_Global";
+	return UBeamContentCache::CACHE_FOLDER() / "CC_Global";
 }
 
 FString UBeamContentSubsystem::GetBakedContentPath(UBeamCoreSettings* CoreSettings)

@@ -760,7 +760,7 @@ void UBeamEditorContent::BakeManifest(FBeamContentManifestId Manifest)
 
 bool UBeamEditorContent::DeleteCachedContentFolder(FString& ErrorMessage)
 {	
-	const FString CachedContentPath = UBeamContentCache::CACHE_FOLDER;
+	const FString CachedContentPath = UBeamContentCache::CACHE_FOLDER();
 
 	// Check if the directory exists
 	if (!FPaths::DirectoryExists(CachedContentPath))

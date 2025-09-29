@@ -21,7 +21,7 @@ class BEAMABLECORE_API UBeamContentCache : public UObject
 	friend class UBeamContentSubsystem;
 
 public:	
-	static const inline FString CACHE_FOLDER = FPaths::ProjectSavedDir() / "Beamable" / "ContentCache"; 
+	static FString CACHE_FOLDER() { return FPaths::ProjectSavedDir() / "Beamable" / "ContentCache"; };
 	
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
 	FBeamContentManifestId ManifestId;
