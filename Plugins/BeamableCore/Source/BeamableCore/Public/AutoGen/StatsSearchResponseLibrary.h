@@ -16,9 +16,9 @@ public:
 	UFUNCTION(BlueprintPure, Category="Beam|Stats|Utils|Json", DisplayName="StatsSearchResponse To JSON String")
 	static FString StatsSearchResponseToJsonString(const UStatsSearchResponse* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Stats|Utils|Make/Break", DisplayName="Make StatsSearchResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
-	static UStatsSearchResponse* Make(TArray<FBeamGamerTag> Ids, UObject* Outer);
+	UFUNCTION(BlueprintPure, Category="Beam|Stats|Utils|Make/Break", DisplayName="Make StatsSearchResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Offset, Limit, Total, Outer", NativeMakeFunc))
+	static UStatsSearchResponse* Make(TArray<FBeamGamerTag> Ids, FOptionalInt32 Offset, FOptionalInt32 Limit, FOptionalInt64 Total, UObject* Outer);
 
 	UFUNCTION(BlueprintPure, Category="Beam|Stats|Utils|Make/Break", DisplayName="Break StatsSearchResponse", meta=(NativeBreakFunc))
-	static void Break(const UStatsSearchResponse* Serializable, TArray<FBeamGamerTag>& Ids);
+	static void Break(const UStatsSearchResponse* Serializable, TArray<FBeamGamerTag>& Ids, FOptionalInt32& Offset, FOptionalInt32& Limit, FOptionalInt64& Total);
 };

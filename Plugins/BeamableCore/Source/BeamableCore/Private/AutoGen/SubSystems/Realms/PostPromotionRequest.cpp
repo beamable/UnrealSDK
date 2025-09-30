@@ -36,7 +36,7 @@ UPostPromotionRequest* UPostPromotionRequest::Make(FBeamPid _SourcePid, FOptiona
 	
 	
 	// Makes a body and fill up with parameters (Blank if no body parameters exist)
-	Req->Body = NewObject<UPromoteRealmRequestBody>(Req);
+	Req->Body = NewObject<URealmsBasicPromoteRealmRequestBody>(Req);
 	Req->Body->SourcePid = _SourcePid;
 	Req->Body->Promotions = _Promotions;
 	Req->Body->ContentManifestIds = _ContentManifestIds;

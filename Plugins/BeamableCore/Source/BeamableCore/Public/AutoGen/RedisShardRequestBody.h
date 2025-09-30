@@ -3,7 +3,8 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
-#include "Serialization/BeamJsonUtils.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalInt32.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
 
 #include "RedisShardRequestBody.generated.h"
 
@@ -14,11 +15,11 @@ class BEAMABLECORE_API URedisShardRequestBody : public UObject, public IBeamJson
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Shard Id", Category="Beam")
-	int32 ShardId = {};
+	FOptionalInt32 ShardId = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Master Host", Category="Beam")
-	FString MasterHost = {};
+	FOptionalString MasterHost = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Slave Hosts", Category="Beam")
-	FString SlaveHosts = {};
+	FOptionalString SlaveHosts = {};
 
 	
 

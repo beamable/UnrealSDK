@@ -65,7 +65,7 @@ class BEAMABLECORERUNTIME_API UBeamContentSubsystem : public UBeamRuntimeSubsyst
 	TMap<UClass*, TArray<UClass*>> RecursivePropertyTypes;
 
 public:
-	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
+	virtual void Initialize(FSubsystemCollectionBase& Collection) override;	
 
 	/**
 	 * For every cooked content manifest tries to load either a local cache from the latest downloaded content (of previous runs) OR falls back to the cooked content with the build. 
@@ -116,14 +116,16 @@ public:
 	 * Tries to get a UBeamContentObject with the given Id from the 'global' (default) manifest.
 	 */
 	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
-	bool TryGetContent(FBeamContentId ContentId, UPARAM(meta=(BeamCastTarget))UBeamContentObject*& OutContent);
+	bool TryGetContent(FBeamContentId ContentId, UPARAM(meta=(BeamCastTarget))
+	                   UBeamContentObject*& OutContent);
 
 
 	/**
 	 * Tries to get a UBeamContentObject with the given Id from the manifest with the given Id.
 	 */
 	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
-	bool TryGetContentFromManifest(FBeamContentManifestId ManifestId, FBeamContentId ContentId, UPARAM(meta=(BeamCastTarget))UBeamContentObject*& OutContent);
+	bool TryGetContentFromManifest(FBeamContentManifestId ManifestId, FBeamContentId ContentId, UPARAM(meta=(BeamCastTarget))
+	                               UBeamContentObject*& OutContent);
 
 	/**
 	 * Checks if the in-memory content caches of the 'global' manfist have the content with the given id.
@@ -141,13 +143,15 @@ public:
 	 * Tries to get a UBeamContentObject with the given Id from the 'global' (default) manifest. This will always return the most recent baked content (either the cooked one or a downloaded and saved one). 
 	 */
 	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
-	bool TryGetBakedContent(FBeamContentId ContentId, UPARAM(meta=(BeamCastTarget))UBeamContentObject*& OutContent);
+	bool TryGetBakedContent(FBeamContentId ContentId, UPARAM(meta=(BeamCastTarget))
+	                        UBeamContentObject*& OutContent);
 
 	/**
 	* Tries to get a UBeamContentObject with the given Id from the manifest with the given Id. This will always return the most recent baked content (either the cooked one or a downloaded and saved one).
 	 */
 	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
-	bool TryGetBakedContentFromManifest(FBeamContentManifestId ManifestId, FBeamContentId ContentId, UPARAM(meta=(BeamCastTarget))UBeamContentObject*& OutContent);
+	bool TryGetBakedContentFromManifest(FBeamContentManifestId ManifestId, FBeamContentId ContentId, UPARAM(meta=(BeamCastTarget))
+	                                    UBeamContentObject*& OutContent);
 
 	/**
 	 * Tries to get a UBeamContentObject with the given Id from the 'global' (default) manifest.
@@ -243,4 +247,7 @@ public:
 	void FetchIndividualContent(FBeamContentManifestId ManifestId, TArray<FBeamContentId> ContentToDownloadFetch, FBeamOperationHandle Op);
 
 	bool EnforceLinks(FBeamContentManifestId ManifestId, TArray<FBeamRemoteContentManifestEntry> ManifestRows, TArray<FBeamContentId>& OutLinksToFetch);
+
+	static FString GetCachedContentPath();
+	static FString GetBakedContentPath(UBeamCoreSettings* CoreSettings);
 };

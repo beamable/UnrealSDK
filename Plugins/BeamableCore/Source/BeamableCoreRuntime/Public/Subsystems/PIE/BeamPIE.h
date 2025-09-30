@@ -481,8 +481,7 @@ public:
 #if !WITH_EDITOR
 		RequestTracker->TriggerOperationSuccess(Op, TEXT(""));
 		return;
-#endif
-
+#else
 		// If we don't have a selected setting, don't do anything.
 		const auto Settings = GetSelectedPIESettings();
 		if (!Settings || Settings->IsDefaultSettings())
@@ -515,6 +514,7 @@ public:
 		}
 
 		PreparePIE(CallingContext, Op);
+#endif
 	}
 
 	/**
@@ -1001,13 +1001,13 @@ public:
 	{
 #if !WITH_EDITOR
 		return true;
-#endif
-
+#else
 		const auto Settings = GetSelectedPIESettings();
 		if (!Settings || Settings->IsDefaultSettings()) return true;
 
 		// We are in a deployed dedicated server (not running from the editor), we won't need to set up the orchestrator's SDK.
 		return !GetDefault<UBeamPIEConfig>()->bIsRunningGameServerLocally;
+#endif
 	}
 
 	/**
@@ -1021,7 +1021,7 @@ public:
 	{
 #if !WITH_EDITOR
 		return Options;
-#endif
+#else
 
 		const auto bHasGamerTag = UGameplayStatics::HasOption(Options, "BeamGamerTag_0");
 		const auto bHasAccessToken = UGameplayStatics::HasOption(Options, "BeamAccessToken_0");
@@ -1106,6 +1106,8 @@ public:
 		}
 
 		return NewOption;
+		
+#endif
 	}
 
 	/**
@@ -1202,7 +1204,7 @@ private:
 						{
 							FTSTicker::GetCoreTicker().AddTicker(FTickerDelegate::CreateLambda([this,WorldContext, Op](const float)
 							{
-								if (!IsValidContext(WorldContext) || !WorldContext->World()) return false;
+								if (!IsValidContext(WorldContext)) return false;
 								ULobby* FoundLobby;
 								if (WorldContext->World()->GetGameInstance()->GetSubsystem<UBeamLobbySubsystem>()->TryGetLobbyById(FGuid{FakeLobbyId}, FoundLobby))
 								{
@@ -1274,7 +1276,7 @@ private:
 		{
 			FTSTicker::GetCoreTicker().AddTicker(FTickerDelegate::CreateLambda([this,PieInstance, WorldContext, Op, PossibleSlotHandles, Runtime](const float)
 			{
-				if (!IsValidContext(WorldContext) || !WorldContext->World()) return false;
+				if (!IsValidContext(WorldContext)) return false;
 				// Let's make sure all the users configured for this PIE instance are done logging in.
 				auto bAreAllUsersAlreadyLoggedIn = true;
 				for (const auto& CurrHandle : PossibleSlotHandles)
@@ -1330,7 +1332,7 @@ private:
 				// Add a ticker function to check if the user is inside a lobby
 				FTSTicker::GetCoreTicker().AddTicker(FTickerDelegate::CreateLambda([=, this](const float)
 				{
-					if (!IsValidContext(WorldContext) || !WorldContext->World()) return false;
+					if (!IsValidContext(WorldContext)) return false;
 		
 					auto bAreAllUsersInTheLobby = true;
 					for (const auto& CurrHandle : PossibleSlotHandles)
@@ -1450,7 +1452,12 @@ private:
 	 */
 	bool IsValidContext(FWorldContext* Context)
 	{
-		return Context != nullptr && Context->WorldType != EWorldType::None;
+		bool bIsValid = Context != nullptr && Context->WorldType != EWorldType::None && Context->World();
+		if (!bIsValid)
+		{
+			UE_LOG(LogBeamEditor, Warning, TEXT("This delegate called was made during terminated PIE Session"));
+		}
+		return bIsValid;
 	}
 
 	/**
@@ -1458,7 +1465,7 @@ private:
 	 */
 	FString GetLogArgs(FString Header, FWorldContext* WorldContext)
 	{
-		if (IsValidContext(WorldContext) && WorldContext->World())
+		if (IsValidContext(WorldContext))
 		{
 			const auto CurrMapName = UWorld::RemovePIEPrefix(WorldContext->World()->GetMapName());
 			return FString::Printf(TEXT("%s [Index: %d, Starting Map: %s, IsServer: %d, NetMode: %d] -"), *Header, FBeamPIE_Utilities::GetPIEInstance(WorldContext), *CurrMapName,
@@ -1480,10 +1487,11 @@ namespace BeamPIE
 		{
 #if !WITH_EDITOR
 			return;
-#endif
+#else
 			UE_LOG(LogBeamRuntime, Warning, TEXT("PRE-INIT PLAY IN EDITOR --- Is Server: %d"), This->IsDedicatedServerInstance());
 			auto BeamPIE = GEngine->GetEngineSubsystem<UBeamPIE>();
 			BeamPIE->PreparePIE_Advanced_NotifyCustomGameInstanceGuard(true);
+#endif
 		}
 
 		/**
@@ -1493,12 +1501,14 @@ namespace BeamPIE
 		{
 #if !WITH_EDITOR
 			return;
-#endif
+#else
+
 			UE_LOG(LogBeamRuntime, Warning, TEXT("INIT PLAY IN EDITOR --- Is Server: %d"), This->IsDedicatedServerInstance());
 			auto BeamPIE = GEngine->GetEngineSubsystem<UBeamPIE>();
 			BeamPIE->PreparePIE_Advanced_NotifyCustomGameInstanceGuard(false);
 			BeamPIE->CPP_PreparePIEOperation(GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot(), This->GetWorld(), {});
 			BeamPIE->PreparePIE_Advanced_NotifyCustomGameInstanceGuard(true);
+#endif
 		}
 
 #if WITH_EDITOR
@@ -1524,10 +1534,11 @@ namespace BeamPIE
 		{
 #if !WITH_EDITOR
 			return false;
-#endif
-
+#else
 			auto BeamPIE = GEngine->GetEngineSubsystem<UBeamPIE>();
 			return BeamPIE->PreparePIE_Advanced_DelayPendingNetGameTravel(This);
+#endif
+
 		}
 	}
 
@@ -1575,9 +1586,10 @@ namespace BeamPIE
 		{
 #if !WITH_EDITOR
 			return Options;
-#endif
+#else
 			const auto PIE = GEngine->GetEngineSubsystem<UBeamPIE>();
 			return PIE->PreparePIE_Advanced_GetExpectedClientPIEOptions(Options, GameMode->GetWorld());
+#endif
 		}
 	}
 }

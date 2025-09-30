@@ -8,12 +8,14 @@
 #include "BeamBackend/BeamRealmHandle.h"
 #include "BeamBackend/BeamRetryConfig.h"
 #include "BeamBackend/ResponseCache/BeamCacheConfig.h"
+#include "Content/BeamContentCacheSerializer.h"
 #include "BeamCoreSettings.generated.h"
 
+class UBeamContentCacheSerializer;
 /**
  * 
  */
-UCLASS(config=Engine, defaultconfig, meta=(DisplayName="Beamable Core"))
+UCLASS(config=BeamEngine, defaultconfig, meta=(DisplayName="Beamable Core"))
 class BEAMABLECORE_API UBeamCoreSettings : public UDeveloperSettings
 {
 	GENERATED_BODY()
@@ -27,7 +29,7 @@ public:
 
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "General", AdvancedDisplay)
 	TArray<TSoftObjectPtr<UBeamEnvironmentData>> BeamablePossibleEnvironments;
-	
+
 	/**
 	* @brief A RealmHandle struct defining the CustomerID and RealmID (CID, PID) that this build will target.
 	* All authentication and non-authenticated requests are made against this realm.
@@ -72,7 +74,7 @@ public:
 	 */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Request/Response")
 	FBeamRetryConfig FallbackRetryConfiguration{{408}, {}, 10, {.5f, 1, 2, 4, 8}, 5};
-		
+
 	/**
 	 * @brief The configuration for cache-ing all requests. Can be overriden via the API in @see UBeamResponseCache.
 	 *
@@ -141,7 +143,7 @@ public:
 	*/
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Content")
 	FString GlobalCachedContentFileName = "CC_Global";
-	
+
 	/**
 	* @brief The name of the folder that is inside the saved folder that all the cached content will go into on runtime.
 	*/
@@ -153,7 +155,13 @@ public:
 	*/
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Content")
 	FString GlobalBakedContentFileName = "BCC_Global";
-	
+
+	/**
+	* @brief A @link UBeamContentCacheSerializer @endlink type that the SDK is supposed to use when de/serializing @link UBeamContentCache @endlink.  
+	*/
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Content")
+	TSubclassOf<UBeamContentCacheSerializer> DefaultContentSerializer = UBeamContentCacheSerializer::StaticClass();
+
 	UFUNCTION(BlueprintCallable)
 	FUserSlot GetOwnerPlayerSlot() const { return FUserSlot{RuntimeUserSlots[0]}; }
 
@@ -171,14 +179,15 @@ public:
 	{
 		if (bSilenceBreakGuardEnsures)
 		{
-			return Serializable != nullptr;		
+			return Serializable != nullptr;
 		}
-		
-		return ensureAlwaysMsgf(Serializable, 
-			TEXT("Trying to break a null Beam Json Serializable object. If you don't care and just want to skip nulls, you can disable this ensure globally at Project Settings -> Beamable Core -> bSilenceBreakGuardEnsures."));	
+
+		return ensureAlwaysMsgf(Serializable,
+		                        TEXT(
+			                        "Trying to break a null Beam Json Serializable object. If you don't care and just want to skip nulls, you can disable this ensure globally at Project Settings -> Beamable Core -> bSilenceBreakGuardEnsures."
+		                        ));
 	}
 
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Experimental")
 	bool bEnableBeamPIE = false;
-	
 };

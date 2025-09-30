@@ -46,11 +46,16 @@ Arguments:
 
 Options:
   --include-prefix                                 If true, the generated .env file will include the local machine name as prefix [default: True]
+  --exclude-otel-creds                             If true, do not ask for otel auth credentials to be put in the env [default: False]
   --instance-count <instance-count>                How many virtual websocket connections the server will open [default: 1]
   --auto-deploy                                    When enabled, automatically deploy dependencies that aren't running [default: False]
+  --include-secret                                 When enabled, includes the legacy SECRET realm secret environment variable [default: False]
   --remove-all-except-pid <remove-all-except-pid>  When enabled, automatically stop all other local instances of this service
   --dryrun                                         [DEPRECATED] Run as much of the command as possible without making any network calls
   --cid <cid>                                      CID (CustomerId) to use (found in Portal->Account); defaults to whatever is in '.beamable/connection-configuration.json'
+  --engine <engine>                                If passed, sets the engine integration that is calling for the command
+  --engine-sdk-version <engine-sdk-version>        The version of the Beamable's SDK running in that Engine
+  --engine-version <engine-version>                The version of the engine that is calling the CLI
   --pid <pid>                                      PID (Realm ID) to use (found in Portal -> Games -> Any Realm's details); defaults to whatever is in '.beamable/connection-configuration.json'
   -q, --quiet                                      When true, skip input waiting and use default arguments (or error if no defaults are possible) [default: False]
   --host <host>                                    This option defines the target Beamable environment. Needed for private cloud customers to target their exclusive Beamable environment. Ignorable by everyone else. Stored in '.beamable/connection-configuration.json'

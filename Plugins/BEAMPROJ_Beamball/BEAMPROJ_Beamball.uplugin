@@ -24,8 +24,7 @@
 		{
 			"Name": "BeamableCore",
 			"Enabled": true
-		},		
-		{
+		},		{
 			"Name": "HathoraSDK",
 			"Enabled": true
 		},

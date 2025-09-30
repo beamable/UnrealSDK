@@ -36,7 +36,7 @@ UPutGameRequest* UPutGameRequest::Make(FBeamPid _RootPID, TArray<UProjectView*> 
 	
 	
 	// Makes a body and fill up with parameters (Blank if no body parameters exist)
-	Req->Body = NewObject<UUpdateGameHierarchyRequestBody>(Req);
+	Req->Body = NewObject<URealmsBasicUpdateGameHierarchyRequestBody>(Req);
 	Req->Body->RootPID = _RootPID;
 	Req->Body->Projects = _Projects;
 	

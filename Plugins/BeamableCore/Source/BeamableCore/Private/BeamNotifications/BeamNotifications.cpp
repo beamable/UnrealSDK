@@ -73,9 +73,12 @@ void UBeamNotifications::Connect(const FUserSlot& Slot, const FBeamRealmUser& Us
 
 		const FOnNotificationEvent& EvtHandler = ConnectionEventHandlers.FindChecked(OutHandle);
 		const bool bDidRun = EvtHandler.ExecuteIfBound(Evt);
-		ensureAlwaysMsgf(bDidRun, TEXT("Notification connection handler was not bound correctly! SLOT=%s, ID=%s, RETRY_COUNT=%d"), *OutHandle.NamespacedSlot, *OutHandle.Id.ToString(),
-		                 RetryCount.FindChecked(OutHandle));
-
+		if (!bDidRun)
+		{
+			UE_LOG(LogBeamNotifications, Verbose, TEXT("Notification connection handler was not bound correctly! SLOT=%s, ID=%s, RETRY_COUNT=%d"), *OutHandle.NamespacedSlot, *OutHandle.Id.ToString(),
+				 RetryCount.FindChecked(OutHandle));
+		}
+		
 		// Reset the retry count
 		RetryCount.Add(OutHandle, 0);
 
@@ -153,7 +156,10 @@ void UBeamNotifications::Connect(const FUserSlot& Slot, const FBeamRealmUser& Us
 
 		const FOnNotificationEvent& EvtHandler = ConnectionEventHandlers.FindChecked(OutHandle);
 		const bool bDidRun = EvtHandler.ExecuteIfBound(Evt);
-		ensureAlwaysMsgf(bDidRun, TEXT("Notification connection handler was not bound correctly! SLOT=%s, ID=%s"), *OutHandle.NamespacedSlot, *OutHandle.Id.ToString());
+		if (!bDidRun)
+		{
+			UE_LOG(LogBeamNotifications, Verbose, TEXT("Notification connection handler was not bound correctly! SLOT=%s, ID=%s"), *OutHandle.NamespacedSlot, *OutHandle.Id.ToString());
+		}
 
 		if (StatusCode == UserSignOutCloseCode)
 		{

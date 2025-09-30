@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
-
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalMapOfString.h"
 
 #include "RealmConfigSaveRequestBody.generated.h"
 
@@ -14,7 +14,7 @@ class BEAMABLECORE_API URealmConfigSaveRequestBody : public UObject, public IBea
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Config", Category="Beam")
-	TMap<FString, FString> Config = {};
+	FOptionalMapOfString Config = {};
 
 	
 

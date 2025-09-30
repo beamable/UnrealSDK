@@ -62,6 +62,24 @@ namespace BeamMultiplayer
 			const auto Lobby = This->GetGameInstance()->GetSubsystem<UBeamLobbySubsystem>();
 			return Lobby->PrepareLoginOptionsByLocalPlayer(This, Options);
 		}
+
+		void Logout(const AController* Controller)
+		{
+			
+			const auto LobbySubsystem = Controller->GetGameInstance()->GetSubsystem<UBeamLobbySubsystem>();
+
+			if (!IsValid(LobbySubsystem))
+			{
+				UE_LOG(LogBeamRuntime, Verbose, TEXT("The lobby system is invalid, you probably stop the game server with the client at same time."))
+				return;
+			}
+			auto UserSlot = LobbySubsystem->GetUserSlotByPlayerController(Controller);
+			
+			LobbySubsystem->TryRemoveLocalPlayerState(Controller);
+
+			const auto UserSlots = GEngine->GetEngineSubsystem<UBeamUserSlots>();
+			UserSlots->ClearServerUserAtSlotSilent(UserSlot, Controller);
+		}
 	}
 
 	void Authentication::PreLoginAsync(const AGameModeBase* GameMode, const FString& Options, const FString& Address, const FUniqueNetIdRepl& UniqueId, const FBeamOperationEventHandlerCode& OperationHandler)

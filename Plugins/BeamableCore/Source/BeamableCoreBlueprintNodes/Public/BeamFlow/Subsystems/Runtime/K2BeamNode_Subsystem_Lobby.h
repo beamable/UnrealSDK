@@ -440,6 +440,25 @@ class UK2BeamNode_GetLocalState_TryBeginUpdateLobby : public UK2BeamNode_GetLoca
 
 #undef LOCTEXT_NAMESPACE
 
+#define LOCTEXT_NAMESPACE "K2BeamNode_GetLocalState_TryBeginUpdateLobby"
+
+UCLASS(meta=(BeamGetLocalState))
+class UK2BeamNode_GetLocalState_TryRemoveLocalPlayerState : public UK2BeamNode_GetLocalState
+{
+	GENERATED_BODY()
+
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Local State - Lobby - TryRemoveLocalPlayerState"); }
+
+	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLobbySubsystem, GetSelf); }
+
+	virtual FName GetFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLobbySubsystem, TryRemoveLocalPlayerState); }
+
+	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamLobbySubsystem::StaticClass(); }
+};
+
+#undef LOCTEXT_NAMESPACE
+
+
 #define LOCTEXT_NAMESPACE "K2BeamNode_GetLocalState_PrepareUpdateName"
 
 UCLASS(meta=(BeamGetLocalState))

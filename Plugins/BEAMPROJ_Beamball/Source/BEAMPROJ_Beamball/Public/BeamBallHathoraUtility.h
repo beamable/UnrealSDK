@@ -66,7 +66,10 @@ public:
 		// For each pair in the Pings map, add it to the JSON object
 		for (const auto& Pair : RegionPings.Pings)
 		{
-			JsonObject->SetNumberField(Pair.Key, Pair.Value);
+			if (Pair.Value != 0)
+			{
+				JsonObject->SetNumberField(Pair.Key, Pair.Value);
+			}
 		}
 
 		// Serialize the JSON object to a string

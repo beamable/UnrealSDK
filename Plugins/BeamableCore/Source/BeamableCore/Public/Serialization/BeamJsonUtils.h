@@ -203,6 +203,10 @@ class BEAMABLECORE_API UBeamJsonUtils final : public UBlueprintFunctionLibrary
 				{
 					Serializer->WriteValue(Value.ToIso8601());
 				}
+				else if constexpr (std::is_same_v<TDataType, FDateTime>)
+				{
+					Serializer->WriteValue(Value.ToIso8601());
+				}
 				else
 				{
 					Serializer->WriteValue(Value);

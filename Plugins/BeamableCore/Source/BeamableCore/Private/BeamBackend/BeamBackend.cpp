@@ -207,7 +207,7 @@ void UBeamBackend::PrepareBeamableRequestToRealm(const TUnrealRequestPtr& Unreal
 
 	// Checking if it's running in a packing build or in the editor.
 	if (FApp::IsGame())
-	{		
+	{
 		// So we know this request comes from Unreal or an UnrealServer (dedicated server builds).
 		if (IsRunningDedicatedServer()) UnrealRequest->SetHeader(HEADER_ENGINE_TYPE, FString::Printf(TEXT("UnrealServer-%s"), *UGameplayStatics::GetPlatformName()));
 		else UnrealRequest->SetHeader(HEADER_ENGINE_TYPE, FString::Printf(TEXT("Unreal-%s"), *UGameplayStatics::GetPlatformName()));
@@ -304,20 +304,10 @@ void UBeamBackend::PrepareBeamableRequestToRealmWithRoutingKey(const TUnrealRequ
 	}
 }
 
-bool UBeamBackend::HandlePIESessionRequestGuard(TUnrealRequestPtr Request, int64 RequestId)
+bool UBeamBackend::HandlePIESessionRequestGuard(FWeakObjectPtr ContextWeakPtr, int64 RequestId)
 {
-	UpdatePieState();
-	if (!bIsInPIE && InFlightPIERequests.Contains(Request))
+	if (!ContextWeakPtr.IsValid())
 	{
-		InFlightPIERequests.Remove(Request);
-
-		// Flag the request as completed so that it gets cleaned up on the next tick
-		if (RequestId != -1)
-		{
-			FBeamRequestContext& RequestContext = *InFlightRequestContexts.Find(RequestId);
-			RequestContext.BeamStatus = AS_Completed;
-		}
-
 		UE_LOG(LogBeamBackend, Warning, TEXT("Ignoring Beamable Request made during terminated PIE Session | REQUEST_ID=%lld"), RequestId);
 		return true;
 	}
@@ -678,7 +668,6 @@ bool UBeamBackend::ExtractDataFromResponse(const FHttpRequestPtr Request, const 
 	}
 	return true;
 }
-
 
 
 /**

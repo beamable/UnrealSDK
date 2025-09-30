@@ -467,6 +467,37 @@ void UBeamUserSlots::ClearUserAtSlot(FUserSlot SlotId, const EUserSlotClearedRea
 	}
 }
 
+void UBeamUserSlots::ClearServerUserAtSlotSilent(FUserSlot SlotId, const UObject* CallingContext)
+{
+	const auto NamespacedSlotId = GetNamespacedSlotId(SlotId, CallingContext);
+	if (FBeamRealmUser ClearedUserData; GetUserDataAtSlot(SlotId, ClearedUserData, CallingContext))
+	{
+		
+		// Remove Slot from list of loaded slots
+		const auto LoadedAtIdx = AuthenticatedUserMapping.FindChecked(NamespacedSlotId);
+		AuthenticatedUsers.RemoveAt(LoadedAtIdx);
+		AuthenticatedUserMapping.Remove(NamespacedSlotId);
+
+		if (LoadedAtIdx < AuthenticatedUsers.Num())
+		{
+			// We need to update the mapping for all the slots that were loaded after the one we just removed.
+			for (auto& UserMapping : AuthenticatedUserMapping)
+			{
+				if (UserMapping.Value > LoadedAtIdx)
+				{
+					UserMapping.Value--;
+				}
+			}
+		}
+
+		UE_LOG(LogBeamUserSlots, Verbose, TEXT("Cleared Authenticated User at Slot!\nUSER_SLOT=%s"), *NamespacedSlotId);
+	}
+	else
+	{
+		UE_LOG(LogBeamUserSlots, Verbose, TEXT("No Authenticated User is loaded at Slot!\nUSER_SLOT=%s"), *NamespacedSlotId);
+	}
+}
+
 void UBeamUserSlots::ClearAllCachedUserDataAtSlot(FUserSlot SlotId)
 {
 	TArray<FString> AllCachedUserSlots;

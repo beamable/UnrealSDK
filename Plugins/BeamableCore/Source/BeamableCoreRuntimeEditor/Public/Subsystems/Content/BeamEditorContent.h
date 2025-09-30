@@ -10,6 +10,7 @@
 #include "Subsystems/BeamEditorSubsystem.h"
 #include "Subsystems/EditorAssetSubsystem.h"
 #include "AutoGen/Arrays/ArrayOfString.h"
+#include "Content/BeamContentCache.h"
 #include "Subsystems/CLI/BeamCli.h"
 #include "Subsystems/CLI/Autogen/StreamData/LocalContentManifestStreamData.h"
 #include "BeamEditorContent.generated.h"
@@ -186,7 +187,7 @@ public:
 	                      UBeamContentObject*& ContentObject, FString& ErrMsg);
 
 	UFUNCTION(BlueprintCallable)
-	bool DuplicateContent(const FBeamContentManifestId& ManifestId, FBeamContentId Id,FString& ErrMsg);
+	bool DuplicateContent(const FBeamContentManifestId& ManifestId, FBeamContentId Id,FString& ErrMsg, FString& CreatedId);
 	
 	/**
 	 * Tries to get the in-memory deserialized @link UBeamContentObject @endlink instance for the given manifest/content id pair.
@@ -239,6 +240,13 @@ public:
 	void BakeManifest(FBeamContentManifestId Manifest);
 
 	/**
+	 * Destroys all local changes by re-downloading the remote manifest and content objects to the local cache. 
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Beam Editor Content", meta = (CallInEditor = "true"))
+	bool DeleteCachedContentFolder(FString& ErrorMessage);
+	
+
+	/**
 	 * @brief Downloads the remote manifest and content objects to the local cache. This destroys all local changes. 
 	 */
 	void PublishManifest(FBeamContentManifestId ContentManifestId, FBeamOperationHandle Op);
@@ -269,10 +277,10 @@ public:
 
 	/**
 	 * Fills the map with each content id for each content type. It respects the hierarchy. 
-	 */	
+	 */
 	[[deprecated("We'll replace this function with a better version of it in the next release (versions that returns FBeamContentId from TSubclassOf<UBeamContentObject>) --- this function will become private.")]]
 	void GetContentTypeToIdMaps(TMap<FName, TArray<TSharedPtr<FName>>>& Map);
-	
+
 private:
 	void RebuildLocalManifestCache(const TArray<ULocalContentManifestStreamData*>& Data);
 	void UpdateLocalManifestCache(ULocalContentManifestStreamData* ToUpdate, ULocalContentManifestStreamData* ToClear);

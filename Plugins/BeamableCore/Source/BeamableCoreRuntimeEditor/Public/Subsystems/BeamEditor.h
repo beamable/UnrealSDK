@@ -9,6 +9,9 @@
 #include "RequestTracker/BeamRequestTracker.h"
 
 #include "AutoGen/SubSystems/Accounts/GetAdminMeRequest.h"
+#include "AutoGen/SubSystems/Auth/AuthenticateRequest.h"
+#include "AutoGen/SubSystems/Realms/GetCustomerAliasAvailableRequest.h"
+#include "AutoGen/SubSystems/Realms/PostCustomerRequest.h"
 #include "EditorSubsystem.h"
 #include "CLI/Autogen/StreamData/DeveloperUserDataStreamData.h"
 
@@ -168,6 +171,8 @@ class BEAMABLECORERUNTIMEEDITOR_API UBeamEditor : public UEditorSubsystem
 
 	static const FBeamRealmHandle Signed_Out_Realm_Handle;
 
+	static inline FName GetOperationEventID_GetRealmOrgsTriggered() { return FName("ON_GET_REALM_ORGS_TRIGGERED"); }
+
 	/** @brief Initializes the subsystem.  */
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 
@@ -270,7 +275,7 @@ public:
 
 	UPROPERTY(BlueprintReadOnly)
 	FBeamCustomerProjectData CurrentProjectData;
-
+	
 	// This will list all the docs pages in the Unreal - (NOT IN USE)
 	UPROPERTY(BlueprintReadOnly, Category="Beam")
 	TArray<FDocsPageItem> DocsPages;
@@ -303,6 +308,18 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Beam", meta=(ExpandBoolAsExecs="ReturnValue"))
 	bool GetActiveProjectAndRealmData(FBeamCustomerProjectData& ProjectData, FBeamProjectRealmData& RealmData);
 
+	/**
+	 * @brief Get all the available games from the CurrentProjectData; if the data is there already.
+	 */
+	UFUNCTION(BlueprintCallable, Category="Beam", meta=(ExpandBoolAsExecs="ReturnValue"))
+	bool TryGetAvailableProjects(TArray<FString>& Projects);
+
+	/**
+ * @brief Get all the available realms from the CurrentProjectData for a specific Project; if the data is there already.
+ */
+	UFUNCTION(BlueprintCallable, Category="Beam", meta=(ExpandBoolAsExecs="ReturnValue"))
+	bool TryGetAvailableProjectRealms(FString Project, TArray<FBeamProjectRealmData>& Realms);
+
 
 	UFUNCTION(BlueprintCallable, Category="Beam", meta=(AutoCreateRefTerm="OnOperationEvent"))
 	void SignOut();
@@ -333,14 +350,28 @@ public:
 	 * @return The OperationHandle for the sign in operation. 
 	 */
 	UFUNCTION(BlueprintCallable, meta=(AutoCreateRefTerm="OnOperationEvent"))
-	FBeamOperationHandle SignInOperation(FString OrgName, FString Email, FString Password, const FBeamOperationEventHandler& OnOperationEvent);
+	FBeamOperationHandle SignInOperation(FString OrgName, FString Pid, FString Email, FString Password, const FBeamOperationEventHandler& OnOperationEvent);
 
 	/**
 	 * @brief Signs in to the beamable editor.	  
 	 * @return The OperationHandle for the sign in operation. 
 	 */
-	FBeamOperationHandle CPP_SignInOperation(FString OrgName, FString Email, FString Password, const FBeamOperationEventHandlerCode& OnOperationEvent);
+	FBeamOperationHandle CPP_SignInOperation(FString OrgName, FString Pid, FString Email, FString Password, const FBeamOperationEventHandlerCode& OnOperationEvent);
 
+	/**
+	 * @brief Fetch the all the realms for the user and feed the CurrentProjectData state.	  
+	 * @return The OperationHandle for the fetch in operation. 
+	 */
+	UFUNCTION(BlueprintCallable, meta=(AutoCreateRefTerm="OnOperationEvent"))
+	FBeamOperationHandle FetchRealmOrgsOperation(FString OrgName, FString Email, FString Password, const FBeamOperationEventHandler& OnOperationEvent);
+
+	/**
+	 * @brief Fetch the all the realms for the user and feed the CurrentProjectData state.	  
+	 * @return The OperationHandle for the fetch in operation. 
+	 */
+	FBeamOperationHandle CPP_FetchRealmOrgsOperation(FString OrgName, FString Email, FString Password, const FBeamOperationEventHandlerCode& OnOperationEvent);
+
+	
 	/**
 	 * @brief Change the current target realm to a new target realm.
 	 * Invokes two global callbacks (on every existing UBeamableEditorSubsystem): first a OnRealmCleanup and then a OnRealmInitialize(). 
@@ -359,13 +390,22 @@ private:
 	/**
 	 * @brief Signs in as a part of the given operation. 
 	 */
-	void SignIn(FString OrgName, FString Email, FString Password, FBeamOperationHandle Op);
+	void SignIn(FString OrgName, FString Pid, FString Email, FString Password, FBeamOperationHandle Op);
 
+	/**
+	 * @brief Fetch the org realms and fill the CurrentProjectData state. 
+	 */
+	void FetchOrgRealms(FString OrgName, FString Email, FString Password, FBeamOperationHandle Op);
+	
 	/**
 	 * @brief Signs automatically using the current CLI info. 
 	 */
 	void SignInWithCliInfo(FBeamOperationHandle Op);
 
+	bool VerifyCLIInstalled(FBeamOperationHandle Op);
+
+	void UpdateCurrentProjectData(FBeamOperationHandle Op);
+	
 	/**
 	 * @brief Call to select a realm as a part of the given operation. 
 	 */
