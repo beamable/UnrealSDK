@@ -1,0 +1,91 @@
+{
+  "SnapshotTimestamp": 1759265150609,
+  "ManifestId": "global",
+  "ProjectData": {
+    "PID": "DE_1752011665993756",
+    "RealmName": "HathoraDemo"
+  },
+  "Author": {
+    "Email": "felipe@beamable.com",
+    "AccountId": 1852385846262784
+  },
+  "IsAutoSnapshot": true,
+  "contents": {
+    "currency.coins": {
+      "properties": {
+        "clientPermission": {
+          "data": {
+            "write_self": false
+          }
+        },
+        "startingAmount": {
+          "data": 250
+        }
+      },
+      "tags": [],
+      "Checksum": "7a0307469aa8de5c3792c1d716fa0e0b85234104"
+    },
+    "currency.gems": {
+      "properties": {
+        "clientPermission": {
+          "data": {
+            "write_self": false
+          }
+        },
+        "startingAmount": {
+          "data": 0
+        }
+      },
+      "tags": [],
+      "Checksum": "45a33a8eb77cccf05272cd3de381ef0d059a8089"
+    },
+    "game_types.solo_queue": {
+      "properties": {
+        "FederatedGameServerNamespace": {
+          "data": "hathora"
+        },
+        "NumericRules": {
+          "data": []
+        },
+        "StringRules": {
+          "data": []
+        },
+        "Teams": {
+          "data": [
+            {
+              "Name": "Solo",
+              "MinPlayers": 2,
+              "MaxPlayers": 2
+            }
+          ]
+        }
+      },
+      "tags": [],
+      "Checksum": "5f032d35617810125fff861c1bced679b7cc8dd1"
+    },
+    "game_types.training": {
+      "properties": {
+        "FederatedGameServerNamespace": {
+          "data": "hathora"
+        },
+        "NumericRules": {
+          "data": []
+        },
+        "StringRules": {
+          "data": []
+        },
+        "Teams": {
+          "data": [
+            {
+              "Name": "Team",
+              "MinPlayers": 1,
+              "MaxPlayers": 1
+            }
+          ]
+        }
+      },
+      "tags": [],
+      "Checksum": "ca92df47e7ce280a35e91fb1aef0207da19e6488"
+    }
+  }
+}

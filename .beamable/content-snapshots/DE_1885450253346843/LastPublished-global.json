@@ -1,0 +1,267 @@
+{
+  "SnapshotTimestamp": 1759264273622,
+  "ManifestId": "global",
+  "ProjectData": {
+    "PID": "DE_1885450253346843",
+    "RealmName": "Beamball"
+  },
+  "Author": {
+    "Email": "felipe@beamable.com",
+    "AccountId": 1852385846262784
+  },
+  "IsAutoSnapshot": true,
+  "contents": {
+    "currency.coins": {
+      "properties": {
+        "clientPermission": {
+          "data": {
+            "write_self": false
+          }
+        },
+        "startingAmount": {
+          "data": 0
+        }
+      },
+      "tags": [],
+      "Checksum": "45a33a8eb77cccf05272cd3de381ef0d059a8089"
+    },
+    "game_types.default": {
+      "properties": {
+        "FederatedGameServerNamespace": {
+          "data": "beamball"
+        },
+        "MaxWaitDurationSecs": {
+          "data": 60
+        },
+        "NumericRules": {
+          "data": []
+        },
+        "StringRules": {
+          "data": []
+        },
+        "Teams": {
+          "data": [
+            {
+              "Name": "TeamA",
+              "MinPlayers": 2,
+              "MaxPlayers": 2
+            }
+          ]
+        }
+      },
+      "tags": [],
+      "Checksum": "f39a246b21bb6efe343363b0bb12b122aa2058f8"
+    },
+    "items.itemskin.skin1": {
+      "properties": {
+        "clientPermission": {
+          "data": {
+            "write_self": false
+          }
+        },
+        "SkinData": {
+          "data": "/BEAMPROJ_Beamball/Database/Skins/Skin1.Skin1"
+        }
+      },
+      "tags": [
+        "asd",
+        "asdasd"
+      ],
+      "Checksum": "86b656f5768bb357de3e259d624cf8a315021f15"
+    },
+    "items.itemskin.skin2": {
+      "properties": {
+        "clientPermission": {
+          "data": {
+            "write_self": false
+          }
+        },
+        "SkinData": {
+          "data": "/BEAMPROJ_Beamball/Database/Skins/Skin2.Skin2"
+        }
+      },
+      "tags": [],
+      "Checksum": "1c286699469c12c51fc8cbf3cc03cc98c99606fe"
+    },
+    "items.itemskin.skin3": {
+      "properties": {
+        "clientPermission": {
+          "data": {
+            "write_self": false
+          }
+        },
+        "SkinData": {
+          "data": "/BEAMPROJ_Beamball/Database/Skins/Skin3.Skin3"
+        }
+      },
+      "tags": [],
+      "Checksum": "653ab678a964275ec52d90457164147361bc084a"
+    },
+    "items.itemskin.skin4": {
+      "properties": {
+        "clientPermission": {
+          "data": {
+            "write_self": false
+          }
+        },
+        "SkinData": {
+          "data": "/BEAMPROJ_Beamball/Database/Skins/Skin4.Skin4"
+        }
+      },
+      "tags": [],
+      "Checksum": "8a89875a73937891b232f8c2a76063f57d685dd8"
+    },
+    "leaderboards.global": {
+      "properties": {
+        "permissions": {
+          "data": {
+            "write_self": true
+          }
+        }
+      },
+      "tags": [],
+      "Checksum": "366b59d652d65d720d123e4fc9c139a926bb988c"
+    },
+    "listings.skin1": {
+      "properties": {
+        "clientData": {
+          "data": {
+            "path": "/Script/BEAMPROJ_Beamball.BeamBallListingDataAsset\u0027/BEAMPROJ_Beamball/Database/Listing/Skin1.Skin1\u0027"
+          }
+        },
+        "offer": {
+          "data": {
+            "titles": [],
+            "descriptions": [],
+            "obtainCurrency": [],
+            "obtainItems": [
+              {
+                "contentId": "items.itemskin.skin1",
+                "properties": []
+              }
+            ]
+          }
+        },
+        "price": {
+          "data": {
+            "type": "currency",
+            "symbol": "currency.coins",
+            "amount": 50
+          }
+        }
+      },
+      "tags": [],
+      "Checksum": "66a98631767b141ab1f5a05ee5b6e5521b2f4a94"
+    },
+    "listings.skin2": {
+      "properties": {
+        "clientData": {
+          "data": {
+            "path": "/Script/BEAMPROJ_Beamball.BeamBallListingDataAsset\u0027/BEAMPROJ_Beamball/Database/Listing/Skin2.Skin2\u0027"
+          }
+        },
+        "offer": {
+          "data": {
+            "titles": [],
+            "descriptions": [],
+            "obtainCurrency": [],
+            "obtainItems": [
+              {
+                "contentId": "items.itemskin.skin2",
+                "properties": []
+              }
+            ]
+          }
+        },
+        "price": {
+          "data": {
+            "type": "currency",
+            "symbol": "currency.coins",
+            "amount": 50
+          }
+        }
+      },
+      "tags": [],
+      "Checksum": "b10bda137d21a61a72ba9f4662eb65b3c907612c"
+    },
+    "listings.skin3": {
+      "properties": {
+        "clientData": {
+          "data": {
+            "path": "/Script/BEAMPROJ_Beamball.BeamBallListingDataAsset\u0027/BEAMPROJ_Beamball/Database/Listing/Skin3.Skin3\u0027"
+          }
+        },
+        "offer": {
+          "data": {
+            "titles": [],
+            "descriptions": [],
+            "obtainCurrency": [],
+            "obtainItems": [
+              {
+                "contentId": "items.itemskin.skin3",
+                "properties": []
+              }
+            ]
+          }
+        },
+        "price": {
+          "data": {
+            "type": "currency",
+            "symbol": "currency.coins",
+            "amount": 50
+          }
+        }
+      },
+      "tags": [],
+      "Checksum": "7608836c244aaecde85d74b42d59c08081f519d2"
+    },
+    "listings.skin4": {
+      "properties": {
+        "clientData": {
+          "data": {
+            "path": "/Script/BEAMPROJ_Beamball.BeamBallListingDataAsset\u0027/BEAMPROJ_Beamball/Database/Listing/Skin4.Skin4\u0027"
+          }
+        },
+        "offer": {
+          "data": {
+            "titles": [],
+            "descriptions": [],
+            "obtainCurrency": [],
+            "obtainItems": [
+              {
+                "contentId": "items.itemskin.skin4",
+                "properties": []
+              }
+            ]
+          }
+        },
+        "price": {
+          "data": {
+            "type": "currency",
+            "symbol": "currency.coins",
+            "amount": 50
+          }
+        }
+      },
+      "tags": [],
+      "Checksum": "f74a48ac11d65c5cf7fd9009246e3cd53dc4fb8d"
+    },
+    "stores.SkinStore": {
+      "properties": {
+        "listings": {
+          "links": [
+            "listings.skin1",
+            "listings.skin2",
+            "listings.skin3",
+            "listings.skin4"
+          ]
+        },
+        "title": {
+          "data": "Skin Store"
+        }
+      },
+      "tags": [],
+      "Checksum": "ce882f65e9ee8020058c0e321c5629de6c949a01"
+    }
+  }
+}
