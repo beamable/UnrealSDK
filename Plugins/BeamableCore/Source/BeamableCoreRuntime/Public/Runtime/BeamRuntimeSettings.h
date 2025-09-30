@@ -61,7 +61,7 @@ public:
 	 * @brief Whether or not we should download each individual content JSON when beamable is ready for use.
 	 */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Content")
-	bool bDownloadIndividualContentOnStart = false;
+	bool bDownloadIndividualContentOnStart = true;
 
 	/**
 	 * @brief Specify filters for which content to download when bDownloadIndividualContentOnStart is true. This has 3 cases:
