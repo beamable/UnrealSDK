@@ -16,7 +16,7 @@ FBeamOperationHandle UBeamOTELManagerEditor::OnRealmInitialized(FBeamRealmHandle
 	
 	auto Cli = GEditor->GetEditorSubsystem<UBeamCli>();
 	
-	Cli->RunCommand(PruneCommand, {TEXT("--delete-all")}, {});
+	Cli->RunCommand(PruneCommand, {TEXT("--delete-all"), TEXT("-q")}, {});
 
 	return Super::OnRealmInitialized(NewRealm);
 }
