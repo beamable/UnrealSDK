@@ -112,7 +112,8 @@ void UBeamUserDeveloperManagerEditor::TriggerOnUserSlotAuthenticated(const FUser
 				FString::Printf(TEXT("--pid %s"), *BeamRealmUser.RealmHandle.Pid.AsString),
 				FString::Printf(TEXT("--cid %s"), *BeamRealmUser.RealmHandle.Cid.AsString),
 				FString::Printf(TEXT("--gamer-tag %s"), *BeamRealmUser.GamerTag.AsString),
-				FString::Printf(TEXT("--user-type %d"), UserType)
+				FString::Printf(TEXT("--user-type %d"), UserType),
+				FString::Printf(TEXT("-q"))
 			};
 
 			auto Handler = RequestTracker->CPP_BeginOperation({}, GetName(), {});
@@ -561,12 +562,12 @@ void UBeamUserDeveloperManagerEditor::RunPsCommand(FBeamOperationHandle Operatio
 			if (WatchCommand->Stream.Num() == 0) RequestTracker->TriggerOperationError(OperationHandle, TEXT("Failed to fetch initial full-rebuild event"));
 
 			const auto ReqProcess = FString::Printf(TEXT("--require-process-id %d"), FPlatformProcess::GetCurrentProcessId());
-			BeamCli->RunCommand(WatchCommand, {TEXT("-w"), ReqProcess}, {});
+			BeamCli->RunCommand(WatchCommand, {TEXT("-w"), ReqProcess, TEXT("-q")}, {});
 		}
 	};
 
 	const auto ReqProcess = FString::Printf(TEXT("--require-process-id %d"), FPlatformProcess::GetCurrentProcessId());
-	BeamCli->RunCommand(WatchCommand, {TEXT("-w"), ReqProcess}, {});
+	BeamCli->RunCommand(WatchCommand, {TEXT("-w"), ReqProcess, TEXT("-q")}, {});
 }
 
 

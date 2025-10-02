@@ -62,7 +62,7 @@ FBeamOperationHandle UBeamCli::InitializeWhenEditorReady()
 
 
 	// Try to run the CLI once just to see if it is installed. If Launch returns "true", that means the CLI was found in this machine's PATH. 
-	IsInstalledProcess = MakeUnique<FMonitoredProcess>(UBeamCliCommand::GetDotnetPath(), TEXT("beam version"), FPaths::ProjectDir(), true, true);
+	IsInstalledProcess = MakeUnique<FMonitoredProcess>(UBeamCliCommand::GetDotnetPath(), TEXT("beam version -q"), FPaths::ProjectDir(), true, true);
 	IsInstalledProcess->OnOutput().BindLambda([this, Op, ExpectedVersion](const FString& InstalledVersion)
 	{
 		// We dispatch to the GameThread as triggering operation events should always be done in the GameThread.
@@ -107,7 +107,7 @@ FBeamOperationHandle UBeamCli::InitializeWhenEditorReady()
 	// If we couldn't find a local CLI version --- set it as false.
 	if (!IsInstalledProcess->Launch())
 	{
-		IsInstalledProcess = MakeUnique<FMonitoredProcess>(UBeamCliCommand::GetDotnetPath(), TEXT("--version"), FPaths::ProjectDir(), true, false);
+		IsInstalledProcess = MakeUnique<FMonitoredProcess>(UBeamCliCommand::GetDotnetPath(), TEXT("--version -q"), FPaths::ProjectDir(), true, false);
 		const auto didLaunchDotnet = IsInstalledProcess->Launch();
 		if (!didLaunchDotnet)
 		{
