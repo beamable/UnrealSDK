@@ -10,11 +10,13 @@ namespace Beamable.DiscordSampleMs
 		/// </summary>
 		public static async Task Main()
 		{
-			// inject data from the CLI.
-			await MicroserviceBootstrapper.Prepare<DiscordSampleMs>();
+			// Creating the builder that we use to setup the config of microservice
+			var beamConfigBuilder = BeamServer.Create();
+
+			beamConfigBuilder.IncludeRoutes<DiscordSampleMs>(routePrefix: "");
 			
-			// run the Microservice code
-			await MicroserviceBootstrapper.Start<DiscordSampleMs>();
+			// Start the microservice and keep the process running
+			await beamConfigBuilder.RunForever();
 		}
 	}
 }

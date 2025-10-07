@@ -11,11 +11,13 @@ namespace Beamable.BeamballMs
 		/// </summary>
 		public static async Task Main()
 		{
-			// inject data from the CLI.
-			await MicroserviceBootstrapper.Prepare<BeamballMs>();
+			// Creating the builder that we use to setup the config of microservice
+			var beamConfigBuilder = BeamServer.Create();
+
+			beamConfigBuilder.IncludeRoutes<BeamballMs>(routePrefix: "");
 			
-			// run the Microservice code
-			await MicroserviceBootstrapper.Start<BeamballMs>();
+			// Start the microservice and keep the process running
+			await beamConfigBuilder.RunForever();
 		}
 	}
 }
