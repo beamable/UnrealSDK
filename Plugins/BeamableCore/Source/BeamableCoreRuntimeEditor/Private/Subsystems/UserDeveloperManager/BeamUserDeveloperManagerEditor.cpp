@@ -510,7 +510,7 @@ void UBeamUserDeveloperManagerEditor::UpdateDeveloperUserInfo(FBeamGamerTag Game
 	UpdateInfoCommand->OnCompleted = [this](const int&, const FBeamOperationHandle&)
 	{
 	};
-
+	
 	FString TagsStr = "";
 
 	for (auto tag : Tags)

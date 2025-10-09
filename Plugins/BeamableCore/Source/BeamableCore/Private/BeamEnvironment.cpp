@@ -37,6 +37,26 @@ FString UBeamEnvironment::GetAPIUrl()
 	return Data->APIUrl;
 }
 
+bool UBeamEnvironment::RefreshEnvData()
+{
+	const UBeamCoreSettings* beamCoreSettings = GetDefault<UBeamCoreSettings>();
+	if (!Data)
+	{
+		Data = beamCoreSettings->BeamableEnvironment.LoadSynchronous();
+		return true;
+	}else
+	{
+		auto NewData = beamCoreSettings->BeamableEnvironment.LoadSynchronous();
+		
+		if (NewData && NewData->APIUrl != Data->APIUrl)
+		{
+			Data = NewData;
+			return true;
+		}
+	}
+	return false;
+}
+
 
 const FString FBeamPackageVersion::PREVIEW_STRING = FString::Printf(TEXT("PREVIEW"));
 const FString FBeamPackageVersion::RC_STRING = FString::Printf(TEXT("RC"));

@@ -57,6 +57,7 @@ struct FDocsPageItem
 	}
 };
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FEditorUserLogout);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FEditorMessageClickedEvent);
 
@@ -204,7 +205,7 @@ class BEAMABLECORERUNTIMEEDITOR_API UBeamEditor : public UEditorSubsystem
 	 * @brief Stored lambda delegate handle for what this subsystem does when the editor is fully initialized (kick off the Beamable Editor Integration initialization flow).
 	 */
 	FDelegateHandle EditorInitializedHandle;
-
+	
 	/**
 	 * @brief When a realm change is requested, we notify all UBeamEditorSubsystems that exist so that they can prepare for the change.
 	 * They return operation handles that we wait on. When done, we change the realm.
@@ -275,6 +276,10 @@ public:
 
 	UPROPERTY(BlueprintReadOnly)
 	FBeamCustomerProjectData CurrentProjectData;
+
+	// Called when the editor user logout
+	UPROPERTY(BlueprintReadWrite, BlueprintAssignable)
+	FEditorUserLogout OnLogout;
 	
 	// This will list all the docs pages in the Unreal - (NOT IN USE)
 	UPROPERTY(BlueprintReadOnly, Category="Beam")

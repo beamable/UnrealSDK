@@ -140,4 +140,7 @@ public:
 
 	UFUNCTION()
 	FString GetAPIUrl();
+
+	UFUNCTION()
+	bool RefreshEnvData();
 };

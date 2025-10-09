@@ -413,6 +413,7 @@ void UBeamEditor::SignOut()
 		{
 			UserSlotClearedHandler = UserSlots->GlobalUserSlotClearedCodeHandler.AddUFunction(this, GET_FUNCTION_NAME_CHECKED(UBeamEditor, OnUserSlotCleared));
 			UserSlots->ClearUserAtSlot(GetMainEditorSlot(), USCR_Manual, true);
+			OnLogout.Broadcast();
 		}
 		else
 		{
