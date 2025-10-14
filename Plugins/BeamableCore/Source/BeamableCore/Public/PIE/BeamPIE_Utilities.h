@@ -128,7 +128,7 @@ public:
 			return true;
 		}
 
-		if (CallingContext && GEngine)
+		if (CallingContext && GEngine && CallingContext->GetWorld())
 		{
 			const auto WorldContext = GEngine->GetWorldContextFromWorld(CallingContext->GetWorld());
 
