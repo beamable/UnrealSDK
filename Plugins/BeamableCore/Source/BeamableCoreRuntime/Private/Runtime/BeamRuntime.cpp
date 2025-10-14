@@ -2463,7 +2463,8 @@ void UBeamRuntime::RunPostAuthenticationSetup_CacheLocalAccountInfo(const UAccou
 	UserSlotSystem->SetGamerTagAtSlot(UserSlot, GamerTag, this);
 	if (Email.IsSet) UserSlotSystem->SetEmailAtSlot(UserSlot, Email.Val, this);
 	if (ExternalIds.IsSet) UserSlotSystem->SetExternalIdsAtSlot(UserSlot, ExternalIds.Val, this);
-
+	UserSlotSystem->SaveSlot(UserSlot, this);
+	
 	FBeamRealmUser BeamRealmUser;
 	if (ensureAlways(UserSlotSystem->GetUserDataAtSlot(UserSlot, BeamRealmUser, this)))
 	{
