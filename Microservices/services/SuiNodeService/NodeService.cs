@@ -238,5 +238,13 @@ namespace SuiNodeServicve
                 "withdrawCurrency",
                 new object[] { requestJson, realmAccountPrivateKey, environment }) ?? "";
         }
+
+        public static async Task<string> TransferSui(string to, long amount, string realmKey, string environment)
+        {
+            return await StaticNodeJSService.InvokeFromFileAsync<string>(
+                BridgeModulePath,
+                "transferSui",
+                new object[] { to, amount, realmKey, environment });
+        }
     }
 }

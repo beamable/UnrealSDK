@@ -747,8 +747,9 @@ async function burnNft(callback: Callback<string>, request: string, realmKey: st
     try {
         const suiClient = getSuiClientInstance(environment);
         const gameKeypair = Ed25519Keypair.fromSecretKey(realmKey);
+        const workingKeypair = Ed25519Keypair.fromSecretKey(deleteRequests[0].WorkingWalletKey);
         const playerKeypair = Ed25519Keypair.fromSecretKey(deleteRequests[0].PlayerWalletKey);
-        const gameWallet = gameKeypair.toSuiAddress();
+        const workingWallet = workingKeypair.toSuiAddress();
         const txb = new Transaction();
         const currentTime = Date.now();
 
@@ -777,7 +778,7 @@ async function burnNft(callback: Callback<string>, request: string, realmKey: st
         }
 
         let payment: SuiObjectRef[] = [];
-        const coins = await suiClient.getCoins({ owner: gameWallet, limit: 1 });
+        const coins = await suiClient.getCoins({ owner: workingWallet, limit: 1 });
         if (coins.data.length > 0) {
             payment = coins.data.map((coin) => ({
                 objectId: coin.coinObjectId,
@@ -785,21 +786,21 @@ async function burnNft(callback: Callback<string>, request: string, realmKey: st
                 digest: coin.digest,
             }));
         } else {
-            throw new Error(`Can't find gas coins from sponsor ${gameWallet}.`);
+            throw new Error(`Can't find gas coins from sponsor ${workingWallet}.`);
         }
 
         const kindBytes = await txb.build({ onlyTransactionKind: true, client: suiClient });
         const sponsoredTxb = Transaction.fromKind(kindBytes);
         sponsoredTxb.setSender(playerKeypair.toSuiAddress());
-        sponsoredTxb.setGasOwner(gameWallet);
+        sponsoredTxb.setGasOwner(workingWallet);
         sponsoredTxb.setGasPayment(payment);
-        const sponsoredBytes = await sponsoredTxb.build({ client: suiClient });
-        const developerSignature = await gameKeypair!.signTransaction(sponsoredBytes);
+        const sponsoredBytes = await sponsoredTxb.build({ client: suiClient })
         const playerSignature = await playerKeypair!.signTransaction(sponsoredBytes);
+        const workingSignature = await workingKeypair!.signTransaction(sponsoredBytes);
 
         const response = await suiClient.executeTransactionBlock({
             transactionBlock: sponsoredBytes,
-            signature: [developerSignature.signature, playerSignature.signature],
+            signature: [workingSignature.signature, playerSignature.signature],
             options: {
                 showEffects: true,
                 showEvents: true,
@@ -972,6 +973,35 @@ async function withdrawCurrency(callback: Callback<string>, request: string, dev
     callback(error, JSON.stringify(result));
 }
 
+async function transferSui(callback: Callback<string>, toAddress: string, amount: number, realmKey: string, environment: Environment) {
+    let error = null;
+    const result = new SuiTransactionResult();
+    try {
+        const suiClient = getSuiClientInstance(environment);
+        const keypair = Ed25519Keypair.fromSecretKey(decodeSuiPrivateKey(realmKey));
+        const tx = new Transaction();
+        const [coin] = tx.splitCoins(tx.gas, [amount]);
+        tx.transferObjects([coin], toAddress);
+        const response = await suiClient.signAndExecuteTransaction({
+            signer: keypair,
+            transaction: tx,
+            options: {
+                showEffects: true
+            }
+        });
+        if (response.effects != null) {
+            result.status = response.effects.status.status;
+            result.gasUsed = calculateTotalCost(response.effects.gasUsed);
+            result.digest = response.effects.transactionDigest;
+            result.objectIds = response.effects.created?.map(o => o.reference.objectId);
+            result.error = response.effects.status.error;
+        }
+    } catch (ex) {
+        error = ex;
+    }
+    callback(error, JSON.stringify(result));
+}
+
 module.exports = {
     createWallet,
     importWallet,
@@ -988,5 +1018,6 @@ module.exports = {
     updateNft,
     objectExists,
     burnNft,
-    withdrawCurrency
+    withdrawCurrency,
+    transferSui
 };

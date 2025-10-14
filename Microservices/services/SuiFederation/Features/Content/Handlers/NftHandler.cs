@@ -16,6 +16,7 @@ using Beamable.SuiFederation.Features.SuiApi;
 using Beamable.SuiFederation.Features.SuiApi.Models;
 using Beamable.SuiFederation.Features.Transactions;
 using Beamable.SuiFederation.Features.Transactions.Storage.Models;
+using Beamable.SuiFederation.Features.WalletManager;
 using SuiFederationCommon.Extensions;
 using SuiFederationCommon.Models;
 
@@ -28,14 +29,16 @@ public class NftHandler : IService, IContentHandler
     private readonly TransactionManagerFactory _transactionManagerFactory;
     private readonly MintCollection _mintCollection;
     private readonly AccountsService _accountsService;
+    private readonly WalletManagerService _walletManagerService;
 
-    public NftHandler(ContractService contractService, SuiApiService suiApiService, TransactionManagerFactory transactionManagerFactory, MintCollection mintCollection, AccountsService accountsService)
+    public NftHandler(ContractService contractService, SuiApiService suiApiService, TransactionManagerFactory transactionManagerFactory, MintCollection mintCollection, AccountsService accountsService, WalletManagerService walletManagerService)
     {
         _contractService = contractService;
         _suiApiService = suiApiService;
         _transactionManagerFactory = transactionManagerFactory;
         _mintCollection = mintCollection;
         _accountsService = accountsService;
+        _walletManagerService = walletManagerService;
     }
 
     public async Task<BaseMessage?> ConstructMessage(string transaction, string wallet, InventoryRequest inventoryRequest, IContentObject contentObject)
@@ -77,6 +80,8 @@ public class NftHandler : IService, IContentHandler
     {
         var contract = await _contractService.GetByContentId<NftContract>(inventoryRequest.ToNftType());
         var playerAccount = await _accountsService.GetAccountByAddress(wallet);
+        var transactionManager = _transactionManagerFactory.Create(transaction);
+        var workingWallet = await _walletManagerService.GetWorkingWallet(transactionManager);
         return new NftDeleteMessage(
             inventoryRequest.ContentId,
             contract.PackageId,
@@ -85,7 +90,8 @@ public class NftHandler : IService, IContentHandler
             wallet,
             inventoryRequest.ProxyId,
             contract.OwnerInfo,
-            playerAccount!.PrivateKey
+            playerAccount!.PrivateKey,
+            workingWallet.PrivateKey
         );
     }
 

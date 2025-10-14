@@ -127,6 +127,7 @@ export interface NftDeleteMessage {
     PlayerWalletKey: string;
     PlayerWalletAddress: string;
     OwnerObjectId: string;
+    WorkingWalletKey: string;
 }
 
 export class CoinToken {

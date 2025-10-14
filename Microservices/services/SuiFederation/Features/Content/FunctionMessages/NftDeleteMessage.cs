@@ -12,7 +12,8 @@ public record NftDeleteMessage(
     string PlayerWalletAddress,
     string ProxyId,
     string OwnerObjectId,
-    string PlayerWalletKey)
+    string PlayerWalletKey,
+    string WorkingWalletKey)
     : BaseMessage(ContentId, PackageId, Module, Function, PlayerWalletAddress)
 {
     public string SerializeSelected()

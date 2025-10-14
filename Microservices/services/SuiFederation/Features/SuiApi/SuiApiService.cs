@@ -335,4 +335,23 @@ public class SuiApiService : IService
             }
         }
     }
+
+    public async Task<SuiTransactionResult> TransferSui(string toAddress, long amount)
+    {
+        using (new Measure($"Sui.TransferSui to: {toAddress}"))
+        {
+            try
+            {
+                var realmAccount = await _accountsService.GetOrCreateRealmAccount();
+                var environment = await _configuration.SuiEnvironment;
+                var jsonString = await NodeService.TransferSui(toAddress, amount, realmAccount.PrivateKey, environment);
+                return JsonSerializer.Deserialize<SuiTransactionResult>(jsonString) ?? throw new Exception();
+            }
+            catch (Exception ex)
+            {
+                BeamableLogger.LogError("Can't TransferSui to {address}. Error: {error}", toAddress, ex.Message);
+                throw new SuiApiException($"TransferSui: {ex.Message}");
+            }
+        }
+    }
 }

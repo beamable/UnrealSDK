@@ -23,6 +23,7 @@ public class TransactionManager
 
     private readonly AsyncLocal<ObjectId?> _currentTransaction = new();
     private static int _inflightTransactions;
+    public static readonly string InstanceId = Guid.NewGuid().ToString();
 
     private static readonly JsonSerializerOptions JsonSerializerOptions = new()
     {
@@ -105,7 +106,7 @@ public class TransactionManager
         }
     }
 
-    private async Task<ObjectId> StartTransaction<TRequest>(string walletAddress, string? inventoryTransaction, string operationName, TRequest request)
+    public async Task<ObjectId> StartTransaction<TRequest>(string walletAddress, string? inventoryTransaction, string operationName, TRequest request)
     {
         return await StartTransaction(walletAddress, inventoryTransaction, operationName, request, _requestContext.UserId, _requestContext.Path);
     }

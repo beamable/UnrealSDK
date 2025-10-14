@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Beamable.Server;
 using Beamable.SuiFederation.Features.LockManager.Storage.Models;
@@ -19,10 +21,11 @@ public class LockCollection(IStorageObjectConnectionProvider storageObjectConnec
                 (await storageObjectConnectionProvider.SuiFederationStorageDatabase()).GetCollection<Lock>("lock");
             await _collection.Indexes.CreateManyAsync(new[]
             {
-                new CreateIndexModel<Lock>(Builders<Lock>.IndexKeys.Ascending(x => x.Name),
+                new CreateIndexModel<Lock>(Builders<Lock>.IndexKeys
+                        .Ascending(x => x.LockId)
+                        .Ascending(x => x.InstanceId),
                     new CreateIndexOptions
                     {
-                        Name = "name",
                         Unique = true
                     }),
                 new CreateIndexModel<Lock>(Builders<Lock>.IndexKeys.Ascending(x => x.Expiration),
@@ -36,29 +39,32 @@ public class LockCollection(IStorageObjectConnectionProvider storageObjectConnec
         return _collection;
     }
 
-    public async Task<bool> AcquireLock(string name, int lockTimeoutSeconds)
+    public async Task<bool> AcquireLock(string name, string instanceId, int lockTimeoutSeconds)
     {
         var collection = await Get();
-        var filter = Builders<Lock>.Filter.Eq(x => x.Name, name);
-
-        var update = Builders<Lock>.Update
-            .SetOnInsert(x => x.Name, name)
-            .SetOnInsert(x => x.Expiration, DateTime.UtcNow.AddSeconds(lockTimeoutSeconds));
-
-        var options = new FindOneAndUpdateOptions<Lock>
+        try
         {
-            IsUpsert = true,
-            ReturnDocument = ReturnDocument.After
-        };
-
-        var result = await collection.FindOneAndUpdateAsync(filter, update, options);
-        return result != null;
+            var newLock = new Lock(name, instanceId, DateTime.UtcNow.AddSeconds(lockTimeoutSeconds));
+            await collection.InsertOneAsync(newLock);
+            return true;
+        }
+        catch (MongoWriteException ex) when (ex.WriteError.Category == ServerErrorCategory.DuplicateKey)
+        {
+            return false;
+        }
     }
 
     public async Task ReleaseLock(string name)
     {
         var collection = await Get();
-        var filter = Builders<Lock>.Filter.Eq(x => x.Name, name);
-        await collection.DeleteOneAsync(filter);
+        var filter = Builders<Lock>.Filter.Eq(x => x.LockId, name);
+        await collection.DeleteOneAsync(filter, CancellationToken.None);
+    }
+
+    public async Task<List<string>> GetLocked()
+    {
+        var collection = await Get();
+        var locks = await collection.Find(_ => true).Project(l => l.LockId).ToListAsync();
+        return locks ?? [];
     }
 }

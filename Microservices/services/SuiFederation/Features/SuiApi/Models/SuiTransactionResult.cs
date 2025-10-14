@@ -1,3 +1,5 @@
+using System;
+
 namespace Beamable.SuiFederation.Features.SuiApi.Models;
 
 public record SuiTransactionResult(
@@ -5,4 +7,7 @@ public record SuiTransactionResult(
     string digest,
     string gasUsed,
     string[] objectIds,
-    string error);
+    string error)
+{
+    public bool IsSuccess => status.Equals("success", StringComparison.OrdinalIgnoreCase);
+}
