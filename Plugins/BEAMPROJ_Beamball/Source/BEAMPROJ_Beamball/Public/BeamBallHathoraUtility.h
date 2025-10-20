@@ -39,7 +39,7 @@ public:
 						else
 						{
 							UE_LOG(LogTemp, Display, TEXT("Failed to update Hathora Pings"));
-							Runtime->RequestTrackerSystem->TriggerOperationSuccess(Op, {});
+							Runtime->RequestTrackerSystem->TriggerOperationError(Op, {});
 						}
 					});
 

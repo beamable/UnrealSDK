@@ -256,4 +256,8 @@ private:
 
 	// Utility Functions
 	void InvalidateLiveTicket(FBeamMatchmakingTicket& LiveTicket);
+
+	void CommitRegionPing(FUserSlot UserSlot, TMap<FString, int32> RegionPings, FBeamOperationEventHandlerCode Handler);
+	
+	static FString ConvertRegionPingsToJson(TMap<FString, int32> RegionPings);
 };
