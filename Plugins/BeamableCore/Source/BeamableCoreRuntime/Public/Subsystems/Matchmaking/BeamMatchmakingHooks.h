@@ -14,7 +14,9 @@ class UBeamMatchmakingHookHandle : public UObject, public IBeamOperationEventDat
 
 public:
 	const UObject* Context;
+	UPROPERTY(BlueprintReadOnly)
 	FBeamOperationHandle OperationHandle;
+	UPROPERTY(BlueprintReadWrite)
 	TMap<FString, int32> PingsPerRegion;
 	
 };
@@ -31,6 +33,4 @@ public:
 	UFUNCTION(BlueprintNativeEvent)
 	void UpdatePings(UBeamMatchmakingHookHandle* MatchmakingHookHandle);
 	virtual void UpdatePings_Implementation(UBeamMatchmakingHookHandle* MatchmakingHookHandle);
-
-	void TImer(UBeamMatchmakingHookHandle* MatchmakingHookHandle);
 };

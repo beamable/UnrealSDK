@@ -123,7 +123,7 @@ FBeamOperationHandle UBeamMatchmakingSubsystem::TryJoinQueueOperation(FUserSlot 
 	MatchmakingHookHandle->Context = this;
 	MatchmakingHookHandle->OperationHandle = Runtime->RequestTrackerSystem->BeginOperation({UserSlot}, GetClass()->GetFName().ToString(), {});;
 	
-	auto Extension = NewObject<UBeamMatchmakingHooks>();
+	auto Extension = NewObject<UBeamMatchmakingHooks>(GetTransientPackage(), GetDefault<UBeamRuntimeSettings>()->DefaultMatchmakingHook.LoadSynchronous());
 	Extension->UpdatePings(MatchmakingHookHandle);
 	
 	auto OnWaitCompleted = FOnWaitCompleteCode::CreateLambda([this, UserSlot, GameTypeQueue, Team, MatchmakingHookHandle, Handle](FBeamWaitCompleteEvent Evt)
@@ -549,6 +549,10 @@ void UBeamMatchmakingSubsystem::InvalidateLiveTicket(FBeamMatchmakingTicket& Liv
 
 void UBeamMatchmakingSubsystem::CommitRegionPing(FUserSlot UserSlot, TMap<FString, int32> RegionPings, FBeamOperationEventHandlerCode Handler)
 {
+	for (auto Ping : RegionPings)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("%s %d"), *Ping.Key, Ping.Value);
+	}
 	const FString PingsJson = ConvertRegionPingsToJson(RegionPings);
 
 	TMap<FString, FString> StatsMap;
