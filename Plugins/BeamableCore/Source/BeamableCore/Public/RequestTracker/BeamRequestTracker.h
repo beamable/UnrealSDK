@@ -3,12 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "BeamHookHandle.h"
 #include "BeamOperation.h"
 #include "BeamBackend/BeamBackend.h"
 #include "RequestTracker/BeamWaitHandle.h"
 #include "RequestTracker/BeamOperationHandle.h"
 
 #include "BeamRequestTracker.generated.h"
+
 
 
 // If we have the default one, let's pass along '-1' only if there were no dependent requests. If there, were assume it's a sequential chain and we are being called in the latest request's handler.
@@ -27,6 +29,7 @@ DECLARE_DELEGATE_RetVal(FBeamOperationHandle, FDelayedOperation)
 #define DEFINE_BEAM_OPERATION_HOOK_SixParams(HookName, ...) EXPAND(DECLARE_DELEGATE_RetVal_SixParams(FBeamOperationHandle, HookName, __VA_ARGS__))
 #define DEFINE_BEAM_OPERATION_HOOK_SevenParams(HookName, ...) EXPAND(DECLARE_DELEGATE_RetVal_SevenParams(FBeamOperationHandle, HookName, __VA_ARGS__))
 #define DEFINE_BEAM_OPERATION_HOOK_EightParams(HookName, ...) EXPAND(DECLARE_DELEGATE_RetVal_EightParams(FBeamOperationHandle, HookName, __VA_ARGS__))
+
 
 
 UCLASS(BlueprintType, NotBlueprintable)
@@ -268,7 +271,36 @@ public:
 		UE_LOG(LogBeamRequestTracker, Error, TEXT("%s"), *Error);
 		return false;
 	}
+
+	template <typename FHook, typename... Args>
+	bool InvokeAndWaitSequentiallyForHooks(FHook& Hooks, FOnWaitCompleteCode Handler, Args&&... args)
+	{
+		return true;
+	}
+
+	FBeamOperationHandle PreHookCall(UBeamHookHandle* Handle)
+	{
+		return Handle->OperationHandle = CPP_BeginOperation({}, GetName(), {});
+	}
+		
 	
+	UFUNCTION(BlueprintCallable)
+	virtual void CompleteOperationSuccess(UBeamHookHandle* Handle)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("CompleteOperationSuccess"));
+		FBeamOperationHandle RunningOperation = Handle->OperationHandle;
+		Handle->OperationHandle = BeginOperation({}, GetName(), {});
+		TriggerOperationSuccess(RunningOperation, "");
+	}
+	
+	UFUNCTION(BlueprintCallable)
+	virtual void CompleteOperationFail(UBeamHookHandle* Handle)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("CompleteOperationFail"));
+		FBeamOperationHandle RunningOperation = Handle->OperationHandle;
+		Handle->OperationHandle = BeginOperation({}, GetName(), {});
+		TriggerOperationError(RunningOperation, "");
+	}
 	/***
 	 *       ____                        __  _                 
 	 *      / __ \____  ___  _________ _/ /_(_)___  ____  _____

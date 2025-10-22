@@ -110,46 +110,69 @@ bool UBeamMatchmakingSubsystem::TryGetTicket(const FUserSlot& Slot, FBeamMatchma
 	Ticket = {};
 	return false;
 }
-
+DEFINE_BEAM_OPERATION_HOOK_OneParam(FOnBeamableTryJoinMatchmakingQueue, UBeamMatchmakingHookHandle*);
 
 // OPERATIONS
 
 FBeamOperationHandle UBeamMatchmakingSubsystem::TryJoinQueueOperation(FUserSlot UserSlot, FBeamContentId GameTypeQueue, FOptionalString Team, FBeamOperationEventHandler OnOperationEvent)
 {
-	
 	const FBeamOperationHandle Handle = Runtime->RequestTrackerSystem->BeginOperation({UserSlot}, GetClass()->GetFName().ToString(), OnOperationEvent);
 	
-	auto MatchmakingHookHandle = NewObject<UBeamMatchmakingHookHandle>(GetTransientPackage());
-	MatchmakingHookHandle->Context = this;
-	MatchmakingHookHandle->OperationHandle = Runtime->RequestTrackerSystem->BeginOperation({UserSlot}, GetClass()->GetFName().ToString(), {});;
+	TArray<FOnBeamableTryJoinMatchmakingQueue> TryJoinMatchmakingQueue;
 	
-	auto Extension = NewObject<UBeamMatchmakingHooks>(GetTransientPackage(), GetDefault<UBeamRuntimeSettings>()->DefaultMatchmakingHook.LoadSynchronous());
-	Extension->UpdatePings(MatchmakingHookHandle);
-	
-	auto OnWaitCompleted = FOnWaitCompleteCode::CreateLambda([this, UserSlot, GameTypeQueue, Team, MatchmakingHookHandle, Handle](FBeamWaitCompleteEvent Evt)
-	{
-		FBeamOperationEventHandlerCode StatsOperationHandle;
-		StatsOperationHandle.BindLambda([this, UserSlot, GameTypeQueue, Team, Handle](FBeamOperationEvent Evt)
-		{
-			UE_LOG(LogTemp, Display, TEXT("Updated Region Pings"));
+	TArray<TSoftClassPtr<UBeamMatchmakingHooks>> PreBeamHooksSoftPtr = GetDefault<UBeamRuntimeSettings>()->DefaultTryJoinMatchmakingHook;
 
-			if (Evt.EventType == OET_SUCCESS)
-			{
-				UE_LOG(LogTemp, Warning, TEXT("Join Matchmaking Queue"));
-				TryJoinQueue(UserSlot, GameTypeQueue, Team, {}, Handle);
-			}
-			else
-			{
-				UE_LOG(LogTemp, Display, TEXT("Failed to update Region Pings"));
-				RequestTracker->TriggerOperationError(Handle, {});
-			}
-		});
+	// Running Pre Hook Calls
+	for (auto HookSoftPtr : PreBeamHooksSoftPtr)
+	{
+		TryJoinMatchmakingQueue.Add(FOnBeamableTryJoinMatchmakingQueue::CreateLambda([this, HookSoftPtr](UBeamMatchmakingHookHandle* HookHandle)
+		{
+			UBeamMatchmakingHooks* Extension = NewObject<UBeamMatchmakingHooks>(GetTransientPackage(), HookSoftPtr.LoadSynchronous());
+			Extension->SetContext(this);
+			
+			auto OperationHandle = RequestTracker->PreHookCall( HookHandle );
+			Extension->TryJoinQueueHookAction(HookHandle);
+			return OperationHandle;
+		}));
+	}
+	// Running Update Ping
+
+	
+	TryJoinMatchmakingQueue.Add(FOnBeamableTryJoinMatchmakingQueue::CreateLambda([this](UBeamMatchmakingHookHandle* HookHandle)
+	{
+		UBeamMatchmakingHooks* Extension = NewObject<UBeamMatchmakingHooks>(GetTransientPackage(), GetDefault<UBeamRuntimeSettings>()->DefaultMatchmakingHook.LoadSynchronous());
+		Extension->SetContext(this);
 		
-		CommitRegionPing(UserSlot, MatchmakingHookHandle->PingsPerRegion, StatsOperationHandle);
+		auto OperationHandle = RequestTracker->PreHookCall( HookHandle );
+		Extension->UpdatePings(HookHandle);
+		return OperationHandle;
+	}));
+	
+	// Running Commit Ping
+	TryJoinMatchmakingQueue.Add(FOnBeamableTryJoinMatchmakingQueue::CreateLambda([this, UserSlot](UBeamMatchmakingHookHandle* HookHandle)
+	{
+		auto OperationHandle = RequestTracker->PreHookCall( HookHandle );
+		CommitRegionPing(UserSlot, HookHandle->PingsPerRegion, OperationHandle);
+		return OperationHandle;
+	}));
+	
+	
+	const auto HookWaitHandler = TDelegate<void(FBeamWaitCompleteEvent)>::CreateLambda([this, UserSlot, GameTypeQueue, Team, Handle](FBeamWaitCompleteEvent Evt)
+	{
+		TArray<FString> Errs;
+		if (RequestTracker->IsWaitFailed(Evt, Errs))
+		{
+			FString Err;
+			for (const auto& Error : Errs) Err += FString::Printf(TEXT("%s\n"), *Error);
+			
+			RequestTracker->TriggerOperationError(Handle, Err);
+			return;
+		}
+		TryJoinQueue(UserSlot, GameTypeQueue, Team, {}, Handle);
 	});
 	
-	TArray<FBeamWaitHandle> WaitHandle;
-	RequestTracker->CPP_WaitAll({}, {MatchmakingHookHandle->OperationHandle}, WaitHandle, OnWaitCompleted);
+	FBeamWaitHandle _;
+	RequestTracker->InvokeAndWaitSequentiallyForHooks(_, TryJoinMatchmakingQueue, HookWaitHandler,  NewObject<UBeamMatchmakingHookHandle>(GetTransientPackage()));
 	
 	return Handle;
 }
@@ -547,12 +570,25 @@ void UBeamMatchmakingSubsystem::InvalidateLiveTicket(FBeamMatchmakingTicket& Liv
 	OnMatchTimedOutCode.Remove(InvalidatedTicket.TicketId);
 }
 
-void UBeamMatchmakingSubsystem::CommitRegionPing(FUserSlot UserSlot, TMap<FString, int32> RegionPings, FBeamOperationEventHandlerCode Handler)
+void UBeamMatchmakingSubsystem::CommitRegionPing(FUserSlot UserSlot, TMap<FString, int32> RegionPings, FBeamOperationHandle OperationHandle)
 {
-	for (auto Ping : RegionPings)
+	FBeamOperationEventHandlerCode StatsOperationHandle;
+	StatsOperationHandle.BindLambda([this, OperationHandle](FBeamOperationEvent Evt)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("%s %d"), *Ping.Key, Ping.Value);
-	}
+		UE_LOG(LogTemp, Display, TEXT("Updated Region Pings"));
+	
+		if (Evt.EventType == OET_SUCCESS)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Join Matchmaking Queue"));
+			RequestTracker->TriggerOperationSuccess(OperationHandle, "Success");
+		}
+		else
+		{
+			UE_LOG(LogTemp, Display, TEXT("Failed to update Region Pings"));
+			RequestTracker->TriggerOperationError(OperationHandle, "Failed to update Region Pings");
+		}
+	});
+	
 	const FString PingsJson = ConvertRegionPingsToJson(RegionPings);
 
 	TMap<FString, FString> StatsMap;
@@ -560,9 +596,13 @@ void UBeamMatchmakingSubsystem::CommitRegionPing(FUserSlot UserSlot, TMap<FStrin
 
 	UBeamStatsSubsystem* Stats = GetGameInstance()->GetSubsystem<UBeamStatsSubsystem>();
 	UBeamStatUpdateCommand* Command;
+	
 	if (Stats->TryCreateUpdateCommand(UserSlot, StatsMap, Command))
 	{
-		Stats->CPP_CommitStatsOperation(UserSlot, Handler);
+		Stats->CPP_CommitStatsOperation(UserSlot, StatsOperationHandle);
+	}else
+	{
+		RequestTracker->TriggerOperationError(OperationHandle, "Failed to update Region Pings");
 	}
 }
 

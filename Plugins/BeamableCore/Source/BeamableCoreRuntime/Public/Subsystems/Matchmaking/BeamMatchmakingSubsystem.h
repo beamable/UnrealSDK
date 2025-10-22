@@ -205,6 +205,7 @@ public:
 	 */
 	FBeamOperationHandle CPP_TryJoinQueueOperation(FUserSlot UserSlot, const FBeamContentId& GameTypeQueue, FOptionalString Team, FBeamOperationEventHandlerCode OnOperationEvent);
 
+	
 	/**
 	 * @brief Joins the given game type queue.
 	 * The user in the given user slot is added to the queue. If that user is in a party:
@@ -257,7 +258,7 @@ private:
 	// Utility Functions
 	void InvalidateLiveTicket(FBeamMatchmakingTicket& LiveTicket);
 
-	void CommitRegionPing(FUserSlot UserSlot, TMap<FString, int32> RegionPings, FBeamOperationEventHandlerCode Handler);
+	void CommitRegionPing(FUserSlot UserSlot, TMap<FString, int32> RegionPings, FBeamOperationHandle OperationHandle);
 	
 	static FString ConvertRegionPingsToJson(TMap<FString, int32> RegionPings);
 };
