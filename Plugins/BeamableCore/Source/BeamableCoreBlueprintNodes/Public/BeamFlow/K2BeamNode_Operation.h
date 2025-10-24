@@ -25,7 +25,7 @@ enum EOperationNodeModes
 /**
  * 
  */
-UCLASS(NotBlueprintable, NotBlueprintType, Hidden, meta=(BeamFlowNode))
+UCLASS(NotBlueprintable, NotBlueprintType, meta=(BeamFlowNode))
 class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_Operation : public UK2BeamNode_BeamFlow
 {
 	GENERATED_BODY()

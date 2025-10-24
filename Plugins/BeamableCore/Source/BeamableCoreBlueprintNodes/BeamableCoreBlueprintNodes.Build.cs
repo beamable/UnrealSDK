@@ -26,6 +26,7 @@ public class BeamableCoreBlueprintNodes : ModuleRules
 				"Projects", // Required to use IPluginManager in order to configure new Slate styles
 				"ToolMenus",
 				"ToolMenusEditor", 
+				"DeveloperSettings"
 			}
 		);
 

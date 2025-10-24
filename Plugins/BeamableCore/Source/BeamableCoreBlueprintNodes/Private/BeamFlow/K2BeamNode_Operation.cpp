@@ -3,6 +3,7 @@
 
 #include "BeamFlow/K2BeamNode_Operation.h"
 
+#include "BeamBlueprintSettings.h"
 #include "BeamK2.h"
 #include "K2Node_BreakStruct.h"
 #include "K2Node_CallFunction.h"
@@ -87,15 +88,34 @@ UClass* UK2BeamNode_Operation::GetRuntimeSubsystemClass() const
 
 TMap<FName, UClass*> UK2BeamNode_Operation::GetOperationEventCastClass(EBeamOperationEventType Type) const
 {
-	return {
-	};
+	TMap<FName, UClass*> CastMap = {};
+	auto Map = GetDefault<UBeamBlueprintSettings>()->Config;
+	if (Map.Contains(GetClass()))
+	{
+		for (auto Item : Map[GetClass()].SubEvents)
+		{
+			CastMap.Add(FName(Item.SubEventName), Item.CastClass.LoadSynchronous());
+		}
+	}
+	
+	return CastMap;
 }
 
 TArray<FName> UK2BeamNode_Operation::GetOperationEventIds(EBeamOperationEventType Type) const
 {
-	return {
+	TArray<FName> Names = {
 		NAME_None,
 	};
+	auto Map = GetDefault<UBeamBlueprintSettings>()->Config;
+	if (Map.Contains(GetClass()))
+	{
+		for (auto Item : Map[GetClass()].SubEvents)
+		{
+			Names.Add(FName(Item.SubEventName));
+		}
+	}
+
+	return Names;
 }
 
 

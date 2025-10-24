@@ -15,7 +15,7 @@ void UBeamMatchmakingHooks::SetContext(const UObject* ContextReference)
 
 void UBeamMatchmakingHooks::UpdatePings_Implementation(UBeamMatchmakingHookHandle* MatchmakingHookHandle)
 {
-	GEngine->GetEngineSubsystem<UBeamRequestTracker>()->TriggerOperationSuccessWithData(MatchmakingHookHandle->OperationHandle, "Success", MatchmakingHookHandle);
+	GEngine->GetEngineSubsystem<UBeamRequestTracker>()->TriggerOperationSuccess(MatchmakingHookHandle->CurrentOperationHandle, "Success");
 }
 
 void UBeamMatchmakingHooks::TryJoinQueue_Implementation(FUserSlot Slot, FBeamContentId GameTypeQueue, FOptionalString Team, FOptionalArrayOfBeamTag Tags, FBeamOperationHandle Op)

@@ -280,7 +280,7 @@ public:
 
 	FBeamOperationHandle PreHookCall(UBeamHookHandle* Handle)
 	{
-		return Handle->OperationHandle = CPP_BeginOperation({}, GetName(), {});
+		return Handle->CurrentOperationHandle = CPP_BeginOperation({}, GetName(), {});
 	}
 		
 	
@@ -288,8 +288,8 @@ public:
 	virtual void CompleteOperationSuccess(UBeamHookHandle* Handle)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("CompleteOperationSuccess"));
-		FBeamOperationHandle RunningOperation = Handle->OperationHandle;
-		Handle->OperationHandle = BeginOperation({}, GetName(), {});
+		FBeamOperationHandle RunningOperation = Handle->CurrentOperationHandle;
+		Handle->CurrentOperationHandle = BeginOperation({}, GetName(), {});
 		TriggerOperationSuccess(RunningOperation, "");
 	}
 	
@@ -297,10 +297,12 @@ public:
 	virtual void CompleteOperationFail(UBeamHookHandle* Handle)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("CompleteOperationFail"));
-		FBeamOperationHandle RunningOperation = Handle->OperationHandle;
-		Handle->OperationHandle = BeginOperation({}, GetName(), {});
+		FBeamOperationHandle RunningOperation = Handle->CurrentOperationHandle;
+		Handle->CurrentOperationHandle = BeginOperation({}, GetName(), {});
 		TriggerOperationError(RunningOperation, "");
 	}
+
+	
 	/***
 	 *       ____                        __  _                 
 	 *      / __ \____  ___  _________ _/ /_(_)___  ____  _____

@@ -15,5 +15,5 @@ void UBeamBallMatchmakingHooks::UpdatePings_Implementation(UBeamMatchmakingHookH
 void UBeamBallMatchmakingHooks::OnUpdatePings(FHathoraRegionPings Result, UBeamMatchmakingHookHandle* MatchmakingHookHandle)
 {
 	MatchmakingHookHandle->PingsPerRegion = Result.Pings;
-	GEngine->GetEngineSubsystem<UBeamRequestTracker>()->TriggerOperationSuccessWithData(MatchmakingHookHandle->OperationHandle, "Success", MatchmakingHookHandle);
+	GEngine->GetEngineSubsystem<UBeamRequestTracker>()->TriggerOperationSuccessWithData(MatchmakingHookHandle->CurrentOperationHandle, "Success", MatchmakingHookHandle);
 }

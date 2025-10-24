@@ -16,8 +16,11 @@ class BEAMABLECORE_API UBeamHookHandle : public UObject
 	GENERATED_BODY()
 
 public:
+
+	UPROPERTY(BlueprintReadOnly)
+	FBeamOperationHandle MainOperationHandle;
 	
 	UPROPERTY(BlueprintReadOnly)
-	FBeamOperationHandle OperationHandle;
+	FBeamOperationHandle CurrentOperationHandle;
 
 };
