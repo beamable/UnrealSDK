@@ -16,7 +16,7 @@ class BEAMPROJ_BEAMBALL_API UBeamBallMatchmakingHooks : public UBeamMatchmakingH
 	GENERATED_BODY()
 
 public:
-	virtual void UpdatePings_Implementation(UBeamMatchmakingHookHandle* MatchmakingHookHandle) override;
+	virtual void UpdatePings_Implementation(UBeamMatchmakingTryJoinQueueHookHandle* MatchmakingHookHandle) override;
 
-	void OnUpdatePings(FHathoraRegionPings Result, UBeamMatchmakingHookHandle* MatchmakingHookHandle);
+	void OnUpdatePings(FHathoraRegionPings Result, UBeamMatchmakingTryJoinQueueHookHandle* MatchmakingHookHandle);
 };

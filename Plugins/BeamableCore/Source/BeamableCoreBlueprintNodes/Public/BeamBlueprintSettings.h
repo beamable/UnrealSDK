@@ -15,6 +15,9 @@ public:
 	UPROPERTY(EditAnywhere, Config, BlueprintReadWrite, Category="Sub Event")
 	FString SubEventName;
 	
+	UPROPERTY(EditAnywhere, Config, BlueprintReadWrite, Category="Sub Event")
+	TEnumAsByte<EBeamOperationEventType> Type;
+	
 	UPROPERTY(EditAnywhere, Config, BlueprintReadWrite, Category="Sub Event", meta=(MustImplement="BeamOperationEventData"))
 	TSoftClassPtr<UObject> CastClass;
 };

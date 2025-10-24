@@ -278,6 +278,24 @@ public:
 		return true;
 	}
 
+	template <class  T = UBeamHookHandle>
+	T* BeginHookHandle(FBeamOperationEventHandler OnOperationEvent, UObject* Outer = (UObject*)GetTransientPackage())
+	{
+		static_assert(std::is_base_of_v<UBeamHookHandle, T>, "This FHook does not derive from UBeamHookHandle.");
+		T* Result = NewObject<T>(Outer);
+		Result->MainOperationHandle = BeginOperation({}, Outer->GetName(), OnOperationEvent);
+		return Result;
+	}
+
+	template <class  T = UBeamHookHandle>
+	T* BeginHookHandle(FBeamOperationEventHandlerCode OnOperationEvent, UObject* Outer = (UObject*)GetTransientPackage())
+	{
+		static_assert(std::is_base_of_v<UBeamHookHandle, T>, "This FHook does not derive from UBeamHookHandle.");
+		T* Result = NewObject<T>(Outer);
+		Result->MainOperationHandle = CPP_BeginOperation({}, Outer->GetName(), OnOperationEvent);
+		return Result;
+	}
+	
 	FBeamOperationHandle PreHookCall(UBeamHookHandle* Handle)
 	{
 		return Handle->CurrentOperationHandle = CPP_BeginOperation({}, GetName(), {});
@@ -288,18 +306,14 @@ public:
 	virtual void CompleteOperationSuccess(UBeamHookHandle* Handle)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("CompleteOperationSuccess"));
-		FBeamOperationHandle RunningOperation = Handle->CurrentOperationHandle;
-		Handle->CurrentOperationHandle = BeginOperation({}, GetName(), {});
-		TriggerOperationSuccess(RunningOperation, "");
+		TriggerOperationSuccess(Handle->CurrentOperationHandle, "");
 	}
 	
 	UFUNCTION(BlueprintCallable)
 	virtual void CompleteOperationFail(UBeamHookHandle* Handle)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("CompleteOperationFail"));
-		FBeamOperationHandle RunningOperation = Handle->CurrentOperationHandle;
-		Handle->CurrentOperationHandle = BeginOperation({}, GetName(), {});
-		TriggerOperationError(RunningOperation, "");
+		TriggerOperationError(Handle->CurrentOperationHandle, "");
 	}
 
 	

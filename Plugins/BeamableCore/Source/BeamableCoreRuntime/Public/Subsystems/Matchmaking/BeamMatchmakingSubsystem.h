@@ -95,6 +95,8 @@ class BEAMABLECORERUNTIME_API UBeamMatchmakingSubsystem : public UBeamRuntimeSub
 {
 	GENERATED_BODY()
 
+	friend class UBeamMatchmakingHooks;
+	
 	UPROPERTY()
 	UBeamMatchmakingApi* MatchmakingApi;
 

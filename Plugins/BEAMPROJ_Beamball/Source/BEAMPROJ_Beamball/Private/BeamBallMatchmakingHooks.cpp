@@ -6,13 +6,13 @@
 #include "HathoraSDK.h"
 #include "RequestTracker/BeamRequestTracker.h"
 
-void UBeamBallMatchmakingHooks::UpdatePings_Implementation(UBeamMatchmakingHookHandle* MatchmakingHookHandle)
+void UBeamBallMatchmakingHooks::UpdatePings_Implementation(UBeamMatchmakingTryJoinQueueHookHandle* MatchmakingHookHandle)
 {
 	
 	FHathoraSDK::Instance()->GetRegionalPings(FHathoraOnGetRegionalPings::CreateUObject(this, &UBeamBallMatchmakingHooks::OnUpdatePings, MatchmakingHookHandle));
 }
 
-void UBeamBallMatchmakingHooks::OnUpdatePings(FHathoraRegionPings Result, UBeamMatchmakingHookHandle* MatchmakingHookHandle)
+void UBeamBallMatchmakingHooks::OnUpdatePings(FHathoraRegionPings Result, UBeamMatchmakingTryJoinQueueHookHandle* MatchmakingHookHandle)
 {
 	MatchmakingHookHandle->PingsPerRegion = Result.Pings;
 	GEngine->GetEngineSubsystem<UBeamRequestTracker>()->TriggerOperationSuccessWithData(MatchmakingHookHandle->CurrentOperationHandle, "Success", MatchmakingHookHandle);

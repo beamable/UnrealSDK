@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "BeamHookHandle.h"
+#include "BeamBackend/SemanticTypes/BeamContentId.h"
 #include "RequestTracker/BeamOperation.h"
 #include "RequestTracker/BeamRequestTracker.h"
 #include "UObject/Object.h"
@@ -12,7 +13,7 @@
 
 
 UCLASS(BlueprintType, Blueprintable)
-class UBeamMatchmakingHookHandle : public UBeamHookHandle
+class UBeamMatchmakingTryJoinQueueHookHandle : public UBeamHookHandle
 {
 	GENERATED_BODY()
 
@@ -46,14 +47,19 @@ public:
 	void SetContext(const UObject* Context);
 	
 	UFUNCTION(BlueprintNativeEvent)
-	void UpdatePings(UBeamMatchmakingHookHandle* MatchmakingHookHandle);
-	virtual void UpdatePings_Implementation(UBeamMatchmakingHookHandle* MatchmakingHookHandle);
+	void UpdatePings(UBeamMatchmakingTryJoinQueueHookHandle* MatchmakingHookHandle);
+	virtual void UpdatePings_Implementation(UBeamMatchmakingTryJoinQueueHookHandle* MatchmakingHookHandle);
 
+	
+	UFUNCTION(BlueprintNativeEvent)
+	void PreTryJoinQueueHookAction(UBeamMatchmakingTryJoinQueueHookHandle* MatchmakingHookHandle);
+	virtual void PreTryJoinQueueHookAction_Implementation(UBeamMatchmakingTryJoinQueueHookHandle* MatchmakingHookHandle);
+	
 	UFUNCTION(BlueprintNativeEvent)
 	void TryJoinQueue(FUserSlot Slot, FBeamContentId GameTypeQueue, FOptionalString Team, FOptionalArrayOfBeamTag Tags, FBeamOperationHandle Op);
 	virtual void TryJoinQueue_Implementation(FUserSlot Slot, FBeamContentId GameTypeQueue, FOptionalString Team, FOptionalArrayOfBeamTag Tags, FBeamOperationHandle Op);
 
 	UFUNCTION(BlueprintNativeEvent)
-	void TryJoinQueueHookAction(UBeamMatchmakingHookHandle* MatchmakingHookHandle);
-	virtual void TryJoinQueueHookAction_Implementation(UBeamMatchmakingHookHandle* MatchmakingHookHandle);
+	void AfterTryJoinQueueHookAction(UBeamMatchmakingTryJoinQueueHookHandle* MatchmakingHookHandle);
+	virtual void AfterTryJoinQueueHookAction_Implementation(UBeamMatchmakingTryJoinQueueHookHandle* MatchmakingHookHandle);
 };
