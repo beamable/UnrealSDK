@@ -8,11 +8,6 @@
 #include "Subsystems/Matchmaking/BeamMatchmakingSubsystem.h"
 
 
-void UBeamMatchmakingHooks::SetContext(const UObject* ContextReference)
-{
-	this->Context = ContextReference;
-}
-
 void UBeamMatchmakingHooks::UpdatePings_Implementation(UBeamMatchmakingTryJoinQueueHookHandle* MatchmakingHookHandle)
 {
 	GEngine->GetEngineSubsystem<UBeamRequestTracker>()->TriggerOperationSuccess(MatchmakingHookHandle->CurrentOperationHandle, "Success");

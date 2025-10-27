@@ -94,7 +94,10 @@ TMap<FName, UClass*> UK2BeamNode_Operation::GetOperationEventCastClass(EBeamOper
 	{
 		for (auto Item : Map[GetClass()].SubEvents)
 		{
-			CastMap.Add(FName(Item.SubEventName), Item.CastClass.LoadSynchronous());
+			if (Item.Type == Type && Item.CastClass != nullptr)
+			{
+				CastMap.Add(FName(Item.SubEventName), Item.CastClass.LoadSynchronous());
+			}
 		}
 	}
 	
@@ -111,7 +114,10 @@ TArray<FName> UK2BeamNode_Operation::GetOperationEventIds(EBeamOperationEventTyp
 	{
 		for (auto Item : Map[GetClass()].SubEvents)
 		{
-			Names.Add(FName(Item.SubEventName));
+			if (Item.Type == Type)
+			{
+				Names.Add(FName(Item.SubEventName));
+			}
 		}
 	}
 

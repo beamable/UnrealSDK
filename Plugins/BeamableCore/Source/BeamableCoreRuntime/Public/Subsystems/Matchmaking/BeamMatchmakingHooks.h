@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "BeamHookHandle.h"
 #include "BeamBackend/SemanticTypes/BeamContentId.h"
+#include "Hooks/BeamBaseHook.h"
 #include "RequestTracker/BeamOperation.h"
 #include "RequestTracker/BeamRequestTracker.h"
 #include "UObject/Object.h"
@@ -27,24 +28,14 @@ public:
  * 
  */
 UCLASS(BlueprintType, Blueprintable)
-class BEAMABLECORERUNTIME_API UBeamMatchmakingHooks : public UObject
+class BEAMABLECORERUNTIME_API UBeamMatchmakingHooks : public UBeamBaseHook
 {
 	GENERATED_BODY()
-	UWorld* GetWorld() const override
-	{
-		if (IsTemplate() || !GetOuter())
-		{
-			return nullptr;
-		}
-		return Context->GetWorld();
-	}
-	//
-	const UObject* Context;
-	
+
 public:
 	// UBeamMatchmakingHooks(const UObject* Context);
 
-	void SetContext(const UObject* Context);
+
 	
 	UFUNCTION(BlueprintNativeEvent)
 	void UpdatePings(UBeamMatchmakingTryJoinQueueHookHandle* MatchmakingHookHandle);
