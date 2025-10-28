@@ -1,3 +1,89 @@
 ﻿<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
 	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=08443E6FF4EB5D4A8A7D096F9B1E41B7/Shortcut/@EntryValue">beam_uk2foreach</s:String>
-	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=9EF276074B12AF47967D13FFC1B8C291/Shortcut/@EntryValue">beam_uk2getlocalstate</s:String></wpf:ResourceDictionary>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=4C5C716110B0584CAEA3BD4A54ED4FCD/@KeyIndexDefined">True</s:Boolean>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=4C5C716110B0584CAEA3BD4A54ED4FCD/Applicability/=Live/@EntryIndexedValue">True</s:Boolean>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=4C5C716110B0584CAEA3BD4A54ED4FCD/Field/=METHOD_005FNAME/@KeyIndexDefined">True</s:Boolean>
+	<s:Int64 x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=4C5C716110B0584CAEA3BD4A54ED4FCD/Field/=METHOD_005FNAME/Order/@EntryValue">0</s:Int64>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=4C5C716110B0584CAEA3BD4A54ED4FCD/Field/=SUBSYSTEM_005FNAME/@KeyIndexDefined">True</s:Boolean>
+	<s:Int64 x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=4C5C716110B0584CAEA3BD4A54ED4FCD/Field/=SUBSYSTEM_005FNAME/Order/@EntryValue">1</s:Int64>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=4C5C716110B0584CAEA3BD4A54ED4FCD/Reformat/@EntryValue">True</s:Boolean>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=4C5C716110B0584CAEA3BD4A54ED4FCD/Scope/=F6696F8185506F41B9C4252540BE9C18/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=4C5C716110B0584CAEA3BD4A54ED4FCD/Scope/=F6696F8185506F41B9C4252540BE9C18/Type/@EntryValue">InCppFile</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=4C5C716110B0584CAEA3BD4A54ED4FCD/Shortcut/@EntryValue">beam_foreach_k2</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=4C5C716110B0584CAEA3BD4A54ED4FCD/ShortenQualifiedReferences/@EntryValue">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=4C5C716110B0584CAEA3BD4A54ED4FCD/Text/@EntryValue">#define LOCTEXT_NAMESPACE "K2BeamNode_GetLocalStateForeach_$METHOD_NAME$"
+
+UCLASS(meta=(BeamGetLocalStateForeach))
+class UK2BeamNode_GetLocalStateForeach_$METHOD_NAME$ : public UK2BeamNode_GetLocalStateForeach
+{
+	GENERATED_BODY()
+
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Local State - $SUBSYSTEM_NAME$ - $METHOD_NAME$"); }
+
+	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeam$SUBSYSTEM_NAME$Subsystem, GetSelf); }
+
+	virtual FName GetFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeam$SUBSYSTEM_NAME$Subsystem, $METHOD_NAME$); }
+
+	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeam$SUBSYSTEM_NAME$Subsystem::StaticClass(); }
+};
+
+#undef LOCTEXT_NAMESPACE</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=7496BA2E1F915C42A581BB417CB462B1/@KeyIndexDefined">True</s:Boolean>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=7496BA2E1F915C42A581BB417CB462B1/Applicability/=Live/@EntryIndexedValue">True</s:Boolean>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=7496BA2E1F915C42A581BB417CB462B1/Field/=METHOD_005FNAME/@KeyIndexDefined">True</s:Boolean>
+	<s:Int64 x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=7496BA2E1F915C42A581BB417CB462B1/Field/=METHOD_005FNAME/Order/@EntryValue">0</s:Int64>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=7496BA2E1F915C42A581BB417CB462B1/Field/=SUBSYSTEM_005FNAME/@KeyIndexDefined">True</s:Boolean>
+	<s:Int64 x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=7496BA2E1F915C42A581BB417CB462B1/Field/=SUBSYSTEM_005FNAME/Order/@EntryValue">1</s:Int64>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=7496BA2E1F915C42A581BB417CB462B1/Reformat/@EntryValue">True</s:Boolean>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=7496BA2E1F915C42A581BB417CB462B1/Scope/=F6696F8185506F41B9C4252540BE9C18/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=7496BA2E1F915C42A581BB417CB462B1/Scope/=F6696F8185506F41B9C4252540BE9C18/Type/@EntryValue">InCppFile</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=7496BA2E1F915C42A581BB417CB462B1/Shortcut/@EntryValue">beam_operation_k2</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=7496BA2E1F915C42A581BB417CB462B1/ShortenQualifiedReferences/@EntryValue">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=7496BA2E1F915C42A581BB417CB462B1/Text/@EntryValue">#define LOCTEXT_NAMESPACE "UK2BeamNode_Operation_$METHOD_NAME$"
+
+UCLASS(meta=(BeamFlowNode))
+class UK2BeamNode_Operation_$METHOD_NAME$ : public UK2BeamNode_Operation
+{
+	GENERATED_BODY()
+
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "$SUBSYSTEM_NAME$ - Operation - $METHOD_NAME$"); }
+
+	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeam$SUBSYSTEM_NAME$Subsystem, GetSelf); }
+
+	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeam$SUBSYSTEM_NAME$Subsystem, $METHOD_NAME$); }
+
+	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeam$SUBSYSTEM_NAME$Subsystem::StaticClass(); }
+
+	virtual bool IsNodeSafeToIgnore() const override { return false; }
+};
+
+#undef LOCTEXT_NAMESPACE</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=9EF276074B12AF47967D13FFC1B8C291/Shortcut/@EntryValue">beam_uk2getlocalstate</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=E3FEF312242FA94C96D41DCA683AF757/@KeyIndexDefined">True</s:Boolean>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=E3FEF312242FA94C96D41DCA683AF757/Applicability/=Live/@EntryIndexedValue">True</s:Boolean>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=E3FEF312242FA94C96D41DCA683AF757/Field/=METHOD_005FNAME/@KeyIndexDefined">True</s:Boolean>
+	<s:Int64 x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=E3FEF312242FA94C96D41DCA683AF757/Field/=METHOD_005FNAME/Order/@EntryValue">0</s:Int64>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=E3FEF312242FA94C96D41DCA683AF757/Field/=SUBSYSTEM_005FNAME/@KeyIndexDefined">True</s:Boolean>
+	<s:Int64 x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=E3FEF312242FA94C96D41DCA683AF757/Field/=SUBSYSTEM_005FNAME/Order/@EntryValue">1</s:Int64>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=E3FEF312242FA94C96D41DCA683AF757/Reformat/@EntryValue">True</s:Boolean>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=E3FEF312242FA94C96D41DCA683AF757/Scope/=F6696F8185506F41B9C4252540BE9C18/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=E3FEF312242FA94C96D41DCA683AF757/Scope/=F6696F8185506F41B9C4252540BE9C18/Type/@EntryValue">InCppFile</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=E3FEF312242FA94C96D41DCA683AF757/Shortcut/@EntryValue">beam_local_state_k2</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=E3FEF312242FA94C96D41DCA683AF757/ShortenQualifiedReferences/@EntryValue">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=E3FEF312242FA94C96D41DCA683AF757/Text/@EntryValue">#define LOCTEXT_NAMESPACE "K2BeamNode_GetLocalState_$METHOD_NAME$"
+
+UCLASS(meta=(BeamGetLocalState))
+class UK2BeamNode_GetLocalState_$METHOD_NAME$ : public UK2BeamNode_GetLocalState
+{
+	GENERATED_BODY()
+
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Local State - $SUBSYSTEM_NAME$ - $METHOD_NAME$"); }
+
+	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeam$SUBSYSTEM_NAME$Subsystem, GetSelf); }
+
+	virtual FName GetFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeam$SUBSYSTEM_NAME$Subsystem, $METHOD_NAME$); }
+
+	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeam$SUBSYSTEM_NAME$Subsystem::StaticClass(); }
+};
+
+#undef LOCTEXT_NAMESPACE</s:String></wpf:ResourceDictionary>
