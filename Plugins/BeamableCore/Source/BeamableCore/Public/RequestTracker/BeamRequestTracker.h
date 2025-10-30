@@ -288,7 +288,7 @@ public:
 	}
 
 	template <class  T = UBeamHookHandle>
-	T* BeginHookHandle(FBeamOperationEventHandlerCode OnOperationEvent, UObject* Outer = (UObject*)GetTransientPackage())
+	T* CPP_BeginHookHandle(FBeamOperationEventHandlerCode OnOperationEvent, UObject* Outer = (UObject*)GetTransientPackage())
 	{
 		static_assert(std::is_base_of_v<UBeamHookHandle, T>, "This FHook does not derive from UBeamHookHandle.");
 		T* Result = NewObject<T>(Outer);
@@ -296,7 +296,7 @@ public:
 		return Result;
 	}
 	
-	FBeamOperationHandle PreHookCall(UBeamHookHandle* Handle)
+	FBeamOperationHandle CPP_PreHookCall(UBeamHookHandle* Handle)
 	{
 		return Handle->CurrentOperationHandle = CPP_BeginOperation({}, GetName(), {});
 	}
@@ -367,7 +367,7 @@ public:
 	 * @brief Adds a request to this transaction. This means that every WaitHandle that is waiting on this Operation will now be waiting on this request still.
 	 */
 	UFUNCTION(BlueprintCallable, Category="Beam|Operations")
-	void AddRequestToOperation(const FBeamOperationHandle& Op, FBeamRequestContext RequestContext);
+	void BP_AddRequestToOperation(const FBeamOperationHandle& Op, FBeamRequestContext RequestContext);
 
 	/**
 	 * @brief Call only within OnSuccess/OnError/OnComplete or FullResponse handlers when the operation is completed and ended with success. 	 

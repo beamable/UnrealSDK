@@ -568,7 +568,7 @@ void UBeamRequestTracker::AddRequestToOperation(const FBeamOperationHandle& Op, 
 	}
 }
 
-void UBeamRequestTracker::AddRequestToOperation(const FBeamOperationHandle& Op, FBeamRequestContext RequestContext)
+void UBeamRequestTracker::BP_AddRequestToOperation(const FBeamOperationHandle& Op, FBeamRequestContext RequestContext)
 {
 	AddRequestToOperation(Op, RequestContext.RequestId);
 }
