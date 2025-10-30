@@ -7,10 +7,20 @@
 #include "BeamBackend/SemanticTypes/BeamContentId.h"
 #include "Hooks/BeamBaseHook.h"
 #include "RequestTracker/BeamOperation.h"
-#include "RequestTracker/BeamRequestTracker.h"
 #include "UObject/Object.h"
 #include "BeamMatchmakingHooks.generated.h"
 
+USTRUCT(Blueprintable, BlueprintType)
+struct FBeamMatchmakingHook
+{
+	GENERATED_BODY()
+public:
+	UPROPERTY(EditAnywhere, Config, BlueprintReadWrite, Category="Run")
+	bool RunParallel;
+	
+	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category="Hook", meta = (AllowAbstract = false))
+	TSoftClassPtr<UBeamMatchmakingHooks> MatchmakingHook = {};
+};
 
 
 UCLASS(BlueprintType, Blueprintable)
@@ -33,9 +43,6 @@ class BEAMABLECORERUNTIME_API UBeamMatchmakingHooks : public UBeamBaseHook
 	GENERATED_BODY()
 
 public:
-	// UBeamMatchmakingHooks(const UObject* Context);
-
-
 	
 	UFUNCTION(BlueprintNativeEvent)
 	void UpdatePings(UBeamMatchmakingTryJoinQueueHookHandle* MatchmakingHookHandle);
@@ -45,6 +52,10 @@ public:
 	UFUNCTION(BlueprintNativeEvent)
 	void PreTryJoinQueueHookAction(UBeamMatchmakingTryJoinQueueHookHandle* MatchmakingHookHandle);
 	virtual void PreTryJoinQueueHookAction_Implementation(UBeamMatchmakingTryJoinQueueHookHandle* MatchmakingHookHandle);
+
+	UFUNCTION(BlueprintNativeEvent)
+	void PreTryJoinQueueHookActionParallel(FBeamOperationHandle OperationHandle);
+	virtual void PreTryJoinQueueHookActionParallel_Implementation(FBeamOperationHandle MatchmakingHookHandle);
 	
 	UFUNCTION(BlueprintNativeEvent)
 	void TryJoinQueue(FUserSlot Slot, FBeamContentId GameTypeQueue, FOptionalString Team, FOptionalArrayOfBeamTag Tags, FBeamOperationHandle Op);
@@ -53,4 +64,8 @@ public:
 	UFUNCTION(BlueprintNativeEvent)
 	void AfterTryJoinQueueHookAction(UBeamMatchmakingTryJoinQueueHookHandle* MatchmakingHookHandle);
 	virtual void AfterTryJoinQueueHookAction_Implementation(UBeamMatchmakingTryJoinQueueHookHandle* MatchmakingHookHandle);
+
+	UFUNCTION(BlueprintNativeEvent)
+	void AfterTryJoinQueueHookActionParallel(FBeamOperationHandle MatchmakingHookHandle);
+	virtual void AfterTryJoinQueueHookActionParallel_Implementation(FBeamOperationHandle MatchmakingHookHandle);
 };

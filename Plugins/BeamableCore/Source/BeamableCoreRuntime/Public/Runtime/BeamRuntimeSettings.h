@@ -16,6 +16,7 @@ class UDataTable;
 class UBeamRuntimeSubsystem;
 class UBeamContentObject;
 
+
 /**
  * 
  */
@@ -53,15 +54,21 @@ public:
 	 */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Beam Systems")
 	TArray<TSubclassOf<UBeamRuntimeSubsystem>> ManualyInitializedRuntimeSubsystems;
-	
-	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category="Matchmaking Hooks", meta = (AllowAbstract = false))
-	TArray<TSoftClassPtr<UBeamMatchmakingHooks>> PreTryJoinMatchmakingHook = {};
 
-	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category="Matchmaking Hooks", meta = (AllowAbstract = false))
-	TSoftClassPtr<UBeamMatchmakingHooks> DefaultMatchmakingHook = UBeamMatchmakingHooks::StaticClass();
+	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category="Matchmaking Hooks|Pre - Join Matchmaking", meta = (AllowAbstract = false))
+	TArray<TSoftClassPtr<UBeamMatchmakingHooks>> PreJoinMatchmakingHookParallel = {};
 	
-	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category="Matchmaking Hooks", meta = (AllowAbstract = false))
-	TArray<TSoftClassPtr<UBeamMatchmakingHooks>> AfterTryJoinMatchmakingHook = {};
+	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category="Matchmaking Hooks|Pre - Join Matchmaking", meta = (AllowAbstract = false))
+	TArray<TSoftClassPtr<UBeamMatchmakingHooks>> PreJoinMatchmakingHookSequentially = {};
+
+	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category="Matchmaking Hooks|Join Matchmaking", meta = (AllowAbstract = false))
+	TSoftClassPtr<UBeamMatchmakingHooks> DefaultMatchmakingHook = UBeamMatchmakingHooks::StaticClass();
+
+	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category="Matchmaking Hooks|After - Join Matchmaking", meta = (AllowAbstract = false))
+	TArray<TSoftClassPtr<UBeamMatchmakingHooks>> AfterTryJoinMatchmakingHookParallel = {};
+	
+	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category="Matchmaking Hooks|After - Join Matchmaking", meta = (AllowAbstract = false))
+	TArray<TSoftClassPtr<UBeamMatchmakingHooks>> AfterTryJoinMatchmakingHookSequentially = {};
 
 	
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category="Content Hooks", meta = (AllowAbstract = false))

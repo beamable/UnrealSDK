@@ -94,9 +94,9 @@ TMap<FName, UClass*> UK2BeamNode_Operation::GetOperationEventCastClass(EBeamOper
 	{
 		for (auto Item : Map[GetClass()].SubEvents)
 		{
-			if (Item.Type == Type && Item.CastClass != nullptr)
+			if (Item.Type == Type && Item.TargetCastClass != nullptr)
 			{
-				CastMap.Add(FName(Item.SubEventName), Item.CastClass.LoadSynchronous());
+				CastMap.Add(FName(Item.SubEventName), Item.TargetCastClass.LoadSynchronous());
 			}
 		}
 	}

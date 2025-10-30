@@ -87,6 +87,9 @@ struct FBeamMatchmakingState
 };
 
 
+DEFINE_BEAM_OPERATION_HOOK_OneParam(FOnBeamableTryJoinMatchmakingQueue, UBeamMatchmakingTryJoinQueueHookHandle*);
+DEFINE_BEAM_OPERATION_HOOK_OneParam(FOnBeamableTryJoinMatchmakingQueueParallel, FBeamOperationHandle);
+
 /**
  * 
  */
@@ -248,6 +251,7 @@ public:
 
 private:
 
+
 	void TryJoinQueueHook(FUserSlot UserSlot, FBeamContentId GameTypeQueue, FOptionalString Team, FOptionalArrayOfBeamTag Tags, UBeamMatchmakingTryJoinQueueHookHandle* BeamMatchmakingTryJoinQueueHookHandle);
 	
 	// Operation Implementations
@@ -266,4 +270,6 @@ private:
 	void CommitRegionPing(FUserSlot UserSlot, TMap<FString, int32> RegionPings, FBeamOperationHandle OperationHandle);
 	
 	static FString ConvertRegionPingsToJson(TMap<FString, int32> RegionPings);
+	
+	void StartParallelHookOperation(TArray<FOnBeamableTryJoinMatchmakingQueueParallel> PreTryJoinMatchmakingQueueParallel, FBeamOperationHandle ParallelHandle);
 };

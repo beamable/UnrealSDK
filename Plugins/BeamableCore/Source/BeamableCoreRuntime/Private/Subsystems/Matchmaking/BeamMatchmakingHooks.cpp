@@ -25,7 +25,16 @@ void UBeamMatchmakingHooks::AfterTryJoinQueueHookAction_Implementation(UBeamMatc
 	
 }
 
+void UBeamMatchmakingHooks::AfterTryJoinQueueHookActionParallel_Implementation(FBeamOperationHandle MatchmakingHookHandle)
+{
+}
+
 void UBeamMatchmakingHooks::PreTryJoinQueueHookAction_Implementation(UBeamMatchmakingTryJoinQueueHookHandle* MatchmakingHookHandle)
+{
+	
+}
+
+void UBeamMatchmakingHooks::PreTryJoinQueueHookActionParallel_Implementation(FBeamOperationHandle MatchmakingHookHandle)
 {
 	
 }

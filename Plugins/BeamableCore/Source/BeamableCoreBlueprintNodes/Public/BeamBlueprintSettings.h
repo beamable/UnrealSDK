@@ -8,7 +8,7 @@
 #include "BeamBlueprintSettings.generated.h"
 
 USTRUCT(Blueprintable, BlueprintType)
-struct FSubEvent
+struct FBeamSubEvent
 {
 	GENERATED_BODY()
 public:
@@ -19,7 +19,7 @@ public:
 	TEnumAsByte<EBeamOperationEventType> Type;
 	
 	UPROPERTY(EditAnywhere, Config, BlueprintReadWrite, Category="Sub Event", meta=(MustImplement="BeamOperationEventData"))
-	TSoftClassPtr<UObject> CastClass;
+	TSoftClassPtr<UObject> TargetCastClass;
 };
 
 USTRUCT(Blueprintable, BlueprintType)
@@ -28,7 +28,7 @@ struct FSubEventArray
 	GENERATED_BODY()
 public:
 	UPROPERTY(EditAnywhere, Config, BlueprintReadWrite, Category="Sub Event")
-	TArray<FSubEvent> SubEvents;
+	TArray<FBeamSubEvent> SubEvents;
 };
 
 /**
