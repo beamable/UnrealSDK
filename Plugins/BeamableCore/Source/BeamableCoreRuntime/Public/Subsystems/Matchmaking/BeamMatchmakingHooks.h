@@ -10,18 +10,6 @@
 #include "UObject/Object.h"
 #include "BeamMatchmakingHooks.generated.h"
 
-USTRUCT(Blueprintable, BlueprintType)
-struct FBeamMatchmakingHook
-{
-	GENERATED_BODY()
-public:
-	UPROPERTY(EditAnywhere, Config, BlueprintReadWrite, Category="Run")
-	bool RunParallel;
-	
-	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category="Hook", meta = (AllowAbstract = false))
-	TSoftClassPtr<UBeamMatchmakingHooks> MatchmakingHook = {};
-};
-
 
 UCLASS(BlueprintType, Blueprintable)
 class UBeamMatchmakingTryJoinQueueHookHandle : public UBeamHookHandle
@@ -33,21 +21,46 @@ public:
 	TMap<FString, int32> PingsPerRegion;
 };
 
+/**
+ * 
+ */
+UCLASS(BlueprintType, Blueprintable)
+class BEAMABLECORERUNTIME_API UBeamMatchmakingUpdatePingHook : public UBeamBaseHook
+{
+	GENERATED_BODY()
+
+public:
+	UFUNCTION(BlueprintNativeEvent)
+	void UpdatePings(UBeamMatchmakingTryJoinQueueHookHandle* MatchmakingHookHandle);
+	virtual void UpdatePings_Implementation(UBeamMatchmakingTryJoinQueueHookHandle* MatchmakingHookHandle);
+
+};
 
 /**
  * 
  */
 UCLASS(BlueprintType, Blueprintable)
-class BEAMABLECORERUNTIME_API UBeamMatchmakingHooks : public UBeamBaseHook
+class BEAMABLECORERUNTIME_API UBeamMatchmakingTryJoinQueueHook : public UBeamBaseHook
 {
 	GENERATED_BODY()
 
 public:
 	
 	UFUNCTION(BlueprintNativeEvent)
-	void UpdatePings(UBeamMatchmakingTryJoinQueueHookHandle* MatchmakingHookHandle);
-	virtual void UpdatePings_Implementation(UBeamMatchmakingTryJoinQueueHookHandle* MatchmakingHookHandle);
+	void TryJoinQueue(FUserSlot Slot, FBeamContentId GameTypeQueue, FOptionalString Team, FOptionalArrayOfBeamTag Tags, FBeamOperationHandle Op);
+	virtual void TryJoinQueue_Implementation(FUserSlot Slot, FBeamContentId GameTypeQueue, FOptionalString Team, FOptionalArrayOfBeamTag Tags, FBeamOperationHandle Op);
 
+};
+
+/**
+ * 
+ */
+UCLASS(BlueprintType, Blueprintable)
+class BEAMABLECORERUNTIME_API UBeamMatchmakingPreTryJoinQueueHook : public UBeamBaseHook
+{
+	GENERATED_BODY()
+
+public:
 	
 	UFUNCTION(BlueprintNativeEvent)
 	void PreTryJoinQueueHookAction(UBeamMatchmakingTryJoinQueueHookHandle* MatchmakingHookHandle);
@@ -56,11 +69,18 @@ public:
 	UFUNCTION(BlueprintNativeEvent)
 	void PreTryJoinQueueHookActionParallel(FBeamOperationHandle OperationHandle);
 	virtual void PreTryJoinQueueHookActionParallel_Implementation(FBeamOperationHandle MatchmakingHookHandle);
-	
-	UFUNCTION(BlueprintNativeEvent)
-	void TryJoinQueue(FUserSlot Slot, FBeamContentId GameTypeQueue, FOptionalString Team, FOptionalArrayOfBeamTag Tags, FBeamOperationHandle Op);
-	virtual void TryJoinQueue_Implementation(FUserSlot Slot, FBeamContentId GameTypeQueue, FOptionalString Team, FOptionalArrayOfBeamTag Tags, FBeamOperationHandle Op);
+};
 
+/**
+ * 
+ */
+UCLASS(BlueprintType, Blueprintable)
+class BEAMABLECORERUNTIME_API UBeamMatchmakingAfterTryJoinQueueHook : public UBeamBaseHook
+{
+	GENERATED_BODY()
+
+public:
+	
 	UFUNCTION(BlueprintNativeEvent)
 	void AfterTryJoinQueueHookAction(UBeamMatchmakingTryJoinQueueHookHandle* MatchmakingHookHandle);
 	virtual void AfterTryJoinQueueHookAction_Implementation(UBeamMatchmakingTryJoinQueueHookHandle* MatchmakingHookHandle);

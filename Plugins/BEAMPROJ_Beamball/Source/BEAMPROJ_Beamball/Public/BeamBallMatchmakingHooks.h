@@ -11,7 +11,7 @@
  * 
  */
 UCLASS(BlueprintType, Blueprintable)
-class BEAMPROJ_BEAMBALL_API UBeamBallMatchmakingHooks : public UBeamMatchmakingHooks
+class BEAMPROJ_BEAMBALL_API UBeamBallMatchmakingHooks : public UBeamMatchmakingUpdatePingHook
 {
 	GENERATED_BODY()
 

@@ -8,33 +8,34 @@
 #include "Subsystems/Matchmaking/BeamMatchmakingSubsystem.h"
 
 
-void UBeamMatchmakingHooks::UpdatePings_Implementation(UBeamMatchmakingTryJoinQueueHookHandle* MatchmakingHookHandle)
+void UBeamMatchmakingUpdatePingHook::UpdatePings_Implementation(UBeamMatchmakingTryJoinQueueHookHandle* MatchmakingHookHandle)
 {
 	GEngine->GetEngineSubsystem<UBeamRequestTracker>()->TriggerOperationSuccess(MatchmakingHookHandle->CurrentOperationHandle, "Success");
 }
 
-void UBeamMatchmakingHooks::TryJoinQueue_Implementation(FUserSlot Slot, FBeamContentId GameTypeQueue, FOptionalString Team, FOptionalArrayOfBeamTag Tags, FBeamOperationHandle Op)
+void UBeamMatchmakingTryJoinQueueHook::TryJoinQueue_Implementation(FUserSlot Slot, FBeamContentId GameTypeQueue, FOptionalString Team, FOptionalArrayOfBeamTag Tags, FBeamOperationHandle Op)
 {
 	auto GInstance = Context->GetWorld()->GetGameInstance();
 	auto MatchmakingSubsystem = GInstance->GetSubsystem<UBeamMatchmakingSubsystem>();
 	MatchmakingSubsystem->TryJoinQueue(Slot, GameTypeQueue, Team, Tags, Op);
 }
 
-void UBeamMatchmakingHooks::AfterTryJoinQueueHookAction_Implementation(UBeamMatchmakingTryJoinQueueHookHandle* MatchmakingHookHandle)
+void UBeamMatchmakingPreTryJoinQueueHook::PreTryJoinQueueHookAction_Implementation(UBeamMatchmakingTryJoinQueueHookHandle* MatchmakingHookHandle)
 {
 	
 }
 
-void UBeamMatchmakingHooks::AfterTryJoinQueueHookActionParallel_Implementation(FBeamOperationHandle MatchmakingHookHandle)
-{
-}
-
-void UBeamMatchmakingHooks::PreTryJoinQueueHookAction_Implementation(UBeamMatchmakingTryJoinQueueHookHandle* MatchmakingHookHandle)
+void UBeamMatchmakingPreTryJoinQueueHook::PreTryJoinQueueHookActionParallel_Implementation(FBeamOperationHandle MatchmakingHookHandle)
 {
 	
 }
 
-void UBeamMatchmakingHooks::PreTryJoinQueueHookActionParallel_Implementation(FBeamOperationHandle MatchmakingHookHandle)
+void UBeamMatchmakingAfterTryJoinQueueHook::AfterTryJoinQueueHookAction_Implementation(UBeamMatchmakingTryJoinQueueHookHandle* MatchmakingHookHandle)
+{
+	
+}
+
+void UBeamMatchmakingAfterTryJoinQueueHook::AfterTryJoinQueueHookActionParallel_Implementation(FBeamOperationHandle MatchmakingHookHandle)
 {
 	
 }

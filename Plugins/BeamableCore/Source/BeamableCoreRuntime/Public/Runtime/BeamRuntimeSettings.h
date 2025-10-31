@@ -56,19 +56,22 @@ public:
 	TArray<TSubclassOf<UBeamRuntimeSubsystem>> ManualyInitializedRuntimeSubsystems;
 
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category="Matchmaking Hooks|Pre - Join Matchmaking", meta = (AllowAbstract = false))
-	TArray<TSoftClassPtr<UBeamMatchmakingHooks>> PreJoinMatchmakingHookParallel = {};
+	TArray<TSoftClassPtr<UBeamMatchmakingPreTryJoinQueueHook>> PreJoinMatchmakingHookParallel = {};
 	
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category="Matchmaking Hooks|Pre - Join Matchmaking", meta = (AllowAbstract = false))
-	TArray<TSoftClassPtr<UBeamMatchmakingHooks>> PreJoinMatchmakingHookSequentially = {};
+	TArray<TSoftClassPtr<UBeamMatchmakingPreTryJoinQueueHook>> PreJoinMatchmakingHookSequentially = {};
 
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category="Matchmaking Hooks|Join Matchmaking", meta = (AllowAbstract = false))
-	TSoftClassPtr<UBeamMatchmakingHooks> DefaultMatchmakingHook = UBeamMatchmakingHooks::StaticClass();
+	TSoftClassPtr<UBeamMatchmakingUpdatePingHook> UpdatePingMatchmakingHook = {};
+	
+	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category="Matchmaking Hooks|Join Matchmaking", meta = (AllowAbstract = false))
+	TSoftClassPtr<UBeamMatchmakingTryJoinQueueHook> DefaultMatchmakingHook = UBeamMatchmakingTryJoinQueueHook::StaticClass();
 
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category="Matchmaking Hooks|After - Join Matchmaking", meta = (AllowAbstract = false))
-	TArray<TSoftClassPtr<UBeamMatchmakingHooks>> AfterTryJoinMatchmakingHookParallel = {};
+	TArray<TSoftClassPtr<UBeamMatchmakingAfterTryJoinQueueHook>> AfterJoinMatchmakingHookParallel = {};
 	
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category="Matchmaking Hooks|After - Join Matchmaking", meta = (AllowAbstract = false))
-	TArray<TSoftClassPtr<UBeamMatchmakingHooks>> AfterTryJoinMatchmakingHookSequentially = {};
+	TArray<TSoftClassPtr<UBeamMatchmakingAfterTryJoinQueueHook>> AfterJoinMatchmakingHookSequentially = {};
 
 	
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category="Content Hooks", meta = (AllowAbstract = false))

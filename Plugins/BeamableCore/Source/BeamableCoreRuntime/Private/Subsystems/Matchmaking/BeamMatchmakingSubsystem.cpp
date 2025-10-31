@@ -190,7 +190,7 @@ void UBeamMatchmakingSubsystem::TryJoinQueueHook(FUserSlot UserSlot, FBeamConten
 
 	TArray<FOnBeamableTryJoinMatchmakingQueueParallel> PreTryJoinMatchmakingQueueParallel;
 	
-	TArray<TSoftClassPtr<UBeamMatchmakingHooks>> PreBeamHooksSoftPtrParallel = GetDefault<UBeamRuntimeSettings>()->PreJoinMatchmakingHookParallel;
+	TArray<TSoftClassPtr<UBeamMatchmakingPreTryJoinQueueHook>> PreBeamHooksSoftPtrParallel = GetDefault<UBeamRuntimeSettings>()->PreJoinMatchmakingHookParallel;
 	
 	// Running Pre Hook Calls
 	for (auto BeamMatchmakingHook : PreBeamHooksSoftPtrParallel)
@@ -202,7 +202,7 @@ void UBeamMatchmakingSubsystem::TryJoinQueueHook(FUserSlot UserSlot, FBeamConten
 		}
 		PreTryJoinMatchmakingQueueParallel.Add(FOnBeamableTryJoinMatchmakingQueueParallel::CreateLambda([this, BeamMatchmakingHook](FBeamOperationHandle HookHandle)
 		{
-			UBeamMatchmakingHooks* Extension = NewObject<UBeamMatchmakingHooks>(GetTransientPackage(), BeamMatchmakingHook.LoadSynchronous());
+			UBeamMatchmakingPreTryJoinQueueHook* Extension = NewObject<UBeamMatchmakingPreTryJoinQueueHook>(GetTransientPackage(), BeamMatchmakingHook.LoadSynchronous());
 			Extension->SetContext(this);
 			auto ParallelHandle = RequestTracker->CPP_BeginOperation({}, GetName(), {});
 				
@@ -218,7 +218,7 @@ void UBeamMatchmakingSubsystem::TryJoinQueueHook(FUserSlot UserSlot, FBeamConten
 
 	TArray<FOnBeamableTryJoinMatchmakingQueue> TryJoinMatchmakingQueueSequentially;
 	
-	TArray<TSoftClassPtr<UBeamMatchmakingHooks>> PreBeamHooksSoftPtrSequentially = GetDefault<UBeamRuntimeSettings>()->PreJoinMatchmakingHookSequentially;
+	TArray<TSoftClassPtr<UBeamMatchmakingPreTryJoinQueueHook>> PreBeamHooksSoftPtrSequentially = GetDefault<UBeamRuntimeSettings>()->PreJoinMatchmakingHookSequentially;
 	
 	// Running Pre Hook Calls
 	for (auto BeamMatchmakingHook : PreBeamHooksSoftPtrSequentially)
@@ -231,7 +231,7 @@ void UBeamMatchmakingSubsystem::TryJoinQueueHook(FUserSlot UserSlot, FBeamConten
 	
 		TryJoinMatchmakingQueueSequentially.Add(FOnBeamableTryJoinMatchmakingQueue::CreateLambda([this, BeamMatchmakingHook](UBeamMatchmakingTryJoinQueueHookHandle* HookHandle)
 		{
-			UBeamMatchmakingHooks* Extension = NewObject<UBeamMatchmakingHooks>(GetTransientPackage(), BeamMatchmakingHook.LoadSynchronous());
+			UBeamMatchmakingPreTryJoinQueueHook* Extension = NewObject<UBeamMatchmakingPreTryJoinQueueHook>(GetTransientPackage(), BeamMatchmakingHook.LoadSynchronous());
 			Extension->SetContext(this);
 			
 			auto OperationHandle = RequestTracker->CPP_PreHookCall( HookHandle );
@@ -245,62 +245,52 @@ void UBeamMatchmakingSubsystem::TryJoinQueueHook(FUserSlot UserSlot, FBeamConten
 	{
 		return ParallelHandle;
 	}));
-	
-	
-	if (GetDefault<UBeamRuntimeSettings>()->DefaultMatchmakingHook.IsValid())
-	{
-		// Running Update Ping
-	
-		TryJoinMatchmakingQueueSequentially.Add(FOnBeamableTryJoinMatchmakingQueue::CreateLambda([this](UBeamMatchmakingTryJoinQueueHookHandle* HookHandle)
-		{
-			UBeamMatchmakingHooks* Extension = NewObject<UBeamMatchmakingHooks>(GetTransientPackage(), GetDefault<UBeamRuntimeSettings>()->DefaultMatchmakingHook.LoadSynchronous());
-			Extension->SetContext(this);
-		
-			auto OperationHandle = RequestTracker->CPP_PreHookCall( HookHandle );
-			Extension->UpdatePings(HookHandle);
-			return OperationHandle;
-		}));
-	
-		// Running Commit Ping
-		TryJoinMatchmakingQueueSequentially.Add(FOnBeamableTryJoinMatchmakingQueue::CreateLambda([this, UserSlot](UBeamMatchmakingTryJoinQueueHookHandle* HookHandle)
-		{
-			for (auto JoinMatchmakingQueue : HookHandle->PingsPerRegion)
-			{
-				UE_LOG(LogTemp, Warning, TEXT("Ping - %s %d"), *JoinMatchmakingQueue.Key, JoinMatchmakingQueue.Value);
-			}
-			auto OperationHandle = RequestTracker->CPP_PreHookCall( HookHandle );
-			CommitRegionPing(UserSlot, HookHandle->PingsPerRegion, OperationHandle);
-			return OperationHandle;
-		}));
 
-		// Try Join Queue
-		TryJoinMatchmakingQueueSequentially.Add(FOnBeamableTryJoinMatchmakingQueue::CreateLambda([this, UserSlot, GameTypeQueue, Team](UBeamMatchmakingTryJoinQueueHookHandle* HookHandle)
-		{
-			UBeamMatchmakingHooks* Extension = NewObject<UBeamMatchmakingHooks>(GetTransientPackage(), GetDefault<UBeamRuntimeSettings>()->DefaultMatchmakingHook.LoadSynchronous());
-			auto OperationHandle = RequestTracker->CPP_PreHookCall( HookHandle );
-		
-			UE_LOG(LogTemp, Warning, TEXT("Join Matchmaking Queue"));
-			if (Extension != nullptr)
-			{
-				Extension->SetContext(this);
-				Extension->TryJoinQueue(UserSlot, GameTypeQueue, Team, {}, OperationHandle);
-			}else
-			{
-				// In the case of a none be setup in the default hook we call the default implementation
-				TryJoinQueue(UserSlot, GameTypeQueue, Team, {}, OperationHandle);
-			}
-	
-			return OperationHandle;
-		}));
-	}else
+	// Running Update Ping
+	TryJoinMatchmakingQueueSequentially.Add(FOnBeamableTryJoinMatchmakingQueue::CreateLambda([this](UBeamMatchmakingTryJoinQueueHookHandle* HookHandle)
 	{
-		UE_LOG(LogTemp, Error, TEXT("The default matchmaking setup for %s is invalid"), *GetDefault<UBeamRuntimeSettings>()->DefaultMatchmakingHook->GetName());
-	}
+		UBeamMatchmakingUpdatePingHook* Extension = NewObject<UBeamMatchmakingUpdatePingHook>(GetTransientPackage(), GetDefault<UBeamRuntimeSettings>()->UpdatePingMatchmakingHook.LoadSynchronous());
+		Extension->SetContext(this);
+	
+		auto OperationHandle = RequestTracker->CPP_PreHookCall( HookHandle );
+		Extension->UpdatePings(HookHandle);
+		return OperationHandle;
+	}));
+	
+	// Running Commit Ping
+	TryJoinMatchmakingQueueSequentially.Add(FOnBeamableTryJoinMatchmakingQueue::CreateLambda([this, UserSlot](UBeamMatchmakingTryJoinQueueHookHandle* HookHandle)
+	{
+		for (auto JoinMatchmakingQueue : HookHandle->PingsPerRegion)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Ping - %s %d"), *JoinMatchmakingQueue.Key, JoinMatchmakingQueue.Value);
+		}
+		auto OperationHandle = RequestTracker->CPP_PreHookCall( HookHandle );
+		CommitRegionPing(UserSlot, HookHandle->PingsPerRegion, OperationHandle);
+		return OperationHandle;
+	}));
+
+	// Try Join Queue
+	TryJoinMatchmakingQueueSequentially.Add(FOnBeamableTryJoinMatchmakingQueue::CreateLambda([this, UserSlot, GameTypeQueue, Team](UBeamMatchmakingTryJoinQueueHookHandle* HookHandle)
+	{
+		auto OperationHandle = RequestTracker->CPP_PreHookCall( HookHandle );
+		if (GetDefault<UBeamRuntimeSettings>()->DefaultMatchmakingHook.IsValid())
+		{
+			UBeamMatchmakingTryJoinQueueHook* Extension = NewObject<UBeamMatchmakingTryJoinQueueHook>(GetTransientPackage(), GetDefault<UBeamRuntimeSettings>()->DefaultMatchmakingHook.LoadSynchronous());
+			UE_LOG(LogTemp, Warning, TEXT("Join Matchmaking Queue"));
+
+			Extension->SetContext(this);
+			Extension->TryJoinQueue(UserSlot, GameTypeQueue, Team, {}, OperationHandle);
+		}
+		else{
+			// In the case of a none be setup in the default hook we call the default implementation
+			TryJoinQueue(UserSlot, GameTypeQueue, Team, {}, OperationHandle);
+		}
+		return OperationHandle;
+	}));
+
 	// Start the parallel PreTryJoinQueue
 	FBeamOperationHandle AfterParallelHandle = RequestTracker->CPP_BeginOperation({}, GetName(), {});
 
-	
-	TArray<TSoftClassPtr<UBeamMatchmakingHooks>> AfterBeamHooksSoftPtrSequentially = GetDefault<UBeamRuntimeSettings>()->AfterTryJoinMatchmakingHookSequentially;
 
 
 	// Wait for the parallel
@@ -308,7 +298,7 @@ void UBeamMatchmakingSubsystem::TryJoinQueueHook(FUserSlot UserSlot, FBeamConten
 	{
 		TArray<FOnBeamableTryJoinMatchmakingQueueParallel> AfterTryJoinMatchmakingQueueParallel;
 		
-		TArray<TSoftClassPtr<UBeamMatchmakingHooks>> AfterBeamHooksSoftPtrParallel = GetDefault<UBeamRuntimeSettings>()->AfterTryJoinMatchmakingHookParallel;
+		TArray<TSoftClassPtr<UBeamMatchmakingAfterTryJoinQueueHook>> AfterBeamHooksSoftPtrParallel = GetDefault<UBeamRuntimeSettings>()->AfterJoinMatchmakingHookParallel;
 
 		for (auto MatchmakingHookPtr : AfterBeamHooksSoftPtrParallel)
 		{
@@ -320,7 +310,7 @@ void UBeamMatchmakingSubsystem::TryJoinQueueHook(FUserSlot UserSlot, FBeamConten
 	
 			AfterTryJoinMatchmakingQueueParallel.Add(FOnBeamableTryJoinMatchmakingQueueParallel::CreateLambda([this, MatchmakingHookPtr](FBeamOperationHandle HookHandle)
 			{
-				UBeamMatchmakingHooks* Extension = NewObject<UBeamMatchmakingHooks>(GetTransientPackage(), MatchmakingHookPtr.LoadSynchronous());
+				UBeamMatchmakingAfterTryJoinQueueHook* Extension = NewObject<UBeamMatchmakingAfterTryJoinQueueHook>(GetTransientPackage(), MatchmakingHookPtr.LoadSynchronous());
 				Extension->SetContext(this);
 				auto ParallelHandle = RequestTracker->CPP_BeginOperation({}, GetName(), {});
 			
@@ -332,7 +322,9 @@ void UBeamMatchmakingSubsystem::TryJoinQueueHook(FUserSlot UserSlot, FBeamConten
 		StartParallelHookOperation(AfterTryJoinMatchmakingQueueParallel, AfterParallelHandle);
 		return RequestTracker->CPP_BeginSuccessfulOperation({}, GetName(), TEXT(""), {});
 	}));
-	
+		
+	TArray<TSoftClassPtr<UBeamMatchmakingAfterTryJoinQueueHook>> AfterBeamHooksSoftPtrSequentially = GetDefault<UBeamRuntimeSettings>()->AfterJoinMatchmakingHookSequentially;
+
 	for (auto MatchmakingHookPtr : AfterBeamHooksSoftPtrSequentially)
 	{
 		if (!MatchmakingHookPtr.IsValid())
@@ -343,7 +335,7 @@ void UBeamMatchmakingSubsystem::TryJoinQueueHook(FUserSlot UserSlot, FBeamConten
 	
 		TryJoinMatchmakingQueueSequentially.Add(FOnBeamableTryJoinMatchmakingQueue::CreateLambda([this, MatchmakingHookPtr](UBeamMatchmakingTryJoinQueueHookHandle* HookHandle)
 		{
-			UBeamMatchmakingHooks* Extension = NewObject<UBeamMatchmakingHooks>(GetTransientPackage(), MatchmakingHookPtr.LoadSynchronous());
+			UBeamMatchmakingAfterTryJoinQueueHook* Extension = NewObject<UBeamMatchmakingAfterTryJoinQueueHook>(GetTransientPackage(), MatchmakingHookPtr.LoadSynchronous());
 			Extension->SetContext(this);
 			
 			auto OperationHandle = RequestTracker->CPP_PreHookCall( HookHandle );
@@ -754,7 +746,8 @@ void UBeamMatchmakingSubsystem::CommitRegionPing(FUserSlot UserSlot, TMap<FStrin
 	const FString PingsJson = ConvertRegionPingsToJson(RegionPings);
 
 	TMap<FString, FString> StatsMap;
-	StatsMap.Add("beam.region.pings", PingsJson);
+
+	StatsMap.Add(StatRegionPingKey, PingsJson);
 
 	UBeamStatsSubsystem* Stats = GetGameInstance()->GetSubsystem<UBeamStatsSubsystem>();
 	UBeamStatUpdateCommand* Command;

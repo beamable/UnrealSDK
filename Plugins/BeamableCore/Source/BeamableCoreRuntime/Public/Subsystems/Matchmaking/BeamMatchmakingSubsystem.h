@@ -97,8 +97,10 @@ UCLASS(BlueprintType)
 class BEAMABLECORERUNTIME_API UBeamMatchmakingSubsystem : public UBeamRuntimeSubsystem
 {
 	GENERATED_BODY()
+	
+	const FString StatRegionPingKey = "beam.region.pings";
 
-	friend class UBeamMatchmakingHooks;
+	friend class UBeamMatchmakingTryJoinQueueHook;
 	
 	UPROPERTY()
 	UBeamMatchmakingApi* MatchmakingApi;
@@ -114,6 +116,7 @@ class BEAMABLECORERUNTIME_API UBeamMatchmakingSubsystem : public UBeamRuntimeSub
 
 	UPROPERTY()
 	UBeamContentSubsystem* ContentSubsystem;
+	
 
 public:
 	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, meta=(DefaultToSelf="CallingContext"))
