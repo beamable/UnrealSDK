@@ -23,9 +23,8 @@ class BEAMABLECORERUNTIME_API UBeamBaseHook : public UObject
 		return Context->GetWorld();
 	}
 
-protected:
-	const UObject* Context;
-
 public:
+	const UObject* Context;
+	
 	virtual void SetContext(const UObject* ContextReference);
 };

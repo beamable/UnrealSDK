@@ -236,10 +236,11 @@ public:
 	 * Execute Sequentially all the hooks
 	 */
 	template <typename FHook, typename... Args>
-	bool InvokeAndWaitSequentiallyForHooks(FBeamWaitHandle& OutWaitHandle, TArray<FHook> Hooks, FOnWaitCompleteCode Handler, Args&&... args)
+	bool RunBeamTaskGraph(FBeamWaitHandle& OutWaitHandle, TArray<FHook> Hooks, FOnWaitCompleteCode Handler, Args&&... args)
 	{
 		static_assert(std::is_same_v<typename FHook::RetValType, FBeamOperationHandle>, TEXT("This FHook does not return an FBeamOperationHandle. You can't wait on it."));
-
+		
+		
 		// Since hooks are optional by default, if there are none we just do nothing.
 		if (!Hooks.Num())
 		{
@@ -272,11 +273,11 @@ public:
 		return false;
 	}
 
-	template <typename FHook, typename... Args>
-	bool InvokeAndWaitSequentiallyForHooks(FHook& Hooks, FOnWaitCompleteCode Handler, Args&&... args)
-	{
-		return true;
-	}
+	// template <typename FHook, typename... Args>
+	// bool RunBeamTaskGraph(FHook& Hooks, FOnWaitCompleteCode Handler, Args&&... args)
+	// {
+	// 	return true;
+	// }
 
 	template <class  T = UBeamHookHandle>
 	T* BeginHookHandle(FBeamOperationEventHandler OnOperationEvent, UObject* Outer = (UObject*)GetTransientPackage())

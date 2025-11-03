@@ -86,9 +86,8 @@ struct FBeamMatchmakingState
 	FDateTime LastJoinTime;
 };
 
-
-DEFINE_BEAM_OPERATION_HOOK_OneParam(FOnBeamableTryJoinMatchmakingQueue, UBeamMatchmakingTryJoinQueueHookHandle*);
 DEFINE_BEAM_OPERATION_HOOK_OneParam(FOnBeamableTryJoinMatchmakingQueueParallel, FBeamOperationHandle);
+DEFINE_BEAM_OPERATION_HOOK_OneParam(FOnBeamableTryJoinMatchmakingQueueSequentially, FBeamOperationHandle);
 
 /**
  * 
@@ -100,7 +99,7 @@ class BEAMABLECORERUNTIME_API UBeamMatchmakingSubsystem : public UBeamRuntimeSub
 	
 	const FString StatRegionPingKey = "beam.region.pings";
 
-	friend class UBeamMatchmakingTryJoinQueueHook;
+	friend class UBeamDefaultMatchmakingHooks;
 	
 	UPROPERTY()
 	UBeamMatchmakingApi* MatchmakingApi;
@@ -274,5 +273,5 @@ private:
 	
 	static FString ConvertRegionPingsToJson(TMap<FString, int32> RegionPings);
 	
-	void StartParallelHookOperation(TArray<FOnBeamableTryJoinMatchmakingQueueParallel> PreTryJoinMatchmakingQueueParallel, FBeamOperationHandle ParallelHandle);
+	void StartParallelHookOperation(TArray<FOnBeamableTryJoinMatchmakingQueueParallel> PreTryJoinMatchmakingQueueParallel, FBeamOperationHandle CurrentStepOperationHandle, FBeamOperationHandle MainOperationHandle);
 };

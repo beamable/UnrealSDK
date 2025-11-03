@@ -55,24 +55,8 @@ public:
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Beam Systems")
 	TArray<TSubclassOf<UBeamRuntimeSubsystem>> ManualyInitializedRuntimeSubsystems;
 
-	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category="Matchmaking Hooks|Pre - Join Matchmaking", meta = (AllowAbstract = false))
-	TArray<TSoftClassPtr<UBeamMatchmakingPreTryJoinQueueHook>> PreJoinMatchmakingHookParallel = {};
-	
-	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category="Matchmaking Hooks|Pre - Join Matchmaking", meta = (AllowAbstract = false))
-	TArray<TSoftClassPtr<UBeamMatchmakingPreTryJoinQueueHook>> PreJoinMatchmakingHookSequentially = {};
-
-	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category="Matchmaking Hooks|Join Matchmaking", meta = (AllowAbstract = false))
-	TSoftClassPtr<UBeamMatchmakingUpdatePingHook> UpdatePingMatchmakingHook = UBeamMatchmakingUpdatePingHook::StaticClass();
-	
-	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category="Matchmaking Hooks|Join Matchmaking", meta = (AllowAbstract = false))
-	TSoftClassPtr<UBeamMatchmakingTryJoinQueueHook> DefaultMatchmakingHook = UBeamMatchmakingTryJoinQueueHook::StaticClass();
-
-	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category="Matchmaking Hooks|After - Join Matchmaking", meta = (AllowAbstract = false))
-	TArray<TSoftClassPtr<UBeamMatchmakingAfterTryJoinQueueHook>> AfterJoinMatchmakingHookParallel = {};
-	
-	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category="Matchmaking Hooks|After - Join Matchmaking", meta = (AllowAbstract = false))
-	TArray<TSoftClassPtr<UBeamMatchmakingAfterTryJoinQueueHook>> AfterJoinMatchmakingHookSequentially = {};
-
+	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category="Matchmaking Hooks| Matchmaking", meta = (AllowAbstract = false))
+	TArray<TSoftClassPtr<UBeamMatchmakingHooks>> MatchmakingHooks = {UBeamDefaultMatchmakingHooks::StaticClass()};
 	
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category="Content Hooks", meta = (AllowAbstract = false))
 	TSoftClassPtr<UBeamContentHooks> DefaultContentHook = UBeamContentHooks::StaticClass();

@@ -11,12 +11,12 @@
  * 
  */
 UCLASS(BlueprintType, Blueprintable)
-class BEAMPROJ_BEAMBALL_API UBeamBallMatchmakingHooks : public UBeamMatchmakingUpdatePingHook
+class BEAMPROJ_BEAMBALL_API UBeamBallMatchmakingHooks : public UBeamMatchmakingHooks
 {
 	GENERATED_BODY()
 
 public:
-	virtual void UpdatePings_Implementation(UBeamMatchmakingTryJoinQueueHookHandle* MatchmakingHookHandle) override;
-
-	void OnUpdatePings(FHathoraRegionPings Result, UBeamMatchmakingTryJoinQueueHookHandle* MatchmakingHookHandle);
+	// virtual void UpdatePings_Implementation(UBeamMatchmakingTryJoinQueueHookHandle* MatchmakingHookHandle) override;
+	//
+	// void OnUpdatePings(FHathoraRegionPings Result, UBeamMatchmakingTryJoinQueueHookHandle* MatchmakingHookHandle);
 };
