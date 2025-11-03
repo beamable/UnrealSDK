@@ -62,7 +62,7 @@ public:
 	TArray<TSoftClassPtr<UBeamMatchmakingPreTryJoinQueueHook>> PreJoinMatchmakingHookSequentially = {};
 
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category="Matchmaking Hooks|Join Matchmaking", meta = (AllowAbstract = false))
-	TSoftClassPtr<UBeamMatchmakingUpdatePingHook> UpdatePingMatchmakingHook = {};
+	TSoftClassPtr<UBeamMatchmakingUpdatePingHook> UpdatePingMatchmakingHook = UBeamMatchmakingUpdatePingHook::StaticClass();
 	
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category="Matchmaking Hooks|Join Matchmaking", meta = (AllowAbstract = false))
 	TSoftClassPtr<UBeamMatchmakingTryJoinQueueHook> DefaultMatchmakingHook = UBeamMatchmakingTryJoinQueueHook::StaticClass();

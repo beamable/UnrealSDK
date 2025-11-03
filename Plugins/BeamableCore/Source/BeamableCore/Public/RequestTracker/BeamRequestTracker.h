@@ -300,21 +300,6 @@ public:
 	{
 		return Handle->CurrentOperationHandle = CPP_BeginOperation({}, GetName(), {});
 	}
-		
-	
-	UFUNCTION(BlueprintCallable)
-	virtual void CompleteOperationSuccess(UBeamHookHandle* Handle)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("CompleteOperationSuccess"));
-		TriggerOperationSuccess(Handle->CurrentOperationHandle, "");
-	}
-	
-	UFUNCTION(BlueprintCallable)
-	virtual void CompleteOperationFail(UBeamHookHandle* Handle)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("CompleteOperationFail"));
-		TriggerOperationError(Handle->CurrentOperationHandle, "");
-	}
 
 	
 	/***
