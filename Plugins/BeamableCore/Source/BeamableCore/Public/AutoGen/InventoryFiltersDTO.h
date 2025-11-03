@@ -21,8 +21,8 @@ public:
 	FOptionalTimeRange CreatedAt = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Updated At", Category="Beam")
 	FOptionalTimeRange UpdatedAt = {};
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Properties", Category="Beam")
-	FOptionalArrayOfPropertyFilterDTO Properties = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Property Filters", Category="Beam")
+	FOptionalArrayOfPropertyFilterDTO PropertyFilters = {};
 
 	
 

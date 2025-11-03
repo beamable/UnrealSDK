@@ -23,7 +23,7 @@ FString UBeamoV2ContextRuleFilterLibrary::BeamoV2ContextRuleFilterToJsonString(c
 	return Result;
 }	
 
-UBeamoV2ContextRuleFilter* UBeamoV2ContextRuleFilterLibrary::Make(FOptionalBeamoV2RuleOperationType PlayerIdOperationType, FOptionalBeamoV2RuleOperationType PathsOperationType, FOptionalArrayOfInt64 PlayerIds, FOptionalArrayOfString Paths, UObject* Outer)
+UBeamoV2ContextRuleFilter* UBeamoV2ContextRuleFilterLibrary::Make(FOptionalBeamoV2PlayerRuleOperationType PlayerIdOperationType, FOptionalBeamoV2PathRuleOperationType PathsOperationType, FOptionalArrayOfInt64 PlayerIds, FOptionalArrayOfString Paths, UObject* Outer)
 {
 	auto Serializable = NewObject<UBeamoV2ContextRuleFilter>(Outer);
 	Serializable->PlayerIdOperationType = PlayerIdOperationType;
@@ -34,7 +34,7 @@ UBeamoV2ContextRuleFilter* UBeamoV2ContextRuleFilterLibrary::Make(FOptionalBeamo
 	return Serializable;
 }
 
-void UBeamoV2ContextRuleFilterLibrary::Break(const UBeamoV2ContextRuleFilter* Serializable, FOptionalBeamoV2RuleOperationType& PlayerIdOperationType, FOptionalBeamoV2RuleOperationType& PathsOperationType, FOptionalArrayOfInt64& PlayerIds, FOptionalArrayOfString& Paths)
+void UBeamoV2ContextRuleFilterLibrary::Break(const UBeamoV2ContextRuleFilter* Serializable, FOptionalBeamoV2PlayerRuleOperationType& PlayerIdOperationType, FOptionalBeamoV2PathRuleOperationType& PathsOperationType, FOptionalArrayOfInt64& PlayerIds, FOptionalArrayOfString& Paths)
 {
 	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
 	{

@@ -14,8 +14,8 @@ class BEAMABLECORE_API UInventoryQueryRequestBody : public UObject, public IBeam
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Filters", Category="Beam")
-	FOptionalInventoryFiltersDTO Filters = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Item Filters", Category="Beam")
+	FOptionalInventoryFiltersDTO ItemFilters = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Scopes", Category="Beam")
 	FOptionalArrayOfString Scopes = {};
 

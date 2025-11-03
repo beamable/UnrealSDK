@@ -102,7 +102,7 @@ void UBeamCommerceApi::BP_PostCatalogLegacyImpl(const FBeamRealmHandle& TargetRe
 	{
 		// Binds the handler to the static response handler (pre-generated)
 		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UPostCatalogLegacyRequest, UResultResponse, FOnPostCatalogLegacySuccess, FOnPostCatalogLegacyError, FOnPostCatalogLegacyComplete>
-			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);
+			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 	    
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
@@ -164,7 +164,7 @@ void UBeamCommerceApi::BP_GetCatalogImpl(const FBeamRealmHandle& TargetRealm, co
 	{
 		// Binds the handler to the static response handler (pre-generated)
 		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UGetCatalogRequest, UGetCatalogResponse, FOnGetCatalogSuccess, FOnGetCatalogError, FOnGetCatalogComplete>
-			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);
+			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 	    
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
@@ -226,7 +226,7 @@ void UBeamCommerceApi::BP_PostSkusImpl(const FBeamRealmHandle& TargetRealm, cons
 	{
 		// Binds the handler to the static response handler (pre-generated)
 		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UPostSkusRequest, UResultResponse, FOnPostSkusSuccess, FOnPostSkusError, FOnPostSkusComplete>
-			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);
+			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 	    
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
@@ -288,7 +288,7 @@ void UBeamCommerceApi::BP_GetCommerceImpl(const FBeamRealmHandle& TargetRealm, c
 	{
 		// Binds the handler to the static response handler (pre-generated)
 		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UGetCommerceRequest, UGetActiveOffersResponse, FOnGetCommerceSuccess, FOnGetCommerceError, FOnGetCommerceComplete>
-			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);
+			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 	    
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
@@ -350,7 +350,7 @@ void UBeamCommerceApi::BP_GetCouponsCountImpl(const FBeamRealmHandle& TargetReal
 	{
 		// Binds the handler to the static response handler (pre-generated)
 		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UGetCouponsCountRequest, UGetTotalCouponResponse, FOnGetCouponsCountSuccess, FOnGetCouponsCountError, FOnGetCouponsCountComplete>
-			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);
+			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 	    
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
@@ -412,7 +412,7 @@ void UBeamCommerceApi::BP_PutListingsCooldownImpl(const FBeamRealmHandle& Target
 	{
 		// Binds the handler to the static response handler (pre-generated)
 		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UPutListingsCooldownRequest, UCommonResponse, FOnPutListingsCooldownSuccess, FOnPutListingsCooldownError, FOnPutListingsCooldownComplete>
-			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);
+			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 	    
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
@@ -474,7 +474,7 @@ void UBeamCommerceApi::BP_GetOffersAdminImpl(const FBeamRealmHandle& TargetRealm
 	{
 		// Binds the handler to the static response handler (pre-generated)
 		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UGetOffersAdminRequest, UGetActiveOffersResponse, FOnGetOffersAdminSuccess, FOnGetOffersAdminError, FOnGetOffersAdminComplete>
-			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);
+			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 	    
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
@@ -536,7 +536,7 @@ void UBeamCommerceApi::BP_PostPurchaseImpl(const FBeamRealmHandle& TargetRealm, 
 	{
 		// Binds the handler to the static response handler (pre-generated)
 		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UPostPurchaseRequest, UCommonResponse, FOnPostPurchaseSuccess, FOnPostPurchaseError, FOnPostPurchaseComplete>
-			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);
+			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 	    
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
@@ -598,7 +598,7 @@ void UBeamCommerceApi::BP_PutPurchaseImpl(const FBeamRealmHandle& TargetRealm, c
 	{
 		// Binds the handler to the static response handler (pre-generated)
 		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UPutPurchaseRequest, UResultResponse, FOnPutPurchaseSuccess, FOnPutPurchaseError, FOnPutPurchaseComplete>
-			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);
+			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 	    
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
@@ -660,7 +660,7 @@ void UBeamCommerceApi::BP_GetListingsImpl(const FBeamRealmHandle& TargetRealm, c
 	{
 		// Binds the handler to the static response handler (pre-generated)
 		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UGetListingsRequest, UActiveListingResponse, FOnGetListingsSuccess, FOnGetListingsError, FOnGetListingsComplete>
-			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);
+			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 	    
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
@@ -722,7 +722,7 @@ void UBeamCommerceApi::BP_DeleteStatusImpl(const FBeamRealmHandle& TargetRealm, 
 	{
 		// Binds the handler to the static response handler (pre-generated)
 		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UDeleteStatusRequest, UCommonResponse, FOnDeleteStatusSuccess, FOnDeleteStatusError, FOnDeleteStatusComplete>
-			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);
+			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 	    
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
@@ -784,7 +784,7 @@ void UBeamCommerceApi::BP_PostCouponsImpl(const FBeamRealmHandle& TargetRealm, c
 	{
 		// Binds the handler to the static response handler (pre-generated)
 		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UPostCouponsRequest, UCommonResponse, FOnPostCouponsSuccess, FOnPostCouponsError, FOnPostCouponsComplete>
-			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);
+			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 	    
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
@@ -846,7 +846,7 @@ void UBeamCommerceApi::BP_PostStatsUpdateImpl(const FBeamRealmHandle& TargetReal
 	{
 		// Binds the handler to the static response handler (pre-generated)
 		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UPostStatsUpdateRequest, UCommonResponse, FOnPostStatsUpdateSuccess, FOnPostStatsUpdateError, FOnPostStatsUpdateComplete>
-			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);
+			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 	    
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
@@ -908,7 +908,7 @@ void UBeamCommerceApi::BP_GetOffersImpl(const FBeamRealmHandle& TargetRealm, con
 	{
 		// Binds the handler to the static response handler (pre-generated)
 		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UGetOffersRequest, UGetActiveOffersResponse, FOnGetOffersSuccess, FOnGetOffersError, FOnGetOffersComplete>
-			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);
+			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 	    
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	

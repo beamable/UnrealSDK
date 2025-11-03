@@ -23,7 +23,7 @@ FString UInFlightFailureResponseLibrary::InFlightFailureResponseToJsonString(con
 	return Result;
 }	
 
-UInFlightFailureResponse* UInFlightFailureResponseLibrary::Make(TArray<UAdminActorInFlightFailure*> Failures, UObject* Outer)
+UInFlightFailureResponse* UInFlightFailureResponseLibrary::Make(TArray<UInFlightFailure*> Failures, UObject* Outer)
 {
 	auto Serializable = NewObject<UInFlightFailureResponse>(Outer);
 	Serializable->Failures = Failures;
@@ -31,7 +31,7 @@ UInFlightFailureResponse* UInFlightFailureResponseLibrary::Make(TArray<UAdminAct
 	return Serializable;
 }
 
-void UInFlightFailureResponseLibrary::Break(const UInFlightFailureResponse* Serializable, TArray<UAdminActorInFlightFailure*>& Failures)
+void UInFlightFailureResponseLibrary::Break(const UInFlightFailureResponse* Serializable, TArray<UInFlightFailure*>& Failures)
 {
 	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
 	{

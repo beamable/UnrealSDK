@@ -43,7 +43,7 @@ void UBeamLeaderboardsApi::BP_GetListImpl(const FBeamRealmHandle& TargetRealm, c
 	{
 		// Binds the handler to the static response handler (pre-generated)
 		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UBasicLeaderboardsGetListRequest, ULeaderboardListResponse, FOnBasicLeaderboardsGetListSuccess, FOnBasicLeaderboardsGetListError, FOnBasicLeaderboardsGetListComplete>
-			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);
+			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 	    
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
@@ -105,7 +105,7 @@ void UBeamLeaderboardsApi::BP_GetPlayerImpl(const FBeamRealmHandle& TargetRealm,
 	{
 		// Binds the handler to the static response handler (pre-generated)
 		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UGetPlayerRequest, UListLeaderBoardViewResponse, FOnGetPlayerSuccess, FOnGetPlayerError, FOnGetPlayerComplete>
-			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);
+			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 	    
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
@@ -167,7 +167,7 @@ void UBeamLeaderboardsApi::BP_BasicLeaderboardsGetAssignmentImpl(const FBeamReal
 	{
 		// Binds the handler to the static response handler (pre-generated)
 		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UBasicLeaderboardsGetAssignmentRequest, ULeaderboardAssignmentInfo, FOnBasicLeaderboardsGetAssignmentSuccess, FOnBasicLeaderboardsGetAssignmentError, FOnBasicLeaderboardsGetAssignmentComplete>
-			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);
+			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 	    
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
@@ -229,7 +229,7 @@ void UBeamLeaderboardsApi::BP_GetUidImpl(const FBeamRealmHandle& TargetRealm, co
 	{
 		// Binds the handler to the static response handler (pre-generated)
 		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UGetUidRequest, ULeaderboardUidResponse, FOnGetUidSuccess, FOnGetUidError, FOnGetUidComplete>
-			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);
+			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 	    
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
@@ -291,7 +291,7 @@ void UBeamLeaderboardsApi::BP_DeleteEntriesImpl(const FBeamRealmHandle& TargetRe
 	{
 		// Binds the handler to the static response handler (pre-generated)
 		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UDeleteEntriesRequest, UCommonResponse, FOnDeleteEntriesSuccess, FOnDeleteEntriesError, FOnDeleteEntriesComplete>
-			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);
+			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 	    
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
@@ -353,7 +353,7 @@ void UBeamLeaderboardsApi::BP_GetMembershipImpl(const FBeamRealmHandle& TargetRe
 	{
 		// Binds the handler to the static response handler (pre-generated)
 		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UGetMembershipRequest, ULeaderboardMembershipResponse, FOnGetMembershipSuccess, FOnGetMembershipError, FOnGetMembershipComplete>
-			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);
+			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 	    
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
@@ -415,7 +415,7 @@ void UBeamLeaderboardsApi::BP_GetRanksImpl(const FBeamRealmHandle& TargetRealm, 
 	{
 		// Binds the handler to the static response handler (pre-generated)
 		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UGetRanksRequest, ULeaderBoardViewResponse, FOnGetRanksSuccess, FOnGetRanksError, FOnGetRanksComplete>
-			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);
+			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 	    
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
@@ -477,7 +477,7 @@ void UBeamLeaderboardsApi::BP_GetPartitionImpl(const FBeamRealmHandle& TargetRea
 	{
 		// Binds the handler to the static response handler (pre-generated)
 		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UGetPartitionRequest, ULeaderboardPartitionInfo, FOnGetPartitionSuccess, FOnGetPartitionError, FOnGetPartitionComplete>
-			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);
+			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 	    
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
@@ -539,7 +539,7 @@ void UBeamLeaderboardsApi::BP_GetFriendsImpl(const FBeamRealmHandle& TargetRealm
 	{
 		// Binds the handler to the static response handler (pre-generated)
 		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UObjectLeaderboardsGetFriendsByObjectIdRequest, ULeaderBoardViewResponse, FOnObjectLeaderboardsGetFriendsByObjectIdSuccess, FOnObjectLeaderboardsGetFriendsByObjectIdError, FOnObjectLeaderboardsGetFriendsByObjectIdComplete>
-			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);
+			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 	    
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
@@ -601,7 +601,7 @@ void UBeamLeaderboardsApi::BP_PostLeaderboardsImpl(const FBeamRealmHandle& Targe
 	{
 		// Binds the handler to the static response handler (pre-generated)
 		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UPostLeaderboardsRequest, UCommonResponse, FOnPostLeaderboardsSuccess, FOnPostLeaderboardsError, FOnPostLeaderboardsComplete>
-			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);
+			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 	    
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
@@ -663,7 +663,7 @@ void UBeamLeaderboardsApi::BP_DeleteLeaderboardsImpl(const FBeamRealmHandle& Tar
 	{
 		// Binds the handler to the static response handler (pre-generated)
 		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UDeleteLeaderboardsRequest, UCommonResponse, FOnDeleteLeaderboardsSuccess, FOnDeleteLeaderboardsError, FOnDeleteLeaderboardsComplete>
-			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);
+			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 	    
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
@@ -725,7 +725,7 @@ void UBeamLeaderboardsApi::BP_GetMatchesImpl(const FBeamRealmHandle& TargetRealm
 	{
 		// Binds the handler to the static response handler (pre-generated)
 		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UObjectLeaderboardsGetMatchesByObjectIdRequest, UMatchMakingMatchesPvpResponse, FOnObjectLeaderboardsGetMatchesByObjectIdSuccess, FOnObjectLeaderboardsGetMatchesByObjectIdError, FOnObjectLeaderboardsGetMatchesByObjectIdComplete>
-			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);
+			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 	    
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
@@ -787,7 +787,7 @@ void UBeamLeaderboardsApi::BP_ObjectLeaderboardsGetAssignmentByObjectIdImpl(cons
 	{
 		// Binds the handler to the static response handler (pre-generated)
 		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UObjectLeaderboardsGetAssignmentByObjectIdRequest, ULeaderboardAssignmentInfo, FOnObjectLeaderboardsGetAssignmentByObjectIdSuccess, FOnObjectLeaderboardsGetAssignmentByObjectIdError, FOnObjectLeaderboardsGetAssignmentByObjectIdComplete>
-			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);
+			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 	    
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
@@ -849,7 +849,7 @@ void UBeamLeaderboardsApi::BP_DeleteAssignmentImpl(const FBeamRealmHandle& Targe
 	{
 		// Binds the handler to the static response handler (pre-generated)
 		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UDeleteAssignmentRequest, UCommonResponse, FOnDeleteAssignmentSuccess, FOnDeleteAssignmentError, FOnDeleteAssignmentComplete>
-			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);
+			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 	    
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
@@ -911,7 +911,7 @@ void UBeamLeaderboardsApi::BP_PutEntryImpl(const FBeamRealmHandle& TargetRealm, 
 	{
 		// Binds the handler to the static response handler (pre-generated)
 		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UPutEntryRequest, UCommonResponse, FOnPutEntrySuccess, FOnPutEntryError, FOnPutEntryComplete>
-			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);
+			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 	    
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
@@ -973,7 +973,7 @@ void UBeamLeaderboardsApi::BP_DeleteEntryImpl(const FBeamRealmHandle& TargetReal
 	{
 		// Binds the handler to the static response handler (pre-generated)
 		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UDeleteEntryRequest, UCommonResponse, FOnDeleteEntrySuccess, FOnDeleteEntryError, FOnDeleteEntryComplete>
-			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);
+			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 	    
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
@@ -1035,7 +1035,7 @@ void UBeamLeaderboardsApi::BP_PutFreezeImpl(const FBeamRealmHandle& TargetRealm,
 	{
 		// Binds the handler to the static response handler (pre-generated)
 		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UPutFreezeRequest, UCommonResponse, FOnPutFreezeSuccess, FOnPutFreezeError, FOnPutFreezeComplete>
-			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);
+			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 	    
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
@@ -1097,7 +1097,7 @@ void UBeamLeaderboardsApi::BP_GetDetailsImpl(const FBeamRealmHandle& TargetRealm
 	{
 		// Binds the handler to the static response handler (pre-generated)
 		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UGetDetailsRequest, ULeaderboardDetails, FOnGetDetailsSuccess, FOnGetDetailsError, FOnGetDetailsComplete>
-			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);
+			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 	    
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
@@ -1159,7 +1159,7 @@ void UBeamLeaderboardsApi::BP_GetViewImpl(const FBeamRealmHandle& TargetRealm, c
 	{
 		// Binds the handler to the static response handler (pre-generated)
 		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UGetViewRequest, ULeaderBoardViewResponse, FOnGetViewSuccess, FOnGetViewError, FOnGetViewComplete>
-			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);
+			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 	    
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
@@ -1221,7 +1221,7 @@ void UBeamLeaderboardsApi::BP_PutSwapImpl(const FBeamRealmHandle& TargetRealm, c
 	{
 		// Binds the handler to the static response handler (pre-generated)
 		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UPutSwapRequest, UCommonResponse, FOnPutSwapSuccess, FOnPutSwapError, FOnPutSwapComplete>
-			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);
+			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 	    
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	

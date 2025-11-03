@@ -43,7 +43,7 @@ void UBeamMatchmakingApi::BP_GetMatchesImpl(const FBeamRealmHandle& TargetRealm,
 	{
 		// Binds the handler to the static response handler (pre-generated)
 		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UApiMatchmakingGetMatchesByIdRequest, UMatch, FOnApiMatchmakingGetMatchesByIdSuccess, FOnApiMatchmakingGetMatchesByIdError, FOnApiMatchmakingGetMatchesByIdComplete>
-			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);
+			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 	    
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
@@ -105,7 +105,7 @@ void UBeamMatchmakingApi::BP_ApiMatchmakingGetTicketsImpl(const FBeamRealmHandle
 	{
 		// Binds the handler to the static response handler (pre-generated)
 		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UApiMatchmakingGetTicketsRequest, UTicketQueryResponse, FOnApiMatchmakingGetTicketsSuccess, FOnApiMatchmakingGetTicketsError, FOnApiMatchmakingGetTicketsComplete>
-			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);
+			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 	    
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
@@ -167,7 +167,7 @@ void UBeamMatchmakingApi::BP_PostTicketsImpl(const FBeamRealmHandle& TargetRealm
 	{
 		// Binds the handler to the static response handler (pre-generated)
 		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UPostTicketsRequest, UTicketReservationResponse, FOnPostTicketsSuccess, FOnPostTicketsError, FOnPostTicketsComplete>
-			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);
+			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 	    
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
@@ -229,7 +229,7 @@ void UBeamMatchmakingApi::BP_ApiMatchmakingGetTicketsByIdImpl(const FBeamRealmHa
 	{
 		// Binds the handler to the static response handler (pre-generated)
 		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UApiMatchmakingGetTicketsByIdRequest, UTicket, FOnApiMatchmakingGetTicketsByIdSuccess, FOnApiMatchmakingGetTicketsByIdError, FOnApiMatchmakingGetTicketsByIdComplete>
-			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);
+			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 	    
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
@@ -291,7 +291,7 @@ void UBeamMatchmakingApi::BP_DeleteTicketsImpl(const FBeamRealmHandle& TargetRea
 	{
 		// Binds the handler to the static response handler (pre-generated)
 		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UDeleteTicketsRequest, UApiMatchmakingTicketsDeleteTicketResponse, FOnDeleteTicketsSuccess, FOnDeleteTicketsError, FOnDeleteTicketsComplete>
-			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);
+			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 	    
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	

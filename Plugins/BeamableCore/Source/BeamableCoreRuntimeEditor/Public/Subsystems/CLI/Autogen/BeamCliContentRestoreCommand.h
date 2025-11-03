@@ -102,6 +102,7 @@ Options:
   -n, --name <name>                          Defines the name or path for the snapshot to be restored. If passed a name, it will first get the snapshot from shared folder '.beamable/content-snapshots/[PID]' than from the local only under '.beamable/temp/content-snapshots/[PID]'. If a path is passed, it is going to try get the json file from the path []
   --pid <pid>                                An optional field to set the PID from where you would like to get the snapshot to be restored. The default will be the current PID the user are in []
   -d, --delete-after-restore                 Defines if the snapshot file should be deleted after restoring [default: False]
+  --additive-restore                         Defines if the restore will additionally adds the contents without deleting current local contents [default: False]
   --dryrun                                   [DEPRECATED] Run as much of the command as possible without making any network calls
   --cid <cid>                                CID (CustomerId) to use (found in Portal->Account); defaults to whatever is in '.beamable/connection-configuration.json'
   --engine <engine>                          If passed, sets the engine integration that is calling for the command

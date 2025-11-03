@@ -43,7 +43,7 @@ void UBeamServicePlanApi::BP_GetServicePlansImpl(const FBeamRealmHandle& TargetR
 	{
 		// Binds the handler to the static response handler (pre-generated)
 		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UGetServicePlansRequest, UServicePlanActorServicePlansResponse, FOnGetServicePlansSuccess, FOnGetServicePlansError, FOnGetServicePlansComplete>
-			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);
+			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 	    
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
@@ -105,7 +105,7 @@ void UBeamServicePlanApi::BP_PostServicePlansImpl(const FBeamRealmHandle& Target
 	{
 		// Binds the handler to the static response handler (pre-generated)
 		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UPostServicePlansRequest, UEmptyMessage, FOnPostServicePlansSuccess, FOnPostServicePlansError, FOnPostServicePlansComplete>
-			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);
+			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 	    
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
@@ -167,7 +167,7 @@ void UBeamServicePlanApi::BP_GetServicePlanImpl(const FBeamRealmHandle& TargetRe
 	{
 		// Binds the handler to the static response handler (pre-generated)
 		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UGetServicePlanRequest, UServicePlanActorServicePlan, FOnGetServicePlanSuccess, FOnGetServicePlanError, FOnGetServicePlanComplete>
-			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);
+			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 	    
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
@@ -229,7 +229,7 @@ void UBeamServicePlanApi::BP_DeleteServicePlanImpl(const FBeamRealmHandle& Targe
 	{
 		// Binds the handler to the static response handler (pre-generated)
 		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UDeleteServicePlanRequest, UEmptyMessage, FOnDeleteServicePlanSuccess, FOnDeleteServicePlanError, FOnDeleteServicePlanComplete>
-			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);
+			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 	    
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	

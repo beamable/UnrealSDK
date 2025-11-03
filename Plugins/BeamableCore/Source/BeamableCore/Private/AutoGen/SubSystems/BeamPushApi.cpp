@@ -43,7 +43,7 @@ void UBeamPushApi::BP_PostRegisterImpl(const FBeamRealmHandle& TargetRealm, cons
 	{
 		// Binds the handler to the static response handler (pre-generated)
 		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UBasicPushPostRegisterRequest, UEmptyRsp, FOnBasicPushPostRegisterSuccess, FOnBasicPushPostRegisterError, FOnBasicPushPostRegisterComplete>
-			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);
+			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 	    
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
@@ -105,7 +105,7 @@ void UBeamPushApi::BP_PostSendImpl(const FBeamRealmHandle& TargetRealm, const FB
 	{
 		// Binds the handler to the static response handler (pre-generated)
 		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UPostSendRequest, UEmptyRsp, FOnPostSendSuccess, FOnPostSendError, FOnPostSendComplete>
-			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);
+			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 	    
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	

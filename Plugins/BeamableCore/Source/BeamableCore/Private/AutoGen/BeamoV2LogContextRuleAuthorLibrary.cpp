@@ -23,21 +23,21 @@ FString UBeamoV2LogContextRuleAuthorLibrary::BeamoV2LogContextRuleAuthorToJsonSt
 	return Result;
 }	
 
-UBeamoV2LogContextRuleAuthor* UBeamoV2LogContextRuleAuthorLibrary::Make(FString Email, FString AccountId, UObject* Outer)
+UBeamoV2LogContextRuleAuthor* UBeamoV2LogContextRuleAuthorLibrary::Make(FString AccountId, FOptionalString Email, UObject* Outer)
 {
 	auto Serializable = NewObject<UBeamoV2LogContextRuleAuthor>(Outer);
-	Serializable->Email = Email;
 	Serializable->AccountId = AccountId;
+	Serializable->Email = Email;
 	
 	return Serializable;
 }
 
-void UBeamoV2LogContextRuleAuthorLibrary::Break(const UBeamoV2LogContextRuleAuthor* Serializable, FString& Email, FString& AccountId)
+void UBeamoV2LogContextRuleAuthorLibrary::Break(const UBeamoV2LogContextRuleAuthor* Serializable, FString& AccountId, FOptionalString& Email)
 {
 	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
 	{
-		Email = Serializable->Email;
 		AccountId = Serializable->AccountId;
+		Email = Serializable->Email;
 	}
 		
 }

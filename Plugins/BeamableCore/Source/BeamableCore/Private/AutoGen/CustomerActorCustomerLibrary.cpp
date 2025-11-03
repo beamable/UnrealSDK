@@ -23,7 +23,7 @@ FString UCustomerActorCustomerLibrary::CustomerActorCustomerToJsonString(const U
 	return Result;
 }	
 
-UCustomerActorCustomer* UCustomerActorCustomerLibrary::Make(int64 CustomerId, FString Name, FOptionalString Alias, FOptionalPaymentStatus PaymentStatus, FOptionalActivationStatus ActivationStatus, FOptionalString Contact, FOptionalDateTime Created, FOptionalDateTime Updated, FOptionalArrayOfRealm Realms, FOptionalArrayOfCustomerActorAccount Accounts, UObject* Outer)
+UCustomerActorCustomer* UCustomerActorCustomerLibrary::Make(int64 CustomerId, FString Name, FOptionalString Alias, FOptionalPaymentStatus PaymentStatus, FOptionalActivationStatus ActivationStatus, FOptionalString Contact, FOptionalDateTime Created, FOptionalDateTime Updated, FOptionalArrayOfRealm Realms, FOptionalArrayOfCustomerActorAccount Accounts, FOptionalMapOfString Config, UObject* Outer)
 {
 	auto Serializable = NewObject<UCustomerActorCustomer>(Outer);
 	Serializable->CustomerId = CustomerId;
@@ -36,11 +36,12 @@ UCustomerActorCustomer* UCustomerActorCustomerLibrary::Make(int64 CustomerId, FS
 	Serializable->Updated = Updated;
 	Serializable->Realms = Realms;
 	Serializable->Accounts = Accounts;
+	Serializable->Config = Config;
 	
 	return Serializable;
 }
 
-void UCustomerActorCustomerLibrary::Break(const UCustomerActorCustomer* Serializable, int64& CustomerId, FString& Name, FOptionalString& Alias, FOptionalPaymentStatus& PaymentStatus, FOptionalActivationStatus& ActivationStatus, FOptionalString& Contact, FOptionalDateTime& Created, FOptionalDateTime& Updated, FOptionalArrayOfRealm& Realms, FOptionalArrayOfCustomerActorAccount& Accounts)
+void UCustomerActorCustomerLibrary::Break(const UCustomerActorCustomer* Serializable, int64& CustomerId, FString& Name, FOptionalString& Alias, FOptionalPaymentStatus& PaymentStatus, FOptionalActivationStatus& ActivationStatus, FOptionalString& Contact, FOptionalDateTime& Created, FOptionalDateTime& Updated, FOptionalArrayOfRealm& Realms, FOptionalArrayOfCustomerActorAccount& Accounts, FOptionalMapOfString& Config)
 {
 	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
 	{
@@ -54,6 +55,7 @@ void UCustomerActorCustomerLibrary::Break(const UCustomerActorCustomer* Serializ
 		Updated = Serializable->Updated;
 		Realms = Serializable->Realms;
 		Accounts = Serializable->Accounts;
+		Config = Serializable->Config;
 	}
 		
 }

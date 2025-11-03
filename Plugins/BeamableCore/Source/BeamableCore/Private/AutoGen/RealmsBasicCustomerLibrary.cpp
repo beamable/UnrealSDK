@@ -23,7 +23,7 @@ FString URealmsBasicCustomerLibrary::RealmsBasicCustomerToJsonString(const UReal
 	return Result;
 }	
 
-URealmsBasicCustomer* URealmsBasicCustomerLibrary::Make(FString Name, FBeamCid Cid, TArray<UProject*> Projects, TArray<URealmsBasicAccount*> Accounts, FOptionalString ActivationStatus, FOptionalString PaymentStatus, FOptionalString Image, FOptionalString Contact, FOptionalString Alias, FOptionalInt64 Updated, FOptionalString CrmLink, FOptionalInt64 Created, UObject* Outer)
+URealmsBasicCustomer* URealmsBasicCustomerLibrary::Make(FString Name, FBeamCid Cid, TArray<UProject*> Projects, TArray<URealmsBasicAccount*> Accounts, FOptionalString ActivationStatus, FOptionalString PaymentStatus, FOptionalString Image, FOptionalString Contact, FOptionalString Alias, FOptionalInt64 Updated, FOptionalString CrmLink, FOptionalInt64 Created, FOptionalMapOfString Config, UObject* Outer)
 {
 	auto Serializable = NewObject<URealmsBasicCustomer>(Outer);
 	Serializable->Name = Name;
@@ -38,11 +38,12 @@ URealmsBasicCustomer* URealmsBasicCustomerLibrary::Make(FString Name, FBeamCid C
 	Serializable->Updated = Updated;
 	Serializable->CrmLink = CrmLink;
 	Serializable->Created = Created;
+	Serializable->Config = Config;
 	
 	return Serializable;
 }
 
-void URealmsBasicCustomerLibrary::Break(const URealmsBasicCustomer* Serializable, FString& Name, FBeamCid& Cid, TArray<UProject*>& Projects, TArray<URealmsBasicAccount*>& Accounts, FOptionalString& ActivationStatus, FOptionalString& PaymentStatus, FOptionalString& Image, FOptionalString& Contact, FOptionalString& Alias, FOptionalInt64& Updated, FOptionalString& CrmLink, FOptionalInt64& Created)
+void URealmsBasicCustomerLibrary::Break(const URealmsBasicCustomer* Serializable, FString& Name, FBeamCid& Cid, TArray<UProject*>& Projects, TArray<URealmsBasicAccount*>& Accounts, FOptionalString& ActivationStatus, FOptionalString& PaymentStatus, FOptionalString& Image, FOptionalString& Contact, FOptionalString& Alias, FOptionalInt64& Updated, FOptionalString& CrmLink, FOptionalInt64& Created, FOptionalMapOfString& Config)
 {
 	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
 	{
@@ -58,6 +59,7 @@ void URealmsBasicCustomerLibrary::Break(const URealmsBasicCustomer* Serializable
 		Updated = Serializable->Updated;
 		CrmLink = Serializable->CrmLink;
 		Created = Serializable->Created;
+		Config = Serializable->Config;
 	}
 		
 }

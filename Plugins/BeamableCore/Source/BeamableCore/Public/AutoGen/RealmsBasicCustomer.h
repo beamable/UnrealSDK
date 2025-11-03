@@ -5,6 +5,7 @@
 #include "Serialization/BeamJsonSerializable.h"
 #include "Serialization/BeamJsonUtils.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalMapOfString.h"
 #include "BeamBackend/SemanticTypes/BeamCid.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalInt64.h"
 #include "BeamableCore/Public/AutoGen/Project.h"
@@ -42,6 +43,8 @@ public:
 	FOptionalString CrmLink = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Created", Category="Beam")
 	FOptionalInt64 Created = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Config", Category="Beam")
+	FOptionalMapOfString Config = {};
 
 	
 

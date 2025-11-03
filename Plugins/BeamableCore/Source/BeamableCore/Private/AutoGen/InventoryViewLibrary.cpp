@@ -23,23 +23,25 @@ FString UInventoryViewLibrary::InventoryViewToJsonString(const UInventoryView* S
 	return Result;
 }	
 
-UInventoryView* UInventoryViewLibrary::Make(TArray<UCurrencyView*> Currencies, TArray<UItemGroup*> Items, FOptionalString Scope, UObject* Outer)
+UInventoryView* UInventoryViewLibrary::Make(TArray<UCurrencyView*> Currencies, TArray<UItemGroup*> Items, FOptionalString Scope, FOptionalInventoryFiltersDTO ItemFilters, UObject* Outer)
 {
 	auto Serializable = NewObject<UInventoryView>(Outer);
 	Serializable->Currencies = Currencies;
 	Serializable->Items = Items;
 	Serializable->Scope = Scope;
+	Serializable->ItemFilters = ItemFilters;
 	
 	return Serializable;
 }
 
-void UInventoryViewLibrary::Break(const UInventoryView* Serializable, TArray<UCurrencyView*>& Currencies, TArray<UItemGroup*>& Items, FOptionalString& Scope)
+void UInventoryViewLibrary::Break(const UInventoryView* Serializable, TArray<UCurrencyView*>& Currencies, TArray<UItemGroup*>& Items, FOptionalString& Scope, FOptionalInventoryFiltersDTO& ItemFilters)
 {
 	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
 	{
 		Currencies = Serializable->Currencies;
 		Items = Serializable->Items;
 		Scope = Serializable->Scope;
+		ItemFilters = Serializable->ItemFilters;
 	}
 		
 }
