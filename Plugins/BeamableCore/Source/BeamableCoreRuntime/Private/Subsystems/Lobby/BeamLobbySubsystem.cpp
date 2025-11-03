@@ -164,9 +164,9 @@ bool UBeamLobbySubsystem::TryGetCurrentSlotPasscode(FUserSlot Slot, FString& Pas
 
 bool UBeamLobbySubsystem::TryGetLobbyById(FGuid LobbyId, ULobby*& Lobby)
 {
-	if (const auto ExistingLobbyIdx = KnownLobbies.IndexOfByPredicate([LobbyId](const ULobby* Lob)
+	if (const auto ExistingLobbyIdx = KnownLobbies.IndexOfByPredicate([LobbyId](const ULobby* Lobby)
 	{
-		return Lob->LobbyId.Val == LobbyId.ToString(EGuidFormats::DigitsWithHyphensLower);
+		return Lobby->LobbyId.Val == LobbyId.ToString(EGuidFormats::DigitsWithHyphensLower);
 	}); ExistingLobbyIdx != INDEX_NONE)
 	{
 		Lobby = KnownLobbies[ExistingLobbyIdx];

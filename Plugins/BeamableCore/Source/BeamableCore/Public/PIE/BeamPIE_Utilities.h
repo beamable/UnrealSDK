@@ -27,6 +27,18 @@ public:
 		return true;
 	}
 
+	/**
+	 * Checks if the FContext is valid
+	 */
+	static bool IsValidContext(FWorldContext* Context)
+	{
+		bool bIsValid = Context != nullptr && Context->WorldType != EWorldType::None && Context->World();
+		if (!bIsValid)
+		{
+			UE_LOG(LogBeamEditor, Warning, TEXT("This delegate called was made during terminated PIE Session"));
+		}
+		return bIsValid;
+	}
 	
 	static bool CheckPIEMapFilter(FString MapName, FBeamPIE_Settings PIESetting)
 	{
