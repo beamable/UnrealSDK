@@ -43,7 +43,7 @@ void UBeamDiscordSampleMsApi::BP_UpdateFromDiscordImpl(const FBeamRealmHandle& T
 	{
 		// Binds the handler to the static response handler (pre-generated)
 		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UDiscordSampleMsUpdateFromDiscordRequest, UDiscordSampleMsUpdateFromDiscordResponse, FOnDiscordSampleMsUpdateFromDiscordSuccess, FOnDiscordSampleMsUpdateFromDiscordError, FOnDiscordSampleMsUpdateFromDiscordComplete>
-			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);
+			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 	    
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
@@ -105,7 +105,7 @@ void UBeamDiscordSampleMsApi::BP_UpdateUserWhitelistedStatusImpl(const FBeamReal
 	{
 		// Binds the handler to the static response handler (pre-generated)
 		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UDiscordSampleMsUpdateUserWhitelistedStatusRequest, UDiscordWhitelistedInfo, FOnDiscordSampleMsUpdateUserWhitelistedStatusSuccess, FOnDiscordSampleMsUpdateUserWhitelistedStatusError, FOnDiscordSampleMsUpdateUserWhitelistedStatusComplete>
-			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);
+			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 	    
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
