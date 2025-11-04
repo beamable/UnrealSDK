@@ -252,9 +252,6 @@ public:
 	FBeamOperationHandle CPP_TryLeaveQueueOperation(FUserSlot UserSlot, FBeamOperationEventHandlerCode OnOperationEvent);
 
 private:
-
-
-	void TryJoinQueueHook(FUserSlot UserSlot, FBeamContentId GameTypeQueue, FOptionalString Team, FOptionalArrayOfBeamTag Tags, UBeamMatchmakingTryJoinQueueHookHandle* BeamMatchmakingTryJoinQueueHookHandle);
 	
 	// Operation Implementations
 	void TryJoinQueue(FUserSlot Slot, FBeamContentId GameTypeQueue, FOptionalString Team, FOptionalArrayOfBeamTag Tags, FBeamOperationHandle Op);
@@ -272,6 +269,4 @@ private:
 	void CommitRegionPing(FUserSlot UserSlot, TMap<FString, int32> RegionPings, FBeamOperationHandle OperationHandle);
 	
 	static FString ConvertRegionPingsToJson(TMap<FString, int32> RegionPings);
-	
-	void StartParallelHookOperation(TArray<FOnBeamableTryJoinMatchmakingQueueParallel> PreTryJoinMatchmakingQueueParallel, FBeamOperationHandle CurrentStepOperationHandle, FBeamOperationHandle MainOperationHandle);
 };

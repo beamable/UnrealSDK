@@ -55,12 +55,9 @@ public:
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Beam Systems")
 	TArray<TSubclassOf<UBeamRuntimeSubsystem>> ManualyInitializedRuntimeSubsystems;
 
-	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category="Matchmaking Hooks| Matchmaking", meta = (AllowAbstract = false))
-	TArray<TSoftClassPtr<UBeamMatchmakingHooks>> MatchmakingHooks = {UBeamDefaultMatchmakingHooks::StaticClass()};
 	
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category="Content Hooks", meta = (AllowAbstract = false))
 	TSoftClassPtr<UBeamContentHooks> DefaultContentHook = UBeamContentHooks::StaticClass();
-
 	
 	/**
 	 * @brief As per UE docs, we have a streamable manager declared to load up beamable content asynchronously at runtime: https://docs.unrealengine.com/5.1/en-US/asynchronous-asset-loading-in-unreal-engine/.

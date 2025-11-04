@@ -116,41 +116,41 @@ bool UBeamMatchmakingSubsystem::TryGetTicket(const FUserSlot& Slot, FBeamMatchma
 
 FBeamOperationHandle UBeamMatchmakingSubsystem::TryJoinQueueOperation(FUserSlot UserSlot, FBeamContentId GameTypeQueue, FOptionalString Team, FBeamOperationEventHandler OnOperationEvent)
 {
-	UBeamMatchmakingTryJoinQueueHookHandle* BeamMatchmakingTryJoinQueueHookHandle = Runtime->RequestTrackerSystem->BeginHookHandle<UBeamMatchmakingTryJoinQueueHookHandle>(OnOperationEvent, GetTransientPackage());
-
-	TryJoinQueueHook(UserSlot, GameTypeQueue, Team, {}, BeamMatchmakingTryJoinQueueHookHandle);
+	const auto Handle = Runtime->RequestTrackerSystem->BeginOperation({UserSlot}, GetClass()->GetFName().ToString(), OnOperationEvent);
 	
-	return BeamMatchmakingTryJoinQueueHookHandle->MainOperationHandle;
+	TryJoinQueue(UserSlot, GameTypeQueue, Team, {}, Handle);
+	
+	return Handle;
 }
 
 FBeamOperationHandle UBeamMatchmakingSubsystem::CPP_TryJoinQueueOperation(FUserSlot UserSlot, const FBeamContentId& GameTypeQueue, FOptionalString Team,
                                                                           FBeamOperationEventHandlerCode OnOperationEvent)
 {
-	UBeamMatchmakingTryJoinQueueHookHandle* BeamMatchmakingTryJoinQueueHookHandle = Runtime->RequestTrackerSystem->CPP_BeginHookHandle<UBeamMatchmakingTryJoinQueueHookHandle>(OnOperationEvent, GetTransientPackage());
-
-	TryJoinQueueHook(UserSlot, GameTypeQueue, Team, {}, BeamMatchmakingTryJoinQueueHookHandle);
+	const auto Handle = Runtime->RequestTrackerSystem->CPP_BeginOperation({UserSlot}, GetClass()->GetFName().ToString(), OnOperationEvent);
 	
-	return BeamMatchmakingTryJoinQueueHookHandle->MainOperationHandle;
+	TryJoinQueue(UserSlot, GameTypeQueue, Team, {}, Handle);
+	
+	return Handle;
 }
 
 FBeamOperationHandle UBeamMatchmakingSubsystem::TryJoinQueueWithTagsOperation(FUserSlot UserSlot, FBeamContentId GameTypeQueue, FOptionalString Team, TArray<FBeamTag> Tags,
                                                                               FBeamOperationEventHandler OnOperationEvent)
 {
-	UBeamMatchmakingTryJoinQueueHookHandle* BeamMatchmakingTryJoinQueueHookHandle = Runtime->RequestTrackerSystem->BeginHookHandle<UBeamMatchmakingTryJoinQueueHookHandle>(OnOperationEvent, GetTransientPackage());
-
-	TryJoinQueueHook(UserSlot, GameTypeQueue, Team, FOptionalArrayOfBeamTag{Tags}, BeamMatchmakingTryJoinQueueHookHandle);
+	const auto Handle = Runtime->RequestTrackerSystem->BeginOperation({UserSlot}, GetClass()->GetFName().ToString(), OnOperationEvent);
 	
-	return BeamMatchmakingTryJoinQueueHookHandle->MainOperationHandle;
+	TryJoinQueue(UserSlot, GameTypeQueue, Team, FOptionalArrayOfBeamTag{Tags}, Handle);
+	
+	return Handle;
 }
 
 FBeamOperationHandle UBeamMatchmakingSubsystem::CPP_TryJoinQueueWithTagsOperation(FUserSlot UserSlot, const FBeamContentId& GameTypeQueue, FOptionalString Team, TArray<FBeamTag> Tags,
                                                                                   FBeamOperationEventHandlerCode OnOperationEvent)
 {
-	UBeamMatchmakingTryJoinQueueHookHandle* BeamMatchmakingTryJoinQueueHookHandle = Runtime->RequestTrackerSystem->CPP_BeginHookHandle<UBeamMatchmakingTryJoinQueueHookHandle>(OnOperationEvent, GetTransientPackage());
-
-	TryJoinQueueHook(UserSlot, GameTypeQueue, Team, FOptionalArrayOfBeamTag{Tags}, BeamMatchmakingTryJoinQueueHookHandle);
+	const auto Handle = Runtime->RequestTrackerSystem->CPP_BeginOperation({UserSlot}, GetClass()->GetFName().ToString(), OnOperationEvent);
 	
-	return BeamMatchmakingTryJoinQueueHookHandle->MainOperationHandle;
+	TryJoinQueue(UserSlot, GameTypeQueue, Team, FOptionalArrayOfBeamTag{Tags}, Handle);
+	
+	return Handle;
 }
 
 FBeamOperationHandle UBeamMatchmakingSubsystem::TryLeaveQueueOperation(FUserSlot UserSlot, FBeamOperationEventHandler OnOperationEvent)
@@ -165,106 +165,6 @@ FBeamOperationHandle UBeamMatchmakingSubsystem::CPP_TryLeaveQueueOperation(FUser
 	const auto Handle = Runtime->RequestTrackerSystem->CPP_BeginOperation({UserSlot}, GetClass()->GetFName().ToString(), OnOperationEvent);
 	TryLeaveQueue(UserSlot, Handle);
 	return Handle;
-}
-
-void UBeamMatchmakingSubsystem::StartParallelHookOperation(TArray<FOnBeamableTryJoinMatchmakingQueueParallel> PreTryJoinMatchmakingQueueParallel, FBeamOperationHandle CurrentStepOperationHandle, FBeamOperationHandle MainOperationHandle)
-{
-	FBeamWaitHandle _;
-	RequestTracker->InvokeAndWaitForHooks(_, PreTryJoinMatchmakingQueueParallel, FOnWaitCompleteCode::CreateLambda([this, CurrentStepOperationHandle](FBeamWaitCompleteEvent Evt)
-	{
-		TArray<FString> Errs;
-		if (RequestTracker->IsWaitFailed(Evt, Errs))
-		{
-			FString Err;
-			for (const auto& Error : Errs) Err += FString::Printf(TEXT("%s\n"), *Error);
-				
-			RequestTracker->TriggerOperationError(CurrentStepOperationHandle, Err);
-			return;
-		}
-		RequestTracker->TriggerOperationSuccess(CurrentStepOperationHandle, TEXT("SUCCESS"));
-	}), MainOperationHandle);
-}
-
-void UBeamMatchmakingSubsystem::TryJoinQueueHook(FUserSlot UserSlot, FBeamContentId GameTypeQueue, FOptionalString Team, FOptionalArrayOfBeamTag Tags, UBeamMatchmakingTryJoinQueueHookHandle* BeamMatchmakingTryJoinQueueHookHandle)
-{
-	TArray<FOnBeamableTryJoinMatchmakingQueueParallel> PreTryJoinMatchmakingQueueParallel;
-	
-	TArray<FOnBeamableTryJoinMatchmakingQueueParallel> ReplaceTryJoinMatchmakingQueueParallel;
-	
-	TArray<TSoftClassPtr<UBeamMatchmakingHooks>> BeamMatchmakingHooksSoftPtr = GetDefault<UBeamRuntimeSettings>()->MatchmakingHooks;
-	
-	// Running Pre Hook Calls
-	for (auto BeamMatchmakingHook : BeamMatchmakingHooksSoftPtr)
-	{
-		if (!BeamMatchmakingHook.IsValid())
-		{
-			UE_LOG(LogTemp, Error, TEXT("The matchmaking setup for is invalid"));
-			continue;
-		}
-		UBeamMatchmakingHooks* Extension = NewObject<UBeamMatchmakingHooks>(GetTransientPackage(), BeamMatchmakingHook.LoadSynchronous());
-		Extension->SetContext(this);
-		
-		PreTryJoinMatchmakingQueueParallel.Add(FOnBeamableTryJoinMatchmakingQueueParallel::CreateLambda([this, Extension](FBeamOperationHandle MainOperationHandle)
-		{
-			auto HookHandle = NewObject<UBeamHookHandle>(GetTransientPackage());
-			HookHandle->MainOperationHandle = MainOperationHandle;;
-			
-			auto OperationHandle = RequestTracker->CPP_PreHookCall( HookHandle );
-			
-			Extension->PreTryJoinQueue(HookHandle);
-				
-			return OperationHandle;
-		}));
-
-			
-		ReplaceTryJoinMatchmakingQueueParallel.Add(FOnBeamableTryJoinMatchmakingQueueParallel::CreateLambda([this, Extension, UserSlot, GameTypeQueue, Team](FBeamOperationHandle MainOperationHandle)
-		{
-			auto HookHandle = NewObject<UBeamHookHandle>(GetTransientPackage());
-			HookHandle->MainOperationHandle = MainOperationHandle;;
-			
-			auto OperationHandle = RequestTracker->CPP_PreHookCall( HookHandle );
-			
-			Extension->TryJoinQueue(UserSlot, GameTypeQueue, Team, {}, OperationHandle);
-			
-			return OperationHandle;
-		}));
-	}
-
-	TArray<FOnBeamableTryJoinMatchmakingQueueSequentially> TryJoinMatchmakingQueueSequentially;
-	
-	// Run All Pre Join Queue Operation Parallel
-	TryJoinMatchmakingQueueSequentially.Add(FOnBeamableTryJoinMatchmakingQueueSequentially::CreateLambda([this, PreTryJoinMatchmakingQueueParallel](FBeamOperationHandle MainOperation)
-	{
-		FBeamOperationHandle PreJoinQueueSyncPointOperation = RequestTracker->CPP_BeginOperation({}, GetName(), {});
-		StartParallelHookOperation(PreTryJoinMatchmakingQueueParallel,  PreJoinQueueSyncPointOperation, MainOperation);
-		return PreJoinQueueSyncPointOperation;
-	}));
-	
-	// Wait for the parallel
-	TryJoinMatchmakingQueueSequentially.Add(FOnBeamableTryJoinMatchmakingQueueSequentially::CreateLambda([this, ReplaceTryJoinMatchmakingQueueParallel](FBeamOperationHandle MainOperation)
-	{
-		FBeamOperationHandle ReplaceJoinQueueSyncPointOperation = RequestTracker->CPP_BeginOperation({}, GetName(), {});
-		StartParallelHookOperation(ReplaceTryJoinMatchmakingQueueParallel, ReplaceJoinQueueSyncPointOperation, MainOperation);
-		return ReplaceJoinQueueSyncPointOperation;
-	}));
-
-	const auto HookWaitHandler = TDelegate<void(FBeamWaitCompleteEvent)>::CreateLambda([this, BeamMatchmakingTryJoinQueueHookHandle](FBeamWaitCompleteEvent Evt)
-	{
-		TArray<FString> Errs;
-		if (RequestTracker->IsWaitFailed(Evt, Errs))
-		{
-			FString Err;
-			for (const auto& Error : Errs) Err += FString::Printf(TEXT("%s\n"), *Error);
-			
-			RequestTracker->TriggerOperationError(BeamMatchmakingTryJoinQueueHookHandle->MainOperationHandle, Err);
-			return;
-		}
-		RequestTracker->TriggerOperationSuccess(BeamMatchmakingTryJoinQueueHookHandle->MainOperationHandle, TEXT("SUCCESS"));
-	});
-	FBeamWaitHandle __;
-	
-	RequestTracker->RunBeamTaskGraph(__, TryJoinMatchmakingQueueSequentially, HookWaitHandler,  BeamMatchmakingTryJoinQueueHookHandle->MainOperationHandle);
-	
 }
 
 // OPERATION IMPLEMENTATIONS
