@@ -55,6 +55,7 @@ class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_Operation : public UK2BeamNode_
 	UPROPERTY()
 	int32 NumPins = 0;
 
+
 	/**
 	 * @brief Just a display on whether or not this is a Multi User Operation. This changes the semantics of the node a bit.
 	 */
@@ -112,6 +113,8 @@ class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_Operation : public UK2BeamNode_
 	virtual bool CanRemovePin(const UEdGraphPin* Pin) const override;
 	virtual void NotifyPinConnectionListChanged(UEdGraphPin* Pin) override;
 	virtual void PostReconstructNode() override;
+
+	virtual void GetNodeContextMenuActions(UToolMenu* Menu, UGraphNodeContextMenuContext* Context) const override;
 
 
 	virtual void AllocateDefaultPins() override;

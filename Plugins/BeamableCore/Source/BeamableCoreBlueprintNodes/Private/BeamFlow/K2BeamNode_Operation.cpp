@@ -275,6 +275,47 @@ void UK2BeamNode_Operation::PostReconstructNode()
 	}
 }
 
+void UK2BeamNode_Operation::GetNodeContextMenuActions(UToolMenu* Menu, UGraphNodeContextMenuContext* Context) const
+{
+	Super::GetNodeContextMenuActions(Menu, Context);
+
+	if (!Context->bIsDebugging)
+	{
+		static auto WaitAllNodeName = FName("WaitAllNode");
+		const auto WaitAllNodeNameStr = LOCTEXT("WaitAllNode", "Wait All Node");
+
+		FToolMenuSection& Section = Menu->AddSection(WaitAllNodeName, WaitAllNodeNameStr);
+
+		if (Context->Pin != nullptr)
+		{
+			if (CanRemovePin(Context->Pin))
+			{
+				Section.AddMenuEntry(
+					"RemovePin",
+					LOCTEXT("RemovePin", "Remove Pin"),
+					LOCTEXT("RemovePinTooltip", "Remove this input pin"),
+					FSlateIcon(),
+					FUIAction(
+						FExecuteAction::CreateUObject(const_cast<UK2BeamNode_Operation*>(this), &UK2BeamNode_Operation::RemoveInputPin, const_cast<UEdGraphPin*>(Context->Pin))
+					)
+				);
+			}
+		}
+		else if (CanAddPin())
+		{
+			Section.AddMenuEntry(
+				"AddPin",
+				LOCTEXT("AddPin", "Add Pin"),
+				LOCTEXT("AddPinTooltip", "Add another input pin"),
+				FSlateIcon(),
+				FUIAction(
+					FExecuteAction::CreateUObject(const_cast<UK2BeamNode_Operation*>(this), &UK2BeamNode_Operation::AddInputPin)
+				)
+			);
+		}
+	}
+}
+
 void UK2BeamNode_Operation::AllocateDefaultPins()
 {
 	if (!bIsAlreadyAllocated)
@@ -305,6 +346,10 @@ void UK2BeamNode_Operation::AllocateDefaultPins()
 
 	// Create the output pins in an order that improves usability.
 	EnforceOperationPins();
+
+	for (int i = 0; i < NumPins; ++i)
+		CreateContextInputPin(i);
+	
 	if (bIsInBeamFlowMode)
 	{
 		EnforceBeamFlowModePins();
@@ -377,6 +422,7 @@ void UK2BeamNode_Operation::ExpandNode(FKismetCompilerContext& CompilerContext, 
 			}
 		}
 	}
+	
 	auto OnCompletePin = WaitAllNode->FindPin(FName("OnComplete"));
 
 	// Gets all relevant pins
