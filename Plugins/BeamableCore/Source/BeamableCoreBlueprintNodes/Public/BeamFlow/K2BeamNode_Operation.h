@@ -26,7 +26,7 @@ enum EOperationNodeModes
  * 
  */
 UCLASS(NotBlueprintable, NotBlueprintType, meta=(BeamFlowNode))
-class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_Operation : public UK2BeamNode_BeamFlow
+class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_Operation : public UK2BeamNode_BeamFlow, public IK2Node_AddPinInterface
 {
 	GENERATED_BODY()
 
@@ -52,7 +52,8 @@ class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_Operation : public UK2BeamNode_
 
 	const FString Operation_DataPinInSynchronousFlowMessage = FString::Format(*Operation_InvalidPinInFlowMessage,
 	                                                                          {TEXT("Synchronous"), *OP_Operation_Event.ToString(), TEXT("any Non-Synchronous")});
-
+	UPROPERTY()
+	int32 NumPins = 0;
 
 	/**
 	 * @brief Just a display on whether or not this is a Multi User Operation. This changes the semantics of the node a bit.
@@ -99,11 +100,23 @@ class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_Operation : public UK2BeamNode_
 
 		return Super::GetTooltipText();
 	}
-	 
+
+	void PropagatePinType(UEdGraphPin* const& Pin) const;
 
 	//UK2Node impl
+
+	UEdGraphPin* CreateContextInputPin(int32 PinIdx);
+
+	virtual void AddInputPin() override;
+	virtual void RemoveInputPin(UEdGraphPin* Pin) override;
+	virtual bool CanRemovePin(const UEdGraphPin* Pin) const override;
+	virtual void NotifyPinConnectionListChanged(UEdGraphPin* Pin) override;
+	virtual void PostReconstructNode() override;
+
+
 	virtual void AllocateDefaultPins() override;
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
+	bool IsDependencyPin(UEdGraphPin* Pin);
 	virtual void ExpandNode(FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph) override;
 	virtual bool CanJumpToDefinition() const override { return true; };
 	virtual void JumpToDefinition() const override;
@@ -113,7 +126,7 @@ class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_Operation : public UK2BeamNode_
 
 protected:
 	virtual FText GetKeywords() const override { return FText::FromString(FString::Printf(TEXT("Beam %s"), *GetServiceName())); };
-	
+
 	virtual FName GetCornerIcon() const override;
 
 	/**
@@ -143,7 +156,7 @@ protected:
 	 * */
 	virtual TMap<FName, UClass*> GetOperationEventCastClass(EBeamOperationEventType Type) const;
 
-	
+
 	/**
 	 * Returns the list of possible values for FBeamOperationEvent.EventCode given the type of the event (success/error/etc).
 	 * Must always include NAME_None as its first value (the base implementation guarantees this) so call it if you override this to expose other events. 
@@ -197,7 +210,8 @@ protected:
 	                                   const TArray<TArray<UEdGraphNode*>>& PerFlowEventNodes);
 
 	void ExpandBeamFlowSubEvents(FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph, const UEdGraphSchema_K2* K2Schema,
-	                             const TArray<FName>& EventIds, const TMap<FName, UClass*>& EventDataCasts, const TArray<FName>& EventsFlowPinNames, UK2Node_BreakStruct* BreakOperationResultNode, UEdGraphPin* SubEventSwitchExecPin, FName BaseExecPinName);
+	                             const TArray<FName>& EventIds, const TMap<FName, UClass*>& EventDataCasts, const TArray<FName>& EventsFlowPinNames, UK2Node_BreakStruct* BreakOperationResultNode,
+	                             UEdGraphPin* SubEventSwitchExecPin, FName BaseExecPinName);
 };
 
 #undef LOCTEXT_NAMESPACE

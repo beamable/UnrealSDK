@@ -191,8 +191,7 @@ void UK2BeamNode_WaitAll::ExpandNode(FKismetCompilerContext& CompilerContext, UE
 	}
 
 	const auto ExpandMakeArrayNodes = [this](FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph, const UK2Node_CallFunction* CallWaitAllNode, const FName WaitAllInputParam,
-	                                         TArray<UEdGraphPin*> ArrayContentPins) -> UEdGraphPin*
-	{
+	                                         TArray<UEdGraphPin*> ArrayContentPins) -> UEdGraphPin* {
 		const UEdGraphSchema_K2* K2 = GetDefault<UEdGraphSchema_K2>();
 
 		// Creates a make array node with the same amount of Struct pins as we have here.
@@ -238,7 +237,7 @@ void UK2BeamNode_WaitAll::ExpandNode(FKismetCompilerContext& CompilerContext, UE
 
 		// Get all the pins we have on this custom node
 		const auto OnCompleteFlowPin = FindPin(P_CompleteCallback);
-		const auto EventPin = FindPinChecked(P_Evt);		
+		const auto EventPin = FindPinChecked(P_Evt);
 
 		const TArray<UEdGraphPin*> StartingGraphs{OnCompleteFlowPin,};
 		const TArray<FName> RelevantEventSpawningFunctionNames{GET_FUNCTION_NAME_CHECKED(UBeamRequestTracker, WaitAll)};
@@ -247,10 +246,11 @@ void UK2BeamNode_WaitAll::ExpandNode(FKismetCompilerContext& CompilerContext, UE
 		GetPerBeamFlowNodes(CompilerContext, this, StartingGraphs, RelevantEventSpawningFunctionNames, OutPerFlowNodes, OutPerEventFlowNodes);
 
 		const auto WaitAllOnCompletePin = CallWaitAllNode->FindPinChecked(P_CompleteCallback, EGPD_Input);
+		const auto WaitAllThenPin = CallWaitAllNode->FindPinChecked(UEdGraphSchema_K2::PN_Then, EGPD_Output);
 
 		const auto CompleteEventNodeExecPin = CompleteEventNode->FindPin(UEdGraphSchema_K2::PN_Then);
 		const auto CompleteEventDelegatePin = CompleteEventNode->FindPinChecked(CompleteEventNode->DelegateOutputName);
-		const auto CompleteEventContextsPin = CompleteEventNode->FindPinChecked(P_Evt);		
+		const auto CompleteEventContextsPin = CompleteEventNode->FindPinChecked(P_Evt);
 
 
 		// Replace the connections of any of the nodes' pins with any matching pin in the first list with its corresponding pin in the second list.		
@@ -262,6 +262,9 @@ void UK2BeamNode_WaitAll::ExpandNode(FKismetCompilerContext& CompilerContext, UE
 		// Move the execution flow from the "On Complete" pin to the "Then" execution pin of the CompleteEvent node.  
 		const auto ExecFlowMoved = CompilerContext.MovePinLinksToIntermediate(*OnCompleteFlowPin, *CompleteEventNodeExecPin);
 		check(!ExecFlowMoved.IsFatal());
+
+		const auto ExecFlowMovedThen = CompilerContext.MovePinLinksToIntermediate(*GetThenPin(), *WaitAllThenPin);
+		check(!ExecFlowMovedThen.IsFatal());
 
 		// Connect the CompleteEventNode's "OutputDelegate" pin to the "____ Request" Wait All Call Function node "OnComplete" delegate pin.
 		const auto bConnectedDelegatePins = K2Schema->TryCreateConnection(CompleteEventDelegatePin, WaitAllOnCompletePin);
@@ -322,42 +325,43 @@ void UK2BeamNode_WaitAll::GetNodeContextMenuActions(UToolMenu* Menu, UGraphNodeC
 
 void UK2BeamNode_WaitAll::PropagatePinType(UEdGraphPin* const& Pin) const
 {
+	UE_LOG(LogTemp, Warning, TEXT("Propagating test"));
 	// If it's a wildcard pin that was changed.
 	if (Pin && Pin->ParentPin == nullptr)
 	{
 		const auto bIsConnected = Pin->LinkedTo.Num() > 0;
 		if (bIsConnected)
 		{
-			const auto bIsWildcard = (Pin->PinType.PinCategory == UEdGraphSchema_K2::PC_Wildcard);
-			if (bIsWildcard)
+			// const auto bIsWildcard = (Pin->PinType.PinCategory == UEdGraphSchema_K2::PC_Wildcard);
+			// if (bIsWildcard)
+			// {
+			const auto& NewType = Pin->LinkedTo[0]->PinType;
+			// If the connected pin is a FBeamWaitHandle, FBeamRequestContext or a FBeamOperationHandle struct, we propagate the type of that pin.
+			if (NewType.PinSubCategoryObject == FBeamWaitHandle::StaticStruct() ||
+				NewType.PinSubCategoryObject == FBeamOperationHandle::StaticStruct() ||
+				NewType.PinSubCategoryObject == FBeamRequestContext::StaticStruct())
 			{
-				const auto& NewType = Pin->LinkedTo[0]->PinType;
-				// If the connected pin is a FBeamWaitHandle, FBeamRequestContext or a FBeamOperationHandle struct, we propagate the type of that pin.
-				if (NewType.PinSubCategoryObject == FBeamWaitHandle::StaticStruct() ||
-					NewType.PinSubCategoryObject == FBeamOperationHandle::StaticStruct() ||
-					NewType.PinSubCategoryObject == FBeamRequestContext::StaticStruct())
-				{
-					Pin->PinType = NewType;
-					Pin->PinType.bIsReference = false;
-					GetGraph()->NotifyGraphChanged();
-				}
-				else
-				{
-					FNotificationInfo Notification(LOCTEXT("UnsupportedWaitHandleDependencyType_Error",
-					                                       "Unsupported WaitHandle Dependency type! Only supported types are: FBeamWaitHandle, FBeamRequestContext and FBeamOperationHandle."));
-					Notification.bUseSuccessFailIcons = true;
-					Notification.bFireAndForget = true;
-					Notification.ExpireDuration = 7;
-					Notification.bUseLargeFont = true;
-					Notification.FadeInDuration = 1.0f;
-					Notification.FadeOutDuration = 1.0f;
-					//How long our Notification widget is, I believe this is in pixels.
-					Notification.WidthOverride = 500.0f;
-					FSlateNotificationManager::Get().AddNotification(Notification);
-
-					Pin->BreakAllPinLinks();
-				}
+				Pin->PinType = NewType;
+				Pin->PinType.bIsReference = false;
+				GetGraph()->NotifyGraphChanged();
 			}
+			else
+			{
+				FNotificationInfo Notification(LOCTEXT("UnsupportedWaitHandleDependencyType_Error",
+				                                       "Unsupported WaitHandle Dependency type! Only supported types are: FBeamWaitHandle, FBeamRequestContext and FBeamOperationHandle."));
+				Notification.bUseSuccessFailIcons = true;
+				Notification.bFireAndForget = true;
+				Notification.ExpireDuration = 7;
+				Notification.bUseLargeFont = true;
+				Notification.FadeInDuration = 1.0f;
+				Notification.FadeOutDuration = 1.0f;
+				//How long our Notification widget is, I believe this is in pixels.
+				Notification.WidthOverride = 500.0f;
+				FSlateNotificationManager::Get().AddNotification(Notification);
+
+				Pin->BreakAllPinLinks();
+			}
+			// }
 		}
 		else
 		{
@@ -374,7 +378,7 @@ void UK2BeamNode_WaitAll::PropagatePinType(UEdGraphPin* const& Pin) const
 void UK2BeamNode_WaitAll::CreateBeamFlowModePins()
 {
 	CreatePin(EGPD_Output, UEdGraphSchema_K2::PC_Exec, P_CompleteCallback);
-	CreatePin(EGPD_Output, UEdGraphSchema_K2::PC_Struct, FBeamWaitCompleteEvent::StaticStruct(), P_Evt);	
+	CreatePin(EGPD_Output, UEdGraphSchema_K2::PC_Struct, FBeamWaitCompleteEvent::StaticStruct(), P_Evt);
 }
 
 void UK2BeamNode_WaitAll::EnterBeamFlowModeImpl()

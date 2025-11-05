@@ -12,7 +12,6 @@
 #include "BeamRequestTracker.generated.h"
 
 
-
 // If we have the default one, let's pass along '-1' only if there were no dependent requests. If there, were assume it's a sequential chain and we are being called in the latest request's handler.
 // As such, we pass in the last dependent request id added.
 #define DEFAULT_REQUEST_ID -1000
@@ -29,7 +28,6 @@ DECLARE_DELEGATE_RetVal(FBeamOperationHandle, FDelayedOperation)
 #define DEFINE_BEAM_OPERATION_HOOK_SixParams(HookName, ...) EXPAND(DECLARE_DELEGATE_RetVal_SixParams(FBeamOperationHandle, HookName, __VA_ARGS__))
 #define DEFINE_BEAM_OPERATION_HOOK_SevenParams(HookName, ...) EXPAND(DECLARE_DELEGATE_RetVal_SevenParams(FBeamOperationHandle, HookName, __VA_ARGS__))
 #define DEFINE_BEAM_OPERATION_HOOK_EightParams(HookName, ...) EXPAND(DECLARE_DELEGATE_RetVal_EightParams(FBeamOperationHandle, HookName, __VA_ARGS__))
-
 
 
 UCLASS(BlueprintType, NotBlueprintable)
@@ -152,13 +150,14 @@ public:
 	                        const TArray<FBeamOperationHandle>& Operations, const TArray<FBeamWaitHandle>& Waits,
 	                        FOnWaitComplete OnComplete);
 
+
 	/**
 	 * @copybrief WaitAll
 	 */
 	FBeamWaitHandle CPP_WaitAll(const TArray<FBeamRequestContext>& RequestContexts,
 	                            const TArray<FBeamOperationHandle>& Operations, const TArray<FBeamWaitHandle>& Waits,
 	                            FOnWaitCompleteCode OnCompleteCode);
-	
+
 	/**
 	 * Returns TRUE if ALL of the Requests, Operations or Waits it depends on Succeeded.
 	 * Cancelled operations do not make this return true.
@@ -231,6 +230,7 @@ public:
 		UE_LOG(LogBeamRequestTracker, Error, TEXT("%s"), *Error);
 		return false;
 	}
+
 	/**
 	 * Returns false if a hook was not bound or if no hooks were present. True if all present hooks were correctly bound.
 	 * Execute Sequentially all the hooks
@@ -239,8 +239,8 @@ public:
 	bool RunBeamTaskGraph(FBeamWaitHandle& OutWaitHandle, TArray<FHook> Hooks, FOnWaitCompleteCode Handler, Args&&... args)
 	{
 		static_assert(std::is_same_v<typename FHook::RetValType, FBeamOperationHandle>, TEXT("This FHook does not return an FBeamOperationHandle. You can't wait on it."));
-		
-		
+
+
 		// Since hooks are optional by default, if there are none we just do nothing.
 		if (!Hooks.Num())
 		{
@@ -265,7 +265,7 @@ public:
 			OutWaitHandle = GetSelf()->CPP_WaitAll({}, {Handle}, {}, Handler);
 
 			InvokeHooksSequentially(0, Hooks, Handle, std::forward<Args>(args)...);
-			
+
 			return true;
 		}
 
@@ -279,7 +279,7 @@ public:
 	// 	return true;
 	// }
 
-	template <class  T = UBeamHookHandle>
+	template <class T = UBeamHookHandle>
 	T* BeginHookHandle(FBeamOperationEventHandler OnOperationEvent, UObject* Outer = (UObject*)GetTransientPackage())
 	{
 		static_assert(std::is_base_of_v<UBeamHookHandle, T>, "This FHook does not derive from UBeamHookHandle.");
@@ -288,7 +288,7 @@ public:
 		return Result;
 	}
 
-	template <class  T = UBeamHookHandle>
+	template <class T = UBeamHookHandle>
 	T* CPP_BeginHookHandle(FBeamOperationEventHandlerCode OnOperationEvent, UObject* Outer = (UObject*)GetTransientPackage())
 	{
 		static_assert(std::is_base_of_v<UBeamHookHandle, T>, "This FHook does not derive from UBeamHookHandle.");
@@ -296,13 +296,13 @@ public:
 		Result->MainOperationHandle = CPP_BeginOperation({}, Outer->GetName(), OnOperationEvent);
 		return Result;
 	}
-	
+
 	FBeamOperationHandle CPP_PreHookCall(UBeamHookHandle* Handle)
 	{
 		return Handle->CurrentOperationHandle = CPP_BeginOperation({}, GetName(), {});
 	}
 
-	
+
 	/***
 	 *       ____                        __  _                 
 	 *      / __ \____  ___  _________ _/ /_(_)___  ____  _____
@@ -541,13 +541,13 @@ public:
 	FBeamOperationHandle CPP_BeginErrorOperation(const TArray<FUserSlot>& Participants, const FString& CallingSystem, FString Error, FBeamOperationEventHandlerCode OnEvent);
 
 private:
-
 	template <typename FHook, typename... Args>
 	void InvokeHooksSequentially(int Index, TArray<FHook> Hooks, FBeamOperationHandle Handler, Args&&... args)
 	{
 		static_assert(std::is_same_v<typename FHook::RetValType, FBeamOperationHandle>, TEXT("This FHook does not return an FBeamOperationHandle. You can't wait on it."));
-		
-		auto OnComplete = FOnWaitCompleteCode::CreateLambda([this, Hooks, Index, Handler, tupleArgs = std::make_tuple(std::forward<Args>(args)...)](const FBeamWaitCompleteEvent& PostEvt) mutable {
+
+		auto OnComplete = FOnWaitCompleteCode::CreateLambda([this, Hooks, Index, Handler, tupleArgs = std::make_tuple(std::forward<Args>(args)...)](const FBeamWaitCompleteEvent& PostEvt) mutable
+		{
 			TArray<FString> Errors;
 			if (IsWaitFailed(PostEvt, Errors))
 			{
@@ -556,7 +556,7 @@ private:
 				TriggerOperationError(Handler, ErrorMessage);
 				return;
 			}
-		
+
 			if (Index < Hooks.Num() - 1)
 			{
 				std::apply(
@@ -566,12 +566,13 @@ private:
 					},
 					std::move(tupleArgs)
 				);
-			}else
+			}
+			else
 			{
 				TriggerOperationSuccess(Handler, "Success");
 			}
 		});
-	
+
 		CPP_WaitAll({}, {Hooks[Index].Execute(std::forward<Args>(args)...)}, {}, OnComplete);
 	}
 };

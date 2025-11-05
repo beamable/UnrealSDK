@@ -116,10 +116,11 @@ bool UBeamMatchmakingSubsystem::TryGetTicket(const FUserSlot& Slot, FBeamMatchma
 
 FBeamOperationHandle UBeamMatchmakingSubsystem::TryJoinQueueOperation(FUserSlot UserSlot, FBeamContentId GameTypeQueue, FOptionalString Team, FBeamOperationEventHandler OnOperationEvent)
 {
+	UE_LOG(LogTemp, Warning, TEXT("Starting Join Queue"));
 	const auto Handle = Runtime->RequestTrackerSystem->BeginOperation({UserSlot}, GetClass()->GetFName().ToString(), OnOperationEvent);
-	
+
 	TryJoinQueue(UserSlot, GameTypeQueue, Team, {}, Handle);
-	
+
 	return Handle;
 }
 
@@ -127,9 +128,9 @@ FBeamOperationHandle UBeamMatchmakingSubsystem::CPP_TryJoinQueueOperation(FUserS
                                                                           FBeamOperationEventHandlerCode OnOperationEvent)
 {
 	const auto Handle = Runtime->RequestTrackerSystem->CPP_BeginOperation({UserSlot}, GetClass()->GetFName().ToString(), OnOperationEvent);
-	
+
 	TryJoinQueue(UserSlot, GameTypeQueue, Team, {}, Handle);
-	
+
 	return Handle;
 }
 
@@ -137,9 +138,9 @@ FBeamOperationHandle UBeamMatchmakingSubsystem::TryJoinQueueWithTagsOperation(FU
                                                                               FBeamOperationEventHandler OnOperationEvent)
 {
 	const auto Handle = Runtime->RequestTrackerSystem->BeginOperation({UserSlot}, GetClass()->GetFName().ToString(), OnOperationEvent);
-	
+
 	TryJoinQueue(UserSlot, GameTypeQueue, Team, FOptionalArrayOfBeamTag{Tags}, Handle);
-	
+
 	return Handle;
 }
 
@@ -147,9 +148,9 @@ FBeamOperationHandle UBeamMatchmakingSubsystem::CPP_TryJoinQueueWithTagsOperatio
                                                                                   FBeamOperationEventHandlerCode OnOperationEvent)
 {
 	const auto Handle = Runtime->RequestTrackerSystem->CPP_BeginOperation({UserSlot}, GetClass()->GetFName().ToString(), OnOperationEvent);
-	
+
 	TryJoinQueue(UserSlot, GameTypeQueue, Team, FOptionalArrayOfBeamTag{Tags}, Handle);
-	
+
 	return Handle;
 }
 
@@ -288,7 +289,7 @@ void UBeamMatchmakingSubsystem::TryJoinQueue(FUserSlot Slot, FBeamContentId Game
 		TagsVal.Add(FBeamTag{UBeamLobbySubsystem::Reserved_PlayerTag_UniqueNetId_Property, LocalPlayer->GetPreferredUniqueNetId().GetUniqueNetId()->ToString()});
 		Tags.Val = TagsVal;
 	}
-	
+
 	FBeamRequestContext Ctx;
 	const auto Req = UPostTicketsRequest::Make(FOptionalBool{true}, {}, Team, {}, FOptionalArrayOfBeamContentId{{GameTypeQueue}}, Tags, GetTransientPackage(), {});
 	MatchmakingApi->CPP_PostTickets(Slot, Req, Handler, Ctx, Op, this);
@@ -528,7 +529,7 @@ void UBeamMatchmakingSubsystem::CommitRegionPing(FUserSlot UserSlot, TMap<FStrin
 	StatsOperationHandle.BindLambda([this, OperationHandle](FBeamOperationEvent Evt)
 	{
 		UE_LOG(LogTemp, Display, TEXT("Updated Region Pings"));
-	
+
 		if (Evt.EventType == OET_SUCCESS)
 		{
 			RequestTracker->TriggerOperationSuccess(OperationHandle, "Success");
@@ -539,7 +540,7 @@ void UBeamMatchmakingSubsystem::CommitRegionPing(FUserSlot UserSlot, TMap<FStrin
 			RequestTracker->TriggerOperationError(OperationHandle, "Failed to update Region Pings");
 		}
 	});
-	
+
 	const FString PingsJson = ConvertRegionPingsToJson(RegionPings);
 
 	TMap<FString, FString> StatsMap;
@@ -548,11 +549,12 @@ void UBeamMatchmakingSubsystem::CommitRegionPing(FUserSlot UserSlot, TMap<FStrin
 
 	UBeamStatsSubsystem* Stats = GetGameInstance()->GetSubsystem<UBeamStatsSubsystem>();
 	UBeamStatUpdateCommand* Command;
-	
+
 	if (Stats->TryCreateUpdateCommand(UserSlot, StatsMap, Command))
 	{
 		Stats->CPP_CommitStatsOperation(UserSlot, StatsOperationHandle);
-	}else
+	}
+	else
 	{
 		RequestTracker->TriggerOperationError(OperationHandle, "Failed to update Region Pings");
 	}
