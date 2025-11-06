@@ -349,7 +349,7 @@ void UK2BeamNode_Operation::AllocateDefaultPins()
 
 	for (int i = 0; i < NumPins; ++i)
 		CreateContextInputPin(i);
-	
+
 	if (bIsInBeamFlowMode)
 	{
 		EnforceBeamFlowModePins();
@@ -382,11 +382,6 @@ void UK2BeamNode_Operation::PostEditChangeProperty(FPropertyChangedEvent& Proper
 	}
 }
 
-bool UK2BeamNode_Operation::IsDependencyPin(UEdGraphPin* Pin)
-{
-	return Pin->PinName.ToString().StartsWith(TEXT("Dependency"));
-}
-
 void UK2BeamNode_Operation::ExpandNode(FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph)
 {
 	const UEdGraphSchema_K2* K2Schema = GetDefault<UEdGraphSchema_K2>();
@@ -394,36 +389,11 @@ void UK2BeamNode_Operation::ExpandNode(FKismetCompilerContext& CompilerContext, 
 	const UK2Node_CallFunction* CallGetSubsystem = CreateCallFunctionNode(this, CompilerContext, SourceGraph, GetSubsystemSelfFunctionName(), GetRuntimeSubsystemClass());
 	const UK2Node_CallFunction* CallRequestFunction = CreateCallFunctionNode(this, CompilerContext, SourceGraph, GetOperationFunctionName(), GetRuntimeSubsystemClass());
 
-	UK2BeamNode_WaitAll* WaitAllNode = CompilerContext.SpawnIntermediateNode<UK2BeamNode_WaitAll>(this, SourceGraph);
+	UK2BeamNode_WaitAll* WaitAllNode = CreateWaitAllNodeNode(this, CompilerContext, SourceGraph);
 
-	WaitAllNode->NumPins = NumPins;
-
-	WaitAllNode->AllocateDefaultPins();
-
-	TArray<UEdGraphPin*> ConnectedWaitPins;
-
-	for (auto DependencyPin : Pins)
-	{
-		if (IsDependencyPin(DependencyPin))
-		{
-			for (auto WaitPin : WaitAllNode->Pins)
-			{
-				if (IsDependencyPin(WaitPin) && !ConnectedWaitPins.Contains(WaitPin))
-				{
-					if (DependencyPin->LinkedTo.Num() > 0)
-					{
-						ConnectedWaitPins.Add(WaitPin);
-						WaitPin->MakeLinkTo(DependencyPin->LinkedTo[0]);
-						WaitAllNode->PropagatePinType(WaitPin);
-						UE_LOG(LogTemp, Log, TEXT("Dependency Links"));
-					}
-					break;
-				}
-			}
-		}
-	}
-	
-	auto OnCompletePin = WaitAllNode->FindPin(FName("OnComplete"));
+	auto WaitAll_OnComplete = WaitAllNode->FindPin(FName("OnComplete"));
+	auto WaitAll_Then = WaitAllNode->FindPin(UEdGraphSchema_K2::PN_Then);
+	auto WaitAll_Exec = WaitAllNode->FindPin(UEdGraphSchema_K2::PN_Execute);
 
 	// Gets all relevant pins
 	const auto ExecutionPin = K2Schema->FindExecutionPin(*this, EGPD_Input);
@@ -433,17 +403,17 @@ void UK2BeamNode_Operation::ExpandNode(FKismetCompilerContext& CompilerContext, 
 	const auto ThenPin = K2Schema->FindExecutionPin(*this, EGPD_Output);
 	const auto HandlePin = FindPin(OP_Operation_Handle);
 
-	const auto MovedRegularExecutionFlowThen = CompilerContext.MovePinLinksToIntermediate(*ThenPin, *WaitAllNode->FindPin(UEdGraphSchema_K2::PN_Then));
+	const auto MovedRegularExecutionFlowThen = CompilerContext.MovePinLinksToIntermediate(*ThenPin, *WaitAll_Then);
+	check(!MovedRegularExecutionFlowThen.IsFatal())
 
-
-	const auto MovedRegularExecutionFlow = CompilerContext.MovePinLinksToIntermediate(*ExecutionPin, *WaitAllNode->FindPin(UEdGraphSchema_K2::PN_Execute));
+	const auto MovedRegularExecutionFlow = CompilerContext.MovePinLinksToIntermediate(*ExecutionPin, *WaitAll_Exec);
 	check(!MovedRegularExecutionFlow.IsFatal())
 
 	// Connects the result of the "static BeamApi::GetSelf" call to the "non-static RuntimeSubsystem::___Operation" Call Function node.
 	SetUpPinsFunctionToOwnerSubsystem(CallGetSubsystem, CallRequestFunction);
 
 	// Set up Input pins for the expanded operation node
-	SetUpInputPinsForOperationNode(CompilerContext, CallRequestFunction, OnCompletePin);
+	SetUpInputPinsForOperationNode(CompilerContext, CallRequestFunction, WaitAll_OnComplete);
 
 	// Split out all the nodes for each "sub-graph": OnSuccess Sub-Graph, OnError Sub-Graph and OnComplete Sub-Graph. 
 	if (bIsInBeamFlowMode)
@@ -483,6 +453,47 @@ FString UK2BeamNode_Operation::GetPinMetaData(FName InPinName, FName InKey)
 	}
 
 	return MetaData;
+}
+
+
+UK2BeamNode_WaitAll* UK2BeamNode_Operation::CreateWaitAllNodeNode(UEdGraphNode* Node, FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph)
+{
+	auto IsDependencyPin = [](UEdGraphPin* Pin)
+	{
+		return Pin->PinName.ToString().StartsWith(TEXT("Dependency"));
+	};
+
+
+	UK2BeamNode_WaitAll* WaitAllNode = CompilerContext.SpawnIntermediateNode<UK2BeamNode_WaitAll>(Node, SourceGraph);
+
+	WaitAllNode->NumPins = NumPins;
+
+	WaitAllNode->AllocateDefaultPins();
+
+	TArray<UEdGraphPin*> ConnectedWaitPins;
+
+	for (auto DependencyPin : Pins)
+	{
+		if (IsDependencyPin(DependencyPin))
+		{
+			for (auto WaitPin : WaitAllNode->Pins)
+			{
+				if (IsDependencyPin(WaitPin) && !ConnectedWaitPins.Contains(WaitPin))
+				{
+					if (DependencyPin->LinkedTo.Num() > 0)
+					{
+						ConnectedWaitPins.Add(WaitPin);
+						WaitPin->MakeLinkTo(DependencyPin->LinkedTo[0]);
+						WaitAllNode->PropagatePinType(WaitPin);
+						UE_LOG(LogTemp, Log, TEXT("Dependency Links"));
+					}
+					break;
+				}
+			}
+		}
+	}
+
+	return WaitAllNode;
 }
 
 FName UK2BeamNode_Operation::GetCornerIcon() const

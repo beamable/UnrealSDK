@@ -27,6 +27,7 @@ using namespace BeamK2;
 
 const FName UK2BeamNode_WaitAll::SelfFunctionName = GET_FUNCTION_NAME_CHECKED(UBeamRequestTracker, GetSelf);
 const FName UK2BeamNode_WaitAll::WaitAllFunctionName = GET_FUNCTION_NAME_CHECKED(UBeamRequestTracker, WaitAll);
+const FName UK2BeamNode_WaitAll::IsWaitFailedFunctionName = GET_FUNCTION_NAME_CHECKED(UBeamRequestTracker, IsWaitFailed);
 
 const FName UK2BeamNode_WaitAll::P_CompleteCallback = FName("OnComplete");
 const FName UK2BeamNode_WaitAll::P_RequestContexts = FName("RequestContexts");
@@ -166,10 +167,15 @@ void UK2BeamNode_WaitAll::ExpandNode(FKismetCompilerContext& CompilerContext, UE
 	// Create nodes calling the GetSelf method of the UBeamBackend and the WaitAll function
 	const auto CallSelfNode = CreateCallFunctionNode(this, CompilerContext, SourceGraph, SelfFunctionName, UBeamRequestTracker::StaticClass());
 	const auto CallWaitAllNode = CreateCallFunctionNode(this, CompilerContext, SourceGraph, WaitAllFunctionName, UBeamRequestTracker::StaticClass());
+	const auto CallIsWaitFailedNode = CreateCallFunctionNode(this, CompilerContext, SourceGraph, IsWaitFailedFunctionName, UBeamRequestTracker::StaticClass());
 
 	// Link the CallSelf node to the CallWaitAll node
 	const auto bConnectedSubsystemToFunctionCall = K2Schema->TryCreateConnection(CallSelfNode->GetReturnValuePin(), K2Schema->FindSelfPin(*CallWaitAllNode, EGPD_Input));
 	check(bConnectedSubsystemToFunctionCall)
+
+	// Link the CallSelf node to the IsWaitFailed node
+	const auto bConnectedSubsystemToFunctionCallWaitFailed = K2Schema->TryCreateConnection(CallSelfNode->GetReturnValuePin(), K2Schema->FindSelfPin(*CallIsWaitFailedNode, EGPD_Input));
+	check(bConnectedSubsystemToFunctionCallWaitFailed)
 
 
 	// Gets a list of all input pins that are structs in this wrapper node.

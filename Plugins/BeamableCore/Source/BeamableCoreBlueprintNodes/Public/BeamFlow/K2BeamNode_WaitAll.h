@@ -16,6 +16,7 @@ class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_WaitAll : public UK2BeamNode_Be
 public:
 	static const FName SelfFunctionName;
 	static const FName WaitAllFunctionName;
+	static const FName IsWaitFailedFunctionName;
 	static const FName P_CompleteCallback;
 	static const FName P_RequestContexts;
 	static const FName P_Operations;

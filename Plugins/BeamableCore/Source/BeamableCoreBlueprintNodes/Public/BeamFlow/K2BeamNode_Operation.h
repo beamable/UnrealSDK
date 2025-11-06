@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "K2BeamNode_BeamFlow.h"
 #include "K2BeamNode_GetLocalState.h"
+#include "K2BeamNode_WaitAll.h"
 #include "K2Node_BreakStruct.h"
 #include "K2Node_CallFunction.h"
 #include "RequestTracker/BeamOperation.h"
@@ -119,13 +120,17 @@ class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_Operation : public UK2BeamNode_
 
 	virtual void AllocateDefaultPins() override;
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
-	bool IsDependencyPin(UEdGraphPin* Pin);
+
 	virtual void ExpandNode(FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph) override;
 	virtual bool CanJumpToDefinition() const override { return true; };
 	virtual void JumpToDefinition() const override;
 	virtual FString GetPinMetaData(FName InPinName, FName InKey) override;
 	//BeamFlowNode impl
 
+	/**
+	 * @brief Utility that creates a wait all node and connect the dependency pins. 	 
+	 */
+	UK2BeamNode_WaitAll* CreateWaitAllNodeNode(UEdGraphNode* Node, FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph);
 
 protected:
 	virtual FText GetKeywords() const override { return FText::FromString(FString::Printf(TEXT("Beam %s"), *GetServiceName())); };
