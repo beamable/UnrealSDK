@@ -186,10 +186,24 @@ void UK2BeamNode_Operation::PropagatePinType(UEdGraphPin* const& Pin) const
 	}
 }
 
-UEdGraphPin* UK2BeamNode_Operation::CreateContextInputPin(int32 PinIdx)
+FName UK2BeamNode_Operation::GetDependencyPinName()
+{
+	int MaxDependencyPin = 100;
+	for (int PinIndex = 0 ; PinIndex < MaxDependencyPin ; PinIndex++)
+	{
+		FName PinName = FName(FString::Printf(TEXT("Dependency - %d"), PinIndex));
+		if (!FindPin(PinName))
+		{
+			return PinName;
+		}
+	}
+	return FName(NAME_None);
+}
+
+UEdGraphPin* UK2BeamNode_Operation::CreateContextInputPin()
 {
 	// To see a bit more about how Wildcard pins work, take a look at (Search the project for this type): UK2Node_GetArrayItem
-	const auto PinName = FName(FString::Printf(TEXT("Dependency - %d"), PinIdx));
+	const auto PinName = GetDependencyPinName();
 	return CreatePin(EGPD_Input, UEdGraphSchema_K2::PC_Wildcard, PinName);
 }
 
@@ -198,7 +212,7 @@ void UK2BeamNode_Operation::AddInputPin()
 	FScopedTransaction Transaction(LOCTEXT("AddPinTx", "AddPin"));
 	Modify();
 
-	const auto AddedPin = CreateContextInputPin(NumPins);
+	const auto AddedPin = CreateContextInputPin();
 	NumPins += 1;
 
 	// TODO: connect this with the sicronous flow instead of the complete
@@ -224,22 +238,21 @@ void UK2BeamNode_Operation::RemoveInputPin(UEdGraphPin* Pin)
 		Pins.RemoveAt(PinRemovalIndex);
 		Pin->MarkAsGarbage();
 		NumPins -= 1;
-
+		
+		TArray<UEdGraphPin*> DependencyPins;
 		for (int32 PinIndex = 0; PinIndex < Pins.Num(); ++PinIndex)
 		{
 			UEdGraphPin* LocalPin = Pins[PinIndex];
 			check(LocalPin)
-			if (LocalPin && LocalPin->PinType.PinCategory == UEdGraphSchema_K2::PC_Struct && LocalPin->Direction == EGPD_Input)
+			if (LocalPin && LocalPin->PinName.ToString().StartsWith(TEXT("Dependency -")))
 			{
-				const FString PinNameLastCharacter = FString::Printf(TEXT("%c"), LocalPin->GetDisplayName().ToString()[LocalPin->PinName.GetStringLength() - 1]);
-				int PinNameIdx;
-				FDefaultValueHelper::ParseInt(PinNameLastCharacter, PinNameIdx);
-				if (PinNameIdx > RemovedPinNameIdx)
-				{
-					LocalPin->Modify();
-					LocalPin->PinName = FName(FString::Printf(TEXT("Dependency - %d"), PinNameIdx - 1));
-				}
+				DependencyPins.Add(LocalPin);
+				
 			}
+		}
+		for (int32 PinIndex = 0; PinIndex < DependencyPins.Num(); PinIndex++)
+		{
+			DependencyPins[PinIndex]->PinName = FName(FString::Printf(TEXT("Dependency - %d"), PinIndex));
 		}
 		FBlueprintEditorUtils::MarkBlueprintAsStructurallyModified(GetBlueprint());
 	}
@@ -347,8 +360,6 @@ void UK2BeamNode_Operation::AllocateDefaultPins()
 	// Create the output pins in an order that improves usability.
 	EnforceOperationPins();
 
-	for (int i = 0; i < NumPins; ++i)
-		CreateContextInputPin(i);
 
 	if (bIsInBeamFlowMode)
 	{
@@ -358,6 +369,10 @@ void UK2BeamNode_Operation::AllocateDefaultPins()
 	{
 		ParseFunctionForNodeInputPins(this, OperationFunction, {OP_Operation_OnOperationEvent}, true);
 	}
+
+	for (int i = 0; i < NumPins; ++i)
+		CreateContextInputPin();
+
 }
 
 

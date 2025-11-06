@@ -105,9 +105,11 @@ class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_Operation : public UK2BeamNode_
 
 	void PropagatePinType(UEdGraphPin* const& Pin) const;
 
+	FName GetDependencyPinName();
+
 	//UK2Node impl
 
-	UEdGraphPin* CreateContextInputPin(int32 PinIdx);
+	UEdGraphPin* CreateContextInputPin();
 
 	virtual void AddInputPin() override;
 	virtual void RemoveInputPin(UEdGraphPin* Pin) override;
