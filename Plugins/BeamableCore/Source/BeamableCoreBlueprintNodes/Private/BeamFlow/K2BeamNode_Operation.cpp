@@ -3,6 +3,7 @@
 
 #include "BeamFlow/K2BeamNode_Operation.h"
 
+#include "BeamBlueprintSettings.h"
 #include "BeamK2.h"
 #include "K2Node_BreakStruct.h"
 #include "K2Node_CallFunction.h"
@@ -13,8 +14,11 @@
 #include "K2Node_SwitchString.h"
 #include "KismetCompiler.h"
 #include "SourceCodeNavigation.h"
+#include "BeamFlow/K2BeamNode_WaitAll.h"
+#include "Framework/Notifications/NotificationManager.h"
 #include "RequestTracker/BeamRequestTracker.h"
 #include "Runtime/BeamRuntime.h"
+#include "Widgets/Notifications/SNotificationList.h"
 using namespace BeamK2;
 
 #define LOCTEXT_NAMESPACE "K2BeamNode_Operation"
@@ -87,15 +91,40 @@ UClass* UK2BeamNode_Operation::GetRuntimeSubsystemClass() const
 
 TMap<FName, UClass*> UK2BeamNode_Operation::GetOperationEventCastClass(EBeamOperationEventType Type) const
 {
-	return {
-	};
+	TMap<FName, UClass*> CastMap = {};
+	auto Map = GetDefault<UBeamBlueprintSettings>()->Config;
+	if (Map.Contains(GetClass()))
+	{
+		for (auto Item : Map[GetClass()].SubEvents)
+		{
+			if (Item.Type == Type && Item.TargetCastClass != nullptr)
+			{
+				CastMap.Add(FName(Item.SubEventName), Item.TargetCastClass.LoadSynchronous());
+			}
+		}
+	}
+
+	return CastMap;
 }
 
 TArray<FName> UK2BeamNode_Operation::GetOperationEventIds(EBeamOperationEventType Type) const
 {
-	return {
+	TArray<FName> Names = {
 		NAME_None,
 	};
+	auto Map = GetDefault<UBeamBlueprintSettings>()->Config;
+	if (Map.Contains(GetClass()))
+	{
+		for (auto Item : Map[GetClass()].SubEvents)
+		{
+			if (Item.Type == Type)
+			{
+				Names.Add(FName(Item.SubEventName));
+			}
+		}
+	}
+
+	return Names;
 }
 
 
@@ -106,20 +135,214 @@ TArray<FString> UK2BeamNode_Operation::GetOperationEventIdTooltips(EBeamOperatio
 	};
 }
 
+void UK2BeamNode_Operation::PropagatePinType(UEdGraphPin* const& Pin) const
+{
+	// If it's a wildcard pin that was changed.
+	if (Pin && Pin->ParentPin == nullptr)
+	{
+		const auto bIsConnected = Pin->LinkedTo.Num() > 0;
+		if (bIsConnected)
+		{
+			const auto bIsWildcard = (Pin->PinType.PinCategory == UEdGraphSchema_K2::PC_Wildcard);
+			if (bIsWildcard)
+			{
+				const auto& NewType = Pin->LinkedTo[0]->PinType;
+				// If the connected pin is a FBeamWaitHandle, FBeamRequestContext or a FBeamOperationHandle struct, we propagate the type of that pin.
+				if (NewType.PinSubCategoryObject == FBeamWaitHandle::StaticStruct() ||
+					NewType.PinSubCategoryObject == FBeamOperationHandle::StaticStruct() ||
+					NewType.PinSubCategoryObject == FBeamRequestContext::StaticStruct())
+				{
+					Pin->PinType = NewType;
+					Pin->PinType.bIsReference = false;
+					GetGraph()->NotifyGraphChanged();
+				}
+				else
+				{
+					FNotificationInfo Notification(LOCTEXT("UnsupportedWaitHandleDependencyType_Error",
+					                                       "Unsupported WaitHandle Dependency type! Only supported types are: FBeamWaitHandle, FBeamRequestContext and FBeamOperationHandle."));
+					Notification.bUseSuccessFailIcons = true;
+					Notification.bFireAndForget = true;
+					Notification.ExpireDuration = 7;
+					Notification.bUseLargeFont = true;
+					Notification.FadeInDuration = 1.0f;
+					Notification.FadeOutDuration = 1.0f;
+					//How long our Notification widget is, I believe this is in pixels.
+					Notification.WidthOverride = 500.0f;
+					FSlateNotificationManager::Get().AddNotification(Notification);
+
+					Pin->BreakAllPinLinks();
+				}
+			}
+		}
+		else
+		{
+			if (Pin->LinkedTo.Num() == 0)
+			{
+				Pin->PinType.PinCategory = UEdGraphSchema_K2::PC_Wildcard;
+				Pin->PinType.PinSubCategory = NAME_None;
+				Pin->PinType.PinSubCategoryObject = nullptr;
+			}
+		}
+	}
+}
+
+FName UK2BeamNode_Operation::GetDependencyPinName()
+{
+	int MaxDependencyPin = 100;
+	for (int PinIndex = 0 ; PinIndex < MaxDependencyPin ; PinIndex++)
+	{
+		FName PinName = FName(FString::Printf(TEXT("Dependency - %d"), PinIndex));
+		if (!FindPin(PinName))
+		{
+			return PinName;
+		}
+	}
+	return FName(NAME_None);
+}
+
+UEdGraphPin* UK2BeamNode_Operation::CreateContextInputPin()
+{
+	// To see a bit more about how Wildcard pins work, take a look at (Search the project for this type): UK2Node_GetArrayItem
+	const auto PinName = GetDependencyPinName();
+	return CreatePin(EGPD_Input, UEdGraphSchema_K2::PC_Wildcard, PinName);
+}
+
+void UK2BeamNode_Operation::AddInputPin()
+{
+	FScopedTransaction Transaction(LOCTEXT("AddPinTx", "AddPin"));
+	Modify();
+
+	const auto AddedPin = CreateContextInputPin();
+	NumPins += 1;
+
+	// TODO: connect this with the sicronous flow instead of the complete
+	// We do this so that the on complete callback always stays at the bottom.
+	// if (const auto DelegatePin = FindPin(P_CompleteCallback))
+	// 	Pins.Swap(Pins.IndexOfByKey(AddedPin), Pins.IndexOfByKey(DelegatePin));
+
+	FBlueprintEditorUtils::MarkBlueprintAsStructurallyModified(GetBlueprint());
+}
+
+void UK2BeamNode_Operation::RemoveInputPin(UEdGraphPin* Pin)
+{
+	FScopedTransaction Transaction(LOCTEXT("RemovePinTx", "RemovePin"));
+	Modify();
+
+	int32 PinRemovalIndex = INDEX_NONE;
+	if (Pins.Find(Pin, /*out*/ PinRemovalIndex))
+	{
+		const FString RemovedPinLastCharacter = FString::Printf(TEXT("%c"), Pin->GetDisplayName().ToString()[Pin->PinName.GetStringLength() - 1]);
+		int32 RemovedPinNameIdx;
+		FDefaultValueHelper::ParseInt(RemovedPinLastCharacter, RemovedPinNameIdx);
+
+		Pins.RemoveAt(PinRemovalIndex);
+		Pin->MarkAsGarbage();
+		NumPins -= 1;
+		
+		TArray<UEdGraphPin*> DependencyPins;
+		for (int32 PinIndex = 0; PinIndex < Pins.Num(); ++PinIndex)
+		{
+			UEdGraphPin* LocalPin = Pins[PinIndex];
+			check(LocalPin)
+			if (LocalPin && LocalPin->PinName.ToString().StartsWith(TEXT("Dependency -")))
+			{
+				DependencyPins.Add(LocalPin);
+				
+			}
+		}
+		for (int32 PinIndex = 0; PinIndex < DependencyPins.Num(); PinIndex++)
+		{
+			DependencyPins[PinIndex]->PinName = FName(FString::Printf(TEXT("Dependency - %d"), PinIndex));
+		}
+		FBlueprintEditorUtils::MarkBlueprintAsStructurallyModified(GetBlueprint());
+	}
+}
+
+bool UK2BeamNode_Operation::CanRemovePin(const UEdGraphPin* Pin) const
+{
+	return (
+		Pin &&
+		NumPins &&
+		(INDEX_NONE != Pins.IndexOfByKey(Pin)) &&
+		(EEdGraphPinDirection::EGPD_Input == Pin->Direction)
+	);
+}
+
+void UK2BeamNode_Operation::NotifyPinConnectionListChanged(UEdGraphPin* Pin)
+{
+	Super::NotifyPinConnectionListChanged(Pin);
+
+	// If it's a wildcard pin that was changed.
+	if (Pin->PinName.ToString().StartsWith(TEXT("Dependency")))
+		PropagatePinType(Pin);
+}
+
+void UK2BeamNode_Operation::PostReconstructNode()
+{
+	Super::PostReconstructNode();
+
+	for (const auto& Pin : Pins)
+	{
+		if (!Pin->PinName.ToString().StartsWith(TEXT("Dependency"))) continue;
+		PropagatePinType(Pin);
+	}
+}
+
+void UK2BeamNode_Operation::GetNodeContextMenuActions(UToolMenu* Menu, UGraphNodeContextMenuContext* Context) const
+{
+	Super::GetNodeContextMenuActions(Menu, Context);
+
+	if (!Context->bIsDebugging)
+	{
+		static auto WaitAllNodeName = FName("WaitAllNode");
+		const auto WaitAllNodeNameStr = LOCTEXT("WaitAllNode", "Wait All Node");
+
+		FToolMenuSection& Section = Menu->AddSection(WaitAllNodeName, WaitAllNodeNameStr);
+
+		if (Context->Pin != nullptr)
+		{
+			if (CanRemovePin(Context->Pin))
+			{
+				Section.AddMenuEntry(
+					"RemovePin",
+					LOCTEXT("RemovePin", "Remove Pin"),
+					LOCTEXT("RemovePinTooltip", "Remove this input pin"),
+					FSlateIcon(),
+					FUIAction(
+						FExecuteAction::CreateUObject(const_cast<UK2BeamNode_Operation*>(this), &UK2BeamNode_Operation::RemoveInputPin, const_cast<UEdGraphPin*>(Context->Pin))
+					)
+				);
+			}
+		}
+		else if (CanAddPin())
+		{
+			Section.AddMenuEntry(
+				"AddPin",
+				LOCTEXT("AddPin", "Add Pin"),
+				LOCTEXT("AddPinTooltip", "Add another input pin"),
+				FSlateIcon(),
+				FUIAction(
+					FExecuteAction::CreateUObject(const_cast<UK2BeamNode_Operation*>(this), &UK2BeamNode_Operation::AddInputPin)
+				)
+			);
+		}
+	}
+}
+
 void UK2BeamNode_Operation::AllocateDefaultPins()
 {
 	if (!bIsAlreadyAllocated)
 	{
 		if (GetOperationEventIds(OET_SUCCESS).Num() > 1 ||
-		GetOperationEventIds(OET_ERROR).Num() > 1	 ||
-		GetOperationEventIds(OET_CANCELLED).Num() > 1)
+			GetOperationEventIds(OET_ERROR).Num() > 1 ||
+			GetOperationEventIds(OET_CANCELLED).Num() > 1)
 		{
 			CurrentExpandedMode = OnSubEvents;
 		}
 		bIsAlreadyAllocated = true;
 	}
-	
-	
+
+
 	Super::AllocateDefaultPins();
 
 	AdvancedPinDisplay = ENodeAdvancedPins::Hidden;
@@ -136,6 +359,8 @@ void UK2BeamNode_Operation::AllocateDefaultPins()
 
 	// Create the output pins in an order that improves usability.
 	EnforceOperationPins();
+
+
 	if (bIsInBeamFlowMode)
 	{
 		EnforceBeamFlowModePins();
@@ -144,6 +369,10 @@ void UK2BeamNode_Operation::AllocateDefaultPins()
 	{
 		ParseFunctionForNodeInputPins(this, OperationFunction, {OP_Operation_OnOperationEvent}, true);
 	}
+
+	for (int i = 0; i < NumPins; ++i)
+		CreateContextInputPin();
+
 }
 
 
@@ -175,6 +404,12 @@ void UK2BeamNode_Operation::ExpandNode(FKismetCompilerContext& CompilerContext, 
 	const UK2Node_CallFunction* CallGetSubsystem = CreateCallFunctionNode(this, CompilerContext, SourceGraph, GetSubsystemSelfFunctionName(), GetRuntimeSubsystemClass());
 	const UK2Node_CallFunction* CallRequestFunction = CreateCallFunctionNode(this, CompilerContext, SourceGraph, GetOperationFunctionName(), GetRuntimeSubsystemClass());
 
+	UK2BeamNode_WaitAll* WaitAllNode = CreateWaitAllNodeNode(this, CompilerContext, SourceGraph);
+
+	auto WaitAll_OnSuccess = WaitAllNode->FindPin(FName("OnSuccess"));
+	auto WaitAll_OnError = WaitAllNode->FindPin(FName("OnError"));
+	auto WaitAll_Then = WaitAllNode->FindPin(UEdGraphSchema_K2::PN_Then);
+	auto WaitAll_Exec = WaitAllNode->FindPin(UEdGraphSchema_K2::PN_Execute);
 
 	// Gets all relevant pins
 	const auto ExecutionPin = K2Schema->FindExecutionPin(*this, EGPD_Input);
@@ -184,11 +419,33 @@ void UK2BeamNode_Operation::ExpandNode(FKismetCompilerContext& CompilerContext, 
 	const auto ThenPin = K2Schema->FindExecutionPin(*this, EGPD_Output);
 	const auto HandlePin = FindPin(OP_Operation_Handle);
 
+	const auto MovedRegularExecutionFlowThen = CompilerContext.MovePinLinksToIntermediate(*ThenPin, *WaitAll_Then);
+	check(!MovedRegularExecutionFlowThen.IsFatal())
+
+	const auto MovedRegularExecutionFlow = CompilerContext.MovePinLinksToIntermediate(*ExecutionPin, *WaitAll_Exec);
+	check(!MovedRegularExecutionFlow.IsFatal())
+
+	UEdGraphPin* ErrorPin = FindPin(OP_Operation_Expanded_OnError);
+	
+	if (ErrorPin)
+	{
+		const auto MovedRegularExecutionFlowError = CompilerContext.MovePinLinksToIntermediate(*ErrorPin, *WaitAll_OnError);
+		check(!MovedRegularExecutionFlowError.IsFatal())
+	}else
+	{
+		// Get the execution pin from the CallRequest node
+		const auto CallRequestFunctionExecPin = CallRequestFunction->FindPinChecked(UEdGraphSchema_K2::PN_Execute);
+
+		// Moves the execution flow from the default "Then" execution pin of this custom node to the "Then" Exec pin of the "____ Request" CallFunction node.	
+	
+		WaitAll_OnError->MakeLinkTo(CallRequestFunctionExecPin);
+	}
+
 	// Connects the result of the "static BeamApi::GetSelf" call to the "non-static RuntimeSubsystem::___Operation" Call Function node.
 	SetUpPinsFunctionToOwnerSubsystem(CallGetSubsystem, CallRequestFunction);
 
 	// Set up Input pins for the expanded operation node
-	SetUpInputPinsForOperationNode(CompilerContext, CallRequestFunction, ExecutionPin);
+	SetUpInputPinsForOperationNode(CompilerContext, CallRequestFunction, WaitAll_OnSuccess);
 
 	// Split out all the nodes for each "sub-graph": OnSuccess Sub-Graph, OnError Sub-Graph and OnComplete Sub-Graph. 
 	if (bIsInBeamFlowMode)
@@ -230,6 +487,47 @@ FString UK2BeamNode_Operation::GetPinMetaData(FName InPinName, FName InKey)
 	return MetaData;
 }
 
+
+UK2BeamNode_WaitAll* UK2BeamNode_Operation::CreateWaitAllNodeNode(UEdGraphNode* Node, FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph)
+{
+	auto IsDependencyPin = [](UEdGraphPin* Pin)
+	{
+		return Pin->PinName.ToString().StartsWith(TEXT("Dependency"));
+	};
+
+
+	UK2BeamNode_WaitAll* WaitAllNode = CompilerContext.SpawnIntermediateNode<UK2BeamNode_WaitAll>(Node, SourceGraph);
+
+	WaitAllNode->NumPins = NumPins;
+
+	WaitAllNode->AllocateDefaultPins();
+
+	TArray<UEdGraphPin*> ConnectedWaitPins;
+
+	for (auto DependencyPin : Pins)
+	{
+		if (IsDependencyPin(DependencyPin))
+		{
+			for (auto WaitPin : WaitAllNode->Pins)
+			{
+				if (IsDependencyPin(WaitPin) && !ConnectedWaitPins.Contains(WaitPin))
+				{
+					if (DependencyPin->LinkedTo.Num() > 0)
+					{
+						ConnectedWaitPins.Add(WaitPin);
+						WaitPin->MakeLinkTo(DependencyPin->LinkedTo[0]);
+						WaitAllNode->PropagatePinType(WaitPin);
+						UE_LOG(LogTemp, Log, TEXT("Dependency Links"));
+					}
+					break;
+				}
+			}
+		}
+	}
+
+	return WaitAllNode;
+}
+
 FName UK2BeamNode_Operation::GetCornerIcon() const
 {
 	return FName("BeamIcon_Operations");
@@ -237,6 +535,7 @@ FName UK2BeamNode_Operation::GetCornerIcon() const
 
 void UK2BeamNode_Operation::EnterBeamFlowModeImpl()
 {
+	RemoveAllPins(this, {OP_Operation_OnOperationEvent});
 	EnforceBeamFlowModePins();
 }
 
@@ -551,8 +850,8 @@ void UK2BeamNode_Operation::SetUpInputPinsForOperationNode(FKismetCompilerContex
 	const auto CallRequestFunctionExecPin = CallOperationFunction->FindPinChecked(UEdGraphSchema_K2::PN_Execute);
 
 	// Moves the execution flow from the default "Then" execution pin of this custom node to the "Then" Exec pin of the "____ Request" CallFunction node.	
-	const auto MovedRegularExecutionFlow = CompilerContext.MovePinLinksToIntermediate(*ExecutionPin, *CallRequestFunctionExecPin);
-	check(!MovedRegularExecutionFlow.IsFatal())
+	
+	ExecutionPin->MakeLinkTo(CallRequestFunctionExecPin);
 
 	// Finally, we move all the rest of the parameters into 
 	for (const auto& WrappedFunctionPin : WrappedOperationFunctionInputPinNames)
@@ -574,20 +873,20 @@ void UK2BeamNode_Operation::SetUpPinsForSynchronousFlow(FKismetCompilerContext& 
                                                         const UK2Node_CallFunction* CallOperationFunction, UEdGraphPin* ThenPin, UEdGraphPin* HandlePin)
 {
 	// Moves the operation handle pin.
-	const auto CallOperationReturnPin = CallOperationFunction->GetReturnValuePin();
-	const auto Moved = CompilerContext.MovePinLinksToIntermediate(*HandlePin, *CallOperationReturnPin);
-	check(!Moved.IsFatal());
-
-	// Replace the connections of any of the nodes' pins with any matching pin in the first list with its corresponding pin in the second list.		
-	const TArray<UEdGraphPin*> CustomNodePins{HandlePin};
-	const TArray<UEdGraphPin*> IntermediatePins{CallOperationReturnPin};
-	ReplaceConnectionsOnBeamFlow(SyncFlowNodes, CustomNodePins, IntermediatePins);
-	ReplaceConnectionsOnBeamFlow(OutPerFlowEventNodes, CustomNodePins, IntermediatePins);
-
-	const auto CallRequestThenPin = CallOperationFunction->GetThenPin();
-	// -- Tie the flow of the CallFunction Then pin (Output Execution pin) to the node which the Synchronous Flow pin is connected.
-	const auto MovedRegularThenFlow = CompilerContext.MovePinLinksToIntermediate(*ThenPin, *CallRequestThenPin);
-	check(!MovedRegularThenFlow.IsFatal())
+	// const auto CallOperationReturnPin = CallOperationFunction->GetReturnValuePin();
+	// const auto Moved = CompilerContext.MovePinLinksToIntermediate(*HandlePin, *CallOperationReturnPin);
+	// check(!Moved.IsFatal());
+	//
+	// // Replace the connections of any of the nodes' pins with any matching pin in the first list with its corresponding pin in the second list.		
+	// const TArray<UEdGraphPin*> CustomNodePins{HandlePin};
+	// const TArray<UEdGraphPin*> IntermediatePins{CallOperationReturnPin};
+	// ReplaceConnectionsOnBeamFlow(SyncFlowNodes, CustomNodePins, IntermediatePins);
+	// ReplaceConnectionsOnBeamFlow(OutPerFlowEventNodes, CustomNodePins, IntermediatePins);
+	//
+	// const auto CallRequestThenPin = CallOperationFunction->GetThenPin();
+	// // -- Tie the flow of the CallFunction Then pin (Output Execution pin) to the node which the Synchronous Flow pin is connected.
+	// const auto MovedRegularThenFlow = CompilerContext.MovePinLinksToIntermediate(*ThenPin, *CallRequestThenPin);
+	// check(!MovedRegularThenFlow.IsFatal())
 }
 
 void UK2BeamNode_Operation::SetUpPinsForOnCompleteBeamFlow(FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph, const UK2Node_CallFunction* CallOperationFunction,
@@ -706,28 +1005,28 @@ void UK2BeamNode_Operation::SetUpPinsForSuccessErrorCancelledBeamFlow(FKismetCom
 		// Switch on it out of the EventIds pin of the EventType switch
 		// We will just ignore anything related to sub events.
 		const auto SuccessEventIdSwitch = CreateSwitchNameNode(this, CompilerContext, SourceGraph, K2Schema, GetOperationEventIds(OET_SUCCESS),
-			SwitchEnum->FindPin(StaticEnum<EBeamOperationEventType>()->GetNameByValue(OET_SUCCESS)), SubTypeCodePin);
-		
+		                                                       SwitchEnum->FindPin(StaticEnum<EBeamOperationEventType>()->GetNameByValue(OET_SUCCESS)), SubTypeCodePin);
+
 		auto IntermediateSuccessFlowPin = SuccessEventIdSwitch->FindPin(NAME_None);
-		
+
 		const auto SuccessFlowMoved = CompilerContext.MovePinLinksToIntermediate(*SuccessFlowPin, *IntermediateSuccessFlowPin);
 		check(!SuccessFlowMoved.IsFatal());
-		
-		
+
+
 		const auto ErrorEventIdSwitch = CreateSwitchNameNode(this, CompilerContext, SourceGraph, K2Schema, GetOperationEventIds(OET_ERROR),
-	SwitchEnum->FindPin(StaticEnum<EBeamOperationEventType>()->GetNameByValue(OET_ERROR)), SubTypeCodePin);
-		
+		                                                     SwitchEnum->FindPin(StaticEnum<EBeamOperationEventType>()->GetNameByValue(OET_ERROR)), SubTypeCodePin);
+
 		auto IntermediateErrorFlowPin = ErrorEventIdSwitch->FindPin(NAME_None);
-		
+
 		const auto ErrorFlowMoved = CompilerContext.MovePinLinksToIntermediate(*ErrorFlowPin, *IntermediateErrorFlowPin);
 		check(!ErrorFlowMoved.IsFatal());
 
 
 		const auto CancelledEventIdSwitch = CreateSwitchNameNode(this, CompilerContext, SourceGraph, K2Schema, GetOperationEventIds(OET_CANCELLED),
-SwitchEnum->FindPin(StaticEnum<EBeamOperationEventType>()->GetNameByValue(OET_CANCELLED)), SubTypeCodePin);
-		
+		                                                         SwitchEnum->FindPin(StaticEnum<EBeamOperationEventType>()->GetNameByValue(OET_CANCELLED)), SubTypeCodePin);
+
 		auto IntermediateCancelledFlowPin = CancelledEventIdSwitch->FindPin(NAME_None);
-		
+
 		const auto CancelledFlowMoved = CompilerContext.MovePinLinksToIntermediate(*CancelledFlowPin, *IntermediateCancelledFlowPin);
 		check(!CancelledFlowMoved.IsFatal());
 	}
@@ -801,14 +1100,14 @@ void UK2BeamNode_Operation::ExpandBeamFlowSubEvents(FKismetCompilerContext& Comp
 		// Get the intermediate pins we'll need to connect to all the places our custom node's output pins are connected to.
 		// If we expect a string, than we forward the raw event data string. Otherwise...
 		const auto SubEventValue = EventIds[i];
-		
+
 		const auto ExecPinName = SubEventValue == NAME_None ? BaseExecPinName : FName(FString::Printf(TEXT("%s - %s"), *BaseExecPinName.ToString(), *SubEventValue.ToString()));
-					
+
 		const auto FlowPin = FindPin(ExecPinName);
 
-		
+
 		auto IntermediateSubEventFlowPin = SubEventSwitch->FindPin(SubEventValue);
-		
+
 
 		// Create the cast node and link the success and fail to the subevent execute
 		if (EventDataCasts.Contains(SubEventValue))

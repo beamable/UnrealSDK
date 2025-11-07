@@ -86,6 +86,8 @@ struct FBeamMatchmakingState
 	FDateTime LastJoinTime;
 };
 
+DEFINE_BEAM_OPERATION_HOOK_OneParam(FOnBeamableTryJoinMatchmakingQueueParallel, FBeamOperationHandle);
+DEFINE_BEAM_OPERATION_HOOK_OneParam(FOnBeamableTryJoinMatchmakingQueueSequentially, FBeamOperationHandle);
 
 /**
  * 
@@ -94,7 +96,11 @@ UCLASS(BlueprintType)
 class BEAMABLECORERUNTIME_API UBeamMatchmakingSubsystem : public UBeamRuntimeSubsystem
 {
 	GENERATED_BODY()
+	
+	const FString StatRegionPingKey = "beam.region.pings";
 
+	friend class UBeamDefaultMatchmakingHooks;
+	
 	UPROPERTY()
 	UBeamMatchmakingApi* MatchmakingApi;
 
@@ -109,6 +115,7 @@ class BEAMABLECORERUNTIME_API UBeamMatchmakingSubsystem : public UBeamRuntimeSub
 
 	UPROPERTY()
 	UBeamContentSubsystem* ContentSubsystem;
+	
 
 public:
 	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, meta=(DefaultToSelf="CallingContext"))
@@ -205,6 +212,7 @@ public:
 	 */
 	FBeamOperationHandle CPP_TryJoinQueueOperation(FUserSlot UserSlot, const FBeamContentId& GameTypeQueue, FOptionalString Team, FBeamOperationEventHandlerCode OnOperationEvent);
 
+	
 	/**
 	 * @brief Joins the given game type queue.
 	 * The user in the given user slot is added to the queue. If that user is in a party:
@@ -244,6 +252,7 @@ public:
 	FBeamOperationHandle CPP_TryLeaveQueueOperation(FUserSlot UserSlot, FBeamOperationEventHandlerCode OnOperationEvent);
 
 private:
+	
 	// Operation Implementations
 	void TryJoinQueue(FUserSlot Slot, FBeamContentId GameTypeQueue, FOptionalString Team, FOptionalArrayOfBeamTag Tags, FBeamOperationHandle Op);
 	void TryLeaveQueue(FUserSlot Slot, FBeamOperationHandle Op);
@@ -256,4 +265,8 @@ private:
 
 	// Utility Functions
 	void InvalidateLiveTicket(FBeamMatchmakingTicket& LiveTicket);
+
+	void CommitRegionPing(FUserSlot UserSlot, TMap<FString, int32> RegionPings, FBeamOperationHandle OperationHandle);
+	
+	static FString ConvertRegionPingsToJson(TMap<FString, int32> RegionPings);
 };

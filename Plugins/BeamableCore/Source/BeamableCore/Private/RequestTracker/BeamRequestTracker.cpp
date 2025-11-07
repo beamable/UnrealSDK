@@ -358,6 +358,7 @@ FBeamWaitHandle UBeamRequestTracker::WaitAll(const TArray<FBeamRequestContext>& 
 	return WaitHandle;
 }
 
+
 FBeamWaitHandle UBeamRequestTracker::CPP_WaitAll(const TArray<FBeamRequestContext>& RequestContexts, const TArray<FBeamOperationHandle>& Operations, const TArray<FBeamWaitHandle>& Waits,
                                                  FOnWaitCompleteCode OnCompleteCode)
 {
@@ -568,7 +569,7 @@ void UBeamRequestTracker::AddRequestToOperation(const FBeamOperationHandle& Op, 
 	}
 }
 
-void UBeamRequestTracker::AddRequestToOperation(const FBeamOperationHandle& Op, FBeamRequestContext RequestContext)
+void UBeamRequestTracker::BP_AddRequestToOperation(const FBeamOperationHandle& Op, FBeamRequestContext RequestContext)
 {
 	AddRequestToOperation(Op, RequestContext.RequestId);
 }

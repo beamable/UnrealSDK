@@ -13,14 +13,19 @@ UCLASS(meta=(BeamFlowNode))
 class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_WaitAll : public UK2BeamNode_BeamFlow, public IK2Node_AddPinInterface
 {
 	GENERATED_BODY()
+
 public:
 	static const FName SelfFunctionName;
 	static const FName WaitAllFunctionName;
+	static const FName IsWaitFailedFunctionName;
+
 	static const FName P_CompleteCallback;
+	static const FName P_CompleteCallbackSuccess;
+	static const FName P_CompleteCallbackFail;
 	static const FName P_RequestContexts;
 	static const FName P_Operations;
 	static const FName P_Waits;
-	static const FName P_Evt;	
+	static const FName P_Evt;
 
 	UPROPERTY()
 	TArray<FString> WrappedWaitAllFunctionPinNames;
@@ -51,7 +56,6 @@ public:
 
 	virtual void EnterBeamFlowModeImpl() override;
 	virtual void ExitBeamFlowModeImpl() override;
-
 
 private:
 };
