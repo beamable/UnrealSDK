@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
 #include "Serialization/BeamJsonUtils.h"
 
 #include "BeamoV2LogContextRuleAuthor.generated.h"
@@ -13,10 +14,10 @@ class BEAMABLECORE_API UBeamoV2LogContextRuleAuthor : public UObject, public IBe
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Email", Category="Beam")
-	FString Email = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Account Id", Category="Beam")
 	FString AccountId = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Email", Category="Beam")
+	FOptionalString Email = {};
 
 	
 

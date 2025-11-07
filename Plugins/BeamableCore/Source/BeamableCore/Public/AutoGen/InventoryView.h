@@ -6,6 +6,7 @@
 #include "BeamableCore/Public/AutoGen/CurrencyView.h"
 #include "BeamableCore/Public/AutoGen/ItemGroup.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalInventoryFiltersDTO.h"
 
 #include "InventoryView.generated.h"
 
@@ -21,6 +22,8 @@ public:
 	TArray<UItemGroup*> Items = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Scope", Category="Beam")
 	FOptionalString Scope = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Item Filters", Category="Beam")
+	FOptionalInventoryFiltersDTO ItemFilters = {};
 
 	virtual void DeserializeRequestResponse(UObject* RequestData, FString ResponseContent) override;
 

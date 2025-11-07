@@ -43,7 +43,7 @@ void UBeamPlayerLobbyApi::BP_GetLobbiesImpl(const FBeamRealmHandle& TargetRealm,
 	{
 		// Binds the handler to the static response handler (pre-generated)
 		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UApiPlayerLobbyGetLobbiesByPlayerIdRequest, ULobby, FOnApiPlayerLobbyGetLobbiesByPlayerIdSuccess, FOnApiPlayerLobbyGetLobbiesByPlayerIdError, FOnApiPlayerLobbyGetLobbiesByPlayerIdComplete>
-			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);
+			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 	    
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
@@ -105,7 +105,7 @@ void UBeamPlayerLobbyApi::BP_DeleteLobbiesImpl(const FBeamRealmHandle& TargetRea
 	{
 		// Binds the handler to the static response handler (pre-generated)
 		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UDeleteLobbiesRequest, UApiPlayersLobbiesDeletePlayerLobbyResponse, FOnDeleteLobbiesSuccess, FOnDeleteLobbiesError, FOnDeleteLobbiesComplete>
-			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);
+			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 	    
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	

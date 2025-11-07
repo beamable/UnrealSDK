@@ -10,6 +10,7 @@
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalPaymentStatus.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalActivationStatus.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalDateTime.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalMapOfString.h"
 
 #include "CustomerActorCustomer.generated.h"
 
@@ -39,6 +40,8 @@ public:
 	FOptionalArrayOfRealm Realms = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Accounts", Category="Beam")
 	FOptionalArrayOfCustomerActorAccount Accounts = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Config", Category="Beam")
+	FOptionalMapOfString Config = {};
 
 	virtual void DeserializeRequestResponse(UObject* RequestData, FString ResponseContent) override;
 

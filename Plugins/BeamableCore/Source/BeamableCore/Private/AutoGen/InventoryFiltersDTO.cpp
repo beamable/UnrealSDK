@@ -10,7 +10,7 @@ void UInventoryFiltersDTO::BeamSerializeProperties(TUnrealJsonSerializer& Serial
 	UBeamJsonUtils::SerializeOptional<UContentTagFilter*>(TEXT("contentTagFilter"), &ContentTagFilter, Serializer);
 	UBeamJsonUtils::SerializeOptional<UTimeRange*>(TEXT("createdAt"), &CreatedAt, Serializer);
 	UBeamJsonUtils::SerializeOptional<UTimeRange*>(TEXT("updatedAt"), &UpdatedAt, Serializer);
-	UBeamJsonUtils::SerializeOptional<TArray<UPropertyFilterDTO*>, UPropertyFilterDTO*>(TEXT("properties"), &Properties, Serializer);
+	UBeamJsonUtils::SerializeOptional<TArray<UPropertyFilterDTO*>, UPropertyFilterDTO*>(TEXT("propertyFilters"), &PropertyFilters, Serializer);
 }
 
 void UInventoryFiltersDTO::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
@@ -18,7 +18,7 @@ void UInventoryFiltersDTO::BeamSerializeProperties(TUnrealPrettyJsonSerializer& 
 	UBeamJsonUtils::SerializeOptional<UContentTagFilter*>(TEXT("contentTagFilter"), &ContentTagFilter, Serializer);
 	UBeamJsonUtils::SerializeOptional<UTimeRange*>(TEXT("createdAt"), &CreatedAt, Serializer);
 	UBeamJsonUtils::SerializeOptional<UTimeRange*>(TEXT("updatedAt"), &UpdatedAt, Serializer);
-	UBeamJsonUtils::SerializeOptional<TArray<UPropertyFilterDTO*>, UPropertyFilterDTO*>(TEXT("properties"), &Properties, Serializer);		
+	UBeamJsonUtils::SerializeOptional<TArray<UPropertyFilterDTO*>, UPropertyFilterDTO*>(TEXT("propertyFilters"), &PropertyFilters, Serializer);		
 }
 
 void UInventoryFiltersDTO::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
@@ -26,7 +26,7 @@ void UInventoryFiltersDTO::BeamDeserializeProperties(const TSharedPtr<FJsonObjec
 	UBeamJsonUtils::DeserializeOptional<UContentTagFilter*>("contentTagFilter", Bag, ContentTagFilter, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<UTimeRange*>("createdAt", Bag, CreatedAt, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<UTimeRange*>("updatedAt", Bag, UpdatedAt, OuterOwner);
-	UBeamJsonUtils::DeserializeOptional<TArray<UPropertyFilterDTO*>, UPropertyFilterDTO*>("properties", Bag, Properties, OuterOwner);
+	UBeamJsonUtils::DeserializeOptional<TArray<UPropertyFilterDTO*>, UPropertyFilterDTO*>("propertyFilters", Bag, PropertyFilters, OuterOwner);
 }
 
 

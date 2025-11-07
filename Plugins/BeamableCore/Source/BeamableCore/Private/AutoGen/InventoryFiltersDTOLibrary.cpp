@@ -23,25 +23,25 @@ FString UInventoryFiltersDTOLibrary::InventoryFiltersDTOToJsonString(const UInve
 	return Result;
 }	
 
-UInventoryFiltersDTO* UInventoryFiltersDTOLibrary::Make(FOptionalContentTagFilter ContentTagFilter, FOptionalTimeRange CreatedAt, FOptionalTimeRange UpdatedAt, FOptionalArrayOfPropertyFilterDTO Properties, UObject* Outer)
+UInventoryFiltersDTO* UInventoryFiltersDTOLibrary::Make(FOptionalContentTagFilter ContentTagFilter, FOptionalTimeRange CreatedAt, FOptionalTimeRange UpdatedAt, FOptionalArrayOfPropertyFilterDTO PropertyFilters, UObject* Outer)
 {
 	auto Serializable = NewObject<UInventoryFiltersDTO>(Outer);
 	Serializable->ContentTagFilter = ContentTagFilter;
 	Serializable->CreatedAt = CreatedAt;
 	Serializable->UpdatedAt = UpdatedAt;
-	Serializable->Properties = Properties;
+	Serializable->PropertyFilters = PropertyFilters;
 	
 	return Serializable;
 }
 
-void UInventoryFiltersDTOLibrary::Break(const UInventoryFiltersDTO* Serializable, FOptionalContentTagFilter& ContentTagFilter, FOptionalTimeRange& CreatedAt, FOptionalTimeRange& UpdatedAt, FOptionalArrayOfPropertyFilterDTO& Properties)
+void UInventoryFiltersDTOLibrary::Break(const UInventoryFiltersDTO* Serializable, FOptionalContentTagFilter& ContentTagFilter, FOptionalTimeRange& CreatedAt, FOptionalTimeRange& UpdatedAt, FOptionalArrayOfPropertyFilterDTO& PropertyFilters)
 {
 	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
 	{
 		ContentTagFilter = Serializable->ContentTagFilter;
 		CreatedAt = Serializable->CreatedAt;
 		UpdatedAt = Serializable->UpdatedAt;
-		Properties = Serializable->Properties;
+		PropertyFilters = Serializable->PropertyFilters;
 	}
 		
 }
