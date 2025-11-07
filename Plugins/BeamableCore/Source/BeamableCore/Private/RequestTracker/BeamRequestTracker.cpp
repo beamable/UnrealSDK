@@ -304,7 +304,6 @@ void UBeamRequestTracker::HandleBackendCleanUp(TArray<int64>& OutUsingRequestIds
 FBeamWaitHandle UBeamRequestTracker::WaitAll(const TArray<FBeamRequestContext>& RequestContexts, const TArray<FBeamOperationHandle>& Operations, const TArray<FBeamWaitHandle>& Waits,
                                              FOnWaitComplete OnComplete)
 {
-	UE_LOG(LogTemp, Warning, TEXT("CAlling waiting all %d | %d | %d"), RequestContexts.Num(), Operations.Num(), Waits.Num());
 	// Ensures we get a valid Next Id even if requests get made from multiple threads.
 
 	const auto NextId = ++WaitHandleId;

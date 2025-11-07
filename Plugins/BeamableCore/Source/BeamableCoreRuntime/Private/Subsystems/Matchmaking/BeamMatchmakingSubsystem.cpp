@@ -116,7 +116,6 @@ bool UBeamMatchmakingSubsystem::TryGetTicket(const FUserSlot& Slot, FBeamMatchma
 
 FBeamOperationHandle UBeamMatchmakingSubsystem::TryJoinQueueOperation(FUserSlot UserSlot, FBeamContentId GameTypeQueue, FOptionalString Team, FBeamOperationEventHandler OnOperationEvent)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Starting Join Queue"));
 	const auto Handle = Runtime->RequestTrackerSystem->BeginOperation({UserSlot}, GetClass()->GetFName().ToString(), OnOperationEvent);
 
 	TryJoinQueue(UserSlot, GameTypeQueue, Team, {}, Handle);
