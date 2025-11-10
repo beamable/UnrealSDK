@@ -115,19 +115,33 @@ FBeamOperationHandle UBeamMicroservicesEditor::CPP_DeployRemoteMicroservicesOper
 	return Handle;
 }
 
-FBeamOperationHandle UBeamMicroservicesEditor::RunLocalMicroservicesOperation(const TArray<FString>& BeamoIds, const FBeamOperationEventHandler& OnOperationEvent)
+FBeamOperationHandle UBeamMicroservicesEditor::RunLocalMicroservicesOperation(const TArray<FString>& BeamoIds, bool bUseDocker, const FBeamOperationEventHandler& OnOperationEvent)
 {
 	const auto Slot = Editor->GetMainEditorSlot();
 	const auto Handle = RequestTracker->BeginOperation({Slot}, GetName(), OnOperationEvent);
-	RunHostMicroservices(BeamoIds, Handle);
+	if (bUseDocker)
+	{
+		RunDockerMicroservices(BeamoIds, Handle);
+	}
+	else
+	{
+		RunHostMicroservices(BeamoIds, Handle);
+	}
 	return Handle;
 }
 
-FBeamOperationHandle UBeamMicroservicesEditor::CPP_RunLocalMicroservicesOperation(const TArray<FString>& BeamoIds, const FBeamOperationEventHandlerCode& OnOperationEvent)
+FBeamOperationHandle UBeamMicroservicesEditor::CPP_RunLocalMicroservicesOperation(const TArray<FString>& BeamoIds, bool bUseDocker, const FBeamOperationEventHandlerCode& OnOperationEvent)
 {
 	const auto Slot = Editor->GetMainEditorSlot();
 	const auto Handle = RequestTracker->CPP_BeginOperation({Slot}, GetName(), OnOperationEvent);
-	RunHostMicroservices(BeamoIds, Handle);
+	if (bUseDocker)
+	{
+		RunDockerMicroservices(BeamoIds, Handle);
+	}
+	else
+	{
+		RunHostMicroservices(BeamoIds, Handle);
+	}
 	return Handle;
 }
 
