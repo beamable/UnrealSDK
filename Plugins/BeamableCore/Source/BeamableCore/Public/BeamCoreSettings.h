@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 
 #include "BeamEnvironment.h"
+#include "BeamInfoData.h"
 #include "BeamBackend/BeamRealmHandle.h"
 #include "BeamBackend/BeamRetryConfig.h"
 #include "BeamBackend/ResponseCache/BeamCacheConfig.h"
@@ -23,11 +24,17 @@ class BEAMABLECORE_API UBeamCoreSettings : public UDeveloperSettings
 public:
 	UBeamCoreSettings();
 
-	/* Soft path will be converted to content reference before use */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "General", AdvancedDisplay)
+	bool BeamableDeveloper = false;
+
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "General|Info", AdvancedDisplay)
+	TSoftObjectPtr<UBeamInfoData> BeamableInfoData;
+	
+	/* Soft path will be converted to content reference before use */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "General|Environment", AdvancedDisplay)
 	TSoftObjectPtr<UBeamEnvironmentData> BeamableEnvironment;
 
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "General", AdvancedDisplay)
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "General|Environment", AdvancedDisplay)
 	TArray<TSoftObjectPtr<UBeamEnvironmentData>> BeamablePossibleEnvironments;
 
 	/**

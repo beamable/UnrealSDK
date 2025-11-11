@@ -156,7 +156,7 @@ public:
 	UFUNCTION()
 	void Run_TrySignIntoMainEditorSlot(FBeamWaitCompleteEvent Evt);
 
-	
+
 	bool SetDefaultBeamPIEConfig() const;
 };
 
@@ -190,7 +190,7 @@ class BEAMABLECORERUNTIMEEDITOR_API UBeamEditor : public UEditorSubsystem
 	 * @brief Stored lambda delegate handle for what this subsystem does when a user slot is cleared.
 	 */
 	FDelegateHandle UserSlotClearedHandler;
-	
+
 	/**
 	 * @brief Stored lambda delegate handle for what this subsystem does when we enter PIE mode (mostly just trigger a callback).
 	 */
@@ -205,7 +205,7 @@ class BEAMABLECORERUNTIMEEDITOR_API UBeamEditor : public UEditorSubsystem
 	 * @brief Stored lambda delegate handle for what this subsystem does when the editor is fully initialized (kick off the Beamable Editor Integration initialization flow).
 	 */
 	FDelegateHandle EditorInitializedHandle;
-	
+
 	/**
 	 * @brief When a realm change is requested, we notify all UBeamEditorSubsystems that exist so that they can prepare for the change.
 	 * They return operation handles that we wait on. When done, we change the realm.
@@ -280,7 +280,7 @@ public:
 	// Called when the editor user logout
 	UPROPERTY(BlueprintReadWrite, BlueprintAssignable)
 	FEditorUserLogout OnLogout;
-	
+
 	// This will list all the docs pages in the Unreal - (NOT IN USE)
 	UPROPERTY(BlueprintReadOnly, Category="Beam")
 	TArray<FDocsPageItem> DocsPages;
@@ -376,7 +376,7 @@ public:
 	 */
 	FBeamOperationHandle CPP_FetchRealmOrgsOperation(FString OrgName, FString Email, FString Password, const FBeamOperationEventHandlerCode& OnOperationEvent);
 
-	
+
 	/**
 	 * @brief Change the current target realm to a new target realm.
 	 * Invokes two global callbacks (on every existing UBeamableEditorSubsystem): first a OnRealmCleanup and then a OnRealmInitialize(). 
@@ -401,7 +401,7 @@ private:
 	 * @brief Fetch the org realms and fill the CurrentProjectData state. 
 	 */
 	void FetchOrgRealms(FString OrgName, FString Email, FString Password, FBeamOperationHandle Op);
-	
+
 	/**
 	 * @brief Signs automatically using the current CLI info. 
 	 */
@@ -410,7 +410,7 @@ private:
 	bool VerifyCLIInstalled(FBeamOperationHandle Op);
 
 	void UpdateCurrentProjectData(FBeamOperationHandle Op);
-	
+
 	/**
 	 * @brief Call to select a realm as a part of the given operation. 
 	 */
@@ -448,10 +448,32 @@ private:
 	/**
 	 * @brief Opens the Beamable Portal for a specific user data.
 	 */
-	
 	UFUNCTION(BlueprintCallable, Category="Beam")
-	void OpenPortalOnUserData(UDeveloperUserDataStreamData *UserData);
+	void OpenPortalOnUserData(UDeveloperUserDataStreamData* UserData);
 
+	/**
+	 * @brief Get the current selected enviroment name
+	 */
+	UFUNCTION(BlueprintCallable, Category="Beam")
+	void GetSelectedEnvironment(FString& Environment);
+
+	/**
+	 * @brief Set the selected environment data asset
+	 */
+	UFUNCTION(BlueprintCallable, Category="Beam")
+	void SelectEnvironment(FSoftObjectPath EnvironmentSoftObject);
+
+	/**
+	 * @brief Refresh the environment config for a spefici data asset
+	 */
+	UFUNCTION(BlueprintCallable, Category="Beam")
+	void PullEnvironmentRouteConfig(UBeamEnvironmentData* EnvData);
+
+	/**
+	 * @brief Get the sorted list from the beamable environment and the costumer assets
+	 */
+	UFUNCTION(BlueprintCallable, Category="Beam")
+	void GetSortedEnvironmentList(TArray<FAssetData> BeamableAssets, TArray<FAssetData> CostumerAssets, TArray<UBeamEnvironmentData*>& SortedList);
 	// Utility Functions
 private:
 	/**
@@ -471,5 +493,4 @@ private:
 	 */
 	UFUNCTION(BlueprintCallable, Category="Beam")
 	void ApplyCurrentSettingsToBuild();
-
 };
