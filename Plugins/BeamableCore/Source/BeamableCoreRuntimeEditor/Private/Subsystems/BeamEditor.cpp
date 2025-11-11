@@ -159,6 +159,14 @@ void UBeamEditorBootstrapper::Run_DelayedInitialize()
 		CoreSettings->SaveConfig(CPF_Config, *CoreSettings->GetDefaultConfigFilename());
 	}
 
+	if (CoreSettings->BeamableInfoData.IsNull())
+	{
+		CoreSettings->BeamableInfoData = FSoftObjectPath(TEXT("/Script/BeamableCore.BeamEnvironmentData'/BeamableCore/Info/BeamableInfoData.BeamableInfoData'"));
+
+		CoreSettings->SaveConfig(CPF_Config, *CoreSettings->GetDefaultConfigFilename());
+	}
+
+
 	// Set up the default Editor settings
 	auto EditorSettings = GetMutableDefault<UBeamEditorSettings>();
 	auto bEditorSettingsChanged = false;
@@ -1024,7 +1032,8 @@ void UBeamEditor::GetSelectedEnvironment(FString& Environment)
 	if (GetDefault<UBeamCoreSettings>()->BeamableEnvironment.IsValid())
 	{
 		Environment = GetDefault<UBeamCoreSettings>()->BeamableEnvironment->Environment;
-	}else
+	}
+	else
 	{
 		Environment = GetDefault<UBeamCoreSettings>()->BeamablePossibleEnvironments[0]->Environment;
 	}

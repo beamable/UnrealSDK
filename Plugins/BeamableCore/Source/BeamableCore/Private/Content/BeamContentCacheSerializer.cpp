@@ -119,7 +119,7 @@ bool UBeamContentCacheSerializer::SerializeBeamContentCacheHeader(FBeamContentCa
 		FString AppVersion = GetProjectAppVersion();
 
 		Ctx.TargetAr << AppVersion;
-		Ctx.TargetAr << GetDefault<UBeamCoreSettings>()->BeamableInfoData.LoadSynchronous()->Version;
+		Ctx.TargetAr << GetDefault<UBeamCoreSettings>()->BeamableInfoData->Version;
 	}
 	else
 	{
@@ -135,7 +135,7 @@ bool UBeamContentCacheSerializer::SerializeBeamContentCacheHeader(FBeamContentCa
 		}
 
 		FBeamPackageVersion SdkVersion;
-		FBeamPackageVersion CurrSdkVersion = GetDefault<UBeamCoreSettings>()->BeamableInfoData.LoadSynchronous()->Version;
+		FBeamPackageVersion CurrSdkVersion = GetDefault<UBeamCoreSettings>()->BeamableInfoData->Version;
 		Ctx.TargetAr << SdkVersion;
 		if (!CurrSdkVersion.Equals(SdkVersion))
 		{

@@ -31,13 +31,7 @@ FString UBeamEnvironment::GetAPIUrl()
 	if (!Data)
 	{
 		const UBeamCoreSettings* beamCoreSettings = GetDefault<UBeamCoreSettings>();
-		if (beamCoreSettings->BeamableEnvironment.IsValid())
-		{
-			Data = beamCoreSettings->BeamableEnvironment.LoadSynchronous();
-		}else
-		{
-			Data = beamCoreSettings->BeamablePossibleEnvironments[0].LoadSynchronous();
-		}
+		Data = beamCoreSettings->BeamableEnvironment.LoadSynchronous();
 	}
 
 	return Data->APIUrl;

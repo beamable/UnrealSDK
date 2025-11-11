@@ -217,13 +217,8 @@ void UBeamBackend::PrepareBeamableRequestToRealm(const TUnrealRequestPtr& Unreal
 		UnrealRequest->SetHeader(HEADER_ENGINE_TYPE, FString::Printf(TEXT("UnrealEditor-%s"), *UGameplayStatics::GetPlatformName()));
 	}
 
-	if (GetDefault<UBeamCoreSettings>()->BeamableInfoData.IsValid())
-	{
-		UnrealRequest->SetHeader(HEADER_BEAMABLE_VERSION, GetDefault<UBeamCoreSettings>()->BeamableInfoData->Version.ToString());
-	}else
-	{
-		UE_LOG(LogTemp, Error, TEXT("X-BEAM-SDK-VERSION was not configured correctly, please setup the beamable info data in the beam core settings."))
-	}
+	UnrealRequest->SetHeader(HEADER_BEAMABLE_VERSION, GetDefault<UBeamCoreSettings>()->BeamableInfoData.LoadSynchronous()->Version.ToString());
+
 	UnrealRequest->SetHeader(HEADER_UNREAL_VERSION, FEngineVersion::Current().ToString());
 	UnrealRequest->SetHeader(HEADER_APPLICATION_VERSION, GetProjectAppVersion());
 
