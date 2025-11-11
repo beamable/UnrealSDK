@@ -24,17 +24,17 @@ class BEAMABLECORE_API UBeamCoreSettings : public UDeveloperSettings
 public:
 	UBeamCoreSettings();
 
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "General", AdvancedDisplay)
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "General")
 	bool BeamableDeveloper = false;
 
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "General|Info", AdvancedDisplay)
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "General|Info")
 	TSoftObjectPtr<UBeamInfoData> BeamableInfoData;
 	
 	/* Soft path will be converted to content reference before use */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "General|Environment", AdvancedDisplay)
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "General|Environment")
 	TSoftObjectPtr<UBeamEnvironmentData> BeamableEnvironment;
 
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "General|Environment", AdvancedDisplay)
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "General|Environment")
 	TArray<TSoftObjectPtr<UBeamEnvironmentData>> BeamablePossibleEnvironments;
 
 	/**
