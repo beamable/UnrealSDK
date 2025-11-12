@@ -245,12 +245,12 @@ public:
 	 * @brief Builds and runs the current Microservice project(s) locally, in Docker.  
 	 */
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Editor|Microservice", meta=(AutoCreateRefTerm="BeamoIds"))
-	FBeamOperationHandle RunLocalMicroservicesOperation(const TArray<FString>& BeamoIds, bool bUseDocker, const FBeamOperationEventHandler& OnOperationEvent);
+	FBeamOperationHandle RunLocalMicroservicesOperation(const TArray<FString>& BeamoIds, const FBeamOperationEventHandler& OnOperationEvent);
 
 	/**
 	 * @brief Builds and runs the current Microservice project(s) locally, in Docker.  
 	 */
-	FBeamOperationHandle CPP_RunLocalMicroservicesOperation(const TArray<FString>& BeamoIds, bool bUseDocker, const FBeamOperationEventHandlerCode& OnOperationEvent);
+	FBeamOperationHandle CPP_RunLocalMicroservicesOperation(const TArray<FString>& BeamoIds, const FBeamOperationEventHandlerCode& OnOperationEvent);
 
 
 	/**
