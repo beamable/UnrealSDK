@@ -217,7 +217,8 @@ void UBeamBackend::PrepareBeamableRequestToRealm(const TUnrealRequestPtr& Unreal
 		UnrealRequest->SetHeader(HEADER_ENGINE_TYPE, FString::Printf(TEXT("UnrealEditor-%s"), *UGameplayStatics::GetPlatformName()));
 	}
 
-	UnrealRequest->SetHeader(HEADER_BEAMABLE_VERSION, BeamEnvironment->Data->Version.ToString());
+	UnrealRequest->SetHeader(HEADER_BEAMABLE_VERSION, GetDefault<UBeamCoreSettings>()->BeamableInfoData.LoadSynchronous()->Version.ToString());
+
 	UnrealRequest->SetHeader(HEADER_UNREAL_VERSION, FEngineVersion::Current().ToString());
 	UnrealRequest->SetHeader(HEADER_APPLICATION_VERSION, GetProjectAppVersion());
 

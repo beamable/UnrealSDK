@@ -4,7 +4,6 @@
 #include "Subsystems/Matchmaking/BeamMatchmakingSubsystem.h"
 
 #include "Subsystems/Lobby/BeamLobbySubsystem.h"
-#include "Subsystems/Matchmaking/BeamMatchmakingHooks.h"
 #include "Subsystems/Stats/BeamStatsSubsystem.h"
 
 void UBeamMatchmakingSubsystem::Initialize(FSubsystemCollectionBase& Collection)

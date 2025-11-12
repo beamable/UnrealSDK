@@ -3,7 +3,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "BeamHookHandle.h"
 #include "BeamOperation.h"
 #include "BeamBackend/BeamBackend.h"
 #include "RequestTracker/BeamWaitHandle.h"
@@ -271,35 +270,6 @@ public:
 
 		UE_LOG(LogBeamRequestTracker, Error, TEXT("%s"), *Error);
 		return false;
-	}
-
-	// template <typename FHook, typename... Args>
-	// bool RunBeamTaskGraph(FHook& Hooks, FOnWaitCompleteCode Handler, Args&&... args)
-	// {
-	// 	return true;
-	// }
-
-	template <class T = UBeamHookHandle>
-	T* BeginHookHandle(FBeamOperationEventHandler OnOperationEvent, UObject* Outer = (UObject*)GetTransientPackage())
-	{
-		static_assert(std::is_base_of_v<UBeamHookHandle, T>, "This FHook does not derive from UBeamHookHandle.");
-		T* Result = NewObject<T>(Outer);
-		Result->MainOperationHandle = BeginOperation({}, Outer->GetName(), OnOperationEvent);
-		return Result;
-	}
-
-	template <class T = UBeamHookHandle>
-	T* CPP_BeginHookHandle(FBeamOperationEventHandlerCode OnOperationEvent, UObject* Outer = (UObject*)GetTransientPackage())
-	{
-		static_assert(std::is_base_of_v<UBeamHookHandle, T>, "This FHook does not derive from UBeamHookHandle.");
-		T* Result = NewObject<T>(Outer);
-		Result->MainOperationHandle = CPP_BeginOperation({}, Outer->GetName(), OnOperationEvent);
-		return Result;
-	}
-
-	FBeamOperationHandle CPP_PreHookCall(UBeamHookHandle* Handle)
-	{
-		return Handle->CurrentOperationHandle = CPP_BeginOperation({}, GetName(), {});
 	}
 
 

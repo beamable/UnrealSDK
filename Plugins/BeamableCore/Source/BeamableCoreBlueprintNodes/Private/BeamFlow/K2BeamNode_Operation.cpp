@@ -189,7 +189,7 @@ void UK2BeamNode_Operation::PropagatePinType(UEdGraphPin* const& Pin) const
 FName UK2BeamNode_Operation::GetDependencyPinName()
 {
 	int MaxDependencyPin = 100;
-	for (int PinIndex = 0 ; PinIndex < MaxDependencyPin ; PinIndex++)
+	for (int PinIndex = 0; PinIndex < MaxDependencyPin; PinIndex++)
 	{
 		FName PinName = FName(FString::Printf(TEXT("Dependency - %d"), PinIndex));
 		if (!FindPin(PinName))
@@ -238,7 +238,7 @@ void UK2BeamNode_Operation::RemoveInputPin(UEdGraphPin* Pin)
 		Pins.RemoveAt(PinRemovalIndex);
 		Pin->MarkAsGarbage();
 		NumPins -= 1;
-		
+
 		TArray<UEdGraphPin*> DependencyPins;
 		for (int32 PinIndex = 0; PinIndex < Pins.Num(); ++PinIndex)
 		{
@@ -247,7 +247,6 @@ void UK2BeamNode_Operation::RemoveInputPin(UEdGraphPin* Pin)
 			if (LocalPin && LocalPin->PinName.ToString().StartsWith(TEXT("Dependency -")))
 			{
 				DependencyPins.Add(LocalPin);
-				
 			}
 		}
 		for (int32 PinIndex = 0; PinIndex < DependencyPins.Num(); PinIndex++)
@@ -372,7 +371,6 @@ void UK2BeamNode_Operation::AllocateDefaultPins()
 
 	for (int i = 0; i < NumPins; ++i)
 		CreateContextInputPin();
-
 }
 
 
@@ -425,20 +423,14 @@ void UK2BeamNode_Operation::ExpandNode(FKismetCompilerContext& CompilerContext, 
 	const auto MovedRegularExecutionFlow = CompilerContext.MovePinLinksToIntermediate(*ExecutionPin, *WaitAll_Exec);
 	check(!MovedRegularExecutionFlow.IsFatal())
 
-	UEdGraphPin* ErrorPin = FindPin(OP_Operation_Expanded_OnError);
-	
-	if (ErrorPin)
-	{
-		const auto MovedRegularExecutionFlowError = CompilerContext.MovePinLinksToIntermediate(*ErrorPin, *WaitAll_OnError);
-		check(!MovedRegularExecutionFlowError.IsFatal())
-	}else
-	{
-		// Get the execution pin from the CallRequest node
-		const auto CallRequestFunctionExecPin = CallRequestFunction->FindPinChecked(UEdGraphSchema_K2::PN_Execute);
 
-		// Moves the execution flow from the default "Then" execution pin of this custom node to the "Then" Exec pin of the "____ Request" CallFunction node.	
-	
-		WaitAll_OnError->MakeLinkTo(CallRequestFunctionExecPin);
+	UEdGraphPin* ErrorPin = FindPin(OP_Operation_Expanded_OnError);
+
+	UEdGraphPin* ConnectedToErrorPin = nullptr;
+
+	if (ErrorPin->LinkedTo.Num() > 0)
+	{
+		ConnectedToErrorPin = ErrorPin->LinkedTo[0];
 	}
 
 	// Connects the result of the "static BeamApi::GetSelf" call to the "non-static RuntimeSubsystem::___Operation" Call Function node.
@@ -459,6 +451,19 @@ void UK2BeamNode_Operation::ExpandNode(FKismetCompilerContext& CompilerContext, 
 		ExpandNonBeamFlowMode(CompilerContext, CallRequestFunction, ThenPin, HandlePin);
 	}
 
+	if (ErrorPin && ConnectedToErrorPin)
+	{
+		K2Schema->TryCreateConnection(WaitAll_OnError, ConnectedToErrorPin);
+	}
+	else
+	{
+		// Get the execution pin from the CallRequest node
+		const auto CallRequestFunctionExecPin = CallRequestFunction->FindPinChecked(UEdGraphSchema_K2::PN_Execute);
+
+		// Moves the execution flow from the default "Then" execution pin of this custom node to the "Then" Exec pin of the "____ Request" CallFunction node.	
+
+		WaitAll_OnError->MakeLinkTo(CallRequestFunctionExecPin);
+	}
 
 	// This needs to exist so that the custom node is no longer in the graph and gets killed off when we cook the Blueprint.
 	// This works because we fully replace and guarantee the execution flow is correctly set up.
@@ -850,7 +855,7 @@ void UK2BeamNode_Operation::SetUpInputPinsForOperationNode(FKismetCompilerContex
 	const auto CallRequestFunctionExecPin = CallOperationFunction->FindPinChecked(UEdGraphSchema_K2::PN_Execute);
 
 	// Moves the execution flow from the default "Then" execution pin of this custom node to the "Then" Exec pin of the "____ Request" CallFunction node.	
-	
+
 	ExecutionPin->MakeLinkTo(CallRequestFunctionExecPin);
 
 	// Finally, we move all the rest of the parameters into 
