@@ -3,7 +3,7 @@
 
 #include "BeamOTELManagerEditor.h"
 
-#include "Subsystems/CLI/Autogen/BeamCliTelemetryPruneCommand.h"
+#include "Subsystems/CLI/Autogen/BeamCliTelemetryPushCommand.h"
 
 void UBeamOTELManagerEditor::Initialize(FSubsystemCollectionBase& Collection)
 {
@@ -12,11 +12,23 @@ void UBeamOTELManagerEditor::Initialize(FSubsystemCollectionBase& Collection)
 
 FBeamOperationHandle UBeamOTELManagerEditor::OnRealmInitialized(FBeamRealmHandle NewRealm)
 {
-	UBeamCliTelemetryPruneCommand* PruneCommand = NewObject<UBeamCliTelemetryPruneCommand>();
+	UBeamCliTelemetryPushCommand* PushCommand = NewObject<UBeamCliTelemetryPushCommand>();
 	
 	auto Cli = GEditor->GetEditorSubsystem<UBeamCli>();
 	
-	Cli->RunCommand(PruneCommand, {TEXT("--delete-all"), TEXT("-q")}, {});
+	Cli->RunCommand(PushCommand, {TEXT("-q")}, {});
 
 	return Super::OnRealmInitialized(NewRealm);
+}
+
+void UBeamOTELManagerEditor::AddLog(FString Message, FString StackTrace, FString OtelLogLevel)
+{
+}
+
+void UBeamOTELManagerEditor::OtelPruneLogs()
+{
+}
+
+void UBeamOTELManagerEditor::PublishLogs()
+{
 }
