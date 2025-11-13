@@ -82,7 +82,7 @@ void UBeamMicroservicesEditor::OnReady()
 		{
 			const auto RoutingKeyMap = ConstructRoutingKeyMap();
 			Backend->SetRoutingKeyMap(RoutingKeyMap);
-			UE_LOG(LogBeamMicroservices, Display, TEXT("Preparing PIE with Routing Key: %s"), *RoutingKeyMap);
+			UE_LOG(LogBeamEditorMs, Display, TEXT("Preparing PIE with Routing Key: %s"), *RoutingKeyMap);
 		});
 
 		EndPIE = FEditorDelegates::EndPIE.AddLambda([this](bool Cond)
@@ -208,7 +208,7 @@ bool UBeamMicroservicesEditor::OpenSwaggerDocs(FString BeamoId)
 	const auto LocalMicroservice = LocalMicroserviceData.Find(BeamoId);
 	if (!IsCurrentRoutingKeyValid(BeamoId))
 	{
-		UE_LOG(LogBeamMicroservices, Warning, TEXT("Target for service is not available. BEAMO_ID=%s, ROUTING_KEY=%s"), *BeamoId, *LocalMicroservice->CurrentTarget);
+		UE_LOG(LogBeamEditorMs, Warning, TEXT("Target for service is not available. BEAMO_ID=%s, ROUTING_KEY=%s"), *BeamoId, *LocalMicroservice->CurrentTarget);
 		return false;
 	}
 
@@ -234,7 +234,7 @@ bool UBeamMicroservicesEditor::OpenMongoExpress(FString BeamoId)
 	const auto LocalMicroservice = LocalMicroserviceData.Find(BeamoId);
 	if (LocalMicroservice->ServiceType != MicroStorage)
 	{
-		UE_LOG(LogBeamMicroservices, Warning, TEXT("Service is not a Storage. BEAMO_ID=%s"), *BeamoId);
+		UE_LOG(LogBeamEditorMs, Warning, TEXT("Service is not a Storage. BEAMO_ID=%s"), *BeamoId);
 		return false;
 	}
 
@@ -251,7 +251,7 @@ bool UBeamMicroservicesEditor::ClearMongoLocalData(FString BeamoId)
 	const auto LocalMicroservice = LocalMicroserviceData.Find(BeamoId);
 	if (LocalMicroservice->ServiceType != MicroStorage)
 	{
-		UE_LOG(LogBeamMicroservices, Warning, TEXT("Service is not a Storage. BEAMO_ID=%s"), *BeamoId);
+		UE_LOG(LogBeamEditorMs, Warning, TEXT("Service is not a Storage. BEAMO_ID=%s"), *BeamoId);
 		return false;
 	}
 
@@ -313,7 +313,7 @@ FString UBeamMicroservicesEditor::ConstructRoutingKeyMap()
 		const auto BeamoId = MicroserviceData.Key;
 		if (!IsCurrentRoutingKeyValid(BeamoId))
 		{
-			UE_LOG(LogBeamMicroservices, Error, TEXT("Selected Target is not Valid. SERVICE=%s, TARGET=%s"), *BeamoId, *MicroserviceData.Value.CurrentTarget);
+			UE_LOG(LogBeamEditorMs, Error, TEXT("Selected Target is not Valid. SERVICE=%s, TARGET=%s"), *BeamoId, *MicroserviceData.Value.CurrentTarget);
 			continue;
 		}
 
@@ -343,7 +343,7 @@ void UBeamMicroservicesEditor::OnUpdateLocalStateReceived(const TArray<UBeamCliP
 		// Handle Microservice's being turned on.			
 		if (!LocalMicroserviceData.Contains(Service->Service))
 		{
-			UE_LOG(LogBeamMicroservices, Display, TEXT("Detected microservice. Registering it with the editor. BEAMO_ID=%s"), *BeamoId);
+			UE_LOG(LogBeamEditorMs, Display, TEXT("Detected microservice. Registering it with the editor. BEAMO_ID=%s"), *BeamoId);
 			auto NewServiceDetected = FLocalMicroserviceData{
 				BeamoId, ServiceType, Service->Groups,
 				Stopped,
@@ -499,9 +499,9 @@ void UBeamMicroservicesEditor::SaveFederationProperties(FString ServiceId, FStri
 	Cmd->OnCompleted = [this](const int& ResCode, const FBeamOperationHandle& Op)
 	{
 		if (ResCode != 0)
-			UE_LOG(LogBeamMicroservices, Display, TEXT("Found a problem saving this. Try using the CLI command to run it for more details."))
+			UE_LOG(LogBeamEditorMs, Display, TEXT("Found a problem saving this. Try using the CLI command to run it for more details."))
 		else
-			UE_LOG(LogBeamMicroservices, Display, TEXT("Successfully saved your local settings for this service."))
+			UE_LOG(LogBeamEditorMs, Display, TEXT("Successfully saved your local settings for this service."))
 	};
 
 	Cli->RunCommandServer(Cmd, Params, {});
@@ -521,7 +521,7 @@ void UBeamMicroservicesEditor::DeployMicroservices(const TArray<FString>& Enable
 		const TArray<UBeamCliServicesDeployRemoteProgressStreamData*>& Progress, const TArray<long long>&,
 		const FBeamOperationHandle& Operation)
 		{
-			UE_LOG(LogBeamMicroservices, Display, TEXT("%s"), *Progress.Last()->BeamoId);
+			UE_LOG(LogBeamEditorMs, Display, TEXT("%s"), *Progress.Last()->BeamoId);
 			RequestTracker->TriggerOperationEvent(Operation, OET_SUCCESS, FName("MICROSERVICE_REMOTE_DEPLOY_UPDATE"), Progress.Last()->BeamoId);
 		};
 
@@ -589,7 +589,7 @@ void UBeamMicroservicesEditor::RunDockerMicroservices(const TArray<FString>& Bea
 	const auto ServicesDeploy = NewObject<UBeamCliServicesRunCommand>();
 	ServicesDeploy->OnStreamOutput = [](const TArray<UBeamCliServicesRunStreamData*>& Result, const TArray<long long>&, const FBeamOperationHandle&)
 	{
-		UE_LOG(LogBeamMicroservices, Display, TEXT("%s"), Result.Last()->Success ? TEXT("success") : TEXT("failure"));
+		UE_LOG(LogBeamEditorMs, Display, TEXT("%s"), Result.Last()->Success ? TEXT("success") : TEXT("failure"));
 	};
 
 	ServicesDeploy->OnLocalProgressStreamOutput = [this](
@@ -792,7 +792,21 @@ void UBeamMicroservicesEditor::AppendToLogs(FLocalMicroserviceData* RunningServi
 
 	RunningService->Logs.Append(Log);
 
-	OnLocalMicroserviceUpdate.Broadcast();
+	for (const auto& NewLog : Log)
+	{
+		if (NewLog->LogLevel.Contains("err"))
+		{
+			UE_LOG(LogBeamMs, Error, TEXT("%s"), *NewLog->Message);
+		}
+		else if (NewLog->LogLevel.Contains("warn"))
+		{
+			UE_LOG(LogBeamMs, Warning, TEXT("%s"), *NewLog->Message);
+		}
+		else
+		{
+			UE_LOG(LogBeamMs, Display, TEXT("%s"), *NewLog->Message);
+		}
+	}
 }
 
 void UBeamMicroservicesEditor::StopLogTail(FLocalMicroserviceData* RunningService)
