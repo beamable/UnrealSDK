@@ -92,6 +92,12 @@ struct FLocalMicroserviceData
 	TArray<FString> ServiceGroups;
 
 	/**
+	 * List of microstorages (if any) on which this service depends.
+	 */
+	UPROPERTY()
+	TArray<FString> Storages;
+
+	/**
 	 * The current local running state of the service. This only reflects the local running state of the service.
 	 * If its running remotely or not, is not captured by this variable.
 	 */
@@ -152,6 +158,9 @@ public:
 
 	UPROPERTY(BlueprintReadOnly)
 	TArray<FString> ServiceGroups;
+
+	UPROPERTY(BlueprintReadOnly)
+	TArray<FString> Storages;
 
 	UPROPERTY(BlueprintReadOnly)
 	TArray<FString> AvailableTargets;

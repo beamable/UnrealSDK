@@ -192,6 +192,7 @@ bool UBeamMicroservicesEditor::TryGetFilteredListOfServices(TArray<FString> Incl
 			ServiceView->RunningState = MicroserviceData.Value.RunningState;
 			ServiceView->ServiceGroups = MicroserviceData.Value.ServiceGroups;
 			ServiceView->ServiceType = MicroserviceData.Value.ServiceType;
+			ServiceView->Storages = MicroserviceData.Value.Storages;
 
 			MicroserviceData.Value.TargetsToRoutingKeys.GetKeys(ServiceView->AvailableTargets);
 			ServiceView->LocalTarget = LocalTarget;
@@ -361,7 +362,7 @@ void UBeamMicroservicesEditor::OnUpdateLocalStateReceived(const TArray<UBeamCliP
 		{
 			UE_LOG(LogBeamEditorMs, Display, TEXT("Detected microservice. Registering it with the editor. BEAMO_ID=%s"), *BeamoId);
 			auto NewServiceDetected = FLocalMicroserviceData{
-				BeamoId, ServiceType, Service->Groups,
+				BeamoId, ServiceType, Service->Groups, Service->Storages,
 				Stopped,
 				false,
 				{},
@@ -627,9 +628,56 @@ void UBeamMicroservicesEditor::ExportDockerCompose(const FBeamOperationHandle& O
 		}
 	};
 
-	// Handle completing the operation
-	ExportDockerCompose->OnCompleted = [this, OutputPath](const int& ResultCode, const FBeamOperationHandle& Operation)
+	auto ProgressMap = new TMap<FString, float>();
+	*ProgressMap = {};
+	
+	ExportDockerCompose->OnProgressStreamOutput= [ProgressMap](const TArray<UBeamCliDeploymentPlanProgressStreamData*>& Data, const TArray<long long>& , const FBeamOperationHandle& )
 	{
+		for (const auto& StreamData : Data)
+		{
+			if (!StreamData->ServiceName.IsEmpty())
+			{
+				if (!ProgressMap->Contains(StreamData->ServiceName))
+				{
+					ProgressMap->Add( StreamData->ServiceName, StreamData->Ratio);
+					UE_LOG(LogBeamEditorMs, Display, TEXT("%s => %f"), *StreamData->ServiceName, StreamData->Ratio);
+				}
+				else
+				{
+					const auto PrevProgress = (*ProgressMap)[StreamData->ServiceName];
+					const auto NewProgress = FMath::Max(PrevProgress, StreamData->Ratio);
+					(*ProgressMap)[StreamData->ServiceName] = NewProgress;
+					if (NewProgress > PrevProgress)
+					{
+						UE_LOG(LogBeamEditorMs, Display, TEXT("%s => %f"), *StreamData->ServiceName, NewProgress);
+					}
+				}
+			}
+			else
+			{
+				if (!ProgressMap->Contains(StreamData->Name))
+				{
+					ProgressMap->Add( StreamData->Name, StreamData->Ratio);
+					UE_LOG(LogBeamEditorMs, Display, TEXT("%s => %f"), *StreamData->Name, StreamData->Ratio);
+				}
+				else
+				{
+					const auto PrevProgress = (*ProgressMap)[StreamData->Name];
+					const auto NewProgress = FMath::Max(PrevProgress, StreamData->Ratio);
+					(*ProgressMap)[StreamData->Name] = NewProgress;
+					if (NewProgress > PrevProgress)
+					{
+						UE_LOG(LogBeamEditorMs, Display, TEXT("%s => %f"), *StreamData->Name, NewProgress);
+					}
+				}
+			}
+		}		
+	};
+
+	// Handle completing the operation
+	ExportDockerCompose->OnCompleted = [this, OutputPath, ProgressMap](const int& ResultCode, const FBeamOperationHandle& Operation)
+	{
+		delete ProgressMap;
 		if (ResultCode == 0)
 		{
 			UE_LOG(LogBeamEditorMs, Display, TEXT("Docker Compose project exported to: %s"), *OutputPath)
