@@ -16,6 +16,7 @@
 
 #include "Subsystems/BeamEditorSubsystem.h"
 #include "Misc/MessageDialog.h"
+#include "OTEL/FOtelLogListener.h"
 #include "PIE/BeamPIEConfig.h"
 #include "PIE/BeamPIE_Settings.h"
 #include "Subsystems/EditorAssetSubsystem.h"
@@ -106,6 +107,13 @@ void UBeamEditor::Initialize(FSubsystemCollectionBase& Collection)
 
 	GEngine->GetEngineSubsystem<UBeamEnvironment>()->OnRefreshBackendAsset.BindUObject(this, &UBeamEditor::PullEnvironmentRouteConfig);
 
+	// Add the listener to all logs 
+	static TSharedPtr<FOtelLogListener> OtelLogListener = MakeShared<FOtelLogListener>();
+	if (GLog)
+	{
+		GLog->AddOutputDevice(OtelLogListener.Get());
+	}
+	
 	// Make sure we have a window message object...
 	ClearBeamableWindowMessage();
 }
