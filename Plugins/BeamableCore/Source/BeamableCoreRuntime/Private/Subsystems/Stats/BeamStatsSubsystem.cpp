@@ -750,7 +750,7 @@ FBeamRequestContext UBeamStatsSubsystem::RequestSetStats(const FUserSlot& UserSl
 	ensureAlwaysMsgf(UserSlots->GetUserDataAtSlot(UserSlot, RealmUser, this), TEXT("You must only call this function with an authenticated UserSlot"));
 
 	const auto StatsType = UBeamStatsTypeLibrary::MakeStatsType(Client, Public, RealmUser.GamerTag);
-	const auto Req = UPostClientRequest::Make(StatsType, FOptionalBool{}, FOptionalBeamStatsType{}, FOptionalMapOfString{Stats}, FOptionalMapOfString{}, GetTransientPackage(), {});
+	const auto Req = UPostClientRequest::Make(StatsType, FOptionalBool{}, FOptionalBeamStatsType{StatsType}, FOptionalMapOfString{Stats}, FOptionalMapOfString{}, GetTransientPackage(), {});
 	FBeamRequestContext Ctx;
 	StatsApi->CPP_PostClient(UserSlot, Req, Handler, Ctx, Op, this);
 	return Ctx;

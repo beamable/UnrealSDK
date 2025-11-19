@@ -5,6 +5,8 @@
 
 #include "BeamEditorSettings.h"
 #include "EditorUtilityWidgetBlueprint.h"
+#include "Framework/Notifications/NotificationManager.h"
+#include "Widgets/Notifications/SNotificationList.h"
 
 
 UEditorUtilityWidget* UBeamableEditorBlueprintLibrary::StartEditorWidget(UWidgetBlueprint* Blueprint)
@@ -51,4 +53,24 @@ bool UBeamableEditorBlueprintLibrary::GetRunningPIEWorld(UWorld*& PIEWorld)
 void UBeamableEditorBlueprintLibrary::CopyToClipboard(FString Text)
 {
 	FPropertyEditorClipboard::ClipboardCopy(*Text);
+}
+
+void UBeamableEditorBlueprintLibrary::ShowNotification(FString Title, FText Body, const FSlateBrush& Icon, float ExpireDuration, float FadeOutDuration)
+{
+	// Create and send the notification
+	FNotificationInfo Info{FText::FromString(Title)};
+	Info.SubText = Body;
+
+	//Set a default expire duration and other parameters
+	Info.ExpireDuration = ExpireDuration;
+	Info.FadeOutDuration = FadeOutDuration;
+
+	// Set the icon
+	Info.Image = &Icon;
+
+	// We always show this at the top level.
+	Info.ForWindow = FSlateApplication::Get().GetActiveTopLevelWindow();
+
+	//And call Add Notification, this is pretty much it!
+	FSlateNotificationManager::Get().AddNotification(Info);
 }

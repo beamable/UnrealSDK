@@ -92,6 +92,12 @@ struct FLocalMicroserviceData
 	TArray<FString> ServiceGroups;
 
 	/**
+	 * List of microstorages (if any) on which this service depends.
+	 */
+	UPROPERTY()
+	TArray<FString> Storages;
+
+	/**
 	 * The current local running state of the service. This only reflects the local running state of the service.
 	 * If its running remotely or not, is not captured by this variable.
 	 */
@@ -152,6 +158,9 @@ public:
 
 	UPROPERTY(BlueprintReadOnly)
 	TArray<FString> ServiceGroups;
+
+	UPROPERTY(BlueprintReadOnly)
+	TArray<FString> Storages;
 
 	UPROPERTY(BlueprintReadOnly)
 	TArray<FString> AvailableTargets;
@@ -245,12 +254,12 @@ public:
 	 * @brief Builds and runs the current Microservice project(s) locally, in Docker.  
 	 */
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Editor|Microservice", meta=(AutoCreateRefTerm="BeamoIds"))
-	FBeamOperationHandle RunLocalMicroservicesOperation(const TArray<FString>& BeamoIds, bool bUseDocker, const FBeamOperationEventHandler& OnOperationEvent);
+	FBeamOperationHandle RunLocalMicroservicesOperation(const TArray<FString>& BeamoIds, const FBeamOperationEventHandler& OnOperationEvent);
 
 	/**
 	 * @brief Builds and runs the current Microservice project(s) locally, in Docker.  
 	 */
-	FBeamOperationHandle CPP_RunLocalMicroservicesOperation(const TArray<FString>& BeamoIds, bool bUseDocker, const FBeamOperationEventHandlerCode& OnOperationEvent);
+	FBeamOperationHandle CPP_RunLocalMicroservicesOperation(const TArray<FString>& BeamoIds, const FBeamOperationEventHandlerCode& OnOperationEvent);
 
 
 	/**
@@ -264,6 +273,17 @@ public:
 	 */
 	FBeamOperationHandle CPP_StopLocalMicroservicesOperation(const TArray<FString>& BeamoIds, const FBeamOperationEventHandlerCode& OnOperationEvent);
 
+
+	/**
+	 * @brief This generates a Docker-Compose project inside the Intermediate folder which can then be run with docker manually.  
+	 */
+	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Editor|Microservice")
+	FBeamOperationHandle ExportDockerComposeOperation(const FBeamOperationEventHandler& OnOperationEvent);
+
+	/**
+	 * @brief This generates a Docker-Compose project inside the Intermediate folder which can then be run with docker manually.  
+	 */
+	FBeamOperationHandle CPP_ExportDockerComposeOperation(const FBeamOperationEventHandlerCode& OnOperationEvent);
 
 	/**
 	 * Gets a list of filtered services, by group name and running status.
@@ -325,12 +345,11 @@ public:
 protected:
 	void DeployMicroservices(const TArray<FString>& EnableBeamoIds, const TArray<FString>& DisableBeamoIds, const FBeamOperationHandle& Op) const;
 
-	void RunHostMicroservices(const TArray<FString>& BeamoIds, const FBeamOperationHandle& Op);
-	void RunDockerMicroservices(const TArray<FString>& BeamoIds, const FBeamOperationHandle& Op);
+	void RunHostMicroservices(const TArray<FString>& BeamoIds, const FBeamOperationHandle& Op);	
 	void RunStorageObject(const TArray<FString>& BeamoIds, const FBeamOperationHandle& Op);
-
 	void StopHostMicroservices(const TArray<FString>& BeamoIds, const FBeamOperationHandle& Op);
-	void StopDockerMicroservices(const TArray<FString>& BeamoIds, const FBeamOperationHandle& Op);
+
+	void ExportDockerCompose(const FBeamOperationHandle& Op);
 
 	// This is how we actually keep Local Microservice State in sync
 	void OnUpdateLocalStateReceived(const TArray<UBeamCliProjectPsStreamData*>& Stream, const TArray<long long>&, const FBeamOperationHandle&);

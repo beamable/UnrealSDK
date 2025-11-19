@@ -31,4 +31,12 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category="Beam|Editor")
 	static void CopyToClipboard(FString Text);
+
+	
+	/**
+	 * @brief Shows a UE notification with the given Title, Body and Icon.
+	 */
+	UFUNCTION(BlueprintCallable, Category="Beam", meta=(AdvancedDisplay="ExpireDuration,FadeOutDuration"))
+	static void ShowNotification(FString Title, FText Body, const FSlateBrush& Icon, float ExpireDuration = 20.0f, float FadeOutDuration = 2.0f);
+
 };

@@ -26,6 +26,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<FString> Groups = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<FString> Storages = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<UServicesForRouteCollectionStreamData*> AvailableRoutes = {};
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
@@ -33,6 +35,7 @@ public:
 		UBeamJsonUtils::SerializeRawPrimitive(TEXT("service"), Service, Serializer);
 		UBeamJsonUtils::SerializeRawPrimitive(TEXT("serviceType"), ServiceType, Serializer);
 		UBeamJsonUtils::SerializeArray<FString>(TEXT("groups"), Groups, Serializer);
+		UBeamJsonUtils::SerializeArray<FString>(TEXT("storages"), Storages, Serializer);
 		UBeamJsonUtils::SerializeArray<UServicesForRouteCollectionStreamData*>(TEXT("availableRoutes"), AvailableRoutes, Serializer);	
 	}
 
@@ -41,6 +44,7 @@ public:
 		UBeamJsonUtils::SerializeRawPrimitive(TEXT("service"), Service, Serializer);
 		UBeamJsonUtils::SerializeRawPrimitive(TEXT("serviceType"), ServiceType, Serializer);
 		UBeamJsonUtils::SerializeArray<FString>(TEXT("groups"), Groups, Serializer);
+		UBeamJsonUtils::SerializeArray<FString>(TEXT("storages"), Storages, Serializer);
 		UBeamJsonUtils::SerializeArray<UServicesForRouteCollectionStreamData*>(TEXT("availableRoutes"), AvailableRoutes, Serializer);	
 	}
 
@@ -49,6 +53,7 @@ public:
 		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("service"), Bag, Service);
 		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("serviceType"), Bag, ServiceType);
 		UBeamJsonUtils::DeserializeArray<FString>(TEXT("groups"), Bag, Groups, OuterOwner);
+		UBeamJsonUtils::DeserializeArray<FString>(TEXT("storages"), Bag, Storages, OuterOwner);
 		UBeamJsonUtils::DeserializeArray<UServicesForRouteCollectionStreamData*>(TEXT("availableRoutes"), Bag, AvailableRoutes, OuterOwner);	
 	}
 };
