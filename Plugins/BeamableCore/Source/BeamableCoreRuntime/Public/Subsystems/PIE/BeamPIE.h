@@ -18,6 +18,7 @@
 #include "GameFramework/GameModeBase.h"
 #include "Kismet/GameplayStatics.h"
 #include "PIE/BeamPIE_Utilities.h"
+#include "OTEL/BeamOtel_Utilities.h"
 #include "Subsystems/Content/BeamContentSubsystem.h"
 
 #if WITH_EDITOR
@@ -632,7 +633,7 @@ public:
 						// TODO: Allow users to define a hook operation that can initialize other things (steam, etc...) BEFORE we do this --- so that they can use that UniqueNetId instead.
 						// For now, BeamPIE requires "bUseBeamableGamerTagsAsUniqueNetIds" to be "true".
 
-						UE_BEAM_LOG(WorldContext, LogBeamEditor, Warning,
+						UE_BEAM_LOG_PIE(WorldContext, LogBeamEditor, Warning,
 						            TEXT("If you are not using Beamable GamerTags as UniqueNetIds because you want to use something else as the UniqueId,"
 							            " you need to either configure NetIds manually in the play settings OR"
 							            " set up the AcceptUserIntoGameServer flow so we can keep the mapping between UniqueNetIds and GamerTags.\n"
@@ -650,7 +651,7 @@ public:
 				if (!IsValidContext(WorldContext)) return;
 				
 				// Find the name of the current map and compare
-				UE_BEAM_LOG(WorldContext, LogBeamEditor, Log, TEXT("Beamable SDK Initialized"));
+				UE_BEAM_LOG_PIE(WorldContext, LogBeamEditor, Log, TEXT("Beamable SDK Initialized"));
 				PreparePIE_ApplySelectedSettings(WorldContext, Op);
 
 				// Clean up the OnStarted handle that triggers PIE things...
@@ -880,7 +881,7 @@ public:
 					}
 					else
 					{
-						UE_BEAM_LOG(WorldContext, LogBeamEditor, Warning,
+						UE_BEAM_LOG_PIE(WorldContext, LogBeamEditor, Warning,
 						            TEXT("If you are not using Beamable GamerTags as UniqueNetIds because you want to use something else as the UniqueId,"
 							            " you need to either configure NetIds manually in the play settings OR"
 							            " set up the AcceptUserIntoGameServer flow so we can keep the mapping between UniqueNetIds and GamerTags.\n"
@@ -1269,7 +1270,7 @@ private:
 
 		if (bAreAllUsersAlreadyLoggedIn)
 		{
-			UE_BEAM_LOG(WorldContext, LogBeamEditor, Log, TEXT("Completed Wait until all Login Operation right away"));
+			UE_BEAM_LOG_PIE(WorldContext, LogBeamEditor, Log, TEXT("Completed Wait until all Login Operation right away"));
 			RequestTracker->TriggerOperationSuccess(Op, TEXT(""));
 		}
 		else

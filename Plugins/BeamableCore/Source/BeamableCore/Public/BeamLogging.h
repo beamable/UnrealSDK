@@ -32,8 +32,44 @@ BEAMABLECORE_API DECLARE_LOG_CATEGORY_EXTERN(LogBeamFriend, Log, All);
 
 BEAMABLECORE_API DECLARE_LOG_CATEGORY_EXTERN(LogBeamCli, Log, All);
 
-#define UE_BEAM_LOG(Context, CategoryName, Verbosity, Format, ...) \
+#define UE_BEAM_LOG_PIE(Context, CategoryName, Verbosity, Format, ...) \
 { \
 	UE_LOG(CategoryName, Verbosity, TEXT("%s - %s"), \
 		*FBeamPIE_Utilities::BeamLogFormat(Context), *FString::Printf(Format, ##__VA_ARGS__)); \
+	BeamOtelLog(FString::Printf(TEXT("%s - %s"), *FBeamPIE_Utilities::BeamLogFormat(Context), *FString::Printf(Format, ##__VA_ARGS__)), ELogVerbosity::Verbosity); \
 }
+
+#define UE_BEAM_LOG(CategoryName, Verbosity, Format, ...) \
+{ \
+	UE_LOG(CategoryName, Verbosity, Format, ##__VA_ARGS__); \
+	BeamOtelLog(FString::Printf(TEXT("%s - %s"), *FBeamPIE_Utilities::BeamLogFormat(Context), *FString::Printf(Format, ##__VA_ARGS__)), ELogVerbosity::Verbosity); \
+}
+
+DECLARE_DELEGATE_ThreeParams(FOnBeamLogging, FString, FString, FString);
+
+static FOnBeamLogging BeamLoggingMessageHook;
+
+static FString GetOtelLogVerbosityString(ELogVerbosity::Type Verbosity)
+{
+	switch (Verbosity)
+	{
+	case ELogVerbosity::NoLogging: return TEXT("None");
+	case ELogVerbosity::Fatal: return TEXT("Critical");
+	case ELogVerbosity::Error: return TEXT("Error");
+	case ELogVerbosity::Warning: return TEXT("Warning");
+	case ELogVerbosity::Display: return TEXT("Information");
+	case ELogVerbosity::Log: return TEXT("Debug");
+	case ELogVerbosity::Verbose: return TEXT("Information");
+	case ELogVerbosity::VeryVerbose: return TEXT("Information");
+	default: return TEXT("None");
+	}
+}
+
+static void BeamOtelLog(const FString& Message, ELogVerbosity::Type VerbosityLevel)
+{
+	ANSICHAR StackTrace[65536];
+	FPlatformStackWalk::StackWalkAndDump(StackTrace, UE_ARRAY_COUNT(StackTrace), 0);
+		
+	BeamLoggingMessageHook.ExecuteIfBound(Message, StackTrace, GetOtelLogVerbosityString(VerbosityLevel));
+}
+

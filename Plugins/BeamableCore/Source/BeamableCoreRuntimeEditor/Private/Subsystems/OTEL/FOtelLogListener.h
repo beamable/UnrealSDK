@@ -5,6 +5,7 @@
 class FOtelLogListener : public FOutputDevice
 {
 public:
+
 	virtual void Serialize(const TCHAR* V, ELogVerbosity::Type Verbosity, const FName& Category) override
 	{
 		FString Message(V);
@@ -13,10 +14,13 @@ public:
 		FString CategoryString = Category.ToString();
 
 #if WITH_EDITOR
-		if (Message.Contains("beamable") || CategoryString.Contains("beam"))
+		
+		if ((Message.Contains("beamable") || Message.Contains("beam")) && Verbosity <= ELogVerbosity::Warning)
 		{
-			GEditor->GetEditorSubsystem<UBeamOTELManagerEditor>()->OtelAddLog(Message, "", VerbosityString);
-			// UE_LOG(LogTemp, Warning, TEXT("Intercepted log: [%s] %s - %s"), TEXT(""), *CategoryString, *Message);
+			ANSICHAR StackTrace[65536];
+			FPlatformStackWalk::StackWalkAndDump(StackTrace, UE_ARRAY_COUNT(StackTrace), 0);
+
+			GEditor->GetEditorSubsystem<UBeamOTELManagerEditor>()->OtelAddLog(Message, ANSI_TO_TCHAR(StackTrace), VerbosityString);
 		}
 #endif
 	}
