@@ -13,6 +13,8 @@ void UBeamOTELManagerEditor::Initialize(FSubsystemCollectionBase& Collection)
 	
 	UnrealOtelLogsFolder = FPaths::Combine(FPaths::EngineSavedDir(), TEXT("Beamable"), TEXT("BeamableOtelLogs"));
 	
+	FBeamLogging::BeamLoggingMessageHook.AddUObject(this, &UBeamOTELManagerEditor::OtelAddLog);
+	
 	TickerHandle = FTSTicker::GetCoreTicker().AddTicker(
 	  FTickerDelegate::CreateUObject(this, &UBeamOTELManagerEditor::ReportOtelLogsEachMinute),
 	  0.1f

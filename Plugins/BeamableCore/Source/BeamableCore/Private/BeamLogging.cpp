@@ -22,3 +22,5 @@ DEFINE_LOG_CATEGORY(LogBeamParty);
 DEFINE_LOG_CATEGORY(LogBeamFriend);
 
 DEFINE_LOG_CATEGORY(LogBeamCli);
+
+FOnBeamLogging FBeamLogging::BeamLoggingMessageHook;

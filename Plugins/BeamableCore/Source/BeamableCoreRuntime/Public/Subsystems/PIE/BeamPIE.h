@@ -18,7 +18,6 @@
 #include "GameFramework/GameModeBase.h"
 #include "Kismet/GameplayStatics.h"
 #include "PIE/BeamPIE_Utilities.h"
-#include "OTEL/BeamOtel_Utilities.h"
 #include "Subsystems/Content/BeamContentSubsystem.h"
 
 #if WITH_EDITOR

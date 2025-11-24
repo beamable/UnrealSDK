@@ -423,7 +423,7 @@ public:
 	                                const FBeamRetryConfig& RetryConfig, const TRequestData* RequestData)
 	{
 		StaticCheckForRequestType<TRequestData>();
-		UE_LOG(LogBeamBackend, Verbose, TEXT("Request Preparation - Preparing Request of Type: REQUEST_TYPE=%s"), *RequestData->GetRequestType().Name);
+		UE_BEAM_LOG(LogBeamBackend, Verbose, TEXT("Request Preparation - Preparing Request of Type: REQUEST_TYPE=%s"), *RequestData->GetRequestType().Name);
 
 		// Ensures we get a valid Next Id even if requests get made from multiple threads.
 		int64 ReqId;
@@ -467,7 +467,7 @@ public:
 	                                            const FBeamRetryConfig& RetryConfig, const TRequestData* RequestData, const FString& Prefix)
 	{
 		StaticCheckForRequestType<TRequestData>();
-		UE_LOG(LogBeamBackend, Verbose, TEXT("Request Preparation - Preparing Request of Type: REQUEST_TYPE=%s"), *RequestData->GetRequestType().Name);
+		UE_BEAM_LOG(LogBeamBackend, Verbose, TEXT("Request Preparation - Preparing Request of Type: REQUEST_TYPE=%s"), *RequestData->GetRequestType().Name);
 
 		// Ensures we get a valid Next Id even if requests get made from multiple threads.
 		int64 ReqId;
@@ -511,7 +511,7 @@ public:
 	                                             const TRequestData* RequestData)
 	{
 		StaticCheckForRequestType<TRequestData>();
-		UE_LOG(LogBeamBackend, Verbose, TEXT("Request Preparation - Preparing Request of Type: REQUEST_TYPE=%s"), *RequestData->GetRequestType().Name);
+		UE_BEAM_LOG(LogBeamBackend, Verbose, TEXT("Request Preparation - Preparing Request of Type: REQUEST_TYPE=%s"), *RequestData->GetRequestType().Name);
 
 		// Get information about the user making the request
 		FUserSlot OutUserSlot;
@@ -565,7 +565,7 @@ public:
 	                                                         const FString& Prefix)
 	{
 		StaticCheckForRequestType<TRequestData>();
-		UE_LOG(LogBeamBackend, Verbose, TEXT("Request Preparation - Preparing Request of Type: REQUEST_TYPE=%s"), *RequestData->GetRequestType().Name);
+		UE_BEAM_LOG(LogBeamBackend, Verbose, TEXT("Request Preparation - Preparing Request of Type: REQUEST_TYPE=%s"), *RequestData->GetRequestType().Name);
 
 		// Get some data about the user making the request
 		FUserSlot OutUserSlot;
@@ -699,7 +699,7 @@ public:
 		Request->SetVerb(Verb);
 		Request->SetContentAsString(Body);
 
-		UE_LOG(LogBeamBackend, Verbose, TEXT("Request Preparation - Verb, Route and Body: VERB=%s ROUTE=%s, BODY=%s"),
+		UE_BEAM_LOG(LogBeamBackend, Verbose, TEXT("Request Preparation - Verb, Route and Body: VERB=%s ROUTE=%s, BODY=%s"),
 		       *Verb, *Route, *Body);
 
 		// Add any custom headers
@@ -708,7 +708,7 @@ public:
 			const auto Header = CustomHeader.Key;
 			const auto Value = CustomHeader.Value;
 			Request->SetHeader(Header, Value);
-			UE_LOG(LogBeamBackend, Verbose, TEXT("Request Preparation - Custom Header: HEADER=%s VALUE=%s"),
+			UE_BEAM_LOG(LogBeamBackend, Verbose, TEXT("Request Preparation - Custom Header: HEADER=%s VALUE=%s"),
 			       *Header, *Value);
 		}
 	}
@@ -758,7 +758,7 @@ public:
 		Request->SetVerb(Verb);
 		Request->SetContentAsString(Body);
 
-		UE_LOG(LogBeamBackend, Verbose, TEXT("Request Preparation - Verb, Route and Body: VERB=%s ROUTE=%s, BODY=%s"),
+		UE_BEAM_LOG(LogBeamBackend, Verbose, TEXT("Request Preparation - Verb, Route and Body: VERB=%s ROUTE=%s, BODY=%s"),
 		       *Verb, *Route, *Body);
 
 		// Add any custom headers
@@ -767,7 +767,7 @@ public:
 			const auto Header = CustomHeader.Key;
 			const auto Value = CustomHeader.Value;
 			Request->SetHeader(Header, Value);
-			UE_LOG(LogBeamBackend, Verbose, TEXT("Request Preparation - Custom Header: HEADER=%s VALUE=%s"),
+			UE_BEAM_LOG(LogBeamBackend, Verbose, TEXT("Request Preparation - Custom Header: HEADER=%s VALUE=%s"),
 			       *Header, *Value);
 		}
 	}
@@ -800,7 +800,7 @@ public:
 		StaticCheckForRequestType<TRequestData>();
 		StaticCheckForResponseType<TResponseData>();
 
-		UE_LOG(LogBeamBackend, Verbose,
+		UE_BEAM_LOG(LogBeamBackend, Verbose,
 		       TEXT("Request Preparation - Processor Preparation: Making Blueprint Un-authenticated Request Processor"));
 
 		// We have to create a WeakObjectPtr to the CallingContext, because once it's captured there's the case where the validation for the running in PIE fails
@@ -827,10 +827,10 @@ public:
 				FString ContentAsString;
 				if (!ExtractDataFromResponse(Request, Response, bWasCompleted, RequestStatus, ResponseCode, ContentAsString))
 				{
-					UE_LOG(LogBeamBackend, Error, TEXT("Beamable Request Failed Parsing Response | REQUEST_ID=%lld, REQUEST_TYPE=%s"), RequestId, *RequestType.Name);
+					UE_BEAM_LOG(LogBeamBackend, Error, TEXT("Beamable Request Failed Parsing Response | REQUEST_ID=%lld, REQUEST_TYPE=%s"), RequestId, *RequestType.Name);
 					return;
 				}
-				UE_LOG(LogBeamBackend, Verbose, TEXT("Beamable Request Parsed Response | REQUEST_ID=%lld, REQUEST_TYPE=%s"), RequestId, *RequestType.Name);
+				UE_BEAM_LOG(LogBeamBackend, Verbose, TEXT("Beamable Request Parsed Response | REQUEST_ID=%lld, REQUEST_TYPE=%s"), RequestId, *RequestType.Name);
 
 				// If it was a success, we try to cache the response.
 				if (IsSuccessfulResponse(ResponseCode))
@@ -897,14 +897,14 @@ public:
 		// If the request was cancelled, we'll only run the OnComplete call 
 		if (InFlightRequestsCancelled.Contains(RequestId))
 		{
-			UE_LOG(LogBeamBackend, Verbose, TEXT("Ignoring Request Response since it was cancelled. REQUEST_ID=%lld"),
+			UE_BEAM_LOG(LogBeamBackend, Verbose, TEXT("Ignoring Request Response since it was cancelled. REQUEST_ID=%lld"),
 			       RequestId);
 
 			// Execute the handler if it's bound.
 			const auto bExecutedCallsiteHandler = OnComplete.ExecuteIfBound(Context, RequestData);
 			if (AlwaysLogCompleteResponses || !bExecutedCallsiteHandler)
 			{
-				UE_LOG(LogBeamBackend, Warning, TEXT("Beamable Request Canceled | REQUEST_ID=%lld, NUM_FAILURES=%d"),
+				UE_BEAM_LOG(LogBeamBackend, Warning, TEXT("Beamable Request Canceled | REQUEST_ID=%lld, NUM_FAILURES=%d"),
 				       RequestId, InFlightFailureCount.FindRef(RequestId));
 			}
 
@@ -942,7 +942,7 @@ public:
 			if (AlwaysLogSuccessResponses || !ExecutedCallsiteHandler)
 			{
 				const auto RequestType = RequestData->GetRequestType();
-				UE_LOG(LogBeamBackend, Verbose,
+				UE_BEAM_LOG(LogBeamBackend, Verbose,
 				       TEXT(
 					       "Beamable Request Successfull | REQUEST_ID=%lld, REQUEST_TYPE=%s, RESPONSE_CODE=%d, NUM_FAILURES=%d, RESPONSE_BODY=%s"
 				       ), RequestId, *RequestType.Name, ResponseCode, CurrFailedCount,
@@ -993,7 +993,7 @@ public:
 			// We log the error only if neither callback was set OR if we are configured to do so.
 			if (AlwaysLogErrorResponses || (!bExecutedGlobalHandler && !ExecutedCallsiteHandler))
 			{
-				UE_LOG(LogBeamBackend, Error,
+				UE_BEAM_LOG(LogBeamBackend, Error,
 				       TEXT(
 					       "Beamable Request Failed | REQUEST_ID=%lld, RESPONSE_CODE=%d, NUM_FAILURES=%d, WILL_RETRY=%s, RESPONSE_BODY=%s"
 				       ), RequestId, ResponseCode,
@@ -1009,7 +1009,7 @@ public:
 			const auto bExecutedCallsiteHandler = OnComplete.ExecuteIfBound(Context, RequestData);
 			if (AlwaysLogCompleteResponses || !bExecutedCallsiteHandler)
 			{
-				UE_LOG(LogBeamBackend, Verbose, TEXT( "Beamable Request Completed | REQUEST_ID=%lld, RESPONSE_CODE=%d, WAS_SUCCESS=%s, NUM_FAILURES=%d" ),
+				UE_BEAM_LOG(LogBeamBackend, Verbose, TEXT( "Beamable Request Completed | REQUEST_ID=%lld, RESPONSE_CODE=%d, WAS_SUCCESS=%s, NUM_FAILURES=%d" ),
 				       RequestId, ResponseCode, bWasSuccess ? TEXT("true") : TEXT("false"), CurrFailedCount);
 			}
 
@@ -1050,7 +1050,7 @@ public:
 		StaticCheckForRequestType<TRequestData>();
 		StaticCheckForResponseType<TResponseData>();
 
-		UE_LOG(LogBeamBackend, Verbose,
+		UE_BEAM_LOG(LogBeamBackend, Verbose,
 		       TEXT("Request Preparation - Processor Preparation: Making Blueprint Authenticated Request Processor"));
 
 		// We have to create a WeakObjectPtr to the CallingContext, because once it's captured there's the case where the validation for the running in PIE fails
@@ -1077,10 +1077,10 @@ public:
 				FString ContentAsString;
 				if (!ExtractDataFromResponse(Request, Response, bWasCompleted, RequestStatus, ResponseCode, ContentAsString))
 				{
-					UE_LOG(LogBeamBackend, Error, TEXT("Beamable Request Failed Parsing Response | REQUEST_ID=%lld, REQUEST_TYPE=%s"), RequestId, *RequestType.Name);
+					UE_BEAM_LOG(LogBeamBackend, Error, TEXT("Beamable Request Failed Parsing Response | REQUEST_ID=%lld, REQUEST_TYPE=%s"), RequestId, *RequestType.Name);
 					return;
 				}
-				UE_LOG(LogBeamBackend, Verbose, TEXT("Beamable Request Parsed Response | REQUEST_ID=%lld, REQUEST_TYPE=%s"), RequestId, *RequestType.Name);
+				UE_BEAM_LOG(LogBeamBackend, Verbose, TEXT("Beamable Request Parsed Response | REQUEST_ID=%lld, REQUEST_TYPE=%s"), RequestId, *RequestType.Name);
 
 				// If it was a success, we try to cache the response.
 				if (IsSuccessfulResponse(ResponseCode))
@@ -1163,14 +1163,14 @@ public:
 		// If the request was cancelled, we'll only run the OnComplete call 
 		if (InFlightRequestsCancelled.Contains(RequestId))
 		{
-			UE_LOG(LogBeamBackend, Verbose, TEXT("Ignoring Request Response since it was cancelled. REQUEST_ID=%lld"),
+			UE_BEAM_LOG(LogBeamBackend, Verbose, TEXT("Ignoring Request Response since it was cancelled. REQUEST_ID=%lld"),
 			       RequestId);
 
 			// Execute the handler if it's bound.		
 			const auto bExecutedCallsiteHandler = OnComplete.ExecuteIfBound(Context, RequestData);
 			if (AlwaysLogCompleteResponses || !bExecutedCallsiteHandler)
 			{
-				UE_LOG(LogBeamBackend, Warning,
+				UE_BEAM_LOG(LogBeamBackend, Warning,
 				       TEXT("Beamable Request Canceled | REQUEST_ID=%lld, USER_SLOT=%s, NUM_FAILURES=%d"),
 				       RequestId, bWasMadeWithUserSlot ? *UserSlot.Name : *FString(TEXT("Made Without UserSlot")),
 				       InFlightFailureCount.FindRef(RequestId));
@@ -1211,7 +1211,7 @@ public:
 			if (AlwaysLogSuccessResponses || !ExecutedCallsiteHandler)
 			{
 				const auto RequestType = RequestData->GetRequestType();
-				UE_LOG(LogBeamBackend, Verbose, TEXT( "Beamable Request Successfull | REQUEST_ID=%lld, REQUEST_TYPE=%s, USER_SLOT=%s, RESPONSE_CODE=%d, NUM_FAILURES=%d, RESPONSE_BODY=%s" ),
+				UE_BEAM_LOG(LogBeamBackend, Verbose, TEXT( "Beamable Request Successfull | REQUEST_ID=%lld, REQUEST_TYPE=%s, USER_SLOT=%s, RESPONSE_CODE=%d, NUM_FAILURES=%d, RESPONSE_BODY=%s" ),
 				       RequestId, *RequestType.Name, bWasMadeWithUserSlot ? *UserSlot.Name : TEXT("Made Without UserSlot"), ResponseCode, CurrFailedCount, *ContentAsString);
 			}
 		}
@@ -1268,7 +1268,7 @@ public:
 				// We log the error only if neither callback was set OR if we are configured to do so.
 				if (AlwaysLogErrorResponses || (!bExecutedGlobalHandler && !ExecutedCallsiteHandler))
 				{
-					UE_LOG(LogBeamBackend, Error,
+					UE_BEAM_LOG(LogBeamBackend, Error,
 					       TEXT(
 						       "Beamable Request Failed | REQUEST_ID=%lld, USER_SLOT=%s, RESPONSE_CODE=%d, NUM_FAILURES=%d, WILL_RETRY=%s, RESPONSE_BODY=%s"
 					       ),
@@ -1286,7 +1286,7 @@ public:
 			const auto bExecutedCallsiteHandler = OnComplete.ExecuteIfBound(Context, RequestData);
 			if (AlwaysLogCompleteResponses || !bExecutedCallsiteHandler)
 			{
-				UE_LOG(LogBeamBackend, Verbose, TEXT( "Beamable Request Completed | REQUEST_ID=%lld, USER_SLOT=%s, RESPONSE_CODE=%d, WAS_SUCCESS=%s, NUM_FAILURES=%d" ),
+				UE_BEAM_LOG(LogBeamBackend, Verbose, TEXT( "Beamable Request Completed | REQUEST_ID=%lld, USER_SLOT=%s, RESPONSE_CODE=%d, WAS_SUCCESS=%s, NUM_FAILURES=%d" ),
 				       RequestId, bWasMadeWithUserSlot ? *UserSlot.Name : TEXT("Made Without UserSlot"), ResponseCode, bWasSuccess ? TEXT("true") : TEXT("false"), CurrFailedCount);
 			}
 
@@ -1317,7 +1317,7 @@ public:
 		StaticCheckForRequestType<TRequestData>();
 		StaticCheckForResponseType<TResponseData>();
 
-		UE_LOG(LogBeamBackend, Verbose,
+		UE_BEAM_LOG(LogBeamBackend, Verbose,
 		       TEXT("Request Preparation - Processor Preparation: Making Code Un-authenticated Request Processor"));
 
 		// We have to create a WeakObjectPtr to the CallingContext, because once it's captured there's the case where the validation for the running in PIE fails
@@ -1344,10 +1344,10 @@ public:
 				FString ContentAsString;
 				if (!ExtractDataFromResponse(Request, Response, bWasCompleted, RequestStatus, ResponseCode, ContentAsString))
 				{
-					UE_LOG(LogBeamBackend, Error, TEXT("Beamable Request Failed Parsing Response | REQUEST_ID=%lld, REQUEST_TYPE=%s"), RequestId, *RequestType.Name);
+					UE_BEAM_LOG(LogBeamBackend, Error, TEXT("Beamable Request Failed Parsing Response | REQUEST_ID=%lld, REQUEST_TYPE=%s"), RequestId, *RequestType.Name);
 					return;
 				}
-				UE_LOG(LogBeamBackend, Verbose, TEXT("Beamable Request Parsed Response | REQUEST_ID=%lld, REQUEST_TYPE=%s"), RequestId, *RequestType.Name);
+				UE_BEAM_LOG(LogBeamBackend, Verbose, TEXT("Beamable Request Parsed Response | REQUEST_ID=%lld, REQUEST_TYPE=%s"), RequestId, *RequestType.Name);
 
 				// If it was a success, we try to cache the response.
 				if (IsSuccessfulResponse(ResponseCode))
@@ -1491,7 +1491,7 @@ public:
 			if (AlwaysLogErrorResponses || (!bExecutedCallsiteHandler && !bRanGlobalHandlers))
 			{
 				const auto RequestType = RequestData->GetRequestType();
-				UE_LOG(LogBeamBackend, Error, TEXT( "Beamable Request Failed - Retrying | REQUEST_ID=%lld, REQUEST_TYPE=%s, RESPONSE_CODE=%d, NUM_FAILURES=%d, WILL_RETRY=%s, RESPONSE_BODY=%s" ),
+				UE_BEAM_LOG(LogBeamBackend, Error, TEXT( "Beamable Request Failed - Retrying | REQUEST_ID=%lld, REQUEST_TYPE=%s, RESPONSE_CODE=%d, NUM_FAILURES=%d, WILL_RETRY=%s, RESPONSE_BODY=%s" ),
 				       RequestId, *RequestType.Name, ResponseCode, CurrFailedCount, bWillRetry ? TEXT("true") : TEXT("false"), *ContentAsString);
 			}
 		}
@@ -1504,26 +1504,26 @@ public:
 				// We only log the response for code if we are configured to always run it.
 				if (AlwaysLogSuccessResponses && FullResponse.State == RS_Success)
 				{
-					UE_LOG(LogBeamBackend, Verbose, TEXT( "Beamable Request Successfull | REQUEST_ID=%lld, REQUEST_TYPE=%s, RESPONSE_CODE=%d, NUM_FAILURES=%d, RESPONSE_BODY=%s" ),
+					UE_BEAM_LOG(LogBeamBackend, Verbose, TEXT( "Beamable Request Successfull | REQUEST_ID=%lld, REQUEST_TYPE=%s, RESPONSE_CODE=%d, NUM_FAILURES=%d, RESPONSE_BODY=%s" ),
 					       RequestId, *RequestType.Name, ResponseCode, CurrFailedCount, *ContentAsString);
 				}
 
 				// We log the error only if neither callback was set OR if we are configured to do so.
 				if (AlwaysLogErrorResponses && FullResponse.State == RS_Error)
 				{
-					UE_LOG(LogBeamBackend, Error, TEXT( "Beamable Request Failed | REQUEST_ID=%lld, REQUEST_TYPE=%s, RESPONSE_CODE=%d, NUM_FAILURES=%d, RESPONSE_BODY=%s" ),
+					UE_BEAM_LOG(LogBeamBackend, Error, TEXT( "Beamable Request Failed | REQUEST_ID=%lld, REQUEST_TYPE=%s, RESPONSE_CODE=%d, NUM_FAILURES=%d, RESPONSE_BODY=%s" ),
 					       RequestId, *RequestType.Name, ResponseCode, CurrFailedCount, *ContentAsString);
 				}
 
 				const auto bWasSuccess = FullResponse.State == RS_Success;
 				if (FullResponse.State == RS_Cancelled)
 				{
-					UE_LOG(LogBeamBackend, Warning, TEXT("Beamable Request Canceled | REQUEST_ID=%lld, REQUEST_TYPE=%s, WAS_SUCCESS=%s, NUM_FAILURES=%d"),
+					UE_BEAM_LOG(LogBeamBackend, Warning, TEXT("Beamable Request Canceled | REQUEST_ID=%lld, REQUEST_TYPE=%s, WAS_SUCCESS=%s, NUM_FAILURES=%d"),
 					       RequestId, *RequestType.Name, bWasSuccess ? TEXT("true") : TEXT("false"), InFlightFailureCount.FindRef(RequestId));
 				}
 				else
 				{
-					UE_LOG(LogBeamBackend, Verbose, TEXT("Beamable Request Completed | REQUEST_ID=%lld, REQUEST_TYPE=%s, WAS_SUCCESS=%s, NUM_FAILURES=%d"),
+					UE_BEAM_LOG(LogBeamBackend, Verbose, TEXT("Beamable Request Completed | REQUEST_ID=%lld, REQUEST_TYPE=%s, WAS_SUCCESS=%s, NUM_FAILURES=%d"),
 					       RequestId, *RequestType.Name, bWasSuccess ? TEXT("true") : TEXT("false"), InFlightFailureCount.FindRef(RequestId));
 				}
 			}
@@ -1561,7 +1561,7 @@ public:
 		StaticCheckForRequestType<TRequestData>();
 		StaticCheckForResponseType<TResponseData>();
 
-		UE_LOG(LogBeamBackend, Verbose,
+		UE_BEAM_LOG(LogBeamBackend, Verbose,
 		       TEXT("Request Preparation - Processor Preparation: Making Code Authenticated Request Processor"));
 		// We have to create a WeakObjectPtr to the CallingContext, because once it's captured there's the case where the validation for the running in PIE fails
 		// So we check if the RequestData has been collected, if so this is a bad scenario which some one stop the PIE and play very fast. So we discard the
@@ -1587,10 +1587,10 @@ public:
 				FString ContentAsString;
 				if (!ExtractDataFromResponse(Request, Response, bWasCompleted, RequestStatus, ResponseCode, ContentAsString))
 				{
-					UE_LOG(LogBeamBackend, Error, TEXT("Beamable Request Failed Parsing Response | REQUEST_ID=%lld, REQUEST_TYPE=%s"), RequestId, *RequestType.Name);
+					UE_BEAM_LOG(LogBeamBackend, Error, TEXT("Beamable Request Failed Parsing Response | REQUEST_ID=%lld, REQUEST_TYPE=%s"), RequestId, *RequestType.Name);
 					return;
 				}
-				UE_LOG(LogBeamBackend, Verbose, TEXT("Beamable Request Parsed Response | REQUEST_ID=%lld, REQUEST_TYPE=%s"), RequestId, *RequestType.Name);
+				UE_BEAM_LOG(LogBeamBackend, Verbose, TEXT("Beamable Request Parsed Response | REQUEST_ID=%lld, REQUEST_TYPE=%s"), RequestId, *RequestType.Name);
 
 
 				// If it was a success, we try to cache the response.
@@ -1755,7 +1755,7 @@ public:
 				if (AlwaysLogErrorResponses || (!bExecutedCallsiteHandler && !bRanGlobalHandlers))
 				{
 					const auto RequestType = RequestData->GetRequestType();
-					UE_LOG(LogBeamBackend, Error,
+					UE_BEAM_LOG(LogBeamBackend, Error,
 					       TEXT( "Beamable Request Failed - Retrying | REQUEST_ID=%lld, REQUEST_TYPE=%s, USER_SLOT=%s, RESPONSE_CODE=%d, NUM_FAILURES=%d, WILL_RETRY=%s, RESPONSE_BODY=%s" ),
 					       RequestId, *RequestType.Name, *UserSlotLog, ResponseCode, CurrFailedCount, bWillRetry ? TEXT("true") : TEXT("false"), *ContentAsString);
 				}
@@ -1771,14 +1771,14 @@ public:
 				// We only log the response for code if we are configured to always run it.
 				if (AlwaysLogSuccessResponses && FullResponse.State == RS_Success)
 				{
-					UE_LOG(LogBeamBackend, Verbose, TEXT( "Beamable Request Successfull | REQUEST_ID=%lld, REQUEST_TYPE=%s, USER_SLOT=%s, RESPONSE_CODE=%d, NUM_FAILURES=%d, RESPONSE_BODY=%s" ),
+					UE_BEAM_LOG(LogBeamBackend, Verbose, TEXT( "Beamable Request Successfull | REQUEST_ID=%lld, REQUEST_TYPE=%s, USER_SLOT=%s, RESPONSE_CODE=%d, NUM_FAILURES=%d, RESPONSE_BODY=%s" ),
 					       RequestId, *RequestType.Name, *UserSlotLog, ResponseCode, CurrFailedCount, *ContentAsString);
 				}
 
 				// We log the error only if neither callback was set OR if we are configured to do so.
 				if (AlwaysLogErrorResponses && FullResponse.State == RS_Error)
 				{
-					UE_LOG(LogBeamBackend, Error,
+					UE_BEAM_LOG(LogBeamBackend, Error,
 					       TEXT( "Beamable Request Failed | REQUEST_ID=%lld, REQUEST_TYPE=%s, USER_SLOT=%s, RESPONSE_CODE=%d, NUM_FAILURES=%d, WILL_RETRY=%s, RESPONSE_BODY=%s" ),
 					       RequestId, *RequestType.Name, *UserSlotLog, ResponseCode, CurrFailedCount, bWillRetry ? TEXT("true") : TEXT("false"), *ContentAsString);
 				}
@@ -1786,12 +1786,12 @@ public:
 				const auto bWasSuccess = FullResponse.State == RS_Success;
 				if (FullResponse.State == RS_Cancelled)
 				{
-					UE_LOG(LogBeamBackend, Warning, TEXT("Beamable Request Canceled | REQUEST_ID=%lld, REQUEST_TYPE=%s, USER_SLOT=%s, WAS_SUCCESS=%s, NUM_FAILURES=%d" ),
+					UE_BEAM_LOG(LogBeamBackend, Warning, TEXT("Beamable Request Canceled | REQUEST_ID=%lld, REQUEST_TYPE=%s, USER_SLOT=%s, WAS_SUCCESS=%s, NUM_FAILURES=%d" ),
 					       RequestId, *RequestType.Name, *UserSlotLog, bWasSuccess ? TEXT("true") : TEXT("false"), InFlightFailureCount.FindRef(RequestId));
 				}
 				else
 				{
-					UE_LOG(LogBeamBackend, Verbose, TEXT( "Beamable Request Completed | REQUEST_ID=%lld, REQUEST_TYPE=%s, USER_SLOT=%s, WAS_SUCCESS=%s, NUM_FAILURES=%d" ),
+					UE_BEAM_LOG(LogBeamBackend, Verbose, TEXT( "Beamable Request Completed | REQUEST_ID=%lld, REQUEST_TYPE=%s, USER_SLOT=%s, WAS_SUCCESS=%s, NUM_FAILURES=%d" ),
 					       RequestId, *RequestType.Name, *UserSlotLog, bWasSuccess ? TEXT("true") : TEXT("false"), InFlightFailureCount.FindRef(RequestId));
 				}
 			}

@@ -106,10 +106,7 @@ void UBeamEditor::Initialize(FSubsystemCollectionBase& Collection)
 	});
 
 	GEngine->GetEngineSubsystem<UBeamEnvironment>()->OnRefreshBackendAsset.BindUObject(this, &UBeamEditor::PullEnvironmentRouteConfig);
-
-	UBeamOTELManagerEditor* BeamOtelManagerEditor = GEditor->GetEditorSubsystem<UBeamOTELManagerEditor>();
 	
-	BeamLoggingMessageHook.BindUObject(BeamOtelManagerEditor, &UBeamOTELManagerEditor::OtelAddLog);
 	
 	// Make sure we have a window message object...
 	ClearBeamableWindowMessage();

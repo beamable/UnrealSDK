@@ -34,7 +34,7 @@ void UBeamDiscordSampleMsApi::BP_UpdateFromDiscordImpl(const FBeamRealmHandle& T
 	// If cached...
 	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
 	{
-		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
+		UE_BEAM_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
 		Backend->RunAuthenticatedBlueprintRequestProcessor<UDiscordSampleMsUpdateFromDiscordRequest, UDiscordSampleMsUpdateFromDiscordResponse, FOnDiscordSampleMsUpdateFromDiscordSuccess, FOnDiscordSampleMsUpdateFromDiscordError, FOnDiscordSampleMsUpdateFromDiscordComplete>
 			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);		
 	}
@@ -64,7 +64,7 @@ void UBeamDiscordSampleMsApi::CPP_UpdateFromDiscordImpl(const FBeamRealmHandle& 
 	// If cached...
 	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
 	{
-		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
+		UE_BEAM_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
 		Backend->RunAuthenticatedCodeRequestProcessor<UDiscordSampleMsUpdateFromDiscordRequest, UDiscordSampleMsUpdateFromDiscordResponse>
 			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, TargetRealm, AuthToken, RequestData, Handler);		
 	}
@@ -96,7 +96,7 @@ void UBeamDiscordSampleMsApi::BP_UpdateUserWhitelistedStatusImpl(const FBeamReal
 	// If cached...
 	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
 	{
-		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
+		UE_BEAM_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
 		Backend->RunAuthenticatedBlueprintRequestProcessor<UDiscordSampleMsUpdateUserWhitelistedStatusRequest, UDiscordWhitelistedInfo, FOnDiscordSampleMsUpdateUserWhitelistedStatusSuccess, FOnDiscordSampleMsUpdateUserWhitelistedStatusError, FOnDiscordSampleMsUpdateUserWhitelistedStatusComplete>
 			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);		
 	}
@@ -126,7 +126,7 @@ void UBeamDiscordSampleMsApi::CPP_UpdateUserWhitelistedStatusImpl(const FBeamRea
 	// If cached...
 	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
 	{
-		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
+		UE_BEAM_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
 		Backend->RunAuthenticatedCodeRequestProcessor<UDiscordSampleMsUpdateUserWhitelistedStatusRequest, UDiscordWhitelistedInfo>
 			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, TargetRealm, AuthToken, RequestData, Handler);		
 	}
