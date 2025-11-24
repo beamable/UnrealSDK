@@ -91,7 +91,7 @@ public:
 		{
 			if (Evt.CompletedWithSuccess())
 			{
-				UE_BEAM_LOG(GEngine->GetWorldContextFromWorld(this->GetWorld()), LogBeamEditor, Warning, TEXT("GetPreferredUniqueNetId - 2 - %s"),
+				UE_BEAM_LOG_PIE(GEngine->GetWorldContextFromWorld(this->GetWorld()), LogBeamEditor, Warning, TEXT("GetPreferredUniqueNetId - 2 - %s"),
 				            *UniqueId.GetUniqueNetId().Get()->ToString())
 				Super::PreLoginAsync(BeamOptions, Address, UniqueId, OnComplete);
 			}
