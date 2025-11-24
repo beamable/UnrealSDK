@@ -10,9 +10,32 @@
 void UBeamOTELManagerEditor::Initialize(FSubsystemCollectionBase& Collection)
 {
 	Super::Initialize(Collection);
+	
 	UnrealOtelLogsFolder = FPaths::Combine(FPaths::EngineSavedDir(), TEXT("Beamable"), TEXT("BeamableOtelLogs"));
 	
-	UE_LOG(LogTemp, Warning, TEXT("PATH TO TEMP: %s"), *UnrealOtelLogsFolder);
+	TickerHandle = FTSTicker::GetCoreTicker().AddTicker(
+	  FTickerDelegate::CreateUObject(this, &UBeamOTELManagerEditor::ReportOtelLogsEachMinute),
+	  0.1f
+	);
+}
+
+void UBeamOTELManagerEditor::Deinitialize()
+{
+	FTSTicker::GetCoreTicker().RemoveTicker(TickerHandle);
+	Super::Deinitialize();
+}
+
+bool UBeamOTELManagerEditor::ReportOtelLogsEachMinute(float DeltaTime)
+{
+	TimeAccumulated += DeltaTime;
+
+	if (TimeAccumulated >= ReportTelemetryDelay)
+	{
+		TimeAccumulated = 0.f;
+
+		OtelReportLogs();
+	}
+	return true; // keep ticking
 }
 
 FBeamOperationHandle UBeamOTELManagerEditor::OnRealmInitialized(FBeamRealmHandle NewRealm)
@@ -25,7 +48,7 @@ FBeamOperationHandle UBeamOTELManagerEditor::OnRealmInitialized(FBeamRealmHandle
 
 void UBeamOTELManagerEditor::OtelAddLog(FString Message, FString StackTrace, FString OtelLogLevel)
 {
-	// 1. Generate hash key
+	// Generate hash key
 	FString HashCode = GetLogKey(
 		Message,
 		StackTrace,
@@ -33,11 +56,10 @@ void UBeamOTELManagerEditor::OtelAddLog(FString Message, FString StackTrace, FSt
 		nullptr,
 		nullptr
 	);
-
-	// 2. Generate timestamp (ISO-8601 UTC)
+	
 	FString Timestamp = FDateTime::UtcNow().ToIso8601();
 
-	// 3. Add CliOtelLogRecord to CachedLogs (equivalent of TryAdd)
+	// Add CliOtelLogRecord to CachedLogs (equivalent of TryAdd)
 	if (!CachedLogs.Contains(HashCode))
 	{
 		FCliOtelLogRecord Record;
@@ -51,7 +73,7 @@ void UBeamOTELManagerEditor::OtelAddLog(FString Message, FString StackTrace, FSt
 		CachedLogs.Add(HashCode, Record);
 	}
 
-	// 4. Maintain timestamp list (equivalent to TryGetValue + List.Add)
+	// Maintain timestamp list (equivalent to TryGetValue + List.Add)
 	TArray<FString>* Timestamps = CachedTimestamps.Find(HashCode);
 	if (!Timestamps)
 	{
@@ -71,7 +93,7 @@ void UBeamOTELManagerEditor::OtelPruneLogs()
 	Cli->RunCommand(PruneCommand, {TEXT("--delete-all"), TEXT("-q")}, {});
 }
 
-void UBeamOTELManagerEditor::OtelPublishLogs()
+void UBeamOTELManagerEditor::OtelReportLogs()
 {
 	FlushUnrealLogs();
 
@@ -101,10 +123,16 @@ void UBeamOTELManagerEditor::OtelPublishLogs()
 			GenBeamCommandArgs.Add(TEXT("--paths=") + Path);
 		}
 	}
+
+	FString Engine = FString::Printf(TEXT("--engine %s"), TEXT("\"unreal\""));
+		
+	FString EngineVersion = FString::Printf(TEXT("--engine-version \"unreal-%d.%d.%d\""), ENGINE_MAJOR_VERSION, ENGINE_MINOR_VERSION, ENGINE_PATCH_VERSION);
+		
+	FString SdkVersion = FString::Printf(TEXT("--engine-sdk-version \"%s\""), *GetDefault<UBeamCoreSettings>()->BeamableInfoData->Version.ToString());
 	
 	UBeamCliTelemetryReportCommand* ReportCommand = NewObject<UBeamCliTelemetryReportCommand>();
 
-	ReportCommand->OnStreamOutput = [Cli](TArray<UBeamCliTelemetryReportStreamData*>& StreamData, TArray<int64>& Timestamps, const FBeamOperationHandle& Op)
+	ReportCommand->OnStreamOutput = [](TArray<UBeamCliTelemetryReportStreamData*>& StreamData, TArray<int64>& Timestamps, const FBeamOperationHandle& Op)
 	{
 		for (auto ReportItem : StreamData[0]->AllStatus)
 		{
@@ -117,20 +145,33 @@ void UBeamOTELManagerEditor::OtelPublishLogs()
 			}
 		}
 
-		UBeamCliTelemetryPushCommand* PushCommand = NewObject<UBeamCliTelemetryPushCommand>();
-			
-		Cli->RunCommand(PushCommand, {TEXT("-q")}, {});
+	
 	};
 	ReportCommand->OnCompleted = [](const int& ResCode, const FBeamOperationHandle& Op)
 	{
-		UE_LOG(LogTemp, Display, TEXT("Completed stream output"));
+
 	};
 	FString Paths;
 
 	// Join all args with spaces
 	Paths = FString::Join(GenBeamCommandArgs, TEXT(" "));
 	
-	Cli->RunCommand(ReportCommand, {Paths, TEXT("-q")}, {});
+	Cli->RunCommandSync(ReportCommand, {Paths, Engine, EngineVersion, SdkVersion, TEXT("-q")});
+}
+
+void UBeamOTELManagerEditor::OtelPublishLogs()
+{
+	FString Engine = FString::Printf(TEXT("--engine %s"), TEXT("\"unreal\""));
+		
+	FString EngineVersion = FString::Printf(TEXT("--engine-version \"unreal-%d.%d.%d\""), ENGINE_MAJOR_VERSION, ENGINE_MINOR_VERSION, ENGINE_PATCH_VERSION);
+		
+	FString SdkVersion = FString::Printf(TEXT("--engine-sdk-version \"%s\""), *GetDefault<UBeamCoreSettings>()->BeamableInfoData->Version.ToString());
+	
+	auto Cli = GEditor->GetEditorSubsystem<UBeamCli>();
+	
+	UBeamCliTelemetryPushCommand* PushCommand = NewObject<UBeamCliTelemetryPushCommand>();
+		
+	Cli->RunCommand(PushCommand, {Engine, EngineVersion, SdkVersion, TEXT("-q")}, {});
 	
 }
 

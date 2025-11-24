@@ -57,14 +57,24 @@ UCLASS()
 class BEAMABLECORERUNTIMEEDITOR_API UBeamOTELManagerEditor : public UBeamEditorSubsystem
 {
     GENERATED_BODY()
+    const float ReportTelemetryDelay = 120;
+    
     FString UnrealOtelLogsFolder;
+    
+    FTSTicker::FDelegateHandle TickerHandle;
     
     TMap<FString, FCliOtelLogRecord> CachedLogs;
     TMap<FString, TArray<FString>> CachedTimestamps;
+    float TimeAccumulated = 0;
 
 protected:
+    
+    
     virtual void Initialize(FSubsystemCollectionBase& Collection) override;
-
+    virtual void Deinitialize() override;
+    // This is called every minute
+    bool ReportOtelLogsEachMinute(float DeltaTime);
+    
 public:
     /**
      * When we initialize the realm we push the logs.
@@ -76,6 +86,8 @@ public:
     void OtelAddLog(FString Message, FString StackTrace, FString OtelLogLevel);
 
     void OtelPruneLogs();
+
+    void OtelReportLogs();
 
     void OtelPublishLogs();
 
