@@ -27,6 +27,7 @@ public class BeamableUnrealServerTarget : TargetRules
 
 		Console.WriteLine($"Configuring server project as beamproj={samplePluginName}.");
 		BeamableUnrealTarget.ConfigureIfBeamball(this, samplePluginName);
+		BeamableUnrealTarget.ConfigureIfBeamFarm(this, samplePluginName);
 		BeamableUnrealTarget.ConfigureIfSteamDemo(this, samplePluginName);
 		BeamableUnrealTarget.ConfigureIfLiveOpsDemo(this, samplePluginName);
 		BeamableUnrealTarget.ConfigureIfDiscordDemo(this, samplePluginName);

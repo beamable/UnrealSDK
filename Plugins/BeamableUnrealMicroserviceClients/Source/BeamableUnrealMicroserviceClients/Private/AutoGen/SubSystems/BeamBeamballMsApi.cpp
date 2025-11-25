@@ -32,7 +32,7 @@ void UBeamBeamballMsApi::BP_ProcessMatchResultImpl(const FBeamRealmHandle& Targe
 	// If cached...
 	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
 	{
-		UE_BEAM_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
+		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
 		Backend->RunBlueprintRequestProcessor<UBeamballMsProcessMatchResultRequest, UMatchResult, FOnBeamballMsProcessMatchResultSuccess, FOnBeamballMsProcessMatchResultError, FOnBeamballMsProcessMatchResultComplete>
 			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, RequestData, OnSuccess, OnError, OnComplete);		
 	}
@@ -60,7 +60,7 @@ void UBeamBeamballMsApi::CPP_ProcessMatchResultImpl(const FBeamRealmHandle& Targ
 	// If cached...
 	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
 	{
-		UE_BEAM_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
+		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
 		Backend->RunCodeRequestProcessor<UBeamballMsProcessMatchResultRequest, UMatchResult>
 			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, RequestData, Handler);			
 	}
