@@ -11,9 +11,12 @@
 #include "Content/DownloadContentState.h"
 #include "Kismet/GameplayStatics.h"
 #include "Engine/AssetManager.h"
+#include "Framework/Notifications/NotificationManager.h"
 #include "UObject/UObjectGlobals.h"
 
+
 #if WITH_EDITOR
+#include "Widgets/Notifications/SNotificationList.h"
 #include "BeamableCoreRuntimeEditor/Public/Subsystems/Content/BeamEditorContent.h"
 #endif
 
@@ -1276,7 +1279,15 @@ void UBeamContentSubsystem::FetchContentManifest(FBeamContentManifestId Manifest
 
 		if (Resp.State == RS_Error)
 		{
-			GEngine->GetEngineSubsystem<UBeamRequestTracker>()->TriggerOperationError(Op, {});
+			// If backend return a 404 with that message that means the user never publish any content on this realm
+			if (Resp.ErrorData.status == 404 && Resp.ErrorData.message.Contains("Unable to load the requested manifest.")){
+
+				CreateEmptyManifest();
+				GEngine->GetEngineSubsystem<UBeamRequestTracker>()->TriggerOperationSuccess(Op, {});
+			}else
+			{
+				GEngine->GetEngineSubsystem<UBeamRequestTracker>()->TriggerOperationError(Op, {});
+			}
 		}
 	});
 
@@ -1396,4 +1407,43 @@ FString UBeamContentSubsystem::GetCachedContentPath()
 FString UBeamContentSubsystem::GetBakedContentPath(UBeamCoreSettings* CoreSettings)
 {
 	return FPaths::ProjectContentDir() + CoreSettings->BakedContentFolderName + "/" + CoreSettings->GlobalBakedContentFileName;
+}
+
+void UBeamContentSubsystem::CreateEmptyManifest()
+{
+#if WITH_EDITOR
+	FNotificationInfo Info(FText::FromString("Warning: You init your SDK without publish any content! Please publish any content."));
+	Info.bFireAndForget = true;
+	Info.FadeOutDuration = 1.0f;
+	Info.ExpireDuration = 6.0f;
+	Info.bUseSuccessFailIcons = false;
+	Info.bUseThrobber = false;
+	Info.bUseLargeFont = false;
+	Info.Image = FCoreStyle::Get().GetBrush("NotificationList.DefaultMessage");
+
+	FSlateNotificationManager::Get().AddNotification(Info);
+#endif
+				
+	FString ManifestId = "EmptyManifest";
+	
+	UBeamContentCache* Cache = NewObject<UBeamContentCache>();
+	Cache->ManifestId = FBeamContentManifestId(ManifestId);
+	Cache->LatestRemoteManifest = {};
+
+	const auto NumEntries = Cache->LatestRemoteManifest.Num();
+	Cache->Cache.Reserve(NumEntries);
+	Cache->Hashes.Reserve(NumEntries);
+
+	TMap<FBeamContentId, FString> CurrentLocalHashes = {};
+	if (LiveContent.Contains(ManifestId))
+	{
+		CurrentLocalHashes = LiveContent[ManifestId]->Hashes;
+		LiveContent[ManifestId]->LatestRemoteManifest = Cache->LatestRemoteManifest;
+	}
+	else
+	{
+		LiveContent.Add(ManifestId, Cache);
+	}
+
+	ContentManifestsUpdated.Broadcast({ManifestId});
 }

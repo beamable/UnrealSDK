@@ -102,7 +102,8 @@ private:
 	 */
 	void DownloadContentObjects(FBeamContentManifestId ManifestId, TArray<FBeamRemoteContentManifestEntry> Rows, TMap<FBeamContentId, FString> Checksums,
 	                            bool bIgnoreFilterMap, FBeamOperationHandle Op);
-
+	
+	void CreateEmptyManifest();
 	// Static helpers
 public:
 	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
@@ -260,7 +261,9 @@ public:
 	void FetchIndividualContent(FBeamContentManifestId ManifestId, TArray<FBeamContentId> ContentToDownloadFetch, FBeamOperationHandle Op);
 
 	bool EnforceLinks(FBeamContentManifestId ManifestId, TArray<FBeamRemoteContentManifestEntry> ManifestRows, TArray<FBeamContentId>& OutLinksToFetch);
-
+	
 	static FString GetCachedContentPath();
 	static FString GetBakedContentPath(UBeamCoreSettings* CoreSettings);
+
+
 };
