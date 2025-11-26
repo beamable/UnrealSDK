@@ -91,7 +91,7 @@ namespace BeamMultiplayer
 			UniqueId.IsValid(),
 			TEXT("Failed to received a valid UniqueId --- please ensure that you have UBeamRuntimeSettings::bUseBeamableGamerTagsAsUniqueNetIds set to 'true' OR have another UniqueId set up correctly.")))
 		{
-			UE_BEAM_LOG(GEngine->GetWorldContextFromWorld(GameMode->GetWorld()), LogBeamLobby, Error,
+			UE_BEAM_LOG_PIE(GEngine->GetWorldContextFromWorld(GameMode->GetWorld()), LogBeamLobby, Error,
 			            TEXT("Failed to binding UniqueId for user. OPTIONS=%s, Address=%s"), *Options, *Address);
 		}
 

@@ -27,6 +27,7 @@ public class BeamableUnrealTarget : TargetRules
 		Console.WriteLine($"Configuring standalone project as beamproj={samplePluginName}.");
 
 		ConfigureIfBeamball(this, samplePluginName);
+		ConfigureIfBeamFarm(this, samplePluginName);
 		ConfigureIfLiveOpsDemo(this, samplePluginName);
 		ConfigureIfSteamDemo(this, samplePluginName);
 		ConfigureIfDiscordDemo(this, samplePluginName);
@@ -59,6 +60,33 @@ public class BeamableUnrealTarget : TargetRules
 	public static void ConfigureIfBeamball(TargetRules TargetRules, string beamProj)
 	{
 		if (beamProj == kBeamProj_Beamball)
+		{
+			var oss = Beam.OssConfig.Disabled();
+
+			if (TargetRules.Type == UnrealBuildTool.TargetType.Game)
+			{
+				Beam.ConfigureGame(TargetRules, oss);
+			}
+			else if (TargetRules.Type == UnrealBuildTool.TargetType.Editor)
+			{
+				Beam.ConfigureEditor(TargetRules, oss);
+			}
+			else if (TargetRules.Type == UnrealBuildTool.TargetType.Server)
+			{
+				Beam.ConfigureServer(TargetRules, oss);
+			}
+			else
+			{
+				throw new ArgumentOutOfRangeException();
+			}
+		}
+	}
+	
+	public const string kBeamProj_BeamFarm = "BEAMPROJ_BeamFarm";
+
+	public static void ConfigureIfBeamFarm(TargetRules TargetRules, string beamProj)
+	{
+		if (beamProj == kBeamProj_BeamFarm)
 		{
 			var oss = Beam.OssConfig.Disabled();
 

@@ -69,6 +69,10 @@
       "Enabled":true
     },
     {
+      "Name":"BEAMPROJ_BeamFarm",
+      "Enabled":false
+    },
+    {
       "Name":"OpenImageDenoise",
       "Enabled":false
     },
