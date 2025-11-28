@@ -155,7 +155,8 @@ void UBeamCliCommand::RunServer(const FString Uri, const TArray<FString>& Comman
 						UE_LOG(LogBeamCli, Verbose, TEXT("BeamCli Server - Processing JSON message. CMD=%s, JSON=%s"), *CommandLineToExecute, *Json);
 
 						const auto ReceivedStreamType = Bag.GetString(TEXT("type"));
-						const auto Timestamp = static_cast<int64>(Bag.GetField(TEXT("ts"))->AsNumber());
+						auto TimestampField = Bag.GetField(TEXT("ts"));
+						const auto Timestamp = static_cast<int64>(TimestampField->AsNumber());
 						const auto DataJson = Bag.JsonObject->GetObjectField(TEXT("data")).ToSharedRef();
 
 						// If the command itself handles the data, we don't fall back to these other handlings  

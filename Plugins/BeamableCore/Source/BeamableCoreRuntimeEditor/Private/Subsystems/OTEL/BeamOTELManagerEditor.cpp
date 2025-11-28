@@ -167,7 +167,7 @@ void UBeamOTELManagerEditor::OtelPublishLogs()
 		
 	FString EngineVersion = FString::Printf(TEXT("--engine-version \"unreal-%d.%d.%d\""), ENGINE_MAJOR_VERSION, ENGINE_MINOR_VERSION, ENGINE_PATCH_VERSION);
 		
-	FString SdkVersion = FString::Printf(TEXT("--engine-sdk-version \"%s\""), *GetDefault<UBeamCoreSettings>()->BeamableInfoData->Version.ToString());
+	FString SdkVersion = FString::Printf(TEXT("--engine-sdk-version \"%s\""), *GetDefault<UBeamCoreSettings>()->BeamableInfoData.LoadSynchronous()->Version.ToString());
 	
 	auto Cli = GEditor->GetEditorSubsystem<UBeamCli>();
 	

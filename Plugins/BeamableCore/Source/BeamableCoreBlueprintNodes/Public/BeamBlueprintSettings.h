@@ -16,7 +16,7 @@ public:
 	FString SubEventName;
 	
 	UPROPERTY(EditAnywhere, Config, BlueprintReadWrite, Category="Sub Event")
-	TEnumAsByte<EBeamOperationEventType> Type;
+	TEnumAsByte<EBeamOperationEventType> Type = EBeamOperationEventType::OET_NONE;
 	
 	UPROPERTY(EditAnywhere, Config, BlueprintReadWrite, Category="Sub Event", meta=(MustImplement="BeamOperationEventData"))
 	TSoftClassPtr<UObject> TargetCastClass;
@@ -28,7 +28,7 @@ struct FSubEventArray
 	GENERATED_BODY()
 public:
 	UPROPERTY(EditAnywhere, Config, BlueprintReadWrite, Category="Sub Event")
-	TArray<FBeamSubEvent> SubEvents;
+	TArray<FBeamSubEvent> SubEvents = {};
 };
 
 /**
@@ -41,8 +41,9 @@ class BEAMABLECOREBLUEPRINTNODES_API UBeamBlueprintSettings : public UDeveloperS
 
 public:
 	UBeamBlueprintSettings();
+	
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Beam SubEvents")
-	TMap<TSubclassOf<UK2BeamNode_Operation>, FSubEventArray> Config;
+	TMap<TSubclassOf<UK2BeamNode_Operation>, FSubEventArray> Config = {};
 
 };
 
