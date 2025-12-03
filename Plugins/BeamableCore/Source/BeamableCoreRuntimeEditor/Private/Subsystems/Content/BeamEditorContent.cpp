@@ -900,13 +900,20 @@ void UBeamEditorContent::RunPsCommand(FBeamOperationHandle FirstEventOp)
 				Info.SubText = FText::FromString(Body);
 
 				//Set a default expire duration and other parameters
+				
 				Info.ExpireDuration = 20.0f;
 				Info.FadeOutDuration = 2.0f;
 				Info.Image = ConflictsDetectedOnIds.Num() > 0 ? FAppStyle::GetBrush(TEXT("Icons.Warning")) : FAppStyle::GetBrush(TEXT("Icons.Success"));
 				Info.ForWindow = FSlateApplication::Get().GetActiveTopLevelWindow();
 
 				//And call Add Notification, this is pretty much it!
-				FSlateNotificationManager::Get().AddNotification(Info);
+				FUserSlot MainEditorSlot;
+				FBeamRealmUser MainEditorDeveloper;
+				Editor->TryGetMainEditorSlot(MainEditorSlot, MainEditorDeveloper);
+				if (Data->PublisherEmail != MainEditorDeveloper.Email)
+				{
+					FSlateNotificationManager::Get().AddNotification(Info);
+				}
 			}
 
 
