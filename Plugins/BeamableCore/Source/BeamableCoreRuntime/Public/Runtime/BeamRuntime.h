@@ -621,7 +621,7 @@ public:
 	 * If no user is signed in, returns an empty @link FBeamGamerTag @endlink.
 	 */
 	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
-	bool TryGetSlotGamerTag(FUserSlot Slot, FBeamGamerTag& GamerTag) const
+	bool TryGetSlotGamerTag(FUserSlot Slot, FBeamGamerTag& GamerTag)
 	{
 		FBeamRealmUser Data;
 		if (UserSlotSystem->GetUserDataAtSlot(Slot, Data, this))
