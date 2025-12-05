@@ -28,6 +28,10 @@
     {
       "Name": "BeamableUnrealMicroserviceClients",
       "Enabled": true
+    },
+    {
+      "Name": "OnlineSubsystemGoogle",
+      "Enabled": true
     }
   ]
 }

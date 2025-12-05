@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--OnlineSubsystemGoogle plugin additions-->
+<root>
+	<!-- init section is always evaluated once per architecture -->
+	<init>
+		<log text="GoogleSignIn iOS init"/>
+		
+		<setBoolFromProperty result="bEnabled" ini="Engine" section="OnlineSubsystemGoogle" property="bEnabled" default="false"/>
+		<setStringFromProperty result="ClientId" ini="Engine" section="OnlineSubsystemGoogle" property="ClientId" default=""/>
+		<setStringFromProperty result="ServerClientId" ini="Engine" section="OnlineSubsystemGoogle" property="ServerClientId" default=""/>
+		<setStringFromProperty result="ReversedClientId" ini="Engine" section="OnlineSubsystemGoogle.OnlineIdentityGoogle" property="ReversedClientId" default=""/>
+		<setBoolFromProperty result="bRequestOfflineAccess" ini="Engine" section="OnlineSubsystemGoogle.OnlineIdentityGoogle" property="bRequestOfflineAccess" default="false"/>
+		<dumpvars/>
+	</init>
+
+	<registerBuildSettings>
+	<insertValue value="OnlineSubsystemGoogle[bEnabled,ClientId,ServerClientId]"/>
+	<insertValue value="OnlineSubsystemGoogle.OnlineIdentityGoogle[ReversedClientId,bRequestOfflineAccess]"/>
+	<insertNewline/>
+	</registerBuildSettings>
+
+	<iosPListUpdates>
+		<if condition="bEnabled">
+			<true>
+				<addElements tag="dict" once="true"> 
+					<key>GIDClientID</key>
+				</addElements>
+				<setElement result="NewEntry" value="string" text="$S(ClientId)"/>
+				<addElement tag="dict" name="NewEntry" once="true"/> 
+
+				<if condition="bRequestOfflineAccess">
+					<true>
+						<addElements tag="dict" once="true"> 
+							<key>GIDServerClientID</key>
+						</addElements>
+						<setElement result="NewEntry" value="string" text="$S(ServerClientId)"/>
+						<addElement tag="dict" name="NewEntry" once="true"/> 
+					</true>
+				</if>
+
+				<!-- CFBundleURLTypes block -->
+				<!-- Insert our schemas into the first CFBundleURLSchemes array we find inside CFBundleURLTypes content-->
+				<setBool result="bProcessingComplete" value="false"/>
+				<loopElements tag="dict">
+					<setBool result="bCFBundleURLTypesFound" value="false"/>
+
+					<loopElements tag="$">
+						<setStringFromTag result="TagName" tag="$"/>
+
+						<!-- If we found CFBundleURLTypes we are on next iteration and be should be on its <array > value -->
+						<if condition="bCFBundleURLTypesFound">
+							<true>
+								<setBoolIsEqual result="bIsArray" arg1="$S(TagName)" arg2="array"/>
+								<if condition="bIsArray">
+									<true>
+										<!-- this element is an array of dictionaries -->
+										<loopElements tag="$">
+											<setBool result="bCFBundleURLSchemesFound" value="false"/>
+											<!-- iterate on the <dict> entries looking for a <key> with the text CFBundleURLSchemes to insert our schemas-->
+											<loopElements tag="$">
+												<setStringFromTag result="TagName" tag="$"/>
+
+												<!-- If we found CFBundleURLSchemes we are on next iteration and be should be on its <array > value, so we can add our schemas -->
+												<if condition="bCFBundleURLSchemesFound">
+													<true>
+														<setBoolIsEqual result="bIsArray" arg1="$S(TagName)" arg2="array"/>
+														<if condition="bIsArray">
+															<true>
+																<!-- Add schema to current array -->
+																<setElement result="Schema" value="string" text="$S(ReversedClientId)"/>
+																<addElement tag="$" name="Schema"/>
+
+																<setBool result="bProcessingComplete" value="true"/>
+															</true>
+														</if>
+													</true>
+												</if>
+
+												<if condition="bProcessingComplete">
+													<false>
+														<!-- Check if we found a <key> with text CFBundleURLSchemes -->
+														<setBoolIsEqual result="bIsKey" arg1="$S(TagName)" arg2="key"/>
+														<if condition="bIsKey">
+															<true>
+																<setStringFromTagText result="TagValue" tag="$"/>
+																<setBoolIsEqual result="bCFBundleURLSchemesFound" arg1="$S(TagValue)" arg2="CFBundleURLSchemes"/>
+															</true>
+														</if>
+													</false>
+												</if>
+											</loopElements>
+										</loopElements>
+									</true>
+								</if>
+							</true>
+						</if>
+
+						<if condition="bProcessingComplete">
+							<false>
+								<!-- Check if we found a <key> with text CFBundleURLTypes -->
+								<setBoolIsEqual result="bIsKey" arg1="$S(TagName)" arg2="key"/>
+								<if condition="bIsKey">
+									<true>
+										<setStringFromTagText result="TagValue" tag="$"/>
+										<setBoolIsEqual result="bCFBundleURLTypesFound" arg1="$S(TagValue)" arg2="CFBundleURLTypes"/>
+									</true>
+								</if>
+							</false>
+						</if>
+					</loopElements>
+				</loopElements>
+			</true>
+		</if>
+	</iosPListUpdates>
+	
+</root>
