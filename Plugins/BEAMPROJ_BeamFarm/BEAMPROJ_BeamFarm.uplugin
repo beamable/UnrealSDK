@@ -32,6 +32,10 @@
     {
       "Name": "OnlineSubsystemGoogle",
       "Enabled": true
+    },
+    {
+      "Name" : "OnlineSubsystemUtils",
+      "Enabled" : true
     }
   ]
 }
