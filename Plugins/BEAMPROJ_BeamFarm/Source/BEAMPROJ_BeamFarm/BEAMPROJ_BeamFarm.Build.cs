@@ -30,6 +30,7 @@ public class BEAMPROJ_BeamFarm : ModuleRules
 			}
 			);
 			
+	
 		
 		PrivateDependencyModuleNames.AddRange(
 			new string[]
@@ -49,5 +50,15 @@ public class BEAMPROJ_BeamFarm : ModuleRules
 				// ... add any modules that your module loads dynamically here ...
 			}
 			);
+		
+		// Add the generic Online Subsystem to project
+		PrivateDependencyModuleNames.AddRange(new string[] { "OnlineSubsystem" });
+		PrivateDependencyModuleNames.AddRange(new string[] { "OnlineSubsystemUtils" });
+		
+		// Dynamically add Google Online Subsystem for platforms where you intend to use it
+		if (Target.Platform == UnrealTargetPlatform.Android)
+		{
+			DynamicallyLoadedModuleNames.Add("OnlineSubsystemGoogle");
+		}
 	}
 }
