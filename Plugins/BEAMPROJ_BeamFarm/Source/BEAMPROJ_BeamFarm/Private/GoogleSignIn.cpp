@@ -3,31 +3,12 @@
 #include "Interfaces/OnlineIdentityInterface.h"
 #include "OnlineSubsystem.h"
 
-
-bool UGoogleSignIn::Initialize()
-{
-	if (IOnlineSubsystem* OnlineSubsystem = IOnlineSubsystem::Get(GOOGLE_SUBSYSTEM))
-	{
-		if (OnlineSubsystem == nullptr)
-		{
-			return false;
-		}
-		if (!OnlineSubsystem->Init())
-		{
-			return false;
-		}
-		
-		return true;
-	}
-
-	return false;
-}
-
 bool UGoogleSignIn::IsLoggedIn(int32 index)
 {
 	IOnlineSubsystem* Subsystem = IOnlineSubsystem::Get(GOOGLE_SUBSYSTEM);
 	IOnlineIdentityPtr Identity = Subsystem->GetIdentityInterface();
-	
+
+	// Check if the current status for the login is logged in
 	if (Identity.Get()->GetLoginStatus(index) != ELoginStatus::LoggedIn)
 	{
 		UE_LOG(LogTemp, Error, TEXT("[GOOGLE] User is not logged in"));
@@ -51,7 +32,8 @@ FString UGoogleSignIn::GetAccessToken(int32 index)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("[GOOGLE] User account is invalid")); 
 	}
-        
+
+	// Getting the token from the online subsystem
 	FString Token;
 	UserOnlineAccount->GetAuthAttribute(AUTH_ATTR_ID_TOKEN, Token);
 	return Token;

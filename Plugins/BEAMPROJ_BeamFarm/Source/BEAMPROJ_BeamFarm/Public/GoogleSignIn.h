@@ -11,13 +11,6 @@ class UGoogleSignIn : public UObject
 
 public:
     /**
-     * Initialize the Google subsystem to enable Google authentication
-     * Returns true if initialization succeeded
-     */
-    UFUNCTION(BlueprintCallable, Category = "Sign In | Google")
-    static bool Initialize();
-
-    /**
 	  * Check if the user index is logged in.
 	  */
     UFUNCTION(BlueprintCallable, Category = "Sign In | Google")
@@ -25,6 +18,7 @@ public:
 	
     /**
      * Get the access token for a specific user index
+     * That needs to be called after the login when it will be cached by the online subsystem
      */
 	UFUNCTION(BlueprintCallable, Category = "Sign In | Google")
     static FString GetAccessToken(int32 index);
