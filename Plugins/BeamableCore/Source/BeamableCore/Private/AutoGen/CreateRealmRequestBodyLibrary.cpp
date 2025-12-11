@@ -23,10 +23,11 @@ FString UCreateRealmRequestBodyLibrary::CreateRealmRequestBodyToJsonString(const
 	return Result;
 }	
 
-UCreateRealmRequestBody* UCreateRealmRequestBodyLibrary::Make(FString Name, FOptionalBool bSharded, FOptionalString Plan, FOptionalString Parent, UObject* Outer)
+UCreateRealmRequestBody* UCreateRealmRequestBodyLibrary::Make(FString Name, FOptionalBool bIsHidden, FOptionalBool bSharded, FOptionalString Plan, FOptionalString Parent, UObject* Outer)
 {
 	auto Serializable = NewObject<UCreateRealmRequestBody>(Outer);
 	Serializable->Name = Name;
+	Serializable->bIsHidden = bIsHidden;
 	Serializable->bSharded = bSharded;
 	Serializable->Plan = Plan;
 	Serializable->Parent = Parent;
@@ -34,11 +35,12 @@ UCreateRealmRequestBody* UCreateRealmRequestBodyLibrary::Make(FString Name, FOpt
 	return Serializable;
 }
 
-void UCreateRealmRequestBodyLibrary::Break(const UCreateRealmRequestBody* Serializable, FString& Name, FOptionalBool& bSharded, FOptionalString& Plan, FOptionalString& Parent)
+void UCreateRealmRequestBodyLibrary::Break(const UCreateRealmRequestBody* Serializable, FString& Name, FOptionalBool& bIsHidden, FOptionalBool& bSharded, FOptionalString& Plan, FOptionalString& Parent)
 {
 	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
 	{
 		Name = Serializable->Name;
+		bIsHidden = Serializable->bIsHidden;
 		bSharded = Serializable->bSharded;
 		Plan = Serializable->Plan;
 		Parent = Serializable->Parent;

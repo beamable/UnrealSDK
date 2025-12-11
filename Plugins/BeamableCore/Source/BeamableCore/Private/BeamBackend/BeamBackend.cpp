@@ -809,7 +809,7 @@ void UBeamBackend::SetRoutingKeyMap(TArray<FString> BeamoIds, TArray<FString> Ta
 	{
 		Mappings.Add(BeamoIds[i] + TEXT(":") + TargetKeys[i]);
 	}
-
+	Mappings.Sort();
 	SetRoutingKeyMap(FString::Join(Mappings, TEXT(",")));
 }
 
@@ -822,7 +822,7 @@ void UBeamBackend::SetRoutingKeyMap(FUserSlot Slot, TArray<FString> BeamoIds, TA
 	{
 		Mappings.Add(BeamoIds[i] + TEXT(":") + TargetKeys[i]);
 	}
-
+	Mappings.Sort();
 	SetRoutingKeyMap(Slot, FString::Join(Mappings, TEXT(",")));
 }
 

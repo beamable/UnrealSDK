@@ -23,20 +23,22 @@ FString UPartyLibrary::PartyToJsonString(const UParty* Serializable, const bool 
 	return Result;
 }	
 
-UParty* UPartyLibrary::Make(FOptionalString Id, FOptionalString Restriction, FOptionalBeamGamerTag Leader, FOptionalInt32 MaxSize, FOptionalArrayOfBeamGamerTag Members, FOptionalArrayOfString PendingInvites, UObject* Outer)
+UParty* UPartyLibrary::Make(FOptionalString Id, FOptionalString Restriction, FOptionalBeamGamerTag Leader, FOptionalInt32 MaxSize, FOptionalDateTime Created, FOptionalArrayOfBeamGamerTag Members, FOptionalArrayOfString PendingInvites, FOptionalMapOfTagList MembersTags, UObject* Outer)
 {
 	auto Serializable = NewObject<UParty>(Outer);
 	Serializable->Id = Id;
 	Serializable->Restriction = Restriction;
 	Serializable->Leader = Leader;
 	Serializable->MaxSize = MaxSize;
+	Serializable->Created = Created;
 	Serializable->Members = Members;
 	Serializable->PendingInvites = PendingInvites;
+	Serializable->MembersTags = MembersTags;
 	
 	return Serializable;
 }
 
-void UPartyLibrary::Break(const UParty* Serializable, FOptionalString& Id, FOptionalString& Restriction, FOptionalBeamGamerTag& Leader, FOptionalInt32& MaxSize, FOptionalArrayOfBeamGamerTag& Members, FOptionalArrayOfString& PendingInvites)
+void UPartyLibrary::Break(const UParty* Serializable, FOptionalString& Id, FOptionalString& Restriction, FOptionalBeamGamerTag& Leader, FOptionalInt32& MaxSize, FOptionalDateTime& Created, FOptionalArrayOfBeamGamerTag& Members, FOptionalArrayOfString& PendingInvites, FOptionalMapOfTagList& MembersTags)
 {
 	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
 	{
@@ -44,8 +46,10 @@ void UPartyLibrary::Break(const UParty* Serializable, FOptionalString& Id, FOpti
 		Restriction = Serializable->Restriction;
 		Leader = Serializable->Leader;
 		MaxSize = Serializable->MaxSize;
+		Created = Serializable->Created;
 		Members = Serializable->Members;
 		PendingInvites = Serializable->PendingInvites;
+		MembersTags = Serializable->MembersTags;
 	}
 		
 }

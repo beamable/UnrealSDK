@@ -4,6 +4,7 @@
 #include "Subsystems/Matchmaking/BeamMatchmakingSubsystem.h"
 
 #include "Subsystems/Lobby/BeamLobbySubsystem.h"
+#include "Subsystems/Party/BeamPartySubsystem.h"
 #include "Subsystems/Stats/BeamStatsSubsystem.h"
 
 void UBeamMatchmakingSubsystem::Initialize(FSubsystemCollectionBase& Collection)
@@ -280,16 +281,38 @@ void UBeamMatchmakingSubsystem::TryJoinQueue(FUserSlot Slot, FBeamContentId Game
 	});
 
 	// We use this to enable compatibility with UE's Real-Time Multiplayer Gameplay Framework
+	auto TagsVal = Tags.GetValueOrDefault(TArray<FBeamTag>{});
+	
 	const auto LocalPlayer = Runtime->GetLocalPlayerForSlot(Slot);
 	if (LocalPlayer && LocalPlayer->GetPreferredUniqueNetId().IsValid())
 	{
-		auto TagsVal = Tags.GetValueOrDefault(TArray<FBeamTag>{});
 		TagsVal.Add(FBeamTag{UBeamLobbySubsystem::Reserved_PlayerTag_UniqueNetId_Property, LocalPlayer->GetPreferredUniqueNetId().GetUniqueNetId()->ToString()});
-		Tags.Val = TagsVal;
+	}
+	
+	// Adding routing key to player ticket
+	// IF PLAYER IS ALREADY IN A PARTY THIS ROUTING KEY WILL BE DUPLICATED.
+	UBeamBackend* BeamBackend = GEngine->GetEngineSubsystem<UBeamBackend>();
+
+	FString RoutingKey = "";
+
+	if (BeamBackend->CurrentRoutingKeyMaps.Contains(Slot))
+	{
+		RoutingKey = BeamBackend->CurrentRoutingKeyMaps[Slot];
+	}
+
+	TagsVal.Add(FBeamTag{UBeamLobbySubsystem::Reserved_PlayerTag_Routing_Key_Property, RoutingKey});
+
+	TMap<FString, UTagList*> TagsMap;
+	FBeamRealmUser RealmUser;
+	if (Runtime->TryGetSlotUserData(Slot, RealmUser))
+	{
+		auto TagList = NewObject<UTagList>();
+		TagList->Tags = FOptionalArrayOfBeamTag(TagsVal);
+		TagsMap.Add(RealmUser.GamerTag.AsString, TagList);
 	}
 
 	FBeamRequestContext Ctx;
-	const auto Req = UPostTicketsRequest::Make(FOptionalBool{true}, {}, Team, {}, FOptionalArrayOfBeamContentId{{GameTypeQueue}}, Tags, GetTransientPackage(), {});
+	const auto Req = UPostTicketsRequest::Make(FOptionalBool{true}, {}, Team, {}, FOptionalArrayOfBeamContentId{{GameTypeQueue}}, FOptionalMapOfTagList(TagsMap), GetTransientPackage(), {});
 	MatchmakingApi->CPP_PostTickets(Slot, Req, Handler, Ctx, Op, this);
 }
 

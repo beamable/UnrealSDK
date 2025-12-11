@@ -36,7 +36,7 @@ UBasicRealmsPostGameRequest* UBasicRealmsPostGameRequest::Make(FString _GameName
 	
 	
 	// Makes a body and fill up with parameters (Blank if no body parameters exist)
-	Req->Body = NewObject<UNewGameRequestBody>(Req);
+	Req->Body = NewObject<URealmsBasicNewGameRequestBody>(Req);
 	Req->Body->GameName = _GameName;
 	
 

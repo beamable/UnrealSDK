@@ -352,13 +352,13 @@ public:
 	*/
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Party",
 		meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
-	FBeamOperationHandle JoinPartyOperation(FUserSlot UserSlot, FGuid PartyId,
+	FBeamOperationHandle JoinPartyOperation(FUserSlot UserSlot, FGuid PartyId, TArray<FBeamTag> PlayerTags,
 	                                        FBeamOperationEventHandler OnOperationEvent);
 
 	/**
 	 * @copydoc JoinPartyOperation
 	 */
-	FBeamOperationHandle CPP_JoinPartyOperation(FUserSlot UserSlot, FGuid PartyId,
+	FBeamOperationHandle CPP_JoinPartyOperation(FUserSlot UserSlot, FGuid PartyId, TArray<FBeamTag> PlayerTags,
 	                                            FBeamOperationEventHandlerCode OnOperationEvent);
 
 	/**
@@ -377,13 +377,13 @@ public:
 	*/
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Party",
 		meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
-	FBeamOperationHandle JoinPlayerPartyOperation(FUserSlot UserSlot, FBeamGamerTag PlayerGamerTag,
+	FBeamOperationHandle JoinPlayerPartyOperation(FUserSlot UserSlot, FBeamGamerTag PlayerGamerTag, TArray<FBeamTag> PlayerTags,
 	                                              FBeamOperationEventHandler OnOperationEvent);
 
 	/**
 	 * @copydoc JoinPlayerPartyOperation
 	 */
-	FBeamOperationHandle CPP_JoinPlayerPartyOperation(FUserSlot UserSlot, FBeamGamerTag PlayerGamerTag,
+	FBeamOperationHandle CPP_JoinPlayerPartyOperation(FUserSlot UserSlot, FBeamGamerTag PlayerGamerTag, TArray<FBeamTag> PlayerTags,
 	                                                  FBeamOperationEventHandlerCode OnOperationEvent);
 
 	/**
@@ -462,14 +462,14 @@ public:
 	*/
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Party",
 		meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
-	FBeamOperationHandle CreatePartyOperation(FUserSlot UserSlot, EBeamPartyRestriction Restriction, int32 MaxPlayers,
+	FBeamOperationHandle CreatePartyOperation(FUserSlot UserSlot, EBeamPartyRestriction Restriction, int32 MaxPlayers, TArray<FBeamTag> PlayerTags,
 	                                          FBeamOperationEventHandler OnOperationEvent);
 
 	/**
 	 * @copydoc CreatePartyOperation
 	 */
 	FBeamOperationHandle CPP_CreatePartyOperation(FUserSlot UserSlot, EBeamPartyRestriction Restriction,
-	                                              int32 maxPlayers,
+	                                              int32 MaxPlayers, TArray<FBeamTag> PlayerTags,
 	                                              FBeamOperationEventHandlerCode OnOperationEvent);
 
 	/**
@@ -805,11 +805,11 @@ private:
 
 	void FetchPartyInvites(FUserSlot UserSlot, FBeamOperationHandle Op);
 
-	bool CreateParty(FUserSlot UserSlot, EBeamPartyRestriction Restriction, int32 maxPlayers, FBeamOperationHandle Op);
+	bool CreateParty(FUserSlot UserSlot, EBeamPartyRestriction Restriction, int32 MaxPlayers, TArray<FBeamTag> PlayerTags, FBeamOperationHandle Op);
 
-	void JoinParty(FUserSlot UserSlot, FGuid PartyId, FBeamOperationHandle Op);
+	void JoinParty(FUserSlot UserSlot, FGuid PartyId, TArray<FBeamTag> PlayerTags, FBeamOperationHandle Op);
 
-	void JoinPlayerParty(FUserSlot UserSlot, FBeamGamerTag PlayerGamerTag, FBeamOperationHandle Op);
+	void JoinPlayerParty(FUserSlot UserSlot, FBeamGamerTag PlayerGamerTag, TArray<FBeamTag> PlayerTags, FBeamOperationHandle Op);
 
 	void InvitePlayerToParty(FUserSlot UserSlot, FGuid PartyId, FBeamGamerTag PlayerGamerTag, FBeamOperationHandle Op);
 
@@ -860,5 +860,7 @@ private:
 
 	static FString GetRestrictionString(EBeamPartyRestriction RestrictionType);
 
+	void AddRoutingKey(FUserSlot UserSlot, TArray<FBeamTag> PlayerTags);
+	
 	EBeamPartyRestriction GetRestrictionType(FString RestrictionName);
 };

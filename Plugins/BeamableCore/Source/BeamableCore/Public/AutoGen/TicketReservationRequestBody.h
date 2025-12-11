@@ -8,7 +8,7 @@
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalInt32.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalBool.h"
-#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfBeamTag.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalMapOfTagList.h"
 
 #include "TicketReservationRequestBody.generated.h"
 
@@ -29,7 +29,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Match Types", Category="Beam")
 	FOptionalArrayOfBeamContentId MatchTypes = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Tags", Category="Beam")
-	FOptionalArrayOfBeamTag Tags = {};
+	FOptionalMapOfTagList Tags = {};
 
 	
 

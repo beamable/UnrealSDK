@@ -343,7 +343,7 @@ FString UBeamMicroservicesEditor::ConstructRoutingKeyMap()
 				RoutingKeyMapEntries.Add((TEXT("micro_") + BeamoId + TEXT(":") + RoutingKey));
 		}
 	}
-
+	RoutingKeyMapEntries.Sort();
 	return FString::Join(RoutingKeyMapEntries, TEXT(","));
 }
 

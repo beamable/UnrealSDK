@@ -22,6 +22,8 @@ public:
 	FString Name = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Plan", Category="Beam")
 	FString Plan = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Hidden", Category="Beam")
+	FOptionalBool bHidden = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Is Archived", Category="Beam")
 	FOptionalBool bIsArchived = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Sharded", Category="Beam")

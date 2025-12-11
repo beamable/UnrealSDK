@@ -16,9 +16,9 @@ public:
 	UFUNCTION(BlueprintPure, Category="Beam|Customer|Utils|Json", DisplayName="RealmView To JSON String")
 	static FString RealmViewToJsonString(const URealmView* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Customer|Utils|Make/Break", DisplayName="Make RealmView", meta=(DefaultToSelf="Outer", AdvancedDisplay="bArchived, bSharded, CustomerId, Parent, Secret, Children, Outer", NativeMakeFunc))
-	static URealmView* Make(FString DisplayName, FString RealmId, FOptionalBool bArchived, FOptionalBool bSharded, FOptionalString CustomerId, FOptionalString Parent, FOptionalString Secret, FOptionalArrayOfString Children, UObject* Outer);
+	UFUNCTION(BlueprintPure, Category="Beam|Customer|Utils|Make/Break", DisplayName="Make RealmView", meta=(DefaultToSelf="Outer", AdvancedDisplay="bArchived, bHidden, bSharded, CustomerId, Parent, Secret, Children, Outer", NativeMakeFunc))
+	static URealmView* Make(FString DisplayName, FString RealmId, FOptionalBool bArchived, FOptionalBool bHidden, FOptionalBool bSharded, FOptionalString CustomerId, FOptionalString Parent, FOptionalString Secret, FOptionalArrayOfString Children, UObject* Outer);
 
 	UFUNCTION(BlueprintPure, Category="Beam|Customer|Utils|Make/Break", DisplayName="Break RealmView", meta=(NativeBreakFunc))
-	static void Break(const URealmView* Serializable, FString& DisplayName, FString& RealmId, FOptionalBool& bArchived, FOptionalBool& bSharded, FOptionalString& CustomerId, FOptionalString& Parent, FOptionalString& Secret, FOptionalArrayOfString& Children);
+	static void Break(const URealmView* Serializable, FString& DisplayName, FString& RealmId, FOptionalBool& bArchived, FOptionalBool& bHidden, FOptionalBool& bSharded, FOptionalString& CustomerId, FOptionalString& Parent, FOptionalString& Secret, FOptionalArrayOfString& Children);
 };

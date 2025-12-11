@@ -1,0 +1,48 @@
+#pragma once
+
+#include "CoreMinimal.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalMapOfTagList.h"
+
+#include "OptionalMapOfTagListLibrary.generated.h"
+
+UCLASS(BlueprintType)
+class BEAMABLECORE_API UOptionalMapOfTagListLibrary : public UBlueprintFunctionLibrary
+{
+	GENERATED_BODY()
+public:	
+
+	/**
+	* @brief Constructs an FOptionalMapOfTagList struct from the given value.	  
+	*/
+	UFUNCTION(BlueprintPure, Category="Beam|Party|Utils|Optionals", meta=(DisplayName="Make Optional TMap<FString, UTagList*>", NativeMakeFunc))
+	static FOptionalMapOfTagList MakeOptional(TMap<FString, UTagList*> Value);
+
+	/**
+	 * @brief Converts an TMap<FString, UTagList*> into an FOptionalMapOfTagList automatically.
+	 * @param Value The TMap<FString, UTagList*> to convert.
+	 * @return An optional with the TMap<FString, UTagList*> set as it's value.
+	 */
+	UFUNCTION(BlueprintPure, Category="Beam|Party|Utils|Optionals", meta = (DisplayName="TMap<FString, UTagList*> To Optional", CompactNodeTitle = "->", BlueprintAutocast))
+	static FOptionalMapOfTagList Conv_OptionalFromValue(TMap<FString, UTagList*> Value);
+	
+	/**
+	 * @brief Use this when the behavior changes based on whether or not a value is set on the optional.
+	 * @param Optional The optional you wish to get data from.
+	 * @param Value The value in the optional. 
+	 * @return Whether or not the value was set. We provide no guarantees on what the value is if the optional is not set. 
+	 */
+	UFUNCTION(BlueprintCallable, Category="Beam|Party|Utils|Optionals", meta=(DisplayName="Optional Has Value", ExpandBoolAsExecs="ReturnValue"))
+	static bool HasValue(const FOptionalMapOfTagList& Optional, TMap<FString, UTagList*>& Value);
+
+	/**
+	 * @brief Use this when the behaviour doesnt change based on whether or not the value is set, instead just provide a default value instead.
+	 * @param Optional The optional you wish to get data from.
+	 * @param DefaultValue The value that will be set if the Optional has no value in it.
+	 * @param WasSet Whether or not the value was set. When false, the return value is the given DefaultValue.   
+	 * @return The default value, if the Optional IS NOT set. The optional value, otherwise.
+	 */
+	UFUNCTION(BlueprintPure, Category="Beam|Party|Utils|Optionals", meta=(DisplayName="Get Optional's TMap<FString, UTagList*> Value"))
+	static TMap<FString, UTagList*> GetOptionalValue(const FOptionalMapOfTagList& Optional, TMap<FString, UTagList*> DefaultValue, bool& WasSet);
+
+	
+};

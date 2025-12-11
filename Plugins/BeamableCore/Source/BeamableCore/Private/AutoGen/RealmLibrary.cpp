@@ -23,11 +23,12 @@ FString URealmLibrary::RealmToJsonString(const URealm* Serializable, const bool 
 	return Result;
 }	
 
-URealm* URealmLibrary::Make(FString Name, FString Plan, FOptionalBool bIsArchived, FOptionalBool bSharded, FOptionalString Secret, FOptionalString DisplayName, FOptionalString Parent, FOptionalDateTime Created, FOptionalArrayOfString Children, FOptionalMapOfString Config, FOptionalMapOfString CustomCharts, UObject* Outer)
+URealm* URealmLibrary::Make(FString Name, FString Plan, FOptionalBool bHidden, FOptionalBool bIsArchived, FOptionalBool bSharded, FOptionalString Secret, FOptionalString DisplayName, FOptionalString Parent, FOptionalDateTime Created, FOptionalArrayOfString Children, FOptionalMapOfString Config, FOptionalMapOfString CustomCharts, UObject* Outer)
 {
 	auto Serializable = NewObject<URealm>(Outer);
 	Serializable->Name = Name;
 	Serializable->Plan = Plan;
+	Serializable->bHidden = bHidden;
 	Serializable->bIsArchived = bIsArchived;
 	Serializable->bSharded = bSharded;
 	Serializable->Secret = Secret;
@@ -41,12 +42,13 @@ URealm* URealmLibrary::Make(FString Name, FString Plan, FOptionalBool bIsArchive
 	return Serializable;
 }
 
-void URealmLibrary::Break(const URealm* Serializable, FString& Name, FString& Plan, FOptionalBool& bIsArchived, FOptionalBool& bSharded, FOptionalString& Secret, FOptionalString& DisplayName, FOptionalString& Parent, FOptionalDateTime& Created, FOptionalArrayOfString& Children, FOptionalMapOfString& Config, FOptionalMapOfString& CustomCharts)
+void URealmLibrary::Break(const URealm* Serializable, FString& Name, FString& Plan, FOptionalBool& bHidden, FOptionalBool& bIsArchived, FOptionalBool& bSharded, FOptionalString& Secret, FOptionalString& DisplayName, FOptionalString& Parent, FOptionalDateTime& Created, FOptionalArrayOfString& Children, FOptionalMapOfString& Config, FOptionalMapOfString& CustomCharts)
 {
 	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
 	{
 		Name = Serializable->Name;
 		Plan = Serializable->Plan;
+		bHidden = Serializable->bHidden;
 		bIsArchived = Serializable->bIsArchived;
 		bSharded = Serializable->bSharded;
 		Secret = Serializable->Secret;

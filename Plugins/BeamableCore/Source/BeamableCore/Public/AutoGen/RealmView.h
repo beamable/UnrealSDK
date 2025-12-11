@@ -22,6 +22,8 @@ public:
 	FString RealmId = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Archived", Category="Beam")
 	FOptionalBool bArchived = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Hidden", Category="Beam")
+	FOptionalBool bHidden = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Sharded", Category="Beam")
 	FOptionalBool bSharded = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Customer Id", Category="Beam")
