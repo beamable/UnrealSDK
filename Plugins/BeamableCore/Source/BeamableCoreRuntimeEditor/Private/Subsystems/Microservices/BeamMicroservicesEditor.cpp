@@ -339,7 +339,11 @@ FString UBeamMicroservicesEditor::ConstructRoutingKeyMap()
 		if (MicroserviceData.Value.TargetsToRoutingKeys.Contains(SelectedTarget))
 		{
 			const auto RoutingKey = MicroserviceData.Value.TargetsToRoutingKeys[SelectedTarget];
-			if (!RoutingKey.IsEmpty())
+			const auto bIsNotTargettingRealm = !RoutingKey.IsEmpty();
+			const auto bIsMicroservice = MicroserviceData.Value.ServiceType == MicroService;
+			const auto bIsTargettingNonLocalRealm = bIsMicroservice && bIsNotTargettingRealm && RoutingKey != LocalRoutingKey;
+			const auto bIsTargettingLocalRunningRealm = bIsMicroservice && bIsNotTargettingRealm && RoutingKey == LocalRoutingKey && MicroserviceData.Value.RunningState != Stopped;
+			if (bIsTargettingNonLocalRealm || bIsTargettingLocalRunningRealm)
 				RoutingKeyMapEntries.Add((TEXT("micro_") + BeamoId + TEXT(":") + RoutingKey));
 		}
 	}
@@ -630,8 +634,8 @@ void UBeamMicroservicesEditor::ExportDockerCompose(const FBeamOperationHandle& O
 
 	auto ProgressMap = new TMap<FString, float>();
 	*ProgressMap = {};
-	
-	ExportDockerCompose->OnProgressStreamOutput= [ProgressMap](const TArray<UBeamCliDeploymentPlanProgressStreamData*>& Data, const TArray<long long>& , const FBeamOperationHandle& )
+
+	ExportDockerCompose->OnProgressStreamOutput = [ProgressMap](const TArray<UBeamCliDeploymentPlanProgressStreamData*>& Data, const TArray<long long>&, const FBeamOperationHandle&)
 	{
 		for (const auto& StreamData : Data)
 		{
@@ -639,7 +643,7 @@ void UBeamMicroservicesEditor::ExportDockerCompose(const FBeamOperationHandle& O
 			{
 				if (!ProgressMap->Contains(StreamData->ServiceName))
 				{
-					ProgressMap->Add( StreamData->ServiceName, StreamData->Ratio);
+					ProgressMap->Add(StreamData->ServiceName, StreamData->Ratio);
 					UE_LOG(LogBeamEditorMs, Display, TEXT("%s => %f"), *StreamData->ServiceName, StreamData->Ratio);
 				}
 				else
@@ -657,7 +661,7 @@ void UBeamMicroservicesEditor::ExportDockerCompose(const FBeamOperationHandle& O
 			{
 				if (!ProgressMap->Contains(StreamData->Name))
 				{
-					ProgressMap->Add( StreamData->Name, StreamData->Ratio);
+					ProgressMap->Add(StreamData->Name, StreamData->Ratio);
 					UE_LOG(LogBeamEditorMs, Display, TEXT("%s => %f"), *StreamData->Name, StreamData->Ratio);
 				}
 				else
@@ -671,7 +675,7 @@ void UBeamMicroservicesEditor::ExportDockerCompose(const FBeamOperationHandle& O
 					}
 				}
 			}
-		}		
+		}
 	};
 
 	// Handle completing the operation
