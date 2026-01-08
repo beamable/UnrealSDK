@@ -25,7 +25,7 @@ public class BEAMPROJ_BeamFarm : ModuleRules
 		PublicDependencyModuleNames.AddRange(
 			new string[]
 			{
-				"Core",
+				"Core", "OnlineSubsystem",
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);
@@ -59,6 +59,16 @@ public class BEAMPROJ_BeamFarm : ModuleRules
 		if (Target.Platform == UnrealTargetPlatform.Android)
 		{
 			DynamicallyLoadedModuleNames.Add("OnlineSubsystemGoogle");
+		}
+
+		if (Target.Platform == UnrealTargetPlatform.IOS)
+		{
+			DynamicallyLoadedModuleNames.Add("OnlineSubsystemIOS");
+		}
+		if (Target.Platform == UnrealTargetPlatform.IOS ||
+		    Target.Platform == UnrealTargetPlatform.Mac)
+		{
+			DynamicallyLoadedModuleNames.Add("OnlineSubsystemApple");
 		}
 	}
 }
