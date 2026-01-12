@@ -25,5 +25,9 @@ public:
     static FString GetAccessToken(APlayerController* PlayerController);
 
 	UFUNCTION(BlueprintCallable, Category = "Sign In | Google")
+	static FString GetUserId(APlayerController* PlayerController);
+
+
+	UFUNCTION(BlueprintCallable, Category = "Sign In | Google")
 	static void Login(APlayerController* PlayerController, FOnGoogleEventComplete OnLoginSuccess, FOnGoogleEventComplete OnLoginFail);
 };

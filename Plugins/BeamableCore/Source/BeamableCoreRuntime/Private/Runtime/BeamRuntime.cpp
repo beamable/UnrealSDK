@@ -2047,8 +2047,54 @@ void UBeamRuntime::AttachFederated(FUserSlot UserSlot, FString MicroserviceId, F
 		return;
 	}
 
-	const auto CheckIdentityAvailableHandler = FOnGetAvailableExternalIdentityFullResponse::CreateLambda(
-		[this,UserSlot, Op, MicroserviceId, FederationId, FederatedUserId, FederatedAuthToken](FGetAvailableExternalIdentityFullResponse Resp)
+	const auto AttachToUser = [this, UserSlot, MicroserviceId, FederationId, FederatedUserId, FederatedAuthToken, Op]()
+	{
+		const auto AttachIdentityHandler = FOnPostExternalIdentityFullResponse::CreateLambda(
+					[this, UserSlot, MicroserviceId, FederationId, FederatedUserId, FederatedAuthToken, Op ](FPostExternalIdentityFullResponse Resp)
+					{
+						if (Resp.State == RS_Retrying) return;
+
+						if (Resp.State == RS_Success)
+						{
+							// If it is a 2F auth we will trigger the sub event and then call the success when entire flow finish
+							if (Resp.SuccessData->ChallengeToken.IsSet)
+							{
+								const auto ChallengeSolution = NewObject<UBeamMultiFactorLoginData>(GetTransientPackage());
+
+								ChallengeSolution->MicroserviceId = MicroserviceId;
+								ChallengeSolution->FederationId = FederationId;
+								ChallengeSolution->FederatedUserId = FederatedUserId;
+								ChallengeSolution->FederatedUserAuthToken = FederatedAuthToken;
+								ChallengeSolution->ChallengeToken = Resp.SuccessData->ChallengeToken.Val;
+								ChallengeSolution->OperationHandler = Op;
+
+								RequestTrackerSystem->TriggerOperationEventWithData(Op, OET_SUCCESS, GetOperationEventID_MultiFactorAuthTriggered(), TEXT("2FA_AUTH"), ChallengeSolution);
+							}
+							else
+							{
+								UE_LOG(LogTemp, Warning, TEXT("Successfully Attached Id! Result = %s"), *Resp.SuccessData->Result);
+
+								AttachLocalIdentity(UserSlot, FederatedUserId, MicroserviceId, FederationId);
+
+								// Trigger the operation as successful
+								GEngine->GetEngineSubsystem<UBeamRequestTracker>()->TriggerOperationSuccess(Op, TEXT(""));
+							}
+						}
+
+						if (Resp.State == RS_Error)
+						{
+							UE_LOG(LogTemp, Error, TEXT("Failed to Attach Id! Result = %s"), *Resp.ErrorData.message);
+							GEngine->GetEngineSubsystem<UBeamRequestTracker>()->TriggerOperationError(Op, Resp.ErrorData.message);
+						}
+					});
+		const auto _ = AttachIdentityToUser(UserSlot, MicroserviceId, FederationId, FederatedAuthToken, Op, AttachIdentityHandler);
+			
+	};
+	// If the FederatedUserId is not empty we check the availability if it is empty we assume that we be treat in the federation.
+	if (!FederatedUserId.IsEmpty())
+	{
+		const auto CheckIdentityAvailableHandler = FOnGetAvailableExternalIdentityFullResponse::CreateLambda(
+		[this, Op,  FederatedUserId, AttachToUser](FGetAvailableExternalIdentityFullResponse Resp)
 		{
 			if (Resp.State == RS_Retrying) return;
 
@@ -2060,45 +2106,7 @@ void UBeamRuntime::AttachFederated(FUserSlot UserSlot, FString MicroserviceId, F
 				// If the Federated Identity has never been assigned in this realm, we attach it to the account at the given slot. 
 				if (bIsAvailable)
 				{
-					const auto AttachIdentityHandler = FOnPostExternalIdentityFullResponse::CreateLambda(
-						[this, UserSlot, MicroserviceId, FederationId, FederatedUserId, FederatedAuthToken, Op ](FPostExternalIdentityFullResponse Resp)
-						{
-							if (Resp.State == RS_Retrying) return;
-
-							if (Resp.State == RS_Success)
-							{
-								// If it is a 2F auth we will trigger the sub event and then call the success when entire flow finish
-								if (Resp.SuccessData->ChallengeToken.IsSet)
-								{
-									const auto ChallengeSolution = NewObject<UBeamMultiFactorLoginData>(GetTransientPackage());
-
-									ChallengeSolution->MicroserviceId = MicroserviceId;
-									ChallengeSolution->FederationId = FederationId;
-									ChallengeSolution->FederatedUserId = FederatedUserId;
-									ChallengeSolution->FederatedUserAuthToken = FederatedAuthToken;
-									ChallengeSolution->ChallengeToken = Resp.SuccessData->ChallengeToken.Val;
-									ChallengeSolution->OperationHandler = Op;
-
-									RequestTrackerSystem->TriggerOperationEventWithData(Op, OET_SUCCESS, GetOperationEventID_MultiFactorAuthTriggered(), TEXT("2FA_AUTH"), ChallengeSolution);
-								}
-								else
-								{
-									UE_LOG(LogTemp, Warning, TEXT("Successfully Attached Id! Result = %s"), *Resp.SuccessData->Result);
-
-									AttachLocalIdentity(UserSlot, FederatedUserId, MicroserviceId, FederationId);
-
-									// Trigger the operation as successful
-									GEngine->GetEngineSubsystem<UBeamRequestTracker>()->TriggerOperationSuccess(Op, TEXT(""));
-								}
-							}
-
-							if (Resp.State == RS_Error)
-							{
-								UE_LOG(LogTemp, Error, TEXT("Failed to Attach Id! Result = %s"), *Resp.ErrorData.message);
-								GEngine->GetEngineSubsystem<UBeamRequestTracker>()->TriggerOperationError(Op, Resp.ErrorData.message);
-							}
-						});
-					const auto _ = AttachIdentityToUser(UserSlot, MicroserviceId, FederationId, FederatedAuthToken, Op, AttachIdentityHandler);
+					AttachToUser();
 				}
 				// If it has been assigned in this realm (a user exists in this realm for this Federated Identity id), we log in with that user account into the requesting slot.			 
 				else
@@ -2111,7 +2119,12 @@ void UBeamRuntime::AttachFederated(FUserSlot UserSlot, FString MicroserviceId, F
 			GEngine->GetEngineSubsystem<UBeamRequestTracker>()->TriggerOperationError(Op, Resp.ErrorData.message);
 		});
 
-	const auto _ = CheckFederatedIdentityAvailable(MicroserviceId, FederationId, FederatedUserId, Op, CheckIdentityAvailableHandler);
+		const auto _ = CheckFederatedIdentityAvailable(MicroserviceId, FederationId, FederatedUserId, Op, CheckIdentityAvailableHandler);
+
+	}else
+	{
+		AttachToUser();
+	}
 }
 
 void UBeamRuntime::AttachEmailAndPassword(FUserSlot UserSlot, FString Email, FString Password, FBeamOperationHandle Op)

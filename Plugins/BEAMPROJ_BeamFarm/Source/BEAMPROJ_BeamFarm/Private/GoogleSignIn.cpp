@@ -42,6 +42,19 @@ FString UGoogleSignIn::GetAccessToken(APlayerController* PlayerController)
 	return Token;
 }
 
+FString UGoogleSignIn::GetUserId(APlayerController* PlayerController)
+{
+	IOnlineSubsystem* Subsystem = IOnlineSubsystem::Get(GOOGLE_SUBSYSTEM);
+	IOnlineIdentityPtr Identity = Subsystem->GetIdentityInterface();
+
+	const int32 ControllerId = CastChecked<ULocalPlayer>(PlayerController->Player)->GetControllerId();
+
+	UE_LOG(LogTemp, Warning, TEXT("PLAYER ID: %s"), *Identity->GetUniquePlayerId(ControllerId)->ToString());
+	
+	// Getting the token from the online subsystem
+	return *Identity->GetUniquePlayerId(ControllerId)->ToString();
+}
+
 void UGoogleSignIn::Login(APlayerController* PlayerController, FOnGoogleEventComplete OnLoginSuccess, FOnGoogleEventComplete OnLoginFail)
 {
 	IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get(GOOGLE_SUBSYSTEM);
