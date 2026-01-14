@@ -10,6 +10,7 @@ void UAppleSignIn::Login(APlayerController* PlayerController, FOnAppleEventCompl
 	if (!OnlineSub)
 	{
 		UE_LOG(LogTemp, Error, TEXT("OnlineSubsystem not found"));
+		OnLoginFail.ExecuteIfBound();
 		return;
 	}
 	
