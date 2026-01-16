@@ -122,7 +122,7 @@ void UBeamOTELManagerEditor::OtelReportLogs()
 	{
 		for (const FString& Path : AllFiles)
 		{
-			GenBeamCommandArgs.Add(TEXT("--paths=") + Path);
+			GenBeamCommandArgs.Add(FString::Printf(TEXT("--paths=\"%s\""), *Path));
 		}
 	}
 
