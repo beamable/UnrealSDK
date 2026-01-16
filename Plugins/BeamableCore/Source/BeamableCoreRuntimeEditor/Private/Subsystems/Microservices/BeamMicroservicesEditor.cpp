@@ -315,7 +315,7 @@ bool UBeamMicroservicesEditor::SetCurrentRoutingKey(FString BeamoId, FString Tar
 	if (!ensureAlwaysMsgf(LocalMicroservice, TEXT("BeamoId not found in local microservices data. BEAMO_ID=%s"), *BeamoId))
 		return false;
 
-	if (!ensureAlwaysMsgf(LocalMicroservice->TargetsToRoutingKeys.Contains(Target), TEXT("RoutingKey not found in list of avaialable routing keys. BEAMO_ID=%s, ROUTING_KEY=%s"), *BeamoId, *Target))
+	if (!ensureAlwaysMsgf(LocalMicroservice->TargetsToRoutingKeys.Contains(Target), TEXT("RoutingKey not found in list of avaialable routing keys. BEAMO_ID=%s, TARGET=%s"), *BeamoId, *Target))
 		return false;
 
 	LocalMicroservice->CurrentTarget = Target;

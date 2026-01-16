@@ -3,6 +3,8 @@
 PATH_TO_UNREAL_SDK_REPO=$1
 INSTALL_OSS=${2:-false}
 
+echo -e "\nValidating arguments and .NET dependencies..."
+echo "-------------------------------------------------------"
 if [ "$PATH_TO_UNREAL_SDK_REPO" == "" ]; then
 	echo "Please provide the path to the folder on your machine that contains the Beamable Unreal SDK."
 	return 1
@@ -24,12 +26,16 @@ if ! dotnet tool list >/dev/null 2>&1; then
     return 1
 fi
 
+echo -e "Found .NET and path to the Beamable SDK.\n"
+
 # Install the SDK in your project
 # Find the .uproject file path and name
+echo "Finding '.uproject' in working directory..."
+echo "-------------------------------------------------------"
 UPROJECT_PATH=$(find . -name "*.uproject" -print -quit)
 echo "Found .uproject: $UPROJECT_PATH"
 UPROJECT_NAME=$(basename "$UPROJECT_PATH" ".uproject")
-echo "Installing the SDK in your project: $UPROJECT_NAME"
+echo -e "Installing the SDK in your project: $UPROJECT_NAME\n"
 
 # Ensure we are inside a unreal project root folder.
 if [ $UPROJECT_PATH == "" ]; then
@@ -38,12 +44,18 @@ if [ $UPROJECT_PATH == "" ]; then
 fi
 
 # Check for .beamable directory
+echo "Creating '.beamable' folder in working directory..."
+echo "-------------------------------------------------------"
 if [ ! -d ".beamable" ]; then
-   echo ".beamable folder not found. Creating one here."
+   echo -e ".beamable folder not found. Creating one here.\n"
    mkdir .beamable
+else
+    echo -e ".beamable folder already found. Using the existing one.\n"
 fi
 
 # Read out the expected version of the CLI for your current version of the Unreal SDK you are installing from
+echo "Installing the Beamable CLI in this project..."
+echo "-------------------------------------------------------"
 CLI_VERSION=$(
   # Read the UnrealSDK's own dotnet-tools manifest.
   sed -e 's/^ *//' < "$PATH_TO_UNREAL_SDK_REPO/.config/dotnet-tools.json" |
@@ -67,11 +79,13 @@ fi
 
 # Install Beamable.Tools with optional version
 dotnet tool install Beamable.Tools --version "$CLI_VERSION" --allow-downgrade
-echo "Beamable Tools are installed. To call them use \"dotnet beam\" from any directory under your Unreal project root."
+echo -e "Beamable Tools are installed. To call them use \"dotnet beam\" from any directory under your Unreal project root.\n"
 
 # Guarantee no read-only files exist inside the Plugins/BeamableCore and Plugins/OnlineSubsystemBeamable folders
 # This requires per-OS commands. If you run into "access denied" issues when running this script in non-Windows OSs, 
 # please verify that there are no ReadOnly files inside the beamable plugin folders. 
+echo "Installing the Beamable SDK Plugin in this project..."
+echo "-------------------------------------------------------"
 PLUGIN_PATH="Plugins/BeamableCore"
 if [ -d $PLUGIN_PATH ]; then
 	echo "Clearing any read-only flags on files inside Beamable's Plugin Folders"
@@ -84,4 +98,4 @@ fi
 
 
 dotnet beam unreal init "$PATH_TO_UNREAL_SDK_REPO" "$UPROJECT_PATH" "$INSTALL_OSS"
-echo "Installed Beamable SDK successfully."
+echo -e "Installed Beamable SDK successfully.\n"
