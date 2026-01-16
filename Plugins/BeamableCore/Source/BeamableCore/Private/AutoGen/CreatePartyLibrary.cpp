@@ -23,23 +23,25 @@ FString UCreatePartyLibrary::CreatePartyToJsonString(const UCreateParty* Seriali
 	return Result;
 }	
 
-UCreateParty* UCreatePartyLibrary::Make(FOptionalString Restriction, FOptionalBeamGamerTag Leader, FOptionalInt32 MaxSize, UObject* Outer)
+UCreateParty* UCreatePartyLibrary::Make(FOptionalString Restriction, FOptionalBeamGamerTag Leader, FOptionalInt32 MaxSize, FOptionalArrayOfBeamTag MemberTags, UObject* Outer)
 {
 	auto Serializable = NewObject<UCreateParty>(Outer);
 	Serializable->Restriction = Restriction;
 	Serializable->Leader = Leader;
 	Serializable->MaxSize = MaxSize;
+	Serializable->MemberTags = MemberTags;
 	
 	return Serializable;
 }
 
-void UCreatePartyLibrary::Break(const UCreateParty* Serializable, FOptionalString& Restriction, FOptionalBeamGamerTag& Leader, FOptionalInt32& MaxSize)
+void UCreatePartyLibrary::Break(const UCreateParty* Serializable, FOptionalString& Restriction, FOptionalBeamGamerTag& Leader, FOptionalInt32& MaxSize, FOptionalArrayOfBeamTag& MemberTags)
 {
 	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
 	{
 		Restriction = Serializable->Restriction;
 		Leader = Serializable->Leader;
 		MaxSize = Serializable->MaxSize;
+		MemberTags = Serializable->MemberTags;
 	}
 		
 }

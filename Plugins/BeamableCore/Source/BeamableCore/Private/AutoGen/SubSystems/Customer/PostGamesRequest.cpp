@@ -27,7 +27,7 @@ void UPostGamesRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostGamesRequest* UPostGamesRequest::Make(FString _CustomerId, FString _GameName, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
+UPostGamesRequest* UPostGamesRequest::Make(FString _CustomerId, FString _GameName, FOptionalBool _bIsHidden, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPostGamesRequest* Req = NewObject<UPostGamesRequest>(RequestOwner);
 	Req->CustomHeaders = TMap{CustomHeaders};
@@ -37,8 +37,9 @@ UPostGamesRequest* UPostGamesRequest::Make(FString _CustomerId, FString _GameNam
 	
 	
 	// Makes a body and fill up with parameters (Blank if no body parameters exist)
-	Req->Body = NewObject<UNewGameRequestBody>(Req);
+	Req->Body = NewObject<UCustomerActorNewGameRequestBody>(Req);
 	Req->Body->GameName = _GameName;
+	Req->Body->bIsHidden = _bIsHidden;
 	
 
 	return Req;

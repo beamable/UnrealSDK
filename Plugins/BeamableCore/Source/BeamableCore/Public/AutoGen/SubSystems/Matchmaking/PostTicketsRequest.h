@@ -37,7 +37,7 @@ public:
 	virtual void BuildBody(FString& BodyString) const override;
 
 	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Matchmaking|Utils|Make/Break", DisplayName="Make PostTickets",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_bWatchOnlineStatus,_MaxWaitDurationSecs,_Team,_Players,_MatchTypes,_Tags,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
-	static UPostTicketsRequest* Make(FOptionalBool _bWatchOnlineStatus, FOptionalInt32 _MaxWaitDurationSecs, FOptionalString _Team, FOptionalArrayOfBeamGamerTag _Players, FOptionalArrayOfBeamContentId _MatchTypes, FOptionalArrayOfBeamTag _Tags, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
+	static UPostTicketsRequest* Make(FOptionalBool _bWatchOnlineStatus, FOptionalInt32 _MaxWaitDurationSecs, FOptionalString _Team, FOptionalArrayOfBeamGamerTag _Players, FOptionalArrayOfBeamContentId _MatchTypes, FOptionalMapOfTagList _Tags, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

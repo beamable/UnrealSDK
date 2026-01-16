@@ -8,6 +8,7 @@
 #include "BeamBackend/BeamFullResponse.h"
 
 #include "Serialization/BeamJsonUtils.h"
+#include "BeamableCore/Public/AutoGen/UpdateRealmRequestBody.h"
 #include "BeamableCore/Public/AutoGen/EmptyMessage.h"
 
 #include "PutRealmsRequest.generated.h"
@@ -29,7 +30,8 @@ public:
 	
 
 	// Body Params
-	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="", Category="Beam")
+	UUpdateRealmRequestBody* Body = {};
 
 	// Beam Base Request Declaration
 	UPutRealmsRequest() = default;
@@ -38,8 +40,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Customer|Utils|Make/Break", DisplayName="Make PutRealms",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="RequestOwner", AutoCreateRefTerm="CustomHeaders"))
-	static UPutRealmsRequest* Make(FString _CustomerId, FString _RealmId, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Customer|Utils|Make/Break", DisplayName="Make PutRealms",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_bArchiveStatus,_bHiddenStatus,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	static UPutRealmsRequest* Make(FString _CustomerId, FString _RealmId, FOptionalBool _bArchiveStatus, FOptionalBool _bHiddenStatus, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

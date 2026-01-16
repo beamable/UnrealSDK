@@ -15,6 +15,7 @@ void URealmView::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) cons
 	UBeamJsonUtils::SerializeRawPrimitive(TEXT("displayName"), DisplayName, Serializer);
 	UBeamJsonUtils::SerializeRawPrimitive(TEXT("realmId"), RealmId, Serializer);
 	UBeamJsonUtils::SerializeOptional<bool>(TEXT("archived"), &bArchived, Serializer);
+	UBeamJsonUtils::SerializeOptional<bool>(TEXT("hidden"), &bHidden, Serializer);
 	UBeamJsonUtils::SerializeOptional<bool>(TEXT("sharded"), &bSharded, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("customerId"), &CustomerId, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("parent"), &Parent, Serializer);
@@ -27,6 +28,7 @@ void URealmView::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer
 	UBeamJsonUtils::SerializeRawPrimitive(TEXT("displayName"), DisplayName, Serializer);
 	UBeamJsonUtils::SerializeRawPrimitive(TEXT("realmId"), RealmId, Serializer);
 	UBeamJsonUtils::SerializeOptional<bool>(TEXT("archived"), &bArchived, Serializer);
+	UBeamJsonUtils::SerializeOptional<bool>(TEXT("hidden"), &bHidden, Serializer);
 	UBeamJsonUtils::SerializeOptional<bool>(TEXT("sharded"), &bSharded, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("customerId"), &CustomerId, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("parent"), &Parent, Serializer);
@@ -39,6 +41,7 @@ void URealmView::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("displayName"), Bag, DisplayName);
 	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("realmId"), Bag, RealmId);
 	UBeamJsonUtils::DeserializeOptional<bool>("archived", Bag, bArchived, OuterOwner);
+	UBeamJsonUtils::DeserializeOptional<bool>("hidden", Bag, bHidden, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<bool>("sharded", Bag, bSharded, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("customerId", Bag, CustomerId, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("parent", Bag, Parent, OuterOwner);

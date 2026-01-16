@@ -315,7 +315,7 @@ bool UBeamMicroservicesEditor::SetCurrentRoutingKey(FString BeamoId, FString Tar
 	if (!ensureAlwaysMsgf(LocalMicroservice, TEXT("BeamoId not found in local microservices data. BEAMO_ID=%s"), *BeamoId))
 		return false;
 
-	if (!ensureAlwaysMsgf(LocalMicroservice->TargetsToRoutingKeys.Contains(Target), TEXT("RoutingKey not found in list of avaialable routing keys. BEAMO_ID=%s, ROUTING_KEY=%s"), *BeamoId, *Target))
+	if (!ensureAlwaysMsgf(LocalMicroservice->TargetsToRoutingKeys.Contains(Target), TEXT("RoutingKey not found in list of avaialable routing keys. BEAMO_ID=%s, TARGET=%s"), *BeamoId, *Target))
 		return false;
 
 	LocalMicroservice->CurrentTarget = Target;
@@ -339,11 +339,15 @@ FString UBeamMicroservicesEditor::ConstructRoutingKeyMap()
 		if (MicroserviceData.Value.TargetsToRoutingKeys.Contains(SelectedTarget))
 		{
 			const auto RoutingKey = MicroserviceData.Value.TargetsToRoutingKeys[SelectedTarget];
-			if (!RoutingKey.IsEmpty())
+			const auto bIsNotTargettingRealm = !RoutingKey.IsEmpty();
+			const auto bIsMicroservice = MicroserviceData.Value.ServiceType == MicroService;
+			const auto bIsTargettingNonLocalRealm = bIsMicroservice && bIsNotTargettingRealm && RoutingKey != LocalRoutingKey;
+			const auto bIsTargettingLocalRunningRealm = bIsMicroservice && bIsNotTargettingRealm && RoutingKey == LocalRoutingKey && MicroserviceData.Value.RunningState != Stopped;
+			if (bIsTargettingNonLocalRealm || bIsTargettingLocalRunningRealm)
 				RoutingKeyMapEntries.Add((TEXT("micro_") + BeamoId + TEXT(":") + RoutingKey));
 		}
 	}
-
+	RoutingKeyMapEntries.Sort();
 	return FString::Join(RoutingKeyMapEntries, TEXT(","));
 }
 
@@ -630,8 +634,8 @@ void UBeamMicroservicesEditor::ExportDockerCompose(const FBeamOperationHandle& O
 
 	auto ProgressMap = new TMap<FString, float>();
 	*ProgressMap = {};
-	
-	ExportDockerCompose->OnProgressStreamOutput= [ProgressMap](const TArray<UBeamCliDeploymentPlanProgressStreamData*>& Data, const TArray<long long>& , const FBeamOperationHandle& )
+
+	ExportDockerCompose->OnProgressStreamOutput = [ProgressMap](const TArray<UBeamCliDeploymentPlanProgressStreamData*>& Data, const TArray<long long>&, const FBeamOperationHandle&)
 	{
 		for (const auto& StreamData : Data)
 		{
@@ -639,7 +643,7 @@ void UBeamMicroservicesEditor::ExportDockerCompose(const FBeamOperationHandle& O
 			{
 				if (!ProgressMap->Contains(StreamData->ServiceName))
 				{
-					ProgressMap->Add( StreamData->ServiceName, StreamData->Ratio);
+					ProgressMap->Add(StreamData->ServiceName, StreamData->Ratio);
 					UE_LOG(LogBeamEditorMs, Display, TEXT("%s => %f"), *StreamData->ServiceName, StreamData->Ratio);
 				}
 				else
@@ -657,7 +661,7 @@ void UBeamMicroservicesEditor::ExportDockerCompose(const FBeamOperationHandle& O
 			{
 				if (!ProgressMap->Contains(StreamData->Name))
 				{
-					ProgressMap->Add( StreamData->Name, StreamData->Ratio);
+					ProgressMap->Add(StreamData->Name, StreamData->Ratio);
 					UE_LOG(LogBeamEditorMs, Display, TEXT("%s => %f"), *StreamData->Name, StreamData->Ratio);
 				}
 				else
@@ -671,7 +675,7 @@ void UBeamMicroservicesEditor::ExportDockerCompose(const FBeamOperationHandle& O
 					}
 				}
 			}
-		}		
+		}
 	};
 
 	// Handle completing the operation

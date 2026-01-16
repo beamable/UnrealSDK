@@ -27,7 +27,7 @@ void UPostPartiesRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostPartiesRequest* UPostPartiesRequest::Make(FOptionalString _Restriction, FOptionalBeamGamerTag _Leader, FOptionalInt32 _MaxSize, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
+UPostPartiesRequest* UPostPartiesRequest::Make(FOptionalString _Restriction, FOptionalBeamGamerTag _Leader, FOptionalInt32 _MaxSize, FOptionalArrayOfBeamTag _MemberTags, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPostPartiesRequest* Req = NewObject<UPostPartiesRequest>(RequestOwner);
 	Req->CustomHeaders = TMap{CustomHeaders};
@@ -40,6 +40,7 @@ UPostPartiesRequest* UPostPartiesRequest::Make(FOptionalString _Restriction, FOp
 	Req->Body->Restriction = _Restriction;
 	Req->Body->Leader = _Leader;
 	Req->Body->MaxSize = _MaxSize;
+	Req->Body->MemberTags = _MemberTags;
 	
 
 	return Req;

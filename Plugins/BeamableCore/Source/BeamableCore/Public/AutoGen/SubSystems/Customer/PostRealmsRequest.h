@@ -38,8 +38,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Customer|Utils|Make/Break", DisplayName="Make PostRealms",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_bSharded,_Plan,_Parent,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
-	static UPostRealmsRequest* Make(FString _CustomerId, FString _Name, FOptionalBool _bSharded, FOptionalString _Plan, FOptionalString _Parent, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Customer|Utils|Make/Break", DisplayName="Make PostRealms",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_bIsHidden,_bSharded,_Plan,_Parent,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	static UPostRealmsRequest* Make(FString _CustomerId, FString _Name, FOptionalBool _bIsHidden, FOptionalBool _bSharded, FOptionalString _Plan, FOptionalString _Parent, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

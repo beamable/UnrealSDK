@@ -24,9 +24,9 @@ void UTicket::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("partyId"), &PartyId, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("lobbyId"), &LobbyId, Serializer);
 	UBeamJsonUtils::SerializeOptional<TArray<FBeamGamerTag>, FBeamGamerTag, FString>(TEXT("players"), &Players, Serializer);
-	UBeamJsonUtils::SerializeOptional<TArray<FBeamTag>, FBeamTag>(TEXT("tags"), &Tags, Serializer);
 	UBeamJsonUtils::SerializeOptional<TMap<FString, FString>, FString>(TEXT("stringProperties"), &StringProperties, Serializer);
 	UBeamJsonUtils::SerializeOptional<TMap<FString, double>, double>(TEXT("numberProperties"), &NumberProperties, Serializer);
+	UBeamJsonUtils::SerializeOptional<TMap<FString, UTagList*>, UTagList*>(TEXT("tags"), &Tags, Serializer);
 }
 
 void UTicket::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
@@ -43,9 +43,9 @@ void UTicket::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) c
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("partyId"), &PartyId, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("lobbyId"), &LobbyId, Serializer);
 	UBeamJsonUtils::SerializeOptional<TArray<FBeamGamerTag>, FBeamGamerTag, FString>(TEXT("players"), &Players, Serializer);
-	UBeamJsonUtils::SerializeOptional<TArray<FBeamTag>, FBeamTag>(TEXT("tags"), &Tags, Serializer);
 	UBeamJsonUtils::SerializeOptional<TMap<FString, FString>, FString>(TEXT("stringProperties"), &StringProperties, Serializer);
-	UBeamJsonUtils::SerializeOptional<TMap<FString, double>, double>(TEXT("numberProperties"), &NumberProperties, Serializer);		
+	UBeamJsonUtils::SerializeOptional<TMap<FString, double>, double>(TEXT("numberProperties"), &NumberProperties, Serializer);
+	UBeamJsonUtils::SerializeOptional<TMap<FString, UTagList*>, UTagList*>(TEXT("tags"), &Tags, Serializer);		
 }
 
 void UTicket::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
@@ -62,9 +62,9 @@ void UTicket::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 	UBeamJsonUtils::DeserializeOptional<FString>("partyId", Bag, PartyId, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("lobbyId", Bag, LobbyId, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<TArray<FBeamGamerTag>, FBeamGamerTag, FString>("players", Bag, Players, OuterOwner);
-	UBeamJsonUtils::DeserializeOptional<TArray<FBeamTag>, FBeamTag>("tags", Bag, Tags, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<TMap<FString, FString>, FString>("stringProperties", Bag, StringProperties, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<TMap<FString, double>, double>("numberProperties", Bag, NumberProperties, OuterOwner);
+	UBeamJsonUtils::DeserializeOptional<TMap<FString, UTagList*>, UTagList*>("tags", Bag, Tags, OuterOwner);
 }
 
 

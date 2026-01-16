@@ -14,7 +14,12 @@ void UGetAdminViewRequest::BuildRoute(FString& RouteString) const
 	FString QueryParams = TEXT("");
 	QueryParams.Reserve(1024);
 	bool bIsFirstQueryParam = true;
-	
+	if(bShowHiddenRealms.IsSet){
+		bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
+		QueryParams.Appendf(TEXT("%s=%s"), TEXT("showHiddenRealms"), bShowHiddenRealms.Val ? TEXT("true") : TEXT("false"));
+		bIsFirstQueryParam = false;
+	}
+
 	RouteString.Appendf(TEXT("%s%s"), *Route, *QueryParams);		
 }
 
@@ -23,13 +28,14 @@ void UGetAdminViewRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetAdminViewRequest* UGetAdminViewRequest::Make(FString _CustomerId, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
+UGetAdminViewRequest* UGetAdminViewRequest::Make(FString _CustomerId, FOptionalBool _bShowHiddenRealms, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UGetAdminViewRequest* Req = NewObject<UGetAdminViewRequest>(RequestOwner);
 	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->CustomerId = _CustomerId;
+	Req->bShowHiddenRealms = _bShowHiddenRealms;
 	
 	
 	// Makes a body and fill up with parameters (Blank if no body parameters exist)

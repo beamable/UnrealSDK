@@ -8,6 +8,7 @@
 #include "BeamNotifications/SubSystems/BeamInventoryNotifications.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Subsystems/Inventory/BeamInventorySubsystem.h"
+#include "Subsystems/Lobby/BeamLobbySubsystem.h"
 
 #define stringify( name ) # name
 
@@ -174,40 +175,40 @@ bool UBeamPartySubsystem::TryGetUserInvitesState(FUserSlot UserSlot, TArray<FBea
 	return Invites.Num() != 0;
 }
 
-FBeamOperationHandle UBeamPartySubsystem::JoinPartyOperation(FUserSlot UserSlot, FGuid PartyId,
+FBeamOperationHandle UBeamPartySubsystem::JoinPartyOperation(FUserSlot UserSlot, FGuid PartyId, TArray<FBeamTag> PlayerTags,
                                                              FBeamOperationEventHandler OnOperationEvent)
 {
 	const auto Handle = Runtime->RequestTrackerSystem->BeginOperation({UserSlot}, GetClass()->GetFName().ToString(),
 	                                                                  OnOperationEvent);
-	JoinParty(UserSlot, PartyId, Handle);
+	JoinParty(UserSlot, PartyId, PlayerTags, Handle);
 	return Handle;
 }
 
-FBeamOperationHandle UBeamPartySubsystem::CPP_JoinPartyOperation(FUserSlot UserSlot, FGuid PartyId,
+FBeamOperationHandle UBeamPartySubsystem::CPP_JoinPartyOperation(FUserSlot UserSlot, FGuid PartyId, TArray<FBeamTag> PlayerTags,
                                                                  FBeamOperationEventHandlerCode OnOperationEvent)
 {
 	const auto Handle = Runtime->RequestTrackerSystem->CPP_BeginOperation(
 		{UserSlot}, GetClass()->GetFName().ToString(), OnOperationEvent);
-	JoinParty(UserSlot, PartyId, Handle);
+	JoinParty(UserSlot, PartyId, PlayerTags, Handle);
 	return Handle;
 }
 
-FBeamOperationHandle UBeamPartySubsystem::JoinPlayerPartyOperation(FUserSlot UserSlot, FBeamGamerTag PlayerGamerTag,
+FBeamOperationHandle UBeamPartySubsystem::JoinPlayerPartyOperation(FUserSlot UserSlot, FBeamGamerTag PlayerGamerTag, TArray<FBeamTag> PlayerTags,
                                                                    FBeamOperationEventHandler OnOperationEvent)
 {
 	const auto Handle = Runtime->RequestTrackerSystem->BeginOperation({UserSlot}, GetClass()->GetFName().ToString(),
 	                                                                  OnOperationEvent);
-	JoinPlayerParty(UserSlot, PlayerGamerTag, Handle);
+	JoinPlayerParty(UserSlot, PlayerGamerTag, PlayerTags, Handle);
 	return Handle;
 }
 
-FBeamOperationHandle UBeamPartySubsystem::CPP_JoinPlayerPartyOperation(FUserSlot UserSlot, FBeamGamerTag PlayerGamerTag,
+FBeamOperationHandle UBeamPartySubsystem::CPP_JoinPlayerPartyOperation(FUserSlot UserSlot, FBeamGamerTag PlayerGamerTag, TArray<FBeamTag> PlayerTags,
                                                                        FBeamOperationEventHandlerCode
                                                                        OnOperationEvent)
 {
 	const auto Handle = Runtime->RequestTrackerSystem->CPP_BeginOperation(
 		{UserSlot}, GetClass()->GetFName().ToString(), OnOperationEvent);
-	JoinPlayerParty(UserSlot, PlayerGamerTag, Handle);
+	JoinPlayerParty(UserSlot, PlayerGamerTag, PlayerTags, Handle);
 	return Handle;
 }
 
@@ -271,23 +272,24 @@ FBeamOperationHandle UBeamPartySubsystem::CPP_FetchPlayerPartyStateOperation(FUs
 }
 
 FBeamOperationHandle UBeamPartySubsystem::CreatePartyOperation(FUserSlot UserSlot, EBeamPartyRestriction Restriction,
-                                                               int32 MaxPlayers,
+                                                               int32 MaxPlayers, TArray<FBeamTag> PlayerTags,
                                                                FBeamOperationEventHandler OnOperationEvent)
 {
 	const auto Handle = Runtime->RequestTrackerSystem->BeginOperation({UserSlot}, GetClass()->GetFName().ToString(),
 	                                                                  OnOperationEvent);
-	CreateParty(UserSlot, Restriction, MaxPlayers, Handle);
+	CreateParty(UserSlot, Restriction, MaxPlayers, PlayerTags, Handle);
 	return Handle;
 }
 
 FBeamOperationHandle UBeamPartySubsystem::CPP_CreatePartyOperation(FUserSlot UserSlot,
                                                                    EBeamPartyRestriction Restriction,
-                                                                   int32 maxPlayers,
+                                                                   int32 MaxPlayers,
+                                                                   TArray<FBeamTag> PlayerTags,
                                                                    FBeamOperationEventHandlerCode OnOperationEvent)
 {
 	const auto Handle = Runtime->RequestTrackerSystem->CPP_BeginOperation(
 		{UserSlot}, GetClass()->GetFName().ToString(), OnOperationEvent);
-	CreateParty(UserSlot, Restriction, maxPlayers, Handle);
+	CreateParty(UserSlot, Restriction, MaxPlayers,PlayerTags, Handle);
 	return Handle;
 }
 
@@ -724,7 +726,7 @@ void UBeamPartySubsystem::FetchPartyInvites(FUserSlot UserSlot, FBeamOperationHa
 }
 
 
-bool UBeamPartySubsystem::CreateParty(FUserSlot UserSlot, EBeamPartyRestriction Restriction, int32 maxPlayers,
+bool UBeamPartySubsystem::CreateParty(FUserSlot UserSlot, EBeamPartyRestriction Restriction, int32 MaxPlayers, TArray<FBeamTag> PlayerTags,
                                       FBeamOperationHandle Op)
 {
 	if (!IsUserSlotAuthenticated(UserSlot, __FUNCTION__, Op))
@@ -771,11 +773,12 @@ bool UBeamPartySubsystem::CreateParty(FUserSlot UserSlot, EBeamPartyRestriction 
 	{
 		return false;
 	}
-
+	
+	AddRoutingKey(UserSlot, PlayerTags);
 
 	UPostPartiesRequest* const Request = UPostPartiesRequest::Make(FOptionalString(GetRestrictionString(Restriction)),
 	                                                               FOptionalBeamGamerTag(RealmUser.GamerTag),
-	                                                               FOptionalInt32(maxPlayers), GetTransientPackage(),
+	                                                               FOptionalInt32(MaxPlayers), FOptionalArrayOfBeamTag(PlayerTags), GetTransientPackage(),
 	                                                               {});
 
 	FBeamRequestContext Ctx;
@@ -785,7 +788,7 @@ bool UBeamPartySubsystem::CreateParty(FUserSlot UserSlot, EBeamPartyRestriction 
 	return true;
 }
 
-void UBeamPartySubsystem::JoinParty(FUserSlot UserSlot, FGuid PartyId, FBeamOperationHandle Op)
+void UBeamPartySubsystem::JoinParty(FUserSlot UserSlot, FGuid PartyId, TArray<FBeamTag> PlayerTags, FBeamOperationHandle Op)
 {
 	if (!IsUserSlotAuthenticated(UserSlot, __FUNCTION__, Op))
 	{
@@ -854,14 +857,17 @@ void UBeamPartySubsystem::JoinParty(FUserSlot UserSlot, FGuid PartyId, FBeamOper
 			}
 		});
 
-	UPutPartyRequest* const Request = UPutPartyRequest::Make(PartyId, this, {});
+	AddRoutingKey(UserSlot, PlayerTags);
+	
+	UPutPartyRequest* const Request = UPutPartyRequest::Make(PartyId, FOptionalArrayOfBeamTag(PlayerTags), GetTransientPackage(), {});
 
 	FBeamRequestContext Ctx;
 
 	PartyApi->CPP_PutParty(UserSlot, Request, Handler, Ctx, Op, this);
 }
 
-void UBeamPartySubsystem::JoinPlayerParty(FUserSlot UserSlot, FBeamGamerTag PlayerGamerTag, FBeamOperationHandle Op)
+
+void UBeamPartySubsystem::JoinPlayerParty(FUserSlot UserSlot, FBeamGamerTag PlayerGamerTag, TArray<FBeamTag> PlayerTags, FBeamOperationHandle Op)
 {
 	if (!IsUserSlotAuthenticated(UserSlot, __FUNCTION__, Op))
 	{
@@ -966,7 +972,9 @@ void UBeamPartySubsystem::JoinPlayerParty(FUserSlot UserSlot, FBeamGamerTag Play
 			}
 		});
 
-	UPutPartyRequest* const Request = UPutPartyRequest::Make(PartyId, this, {});
+	AddRoutingKey(UserSlot, PlayerTags);
+
+	UPutPartyRequest* const Request = UPutPartyRequest::Make(PartyId, FOptionalArrayOfBeamTag(PlayerTags), this, {});
 
 	FBeamRequestContext Ctx;
 
@@ -1689,6 +1697,21 @@ FString UBeamPartySubsystem::GetRestrictionString(EBeamPartyRestriction Restrict
 	default:
 		return "";
 	}
+}
+
+
+void UBeamPartySubsystem::AddRoutingKey(FUserSlot UserSlot, TArray<FBeamTag> PlayerTags)
+{
+	UBeamBackend* BeamBackend = GEngine->GetEngineSubsystem<UBeamBackend>();
+
+	FString RoutingKey = "";
+
+	if (BeamBackend->CurrentRoutingKeyMaps.Contains(UserSlot))
+	{
+		RoutingKey = BeamBackend->CurrentRoutingKeyMaps[UserSlot];
+	}
+
+	PlayerTags.Add(FBeamTag{UBeamLobbySubsystem::Reserved_PlayerTag_Routing_Key_Property, RoutingKey});
 }
 
 EBeamPartyRestriction UBeamPartySubsystem::GetRestrictionType(FString RestrictionName)

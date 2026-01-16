@@ -15,7 +15,7 @@
 #include "BeamableCore/Public/AutoGen/SubSystems/Lobby/DeleteLobbyRequest.h"
 #include "BeamableCore/Public/AutoGen/SubSystems/Lobby/PutPasscodeRequest.h"
 #include "BeamableCore/Public/AutoGen/SubSystems/Lobby/ApiLobbyPutMetadataByIdRequest.h"
-#include "BeamableCore/Public/AutoGen/SubSystems/Lobby/PutTagsRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Lobby/ApiLobbyPutTagsByIdRequest.h"
 #include "BeamableCore/Public/AutoGen/SubSystems/Lobby/DeleteTagsRequest.h"
 #include "BeamableCore/Public/AutoGen/SubSystems/Lobby/ApiLobbyPostServerByIdRequest.h"
 
@@ -147,14 +147,14 @@ private:
 	/**
 	 * @brief Private implementation for requests that require authentication that all overloaded BP UFunctions call.	  
 	 */
-	void BP_PutTagsImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, UPutTagsRequest* RequestData,
-	                  const FOnPutTagsSuccess& OnSuccess, const FOnPutTagsError& OnError, const FOnPutTagsComplete& OnComplete, 
+	void BP_PutTagsImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, UApiLobbyPutTagsByIdRequest* RequestData,
+	                  const FOnApiLobbyPutTagsByIdSuccess& OnSuccess, const FOnApiLobbyPutTagsByIdError& OnError, const FOnApiLobbyPutTagsByIdComplete& OnComplete, 
 					  int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 	/**
 	 * @brief Overload version for binding lambdas when in C++ land. Prefer the BP version whenever possible, this is here mostly for quick experimentation purposes.	 
 	 */
-	void CPP_PutTagsImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, UPutTagsRequest* RequestData,
-	                   const FOnPutTagsFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
+	void CPP_PutTagsImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, UApiLobbyPutTagsByIdRequest* RequestData,
+	                   const FOnApiLobbyPutTagsByIdFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 		
 	/**
 	 * @brief Private implementation for requests that require authentication that all overloaded BP UFunctions call.	  
@@ -330,7 +330,7 @@ public:
 	 * @param OpHandle When made as part of an Operation, you can pass this in and it'll register the request with the operation automatically.
 	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches. 
 	 */
-	void CPP_PutTags(const FUserSlot& UserSlot, UPutTagsRequest* Request, const FOnPutTagsFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
+	void CPP_PutTags(const FUserSlot& UserSlot, UApiLobbyPutTagsByIdRequest* Request, const FOnApiLobbyPutTagsByIdFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 
 		
 	/**
@@ -500,7 +500,7 @@ public:
 	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches.
 	 */
 	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Lobby|Utils|Make/Break", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="OpHandle,CallingContext",AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete,OpHandle", BeamFlowFunction))
-	void PutTags(FUserSlot UserSlot, UPutTagsRequest* Request, const FOnPutTagsSuccess& OnSuccess, const FOnPutTagsError& OnError, const FOnPutTagsComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr);
+	void PutTags(FUserSlot UserSlot, UApiLobbyPutTagsByIdRequest* Request, const FOnApiLobbyPutTagsByIdSuccess& OnSuccess, const FOnApiLobbyPutTagsByIdError& OnError, const FOnApiLobbyPutTagsByIdComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr);
 
 		
 	/**

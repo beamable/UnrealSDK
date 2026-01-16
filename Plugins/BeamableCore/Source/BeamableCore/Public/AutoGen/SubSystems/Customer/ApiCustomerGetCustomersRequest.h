@@ -7,6 +7,7 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalBool.h"
 #include "BeamableCore/Public/AutoGen/CustomerActorCustomersResponse.h"
 
 #include "ApiCustomerGetCustomersRequest.generated.h"
@@ -22,7 +23,8 @@ public:
 	
 	
 	// Query Params
-	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Show Hidden Realms", Category="Beam")
+	FOptionalBool bShowHiddenRealms = {};
 
 	// Body Params
 	
@@ -34,8 +36,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Customer|Utils|Make/Break", DisplayName="Make ApiCustomerGetCustomers",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="RequestOwner", AutoCreateRefTerm="CustomHeaders"))
-	static UApiCustomerGetCustomersRequest* Make(UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Customer|Utils|Make/Break", DisplayName="Make ApiCustomerGetCustomers",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_bShowHiddenRealms,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	static UApiCustomerGetCustomersRequest* Make(FOptionalBool _bShowHiddenRealms, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

@@ -21,10 +21,14 @@ void UPutRealmsRequest::BuildRoute(FString& RouteString) const
 
 void UPutRealmsRequest::BuildBody(FString& BodyString) const
 {
-	
+	ensureAlways(Body);
+
+	TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<TCHAR>>::Create(&BodyString);
+	Body->BeamSerialize(JsonSerializer);
+	JsonSerializer->Close();
 }
 
-UPutRealmsRequest* UPutRealmsRequest::Make(FString _CustomerId, FString _RealmId, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
+UPutRealmsRequest* UPutRealmsRequest::Make(FString _CustomerId, FString _RealmId, FOptionalBool _bArchiveStatus, FOptionalBool _bHiddenStatus, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPutRealmsRequest* Req = NewObject<UPutRealmsRequest>(RequestOwner);
 	Req->CustomHeaders = TMap{CustomHeaders};
@@ -35,6 +39,9 @@ UPutRealmsRequest* UPutRealmsRequest::Make(FString _CustomerId, FString _RealmId
 	
 	
 	// Makes a body and fill up with parameters (Blank if no body parameters exist)
+	Req->Body = NewObject<UUpdateRealmRequestBody>(Req);
+	Req->Body->bArchiveStatus = _bArchiveStatus;
+	Req->Body->bHiddenStatus = _bHiddenStatus;
 	
 
 	return Req;

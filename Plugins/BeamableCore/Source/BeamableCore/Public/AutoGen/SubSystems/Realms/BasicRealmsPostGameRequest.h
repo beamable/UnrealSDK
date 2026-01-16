@@ -7,7 +7,7 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-#include "BeamableCore/Public/AutoGen/NewGameRequestBody.h"
+#include "BeamableCore/Public/AutoGen/RealmsBasicNewGameRequestBody.h"
 #include "BeamableCore/Public/AutoGen/CommonResponse.h"
 
 #include "BasicRealmsPostGameRequest.generated.h"
@@ -27,7 +27,7 @@ public:
 
 	// Body Params
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="", Category="Beam")
-	UNewGameRequestBody* Body = {};
+	URealmsBasicNewGameRequestBody* Body = {};
 
 	// Beam Base Request Declaration
 	UBasicRealmsPostGameRequest() = default;

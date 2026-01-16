@@ -1613,7 +1613,7 @@ void UBeamLobbySubsystem::UpdatePlayerTags(const FUserSlot& Slot, FBeamGamerTag 
 
 	// Make the request.
 	const auto LobbyId = LobbyState->LobbyId;
-	const auto Handler = FOnPutTagsFullResponse::CreateLambda([this, Slot, Op, LobbyId, TargetPlayer, Tags](FPutTagsFullResponse Resp)
+	const auto Handler = FOnApiLobbyPutTagsByIdFullResponse::CreateLambda([this, Slot, Op, LobbyId, TargetPlayer, Tags](FApiLobbyPutTagsByIdFullResponse Resp)
 	{
 		// If we are invoking this before retrying, we just don't do anything 
 		if (Resp.State == RS_Retrying) return;
@@ -2180,9 +2180,9 @@ FBeamRequestContext UBeamLobbySubsystem::RequestUpdateLobbyMetadata(const FUserS
 }
 
 FBeamRequestContext UBeamLobbySubsystem::RequestUpdatePlayerTag(const FUserSlot& UserSlot, FGuid LobbyId, FBeamGamerTag PlayerId, TArray<FBeamTag> PlayerTags, bool bShouldReplace,
-                                                                FBeamOperationHandle Op, FOnPutTagsFullResponse Handler) const
+                                                                FBeamOperationHandle Op, FOnApiLobbyPutTagsByIdFullResponse Handler) const
 {
-	const auto Req = UPutTagsRequest::Make(LobbyId,
+	const auto Req = UApiLobbyPutTagsByIdRequest::Make(LobbyId,
 	                                       FOptionalBeamGamerTag(PlayerId),
 	                                       FOptionalBool(bShouldReplace),
 	                                       PlayerTags.Num() > 0 ? FOptionalArrayOfBeamTag(PlayerTags) : FOptionalArrayOfBeamTag(),

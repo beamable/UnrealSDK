@@ -23,12 +23,13 @@ FString URealmViewLibrary::RealmViewToJsonString(const URealmView* Serializable,
 	return Result;
 }	
 
-URealmView* URealmViewLibrary::Make(FString DisplayName, FString RealmId, FOptionalBool bArchived, FOptionalBool bSharded, FOptionalString CustomerId, FOptionalString Parent, FOptionalString Secret, FOptionalArrayOfString Children, UObject* Outer)
+URealmView* URealmViewLibrary::Make(FString DisplayName, FString RealmId, FOptionalBool bArchived, FOptionalBool bHidden, FOptionalBool bSharded, FOptionalString CustomerId, FOptionalString Parent, FOptionalString Secret, FOptionalArrayOfString Children, UObject* Outer)
 {
 	auto Serializable = NewObject<URealmView>(Outer);
 	Serializable->DisplayName = DisplayName;
 	Serializable->RealmId = RealmId;
 	Serializable->bArchived = bArchived;
+	Serializable->bHidden = bHidden;
 	Serializable->bSharded = bSharded;
 	Serializable->CustomerId = CustomerId;
 	Serializable->Parent = Parent;
@@ -38,13 +39,14 @@ URealmView* URealmViewLibrary::Make(FString DisplayName, FString RealmId, FOptio
 	return Serializable;
 }
 
-void URealmViewLibrary::Break(const URealmView* Serializable, FString& DisplayName, FString& RealmId, FOptionalBool& bArchived, FOptionalBool& bSharded, FOptionalString& CustomerId, FOptionalString& Parent, FOptionalString& Secret, FOptionalArrayOfString& Children)
+void URealmViewLibrary::Break(const URealmView* Serializable, FString& DisplayName, FString& RealmId, FOptionalBool& bArchived, FOptionalBool& bHidden, FOptionalBool& bSharded, FOptionalString& CustomerId, FOptionalString& Parent, FOptionalString& Secret, FOptionalArrayOfString& Children)
 {
 	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
 	{
 		DisplayName = Serializable->DisplayName;
 		RealmId = Serializable->RealmId;
 		bArchived = Serializable->bArchived;
+		bHidden = Serializable->bHidden;
 		bSharded = Serializable->bSharded;
 		CustomerId = Serializable->CustomerId;
 		Parent = Serializable->Parent;

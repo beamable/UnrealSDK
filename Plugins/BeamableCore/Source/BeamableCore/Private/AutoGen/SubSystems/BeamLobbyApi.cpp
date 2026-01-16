@@ -517,7 +517,7 @@ void UBeamLobbyApi::CPP_PutMetadataImpl(const FBeamRealmHandle& TargetRealm, con
 
 		
 void UBeamLobbyApi::BP_PutTagsImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken,
-                                UPutTagsRequest* RequestData, const FOnPutTagsSuccess& OnSuccess, const FOnPutTagsError& OnError, const FOnPutTagsComplete& OnComplete, 
+                                UApiLobbyPutTagsByIdRequest* RequestData, const FOnApiLobbyPutTagsByIdSuccess& OnSuccess, const FOnApiLobbyPutTagsByIdError& OnError, const FOnApiLobbyPutTagsByIdComplete& OnComplete, 
 								int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
 	// AUTO-GENERATED...	
@@ -531,14 +531,14 @@ void UBeamLobbyApi::BP_PutTagsImpl(const FBeamRealmHandle& TargetRealm, const FB
 	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
 	{
 		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
-		Backend->RunAuthenticatedBlueprintRequestProcessor<UPutTagsRequest, ULobby, FOnPutTagsSuccess, FOnPutTagsError, FOnPutTagsComplete>
+		Backend->RunAuthenticatedBlueprintRequestProcessor<UApiLobbyPutTagsByIdRequest, ULobby, FOnApiLobbyPutTagsByIdSuccess, FOnApiLobbyPutTagsByIdError, FOnApiLobbyPutTagsByIdComplete>
 			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);		
 	}
 	// If not cached...
 	else
 	{
 		// Binds the handler to the static response handler (pre-generated)
-		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UPutTagsRequest, ULobby, FOnPutTagsSuccess, FOnPutTagsError, FOnPutTagsComplete>
+		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UApiLobbyPutTagsByIdRequest, ULobby, FOnApiLobbyPutTagsByIdSuccess, FOnApiLobbyPutTagsByIdError, FOnApiLobbyPutTagsByIdComplete>
 			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 	    
@@ -548,7 +548,7 @@ void UBeamLobbyApi::BP_PutTagsImpl(const FBeamRealmHandle& TargetRealm, const FB
 }
 
 void UBeamLobbyApi::CPP_PutTagsImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, 
-                              UPutTagsRequest* RequestData, const FOnPutTagsFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
+                              UApiLobbyPutTagsByIdRequest* RequestData, const FOnApiLobbyPutTagsByIdFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
 	// AUTO-GENERATED...
 	const auto Request = Backend->CreateAuthenticatedRequest(OutRequestId, TargetRealm, RetryConfig, AuthToken, RequestData);
@@ -561,14 +561,14 @@ void UBeamLobbyApi::CPP_PutTagsImpl(const FBeamRealmHandle& TargetRealm, const F
 	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
 	{
 		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
-		Backend->RunAuthenticatedCodeRequestProcessor<UPutTagsRequest, ULobby>
+		Backend->RunAuthenticatedCodeRequestProcessor<UApiLobbyPutTagsByIdRequest, ULobby>
 			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, TargetRealm, AuthToken, RequestData, Handler);		
 	}
 	// If not cached...
 	else
 	{
 		// Binds the handler to the static response handler (pre-generated)	
-		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UPutTagsRequest, ULobby>
+		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UApiLobbyPutTagsByIdRequest, ULobby>
 			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
@@ -826,14 +826,14 @@ void UBeamLobbyApi::CPP_PutMetadata(const FUserSlot& UserSlot, UApiLobbyPutMetad
 }
 
 		
-void UBeamLobbyApi::CPP_PutTags(const FUserSlot& UserSlot, UPutTagsRequest* Request, const FOnPutTagsFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
+void UBeamLobbyApi::CPP_PutTags(const FUserSlot& UserSlot, UApiLobbyPutTagsByIdRequest* Request, const FOnApiLobbyPutTagsByIdFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
 	// AUTO-GENERATED...
 	FBeamRealmUser AuthenticatedUser;
 	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser, CallingContext);
 
 	FBeamRetryConfig RetryConfig;
-	Backend->GetRetryConfigForUserSlotAndRequestType(UPutTagsRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
+	Backend->GetRetryConfigForUserSlotAndRequestType(UApiLobbyPutTagsByIdRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
 
     int64 OutRequestId;
 	CPP_PutTagsImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, AuthenticatedUser.AuthToken, Request, Handler, OutRequestId, OpHandle, CallingContext);
@@ -995,14 +995,14 @@ void UBeamLobbyApi::PutMetadata(FUserSlot UserSlot, UApiLobbyPutMetadataByIdRequ
 }
 
 		
-void UBeamLobbyApi::PutTags(FUserSlot UserSlot, UPutTagsRequest* Request, const FOnPutTagsSuccess& OnSuccess, const FOnPutTagsError& OnError, const FOnPutTagsComplete& OnComplete,  FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext)
+void UBeamLobbyApi::PutTags(FUserSlot UserSlot, UApiLobbyPutTagsByIdRequest* Request, const FOnApiLobbyPutTagsByIdSuccess& OnSuccess, const FOnApiLobbyPutTagsByIdError& OnError, const FOnApiLobbyPutTagsByIdComplete& OnComplete,  FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext)
 {
 	// AUTO-GENERATED...
 	FBeamRealmUser AuthenticatedUser;
 	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser, CallingContext);
 
 	FBeamRetryConfig RetryConfig;
-	Backend->GetRetryConfigForUserSlotAndRequestType(UPutTagsRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
+	Backend->GetRetryConfigForUserSlotAndRequestType(UApiLobbyPutTagsByIdRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
 
 	int64 OutRequestId;
 	BP_PutTagsImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, AuthenticatedUser.AuthToken, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	

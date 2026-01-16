@@ -11,7 +11,7 @@
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalMapOfDouble.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalInt32.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalBool.h"
-#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfBeamTag.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalMapOfTagList.h"
 
 #include "Ticket.generated.h"
 
@@ -45,12 +45,12 @@ public:
 	FOptionalString LobbyId = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Players", Category="Beam")
 	FOptionalArrayOfBeamGamerTag Players = {};
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Tags", Category="Beam")
-	FOptionalArrayOfBeamTag Tags = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="String Properties", Category="Beam")
 	FOptionalMapOfString StringProperties = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Number Properties", Category="Beam")
 	FOptionalMapOfDouble NumberProperties = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Tags", Category="Beam")
+	FOptionalMapOfTagList Tags = {};
 
 	virtual void DeserializeRequestResponse(UObject* RequestData, FString ResponseContent) override;
 

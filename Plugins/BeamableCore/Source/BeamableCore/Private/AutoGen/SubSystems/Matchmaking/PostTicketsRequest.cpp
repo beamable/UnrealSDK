@@ -27,7 +27,7 @@ void UPostTicketsRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostTicketsRequest* UPostTicketsRequest::Make(FOptionalBool _bWatchOnlineStatus, FOptionalInt32 _MaxWaitDurationSecs, FOptionalString _Team, FOptionalArrayOfBeamGamerTag _Players, FOptionalArrayOfBeamContentId _MatchTypes, FOptionalArrayOfBeamTag _Tags, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
+UPostTicketsRequest* UPostTicketsRequest::Make(FOptionalBool _bWatchOnlineStatus, FOptionalInt32 _MaxWaitDurationSecs, FOptionalString _Team, FOptionalArrayOfBeamGamerTag _Players, FOptionalArrayOfBeamContentId _MatchTypes, FOptionalMapOfTagList _Tags, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPostTicketsRequest* Req = NewObject<UPostTicketsRequest>(RequestOwner);
 	Req->CustomHeaders = TMap{CustomHeaders};

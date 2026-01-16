@@ -13,7 +13,7 @@
 #include "AutoGen/SubSystems/Lobby/PostLobbiesRequest.h"
 #include "AutoGen/SubSystems/Lobby/PutLobbyRequest.h"
 #include "AutoGen/SubSystems/Lobby/PutPasscodeRequest.h"
-#include "AutoGen/SubSystems/Lobby/PutTagsRequest.h"
+#include "AutoGen/SubSystems/Lobby/ApiLobbyPutTagsByIdRequest.h"
 #include "BeamNotifications/SubSystems/BeamLobbyNotifications.h"
 #include "Kismet/GameplayStatics.h"
 #include "Runtime/BeamRuntimeSubsystem.h"
@@ -169,6 +169,7 @@ public:
 	inline static const FString Reserved_Listen_Server_Property = TEXT("__beam_listen_server_lobby__");
 
 	inline static const FString Reserved_PlayerTag_UniqueNetId_Property = TEXT("__beam_unreal_unique_net_id__");
+	inline static const FString Reserved_PlayerTag_Routing_Key_Property = TEXT("__beam_routing_key_tag__");
 
 	inline static const FString Reserved_LoginOpt_GamerTag_Required = TEXT("LogOptBeamGamerTag");
 	inline static const FString Reserved_LoginOpt_AccessToken_Required = TEXT("LogOptBeamAccessToken");
@@ -794,7 +795,7 @@ private:
 	                                               FOptionalBeamContentId MatchType, FOptionalBeamGamerTag NewHost, FOptionalInt32 MaxPlayers, FOptionalMapOfString GlobalDataUpdates,
 	                                               FOptionalArrayOfString GlobalDataDeletes, FBeamOperationHandle Op, FOnApiLobbyPutMetadataByIdFullResponse Handler) const;
 	FBeamRequestContext RequestUpdatePlayerTag(const FUserSlot& UserSlot, FGuid LobbyId, FBeamGamerTag PlayerId, TArray<FBeamTag> PlayerTags, bool bShouldReplace, FBeamOperationHandle Op,
-	                                           FOnPutTagsFullResponse Handler) const;
+	                                           FOnApiLobbyPutTagsByIdFullResponse Handler) const;
 	FBeamRequestContext RequestDeletePlayerTags(const FUserSlot& UserSlot, FGuid LobbyId, FBeamGamerTag PlayerId, TArray<FBeamTag> PlayerTags, FBeamOperationHandle Op,
 	                                            FOnDeleteTagsFullResponse Handler) const;
 	FBeamRequestContext RequestPostServer(const FUserSlot& UserSlot, FGuid LobbyId, FOptionalBeamContentId SelectedMatchType, FBeamOperationHandle Op, FOnApiLobbyPostServerByIdFullResponse Handler) const;

@@ -36,8 +36,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Party|Utils|Make/Break", DisplayName="Make PostParties",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Restriction,_Leader,_MaxSize,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
-	static UPostPartiesRequest* Make(FOptionalString _Restriction, FOptionalBeamGamerTag _Leader, FOptionalInt32 _MaxSize, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Party|Utils|Make/Break", DisplayName="Make PostParties",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Restriction,_Leader,_MaxSize,_MemberTags,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	static UPostPartiesRequest* Make(FOptionalString _Restriction, FOptionalBeamGamerTag _Leader, FOptionalInt32 _MaxSize, FOptionalArrayOfBeamTag _MemberTags, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)
