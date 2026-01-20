@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Subsystems/BeamEditorSubsystem.h"
+#include "Subsystems/CLI/Autogen/StreamData/CollectorStatusStreamData.h"
 #include "BeamOTELManagerEditor.generated.h"
 
 
@@ -65,7 +66,9 @@ class BEAMABLECORERUNTIMEEDITOR_API UBeamOTELManagerEditor : public UBeamEditorS
     
     TMap<FString, FCliOtelLogRecord> CachedLogs;
     TMap<FString, TArray<FString>> CachedTimestamps;
+    
     float TimeAccumulated = 0;
+    UCollectorStatusStreamData* CollectorStatus;
 
 protected:
     
@@ -90,6 +93,8 @@ public:
     void OtelReportLogs();
 
     void OtelPublishLogs();
+
+    void StartCollectorPs(FBeamOperationHandle Op);
 
     bool ParseUnrealLogs(FString& FileName, FString& JsonData)
     {

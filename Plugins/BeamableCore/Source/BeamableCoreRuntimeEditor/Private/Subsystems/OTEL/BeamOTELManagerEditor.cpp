@@ -3,6 +3,7 @@
 
 #include "BeamOTELManagerEditor.h"
 
+#include "Subsystems/CLI/Autogen/BeamCliTelemetryCollectorPsCommand.h"
 #include "Subsystems/CLI/Autogen/BeamCliTelemetryPruneCommand.h"
 #include "Subsystems/CLI/Autogen/BeamCliTelemetryPushCommand.h"
 #include "Subsystems/CLI/Autogen/BeamCliTelemetryReportCommand.h"
@@ -14,11 +15,7 @@ void UBeamOTELManagerEditor::Initialize(FSubsystemCollectionBase& Collection)
 	UnrealOtelLogsFolder = FPaths::Combine(FPaths::EngineSavedDir(), TEXT("Beamable"), TEXT("BeamableOtelLogs"));
 	
 	FBeamLogging::BeamLoggingMessageHook.AddUObject(this, &UBeamOTELManagerEditor::OtelAddLog);
-	
-	TickerHandle = FTSTicker::GetCoreTicker().AddTicker(
-	  FTickerDelegate::CreateUObject(this, &UBeamOTELManagerEditor::ReportOtelLogsEachMinute),
-	  0.1f
-	);
+
 }
 
 void UBeamOTELManagerEditor::Deinitialize()
@@ -37,15 +34,17 @@ bool UBeamOTELManagerEditor::ReportOtelLogsEachMinute(float DeltaTime)
 
 		OtelReportLogs();
 	}
-	return true; // keep ticking
+	return true; 
 }
 
 FBeamOperationHandle UBeamOTELManagerEditor::OnRealmInitialized(FBeamRealmHandle NewRealm)
 {
 	// Just fire and forget the command push
-	OtelPublishLogs();
+	// OtelPublishLogs();
+	const FBeamOperationHandle Op = RequestTracker->CPP_BeginOperation({}, GetName(), {});
+	StartCollectorPs(Op);
 	
-	return Super::OnRealmInitialized(NewRealm);
+	return Op;
 }
 
 void UBeamOTELManagerEditor::OtelAddLog(FString Message, FString StackTrace, FString OtelLogLevel)
@@ -163,6 +162,14 @@ void UBeamOTELManagerEditor::OtelReportLogs()
 
 void UBeamOTELManagerEditor::OtelPublishLogs()
 {
+	if (CollectorStatus == nullptr || !CollectorStatus->IsReady || !CollectorStatus->IsRunning)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Tried to publish otel logs but collector wans't running or ready."));
+		return;
+	}else
+	{
+		UE_LOG(LogTemp, Log, TEXT("Publishing Otel logs."));
+	}
 	FString Engine = FString::Printf(TEXT("--engine %s"), TEXT("\"unreal\""));
 		
 	FString EngineVersion = FString::Printf(TEXT("--engine-version \"unreal-%d.%d.%d\""), ENGINE_MAJOR_VERSION, ENGINE_MINOR_VERSION, ENGINE_PATCH_VERSION);
@@ -175,6 +182,48 @@ void UBeamOTELManagerEditor::OtelPublishLogs()
 		
 	Cli->RunCommand(PushCommand, {Engine, EngineVersion, SdkVersion, TEXT("-q")}, {});
 	
+}
+
+void UBeamOTELManagerEditor::StartCollectorPs(FBeamOperationHandle Op)
+{
+	auto Cli = GEditor->GetEditorSubsystem<UBeamCli>();
+	
+	auto WatchCommand = NewObject<UBeamCliTelemetryCollectorPsCommand>();
+
+	WatchCommand->bShowReceivedMessageDebug = false;
+	
+	WatchCommand->OnStreamOutput = [this](TArray<UBeamCliTelemetryCollectorPsStreamData*>& Stream, TArray<int64>&, const FBeamOperationHandle&)
+	{
+		if (Stream.Num() > 0 && Stream.Last()->CollectorsStatus.Num() > 0)
+		{
+			// If receive the collector status a it is runn
+			bool bShouldStartOtelRoutine = CollectorStatus == nullptr;
+			
+			CollectorStatus = Stream.Last()->CollectorsStatus.Last();
+			
+			if (bShouldStartOtelRoutine)
+			{
+				OtelPublishLogs();
+				
+				TickerHandle = FTSTicker::GetCoreTicker().AddTicker(
+				  FTickerDelegate::CreateUObject(this, &UBeamOTELManagerEditor::ReportOtelLogsEachMinute),
+				  0.1f
+				);
+			}
+		}
+		
+	};
+
+	WatchCommand->OnExtraStreamStreamOutput = [this](TArray<UBeamCliTelemetryCollectorPsExtraStreamStreamData*>& Stream, TArray<int64>&, const FBeamOperationHandle&)
+	{
+		
+		
+	};
+	WatchCommand->OnCompleted = [this, Cli, WatchCommand](const int& ResCode, const FBeamOperationHandle&)
+	{
+	};
+
+	Cli->RunCommand(WatchCommand, {}, {});
 }
 
 

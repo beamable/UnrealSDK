@@ -57,6 +57,8 @@ public:
 
 	static FString GetDotnetPath();
 
+	bool bShowReceivedMessageDebug = true;
+
 	/**
 	 *  Appends global options we want to pass to every command.
 	 */

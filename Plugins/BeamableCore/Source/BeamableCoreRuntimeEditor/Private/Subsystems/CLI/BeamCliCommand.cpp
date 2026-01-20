@@ -289,7 +289,10 @@ void UBeamCliCommand::PrepareCommandProcess(const TArray<FString>& CommandParams
 			auto Bag = FJsonDataBag();
 			if (Bag.FromJson(MessageJson))
 			{
-				UE_LOG(LogBeamCli, Display, TEXT("BeamCli Command - Message Received. CMD=%s, MESSAGE=%s"), *Params, *MessageJson);
+				if (bShowReceivedMessageDebug)
+				{
+					UE_LOG(LogBeamCli, Display, TEXT("BeamCli Command - Message Received. CMD=%s, MESSAGE=%s"), *Params, *MessageJson);
+				}
 				
 				const auto ReceivedStreamType = Bag.GetString(TEXT("type"));
 				const auto Timestamp = static_cast<int64>(Bag.GetField(TEXT("ts"))->AsNumber());
