@@ -111,6 +111,76 @@ bool UBeamMatchmakingSubsystem::TryGetTicket(const FUserSlot& Slot, FBeamMatchma
 	return false;
 }
 
+// Utility to bind OnMatchSearchStarted callback
+void UBeamMatchmakingSubsystem::CPP_BindOnMatchSearchStarted(FOnMatchmakingTicketUpdatedCode Callback)
+{
+	FUserSlot UserSlot = GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot();
+    
+    if (auto* SlotState = Slots.Find(UserSlot))
+    {
+        SlotState->OnMatchSearchStartedCode = Callback;
+    }
+}
+
+// Utility to bind OnMatchReady callback for specific ticket
+void UBeamMatchmakingSubsystem::CPP_BindOnMatchReady(const FGuid& TicketId, FOnMatchmakingTicketUpdatedCode Callback)
+{
+	FUserSlot UserSlot = GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot();
+    
+    if (auto* SlotState = Slots.Find(UserSlot))
+    {
+        SlotState->OnMatchReadyCode.Add(TicketId, Callback);
+    }
+}
+
+// Utility to bind OnMatchCancelled callback for specific ticket
+void UBeamMatchmakingSubsystem::CPP_BindOnMatchCancelled(const FGuid& TicketId, FOnMatchmakingTicketUpdatedCode Callback)
+{
+    FUserSlot UserSlot = GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot();
+    
+    if (auto* SlotState = Slots.Find(UserSlot))
+    {
+        SlotState->OnMatchCancelledCode.Add(TicketId, Callback);
+    }
+}
+
+// Utility to bind OnMatchTimedOut callback for specific ticket
+void UBeamMatchmakingSubsystem::CPP_BindOnMatchTimedOut(const FGuid& TicketId, FOnMatchmakingTicketUpdatedCode Callback)
+{
+	FUserSlot UserSlot = GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot();
+    
+    if (auto* SlotState = Slots.Find(UserSlot))
+    {
+        SlotState->OnMatchTimedOutCode.Add(TicketId, Callback);
+    }
+}
+
+// Utility to unbind specific ticket callbacks
+void UBeamMatchmakingSubsystem::CPP_UnbindTicketCallbacks(const FGuid& TicketId)
+{
+	FUserSlot UserSlot = GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot();
+    
+    if (auto* SlotState = Slots.Find(UserSlot))
+    {
+        SlotState->OnMatchReadyCode.Remove(TicketId);
+        SlotState->OnMatchCancelledCode.Remove(TicketId);
+        SlotState->OnMatchTimedOutCode.Remove(TicketId);
+    }
+}
+
+// Utility to get current matchmaking state
+bool UBeamMatchmakingSubsystem::TryGetMatchmakingState(FBeamMatchmakingState& OutState)
+{
+	FUserSlot UserSlot = GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot();
+    
+    if (auto* SlotState = Slots.Find(UserSlot))
+    {
+        OutState = *SlotState;
+        return true;
+    }
+    return false;
+}
+
 
 // OPERATIONS
 
@@ -406,11 +476,11 @@ void UBeamMatchmakingSubsystem::OnMatchmakingRemoteUpdateReceived(FMatchmakingRe
 
 					SlotState->InTicket = MsgTicketId;
 					SlotState->LastJoinTime = TicketData->Created.Val;
-
+					
 
 					// Trigger the system level callbacks for "my party leader in another client joined and I now know that"			
-					const auto _ = OnMatchSearchStartedCode.ExecuteIfBound(NewTicket);
-					OnMatchSearchStarted.Broadcast(NewTicket);
+					const auto _ = SlotState->OnMatchSearchStartedCode.ExecuteIfBound(NewTicket);
+					SlotState->OnMatchSearchStarted.Broadcast(NewTicket);
 				}
 			});
 			FBeamRequestContext Ctx;
@@ -438,7 +508,7 @@ void UBeamMatchmakingSubsystem::OnMatchmakingUpdateReceived(FMatchmakingUpdateNo
 			LiveTicket.FoundMatchLobbyId = FGuid(Msg.MatchId);
 
 			const auto Handler = FBeamOperationEventHandlerCode::CreateLambda(
-				[this, MsgTicketId](FBeamOperationEvent Evt)
+				[this, MsgTicketId, LiveTicket](FBeamOperationEvent Evt)
 				{
 					FBeamMatchmakingTicket& T = *LiveTickets.FindByKey(MsgTicketId);
 					if (Evt.EventType == OET_SUCCESS)
@@ -455,25 +525,34 @@ void UBeamMatchmakingSubsystem::OnMatchmakingUpdateReceived(FMatchmakingUpdateNo
 							UE_LOG(LogBeamMatchmaking, Warning, TEXT("Lobby Data. Key=%s, Val=%s"), *Val.Key,
 						       *Val.Value)
 
-						// Trigger this ticket's OnMatchReady callback.
-						TArray<FOnMatchmakingTicketUpdatedCode> CodeCallbacks;
-						OnMatchReadyCode.MultiFind(MsgTicketId, CodeCallbacks, true);
-						for (auto Callback : CodeCallbacks) auto _ = Callback.ExecuteIfBound(T);
+						for (auto Slot : LiveTicket.SlotsInTicket)
+						{
+							auto SlotState = Slots.Find(Slot);
+							// Trigger this ticket's OnMatchReady callback.
+							TArray<FOnMatchmakingTicketUpdatedCode> CodeCallbacks;
+							
+							SlotState->OnMatchReadyCode.MultiFind(MsgTicketId, CodeCallbacks, true);
+							for (auto Callback : CodeCallbacks) auto _ = Callback.ExecuteIfBound(T);
 
-						OnMatchReady.Broadcast(T);
-
+							SlotState->OnMatchReady.Broadcast(T);
+						}
+						
 						// We should invalidate the ticket as we already have the match ready.
 						InvalidateLiveTicket(T);
 					}
 					else
 					{
 						T.FoundMatchLobbyId = FGuid();
+						for (auto Slot : LiveTicket.SlotsInTicket)
+						{
+							auto SlotState = Slots.Find(Slot);
+							
+							TArray<FOnMatchmakingTicketUpdatedCode> CodeCallbacks;
+							SlotState->OnMatchCancelledCode.MultiFind(MsgTicketId, CodeCallbacks, true);
+							for (auto Callback : CodeCallbacks) auto _ = Callback.ExecuteIfBound(T);
 
-						TArray<FOnMatchmakingTicketUpdatedCode> CodeCallbacks;
-						OnMatchCancelledCode.MultiFind(MsgTicketId, CodeCallbacks, true);
-						for (auto Callback : CodeCallbacks) auto _ = Callback.ExecuteIfBound(T);
-
-						OnMatchCancelled.Broadcast(T);
+							SlotState->OnMatchCancelled.Broadcast(T);
+						}
 
 						InvalidateLiveTicket(T);
 					}
@@ -489,12 +568,17 @@ void UBeamMatchmakingSubsystem::OnMatchmakingUpdateReceived(FMatchmakingUpdateNo
 		for (FBeamMatchmakingTicket& LiveTicket : LiveTickets)
 		{
 			if (LiveTicket.TicketId != MsgTicketId) continue;
+			for (auto Slot : LiveTicket.SlotsInTicket)
+			{
+				auto SlotState = Slots.Find(Slot);
+				
+				TArray<FOnMatchmakingTicketUpdatedCode> CodeCallbacks;
+				SlotState->OnMatchCancelledCode.MultiFind(MsgTicketId, CodeCallbacks, true);
+				for (auto Callback : CodeCallbacks) auto _ = Callback.ExecuteIfBound(LiveTicket);
 
-			TArray<FOnMatchmakingTicketUpdatedCode> CodeCallbacks;
-			OnMatchCancelledCode.MultiFind(MsgTicketId, CodeCallbacks, true);
-			for (auto Callback : CodeCallbacks) auto _ = Callback.ExecuteIfBound(LiveTicket);
-
-			OnMatchCancelled.Broadcast(LiveTicket);
+				SlotState->OnMatchCancelled.Broadcast(LiveTicket);
+			}
+		
 
 			InvalidateLiveTicket(LiveTicket);
 		}
@@ -508,11 +592,17 @@ void UBeamMatchmakingSubsystem::OnMatchmakingTimeoutReceived(FMatchmakingTimeout
 	{
 		if (LiveTicket.TicketId != MsgTicketId) continue;
 
-		TArray<FOnMatchmakingTicketUpdatedCode> CodeCallbacks;
-		OnMatchTimedOutCode.MultiFind(MsgTicketId, CodeCallbacks, true);
-		for (auto Callback : CodeCallbacks) auto _ = Callback.ExecuteIfBound(LiveTicket);
+		for (auto Slot : LiveTicket.SlotsInTicket)
+		{
+			auto SlotState = Slots.Find(Slot);
 
-		OnMatchTimedOut.Broadcast(LiveTicket);
+			TArray<FOnMatchmakingTicketUpdatedCode> CodeCallbacks;
+			SlotState->OnMatchTimedOutCode.MultiFind(MsgTicketId, CodeCallbacks, true);
+			for (auto Callback : CodeCallbacks) auto _ = Callback.ExecuteIfBound(LiveTicket);
+
+			SlotState->OnMatchTimedOut.Broadcast(LiveTicket);
+		}
+	
 
 		InvalidateLiveTicket(LiveTicket);
 	}
@@ -533,15 +623,20 @@ void UBeamMatchmakingSubsystem::InvalidateLiveTicket(FBeamMatchmakingTicket& Liv
 			SlotState->InTicket.Invalidate();
 		}
 	}
+
+	for (auto Slot : LiveTicket.SlotsInTicket)
+	{
+		auto SlotState = Slots.Find(Slot);
+
+		// Trigger the BP Cleanup for this ticket
+		SlotState->OnMatchTicketInvalidated.Broadcast(InvalidatedTicket);
+
+		// Auto-Cleanup the C++ delegates.	
+		SlotState->OnMatchReadyCode.Remove(InvalidatedTicket.TicketId);
+		SlotState->OnMatchCancelledCode.Remove(InvalidatedTicket.TicketId);
+		SlotState->OnMatchTimedOutCode.Remove(InvalidatedTicket.TicketId);
+	}
 	LiveTicket.SlotsInTicket.Reset();
-
-	// Trigger the BP Cleanup for this ticket
-	OnMatchTicketInvalidated.Broadcast(InvalidatedTicket);
-
-	// Auto-Cleanup the C++ delegates.	
-	OnMatchReadyCode.Remove(InvalidatedTicket.TicketId);
-	OnMatchCancelledCode.Remove(InvalidatedTicket.TicketId);
-	OnMatchTimedOutCode.Remove(InvalidatedTicket.TicketId);
 }
 
 void UBeamMatchmakingSubsystem::CommitRegionPing(FUserSlot UserSlot, TMap<FString, int32> RegionPings, FBeamOperationHandle OperationHandle)
