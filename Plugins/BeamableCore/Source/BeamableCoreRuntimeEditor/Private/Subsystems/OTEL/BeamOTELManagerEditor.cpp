@@ -39,12 +39,11 @@ bool UBeamOTELManagerEditor::ReportOtelLogsEachMinute(float DeltaTime)
 
 FBeamOperationHandle UBeamOTELManagerEditor::OnRealmInitialized(FBeamRealmHandle NewRealm)
 {
-	// Just fire and forget the command push
-	// OtelPublishLogs();
 	const FBeamOperationHandle Op = RequestTracker->CPP_BeginOperation({}, GetName(), {});
+	
 	StartCollectorPs(Op);
 	
-	return Op;
+	return Super::OnRealmInitialized(NewRealm);
 }
 
 void UBeamOTELManagerEditor::OtelAddLog(FString Message, FString StackTrace, FString OtelLogLevel)
