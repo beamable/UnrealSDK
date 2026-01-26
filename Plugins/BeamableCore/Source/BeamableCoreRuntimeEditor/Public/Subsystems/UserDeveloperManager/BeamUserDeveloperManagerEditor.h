@@ -167,6 +167,25 @@ public:
 		return AssignedUserArray;
 	}
 
+	UFUNCTION(BlueprintCallable)
+	static TArray<FBeamPIE_UserSlotHandle> GetSortedKeysPartyUsers(TMap<FBeamPIE_UserSlotHandle, FBeamPartyPlayerSettings> BeamPartyUsers)
+	{
+		TArray<FBeamPIE_UserSlotHandle> AssignedUserArray;
+		BeamPartyUsers.GenerateKeyArray(AssignedUserArray);
+
+		AssignedUserArray.Sort([](const FBeamPIE_UserSlotHandle& A, const  FBeamPIE_UserSlotHandle& B)
+		{
+			if (A.PIEIndex != B.PIEIndex)
+			{
+				return A.PIEIndex < B.PIEIndex;
+			}
+
+			return A.Slot.Name.Compare(B.Slot.Name) < 0;
+		});
+		
+		return AssignedUserArray;
+	}
+	
 
 	UFUNCTION(BlueprintCallable)
 	static bool TryGetValidUserSlotHandle(int SelectedPIEIndex, bool CreateCopyOnPIE, FString SelectedSlotName, TMap<FBeamPIE_UserSlotHandle, FBeamPIE_PerUserSetting> AssignedUsers, FBeamPIE_UserSlotHandle& UserSlotHandle)

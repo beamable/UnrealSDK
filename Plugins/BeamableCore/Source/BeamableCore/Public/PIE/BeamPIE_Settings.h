@@ -5,6 +5,38 @@
 
 #include "BeamPIE_Settings.generated.h"
 
+
+USTRUCT(BlueprintType)
+struct BEAMABLECORE_API FBeamPartyPlayerSettings
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TMap<FString, FString> PartyTags = {};
+};
+
+USTRUCT(BlueprintType)
+struct BEAMABLECORE_API FBeamPartySettings
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool bShouldAutoCreateParty = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(EditCondition="bShouldAutoCreateParty", EditConditionHides))
+	int32 MaxPartySize = 4;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(EditCondition="bShouldAutoCreateParty", EditConditionHides))
+	int PartyRestriction = 0;
+
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FBeamPIE_UserSlotHandle PlayerHandle = {};
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(EditCondition="bShouldAutoCreateParty", EditConditionHides))
+	TMap<FBeamPIE_UserSlotHandle, FBeamPartyPlayerSettings> PlayerSettingsMap = {};
+};
+
 USTRUCT(BlueprintType)
 struct BEAMABLECORE_API FBeamPIE_Settings
 {
@@ -31,6 +63,8 @@ struct BEAMABLECORE_API FBeamPIE_Settings
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FBeamPIE_LobbySettings FakeLobby;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FBeamPartySettings PartySettings = {};
 
 	bool IsDefaultSettings() const { return SettingsId == DefaultPieSettingsGuid; }
 };
