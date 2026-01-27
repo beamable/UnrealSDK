@@ -84,41 +84,6 @@ struct FBeamMatchmakingState
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category="Beam")
 	FDateTime LastJoinTime;
-
-	/*
-	 * For easy binding from blueprints. You are responsible for unregistering these as your objects are destroyed or when the ticket is invalidated.
-	 */
-	UPROPERTY(BlueprintAssignable)
-	FOnMatchmakingTicketUpdated OnMatchSearchStarted;
-	FOnMatchmakingTicketUpdatedCode OnMatchSearchStartedCode;
-
-	/*
-	 * For easy binding from blueprints. You are responsible for unregistering these as your objects are destroyed or when the ticket is invalidated.
-	 */
-	UPROPERTY(BlueprintAssignable)
-	FOnMatchmakingTicketUpdated OnMatchReady;
-	TMultiMap<FGuid, FOnMatchmakingTicketUpdatedCode> OnMatchReadyCode;
-
-	/*
-	 * For easy binding from blueprints. You are responsible for unregistering these as your objects are destroyed or when the ticket is invalidated.
-	 */
-	UPROPERTY(BlueprintAssignable)
-	FOnMatchmakingTicketUpdated OnMatchCancelled;
-	TMultiMap<FGuid, FOnMatchmakingTicketUpdatedCode> OnMatchCancelledCode;
-
-	/*
-	 * For easy binding from blueprints. You are responsible for unregistering these as your objects are destroyed or when the ticket is invalidated.
-	 */
-	UPROPERTY(BlueprintAssignable)
-	FOnMatchmakingTicketUpdated OnMatchTimedOut;
-	TMultiMap<FGuid, FOnMatchmakingTicketUpdatedCode> OnMatchTimedOutCode;
-
-	/**
-	 * This gets called whenever a ticket is invalidated.
-	 * Use this to unbind the BP OnMatch____ you have bound for that ticket.
-	 */
-	UPROPERTY(BlueprintAssignable)
-	FOnMatchmakingTicketUpdated OnMatchTicketInvalidated;
 };
 
 DEFINE_BEAM_OPERATION_HOOK_OneParam(FOnBeamableTryJoinMatchmakingQueueParallel, FBeamOperationHandle);
@@ -159,7 +124,40 @@ public:
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category="Beam")
 	TArray<FBeamMatchmakingTicket> LiveTickets;
 
-	
+	/*
+	 * For easy binding from blueprints. You are responsible for unregistering these as your objects are destroyed or when the ticket is invalidated.
+	 */
+	UPROPERTY(BlueprintAssignable)
+	FOnMatchmakingTicketUpdated OnMatchSearchStarted;
+	FOnMatchmakingTicketUpdatedCode OnMatchSearchStartedCode;
+
+	/*
+	 * For easy binding from blueprints. You are responsible for unregistering these as your objects are destroyed or when the ticket is invalidated.
+	 */
+	UPROPERTY(BlueprintAssignable)
+	FOnMatchmakingTicketUpdated OnMatchReady;
+	TMultiMap<FGuid, FOnMatchmakingTicketUpdatedCode> OnMatchReadyCode;
+
+	/*
+     * For easy binding from blueprints. You are responsible for unregistering these as your objects are destroyed or when the ticket is invalidated.
+     */
+	UPROPERTY(BlueprintAssignable)
+	FOnMatchmakingTicketUpdated OnMatchCancelled;
+	TMultiMap<FGuid, FOnMatchmakingTicketUpdatedCode> OnMatchCancelledCode;
+
+	/*
+	 * For easy binding from blueprints. You are responsible for unregistering these as your objects are destroyed or when the ticket is invalidated.
+	 */
+	UPROPERTY(BlueprintAssignable)
+	FOnMatchmakingTicketUpdated OnMatchTimedOut;
+	TMultiMap<FGuid, FOnMatchmakingTicketUpdatedCode> OnMatchTimedOutCode;
+
+	/**
+	 * This gets called whenever a ticket is invalidated.
+	 * Use this to unbind the BP OnMatch____ you have bound for that ticket.
+	 */
+	UPROPERTY(BlueprintAssignable)
+	FOnMatchmakingTicketUpdated OnMatchTicketInvalidated;
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category="Beam")
 	TMap<FUserSlot, FBeamMatchmakingState> Slots;
@@ -176,7 +174,6 @@ public:
 
 	// LOCAL STATE GETTERS
 
-	
 	/**
 	 * Checks if the given user slot is in a queue. 
 	 */
@@ -194,64 +191,6 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category="Beam", meta=(AutoCreateRefTerm="Slot", ExpandBoolAsExecs="ReturnValue"))
 	bool TryGetTicket(const FUserSlot& Slot, FBeamMatchmakingTicket& Ticket);
-	
-	/**
-	 * Binds a callback to be invoked when a match search starts for the owner player slot.
-	 * This callback is triggered when the matchmaking ticket is successfully created and the search begins.
-	 * Only one callback can be bound at a time - calling this again will replace the previous callback.
-	 * 
-	 * @param Callback The delegate to invoke when match search starts, passing the ticket information.
-	 */
-	void CPP_BindOnMatchSearchStarted(FOnMatchmakingTicketUpdatedCode Callback);
-	
-	/**
-	 * Binds a callback to be invoked when a match is found and ready for the specified ticket.
-	 * Multiple callbacks can be bound to the same ticket. The callback receives the ticket with the FoundMatchLobbyId populated.
-	 * You are responsible for unbinding these callbacks when your objects are destroyed or when the ticket is invalidated.
-	 * 
-	 * @param TicketId The matchmaking ticket ID to bind the callback to.
-	 * @param Callback The delegate to invoke when a match is ready, passing the updated ticket information.
-	 */
-	void CPP_BindOnMatchReady(const FGuid& TicketId, FOnMatchmakingTicketUpdatedCode Callback);
-	
-	/**
-	 * Binds a callback to be invoked when a matchmaking ticket is cancelled for the specified ticket.
-	 * This can occur when the player explicitly leaves the queue or when the match search is cancelled by the server.
-	 * Multiple callbacks can be bound to the same ticket.
-	 * You are responsible for unbinding these callbacks when your objects are destroyed or when the ticket is invalidated.
-	 * 
-	 * @param TicketId The matchmaking ticket ID to bind the callback to.
-	 * @param Callback The delegate to invoke when the match is cancelled, passing the ticket information.
-	 */
-	void CPP_BindOnMatchCancelled(const FGuid& TicketId, FOnMatchmakingTicketUpdatedCode Callback);
-	
-	/**
-	 * Binds a callback to be invoked when a matchmaking ticket times out without finding a match.
-	 * Multiple callbacks can be bound to the same ticket.
-	 * You are responsible for unbinding these callbacks when your objects are destroyed or when the ticket is invalidated.
-	 * 
-	 * @param TicketId The matchmaking ticket ID to bind the callback to.
-	 * @param Callback The delegate to invoke when the match search times out, passing the ticket information.
-	 */
-	void CPP_BindOnMatchTimedOut(const FGuid& TicketId, FOnMatchmakingTicketUpdatedCode Callback);
-	
-	/**
-	 * Unbinds all callbacks (OnMatchReady, OnMatchCancelled, OnMatchTimedOut) for the specified ticket.
-	 * Call this when you no longer need to receive updates for a particular ticket, such as when your object is being destroyed
-	 * or when the ticket has been invalidated. Note that OnMatchSearchStarted is not affected as it's not ticket-specific.
-	 * 
-	 * @param TicketId The matchmaking ticket ID to unbind all callbacks from.
-	 */
-	void CPP_UnbindTicketCallbacks(const FGuid& TicketId);
-	
-	/**
-	 * Gets the current matchmaking state for the owner player slot.
-	 * 
-	 * @param OutState The matchmaking state structure to populate with the current state.
-	 * @return True if the state was successfully retrieved, false if no state exists for the owner slot.
-	 */
-	UFUNCTION(BlueprintCallable, Category="Beam", meta=(AutoCreateRefTerm="Slot", ExpandBoolAsExecs="ReturnValue"))
-	bool TryGetMatchmakingState(FBeamMatchmakingState& OutState);
 
 
 	// OPERATIONS
