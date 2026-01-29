@@ -464,7 +464,7 @@ void UBeamRuntime::PIEExecuteRequestImpl(int64 ActiveRequestId, const UObject* C
 
 
 	UBeamBackend* BeamBackend = GEngine->GetEngineSubsystem<UBeamBackend>();
-	
+
 	class UWorld* World = CallingContext->GetWorld();
 	if (!World)
 	{
@@ -2050,78 +2050,77 @@ void UBeamRuntime::AttachFederated(FUserSlot UserSlot, FString MicroserviceId, F
 	const auto AttachToUser = [this, UserSlot, MicroserviceId, FederationId, FederatedUserId, FederatedAuthToken, Op]()
 	{
 		const auto AttachIdentityHandler = FOnPostExternalIdentityFullResponse::CreateLambda(
-					[this, UserSlot, MicroserviceId, FederationId, FederatedUserId, FederatedAuthToken, Op ](FPostExternalIdentityFullResponse Resp)
+			[this, UserSlot, MicroserviceId, FederationId, FederatedUserId, FederatedAuthToken, Op ](FPostExternalIdentityFullResponse Resp)
+			{
+				if (Resp.State == RS_Retrying) return;
+
+				if (Resp.State == RS_Success)
+				{
+					// If it is a 2F auth we will trigger the sub event and then call the success when entire flow finish
+					if (Resp.SuccessData->ChallengeToken.IsSet)
 					{
-						if (Resp.State == RS_Retrying) return;
+						const auto ChallengeSolution = NewObject<UBeamMultiFactorLoginData>(GetTransientPackage());
 
-						if (Resp.State == RS_Success)
-						{
-							// If it is a 2F auth we will trigger the sub event and then call the success when entire flow finish
-							if (Resp.SuccessData->ChallengeToken.IsSet)
-							{
-								const auto ChallengeSolution = NewObject<UBeamMultiFactorLoginData>(GetTransientPackage());
+						ChallengeSolution->MicroserviceId = MicroserviceId;
+						ChallengeSolution->FederationId = FederationId;
+						ChallengeSolution->FederatedUserId = FederatedUserId;
+						ChallengeSolution->FederatedUserAuthToken = FederatedAuthToken;
+						ChallengeSolution->ChallengeToken = Resp.SuccessData->ChallengeToken.Val;
+						ChallengeSolution->OperationHandler = Op;
 
-								ChallengeSolution->MicroserviceId = MicroserviceId;
-								ChallengeSolution->FederationId = FederationId;
-								ChallengeSolution->FederatedUserId = FederatedUserId;
-								ChallengeSolution->FederatedUserAuthToken = FederatedAuthToken;
-								ChallengeSolution->ChallengeToken = Resp.SuccessData->ChallengeToken.Val;
-								ChallengeSolution->OperationHandler = Op;
+						RequestTrackerSystem->TriggerOperationEventWithData(Op, OET_SUCCESS, GetOperationEventID_MultiFactorAuthTriggered(), TEXT("2FA_AUTH"), ChallengeSolution);
+					}
+					else
+					{
+						UE_LOG(LogTemp, Warning, TEXT("Successfully Attached Id! Result = %s"), *Resp.SuccessData->Result);
 
-								RequestTrackerSystem->TriggerOperationEventWithData(Op, OET_SUCCESS, GetOperationEventID_MultiFactorAuthTriggered(), TEXT("2FA_AUTH"), ChallengeSolution);
-							}
-							else
-							{
-								UE_LOG(LogTemp, Warning, TEXT("Successfully Attached Id! Result = %s"), *Resp.SuccessData->Result);
+						AttachLocalIdentity(UserSlot, FederatedUserId, MicroserviceId, FederationId);
 
-								AttachLocalIdentity(UserSlot, FederatedUserId, MicroserviceId, FederationId);
+						// Trigger the operation as successful
+						GEngine->GetEngineSubsystem<UBeamRequestTracker>()->TriggerOperationSuccess(Op, TEXT(""));
+					}
+				}
 
-								// Trigger the operation as successful
-								GEngine->GetEngineSubsystem<UBeamRequestTracker>()->TriggerOperationSuccess(Op, TEXT(""));
-							}
-						}
-
-						if (Resp.State == RS_Error)
-						{
-							UE_LOG(LogTemp, Error, TEXT("Failed to Attach Id! Result = %s"), *Resp.ErrorData.message);
-							GEngine->GetEngineSubsystem<UBeamRequestTracker>()->TriggerOperationError(Op, Resp.ErrorData.message);
-						}
-					});
+				if (Resp.State == RS_Error)
+				{
+					UE_LOG(LogTemp, Error, TEXT("Failed to Attach Id! Result = %s"), *Resp.ErrorData.message);
+					GEngine->GetEngineSubsystem<UBeamRequestTracker>()->TriggerOperationError(Op, Resp.ErrorData.message);
+				}
+			});
 		const auto _ = AttachIdentityToUser(UserSlot, MicroserviceId, FederationId, FederatedAuthToken, Op, AttachIdentityHandler);
-			
 	};
 	// If the FederatedUserId is not empty we check the availability if it is empty we assume that we be treat in the federation.
 	if (!FederatedUserId.IsEmpty())
 	{
 		const auto CheckIdentityAvailableHandler = FOnGetAvailableExternalIdentityFullResponse::CreateLambda(
-		[this, Op,  FederatedUserId, AttachToUser](FGetAvailableExternalIdentityFullResponse Resp)
-		{
-			if (Resp.State == RS_Retrying) return;
-
-			if (Resp.State == RS_Success)
+			[this, Op, FederatedUserId, AttachToUser](FGetAvailableExternalIdentityFullResponse Resp)
 			{
-				const auto bIsAvailable = Resp.SuccessData->bAvailable;
-				UE_LOG(LogTemp, Warning, TEXT("Is Available Identity Id: %s, %s"), *FederatedUserId, bIsAvailable ? TEXT("true") : TEXT("false"));
+				if (Resp.State == RS_Retrying) return;
 
-				// If the Federated Identity has never been assigned in this realm, we attach it to the account at the given slot. 
-				if (bIsAvailable)
+				if (Resp.State == RS_Success)
 				{
-					AttachToUser();
+					const auto bIsAvailable = Resp.SuccessData->bAvailable;
+					UE_LOG(LogTemp, Warning, TEXT("Is Available Identity Id: %s, %s"), *FederatedUserId, bIsAvailable ? TEXT("true") : TEXT("false"));
+
+					// If the Federated Identity has never been assigned in this realm, we attach it to the account at the given slot. 
+					if (bIsAvailable)
+					{
+						AttachToUser();
+					}
+					// If it has been assigned in this realm (a user exists in this realm for this Federated Identity id), we log in with that user account into the requesting slot.			 
+					else
+					{
+						// If this external id is already in use in this realm, we error out.
+						GEngine->GetEngineSubsystem<UBeamRequestTracker>()->TriggerOperationError(Op, TEXT("EXTERNAL_IDENTITY_IN_USE"));
+					}
+					return;
 				}
-				// If it has been assigned in this realm (a user exists in this realm for this Federated Identity id), we log in with that user account into the requesting slot.			 
-				else
-				{
-					// If this external id is already in use in this realm, we error out.
-					GEngine->GetEngineSubsystem<UBeamRequestTracker>()->TriggerOperationError(Op, TEXT("EXTERNAL_IDENTITY_IN_USE"));
-				}
-				return;
-			}
-			GEngine->GetEngineSubsystem<UBeamRequestTracker>()->TriggerOperationError(Op, Resp.ErrorData.message);
-		});
+				GEngine->GetEngineSubsystem<UBeamRequestTracker>()->TriggerOperationError(Op, Resp.ErrorData.message);
+			});
 
 		const auto _ = CheckFederatedIdentityAvailable(MicroserviceId, FederationId, FederatedUserId, Op, CheckIdentityAvailableHandler);
-
-	}else
+	}
+	else
 	{
 		AttachToUser();
 	}
@@ -2477,7 +2476,7 @@ void UBeamRuntime::RunPostAuthenticationSetup_CacheLocalAccountInfo(const UAccou
 	if (Email.IsSet) UserSlotSystem->SetEmailAtSlot(UserSlot, Email.Val, this);
 	if (ExternalIds.IsSet) UserSlotSystem->SetExternalIdsAtSlot(UserSlot, ExternalIds.Val, this);
 	UserSlotSystem->SaveSlot(UserSlot, this);
-	
+
 	FBeamRealmUser BeamRealmUser;
 	if (ensureAlways(UserSlotSystem->GetUserDataAtSlot(UserSlot, BeamRealmUser, this)))
 	{

@@ -4,6 +4,7 @@
 #include "Subsystems/BeamEditor.h"
 
 #include "EditorUtilitySubsystem.h"
+#include "AssetRegistry/AssetRegistryModule.h"
 #include "AutoGen/Optionals/OptionalArrayOfBeamExternalIdentityLibrary.h"
 #include "AutoGen/Optionals/OptionalStringLibrary.h"
 #include "AutoGen/SubSystems/BeamAuthApi.h"
@@ -106,8 +107,8 @@ void UBeamEditor::Initialize(FSubsystemCollectionBase& Collection)
 	});
 
 	GEngine->GetEngineSubsystem<UBeamEnvironment>()->OnRefreshBackendAsset.BindUObject(this, &UBeamEditor::PullEnvironmentRouteConfig);
-	
-	
+
+
 	// Make sure we have a window message object...
 	ClearBeamableWindowMessage();
 }
@@ -144,30 +145,7 @@ void UBeamEditorBootstrapper::Run_DelayedInitialize()
 		EngineNetworkSettings->SaveConfig(CPF_Config, *EngineNetworkSettings->GetDefaultConfigFilename());
 	}
 
-	/* INFO - Make sure our core settings and environment settings are correctly set up for our users.
-	 * When this plugin gets added to the project, there are some default settings that we can pre-set for our users so that they don't have to do it.
-	 * This is where we do that.
-	 */
-	auto CoreSettings = GetMutableDefault<UBeamCoreSettings>();
-	if (CoreSettings->BeamableEnvironment.IsNull())
-	{
-		CoreSettings->BeamableEnvironment = FSoftObjectPath(TEXT("/Script/BeamableCore.BeamEnvironmentData'/BeamableCore/Environments/BeamProdEnv.BeamProdEnv'"));
-
-		CoreSettings->BeamablePossibleEnvironments.AddDefaulted(3);
-		CoreSettings->BeamablePossibleEnvironments[0] = FSoftObjectPath(TEXT("/Script/BeamableCore.BeamEnvironmentData'/BeamableCore/Environments/BeamProdEnv.BeamProdEnv'"));
-		CoreSettings->BeamablePossibleEnvironments[1] = FSoftObjectPath(TEXT("/Script/BeamableCore.BeamEnvironmentData'/BeamableCore/Environments/BeamStagingEnv.BeamStagingEnv'"));
-		CoreSettings->BeamablePossibleEnvironments[2] = FSoftObjectPath(TEXT("/Script/BeamableCore.BeamEnvironmentData'/BeamableCore/Environments/BeamDevEnv.BeamDevEnv'"));
-
-		CoreSettings->SaveConfig(CPF_Config, *CoreSettings->GetDefaultConfigFilename());
-	}
-
-	if (CoreSettings->BeamableInfoData.IsNull())
-	{
-		CoreSettings->BeamableInfoData = FSoftObjectPath(TEXT("/Script/BeamableCore.BeamEnvironmentData'/BeamableCore/Info/BeamableInfoData.BeamableInfoData'"));
-
-		CoreSettings->SaveConfig(CPF_Config, *CoreSettings->GetDefaultConfigFilename());
-	}
-
+	EnsureCustomEnvironmentIsSetUp();
 
 	// Set up the default Editor settings
 	auto EditorSettings = GetMutableDefault<UBeamEditorSettings>();
@@ -211,6 +189,136 @@ void UBeamEditorBootstrapper::Run_DelayedInitialize()
 
 	const auto OnCompleteCode = FOnWaitCompleteCode::CreateUFunction(this, GET_FUNCTION_NAME_CHECKED(UBeamEditorBootstrapper, Run_TrySignIntoMainEditorSlot));
 	BeamEditor->OnInitializedAfterEditorReadyWait = RequestTracker->CPP_WaitAll({}, BeamEditor->InitializeAfterEditorReadyOps, {}, OnCompleteCode);
+}
+
+void UBeamEditorBootstrapper::EnsureCustomEnvironmentIsSetUp()
+{
+	/* INFO - Make sure our core settings and environment settings are correctly set up for our users.
+	 * When this plugin gets added to the project, there are some default settings that we can pre-set for our users so that they don't have to do it.
+	 * This is where we do that.
+	 */
+	auto CoreSettings = GetMutableDefault<UBeamCoreSettings>();
+	if (CoreSettings->BeamableEnvironment.IsNull())
+	{
+		CoreSettings->BeamableEnvironment = FSoftObjectPath(TEXT("/Script/BeamableCore.BeamEnvironmentData'/BeamableCore/Environments/BeamProdEnv.BeamProdEnv'"));
+
+		CoreSettings->BeamablePossibleEnvironments.AddDefaulted(3);
+		CoreSettings->BeamablePossibleEnvironments[0] = FSoftObjectPath(TEXT("/Script/BeamableCore.BeamEnvironmentData'/BeamableCore/Environments/BeamProdEnv.BeamProdEnv'"));
+		CoreSettings->BeamablePossibleEnvironments[1] = FSoftObjectPath(TEXT("/Script/BeamableCore.BeamEnvironmentData'/BeamableCore/Environments/BeamStagingEnv.BeamStagingEnv'"));
+		CoreSettings->BeamablePossibleEnvironments[2] = FSoftObjectPath(TEXT("/Script/BeamableCore.BeamEnvironmentData'/BeamableCore/Environments/BeamDevEnv.BeamDevEnv'"));
+	}
+
+	const FString VirtualRoot = TEXT("/Game/Beamable/Environments");
+
+	// Convert /Game/... → absolute disk path
+	const FString ContentRoot = FPaths::ProjectContentDir();
+	const FString DiskRoot =
+		VirtualRoot.Replace(TEXT("/Game"), *ContentRoot);
+
+	TArray<FString> FoundFiles;
+	IFileManager::Get().FindFilesRecursive(
+		FoundFiles,
+		*DiskRoot,
+		TEXT("*.uasset"),
+		true,
+		false
+	);
+	
+	// Iterate over found files and convert them to soft object paths
+	for (const FString& FilePath : FoundFiles)
+	{
+		FString Relative = FilePath;
+		FPaths::MakePathRelativeTo(Relative, *FPaths::ProjectContentDir());
+		
+		Relative.RemoveFromEnd(TEXT(".uasset"));
+
+		const FString PackagePath = FString(TEXT("/Game/")) + Relative;
+		
+		const FString AssetName = FPaths::GetBaseFilename(PackagePath);
+		
+		const FString ObjectPath = PackagePath + TEXT(".") + AssetName;
+
+		FSoftObjectPath SoftPath(ObjectPath);
+
+		const bool bAlreadyExists = CoreSettings->BeamablePossibleEnvironments
+			.ContainsByPredicate([&](const TSoftObjectPtr<UBeamEnvironmentData>& Existing)
+			{
+				return Existing.ToSoftObjectPath() == SoftPath;
+			});
+
+		if (!bAlreadyExists)
+		{
+			CoreSettings->BeamablePossibleEnvironments.Add(
+				TSoftObjectPtr<UBeamEnvironmentData>(SoftPath));
+		}
+	}
+
+
+	if (CoreSettings->BeamableInfoData.IsNull())
+	{
+		CoreSettings->BeamableInfoData = FSoftObjectPath(TEXT("/Script/BeamableCore.BeamEnvironmentData'/BeamableCore/Info/BeamableInfoData.BeamableInfoData'"));
+	}
+
+	CoreSettings->SaveConfig(CPF_Config, *CoreSettings->GetDefaultConfigFilename());
+}
+
+void UBeamEditorBootstrapper::EnsureCorrectEnvironmentSelection()
+{
+	// Construct the path to the config.beam.json file
+	const FString ConfigPath = FPaths::ProjectDir() / TEXT(".beamable") / TEXT("config.beam.json");
+	
+	// Check if the file exists
+	if (!FPaths::FileExists(ConfigPath))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Config file not found at: %s"), *ConfigPath);
+		return;
+	}
+	
+	// Read the JSON file
+	FString JsonContent;
+	if (!FFileHelper::LoadFileToString(JsonContent, *ConfigPath))
+	{
+		UE_LOG(LogTemp, Error, TEXT("Failed to read config file at: %s"), *ConfigPath);
+		return;
+	}
+	
+	// Parse the JSON
+	TSharedPtr<FJsonObject> JsonObject;
+	TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(JsonContent);
+	if (!FJsonSerializer::Deserialize(Reader, JsonObject) || !JsonObject.IsValid())
+	{
+		UE_LOG(LogTemp, Error, TEXT("Failed to parse JSON from config file at: %s"), *ConfigPath);
+		return;
+	}
+	
+	// Get the "host" field from JSON
+	FString HostFromConfig;
+	if (!JsonObject->TryGetStringField(TEXT("host"), HostFromConfig))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("No 'host' field found in config file at: %s"), *ConfigPath);
+		return;
+	}
+	
+	// Get the core settings
+	auto CoreSettings = GetMutableDefault<UBeamCoreSettings>();
+	
+	// Iterate over BeamablePossibleEnvironments to find matching host
+	for (const TSoftObjectPtr<UBeamEnvironmentData>& EnvPtr : CoreSettings->BeamablePossibleEnvironments)
+	{
+		// Load the environment data
+		UBeamEnvironmentData* EnvData = EnvPtr.LoadSynchronous();
+		if (EnvData->APIUrl.Contains(HostFromConfig))
+		{
+			// Found matching environment, set it
+			CoreSettings->BeamableEnvironment = EnvPtr;
+			CoreSettings->SaveConfig(CPF_Config, *CoreSettings->GetDefaultConfigFilename());
+			
+			UE_LOG(LogTemp, Display, TEXT("Environment set to: %s (Host: %s)"), *EnvData->Environment, *EnvData->APIUrl);
+			return;
+		}
+	}
+	
+	UE_LOG(LogTemp, Warning, TEXT("No matching environment found for host: %s"), *HostFromConfig);
 }
 
 void UBeamEditorBootstrapper::Run_TrySignIntoMainEditorSlot(FBeamWaitCompleteEvent Evt)
@@ -263,6 +371,7 @@ void UBeamEditorBootstrapper::Run_TrySignIntoMainEditorSlot(FBeamWaitCompleteEve
 		BeamEditor->UpdateBeamableWindowMessage(TEXT("Sign in successful!"), EMessageType::VE_Info);
 		BeamEditor->bEditorReady = true;
 	}));
+	EnsureCorrectEnvironmentSelection();
 	BeamEditor->SignInWithCliInfo(Op);
 }
 
@@ -597,6 +706,9 @@ void UBeamEditor::SignInWithCliInfo(const FBeamOperationHandle Op)
 		return;
 	}
 
+	
+
+	
 	// Start the CLI server manually skipping the pre-warm 
 	Cli->StartCliServer(true);
 
@@ -890,7 +1002,8 @@ void UBeamEditor::SelectRealm_OnReadyForChange(FBeamWaitCompleteEvent, FBeamReal
 				});
 				FBeamRequestContext Ctx;
 				GEngine->GetEngineSubsystem<UBeamRealmsApi>()->CPP_PostConfig(MainEditorSlot, UpdateConfigReq, Handler, Ctx, CmdOp, this);
-			}else
+			}
+			else
 			{
 				const auto Subsystems = GEditor->GetEditorSubsystemArrayCopy<UBeamEditorSubsystem>();
 				InitalizeFromRealmOps.Reset(Subsystems.Num());
@@ -902,7 +1015,6 @@ void UBeamEditor::SelectRealm_OnReadyForChange(FBeamWaitCompleteEvent, FBeamReal
 				const auto OnCompleteCode = FOnWaitCompleteCode::CreateUObject(this, &UBeamEditor::SelectRealm_OnRealmInitialized, NewRealmHandle, CmdOp);
 				InitializeFromRealmsWait = RequestTracker->CPP_WaitAll({}, InitalizeFromRealmOps, {}, OnCompleteCode);
 			}
-			
 		}
 		else
 		{
