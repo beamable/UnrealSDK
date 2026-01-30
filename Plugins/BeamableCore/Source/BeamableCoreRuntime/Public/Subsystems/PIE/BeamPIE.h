@@ -740,7 +740,7 @@ public:
 		{
 			RequestTracker->TriggerOperationError(Operation, TEXT("No Parties to Create"));
 		}
-		
+
 		// Create a TArray to hold all party requests
 		TArray<UPutPartiesRequest*> PartyRequests;
 
@@ -856,7 +856,7 @@ public:
 					ErrorMessage += Error.message + "\n";
 				}
 				UE_LOG(LogTemp, Warning, TEXT("Some Party Creation Operations failed during BeamPIE Server Preparation."));
-				
+
 				RequestTracker->TriggerOperationError(Operation, ErrorMessage);
 			}
 			else
@@ -867,9 +867,17 @@ public:
 		}));
 	}
 
+	FString GetTeamForUser(FWorldContext* WorldContext, FBeamPIE_Settings const* const Settings, UBeamGameTypeContent* GameTypeContent, TMap<FString, TArray<FBeamPIE_UserSlotHandle>>* TeamToPlayerHandlesMap,
+		const FBeamPIE_UserSlotHandle& Handle)
+	{
+	
+		
+
+		return "";
+	}
+
 	void AutoCreateLobby(FWorldContext* WorldContext, FBeamPIE_Settings const* const Settings, const FUserSlot ServerSlot, FBeamOperationHandle Operation)
 	{
-		
 		UE_LOG(LogBeamEditor, Log, TEXT("%s Server - Creating Fake Lobby for GameServer."), *GetLogArgs(TEXT("Beam PIE Prepare"), WorldContext));
 		// Then, we call the make magical lobby endpoint until it succeeds passing in these users.					
 		const auto API = GEngine->GetEngineSubsystem<UBeamLobbyApi>();
@@ -898,6 +906,13 @@ public:
 			FakeLobby->Restriction = FOptionalLobbyRestriction{EBeamLobbyRestriction::BEAM_Null};
 			FakeLobby->Host = {};
 
+			UBeamContentObject* ContentObject;
+			WorldContext->World()->GetGameInstance()->GetSubsystem<UBeamContentSubsystem>()->TryGetContent(Settings->FakeLobby.GameType, ContentObject);
+				
+			UBeamGameTypeContent* GameTypeContent = static_cast<UBeamGameTypeContent*>(ContentObject);
+
+			TMap<FString, TArray<FBeamPIE_UserSlotHandle>> TeamToPlayerHandlesMap;
+			
 			// Set up the players in the fake lobby.
 			FakeLobby->Players = FOptionalArrayOfLobbyPlayer{{}};
 			for (const auto& KVP : ServerGamerTags)
@@ -935,6 +950,15 @@ public:
 						                " set up the AcceptUserIntoGameServer flow so we can keep the mapping between UniqueNetIds and GamerTags.\n"
 						                "If you aren't using any other UniqueNetIds, we recommend you turn UBeamRuntimeSettings::bUseBeamableGamerTagsAsUniqueNetIds on in your Project Settings."))
 				}
+
+
+				if (GameTypeContent && GameTypeContent->Teams.Num() > 0)
+				{
+					FString Team = GetTeamForUser(WorldContext, Settings, GameTypeContent, &TeamToPlayerHandlesMap, Handle);
+					if (LobbyPlayer->Tags.IsSet) LobbyPlayer->Tags.Val.Add(FBeamTag{UBeamLobbySubsystem::Reserved_PlayerTag_Team_Property, GamerTag.AsString});
+					else LobbyPlayer->Tags = FOptionalArrayOfBeamTag{TArray{FBeamTag{UBeamLobbySubsystem::Reserved_PlayerTag_Team_Property, GamerTag.AsString}}};
+				}
+				
 
 				FakeLobby->Players.Val.Add(LobbyPlayer);
 				for (FBeamTag Tag : Tags)
@@ -1105,9 +1129,9 @@ public:
 			PreparePIE_LoadAllAssignedUsers(WorldContext, Settings);
 
 			const auto ServerSlot = GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot();
-			
-			auto PresenceOperation = RequestTracker->CPP_BeginOperation({}, GetName(), FBeamOperationEventHandlerCode::CreateLambda([this, WorldContext, Settings, ServerSlot, Op](const FBeamOperationEvent& Event){
 
+			auto PresenceOperation = RequestTracker->CPP_BeginOperation({}, GetName(), FBeamOperationEventHandlerCode::CreateLambda([this, WorldContext, Settings, ServerSlot, Op](const FBeamOperationEvent& Event)
+			{
 				if (Event.EventType != OET_SUCCESS)
 				{
 					RequestTracker->TriggerOperationError(Op, Event.EventCode);
@@ -1116,36 +1140,42 @@ public:
 				// If have to create both Party and Lobby, we chain the operations.
 				if (Settings->PartySettings.bShouldAutoCreateParty && Settings->FakeLobby.bShouldAutoCreateLobby)
 				{
-					auto PartyAutoCreationOperation = RequestTracker->CPP_BeginOperation({}, GetName(), FBeamOperationEventHandlerCode::CreateLambda([this, WorldContext, Settings, ServerSlot, Op](const FBeamOperationEvent& Event){
-
-						if (Event.EventType != OET_SUCCESS)
-						{
-							RequestTracker->TriggerOperationError(Op, Event.EventCode);
-							return;
-						}
-						auto LobbyAutoCreationOperation = RequestTracker->CPP_BeginOperation({}, GetName(), FBeamOperationEventHandlerCode::CreateLambda([this, Op](const FBeamOperationEvent& Event){
-							if (Event.EventType == OET_SUCCESS)
-							{
-								RequestTracker->TriggerOperationSuccess(Op, TEXT(""));
-							}else
-							{
-								RequestTracker->TriggerOperationError(Op, Event.EventCode);
-							}
-						}));
-						AutoCreateLobby(WorldContext, Settings, ServerSlot, LobbyAutoCreationOperation);
-					}));
+					auto PartyAutoCreationOperation = RequestTracker->CPP_BeginOperation({}, GetName(), FBeamOperationEventHandlerCode::CreateLambda(
+						                                                                     [this, WorldContext, Settings, ServerSlot, Op](const FBeamOperationEvent& Event)
+						                                                                     {
+							                                                                     if (Event.EventType != OET_SUCCESS)
+							                                                                     {
+								                                                                     RequestTracker->TriggerOperationError(Op, Event.EventCode);
+								                                                                     return;
+							                                                                     }
+							                                                                     auto LobbyAutoCreationOperation = RequestTracker->CPP_BeginOperation(
+								                                                                     {}, GetName(), FBeamOperationEventHandlerCode::CreateLambda([this, Op](const FBeamOperationEvent& Event)
+								                                                                     {
+									                                                                     if (Event.EventType == OET_SUCCESS)
+									                                                                     {
+										                                                                     RequestTracker->TriggerOperationSuccess(Op, TEXT(""));
+									                                                                     }
+									                                                                     else
+									                                                                     {
+										                                                                     RequestTracker->TriggerOperationError(Op, Event.EventCode);
+									                                                                     }
+								                                                                     }));
+							                                                                     AutoCreateLobby(WorldContext, Settings, ServerSlot, LobbyAutoCreationOperation);
+						                                                                     }));
 					AutoCreateParty(WorldContext, Settings, PartyAutoCreationOperation);
 					return;
 				}
-				
+
 				// If we are creating only the party
 				if (Settings->PartySettings.bShouldAutoCreateParty)
 				{
-					auto PartyAutoCreationOperation = RequestTracker->CPP_BeginOperation({}, GetName(), FBeamOperationEventHandlerCode::CreateLambda([this, Op](const FBeamOperationEvent& Event){
+					auto PartyAutoCreationOperation = RequestTracker->CPP_BeginOperation({}, GetName(), FBeamOperationEventHandlerCode::CreateLambda([this, Op](const FBeamOperationEvent& Event)
+					{
 						if (Event.EventType == OET_SUCCESS)
 						{
 							RequestTracker->TriggerOperationSuccess(Op, TEXT(""));
-						}else
+						}
+						else
 						{
 							RequestTracker->TriggerOperationError(Op, Event.EventCode);
 						}
@@ -1157,11 +1187,13 @@ public:
 				// If we are creating only the lobby
 				if (Settings->FakeLobby.bShouldAutoCreateLobby)
 				{
-					auto LobbyAutoCreationOperation = RequestTracker->CPP_BeginOperation({}, GetName(), FBeamOperationEventHandlerCode::CreateLambda([this, Op](const FBeamOperationEvent& Event){
+					auto LobbyAutoCreationOperation = RequestTracker->CPP_BeginOperation({}, GetName(), FBeamOperationEventHandlerCode::CreateLambda([this, Op](const FBeamOperationEvent& Event)
+					{
 						if (Event.EventType != OET_SUCCESS)
 						{
 							RequestTracker->TriggerOperationError(Op, Event.EventCode);
-						}else
+						}
+						else
 						{
 							RequestTracker->TriggerOperationSuccess(Op, TEXT(""));
 						}
@@ -1174,7 +1206,7 @@ public:
 			UPostQueryRequest* PresenceRequest = NewObject<UPostQueryRequest>();
 
 			TArray<FString> GamerTags;
-			
+
 			for (auto ServerGamerTag : ServerGamerTags)
 			{
 				GamerTags.Add(ServerGamerTag.Value.AsString);
@@ -1184,7 +1216,7 @@ public:
 			PresenceRequest->Body->PlayerIds = FOptionalArrayOfString(GamerTags);
 
 			const auto PresenceHandler = FOnPostQueryFullResponse::CreateUObject(this, &UBeamPIE::CheckPIE_OnlinePlayersHandler, WorldContext, PresenceRequest, PresenceOperation);
-			
+
 			FBeamRequestContext PresenceContext;
 			PresenceAPI->CPP_PostQuery(ServerSlot, PresenceRequest, PresenceHandler, PresenceContext, {}, WorldContext->World());
 		}
@@ -1258,13 +1290,18 @@ public:
 						break;
 					}
 				}
-			}else
+			}
+			else
 			{
 				bIsAllPlayersOnline = false;
 			}
 			if (bIsAllPlayersOnline)
 			{
 				RequestTracker->TriggerOperationSuccess(Operation, TEXT(""));
+			}
+			else
+			{
+				UE_LOG(LogTemp, Warning, TEXT("Waiting for all players to be online in Beam PIE Server Preparation."));
 			}
 		}
 

@@ -14,7 +14,7 @@ struct BEAMABLECORE_API FBeamPartyPlayerSettings
 	bool bIsPartyLeader = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FString PartyId;
+	FString PartyId = TEXT("Party_1");
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TMap<FString, FString> PartyTags = {};
@@ -27,12 +27,6 @@ struct BEAMABLECORE_API FBeamPartySettings
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool bShouldAutoCreateParty = false;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(EditCondition="bShouldAutoCreateParty", EditConditionHides))
-	int32 MaxPartySize = 4;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(EditCondition="bShouldAutoCreateParty", EditConditionHides))
-	int PartyRestriction = 0;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(EditCondition="bShouldAutoCreateParty", EditConditionHides))
 	TMap<FBeamPIE_UserSlotHandle, FBeamPartyPlayerSettings> PlayerSettingsMap = {};

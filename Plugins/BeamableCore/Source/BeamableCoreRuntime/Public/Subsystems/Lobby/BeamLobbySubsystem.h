@@ -169,6 +169,7 @@ public:
 	inline static const FString Reserved_Listen_Server_Property = TEXT("__beam_listen_server_lobby__");
 
 	inline static const FString Reserved_PlayerTag_UniqueNetId_Property = TEXT("__beam_unreal_unique_net_id__");
+	inline static const FString Reserved_PlayerTag_Team_Property = TEXT("team");
 	inline static const FString Reserved_PlayerTag_Routing_Key_Property = TEXT("__beam_routing_key_tag__");
 
 	inline static const FString Reserved_LoginOpt_GamerTag_Required = TEXT("LogOptBeamGamerTag");
