@@ -867,13 +867,94 @@ public:
 		}));
 	}
 
-	FString GetTeamForUser(FWorldContext* WorldContext, FBeamPIE_Settings const* const Settings, UBeamGameTypeContent* GameTypeContent, TMap<FString, TArray<FBeamPIE_UserSlotHandle>>* TeamToPlayerHandlesMap,
-		const FBeamPIE_UserSlotHandle& Handle)
+	void GetLobbyTeams(FBeamPIE_Settings const* const Settings, UBeamGameTypeContent* GameTypeContent, TMap<FBeamPIE_UserSlotHandle, FString>& TeamToPlayerHandlesMap)
 	{
-	
-		
+		// Build party groupings if party settings are enabled
+		TMap<FString, TArray<FBeamPIE_UserSlotHandle>> PartyGroups;
+		if (Settings->PartySettings.bShouldAutoCreateParty)
+		{
+			for (const auto& PlayerSetting : Settings->PartySettings.PlayerSettingsMap)
+			{
+				const FBeamPIE_UserSlotHandle& UserSlotHandle = PlayerSetting.Key;
+				const FBeamPartyPlayerSettings& PartyPlayerSettings = PlayerSetting.Value;
 
-		return "";
+				if (PartyGroups.Contains(PartyPlayerSettings.PartyId))
+				{
+					PartyGroups[PartyPlayerSettings.PartyId].Add(UserSlotHandle);
+				}
+				else
+				{
+					PartyGroups.Add(PartyPlayerSettings.PartyId, {UserSlotHandle});
+				}
+			}
+		}
+
+		// Initialize team tracking structures
+		TMap<FString, int32> TeamCurrentCount;
+		TArray<FString> TeamNames;
+
+		for (const FBeamMatchmakingTeamsRule& Team : GameTypeContent->Teams)
+		{
+			TeamNames.Add(Team.Name);
+			TeamCurrentCount.Add(Team.Name, 0);
+		}
+
+		// Assign party members to teams
+		for (const auto& PartyGroup : PartyGroups)
+		{
+			const TArray<FBeamPIE_UserSlotHandle>& PartyMembers = PartyGroup.Value;
+
+			// Find team with least players (ignoring MaxPlayers)
+			FString BestTeam;
+			int32 LeastPlayers = INT32_MAX;
+
+			for (const FString& TeamName : TeamNames)
+			{
+				if (TeamCurrentCount[TeamName] < LeastPlayers)
+				{
+					LeastPlayers = TeamCurrentCount[TeamName];
+					BestTeam = TeamName;
+				}
+			}
+
+			// Assign all party members to the same team
+			if (!BestTeam.IsEmpty())
+			{
+				for (const FBeamPIE_UserSlotHandle& Member : PartyMembers)
+				{
+					TeamToPlayerHandlesMap.Add(Member, BestTeam);
+					TeamCurrentCount[BestTeam]++;
+				}
+			}
+		}
+
+		// Collect non-party players
+		TArray<FBeamPIE_UserSlotHandle> NonPartyPlayers;
+		for (const auto& KVP : ServerGamerTags)
+		{
+			const FBeamPIE_UserSlotHandle& UserHandle = KVP.Key;
+
+			// Check if player is not in any party
+			if (!TeamToPlayerHandlesMap.Contains(UserHandle))
+			{
+				NonPartyPlayers.Add(UserHandle);
+			}
+		}
+
+		// Distribute non-party players alternately across teams
+		int32 CurrentTeamIndex = 0;
+		for (const FBeamPIE_UserSlotHandle& Player : NonPartyPlayers)
+		{
+			if (TeamNames.Num() > 0)
+			{
+				const FString& AssignedTeam = TeamNames[CurrentTeamIndex];
+				TeamToPlayerHandlesMap.Add(Player, AssignedTeam);
+				TeamCurrentCount[AssignedTeam]++;
+
+				// Move to next team in round-robin fashion
+				CurrentTeamIndex = (CurrentTeamIndex + 1) % TeamNames.Num();
+			}
+		}
 	}
 
 	void AutoCreateLobby(FWorldContext* WorldContext, FBeamPIE_Settings const* const Settings, const FUserSlot ServerSlot, FBeamOperationHandle Operation)
@@ -908,11 +989,14 @@ public:
 
 			UBeamContentObject* ContentObject;
 			WorldContext->World()->GetGameInstance()->GetSubsystem<UBeamContentSubsystem>()->TryGetContent(Settings->FakeLobby.GameType, ContentObject);
-				
+
 			UBeamGameTypeContent* GameTypeContent = static_cast<UBeamGameTypeContent*>(ContentObject);
 
-			TMap<FString, TArray<FBeamPIE_UserSlotHandle>> TeamToPlayerHandlesMap;
+
+			TMap<FBeamPIE_UserSlotHandle, FString> PlayerPartyTeamsMap;
 			
+			GetLobbyTeams(Settings, GameTypeContent, PlayerPartyTeamsMap);
+
 			// Set up the players in the fake lobby.
 			FakeLobby->Players = FOptionalArrayOfLobbyPlayer{{}};
 			for (const auto& KVP : ServerGamerTags)
@@ -952,13 +1036,12 @@ public:
 				}
 
 
-				if (GameTypeContent && GameTypeContent->Teams.Num() > 0)
+				if (GameTypeContent && GameTypeContent->Teams.Num() > 0 && PlayerPartyTeamsMap.Contains(Handle))
 				{
-					FString Team = GetTeamForUser(WorldContext, Settings, GameTypeContent, &TeamToPlayerHandlesMap, Handle);
-					if (LobbyPlayer->Tags.IsSet) LobbyPlayer->Tags.Val.Add(FBeamTag{UBeamLobbySubsystem::Reserved_PlayerTag_Team_Property, GamerTag.AsString});
-					else LobbyPlayer->Tags = FOptionalArrayOfBeamTag{TArray{FBeamTag{UBeamLobbySubsystem::Reserved_PlayerTag_Team_Property, GamerTag.AsString}}};
+					if (LobbyPlayer->Tags.IsSet) LobbyPlayer->Tags.Val.Add(FBeamTag{UBeamLobbySubsystem::Reserved_PlayerTag_Team_Property, PlayerPartyTeamsMap[Handle]});
+					else LobbyPlayer->Tags = FOptionalArrayOfBeamTag{TArray{FBeamTag{UBeamLobbySubsystem::Reserved_PlayerTag_Team_Property, PlayerPartyTeamsMap[Handle]}}};
 				}
-				
+
 
 				FakeLobby->Players.Val.Add(LobbyPlayer);
 				for (FBeamTag Tag : Tags)
