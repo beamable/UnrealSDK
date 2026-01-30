@@ -6,6 +6,7 @@
 #include "OnlineSubsystemTypes.h"
 #include "AutoGen/SubSystems/BeamLobbyApi.h"
 #include "AutoGen/SubSystems/BeamPlayerLobbyApi.h"
+#include "AutoGen/SubSystems/BeamPresenceApi.h"
 #include "AutoGen/SubSystems/Lobby/PutLobbiesRequest.h"
 #include "AutoGen/SubSystems/PlayerLobby/ApiPlayerLobbyGetLobbiesByPlayerIdRequest.h"
 #include "Subsystems/EngineSubsystem.h"
@@ -28,6 +29,21 @@
 
 
 #include "BeamPIE.generated.h"
+
+USTRUCT(BlueprintType)
+struct BEAMABLECORERUNTIME_API FBeamPartyPlayerRuntimeSettings
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool bIsPartyLeader = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString GamerTag;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TMap<FString, FString> PartyTags = {};
+};
 
 UCLASS(BlueprintType, Category="Beam")
 class BEAMABLECORERUNTIME_API UBeamPIEProgressionStep : public UObject, public IBeamOperationEventData
@@ -682,6 +698,306 @@ public:
 		}
 	}
 
+	void AutoCreateParty(FWorldContext* WorldContext, FBeamPIE_Settings const* const Settings, FBeamOperationHandle Operation)
+	{
+		const auto API = GEngine->GetEngineSubsystem<UBeamPartyApi>();
+		const auto ServerSlot = GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot();
+
+
+		// Create TMap with PartyId as key and party runtime settings as value
+		TMap<FString, TArray<FBeamPartyPlayerRuntimeSettings>> PartyPlayersRuntimeMap;
+
+		for (const auto& PlayerSetting : Settings->PartySettings.PlayerSettingsMap)
+		{
+			const FBeamPIE_UserSlotHandle& UserSlotHandle = PlayerSetting.Key;
+			const FBeamPartyPlayerSettings& PartyPlayerSettings = PlayerSetting.Value;
+
+			// Get the GamerTag from ServerGamerTags
+			FBeamGamerTag GamerTag;
+			if (ServerGamerTags.Find(UserSlotHandle))
+			{
+				GamerTag = ServerGamerTags[UserSlotHandle];
+			}
+
+			// Create runtime settings
+			FBeamPartyPlayerRuntimeSettings RuntimeSettings;
+			RuntimeSettings.bIsPartyLeader = PartyPlayerSettings.bIsPartyLeader;
+			RuntimeSettings.GamerTag = GamerTag.AsString;
+			RuntimeSettings.PartyTags = PartyPlayerSettings.PartyTags;
+
+			if (PartyPlayersRuntimeMap.Contains(PartyPlayerSettings.PartyId))
+			{
+				PartyPlayersRuntimeMap[PartyPlayerSettings.PartyId].Add(RuntimeSettings);
+			}
+			else
+			{
+				// Add to map with PartyId as key
+				PartyPlayersRuntimeMap.Add(PartyPlayerSettings.PartyId, {RuntimeSettings});
+			}
+		}
+
+		if (PartyPlayersRuntimeMap.Num() == 0)
+		{
+			RequestTracker->TriggerOperationError(Operation, TEXT("No Parties to Create"));
+		}
+		
+		// Create a TArray to hold all party requests
+		TArray<UPutPartiesRequest*> PartyRequests;
+
+		// Iterate through each party in PartyPlayersRuntimeMap
+		for (const auto& PartyEntry : PartyPlayersRuntimeMap)
+		{
+			const FString& PartyId = PartyEntry.Key;
+			const TArray<FBeamPartyPlayerRuntimeSettings>& PartyPlayers = PartyEntry.Value;
+
+			// Create a new request for this party
+			UPutPartiesRequest* Req = NewObject<UPutPartiesRequest>();
+			Req->Body = NewObject<UParty>();
+
+			// Set the party ID
+			Req->Body->Id = FOptionalString(PartyId);
+
+			// Find the leader and build the members array
+			TArray<FBeamGamerTag> Members;
+			FBeamGamerTag LeaderTag;
+			bool bLeaderFound = false;
+
+			for (const auto& PlayerSettings : PartyPlayers)
+			{
+				FBeamGamerTag GamerTag = FBeamGamerTag(PlayerSettings.GamerTag);
+				Members.Add(GamerTag);
+
+				if (PlayerSettings.bIsPartyLeader && !bLeaderFound)
+				{
+					LeaderTag = GamerTag;
+					bLeaderFound = true;
+				}
+			}
+
+			// Set the leader
+			if (bLeaderFound)
+			{
+				Req->Body->Leader = FOptionalBeamGamerTag(LeaderTag);
+			}
+
+			// Set the members
+			Req->Body->Members = FOptionalArrayOfBeamGamerTag(Members);
+
+			// Set max size (optional - defaulting to number of members if not specified)
+			Req->Body->MaxSize = FOptionalInt32(Members.Num());
+
+			// Build MembersTags map
+			TMap<FString, UTagList*> MembersTags;
+			for (const auto& PlayerSettings : PartyPlayers)
+			{
+				if (PlayerSettings.PartyTags.Num() > 0)
+				{
+					UTagList* TagList = NewObject<UTagList>();
+					TArray<FBeamTag> Tags;
+
+					for (const auto& TagPair : PlayerSettings.PartyTags)
+					{
+						Tags.Add(FBeamTag(TagPair.Key, TagPair.Value));
+					}
+
+					TagList->Tags = FOptionalArrayOfBeamTag(Tags);
+					MembersTags.Add(PlayerSettings.GamerTag, TagList);
+				}
+			}
+
+			if (MembersTags.Num() > 0)
+			{
+				Req->Body->MembersTags = FOptionalMapOfTagList(MembersTags);
+			}
+
+			// Add the request to the array
+			PartyRequests.Add(Req);
+		}
+
+		TArray<FBeamOperationHandle> PartyOperations;
+		for (auto PartyRequest : PartyRequests)
+		{
+			FBeamOperationHandle PartyOperation = RequestTracker->CPP_BeginOperation({ServerSlot}, GetName(), {});
+
+			PartyOperations.Add(PartyOperation);
+
+			FBeamRequestContext PartyContext;
+			API->CPP_PutParties(ServerSlot, PartyRequest, FOnPutPartiesFullResponse::CreateLambda([this, WorldContext, PartyOperation](const FPutPartiesFullResponse& Event)
+			{
+				if (!IsValidContext(WorldContext)) return;
+
+				if (Event.State == RS_Success)
+				{
+					UE_LOG(LogBeamEditor, Log, TEXT("%s Server - All Parties Created."), *GetLogArgs(TEXT("Party Created"), WorldContext));
+					RequestTracker->TriggerOperationSuccess(PartyOperation, TEXT(""));
+				}
+				else
+				{
+					UE_LOG(LogBeamEditor, Error, TEXT("%s Server - Fail to create party"), *GetLogArgs(TEXT("Party Created Fail"), WorldContext));
+					RequestTracker->TriggerOperationError(PartyOperation, Event.ErrorData.message);
+				}
+			}), PartyContext, PartyOperation, WorldContext->World());
+		}
+
+		RequestTracker->CPP_WaitAll({}, PartyOperations, {}, FOnWaitCompleteCode::CreateLambda([this, Operation](const FBeamWaitCompleteEvent& Event)
+		{
+			FString ErrorMessage = "";
+			for (auto Error : Event.Errors)
+			{
+				if (!Error.error.IsEmpty())
+				{
+					ErrorMessage += Error.message + "\n";
+				}
+			}
+			if (!ErrorMessage.IsEmpty())
+			{
+				for (auto Error : Event.Errors)
+				{
+					ErrorMessage += Error.message + "\n";
+				}
+				UE_LOG(LogTemp, Warning, TEXT("Some Party Creation Operations failed during BeamPIE Server Preparation."));
+				
+				RequestTracker->TriggerOperationError(Operation, ErrorMessage);
+			}
+			else
+			{
+				UE_LOG(LogTemp, Warning, TEXT("All Party Creation Operations succeeded during BeamPIE Server Preparation."));
+				RequestTracker->TriggerOperationSuccess(Operation, TEXT(""));
+			}
+		}));
+	}
+
+	void AutoCreateLobby(FWorldContext* WorldContext, FBeamPIE_Settings const* const Settings, const FUserSlot ServerSlot, FBeamOperationHandle Operation)
+	{
+		
+		UE_LOG(LogBeamEditor, Log, TEXT("%s Server - Creating Fake Lobby for GameServer."), *GetLogArgs(TEXT("Beam PIE Prepare"), WorldContext));
+		// Then, we call the make magical lobby endpoint until it succeeds passing in these users.					
+		const auto API = GEngine->GetEngineSubsystem<UBeamLobbyApi>();
+
+		ULobby* FakeLobby = NewObject<ULobby>();
+		UE_LOG(LogBeamEditor, Log, TEXT("%s Server - Preparing Fake Lobby"), *GetLogArgs(TEXT("Beam PIE Prepare"), WorldContext));
+		const auto& FakeLobbySettings = Settings->FakeLobby;
+		if (FakeLobbySettings.bIsDedicatedServer)
+		{
+			// Set up the game type
+			FakeLobby->MatchType = FOptionalMatchType{NewObject<UMatchType>()};
+			FakeLobby->MatchType.Val->Id = FOptionalBeamContentId{FakeLobbySettings.GameType};
+			UE_LOG(LogBeamEditor, Log, TEXT("%s Server - Preparing Fake Lobby - Setting GameType %s"),
+			       *GetLogArgs(TEXT("Beam PIE Prepare"), WorldContext), *FakeLobbySettings.GameType.AsString);
+
+			// Add the configured global data (with a flag that tells us that the lobby is coming from PIE).
+			FakeLobby->Data = FOptionalMapOfString{TMap<FString, FString>{{UBeamLobbySubsystem::Reserved_Lobby_From_Editor_Play_Mode_Property, FString(TEXT("true"))}}};
+			for (const auto& LobbyGlobalData : FakeLobbySettings.LobbyGlobalData)
+			{
+				FakeLobby->Data.Val.Add(LobbyGlobalData.Key, LobbyGlobalData.Value);
+				UE_LOG(LogBeamEditor, Log, TEXT("%s Server - Preparing Fake Lobby - Setting Global Data - Key=%s, Val=%s"),
+				       *GetLogArgs(TEXT("Beam PIE Prepare"), WorldContext), *LobbyGlobalData.Key, *LobbyGlobalData.Value);
+			}
+
+			// Dedicated servers are always Null restriction
+			FakeLobby->Restriction = FOptionalLobbyRestriction{EBeamLobbyRestriction::BEAM_Null};
+			FakeLobby->Host = {};
+
+			// Set up the players in the fake lobby.
+			FakeLobby->Players = FOptionalArrayOfLobbyPlayer{{}};
+			for (const auto& KVP : ServerGamerTags)
+			{
+				const auto& Handle = KVP.Key;
+				const auto& GamerTag = KVP.Value;
+				const auto bHasPlayerSettings = Settings->AssignedUsers.Contains(Handle);
+				auto Tags = TArray<FBeamTag>();
+				if (bHasPlayerSettings)
+				{
+					for (const auto& LobbyData : Settings->AssignedUsers[Handle].LobbyData)
+						Tags.Add(FBeamTag{LobbyData.Key, LobbyData.Value});
+				}
+				if (Settings->PartySettings.PlayerSettingsMap.Contains(Handle))
+				{
+					for (const auto& LobbyData : Settings->PartySettings.PlayerSettingsMap[Handle].PartyTags)
+						Tags.Add(FBeamTag{LobbyData.Key, LobbyData.Value});
+				}
+
+				// Set the properties we forward
+				const auto LobbyPlayer = NewObject<ULobbyPlayer>();
+				LobbyPlayer->PlayerId = FOptionalBeamGamerTag{GamerTag};
+				LobbyPlayer->Joined = FOptionalDateTime{FDateTime::UtcNow()};
+				LobbyPlayer->Tags = bHasPlayerSettings ? FOptionalArrayOfBeamTag{Tags} : FOptionalArrayOfBeamTag{};
+				if (GetDefault<UBeamRuntimeSettings>()->bEnableGameplayFrameworkIntegration)
+				{
+					if (LobbyPlayer->Tags.IsSet) LobbyPlayer->Tags.Val.Add(FBeamTag{UBeamLobbySubsystem::Reserved_PlayerTag_UniqueNetId_Property, GamerTag.AsString});
+					else LobbyPlayer->Tags = FOptionalArrayOfBeamTag{TArray{FBeamTag{UBeamLobbySubsystem::Reserved_PlayerTag_UniqueNetId_Property, GamerTag.AsString}}};
+				}
+				else
+				{
+					UE_BEAM_LOG_PIE(WorldContext, LogBeamEditor, Warning,
+					                TEXT("If you are not using Beamable GamerTags as UniqueNetIds because you want to use something else as the UniqueId,"
+						                " you need to either configure NetIds manually in the play settings OR"
+						                " set up the AcceptUserIntoGameServer flow so we can keep the mapping between UniqueNetIds and GamerTags.\n"
+						                "If you aren't using any other UniqueNetIds, we recommend you turn UBeamRuntimeSettings::bUseBeamableGamerTagsAsUniqueNetIds on in your Project Settings."))
+				}
+
+				FakeLobby->Players.Val.Add(LobbyPlayer);
+				for (FBeamTag Tag : Tags)
+				{
+					UE_LOG(LogBeamEditor, Log, TEXT("%s Server - Preparing Fake Lobby - Setting Player Data - GAMER_TAG=%s, Key=%s, Val=%s"),
+					       *GetLogArgs(TEXT("Beam PIE Prepare"), WorldContext), *GamerTag.AsString, *Tag.Name.Val, *Tag.Value.Val);
+				}
+			}
+		}
+		else
+		{
+			RequestTracker->TriggerOperationError(Operation, TEXT("UNSUPPORTED_LISTEN_SERVER"));
+			return;
+		}
+
+		UE_LOG(LogBeamEditor, Log, TEXT("%s Server - Trying to Create the Fake Lobby"), *GetLogArgs(TEXT("Beam PIE Prepare"), WorldContext));
+		auto Req = NewObject<UPutLobbiesRequest>();
+		Req->Body = FakeLobby;
+
+		const auto CreateLobbyHandler = FOnPutLobbiesFullResponse::CreateUObject(this, &UBeamPIE::PreparePIE_Server_CreateLobbyHandler, WorldContext, Req, Operation);
+		FBeamRequestContext Ctx;
+		API->CPP_PutLobbies(ServerSlot, Req, CreateLobbyHandler, Ctx, Operation, WorldContext->World());
+	}
+
+	void PreparePIE_LoadAllAssignedUsers(FWorldContext* WorldContext, FBeamPIE_Settings const* const Settings)
+	{
+		// Let's get the list of PIE+Slot combinations for which we have configured users.
+		UE_LOG(LogBeamEditor, Log, TEXT("%s Server - Building List of Assigned PIE Users"), *GetLogArgs(TEXT("Beam PIE Prepare"), WorldContext));
+		TArray<FBeamPIE_UserSlotHandle> PossibleSlotHandles;
+		for (const auto& AssignedUser : Settings->AssignedUsers)
+		{
+			UE_LOG(LogBeamEditor, Log, TEXT("%s Server - Found Assigned User. USER_SLOT=%s, PIE=%d"), *GetLogArgs(TEXT("Beam PIE Prepare"), WorldContext),
+			       *AssignedUser.Key.Slot.Name, AssignedUser.Key.PIEIndex);
+			PossibleSlotHandles.Add(AssignedUser.Key);
+		}
+
+		// First, we'll need wait until the configured PIE users are all in the Saved/Beamable/UserSlot folder			
+		UE_LOG(LogBeamEditor, Log, TEXT("%s Server - Loading Users into BeamPIE slots."), *GetLogArgs(TEXT("Beam PIE Prepare"), WorldContext));
+		// Let's try to load the user's from the Saved folder
+
+		for (FBeamPIE_UserSlotHandle PossibleSlotHandle : PossibleSlotHandles)
+		{
+			const auto NamespacedSlot = UserSlots->GetNamespacedSlotId(PossibleSlotHandle.Slot.Name, PossibleSlotHandle.PIEIndex);
+
+			UE_LOG(LogBeamEditor, Log, TEXT("%s Server - Attempting to load data for Assigned User. USER_SLOT=%s, PIE=%d"),
+			       *GetLogArgs(TEXT("Beam PIE Prepare"), WorldContext), *PossibleSlotHandle.Slot.Name, PossibleSlotHandle.PIEIndex);
+
+			FUserSlotAuthData Auth;
+			FUserSlotAccountData Account;
+			const auto Res = UserSlots->TryGetSavedUserDataAtNamespacedSlot(NamespacedSlot, Auth, Account);
+			const auto bDidLoad = Res != UBeamUserSlots::LoadSavedUserResult_Failed;
+			if (bDidLoad)
+			{
+				UE_LOG(LogBeamEditor, Log, TEXT("%s Server - Loaded data for Assigned User. USER_SLOT=%s, PIE=%d, GAMER_TAG=%s"),
+				       *GetLogArgs(TEXT("Beam PIE Prepare"), WorldContext), *PossibleSlotHandle.Slot.Name, PossibleSlotHandle.PIEIndex, *Account.GamerTag.AsString);
+				ServerGamerTags.Add(PossibleSlotHandle, Account.GamerTag);
+			}
+		}
+
+		// If all the users are loaded (and we now know their gamertags)...
+		UE_LOG(LogBeamEditor, Log, TEXT("%s Server - Loaded data for All Assigned Users."), *GetLogArgs(TEXT("Beam PIE Prepare"), WorldContext));
+	}
+
 	/**
 	 * This function uses the currently selected settings and then do what it needs to do to provide its semantics. 
 	 */
@@ -786,137 +1102,91 @@ public:
 		// If we are in the server... 
 		else
 		{
-			// If we are not configured to create a lobby, we complete the operation here.
-			if (!Settings->FakeLobby.bShouldAutoCreateLobby)
-			{
-				RequestTracker->TriggerOperationSuccess(Op,TEXT(""));
-				return;
-			}
+			PreparePIE_LoadAllAssignedUsers(WorldContext, Settings);
 
-			// Let's get the list of PIE+Slot combinations for which we have configured users.
-			UE_LOG(LogBeamEditor, Log, TEXT("%s Server - Building List of Assigned PIE Users"), *GetLogArgs(TEXT("Beam PIE Prepare"), WorldContext));
-			TArray<FBeamPIE_UserSlotHandle> PossibleSlotHandles;
-			for (const auto& AssignedUser : Settings->AssignedUsers)
-			{
-				UE_LOG(LogBeamEditor, Log, TEXT("%s Server - Found Assigned User. USER_SLOT=%s, PIE=%d"), *GetLogArgs(TEXT("Beam PIE Prepare"), WorldContext),
-				       *AssignedUser.Key.Slot.Name, AssignedUser.Key.PIEIndex);
-				PossibleSlotHandles.Add(AssignedUser.Key);
-			}
-
-			// First, we'll need wait until the configured PIE users are all in the Saved/Beamable/UserSlot folder			
-			UE_LOG(LogBeamEditor, Log, TEXT("%s Server - Loading Users into BeamPIE slots."), *GetLogArgs(TEXT("Beam PIE Prepare"), WorldContext));
-			// Let's try to load the user's from the Saved folder
-
-			for (FBeamPIE_UserSlotHandle PossibleSlotHandle : PossibleSlotHandles)
-			{
-				const auto NamespacedSlot = UserSlots->GetNamespacedSlotId(PossibleSlotHandle.Slot.Name, PossibleSlotHandle.PIEIndex);
-
-				UE_LOG(LogBeamEditor, Log, TEXT("%s Server - Attempting to load data for Assigned User. USER_SLOT=%s, PIE=%d"),
-				       *GetLogArgs(TEXT("Beam PIE Prepare"), WorldContext), *PossibleSlotHandle.Slot.Name, PossibleSlotHandle.PIEIndex);
-
-				FUserSlotAuthData Auth;
-				FUserSlotAccountData Account;
-				const auto Res = UserSlots->TryGetSavedUserDataAtNamespacedSlot(NamespacedSlot, Auth, Account);
-				const auto bDidLoad = Res != UBeamUserSlots::LoadSavedUserResult_Failed;
-				if (bDidLoad)
-				{
-					UE_LOG(LogBeamEditor, Log, TEXT("%s Server - Loaded data for Assigned User. USER_SLOT=%s, PIE=%d, GAMER_TAG=%s"),
-					       *GetLogArgs(TEXT("Beam PIE Prepare"), WorldContext), *PossibleSlotHandle.Slot.Name, PossibleSlotHandle.PIEIndex, *Account.GamerTag.AsString);
-					ServerGamerTags.Add(PossibleSlotHandle, Account.GamerTag);
-				}
-			}
-
-			// If all the users are loaded (and we now know their gamertags)...
-			UE_LOG(LogBeamEditor, Log, TEXT("%s Server - Loaded data for All Assigned Users."), *GetLogArgs(TEXT("Beam PIE Prepare"), WorldContext));
-
-			UE_LOG(LogBeamEditor, Log, TEXT("%s Server - Creating Fake Lobby for GameServer."), *GetLogArgs(TEXT("Beam PIE Prepare"), WorldContext));
-			// Then, we call the make magical lobby endpoint until it succeeds passing in these users.					
-			const auto API = GEngine->GetEngineSubsystem<UBeamLobbyApi>();
 			const auto ServerSlot = GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot();
+			
+			auto PresenceOperation = RequestTracker->CPP_BeginOperation({}, GetName(), FBeamOperationEventHandlerCode::CreateLambda([this, WorldContext, Settings, ServerSlot, Op](const FBeamOperationEvent& Event){
 
-			ULobby* FakeLobby = NewObject<ULobby>();
-			UE_LOG(LogBeamEditor, Log, TEXT("%s Server - Preparing Fake Lobby"), *GetLogArgs(TEXT("Beam PIE Prepare"), WorldContext));
-			const auto& FakeLobbySettings = Settings->FakeLobby;
-			if (FakeLobbySettings.bIsDedicatedServer)
-			{
-				// Set up the game type
-				FakeLobby->MatchType = FOptionalMatchType{NewObject<UMatchType>()};
-				FakeLobby->MatchType.Val->Id = FOptionalBeamContentId{FakeLobbySettings.GameType};
-				UE_LOG(LogBeamEditor, Log, TEXT("%s Server - Preparing Fake Lobby - Setting GameType %s"),
-				       *GetLogArgs(TEXT("Beam PIE Prepare"), WorldContext), *FakeLobbySettings.GameType.AsString);
-
-				// Add the configured global data (with a flag that tells us that the lobby is coming from PIE).
-				FakeLobby->Data = FOptionalMapOfString{TMap<FString, FString>{{UBeamLobbySubsystem::Reserved_Lobby_From_Editor_Play_Mode_Property, FString(TEXT("true"))}}};
-				for (const auto& LobbyGlobalData : FakeLobbySettings.LobbyGlobalData)
+				if (Event.EventType != OET_SUCCESS)
 				{
-					FakeLobby->Data.Val.Add(LobbyGlobalData.Key, LobbyGlobalData.Value);
-					UE_LOG(LogBeamEditor, Log, TEXT("%s Server - Preparing Fake Lobby - Setting Global Data - Key=%s, Val=%s"),
-					       *GetLogArgs(TEXT("Beam PIE Prepare"), WorldContext), *LobbyGlobalData.Key, *LobbyGlobalData.Value);
+					RequestTracker->TriggerOperationError(Op, Event.EventCode);
+					return;
+				}
+				// If have to create both Party and Lobby, we chain the operations.
+				if (Settings->PartySettings.bShouldAutoCreateParty && Settings->FakeLobby.bShouldAutoCreateLobby)
+				{
+					auto PartyAutoCreationOperation = RequestTracker->CPP_BeginOperation({}, GetName(), FBeamOperationEventHandlerCode::CreateLambda([this, WorldContext, Settings, ServerSlot, Op](const FBeamOperationEvent& Event){
+
+						if (Event.EventType != OET_SUCCESS)
+						{
+							RequestTracker->TriggerOperationError(Op, Event.EventCode);
+							return;
+						}
+						auto LobbyAutoCreationOperation = RequestTracker->CPP_BeginOperation({}, GetName(), FBeamOperationEventHandlerCode::CreateLambda([this, Op](const FBeamOperationEvent& Event){
+							if (Event.EventType == OET_SUCCESS)
+							{
+								RequestTracker->TriggerOperationSuccess(Op, TEXT(""));
+							}else
+							{
+								RequestTracker->TriggerOperationError(Op, Event.EventCode);
+							}
+						}));
+						AutoCreateLobby(WorldContext, Settings, ServerSlot, LobbyAutoCreationOperation);
+					}));
+					AutoCreateParty(WorldContext, Settings, PartyAutoCreationOperation);
+					return;
+				}
+				
+				// If we are creating only the party
+				if (Settings->PartySettings.bShouldAutoCreateParty)
+				{
+					auto PartyAutoCreationOperation = RequestTracker->CPP_BeginOperation({}, GetName(), FBeamOperationEventHandlerCode::CreateLambda([this, Op](const FBeamOperationEvent& Event){
+						if (Event.EventType == OET_SUCCESS)
+						{
+							RequestTracker->TriggerOperationSuccess(Op, TEXT(""));
+						}else
+						{
+							RequestTracker->TriggerOperationError(Op, Event.EventCode);
+						}
+					}));
+					AutoCreateParty(WorldContext, Settings, PartyAutoCreationOperation);
+					return;
 				}
 
-				// Dedicated servers are always Null restriction
-				FakeLobby->Restriction = FOptionalLobbyRestriction{EBeamLobbyRestriction::BEAM_Null};
-				FakeLobby->Host = {};
-
-				// Set up the players in the fake lobby.
-				FakeLobby->Players = FOptionalArrayOfLobbyPlayer{{}};
-				for (const auto& KVP : ServerGamerTags)
+				// If we are creating only the lobby
+				if (Settings->FakeLobby.bShouldAutoCreateLobby)
 				{
-					const auto& Handle = KVP.Key;
-					const auto& GamerTag = KVP.Value;
-					const auto bHasPlayerSettings = Settings->AssignedUsers.Contains(Handle);
-					auto Tags = TArray<FBeamTag>();
-					if (bHasPlayerSettings)
-					{
-						for (const auto& LobbyData : Settings->AssignedUsers[Handle].LobbyData)
-							Tags.Add(FBeamTag{LobbyData.Key, LobbyData.Value});
-					}
-					if (Settings->PartySettings.PlayerSettingsMap.Contains(Handle))
-					{
-						for (const auto& LobbyData : Settings->PartySettings.PlayerSettingsMap[Handle].PartyTags)
-							Tags.Add(FBeamTag{LobbyData.Key, LobbyData.Value});
-					}
-
-					// Set the properties we forward
-					const auto LobbyPlayer = NewObject<ULobbyPlayer>();
-					LobbyPlayer->PlayerId = FOptionalBeamGamerTag{GamerTag};
-					LobbyPlayer->Joined = FOptionalDateTime{FDateTime::UtcNow()};
-					LobbyPlayer->Tags = bHasPlayerSettings ? FOptionalArrayOfBeamTag{Tags} : FOptionalArrayOfBeamTag{};
-					if (GetDefault<UBeamRuntimeSettings>()->bEnableGameplayFrameworkIntegration)
-					{
-						if (LobbyPlayer->Tags.IsSet) LobbyPlayer->Tags.Val.Add(FBeamTag{UBeamLobbySubsystem::Reserved_PlayerTag_UniqueNetId_Property, GamerTag.AsString});
-						else LobbyPlayer->Tags = FOptionalArrayOfBeamTag{TArray{FBeamTag{UBeamLobbySubsystem::Reserved_PlayerTag_UniqueNetId_Property, GamerTag.AsString}}};
-					}
-					else
-					{
-						UE_BEAM_LOG_PIE(WorldContext, LogBeamEditor, Warning,
-						                TEXT("If you are not using Beamable GamerTags as UniqueNetIds because you want to use something else as the UniqueId,"
-							                " you need to either configure NetIds manually in the play settings OR"
-							                " set up the AcceptUserIntoGameServer flow so we can keep the mapping between UniqueNetIds and GamerTags.\n"
-							                "If you aren't using any other UniqueNetIds, we recommend you turn UBeamRuntimeSettings::bUseBeamableGamerTagsAsUniqueNetIds on in your Project Settings."))
-					}
-
-					FakeLobby->Players.Val.Add(LobbyPlayer);
-					for (FBeamTag Tag : Tags)
-					{
-						UE_LOG(LogBeamEditor, Log, TEXT("%s Server - Preparing Fake Lobby - Setting Player Data - GAMER_TAG=%s, Key=%s, Val=%s"),
-						       *GetLogArgs(TEXT("Beam PIE Prepare"), WorldContext), *GamerTag.AsString, *Tag.Name.Val, *Tag.Value.Val);
-					}
+					auto LobbyAutoCreationOperation = RequestTracker->CPP_BeginOperation({}, GetName(), FBeamOperationEventHandlerCode::CreateLambda([this, Op](const FBeamOperationEvent& Event){
+						if (Event.EventType != OET_SUCCESS)
+						{
+							RequestTracker->TriggerOperationError(Op, Event.EventCode);
+						}else
+						{
+							RequestTracker->TriggerOperationSuccess(Op, TEXT(""));
+						}
+					}));
+					AutoCreateLobby(WorldContext, Settings, ServerSlot, LobbyAutoCreationOperation);
 				}
-			}
-			else
+			}));
+			// Check the presence for all players in the settings before continue with party and lobby creation.
+			const auto PresenceAPI = GEngine->GetEngineSubsystem<UBeamPresenceApi>();
+			UPostQueryRequest* PresenceRequest = NewObject<UPostQueryRequest>();
+
+			TArray<FString> GamerTags;
+			
+			for (auto ServerGamerTag : ServerGamerTags)
 			{
-				RequestTracker->TriggerOperationError(Op, TEXT("UNSUPPORTED_LISTEN_SERVER"));
-				return;
+				GamerTags.Add(ServerGamerTag.Value.AsString);
 			}
 
-			UE_LOG(LogBeamEditor, Log, TEXT("%s Server - Trying to Create the Fake Lobby"), *GetLogArgs(TEXT("Beam PIE Prepare"), WorldContext));
-			auto Req = NewObject<UPutLobbiesRequest>();
-			Req->Body = FakeLobby;
+			PresenceRequest->Body = NewObject<UOnlineStatusQuery>();
+			PresenceRequest->Body->PlayerIds = FOptionalArrayOfString(GamerTags);
 
-			const auto CreateLobbyHandler = FOnPutLobbiesFullResponse::CreateUObject(this, &UBeamPIE::PreparePIE_Server_CreateLobbyHandler, WorldContext, Req, PossibleSlotHandles, Op);
-			FBeamRequestContext Ctx;
-			API->CPP_PutLobbies(ServerSlot, Req, CreateLobbyHandler, Ctx, Op, WorldContext->World());
+			const auto PresenceHandler = FOnPostQueryFullResponse::CreateUObject(this, &UBeamPIE::CheckPIE_OnlinePlayersHandler, WorldContext, PresenceRequest, PresenceOperation);
+			
+			FBeamRequestContext PresenceContext;
+			PresenceAPI->CPP_PostQuery(ServerSlot, PresenceRequest, PresenceHandler, PresenceContext, {}, WorldContext->World());
 		}
 	}
 
@@ -942,87 +1212,6 @@ public:
 		{
 			if (Evt.CompletedWithSuccess())
 			{
-				if (Setting->PartySettings.bShouldAutoCreateParty)
-				{
-					const auto BeamPartySubsystem = Runtime->GetGameInstance()->GetSubsystem<UBeamPartySubsystem>();
-
-					auto LeaderPlayerSettings = Setting->PartySettings.PlayerSettingsMap[CurrSlotHandle];
-
-					if (LeaderPlayerSettings.bIsPartyLeader)
-					{
-						FBeamOperationHandle CreatePartyHandle = RequestTracker->CPP_BeginOperation({}, GetName(), FBeamOperationEventHandlerCode::CreateLambda(
-							                                                                            [this, WorldContext, CurrSlotHandle, Setting, BeamPartySubsystem, LeaderPlayerSettings](const FBeamOperationEvent& Event)
-							                                                                            {
-								                                                                            if (!IsValidContext(WorldContext)) return;
-
-								                                                                            if (Event.EventType == OET_SUCCESS)
-								                                                                            {
-									                                                                            UE_LOG(LogTemp, Warning, TEXT("%s Server - Successfully created Party for Slot %s"),
-									                                                                                   *GetLogArgs(TEXT("Beam PIE Prepare"), WorldContext), *CurrSlotHandle.Slot.Name);
-
-									                                                                            if (!IsValidContext(WorldContext)) return;
-
-									                                                                            UE_BEAM_LOG(LogTemp, Warning, TEXT("%s Server - Finished Creating Parties."),
-									                                                                                        *GetLogArgs(TEXT("Beam PIE Prepare"), WorldContext));
-
-								                                                                            	FBeamPartyState PartyState;
-								                                                                            	if (BeamPartySubsystem->TryGetUserPartyState(CurrSlotHandle.Slot, PartyState))
-								                                                                            	{
-								                                                                            	}
-								                                                                            	
-									                                                                            for (auto PartyPlayer : Setting->PartySettings.PlayerSettingsMap)
-									                                                                            {
-										                                                                            if (PartyPlayer.Value.bIsPartyLeader || PartyPlayer.Value.PartyId != LeaderPlayerSettings.PartyId)
-										                                                                            {
-										                                                                            	continue;
-										                                                                            }
-									                                                                     
-										                                                                            // if (BeamPartySubsystem->TryGetUserPartyState(PartyPlayer.Key.Slot, PartyState))
-										                                                                            // {
-											                                                                           //  UE_BEAM_LOG(LogTemp, Warning, TEXT("%s Server - Party State for Slot %s: PARTY_ID=%s, LEADER=%s"),
-											                                                                           //              *GetLogArgs(TEXT("Beam PIE Prepare"), WorldContext), *PartyPlayer.Key.Slot.Name,
-											                                                                           //              *PartyState.PartyId.ToString(), *PartyState.Leader.AsString);
-										                                                                            // }
-										                                                                            // else
-										                                                                            // {
-											                                                                           //  UE_BEAM_LOG(LogTemp, Error, TEXT("%s Server - Failed to get Party State for Slot %s"),
-											                                                                           //              *GetLogArgs(TEXT("Beam PIE Prepare"), WorldContext), *PartyPlayer.Key.Slot.Name);
-										                                                                            // }
-									                                                                            }
-								                                                                            }
-								                                                                            else
-								                                                                            {
-									                                                                            UE_LOG(LogTemp, Error, TEXT("%s Server - Failed to create Party for Slot %s"),
-									                                                                                   *GetLogArgs(TEXT("Beam PIE Prepare"), WorldContext), *CurrSlotHandle.Slot.Name);
-								                                                                            }
-							                                                                            }));
-
-
-						BeamPartySubsystem->CPP_CreatePartyOperation(CurrSlotHandle.Slot, EBeamPartyRestriction::BEAM_Unrestricted, Setting->PartySettings.MaxPartySize,
-						                                             GetBeamTags(LeaderPlayerSettings.PartyTags), FBeamOperationEventHandlerCode::CreateLambda(
-							                                             [this, LeaderPlayerSettings, Setting, BeamPartySubsystem, WorldContext, CreatePartyHandle, CurrSlotHandle](const FBeamOperationEvent& Event)
-							                                             {
-								                                             if (Event.EventType == OET_SUCCESS)
-								                                             {
-									                                             UE_BEAM_LOG(LogTemp, Warning, TEXT("%s Server - Successfully created Party for Slot %s"),
-									                                                         *GetLogArgs(TEXT("Beam PIE Prepare"), WorldContext), *CurrSlotHandle.Slot.Name);
-									                                             RequestTracker->TriggerOperationSuccess(CreatePartyHandle, TEXT(""));
-								                                             }
-								                                             else
-								                                             {
-									                                             UE_BEAM_LOG(LogTemp, Error, TEXT("%s Server - Failed to create Party for Slot %s - Message: %s"),
-									                                                         *GetLogArgs(TEXT("Beam PIE Prepare"), WorldContext), *CurrSlotHandle.Slot.Name, *Event.EventCode);
-
-									                                             RequestTracker->TriggerOperationError(CreatePartyHandle, TEXT("Failed to create party for leader"));
-									                                             return;
-								                                             }
-							                                             }));
-					}
-					else // if it is not the leader, we will try join the party after the leader has created it
-					{
-						UE_BEAM_LOG(LogTemp, Warning, TEXT("%s Server - Slot %s is not Party Leader, will join later."), *GetLogArgs(TEXT("Non Leader - Join Party"), WorldContext), *CurrSlotHandle.Slot.Name);
-					}
-				}
 				// Trigger sub-event on PrepareOp "PIE_ClientLoggedIn" (let's pass in the UserSlot data)
 				RequestTracker->TriggerOperationEvent(PrepareOp, OET_SUCCESS, GetOperationEventID_PIE_ClientLoggedIn(), TEXT(""));
 
@@ -1051,10 +1240,58 @@ public:
 		}
 	}
 
+	void CheckPIE_OnlinePlayersHandler(FPostQueryFullResponse Response, FWorldContext* WorldContext, UPostQueryRequest* Request, FBeamOperationHandle Operation)
+	{
+		if (!IsValidContext(WorldContext)) return;
+
+		bool bIsAllPlayersOnline = true;
+
+		if (Response.State == RS_Success)
+		{
+			if (Response.SuccessData->PlayersStatus.IsSet)
+			{
+				for (auto PlayerStatus : Response.SuccessData->PlayersStatus.Val)
+				{
+					if (!PlayerStatus->bOnline.Val)
+					{
+						bIsAllPlayersOnline = false;
+						break;
+					}
+				}
+			}else
+			{
+				bIsAllPlayersOnline = false;
+			}
+			if (bIsAllPlayersOnline)
+			{
+				RequestTracker->TriggerOperationSuccess(Operation, TEXT(""));
+			}
+		}
+
+		if (Response.State != RS_Success || !bIsAllPlayersOnline)
+		{
+			// If we fail, create a new handler and call the PutLobbies endpoint again
+			// This is guaranteed to succeed eventually because all clients are logging into the game.
+			FTSTicker::GetCoreTicker().AddTicker(FTickerDelegate::CreateLambda([this,WorldContext, Request, Operation](const float)
+			{
+				if (!IsValidContext(WorldContext)) return false;
+
+				const auto PresenceAPI = GEngine->GetEngineSubsystem<UBeamPresenceApi>();
+				const auto PresenceHandler = FOnPostQueryFullResponse::CreateUObject(this, &UBeamPIE::CheckPIE_OnlinePlayersHandler, WorldContext, Request, Operation);
+				const auto ServerSlot = GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot();
+
+				FBeamRequestContext Ctx;
+
+				PresenceAPI->CPP_PostQuery(ServerSlot, Request, PresenceHandler, Ctx, {}, WorldContext->World());
+				return false;
+			}), 0.2f);
+		}
+	}
+
 	/**
 	 * Keep trying to create a lobby until that is done. Since we expect all players to 	  
 	 */
-	void PreparePIE_Server_CreateLobbyHandler(FPutLobbiesFullResponse Resp, FWorldContext* WorldContext, UPutLobbiesRequest* Req, TArray<FBeamPIE_UserSlotHandle> PossibleSlotHandles, FBeamOperationHandle PrepareOp)
+	void PreparePIE_Server_CreateLobbyHandler(FPutLobbiesFullResponse Resp, FWorldContext* WorldContext, UPutLobbiesRequest* Req, FBeamOperationHandle PrepareOp)
 	{
 		if (!IsValidContext(WorldContext)) return;
 
@@ -1072,13 +1309,13 @@ public:
 		{
 			// If we fail, create a new handler and call the PutLobbies endpoint again
 			// This is guaranteed to succeed eventually because all clients are logging into the game.
-			FTSTicker::GetCoreTicker().AddTicker(FTickerDelegate::CreateLambda([this,WorldContext, PossibleSlotHandles, PrepareOp, Req](const float)
+			FTSTicker::GetCoreTicker().AddTicker(FTickerDelegate::CreateLambda([this,WorldContext, PrepareOp, Req](const float)
 			{
 				if (!IsValidContext(WorldContext)) return false;
 
 				UE_LOG(LogBeamEditor, Log, TEXT("%s Server - Failed to create lobby. Trying again."), *GetLogArgs(TEXT("Beam PIE Prepare"), WorldContext));
 
-				const auto CreateLobbyHandler = FOnPutLobbiesFullResponse::CreateUObject(this, &UBeamPIE::PreparePIE_Server_CreateLobbyHandler, WorldContext, Req, PossibleSlotHandles, PrepareOp);
+				const auto CreateLobbyHandler = FOnPutLobbiesFullResponse::CreateUObject(this, &UBeamPIE::PreparePIE_Server_CreateLobbyHandler, WorldContext, Req, PrepareOp);
 				FBeamRequestContext Ctx;
 
 				const auto ServerSlot = GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot();

@@ -318,7 +318,7 @@ void UBeamInventorySubsystem::OnPostUserSignedOut_Implementation(const FUserSlot
 		Inventory.CurrencyProperties.Reset();
 	}
 	ContentSubsystem->ContentManifestsUpdated.RemoveDynamic(this, &UBeamInventorySubsystem::OnManifestRefreshed);
-	
+
 	Super::OnPostUserSignedOut_Implementation(UserSlot, Reason, BeamRealmUser, ResultOp);
 }
 
@@ -326,7 +326,7 @@ void UBeamInventorySubsystem::OnUserSignedIn_Implementation(const FUserSlot& Use
 {
 	ContentSubsystem->ContentManifestsUpdated.AddDynamic(this, &UBeamInventorySubsystem::OnManifestRefreshed);
 
-	
+
 	Inventories.Add(BeamRealmUser.GamerTag, FBeamInventoryState{BeamRealmUser.GamerTag, UserSlot, {}, {}, {}, {}});
 
 	// Fetch the inventory
@@ -337,7 +337,7 @@ void UBeamInventorySubsystem::OnUserSignedIn_Implementation(const FUserSlot& Use
 	const FOnInventoryRefreshNotificationCode NotificationHandler = FOnInventoryRefreshNotificationCode::CreateLambda(
 		[this, UserSlot, BeamRealmUser](const FInventoryRefreshNotificationMessage& InventoryRefreshNotificationMessage)
 		{
-			UPostInventoryRequest* Req = UPostInventoryRequest::Make(BeamRealmUser.GamerTag, {},FOptionalArrayOfString{InventoryRefreshNotificationMessage.Scopes}, GetTransientPackage(), {});
+			UPostInventoryRequest* Req = UPostInventoryRequest::Make(BeamRealmUser.GamerTag, {}, FOptionalArrayOfString{InventoryRefreshNotificationMessage.Scopes}, GetTransientPackage(), {});
 
 			const FOnPostInventoryFullResponse PostInventoryHandler = FOnPostInventoryFullResponse::CreateLambda(
 				[this, InventoryRefreshNotificationMessage](const FBeamFullResponse<UPostInventoryRequest*, UInventoryView*>& Resp)
@@ -461,7 +461,8 @@ bool UBeamInventorySubsystem::TryGetAllItems(FUserSlot Player, TArray<FBeamItemS
 	return TryGetAllItemsByGamerTag(RealmUser.GamerTag, ItemStates);
 }
 
-bool UBeamInventorySubsystem::TryGetAllCurrenciesFilter(FUserSlot Player, EBeamFilterType FilterType, TSubclassOf<UBeamCurrencyContent> Filter, TArray<FBeamPlayerCurrency>& CurrencyStates, TArray<UBeamCurrencyContent*>& Contents)
+bool UBeamInventorySubsystem::TryGetAllCurrenciesFilter(FUserSlot Player, EBeamFilterType FilterType, TSubclassOf<UBeamCurrencyContent> Filter, TArray<FBeamPlayerCurrency>& CurrencyStates,
+                                                        TArray<UBeamCurrencyContent*>& Contents)
 {
 	CurrencyStates = {};
 	Contents = {};
@@ -470,17 +471,17 @@ bool UBeamInventorySubsystem::TryGetAllCurrenciesFilter(FUserSlot Player, EBeamF
 	if (!GEngine->GetEngineSubsystem<UBeamUserSlots>()->GetUserDataAtSlot(Player, RealmUser, this))
 		return false;
 
-	FFilterInventoryCacheHandler FilterHandler{ Filter, RealmUser.GamerTag};
-	
+	FFilterInventoryCacheHandler FilterHandler{Filter, RealmUser.GamerTag};
+
 	if (FilterCurrencyCache.Contains(FilterHandler))
 	{
 		CurrencyStates = FilterCurrencyCache[FilterHandler].States;
 		Contents = FilterCurrencyCache[FilterHandler].Contents;
 		return true;
 	}
-	
+
 	TArray<FBeamPlayerCurrency> Currencies;
-	
+
 	bool Result = TryGetAllCurrenciesByGamerTag(RealmUser.GamerTag, Currencies);
 
 	for (auto Item : Currencies)
@@ -492,11 +493,12 @@ bool UBeamInventorySubsystem::TryGetAllCurrenciesFilter(FUserSlot Player, EBeamF
 		if (FilterType == EBeamFilterType::BEAM_EXACTLY_TYPE)
 		{
 			ValidFilter = Content->GetClass() == Filter;
-		}else if (FilterType == EBeamFilterType::BEAM_INCLUDE_SUBTYPES)
+		}
+		else if (FilterType == EBeamFilterType::BEAM_INCLUDE_SUBTYPES)
 		{
 			ValidFilter = Content->GetClass() == Filter || Content->GetClass()->IsChildOf(Filter);
 		}
-		
+
 		if (!Filter || ValidFilter)
 		{
 			CurrencyStates.Add(Item);
@@ -508,7 +510,7 @@ bool UBeamInventorySubsystem::TryGetAllCurrenciesFilter(FUserSlot Player, EBeamF
 	{
 		FilterCurrencyCache.Add(FilterHandler, FFilterInventoryCache{Contents, CurrencyStates});
 	}
-	
+
 	return Result;
 }
 
@@ -516,13 +518,13 @@ bool UBeamInventorySubsystem::TryGetAllItemsFilter(FUserSlot Player, EBeamFilter
 {
 	ItemStates = {};
 	Contents = {};
-	
+
 	FBeamRealmUser RealmUser;
 	if (!GEngine->GetEngineSubsystem<UBeamUserSlots>()->GetUserDataAtSlot(Player, RealmUser, this))
 		return false;
-	
-	FFilterInventoryCacheHandler FilterHandler{ Filter, RealmUser.GamerTag};
-	
+
+	FFilterInventoryCacheHandler FilterHandler{Filter, RealmUser.GamerTag};
+
 	if (FilterItemCache.Contains(FilterHandler))
 	{
 		ItemStates = FilterItemCache[FilterHandler].States;
@@ -531,23 +533,24 @@ bool UBeamInventorySubsystem::TryGetAllItemsFilter(FUserSlot Player, EBeamFilter
 	}
 
 	TArray<FBeamItemState> Items;
-	
+
 	bool Result = TryGetAllItemsByGamerTag(RealmUser.GamerTag, Items);
-	
+
 	for (auto Item : Items)
 	{
 		UBeamContentObject* Content;
 		Result &= ContentSubsystem->TryGetContent(Item.ContentId, Content);
-		
+
 		bool ValidFilter = true;
 		if (FilterType == EBeamFilterType::BEAM_EXACTLY_TYPE)
 		{
 			ValidFilter = Content->GetClass() == Filter;
-		}else if (FilterType == EBeamFilterType::BEAM_INCLUDE_SUBTYPES)
+		}
+		else if (FilterType == EBeamFilterType::BEAM_INCLUDE_SUBTYPES)
 		{
 			ValidFilter = Content->GetClass() == Filter || Content->GetClass()->IsChildOf(Filter);
 		}
-		
+
 		if (!Filter || ValidFilter)
 		{
 			ItemStates.Add(Item);
@@ -559,11 +562,12 @@ bool UBeamInventorySubsystem::TryGetAllItemsFilter(FUserSlot Player, EBeamFilter
 	{
 		FilterItemCache.Add(FilterHandler, FFilterInventoryCache{Contents, ItemStates});
 	}
-	
+
 	return Result;
 }
 
-bool UBeamInventorySubsystem::TryGetAllCurrenciesRegex(FUserSlot Player, EBeamFilterType FilterType, TSubclassOf<UBeamCurrencyContent> Filter, TArray<FBeamPlayerCurrency>& CurrencyStates, TArray<UBeamCurrencyContent*>& Contents, FString RegexContentName)
+bool UBeamInventorySubsystem::TryGetAllCurrenciesRegex(FUserSlot Player, EBeamFilterType FilterType, TSubclassOf<UBeamCurrencyContent> Filter, TArray<FBeamPlayerCurrency>& CurrencyStates,
+                                                       TArray<UBeamCurrencyContent*>& Contents, FString RegexContentName)
 {
 	bool Result = TryGetAllCurrenciesFilter(Player, FilterType, Filter, CurrencyStates, Contents);
 	for (auto index = Contents.Num() - 1; index >= 0; index--)
@@ -581,10 +585,11 @@ bool UBeamInventorySubsystem::TryGetAllCurrenciesRegex(FUserSlot Player, EBeamFi
 	return Result;
 }
 
-bool UBeamInventorySubsystem::TryGetAllItemsRegex(FUserSlot Player, EBeamFilterType FilterType, TSubclassOf<UBeamItemContent> Filter, TArray<FBeamItemState>& ItemStates, TArray<UBeamItemContent*>& Contents,  FString RegexContentName)
+bool UBeamInventorySubsystem::TryGetAllItemsRegex(FUserSlot Player, EBeamFilterType FilterType, TSubclassOf<UBeamItemContent> Filter, TArray<FBeamItemState>& ItemStates, TArray<UBeamItemContent*>& Contents,
+                                                  FString RegexContentName)
 {
 	bool Result = TryGetAllItemsFilter(Player, FilterType, Filter, ItemStates, Contents);
-	
+
 	for (auto index = Contents.Num() - 1; index >= 0; index--)
 	{
 		FRegexPattern RegexPattern(RegexContentName);
@@ -817,7 +822,7 @@ bool UBeamInventorySubsystem::CommitInventoryUpdate(FUserSlot Player, FBeamOpera
 	Commands.GetAllDeletedItems(DeletedItems);
 	Commands.GetAllUpdatedItems(UpdatedItems);
 
-	FOnPutInventoryFullResponse Handler = FOnPutInventoryFullResponse::CreateLambda([this, Op, Player, GamerTag](const FBeamFullResponse<UPutInventoryRequest*, UCommonResponse*>& Resp)
+	FOnPutInventoryFullResponse Handler = FOnPutInventoryFullResponse::CreateLambda([this, Op, Player, GamerTag](const FPutInventoryFullResponse& Resp)
 	{
 		if (Resp.State == RS_Retrying) return;
 
@@ -847,7 +852,7 @@ bool UBeamInventorySubsystem::CommitInventoryUpdate(FUserSlot Player, FBeamOpera
 		}
 	});
 
-	UPutInventoryRequest* const Request = UPutInventoryRequest::Make(GamerTag,{}, {},
+	UPutInventoryRequest* const Request = UPutInventoryRequest::Make(GamerTag, {}, FOptionalBool(false), {}, {},
 	                                                                 UpdatedItems, CreatedItems, DeletedItems,
 	                                                                 CurrencyChanges, {},
 	                                                                 GetTransientPackage(), {});

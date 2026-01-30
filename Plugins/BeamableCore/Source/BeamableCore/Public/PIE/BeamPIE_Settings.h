@@ -11,11 +11,11 @@ struct BEAMABLECORE_API FBeamPartyPlayerSettings
 {
 	GENERATED_BODY()
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool bIsPartyLeader;
+	bool bIsPartyLeader = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString PartyId;
-	
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TMap<FString, FString> PartyTags = {};
 };
@@ -33,7 +33,7 @@ struct BEAMABLECORE_API FBeamPartySettings
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(EditCondition="bShouldAutoCreateParty", EditConditionHides))
 	int PartyRestriction = 0;
-	
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(EditCondition="bShouldAutoCreateParty", EditConditionHides))
 	TMap<FBeamPIE_UserSlotHandle, FBeamPartyPlayerSettings> PlayerSettingsMap = {};
 };

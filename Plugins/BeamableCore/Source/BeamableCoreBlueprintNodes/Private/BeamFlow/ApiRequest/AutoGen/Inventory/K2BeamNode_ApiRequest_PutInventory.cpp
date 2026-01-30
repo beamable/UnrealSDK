@@ -6,7 +6,7 @@
 
 #include "BeamableCore/Public/AutoGen/SubSystems/BeamInventoryApi.h"
 #include "BeamableCore/Public/AutoGen/SubSystems/Inventory/PutInventoryRequest.h"
-#include "BeamableCore/Public/AutoGen/CommonResponse.h"
+#include "BeamableCore/Public/AutoGen/InventoryUpdateResponse.h"
 
 #define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_PutInventory"
 
@@ -49,7 +49,7 @@ UClass* UK2BeamNode_ApiRequest_PutInventory::GetRequestClass() const
 
 UClass* UK2BeamNode_ApiRequest_PutInventory::GetResponseClass() const
 {
-	return UCommonResponse::StaticClass();
+	return UInventoryUpdateResponse::StaticClass();
 }
 
 FString UK2BeamNode_ApiRequest_PutInventory::GetRequestSuccessDelegateName() const

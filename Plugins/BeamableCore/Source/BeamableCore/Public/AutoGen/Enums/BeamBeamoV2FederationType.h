@@ -13,6 +13,5 @@ enum class EBeamBeamoV2FederationType : uint8
 	BEAM_IFederatedInventory UMETA(DisplayName="I Federated Inventory"),
 	BEAM_IFederatedCommerce UMETA(DisplayName="I Federated Commerce"),
 	BEAM_IFederatedGameServer UMETA(DisplayName="I Federated Game Server"),
-	BEAM_IFederatedPlayerInit UMETA(DisplayName="I Federated Player Init"),
-	BEAM_IFederatedPayments UMETA(DisplayName="I Federated Payments")		
+	BEAM_IFederatedPlayerInit UMETA(DisplayName="I Federated Player Init")		
 };

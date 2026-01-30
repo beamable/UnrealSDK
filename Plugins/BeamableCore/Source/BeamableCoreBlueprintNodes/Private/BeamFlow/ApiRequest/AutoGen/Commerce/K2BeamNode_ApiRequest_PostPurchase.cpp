@@ -6,7 +6,7 @@
 
 #include "BeamableCore/Public/AutoGen/SubSystems/BeamCommerceApi.h"
 #include "BeamableCore/Public/AutoGen/SubSystems/Commerce/PostPurchaseRequest.h"
-#include "BeamableCore/Public/AutoGen/CommonResponse.h"
+#include "BeamableCore/Public/AutoGen/InventoryUpdateResponse.h"
 
 #define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_PostPurchase"
 
@@ -49,7 +49,7 @@ UClass* UK2BeamNode_ApiRequest_PostPurchase::GetRequestClass() const
 
 UClass* UK2BeamNode_ApiRequest_PostPurchase::GetResponseClass() const
 {
-	return UCommonResponse::StaticClass();
+	return UInventoryUpdateResponse::StaticClass();
 }
 
 FString UK2BeamNode_ApiRequest_PostPurchase::GetRequestSuccessDelegateName() const

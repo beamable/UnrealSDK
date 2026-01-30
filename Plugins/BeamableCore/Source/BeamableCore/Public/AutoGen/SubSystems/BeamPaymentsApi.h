@@ -63,7 +63,7 @@
 #include "BeamableCore/Public/AutoGen/SubSystems/Payments/PostWindowsPurchaseCancelRequest.h"
 #include "BeamableCore/Public/AutoGen/SubSystems/Payments/PostWindowsPurchaseFailRequest.h"
 #include "BeamableCore/Public/AutoGen/SubSystems/Payments/PostItunesPurchaseCancelRequest.h"
-#include "BeamableCore/Public/AutoGen/SubSystems/Payments/ObjectPaymentsGetPaymentsByObjectIdRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Payments/GetPaymentsRequest.h"
 
 #include "BeamPaymentsApi.generated.h"
 
@@ -802,14 +802,14 @@ private:
 	/**
 	 * @brief Private implementation for requests that require authentication that all overloaded BP UFunctions call.	  
 	 */
-	void BP_GetPaymentsImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, UObjectPaymentsGetPaymentsByObjectIdRequest* RequestData,
-	                  const FOnObjectPaymentsGetPaymentsByObjectIdSuccess& OnSuccess, const FOnObjectPaymentsGetPaymentsByObjectIdError& OnError, const FOnObjectPaymentsGetPaymentsByObjectIdComplete& OnComplete, 
+	void BP_GetPaymentsImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, UGetPaymentsRequest* RequestData,
+	                  const FOnGetPaymentsSuccess& OnSuccess, const FOnGetPaymentsError& OnError, const FOnGetPaymentsComplete& OnComplete, 
 					  int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 	/**
 	 * @brief Overload version for binding lambdas when in C++ land. Prefer the BP version whenever possible, this is here mostly for quick experimentation purposes.	 
 	 */
-	void CPP_GetPaymentsImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, UObjectPaymentsGetPaymentsByObjectIdRequest* RequestData,
-	                   const FOnObjectPaymentsGetPaymentsByObjectIdFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
+	void CPP_GetPaymentsImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, UGetPaymentsRequest* RequestData,
+	                   const FOnGetPaymentsFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 
 public:
 	
@@ -1694,7 +1694,7 @@ public:
 	 * @param OpHandle When made as part of an Operation, you can pass this in and it'll register the request with the operation automatically.
 	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches. 
 	 */
-	void CPP_GetPayments(const FUserSlot& UserSlot, UObjectPaymentsGetPaymentsByObjectIdRequest* Request, const FOnObjectPaymentsGetPaymentsByObjectIdFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
+	void CPP_GetPayments(const FUserSlot& UserSlot, UGetPaymentsRequest* Request, const FOnGetPaymentsFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 
 
 	
@@ -2517,6 +2517,6 @@ public:
 	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches.
 	 */
 	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Payments|Utils|Make/Break", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="OpHandle,CallingContext",AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete,OpHandle", BeamFlowFunction))
-	void GetPayments(FUserSlot UserSlot, UObjectPaymentsGetPaymentsByObjectIdRequest* Request, const FOnObjectPaymentsGetPaymentsByObjectIdSuccess& OnSuccess, const FOnObjectPaymentsGetPaymentsByObjectIdError& OnError, const FOnObjectPaymentsGetPaymentsByObjectIdComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr);
+	void GetPayments(FUserSlot UserSlot, UGetPaymentsRequest* Request, const FOnGetPaymentsSuccess& OnSuccess, const FOnGetPaymentsError& OnError, const FOnGetPaymentsComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr);
 
 };

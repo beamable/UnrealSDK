@@ -23,11 +23,13 @@ FString UInventoryUpdateRequestBodyLibrary::InventoryUpdateRequestBodyToJsonStri
 	return Result;
 }	
 
-UInventoryUpdateRequestBody* UInventoryUpdateRequestBodyLibrary::Make(FOptionalBool bApplyVipBonus, FOptionalString Transaction, FOptionalArrayOfItemUpdateRequestBody UpdateItems, FOptionalArrayOfItemCreateRequestBody NewItems, FOptionalArrayOfItemDeleteRequestBody DeleteItems, FOptionalMapOfInt64 Currencies, FOptionalMapOfArrayOfCurrencyProperty CurrencyProperties, UObject* Outer)
+UInventoryUpdateRequestBody* UInventoryUpdateRequestBodyLibrary::Make(FOptionalBool bApplyVipBonus, FOptionalBool bIncludeDeltas, FOptionalString Transaction, FOptionalArrayOfString Scopes, FOptionalArrayOfItemUpdateRequestBody UpdateItems, FOptionalArrayOfItemCreateRequestBody NewItems, FOptionalArrayOfItemDeleteRequestBody DeleteItems, FOptionalMapOfInt64 Currencies, FOptionalMapOfArrayOfCurrencyProperty CurrencyProperties, UObject* Outer)
 {
 	auto Serializable = NewObject<UInventoryUpdateRequestBody>(Outer);
 	Serializable->bApplyVipBonus = bApplyVipBonus;
+	Serializable->bIncludeDeltas = bIncludeDeltas;
 	Serializable->Transaction = Transaction;
+	Serializable->Scopes = Scopes;
 	Serializable->UpdateItems = UpdateItems;
 	Serializable->NewItems = NewItems;
 	Serializable->DeleteItems = DeleteItems;
@@ -37,12 +39,14 @@ UInventoryUpdateRequestBody* UInventoryUpdateRequestBodyLibrary::Make(FOptionalB
 	return Serializable;
 }
 
-void UInventoryUpdateRequestBodyLibrary::Break(const UInventoryUpdateRequestBody* Serializable, FOptionalBool& bApplyVipBonus, FOptionalString& Transaction, FOptionalArrayOfItemUpdateRequestBody& UpdateItems, FOptionalArrayOfItemCreateRequestBody& NewItems, FOptionalArrayOfItemDeleteRequestBody& DeleteItems, FOptionalMapOfInt64& Currencies, FOptionalMapOfArrayOfCurrencyProperty& CurrencyProperties)
+void UInventoryUpdateRequestBodyLibrary::Break(const UInventoryUpdateRequestBody* Serializable, FOptionalBool& bApplyVipBonus, FOptionalBool& bIncludeDeltas, FOptionalString& Transaction, FOptionalArrayOfString& Scopes, FOptionalArrayOfItemUpdateRequestBody& UpdateItems, FOptionalArrayOfItemCreateRequestBody& NewItems, FOptionalArrayOfItemDeleteRequestBody& DeleteItems, FOptionalMapOfInt64& Currencies, FOptionalMapOfArrayOfCurrencyProperty& CurrencyProperties)
 {
 	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
 	{
 		bApplyVipBonus = Serializable->bApplyVipBonus;
+		bIncludeDeltas = Serializable->bIncludeDeltas;
 		Transaction = Serializable->Transaction;
+		Scopes = Serializable->Scopes;
 		UpdateItems = Serializable->UpdateItems;
 		NewItems = Serializable->NewItems;
 		DeleteItems = Serializable->DeleteItems;
