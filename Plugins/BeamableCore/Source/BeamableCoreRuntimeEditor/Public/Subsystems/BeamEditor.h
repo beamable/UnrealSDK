@@ -146,7 +146,8 @@ public:
 
 	UFUNCTION()
 	void EnsureCorrectEnvironmentSelection();
-	
+
+
 	/**
 	 * @brief After we have a guarantee that our services are up, we try to sign in to whichever account is saved in the MainEditor user slot
 	 * This is index 0 of the Editor user slots configured in BeamableCoreSettings.
@@ -499,4 +500,6 @@ private:
 	 */
 	UFUNCTION(BlueprintCallable, Category="Beam")
 	void ApplyCurrentSettingsToBuild();
+
+	void SyncHostWithEnvironmentSettings();
 };

@@ -223,28 +223,28 @@ void UBeamEditorBootstrapper::EnsureCustomEnvironmentIsSetUp()
 		true,
 		false
 	);
-	
+
 	// Iterate over found files and convert them to soft object paths
 	for (const FString& FilePath : FoundFiles)
 	{
 		FString Relative = FilePath;
 		FPaths::MakePathRelativeTo(Relative, *FPaths::ProjectContentDir());
-		
+
 		Relative.RemoveFromEnd(TEXT(".uasset"));
 
 		const FString PackagePath = FString(TEXT("/Game/")) + Relative;
-		
+
 		const FString AssetName = FPaths::GetBaseFilename(PackagePath);
-		
+
 		const FString ObjectPath = PackagePath + TEXT(".") + AssetName;
 
 		FSoftObjectPath SoftPath(ObjectPath);
 
 		const bool bAlreadyExists = CoreSettings->BeamablePossibleEnvironments
-			.ContainsByPredicate([&](const TSoftObjectPtr<UBeamEnvironmentData>& Existing)
-			{
-				return Existing.ToSoftObjectPath() == SoftPath;
-			});
+		                                        .ContainsByPredicate([&](const TSoftObjectPtr<UBeamEnvironmentData>& Existing)
+		                                        {
+			                                        return Existing.ToSoftObjectPath() == SoftPath;
+		                                        });
 
 		if (!bAlreadyExists)
 		{
@@ -266,14 +266,14 @@ void UBeamEditorBootstrapper::EnsureCorrectEnvironmentSelection()
 {
 	// Construct the path to the config.beam.json file
 	const FString ConfigPath = FPaths::ProjectDir() / TEXT(".beamable") / TEXT("config.beam.json");
-	
+
 	// Check if the file exists
 	if (!FPaths::FileExists(ConfigPath))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Config file not found at: %s"), *ConfigPath);
 		return;
 	}
-	
+
 	// Read the JSON file
 	FString JsonContent;
 	if (!FFileHelper::LoadFileToString(JsonContent, *ConfigPath))
@@ -281,7 +281,7 @@ void UBeamEditorBootstrapper::EnsureCorrectEnvironmentSelection()
 		UE_LOG(LogTemp, Error, TEXT("Failed to read config file at: %s"), *ConfigPath);
 		return;
 	}
-	
+
 	// Parse the JSON
 	TSharedPtr<FJsonObject> JsonObject;
 	TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(JsonContent);
@@ -290,7 +290,7 @@ void UBeamEditorBootstrapper::EnsureCorrectEnvironmentSelection()
 		UE_LOG(LogTemp, Error, TEXT("Failed to parse JSON from config file at: %s"), *ConfigPath);
 		return;
 	}
-	
+
 	// Get the "host" field from JSON
 	FString HostFromConfig;
 	if (!JsonObject->TryGetStringField(TEXT("host"), HostFromConfig))
@@ -298,10 +298,10 @@ void UBeamEditorBootstrapper::EnsureCorrectEnvironmentSelection()
 		UE_LOG(LogTemp, Warning, TEXT("No 'host' field found in config file at: %s"), *ConfigPath);
 		return;
 	}
-	
+
 	// Get the core settings
 	auto CoreSettings = GetMutableDefault<UBeamCoreSettings>();
-	
+
 	// Iterate over BeamablePossibleEnvironments to find matching host
 	for (const TSoftObjectPtr<UBeamEnvironmentData>& EnvPtr : CoreSettings->BeamablePossibleEnvironments)
 	{
@@ -312,14 +312,15 @@ void UBeamEditorBootstrapper::EnsureCorrectEnvironmentSelection()
 			// Found matching environment, set it
 			CoreSettings->BeamableEnvironment = EnvPtr;
 			CoreSettings->SaveConfig(CPF_Config, *CoreSettings->GetDefaultConfigFilename());
-			
+
 			UE_LOG(LogTemp, Display, TEXT("Environment set to: %s (Host: %s)"), *EnvData->Environment, *EnvData->APIUrl);
 			return;
 		}
 	}
-	
+
 	UE_LOG(LogTemp, Warning, TEXT("No matching environment found for host: %s"), *HostFromConfig);
 }
+
 
 void UBeamEditorBootstrapper::Run_TrySignIntoMainEditorSlot(FBeamWaitCompleteEvent Evt)
 {
@@ -675,6 +676,8 @@ void UBeamEditor::FetchOrgRealms(FString OrgName, FString Email, FString Passwor
 		return;
 	}
 
+	SyncHostWithEnvironmentSettings();
+
 	// Call init with the proper parameters
 	auto InitCommand = NewObject<UBeamCliInitCommand>();
 	InitCommand->OnStreamOutput = [this](const TArray<UBeamCliInitStreamData*>& Stream, const TArray<long long>&, const FBeamOperationHandle&)
@@ -706,9 +709,7 @@ void UBeamEditor::SignInWithCliInfo(const FBeamOperationHandle Op)
 		return;
 	}
 
-	
 
-	
 	// Start the CLI server manually skipping the pre-warm 
 	Cli->StartCliServer(true);
 
@@ -1307,4 +1308,58 @@ void UBeamEditor::ApplyCurrentSettingsToBuild()
 	const auto Cli = GEditor->GetEditorSubsystem<UBeamCli>();
 	const auto Params = TArray<FString>{TEXT("--cid"), RealmData.CID.AsString, TEXT("--pid"), RealmData.PID.AsString, TEXT("--set"), TEXT("--no-overrides")};
 	Cli->RunCommandServer(ConfigSetCmd, Params, {});
+}
+
+void UBeamEditor::SyncHostWithEnvironmentSettings()
+{
+	// Construct the path to the config.beam.json file
+	const FString ConfigPath = FPaths::ProjectDir() / TEXT(".beamable") / TEXT("config.beam.json");
+
+	// Check if the file exists
+	if (!FPaths::FileExists(ConfigPath))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Config file not found at: %s"), *ConfigPath);
+		return;
+	}
+
+	// Read the JSON file
+	FString JsonContent;
+	if (!FFileHelper::LoadFileToString(JsonContent, *ConfigPath))
+	{
+		UE_LOG(LogTemp, Error, TEXT("Failed to read config file at: %s"), *ConfigPath);
+		return;
+	}
+
+	// Parse the JSON
+	TSharedPtr<FJsonObject> JsonObject;
+	TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(JsonContent);
+	if (!FJsonSerializer::Deserialize(Reader, JsonObject) || !JsonObject.IsValid())
+	{
+		UE_LOG(LogTemp, Error, TEXT("Failed to parse JSON from config file at: %s"), *ConfigPath);
+		return;
+	}
+
+	auto CoreSettings = GetMutableDefault<UBeamCoreSettings>();
+	
+	// Load the environment data
+	UBeamEnvironmentData* EnvData =  CoreSettings->BeamableEnvironment.LoadSynchronous();
+
+	// Set the "host" field to match the env
+	JsonObject->SetStringField(TEXT("host"), EnvData->APIUrl);
+
+	// Serialize the modified JSON back to string
+	FString ModifiedJsonContent;
+	TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&ModifiedJsonContent);
+	if (!FJsonSerializer::Serialize(JsonObject.ToSharedRef(), Writer))
+	{
+		UE_LOG(LogTemp, Error, TEXT("Failed to serialize JSON"));
+		return;
+	}
+
+	// Write the modified JSON back to file
+	if (!FFileHelper::SaveStringToFile(ModifiedJsonContent, *ConfigPath))
+	{
+		UE_LOG(LogTemp, Error, TEXT("Failed to write config file at: %s"), *ConfigPath);
+		return;
+	}
 }
