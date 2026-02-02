@@ -428,6 +428,8 @@ void UBeamLobbySubsystem::GetAllLobbies(TArray<ULobby*>& Lobbies, TArray<FBeamLo
 
 bool UBeamLobbySubsystem::TryGetCurrentLobbyState(FUserSlot Slot, UBeamLobbyState*& Lobby)
 {
+	if (!LocalPlayerLobbyInfo.Contains(Slot))
+		return false;
 	Lobby = LocalPlayerLobbyInfo.FindChecked(Slot);
 	if (Lobby->LobbyId.IsValid()) return true;
 	return false;
@@ -460,13 +462,13 @@ bool UBeamLobbySubsystem::TryRemoveLocalPlayerState(const AController* Controlle
 	if (IsValid(this) && ensureAlwaysMsgf(!Runtime->IsClient(), TEXT("The TryRemoveLocalPlayerState only runs on Server!")))
 	{
 		auto GamerTag = GetGamerTagByPlayerController(Controller);
-	
+
 		if (Server_GamerTagToNetId.Contains(GamerTag))
 		{
 			FString NetId = Server_GamerTagToNetId[GamerTag];
 			Server_GamerTagToNetId.Remove(GamerTag);
 			Server_NetIdToGamerTag.Remove(NetId);
-			
+
 			return true;
 		}
 	}
@@ -2183,10 +2185,10 @@ FBeamRequestContext UBeamLobbySubsystem::RequestUpdatePlayerTag(const FUserSlot&
                                                                 FBeamOperationHandle Op, FOnApiLobbyPutTagsByIdFullResponse Handler) const
 {
 	const auto Req = UApiLobbyPutTagsByIdRequest::Make(LobbyId,
-	                                       FOptionalBeamGamerTag(PlayerId),
-	                                       FOptionalBool(bShouldReplace),
-	                                       PlayerTags.Num() > 0 ? FOptionalArrayOfBeamTag(PlayerTags) : FOptionalArrayOfBeamTag(),
-	                                       GetTransientPackage(), {});
+	                                                   FOptionalBeamGamerTag(PlayerId),
+	                                                   FOptionalBool(bShouldReplace),
+	                                                   PlayerTags.Num() > 0 ? FOptionalArrayOfBeamTag(PlayerTags) : FOptionalArrayOfBeamTag(),
+	                                                   GetTransientPackage(), {});
 
 	// Make the request
 	FBeamRequestContext Ctx;

@@ -7,32 +7,6 @@
 
 
 USTRUCT(BlueprintType)
-struct BEAMABLECORE_API FBeamPartyPlayerSettings
-{
-	GENERATED_BODY()
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool bIsPartyLeader = false;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FString PartyId = TEXT("Party_1");
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TMap<FString, FString> PartyTags = {};
-};
-
-USTRUCT(BlueprintType)
-struct BEAMABLECORE_API FBeamPartySettings
-{
-	GENERATED_BODY()
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool bShouldAutoCreateParty = false;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(EditCondition="bShouldAutoCreateParty", EditConditionHides))
-	TMap<FBeamPIE_UserSlotHandle, FBeamPartyPlayerSettings> PlayerSettingsMap = {};
-};
-
-USTRUCT(BlueprintType)
 struct BEAMABLECORE_API FBeamPIE_Settings
 {
 	static inline const FGuid DefaultPieSettingsGuid = FGuid::NewDeterministicGuid(TEXT("__BEAM_DEFAULT_PIE_SETTING__"));
@@ -57,9 +31,6 @@ struct BEAMABLECORE_API FBeamPIE_Settings
 	// Lobby
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FBeamPIE_LobbySettings FakeLobby;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FBeamPartySettings PartySettings = {};
 
 	bool IsDefaultSettings() const { return SettingsId == DefaultPieSettingsGuid; }
 };

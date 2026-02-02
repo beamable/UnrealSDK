@@ -168,7 +168,7 @@ public:
 	}
 
 	UFUNCTION(BlueprintCallable)
-	static TArray<FBeamPIE_UserSlotHandle> GetSortedKeysPartyUsers(TMap<FBeamPIE_UserSlotHandle, FBeamPartyPlayerSettings> BeamPartyUsers)
+	static TArray<FBeamPIE_UserSlotHandle> GetSortedKeysPartyUsers(TMap<FBeamPIE_UserSlotHandle, FBeamPIE_PlayerPartySettings> BeamPartyUsers)
 	{
 		TArray<FBeamPIE_UserSlotHandle> AssignedUserArray;
 		BeamPartyUsers.GenerateKeyArray(AssignedUserArray);
@@ -222,7 +222,7 @@ public:
 	}
 
 	UFUNCTION(BlueprintCallable)
-	static bool TryGetValidPartySlotHandle(int SelectedPIEIndex, FString SelectedSlotName, TMap<FBeamPIE_UserSlotHandle, FBeamPartyPlayerSettings> PartyPlayerSettings,
+	static bool TryGetValidPartySlotHandle(int SelectedPIEIndex, FString SelectedSlotName, TMap<FBeamPIE_UserSlotHandle, FBeamPIE_PlayerPartySettings> PartyPlayerSettings,
 	                                       TMap<FBeamPIE_UserSlotHandle, FBeamPIE_PerUserSetting> AssignedUsers, FBeamPIE_UserSlotHandle& UserSlotHandle)
 	{
 		auto UserSlots = GetDefault<UBeamCoreSettings>()->RuntimeUserSlots;

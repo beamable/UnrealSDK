@@ -703,14 +703,16 @@ public:
 		const auto API = GEngine->GetEngineSubsystem<UBeamPartyApi>();
 		const auto ServerSlot = GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot();
 
+		TMap<FBeamPIE_UserSlotHandle, FBeamPIE_PerUserSetting> PartyUsersMap;
+		GetAllPartyUsersMap(*Settings, PartyUsersMap);
 
 		// Create TMap with PartyId as key and party runtime settings as value
 		TMap<FString, TArray<FBeamPartyPlayerRuntimeSettings>> PartyPlayersRuntimeMap;
 
-		for (const auto& PlayerSetting : Settings->PartySettings.PlayerSettingsMap)
+		for (const auto& PlayerSetting : PartyUsersMap)
 		{
 			const FBeamPIE_UserSlotHandle& UserSlotHandle = PlayerSetting.Key;
-			const FBeamPartyPlayerSettings& PartyPlayerSettings = PlayerSetting.Value;
+			const FBeamPIE_PlayerPartySettings& PartyPlayerSettings = PlayerSetting.Value.PartySettings;
 
 			// Get the GamerTag from ServerGamerTags
 			FBeamGamerTag GamerTag;
@@ -753,9 +755,6 @@ public:
 			// Create a new request for this party
 			UPutPartiesRequest* Req = NewObject<UPutPartiesRequest>();
 			Req->Body = NewObject<UParty>();
-
-			// Set the party ID
-			Req->Body->Id = FOptionalString(PartyId);
 
 			// Find the leader and build the members array
 			TArray<FBeamGamerTag> Members;
@@ -809,7 +808,7 @@ public:
 			{
 				Req->Body->MembersTags = FOptionalMapOfTagList(MembersTags);
 			}
-
+			Req->Body->Restriction = FOptionalString("Unrestricted");
 			// Add the request to the array
 			PartyRequests.Add(Req);
 		}
@@ -867,16 +866,49 @@ public:
 		}));
 	}
 
+	UFUNCTION(BlueprintCallable)
+	void GetAllPartyUsersMap(FBeamPIE_Settings Settings, TMap<FBeamPIE_UserSlotHandle, FBeamPIE_PerUserSetting>& PartyUsersMap)
+	{
+		for (auto AssignedUser : Settings.AssignedUsers)
+		{
+			if (IsPartySet(AssignedUser.Value.PartySettings))
+			{
+				PartyUsersMap.Add(AssignedUser.Key, AssignedUser.Value);
+			}
+		}
+	}
+
+	bool ShouldCreateParty(FBeamPIE_Settings const* const Settings)
+	{
+		for (auto AssignedUser : Settings->AssignedUsers)
+		{
+			if (!AssignedUser.Value.PartySettings.PartyId.IsEmpty())
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	bool IsPartySet(FBeamPIE_PlayerPartySettings PartySettings)
+	{
+		return !PartySettings.PartyId.IsEmpty();
+	}
+
 	void GetLobbyTeams(FBeamPIE_Settings const* const Settings, UBeamGameTypeContent* GameTypeContent, TMap<FBeamPIE_UserSlotHandle, FString>& TeamToPlayerHandlesMap)
 	{
 		// Build party groupings if party settings are enabled
 		TMap<FString, TArray<FBeamPIE_UserSlotHandle>> PartyGroups;
-		if (Settings->PartySettings.bShouldAutoCreateParty)
+
+		if (ShouldCreateParty(Settings))
 		{
-			for (const auto& PlayerSetting : Settings->PartySettings.PlayerSettingsMap)
+			TMap<FBeamPIE_UserSlotHandle, FBeamPIE_PerUserSetting> PartyUsersMap;
+			GetAllPartyUsersMap(*Settings, PartyUsersMap);
+
+			for (const auto& PlayerSetting : PartyUsersMap)
 			{
 				const FBeamPIE_UserSlotHandle& UserSlotHandle = PlayerSetting.Key;
-				const FBeamPartyPlayerSettings& PartyPlayerSettings = PlayerSetting.Value;
+				const FBeamPIE_PlayerPartySettings& PartyPlayerSettings = PlayerSetting.Value.PartySettings;
 
 				if (PartyGroups.Contains(PartyPlayerSettings.PartyId))
 				{
@@ -941,18 +973,41 @@ public:
 			}
 		}
 
-		// Distribute non-party players alternately across teams
+		// Distribute non-party players alternately across teams with available slots
 		int32 CurrentTeamIndex = 0;
 		for (const FBeamPIE_UserSlotHandle& Player : NonPartyPlayers)
 		{
 			if (TeamNames.Num() > 0)
 			{
-				const FString& AssignedTeam = TeamNames[CurrentTeamIndex];
-				TeamToPlayerHandlesMap.Add(Player, AssignedTeam);
-				TeamCurrentCount[AssignedTeam]++;
-
-				// Move to next team in round-robin fashion
-				CurrentTeamIndex = (CurrentTeamIndex + 1) % TeamNames.Num();
+				// Find next team with available slots
+				bool bFoundTeam = false;
+				int32 TeamsChecked = 0;
+		
+				while (TeamsChecked < TeamNames.Num())
+				{
+					CurrentTeamIndex = (CurrentTeamIndex + 1) % TeamNames.Num();
+					const FString& CandidateTeam = TeamNames[CurrentTeamIndex];
+			
+					// Check if this team has room based on MaxPlayers rule
+					const FBeamMatchmakingTeamsRule* TeamRule = GameTypeContent->Teams.FindByPredicate(
+						[&CandidateTeam](const FBeamMatchmakingTeamsRule& Rule) { return Rule.Name == CandidateTeam; }
+					);
+			
+					if (TeamRule && TeamCurrentCount[CandidateTeam] < TeamRule->MaxPlayers)
+					{
+						TeamToPlayerHandlesMap.Add(Player, CandidateTeam);
+						TeamCurrentCount[CandidateTeam]++;
+						bFoundTeam = true;
+						break;
+					}
+			
+					TeamsChecked++;
+				}
+		
+				if (!bFoundTeam)
+				{
+					UE_LOG(LogBeamEditor, Warning, TEXT("Could not assign player - all teams are full"));
+				}
 			}
 		}
 	}
@@ -994,7 +1049,7 @@ public:
 
 
 			TMap<FBeamPIE_UserSlotHandle, FString> PlayerPartyTeamsMap;
-			
+
 			GetLobbyTeams(Settings, GameTypeContent, PlayerPartyTeamsMap);
 
 			// Set up the players in the fake lobby.
@@ -1010,10 +1065,13 @@ public:
 					for (const auto& LobbyData : Settings->AssignedUsers[Handle].LobbyData)
 						Tags.Add(FBeamTag{LobbyData.Key, LobbyData.Value});
 				}
-				if (Settings->PartySettings.PlayerSettingsMap.Contains(Handle))
+				if (Settings->AssignedUsers.Contains(Handle))
 				{
-					for (const auto& LobbyData : Settings->PartySettings.PlayerSettingsMap[Handle].PartyTags)
-						Tags.Add(FBeamTag{LobbyData.Key, LobbyData.Value});
+					if (IsPartySet(Settings->AssignedUsers[Handle].PartySettings))
+					{
+						for (const auto& LobbyData : Settings->AssignedUsers[Handle].PartySettings.PartyTags)
+							Tags.Add(FBeamTag{LobbyData.Key, LobbyData.Value});
+					}
 				}
 
 				// Set the properties we forward
@@ -1221,7 +1279,7 @@ public:
 					return;
 				}
 				// If have to create both Party and Lobby, we chain the operations.
-				if (Settings->PartySettings.bShouldAutoCreateParty && Settings->FakeLobby.bShouldAutoCreateLobby)
+				if (ShouldCreateParty(Settings) && Settings->FakeLobby.bShouldAutoCreateLobby)
 				{
 					auto PartyAutoCreationOperation = RequestTracker->CPP_BeginOperation({}, GetName(), FBeamOperationEventHandlerCode::CreateLambda(
 						                                                                     [this, WorldContext, Settings, ServerSlot, Op](const FBeamOperationEvent& Event)
@@ -1229,6 +1287,7 @@ public:
 							                                                                     if (Event.EventType != OET_SUCCESS)
 							                                                                     {
 								                                                                     RequestTracker->TriggerOperationError(Op, Event.EventCode);
+								                                                                     WorldContext->World()->GetGameInstance()->GetEngine()->DeferredCommands.Add(TEXT("exit"));
 								                                                                     return;
 							                                                                     }
 							                                                                     auto LobbyAutoCreationOperation = RequestTracker->CPP_BeginOperation(
@@ -1245,24 +1304,6 @@ public:
 								                                                                     }));
 							                                                                     AutoCreateLobby(WorldContext, Settings, ServerSlot, LobbyAutoCreationOperation);
 						                                                                     }));
-					AutoCreateParty(WorldContext, Settings, PartyAutoCreationOperation);
-					return;
-				}
-
-				// If we are creating only the party
-				if (Settings->PartySettings.bShouldAutoCreateParty)
-				{
-					auto PartyAutoCreationOperation = RequestTracker->CPP_BeginOperation({}, GetName(), FBeamOperationEventHandlerCode::CreateLambda([this, Op](const FBeamOperationEvent& Event)
-					{
-						if (Event.EventType == OET_SUCCESS)
-						{
-							RequestTracker->TriggerOperationSuccess(Op, TEXT(""));
-						}
-						else
-						{
-							RequestTracker->TriggerOperationError(Op, Event.EventCode);
-						}
-					}));
 					AutoCreateParty(WorldContext, Settings, PartyAutoCreationOperation);
 					return;
 				}
