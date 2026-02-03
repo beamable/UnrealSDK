@@ -899,6 +899,15 @@ public:
 	{
 		// Build party groupings if party settings are enabled
 		TMap<FString, TArray<FBeamPIE_UserSlotHandle>> PartyGroups;
+		// Initialize team tracking structures
+		TMap<FString, int32> TeamCurrentCount;
+		TArray<FString> TeamNames;
+
+		for (const FBeamMatchmakingTeamsRule& Team : GameTypeContent->Teams)
+		{
+			TeamNames.Add(Team.Name);
+			TeamCurrentCount.Add(Team.Name, 0);
+		}
 
 		if (ShouldCreateParty(Settings))
 		{
@@ -907,6 +916,11 @@ public:
 
 			for (const auto& PlayerSetting : PartyUsersMap)
 			{
+				// If the team is set we ignore the party for team assignment
+				if (!PlayerSetting.Value.Team.IsEmpty() && TeamNames.Contains(PlayerSetting.Value.Team))
+				{
+					continue;
+				}
 				const FBeamPIE_UserSlotHandle& UserSlotHandle = PlayerSetting.Key;
 				const FBeamPIE_PlayerPartySettings& PartyPlayerSettings = PlayerSetting.Value.PartySettings;
 
@@ -921,15 +935,6 @@ public:
 			}
 		}
 
-		// Initialize team tracking structures
-		TMap<FString, int32> TeamCurrentCount;
-		TArray<FString> TeamNames;
-
-		for (const FBeamMatchmakingTeamsRule& Team : GameTypeContent->Teams)
-		{
-			TeamNames.Add(Team.Name);
-			TeamCurrentCount.Add(Team.Name, 0);
-		}
 
 		// Assign party members to teams
 		for (const auto& PartyGroup : PartyGroups)
@@ -979,6 +984,13 @@ public:
 		{
 			if (TeamNames.Num() > 0)
 			{
+				auto BeamPie_PerUserSetting = Settings->AssignedUsers[Player];
+				if (!BeamPie_PerUserSetting.Team.IsEmpty() && TeamNames.Contains(BeamPie_PerUserSetting.Team))
+				{
+					TeamToPlayerHandlesMap.Add(Player, BeamPie_PerUserSetting.Team);
+					TeamCurrentCount[BeamPie_PerUserSetting.Team]++;
+					continue;
+				}
 				// Find next team with available slots
 				bool bFoundTeam = false;
 				int32 TeamsChecked = 0;

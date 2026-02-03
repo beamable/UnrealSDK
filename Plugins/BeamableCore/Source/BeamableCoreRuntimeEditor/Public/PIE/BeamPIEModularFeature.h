@@ -94,6 +94,30 @@ public:
 		{
 			ErrorReason += FString::Printf(TEXT("\nThe PIE config is not correct, you not able to have a \"Fake Lobby Settings\" enabled and don't have a \"GameType\" setup for this lobby."));
 		}
+		TMap<FString, bool> PartyLeader;
+		for (auto AssignedUser : SelectedSetting.AssignedUsers)
+		{
+			FBeamPIE_PlayerPartySettings PartySettings = AssignedUser.Value.PartySettings;
+			FString PartyId = PartySettings.PartyId;
+			if (!PartyId.IsEmpty())
+			{
+				if (!PartyLeader.Contains(PartyId))
+				{
+					PartyLeader.Add(PartyId, PartySettings.bIsPartyLeader);
+				}else
+				{
+					PartyLeader[PartyId] |= PartySettings.bIsPartyLeader;
+				}
+			}
+		}
+
+		for (auto Party : PartyLeader)
+		{
+			if (!Party.Value)
+			{
+				ErrorReason += FString::Printf(TEXT("\nThe PIE config is not correct, the Party %s does not have a party leader assigned."), *Party.Key);
+			}
+		}
 
 		if (!ErrorReason.IsEmpty())
 		{

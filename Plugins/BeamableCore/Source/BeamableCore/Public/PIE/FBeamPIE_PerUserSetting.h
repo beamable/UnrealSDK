@@ -30,5 +30,8 @@ struct FBeamPIE_PerUserSetting
 	TMap<FString, FString> LobbyData = {};
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString Team = TEXT("");
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FBeamPIE_PlayerPartySettings PartySettings = {};
 };
