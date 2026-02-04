@@ -285,6 +285,12 @@ public:
 	bool TryGetCurrentLobby(FUserSlot Slot, ULobby*& Lobby);
 
 	/**
+	 * Tries to get whatever the current local data for the given gamer tag's current lobby. If you want a guarantee that this data is up-to-date call, [CPP_]RefreshLobbyOperation first.
+	 */
+	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
+	bool TryGetPlayerLobby(FBeamGamerTag GamerTag, ULobby*& Lobby);
+	
+	/**
 	 *  Try to get a specific data from a ULobby* Object.
 	 *  The default value is what will be return in case of it fail to get the value.
 	 */
@@ -370,6 +376,12 @@ public:
 	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
 	bool TryGetCurrentLobbyState(FUserSlot Slot, UBeamLobbyState*& Lobby);
 
+	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
+	bool TryGetTeamFromLobby(FBeamGamerTag GamerTag, FString& OutTeam);
+
+	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
+	bool TryGetTeamWithIndexFromLobby(FBeamGamerTag GamerTag, FString& OutTeam);
+	
 	/**
 	 * Call this to begin building a set of batched updates to a lobby the player is in.
 	 * After this call, use the various PrepareUpdate______ functions to build out the update.

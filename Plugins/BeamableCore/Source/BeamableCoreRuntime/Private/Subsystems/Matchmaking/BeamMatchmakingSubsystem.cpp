@@ -47,8 +47,8 @@ void UBeamMatchmakingSubsystem::OnPostUserSignedIn_Implementation(const FUserSlo
 	{
 		UE_LOG(LogBeamMatchmaking, Display, TEXT("Beamable Matchmaking | Registering for notifications of GAME_TYPE=%s"), *GameType.AsString);
 
-		const auto UpdateHandler = FOnMatchmakingUpdateNotificationCode::CreateUObject(this, &UBeamMatchmakingSubsystem::OnMatchmakingUpdateReceived);
-		const auto TimeoutHandler = FOnMatchmakingTimeoutNotificationCode::CreateUObject(this, &UBeamMatchmakingSubsystem::OnMatchmakingTimeoutReceived);
+		const auto UpdateHandler = FOnMatchmakingUpdateNotificationCode::CreateUObject(this, &UBeamMatchmakingSubsystem::OnMatchmakingUpdateReceived, UserSlot);
+		const auto TimeoutHandler = FOnMatchmakingTimeoutNotificationCode::CreateUObject(this, &UBeamMatchmakingSubsystem::OnMatchmakingTimeoutReceived, UserSlot);
 
 		MatchmakingNotifications->CPP_SubscribeToMatchmakingUpdate(UserSlot, Runtime->DefaultNotificationChannel, GameType, UpdateHandler, this);
 		MatchmakingNotifications->CPP_SubscribeToMatchmakingTimeout(UserSlot, Runtime->DefaultNotificationChannel, GameType, TimeoutHandler, this);
@@ -64,7 +64,7 @@ void UBeamMatchmakingSubsystem::OnUserSignedOut_Implementation(const FUserSlot& 
 	{
 		if (LiveTicket.SlotsInTicket.Contains(UserSlot))
 		{
-			InvalidateLiveTicket(LiveTicket);
+			InvalidateLiveTicket(LiveTicket, UserSlot);
 		}
 	}
 
@@ -282,13 +282,13 @@ void UBeamMatchmakingSubsystem::TryJoinQueue(FUserSlot Slot, FBeamContentId Game
 
 	// We use this to enable compatibility with UE's Real-Time Multiplayer Gameplay Framework
 	auto TagsVal = Tags.GetValueOrDefault(TArray<FBeamTag>{});
-	
+
 	const auto LocalPlayer = Runtime->GetLocalPlayerForSlot(Slot);
 	if (LocalPlayer && LocalPlayer->GetPreferredUniqueNetId().IsValid())
 	{
 		TagsVal.Add(FBeamTag{UBeamLobbySubsystem::Reserved_PlayerTag_UniqueNetId_Property, LocalPlayer->GetPreferredUniqueNetId().GetUniqueNetId()->ToString()});
 	}
-	
+
 	// Adding routing key to player ticket
 	// IF PLAYER IS ALREADY IN A PARTY THIS ROUTING KEY WILL BE DUPLICATED.
 	UBeamBackend* BeamBackend = GEngine->GetEngineSubsystem<UBeamBackend>();
@@ -343,7 +343,7 @@ void UBeamMatchmakingSubsystem::TryLeaveQueue(FUserSlot Slot, FBeamOperationHand
 			for (FBeamMatchmakingTicket LiveTicket : LiveTickets)
 			{
 				if (LiveTicket.TicketId != TicketId) continue;
-				InvalidateLiveTicket(LiveTicket);
+				InvalidateLiveTicket(LiveTicket, Slot);
 				RequestTracker->TriggerOperationSuccess(Op, TicketId.ToString());
 				break;
 			}
@@ -407,10 +407,17 @@ void UBeamMatchmakingSubsystem::OnMatchmakingRemoteUpdateReceived(FMatchmakingRe
 					SlotState->InTicket = MsgTicketId;
 					SlotState->LastJoinTime = TicketData->Created.Val;
 
-
-					// Trigger the system level callbacks for "my party leader in another client joined and I now know that"			
-					const auto _ = OnMatchSearchStartedCode.ExecuteIfBound(NewTicket);
-					OnMatchSearchStarted.Broadcast(NewTicket);
+					FBeamRealmUser RealmUser;
+					if (UserSlots->GetUserDataAtSlot(UserSlot, RealmUser, this))
+					{
+						// Trigger the system level callbacks for "my party leader in another client joined and I now know that"			
+						const auto _ = OnMatchSearchStartedCode.ExecuteIfBound(RealmUser.GamerTag, NewTicket);
+						OnMatchSearchStarted.Broadcast(RealmUser.GamerTag, NewTicket);
+					}
+					else
+					{
+						UE_LOG(LogTemp, Error, TEXT("Failed to get RealmUser for UserSlot %s while processing RemoteUpdate Searching event."), *UserSlot.Name);
+					}
 				}
 			});
 			FBeamRequestContext Ctx;
@@ -419,7 +426,7 @@ void UBeamMatchmakingSubsystem::OnMatchmakingRemoteUpdateReceived(FMatchmakingRe
 	}
 }
 
-void UBeamMatchmakingSubsystem::OnMatchmakingUpdateReceived(FMatchmakingUpdateNotificationMessage Msg)
+void UBeamMatchmakingSubsystem::OnMatchmakingUpdateReceived(FMatchmakingUpdateNotificationMessage Msg, FUserSlot UserSlot)
 {
 	const auto MsgTicketId = FGuid{Msg.TicketId};
 	UE_LOG(LogBeamMatchmaking, Warning, TEXT("Received Matchmaking Update with Status=%s"), *Msg.Status)
@@ -438,14 +445,14 @@ void UBeamMatchmakingSubsystem::OnMatchmakingUpdateReceived(FMatchmakingUpdateNo
 			LiveTicket.FoundMatchLobbyId = FGuid(Msg.MatchId);
 
 			const auto Handler = FBeamOperationEventHandlerCode::CreateLambda(
-				[this, MsgTicketId](FBeamOperationEvent Evt)
+				[this, MsgTicketId, UserSlot](FBeamOperationEvent Evt)
 				{
-					FBeamMatchmakingTicket& T = *LiveTickets.FindByKey(MsgTicketId);
+					FBeamMatchmakingTicket& Ticket = *LiveTickets.FindByKey(MsgTicketId);
 					if (Evt.EventType == OET_SUCCESS)
 					{
 						ULobby* L;
 						ensureAlways(
-							GetGameInstance()->GetSubsystem<UBeamLobbySubsystem>()->TryGetLobbyById(T.
+							GetGameInstance()->GetSubsystem<UBeamLobbySubsystem>()->TryGetLobbyById(Ticket.
 								FoundMatchLobbyId, L));
 
 						UE_LOG(LogBeamMatchmaking, Warning, TEXT("Match Lobby Locally Fetched LobbyId=%s"),
@@ -455,27 +462,42 @@ void UBeamMatchmakingSubsystem::OnMatchmakingUpdateReceived(FMatchmakingUpdateNo
 							UE_LOG(LogBeamMatchmaking, Warning, TEXT("Lobby Data. Key=%s, Val=%s"), *Val.Key,
 						       *Val.Value)
 
-						// Trigger this ticket's OnMatchReady callback.
-						TArray<FOnMatchmakingTicketUpdatedCode> CodeCallbacks;
-						OnMatchReadyCode.MultiFind(MsgTicketId, CodeCallbacks, true);
-						for (auto Callback : CodeCallbacks) auto _ = Callback.ExecuteIfBound(T);
+						FBeamRealmUser RealmUser;
+						if (UserSlots->GetUserDataAtSlot(UserSlot, RealmUser, this))
+						{
+							// Trigger this ticket's OnMatchReady callback.
+							TArray<FOnMatchmakingTicketUpdatedCode> CodeCallbacks;
+							OnMatchReadyCode.MultiFind(MsgTicketId, CodeCallbacks, true);
+							for (auto Callback : CodeCallbacks) auto _ = Callback.ExecuteIfBound(RealmUser.GamerTag, Ticket);
 
-						OnMatchReady.Broadcast(T);
-
+							OnMatchReady.Broadcast(RealmUser.GamerTag, Ticket);
+						}
+						else
+						{
+							UE_LOG(LogTemp, Error, TEXT("Failed to get RealmUser for UserSlot %s while processing Update Ready event."), *UserSlot.Name);
+						}
 						// We should invalidate the ticket as we already have the match ready.
-						InvalidateLiveTicket(T);
+						InvalidateLiveTicket(Ticket, UserSlot);
 					}
 					else
 					{
-						T.FoundMatchLobbyId = FGuid();
+						Ticket.FoundMatchLobbyId = FGuid();
 
 						TArray<FOnMatchmakingTicketUpdatedCode> CodeCallbacks;
 						OnMatchCancelledCode.MultiFind(MsgTicketId, CodeCallbacks, true);
-						for (auto Callback : CodeCallbacks) auto _ = Callback.ExecuteIfBound(T);
+						FBeamRealmUser RealmUser;
+						if (UserSlots->GetUserDataAtSlot(UserSlot, RealmUser, this))
+						{
+							for (auto Callback : CodeCallbacks) auto _ = Callback.ExecuteIfBound(RealmUser.GamerTag, Ticket);
 
-						OnMatchCancelled.Broadcast(T);
+							OnMatchCancelled.Broadcast(RealmUser.GamerTag, Ticket);
+						}
+						else
+						{
+							UE_LOG(LogTemp, Error, TEXT("Failed to get RealmUser for UserSlot %s while processing Update Ready->Cancelled event."), *UserSlot.Name);
+						}
 
-						InvalidateLiveTicket(T);
+						InvalidateLiveTicket(Ticket, UserSlot);
 					}
 				});
 
@@ -492,16 +514,25 @@ void UBeamMatchmakingSubsystem::OnMatchmakingUpdateReceived(FMatchmakingUpdateNo
 
 			TArray<FOnMatchmakingTicketUpdatedCode> CodeCallbacks;
 			OnMatchCancelledCode.MultiFind(MsgTicketId, CodeCallbacks, true);
-			for (auto Callback : CodeCallbacks) auto _ = Callback.ExecuteIfBound(LiveTicket);
+			FBeamRealmUser RealmUser;
+			if (UserSlots->GetUserDataAtSlot(UserSlot, RealmUser, this))
+			{
+				for (auto Callback : CodeCallbacks) auto _ = Callback.ExecuteIfBound(RealmUser.GamerTag, LiveTicket);
 
-			OnMatchCancelled.Broadcast(LiveTicket);
+				OnMatchCancelled.Broadcast(RealmUser.GamerTag, LiveTicket);
+			}
+			else
+			{
+				UE_LOG(LogTemp, Error, TEXT("Failed to get RealmUser for UserSlot %s while processing Update Cancelled event."), *UserSlot.Name);
+			}
 
-			InvalidateLiveTicket(LiveTicket);
+
+			InvalidateLiveTicket(LiveTicket, UserSlot);
 		}
 	}
 }
 
-void UBeamMatchmakingSubsystem::OnMatchmakingTimeoutReceived(FMatchmakingTimeoutNotificationMessage Msg)
+void UBeamMatchmakingSubsystem::OnMatchmakingTimeoutReceived(FMatchmakingTimeoutNotificationMessage Msg, FUserSlot UserSlot)
 {
 	const auto MsgTicketId = FGuid{Msg.TicketId};
 	for (FBeamMatchmakingTicket& LiveTicket : LiveTickets)
@@ -510,17 +541,24 @@ void UBeamMatchmakingSubsystem::OnMatchmakingTimeoutReceived(FMatchmakingTimeout
 
 		TArray<FOnMatchmakingTicketUpdatedCode> CodeCallbacks;
 		OnMatchTimedOutCode.MultiFind(MsgTicketId, CodeCallbacks, true);
-		for (auto Callback : CodeCallbacks) auto _ = Callback.ExecuteIfBound(LiveTicket);
+		FBeamRealmUser RealmUser;
+		if (UserSlots->GetUserDataAtSlot(UserSlot, RealmUser, this))
+		{
+			for (auto Callback : CodeCallbacks) auto _ = Callback.ExecuteIfBound(RealmUser.GamerTag, LiveTicket);
 
-		OnMatchTimedOut.Broadcast(LiveTicket);
-
-		InvalidateLiveTicket(LiveTicket);
+			OnMatchTimedOut.Broadcast(RealmUser.GamerTag, LiveTicket);
+		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("Failed to get RealmUser for UserSlot %s while processing Timeout event."), *UserSlot.Name);
+		}
+		InvalidateLiveTicket(LiveTicket, UserSlot);
 	}
 }
 
 // UTILITY FUNCTIONS
 
-void UBeamMatchmakingSubsystem::InvalidateLiveTicket(FBeamMatchmakingTicket& LiveTicket)
+void UBeamMatchmakingSubsystem::InvalidateLiveTicket(FBeamMatchmakingTicket& LiveTicket, FUserSlot UserSlot)
 {
 	// Copy the ticket than invalidate it
 	const FBeamMatchmakingTicket InvalidatedTicket = LiveTicket;
@@ -535,8 +573,12 @@ void UBeamMatchmakingSubsystem::InvalidateLiveTicket(FBeamMatchmakingTicket& Liv
 	}
 	LiveTicket.SlotsInTicket.Reset();
 
-	// Trigger the BP Cleanup for this ticket
-	OnMatchTicketInvalidated.Broadcast(InvalidatedTicket);
+	FBeamRealmUser RealmUser;
+	if (UserSlots->GetUserDataAtSlot(UserSlot, RealmUser, this))
+	{
+		// Trigger the BP Cleanup for this ticket
+		OnMatchTicketInvalidated.Broadcast(RealmUser.GamerTag, InvalidatedTicket);
+	}
 
 	// Auto-Cleanup the C++ delegates.	
 	OnMatchReadyCode.Remove(InvalidatedTicket.TicketId);

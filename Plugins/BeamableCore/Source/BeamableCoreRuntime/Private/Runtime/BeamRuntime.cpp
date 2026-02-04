@@ -1683,7 +1683,7 @@ FBeamGamerTag UBeamRuntime::GetGamerTagByPlayerController(const AController* Con
 {
 	if (ensureAlwaysMsgf(IsClient(), TEXT("Not supported in the server. Please use the similar APIs from UBeamLobbySubsystem instead.")))
 	{
-		if (Controller->IsLocalController())
+		if (Controller && Controller->IsLocalController())
 		{
 			if (auto PlayerCtrl = Cast<APlayerController>(Controller))
 			{

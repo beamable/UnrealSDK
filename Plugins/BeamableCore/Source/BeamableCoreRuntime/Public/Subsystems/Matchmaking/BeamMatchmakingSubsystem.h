@@ -67,8 +67,8 @@ struct FBeamMatchmakingTicket
 };
 
 
-DECLARE_DELEGATE_OneParam(FOnMatchmakingTicketUpdatedCode, const FBeamMatchmakingTicket&)
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnMatchmakingTicketUpdated, const FBeamMatchmakingTicket&, Ticket);
+DECLARE_DELEGATE_TwoParams(FOnMatchmakingTicketUpdatedCode, FBeamGamerTag, const FBeamMatchmakingTicket&)
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnMatchmakingTicketUpdated, FBeamGamerTag, GamerTag, const FBeamMatchmakingTicket&, Ticket);
 
 
 USTRUCT(BlueprintType)
@@ -96,11 +96,11 @@ UCLASS(BlueprintType)
 class BEAMABLECORERUNTIME_API UBeamMatchmakingSubsystem : public UBeamRuntimeSubsystem
 {
 	GENERATED_BODY()
-	
+
 	const FString StatRegionPingKey = "beam.region.pings";
 
 	friend class UBeamDefaultMatchmakingHooks;
-	
+
 	UPROPERTY()
 	UBeamMatchmakingApi* MatchmakingApi;
 
@@ -115,7 +115,6 @@ class BEAMABLECORERUNTIME_API UBeamMatchmakingSubsystem : public UBeamRuntimeSub
 
 	UPROPERTY()
 	UBeamContentSubsystem* ContentSubsystem;
-	
 
 public:
 	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, meta=(DefaultToSelf="CallingContext"))
@@ -212,7 +211,7 @@ public:
 	 */
 	FBeamOperationHandle CPP_TryJoinQueueOperation(FUserSlot UserSlot, const FBeamContentId& GameTypeQueue, FOptionalString Team, FBeamOperationEventHandlerCode OnOperationEvent);
 
-	
+
 	/**
 	 * @brief Joins the given game type queue.
 	 * The user in the given user slot is added to the queue. If that user is in a party:
@@ -252,7 +251,6 @@ public:
 	FBeamOperationHandle CPP_TryLeaveQueueOperation(FUserSlot UserSlot, FBeamOperationEventHandlerCode OnOperationEvent);
 
 private:
-	
 	// Operation Implementations
 	void TryJoinQueue(FUserSlot Slot, FBeamContentId GameTypeQueue, FOptionalString Team, FOptionalArrayOfBeamTag Tags, FBeamOperationHandle Op);
 	void TryLeaveQueue(FUserSlot Slot, FBeamOperationHandle Op);
@@ -260,13 +258,13 @@ private:
 
 	// Notification Handlers
 	void OnMatchmakingRemoteUpdateReceived(FMatchmakingRemoteUpdateNotificationMessage Msg, FUserSlot UserSlot);
-	void OnMatchmakingUpdateReceived(FMatchmakingUpdateNotificationMessage Msg);
-	void OnMatchmakingTimeoutReceived(FMatchmakingTimeoutNotificationMessage Msg);
+	void OnMatchmakingUpdateReceived(FMatchmakingUpdateNotificationMessage Msg, FUserSlot UserSlot);
+	void OnMatchmakingTimeoutReceived(FMatchmakingTimeoutNotificationMessage Msg, FUserSlot UserSlot);
 
 	// Utility Functions
-	void InvalidateLiveTicket(FBeamMatchmakingTicket& LiveTicket);
+	void InvalidateLiveTicket(FBeamMatchmakingTicket& LiveTicket, FUserSlot UserSlot);
 
 	void CommitRegionPing(FUserSlot UserSlot, TMap<FString, int32> RegionPings, FBeamOperationHandle OperationHandle);
-	
+
 	static FString ConvertRegionPingsToJson(TMap<FString, int32> RegionPings);
 };

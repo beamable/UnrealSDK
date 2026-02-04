@@ -204,6 +204,23 @@ bool UBeamLobbySubsystem::TryGetCurrentLobby(FUserSlot Slot, ULobby*& Lobby)
 	return false;
 }
 
+bool UBeamLobbySubsystem::TryGetPlayerLobby(FBeamGamerTag GamerTag, ULobby*& Lobby)
+{
+	for (auto KnownLobby : KnownLobbies)
+	{
+		for (auto Player : KnownLobby->Players.Val)
+		{
+			if (Player->PlayerId.Val == GamerTag)
+			{
+				Lobby = KnownLobby;
+				return true;
+			}
+		}
+	}
+
+	return false;
+}
+
 
 bool UBeamLobbySubsystem::TryGetGlobalLobbyData(ULobby* Lobby, FString DataKey, FString DefaultValue, FString& GlobalData)
 {
@@ -432,6 +449,61 @@ bool UBeamLobbySubsystem::TryGetCurrentLobbyState(FUserSlot Slot, UBeamLobbyStat
 		return false;
 	Lobby = LocalPlayerLobbyInfo.FindChecked(Slot);
 	if (Lobby->LobbyId.IsValid()) return true;
+	return false;
+}
+
+bool UBeamLobbySubsystem::TryGetTeamFromLobby(FBeamGamerTag GamerTag, FString& OutTeam)
+{
+	for (auto Lobby : KnownLobbies)
+	{
+		for (auto LobbyPlayer : Lobby->Players.Val)
+		{
+			if (LobbyPlayer->PlayerId.Val == GamerTag)
+			{
+				for (auto BeamTag : LobbyPlayer->Tags.Val)
+				{
+					if (BeamTag.Name.Val == "team")
+					{
+						OutTeam = BeamTag.Value.Val;
+						return true;
+					}
+				}
+			}
+		}
+	}
+
+	return false;
+}
+
+bool UBeamLobbySubsystem::TryGetTeamWithIndexFromLobby(FBeamGamerTag GamerTag, FString& OutTeam)
+{
+	TMap<FString, int> TeamCount;
+	for (auto Lobby : KnownLobbies)
+	{
+		for (auto LobbyPlayer : Lobby->Players.Val)
+		{
+			for (auto BeamTag : LobbyPlayer->Tags.Val)
+			{
+				if (BeamTag.Name.Val == "team")
+				{
+					if (!TeamCount.Contains(BeamTag.Value.Val))
+					{
+						TeamCount.Add(BeamTag.Value.Val, 0);
+					}
+					
+					if (LobbyPlayer->PlayerId.Val == GamerTag)
+					{
+						OutTeam = BeamTag.Value.Val + FString::FromInt(TeamCount[BeamTag.Value.Val]);
+						return true;
+					}
+					
+					TeamCount[BeamTag.Value.Val] ++;
+				}
+			}
+		}
+	}
+	
+
 	return false;
 }
 
