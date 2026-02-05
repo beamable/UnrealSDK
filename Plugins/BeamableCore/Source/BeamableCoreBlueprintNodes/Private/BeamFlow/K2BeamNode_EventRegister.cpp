@@ -74,21 +74,20 @@ void UK2BeamNode_EventRegister::AllocateDefaultPins()
 					for (TFieldIterator<FProperty> PropIt(SignatureFunction); PropIt && (PropIt->PropertyFlags & CPF_Parm); ++PropIt)
 					{
 						FProperty* Param = *PropIt;
-						FString ParamName = DelegateProp->GetName() + TEXT(" - ");
 
 						// Check if this is a FBeamGamerTag and conversion is enabled
 						const FString ParamCppType = Param->GetCPPType();
 						const bool bIsGamerTag = ParamCppType.Contains(TEXT("FBeamGamerTag"));
+						
+						FString ParamName = DelegateProp->GetName() + TEXT(" - ") + (bShouldConvert && bIsGamerTag ? "UserSlot":  Param->GetName());
 
 						if (bShouldConvert && bIsGamerTag)
 						{
-							ParamName += "UserSlot";
 							// Create FUserSlot pin instead
-							auto Pin = CreatePin(EGPD_Output, UEdGraphSchema_K2::PC_Struct, FUserSlot::StaticStruct(), *ParamName);
+							CreatePin(EGPD_Output, UEdGraphSchema_K2::PC_Struct, FUserSlot::StaticStruct(), *ParamName);
 						}
 						else
 						{
-							ParamName += Param->GetName();
 							// Create normal pin with the original type
 							UEdGraphPin* ParamPin = CreatePin(EGPD_Output, UEdGraphSchema_K2::PC_Wildcard, *ParamName);
 							K2Schema->ConvertPropertyToPinType(Param, /*out*/ ParamPin->PinType);
@@ -255,20 +254,19 @@ void UK2BeamNode_EventRegister::ExpandNode(FKismetCompilerContext& CompilerConte
 					for (TFieldIterator<FProperty> Property(SignatureFunction); Property && (Property->PropertyFlags & CPF_Parm); ++Property)
 					{
 						FProperty* ParamProperty = *Property;
-
-						FString ParamName = DelegateProp->GetName() + TEXT(" - ");
-
+						
 						auto CustomEventPin = CustomEventNode->FindPin(ParamProperty->GetName());
-
-
+						
 						// Check if this is a FBeamGamerTag and conversion is enabled
 						const FString ParamCppType = ParamProperty->GetCPPType();
 						const bool bIsGamerTag = ParamCppType.Contains(TEXT("FBeamGamerTag"));
+						
+						FString ParamName = DelegateProp->GetName() + TEXT(" - ") + (bShouldConvert && bIsGamerTag ? "UserSlot":  ParamProperty->GetName());
 
+						auto NodeOutputPin = FindPin(ParamName);
+						
 						if (bShouldConvert && bIsGamerTag)
 						{
-							ParamName += "UserSlot";
-							auto NodeOutputPin = FindPin(ParamName);
 							// Create GetSelf call to get UBeamUserSlots instance
 							UK2Node_CallFunction* GetUserSlotsNode = BeamK2::CreateCallFunctionNode(
 								this, CompilerContext, SourceGraph,
@@ -302,8 +300,6 @@ void UK2BeamNode_EventRegister::ExpandNode(FKismetCompilerContext& CompilerConte
 						}
 						else
 						{
-							ParamName += ParamProperty->GetName();
-							auto NodeOutputPin = FindPin(ParamName);
 							// Normal connection without conversion
 							CompilerContext.MovePinLinksToIntermediate(*NodeOutputPin, *CustomEventPin);
 						}
