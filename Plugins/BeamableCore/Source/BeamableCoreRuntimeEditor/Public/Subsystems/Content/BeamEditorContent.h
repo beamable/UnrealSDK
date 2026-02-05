@@ -66,7 +66,7 @@ public:
 		TEXT("Uncooked");
 
 	inline static const FString DefaultBeamableProjectPath = FPaths::ProjectDir() / TEXT(".beamable");
-	inline static const FString DefaultBeamableProjectContentObjects = DefaultBeamableProjectPath / TEXT("Content");
+	inline static const FString DefaultBeamableProjectContentObjects = DefaultBeamableProjectPath / TEXT("local") / TEXT("content");
 
 	inline static const FString Global_Manifest_Name = TEXT("global");
 	inline static const FBeamContentManifestId Global_Manifest = FBeamContentManifestId(Global_Manifest_Name);

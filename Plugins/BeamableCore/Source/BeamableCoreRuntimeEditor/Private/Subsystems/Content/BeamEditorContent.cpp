@@ -607,7 +607,7 @@ bool UBeamEditorContent::TryRenameContent(const FBeamContentManifestId& Manifest
 	if (!IFileManager::Get().Move(*NewContentPath, *OldContentPath))
 	{
 		Err = FText::FromString(TEXT("Failed renaming the file."));
-		return true;
+		return false;
 	}
 
 	return true;
