@@ -210,6 +210,7 @@ namespace BeamK2
 	void ValidateOutputPinUsage(const FKismetCompilerContext& CompilerContext, const TArray<UEdGraphPin*>& InvalidPins, const TArray<FString>& InvalidPinErrorMessages,
 	                            const TArray<UEdGraphNode*>& NodesToSearchIn);
 
+	
 	/**
 	 * @brief Checks if the given graph is a Macro or the default EventGraph.	  
 	 */

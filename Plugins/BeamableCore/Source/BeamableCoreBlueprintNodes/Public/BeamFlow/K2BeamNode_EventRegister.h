@@ -25,6 +25,9 @@ public:
 	UPROPERTY()
 	TMap<FName, bool> EventUnbindPinsAsExecute;
 
+	UPROPERTY()
+	TMap<FName, bool> ConvertGamerTagToUserSlot;
+
 	// UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	// bool UsesObject;
 
@@ -85,6 +88,8 @@ protected:
 	virtual bool ShowAsExecuteProperty(FMulticastDelegateProperty* DelegateProp);
 
 	virtual bool ShowUnbindAsExecuteProperty(FMulticastDelegateProperty* DelegateProp);
+
+	virtual bool ShouldConvertGamerTagToUserSlot(FMulticastDelegateProperty* DelegateProp);
 
 	virtual bool ShouldUsesObject() { return false; }
 };

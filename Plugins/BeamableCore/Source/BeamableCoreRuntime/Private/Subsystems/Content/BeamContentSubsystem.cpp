@@ -753,8 +753,8 @@ void UBeamContentSubsystem::OnBeamableStarting_Implementation(FBeamOperationHand
 					{
 						ContentHook->OnLoadBeamContent(IndividualDownloadedData);
 					}
+					UE_LOG(LogTemp, Warning, TEXT("DOWNLOADED CONTENT %s"), *IndividualDownloadedData->ContentId);
 				}
-				UE_LOG(LogTemp, Warning, TEXT("DOWNLOADED CONTENT %s"), *IndividualDownloadedData->ContentId);
 			}
 			else if (Evt.EventType == OET_ERROR)
 			{

@@ -24,6 +24,8 @@ void UK2BeamEventRegisterCustomization::CustomizeDetails(IDetailLayoutBuilder& D
 			GenerateShowDelegateAsExecuteCheckboxes(DetailBuilder, Node);
 
 			GenerateShowUnbindAsExecuteCheckboxes(DetailBuilder, Node);
+
+			GenerateConvertGamerTagToUserSlotCheckboxes(DetailBuilder, Node);
 		}
 	}
 }
@@ -152,6 +154,49 @@ void UK2BeamEventRegisterCustomization::GenerateShowUnbindAsExecuteCheckboxes(ID
 				{
 					Node->Modify();
 					Node->EventUnbindPinsAsExecute[DelegateName] = (NewState == ECheckBoxState::Checked);
+					Node->ReconstructNode(); // Optional: auto-refresh
+				})
+			];
+	}
+}
+
+void UK2BeamEventRegisterCustomization::GenerateConvertGamerTagToUserSlotCheckboxes(IDetailLayoutBuilder& DetailBuilder, UK2BeamNode_EventRegister* Node)
+{
+	IDetailCategoryBuilder& Category = DetailBuilder.EditCategory("Convert GamerTag to UserSlot");
+
+	const auto ReferenceClass = Node->GetRuntimeSubsystemClass();
+
+	for (TFieldIterator<FMulticastDelegateProperty> It(ReferenceClass); It; ++It)
+	{
+		FName DelegateName = It->GetFName();
+		if (!It->HasAnyPropertyFlags(CPF_BlueprintAssignable))
+		{
+			continue;
+		}
+		// Ensure entry exists
+		if (!Node->ConvertGamerTagToUserSlot.Contains(DelegateName))
+		{
+			Node->ConvertGamerTagToUserSlot.Add(DelegateName, false);
+		}
+
+		Category.AddCustomRow(FText::FromName(DelegateName))
+		        .NameContent()
+			[
+				SNew(STextBlock)
+				.Text(FText::FromName(DelegateName))
+				.Font(IDetailLayoutBuilder::GetDetailFont())
+			]
+			.ValueContent()
+			[
+				SNew(SCheckBox)
+				.IsChecked_Lambda([Node, DelegateName]()
+				{
+					return Node->ConvertGamerTagToUserSlot[DelegateName] ? ECheckBoxState::Checked : ECheckBoxState::Unchecked;
+				})
+				.OnCheckStateChanged_Lambda([Node, DelegateName](ECheckBoxState NewState)
+				{
+					Node->Modify();
+					Node->ConvertGamerTagToUserSlot[DelegateName] = (NewState == ECheckBoxState::Checked);
 					Node->ReconstructNode(); // Optional: auto-refresh
 				})
 			];

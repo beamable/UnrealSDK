@@ -123,6 +123,16 @@ TArray<FUserSlot> UBeamUserSlots::GetKnownSlots()
 	return KnownSlots;
 }
 
+FUserSlot UBeamUserSlots::GetUserSlot(FBeamGamerTag GamerTag, const UObject* CallingContext)
+{
+	FBeamRealmUser _;
+	FString __;
+	FUserSlot OutUserSlot;
+	GetUserDataWithGamerTag(GamerTag, _, OutUserSlot, __, CallingContext);
+	return OutUserSlot;
+}
+
+
 bool UBeamUserSlots::GetUserDataAtSlot(FUserSlot SlotId, FBeamRealmUser& OutUserData, const UObject* CallingContext) const
 {
 	if (const FString NamespacedSlotId = GetNamespacedSlotId(SlotId, CallingContext); AuthenticatedUserMapping.Contains(NamespacedSlotId))

@@ -149,6 +149,9 @@ private:
 	static FString GetSavedSlotAccountFilePath(FString NamespacedSlotId);
 
 public:
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, meta=(DefaultToSelf="CallingContext"))
+	static UBeamUserSlots* GetSelf(const UObject* CallingContext) { return GEngine->GetEngineSubsystem<UBeamUserSlots>(); }
+
 	/** @brief Initializes the subsystem.  */
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 
@@ -187,6 +190,12 @@ public:
 	UFUNCTION(BlueprintPure, Category="Beam", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
 	TArray<FUserSlot> GetKnownSlots();
 
+	/**
+	 * @brief Tries to find the a FUserSlot that contains the user with the given FBeamGamerTag.
+	 */
+	UFUNCTION(BlueprintPure)
+	FUserSlot GetUserSlot(FBeamGamerTag GamerTag, const UObject* CallingContext);
+	
 	/**
 	 * @brief Tries to get the user currently  mapped to the given slot.	  
 	 * @return True, if there is a user mapped. False, if no user mapped was found. 
