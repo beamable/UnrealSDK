@@ -878,6 +878,32 @@ public:
 		}
 	}
 
+	UFUNCTION(BlueprintCallable)
+	void ValidateTeamUsersMap(FBeamPIE_Settings Settings, TMap<FBeamPIE_UserSlotHandle, FString>& PartyTeamMap)
+	{
+		TMap<FBeamPIE_UserSlotHandle, FBeamPIE_PerUserSetting> PartyUsers;
+		GetAllPartyUsersMap(Settings, PartyUsers);
+
+		TArray<FBeamPIE_UserSlotHandle> LeaderHandles;
+		for (auto LeaderUser : PartyUsers)
+		{
+			if (LeaderUser.Value.PartySettings.bIsPartyLeader)
+			{
+				for (auto AssignedUser : Settings.AssignedUsers)
+				{
+					if (AssignedUser.Key == LeaderUser.Key)
+					{
+						continue;
+					}
+					if (AssignedUser.Value.PartySettings.PartyId == LeaderUser.Value.PartySettings.PartyId)
+					{
+						PartyTeamMap.Add(AssignedUser.Key, LeaderUser.Value.Team);
+					}
+				}
+			}
+		}
+	}
+
 	bool ShouldCreateParty(FBeamPIE_Settings const* const Settings)
 	{
 		for (auto AssignedUser : Settings->AssignedUsers)
