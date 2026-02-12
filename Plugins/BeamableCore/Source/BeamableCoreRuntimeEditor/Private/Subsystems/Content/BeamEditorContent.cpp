@@ -3,6 +3,8 @@
 
 #include "Subsystems/Content/BeamEditorContent.h"
 
+#include <string>
+
 #include "EditorStyleSet.h"
 #include "Content/BeamContentCache.h"
 #include "Content/BeamContentCacheSerializer.h"
@@ -19,7 +21,10 @@
 #include "Subsystems/CLI/Autogen/BeamCliContentPublishCommand.h"
 #include "Subsystems/CLI/Autogen/BeamCliContentPullCommand.h"
 #include "Subsystems/CLI/Autogen/BeamCliContentResolveCommand.h"
+#include "Subsystems/CLI/Autogen/BeamCliContentRestoreCommand.h"
 #include "Subsystems/CLI/Autogen/BeamCliContentSaveCommand.h"
+#include "Subsystems/CLI/Autogen/BeamCliContentSnapshotCommand.h"
+#include "Subsystems/CLI/Autogen/BeamCliContentSnapshotListCommand.h"
 #include "Subsystems/CLI/Autogen/BeamCliContentSyncCommand.h"
 #include "Subsystems/CLI/Autogen/BeamCliContentTagSetCommand.h"
 #include "Widgets/Notifications/SNotificationList.h"
@@ -681,6 +686,190 @@ bool UBeamEditorContent::TryGetFilteredListOfContent(const FBeamContentManifestI
 	});
 
 	return true;
+}
+
+void UBeamEditorContent::ApplyContentSnapshot(FBeamContentManifestId ManifestId, FBeamPid Realm, FString Path, bool DeleteAfterRestore, bool AddAfterRestore, FBeamSnapshotRestored OnApplyCompleted)
+{
+	auto List = NewObject<UBeamCliContentRestoreCommand>();
+	List->OnCompleted = [List, OnApplyCompleted](const int& ErrorCode, const FBeamOperationHandle&)
+	{
+		if (ErrorCode == 0)
+		{
+			OnApplyCompleted.ExecuteIfBound();
+		}
+		else
+		{
+			UE_LOG(LogBeamContent, Log, TEXT("ERROR applying snapshot: %d"), ErrorCode);
+				// TODO Handle error.
+				for (FBeamCliError Error : List->Errors)
+				{
+					UE_LOG(LogBeamContent, Log, TEXT("ERROR applying snapshot: %s"), *Error.Message);
+				}
+				OnApplyCompleted.ExecuteIfBound();
+		}
+	};
+
+	FString Args;
+	
+	Args += !ManifestId.AsString.IsEmpty()?FString::Printf(TEXT("--manifest-id %s"), *ManifestId.AsString) : TEXT("");
+	Args += !Realm.AsString.IsEmpty()? FString::Printf(TEXT("--pid %s"), *Realm.AsString) : TEXT("");
+	Args += FString::Printf(TEXT("--name \"%s\""), *Path);
+	Args += DeleteAfterRestore ? TEXT(" --delete-after-restore") : TEXT("");
+	Args += AddAfterRestore ? TEXT(" --add-after-restore") : TEXT("");
+
+	Cli->RunCommandServer(List, {Args}, {});
+}
+
+void UBeamEditorContent::CreateContentSnapshot(FBeamContentManifestId ManifestId, FBeamPid Realm, FString Name, bool bIsAutoSnapshot, FBeamSnapshotCreated OnSnapshotCreated)
+{
+	auto CreateCmd = NewObject<UBeamCliContentSnapshotCommand>();
+	CreateCmd->OnCompleted = [CreateCmd, OnSnapshotCreated](const int& ErrorCode, const FBeamOperationHandle&)
+	{
+		if (ErrorCode == 0)
+		{
+			OnSnapshotCreated.ExecuteIfBound();
+		}
+		else
+		{
+			UE_LOG(LogBeamContent, Log, TEXT("ERROR creating snapshot: %d"), ErrorCode);
+			// TODO Handle error.
+			for (FBeamCliError Error : CreateCmd->Errors)
+			{
+				UE_LOG(LogBeamContent, Log, TEXT("ERROR creating snapshot: %s"), *Error.Message);
+			}
+			OnSnapshotCreated.ExecuteIfBound();
+		}
+	};
+
+	FString Args;
+	
+	Args += !ManifestId.AsString.IsEmpty()?FString::Printf(TEXT("--manifest-id %s"), *ManifestId.AsString) : TEXT("");
+	Args += !Realm.AsString.IsEmpty()? FString::Printf(TEXT("--pid %s"), *Realm.AsString) : TEXT("");
+	Args += FString::Printf(TEXT("--name \"%s\""), *Name);
+	if (bIsAutoSnapshot)
+	{
+		Args += TEXT(" --auto-snapshot");
+	}
+
+	Cli->RunCommandServer(CreateCmd, {Args}, {});
+}
+
+void UBeamEditorContent::DeleteContentSnapshot(FBeamContentManifestId ManifestId, FBeamPid Realm, FString Path, FBeamSnapshotDeleted OnSnapshotDeleted)
+{
+	// Delete the snapshot file directly using File Utilities
+	IFileManager& FileManager = IFileManager::Get();
+	
+	if (FileManager.FileExists(*Path))
+	{
+		if (FileManager.Delete(*Path, false, true))
+		{
+			UE_LOG(LogBeamContent, Log, TEXT("Successfully deleted snapshot: %s"), *Path);
+			OnSnapshotDeleted.ExecuteIfBound();
+		}
+		else
+		{
+			UE_LOG(LogBeamContent, Error, TEXT("Failed to delete snapshot file: %s"), *Path);
+			OnSnapshotDeleted.ExecuteIfBound();
+		}
+	}
+	else
+	{
+		UE_LOG(LogBeamContent, Warning, TEXT("Snapshot file does not exist: %s"), *Path);
+		OnSnapshotDeleted.ExecuteIfBound();
+	}
+}
+
+void UBeamEditorContent::RefreshContentSnapshots(FBeamContentManifestId ManifestId, FBeamPid Realm, FBeamSnapshotRefreshed OnRefreshCompleted)
+{
+	
+	auto List = NewObject<UBeamCliContentSnapshotListCommand>();
+	List->OnStreamOutput = [OnRefreshCompleted](TArray<UBeamCliContentSnapshotListStreamData*>& StreamData, TArray<long long>&, const FBeamOperationHandle&)
+	{
+		TArray<UBeamSnapshotLocalView*> SnapshotLocalViews;
+		for (UBeamCliContentSnapshotListStreamData* Data : StreamData)
+		{
+			for (UManifestSnapshotItemStreamData* SharedSnapshot : Data->SharedSnapshots)
+			{
+				auto SnapshotView = NewObject<UBeamSnapshotLocalView>();
+				SnapshotView->Name = FText::FromString(SharedSnapshot->Name);
+				SnapshotView->bIsSharedSnapshot = SharedSnapshot->IsAutoSnapshot;
+				SnapshotView->bIsSharedSnapshot = true;
+				SnapshotView->Author = FText::FromString(SharedSnapshot->Author->Email);
+				SnapshotView->ManifestID = FText::FromString(SharedSnapshot->ManifestId);
+				SnapshotView->TimeStamp = FDateTime::FromUnixTimestampDecimal(SharedSnapshot->SavedTimestamp * 0.001);
+				SnapshotView->Realm = FText::FromString(SharedSnapshot->ProjectData->RealmName);
+				SnapshotView->PID = FText::FromString(SharedSnapshot->ProjectData->PID);
+				SnapshotView->Path = SharedSnapshot->Path;
+
+				SnapshotView->Contents.Reserve(SharedSnapshot->Contents.Num());
+				const FBeamContentManifestId SnapshotManifestId{SharedSnapshot->ManifestId};
+				
+				for (UContentSnapshotListItemStreamData* Content : SharedSnapshot->Contents)
+				{
+					FBeamSnapshotContentEntry LocalViewContent;
+					LocalViewContent.Name = FText::FromString(Content->Name);
+					LocalViewContent.CurrentStatus = static_cast<EBeamLocalContentStatus>(Content->CurrentStatus);
+					
+					SnapshotView->Contents.Add(LocalViewContent);
+				}
+
+				SnapshotLocalViews.Add(SnapshotView);
+			}
+
+			for (UManifestSnapshotItemStreamData* LocalSnapshot : Data->LocalSnapshots)
+			{
+				auto SnapshotView = NewObject<UBeamSnapshotLocalView>();
+				SnapshotView->Name = FText::FromString(LocalSnapshot->Name);
+				SnapshotView->bIsSharedSnapshot = LocalSnapshot->IsAutoSnapshot;
+				SnapshotView->bIsSharedSnapshot = false;
+				SnapshotView->Author = FText::FromString(LocalSnapshot->Author->Email);
+				SnapshotView->ManifestID = FText::FromString(LocalSnapshot->ManifestId);
+				SnapshotView->TimeStamp = FDateTime::FromUnixTimestampDecimal(LocalSnapshot->SavedTimestamp * 0.001);
+				SnapshotView->Realm = FText::FromString(LocalSnapshot->ProjectData->RealmName);
+				SnapshotView->PID = FText::FromString(LocalSnapshot->ProjectData->PID);
+				SnapshotView->Path = LocalSnapshot->Path;
+				
+				SnapshotView->Contents.Reserve(LocalSnapshot->Contents.Num());
+				const FBeamContentManifestId SnapshotManifestId{LocalSnapshot->ManifestId};
+				
+				for (UContentSnapshotListItemStreamData* Content : LocalSnapshot->Contents)
+				{
+					FBeamSnapshotContentEntry LocalViewContent;
+					LocalViewContent.Name = FText::FromString(Content->Name);
+					LocalViewContent.CurrentStatus = static_cast<EBeamLocalContentStatus>(Content->CurrentStatus);
+					
+					SnapshotView->Contents.Add(LocalViewContent);
+				}
+
+				SnapshotLocalViews.Add(SnapshotView);
+			}
+		}
+		
+		// TODO: Sort...
+		// TODO: Make sure that the LocalView for the object where this is true "SharedSnapshot->IsAutoSnapshot == true" is always at the top of the list.
+		
+		OnRefreshCompleted.ExecuteIfBound(SnapshotLocalViews);
+	};
+	
+	List->OnCompleted = [List](const int& ErrorCode, const FBeamOperationHandle&)
+	{
+		if (ErrorCode != 0)
+		{
+			// TODO Handle error.
+			for (FBeamCliError Error : List->Errors)
+			{
+				
+			}
+		}
+	};
+
+	FString Args;
+	if (!ManifestId.AsString.IsEmpty())
+		Args += FString::Printf(TEXT("--manifest-id %s"), *ManifestId.AsString);
+	if (!Realm.AsString.IsEmpty())
+		Args += FString::Printf(TEXT("--pid %s"), *Realm.AsString);
+
+	Cli->RunCommandServer(List, {Args}, {});
 }
 
 FString UBeamEditorContent::GetJsonBlobPath(FString RowName, FBeamContentManifestId ManifestId)
