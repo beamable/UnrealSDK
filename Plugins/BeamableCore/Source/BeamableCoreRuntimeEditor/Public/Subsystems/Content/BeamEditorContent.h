@@ -20,6 +20,10 @@
 class IDataTableEditor;
 
 DECLARE_MULTICAST_DELEGATE_TwoParams(FBeamContentModified, FBeamContentManifestId, TArray<FBeamContentId>);
+DECLARE_DYNAMIC_DELEGATE_OneParam(FBeamSnapshotRefreshed, const TArray<UBeamSnapshotLocalView*>&, SnapshotLocalViews);
+DECLARE_DYNAMIC_DELEGATE(FBeamSnapshotRestored);
+DECLARE_DYNAMIC_DELEGATE(FBeamSnapshotCreated);
+DECLARE_DYNAMIC_DELEGATE(FBeamSnapshotDeleted);
 
 /**
  * 
@@ -234,6 +238,20 @@ public:
 	bool TryGetFilteredListOfContent(const FBeamContentManifestId ManifestId, const FString& NameFilter, const FString& TypeFilter, const EBeamLocalContentStatus& ContentStatusFilter,
 	                                 TArray<UBeamContentLocalView*>& FoundLocalContent);
 
+	UFUNCTION(BlueprintCallable)
+	void ApplyContentSnapshot(FBeamContentManifestId ManifestId, FBeamPid Realm, FString Path, bool DeleteAfterRestore, bool AddAfterRestore, FBeamSnapshotRestored
+	                          OnApplyCompleted);
+
+	UFUNCTION(BlueprintCallable)
+	void CreateContentSnapshot(FBeamContentManifestId ManifestId, FBeamPid Realm, FString Name, bool bIsAutoSnapshot, FBeamSnapshotCreated
+	                           OnSnapshotCreated);
+
+	UFUNCTION(BlueprintCallable)
+	void DeleteContentSnapshot(FBeamContentManifestId ManifestId, FBeamPid Realm, FString Path, FBeamSnapshotDeleted OnSnapshotDeleted);
+
+	UFUNCTION(BlueprintCallable)
+	void RefreshContentSnapshots(FBeamContentManifestId ManifestId, FBeamPid Realm, FBeamSnapshotRefreshed OnRefreshCompleted);
+	
 	static FString GetJsonBlobPath(FString RowName, FBeamContentManifestId ManifestId);
 
 	UFUNCTION(BlueprintCallable)

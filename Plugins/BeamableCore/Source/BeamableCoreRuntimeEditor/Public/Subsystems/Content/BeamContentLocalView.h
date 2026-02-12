@@ -52,3 +52,57 @@ struct BEAMABLECORERUNTIMEEDITOR_API FBeamContentViewConfig
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 	TSoftObjectPtr<UTexture2D> TypeForContentObject;
 };
+
+USTRUCT(BlueprintType)
+struct BEAMABLECORERUNTIMEEDITOR_API FBeamSnapshotContentEntry
+{
+	GENERATED_BODY()
+	// TODO: UPROPERTY for whatever you need to display
+
+	UPROPERTY(BlueprintReadOnly)
+	FText Name;
+
+	UPROPERTY(BlueprintReadOnly)
+	EBeamLocalContentStatus CurrentStatus;
+};
+
+
+
+UCLASS(BlueprintType)
+class BEAMABLECORERUNTIMEEDITOR_API UBeamSnapshotLocalView : public UObject
+{
+	GENERATED_BODY()
+
+public:
+	// TODO: Fill out...
+
+	UPROPERTY(BlueprintReadOnly)
+	FText Name;
+	
+	UPROPERTY(BlueprintReadOnly)
+	bool bIsSharedSnapshot;
+
+	UPROPERTY(BlueprintReadOnly)
+	bool bIsAutoSnapshot;
+
+	UPROPERTY(BlueprintReadOnly)
+	FText Author;
+
+	UPROPERTY(BlueprintReadOnly)
+	FDateTime TimeStamp;
+
+	UPROPERTY(BlueprintReadOnly)
+	FText ManifestID;
+
+	UPROPERTY(BlueprintReadOnly)
+	FText Realm;
+
+	UPROPERTY(BlueprintReadOnly)
+	FText PID;
+
+	UPROPERTY(BlueprintReadOnly)
+	FString Path;
+
+	UPROPERTY(BlueprintReadOnly)
+	TArray<FBeamSnapshotContentEntry> Contents;
+};
