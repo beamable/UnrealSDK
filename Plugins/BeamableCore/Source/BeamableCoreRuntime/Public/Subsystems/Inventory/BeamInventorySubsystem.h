@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "AutoGen/InventoryUpdateDelta.h"
 #include "AutoGen/InventoryView.h"
 #include "Content/BeamContentTypes/BeamCurrencyContent.h"
 #include "Content/BeamContentTypes/BeamItemContent.h"
@@ -422,6 +423,16 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void PrepareModifyItemById(FUserSlot Player, UPARAM(meta=(BeamFilter="items"))FBeamContentId ContentId, int64 InstanceId, TMap<FString, FString> Properties);
 
+	
+	/**
+	 * @brief Locally merges an InventoryUpdateDelta into the inventory state without fetching from backend.
+	 * This is used when receiving delta updates from inventory modification responses.
+	 * @param UserSlot The user slot for which to update the inventory
+	 * @param Delta The delta containing the changes to apply to the local inventory state
+	 */
+	UFUNCTION()
+	void CPP_LocalMergeInventoryView(FUserSlot UserSlot, UInventoryUpdateDelta* Delta);
+	
 private:
 	UFUNCTION()
 	bool FetchInventoryForSlot(FUserSlot Player, FBeamOperationHandle Op);
@@ -434,7 +445,7 @@ private:
 
 	UFUNCTION()
 	void MergeInventoryViewIntoState(const UInventoryView* InventoryView, FBeamInventoryState& Inventory, TArray<FString> Scopes);
-
+	
 	UFUNCTION()
 	void InvokeOnInventoryRefreshed(const FBeamGamerTag& GamerTag, const FUserSlot OwnerPlayer);
 

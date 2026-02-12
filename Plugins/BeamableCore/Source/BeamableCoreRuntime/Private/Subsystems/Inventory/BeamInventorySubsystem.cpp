@@ -1024,6 +1024,150 @@ void UBeamInventorySubsystem::MergeInventoryViewIntoState(const UInventoryView* 
 	FilterItemCache.Reset();
 }
 
+void UBeamInventorySubsystem::CPP_LocalMergeInventoryView(FUserSlot UserSlot, UInventoryUpdateDelta* Delta)
+{
+	if (!Delta)
+		return;
+	
+	FBeamRealmUser UserData;
+	if (!Runtime->UserSlotSystem->GetUserDataAtSlot(UserSlot, UserData, this))
+		return;
+
+	const FBeamGamerTag& GamerTag = UserData.GamerTag;
+	
+	// Get the inventory state for this player
+	FBeamInventoryState* InventoryState = Inventories.Find(GamerTag);
+	if (!InventoryState)
+		return;
+
+	// Process currency deltas
+	for (const auto& CurrencyPair : Delta->Currencies)
+	{
+		const FString& CurrencyId = CurrencyPair.Key;
+		const UCurrencyDelta* CurrencyDelta = CurrencyPair.Value;
+		
+		if (CurrencyDelta)
+		{
+			// Update the currency amount with the "After" value from the delta
+			InventoryState->Currencies.Add(CurrencyId, CurrencyDelta->After);
+			
+			// Update currency properties if available
+			if (CurrencyDelta->Properties.IsSet)
+			{
+				TMap<FString, FString> Properties;
+				for (const auto& PropPair : CurrencyDelta->Properties.Val)
+				{
+					// PropertyDelta contains before/after values, we want the "after" value
+					if (PropPair.Value && PropPair.Value->After.IsSet)
+					{
+						Properties.Add(PropPair.Key, PropPair.Value->After.Val);
+					}
+				}
+				InventoryState->CurrencyProperties.Add(CurrencyId, Properties);
+			}
+		}
+	}
+
+	// Process item deltas
+	if (Delta->Items)
+	{
+		// Process created items
+		for (const auto* CreatedItem : Delta->Items->Created)
+		{
+			if (CreatedItem)
+			{
+				FBeamItemState NewItemState;
+				NewItemState.ContentId = CreatedItem->ContentId;
+				NewItemState.InstanceId = CreatedItem->ItemId;
+				NewItemState.CreatedAt = FDateTime::UtcNow();
+				NewItemState.UpdatedAt = FDateTime::UtcNow();
+				
+				// Extract properties from PropertyDelta (use "After" values)
+				if (CreatedItem->Properties.IsSet)
+				{
+					for (const auto& PropPair : CreatedItem->Properties.Val)
+					{
+						if (PropPair.Value && PropPair.Value->After.IsSet)
+						{
+							NewItemState.Properties.Add(PropPair.Key, PropPair.Value->After.Val);
+						}
+					}
+				}
+				
+				// Add to inventory state
+				if (!InventoryState->Items.Contains(NewItemState.ContentId))
+				{
+					InventoryState->Items.Add(NewItemState.ContentId, {});
+				}
+				InventoryState->Items[NewItemState.ContentId].Add(NewItemState);
+			}
+		}
+
+		// Process updated items
+		for (const auto* UpdatedItem : Delta->Items->Updated)
+		{
+			if (UpdatedItem)
+			{
+				const FBeamContentId ContentId = UpdatedItem->ContentId;
+				const int64 InstanceId = UpdatedItem->ItemId;
+				
+				// Find and update the existing item
+				if (InventoryState->Items.Contains(ContentId))
+				{
+					TArray<FBeamItemState>& ItemArray = InventoryState->Items[ContentId];
+					FBeamItemState* ExistingItem = ItemArray.FindByKey(FBeamItemState{ContentId, InstanceId});
+					
+					if (ExistingItem)
+					{
+						// Update properties with "After" values from PropertyDelta
+						if (UpdatedItem->Properties.IsSet)
+						{
+							for (const auto& PropPair : UpdatedItem->Properties.Val)
+							{
+								if (PropPair.Value && PropPair.Value->After.IsSet)
+								{
+									ExistingItem->Properties.Add(PropPair.Key, PropPair.Value->After.Val);
+								}
+							}
+						}
+						ExistingItem->UpdatedAt = FDateTime::UtcNow();
+					}
+				}
+			}
+		}
+
+		// Process deleted items
+		for (const auto* DeletedItem : Delta->Items->Deleted)
+		{
+			if (DeletedItem)
+			{
+				const FBeamContentId ContentId = DeletedItem->ContentId;
+				const int64 InstanceId = DeletedItem->ItemId;
+				
+				// Remove the item from inventory state
+				if (InventoryState->Items.Contains(ContentId))
+				{
+					TArray<FBeamItemState>& ItemArray = InventoryState->Items[ContentId];
+					ItemArray.RemoveAll([InstanceId](const FBeamItemState& Item)
+					{
+						return Item.InstanceId == InstanceId;
+					});
+					
+					// Clean up empty arrays
+					if (ItemArray.Num() == 0)
+					{
+						InventoryState->Items.Remove(ContentId);
+					}
+				}
+			}
+		}
+	}
+
+	// Invalidate the filter cache since we've modified the inventory
+	FilterCurrencyCache.Reset();
+	FilterItemCache.Reset();
+}
+
 void UBeamInventorySubsystem::InvokeOnInventoryRefreshed(const FBeamGamerTag& GamerTag, const FUserSlot OwnerPlayer)
 {
 	// Invoke the updated inventory callback
