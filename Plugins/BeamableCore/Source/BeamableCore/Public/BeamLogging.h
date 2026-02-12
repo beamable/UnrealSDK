@@ -56,11 +56,11 @@ public:
 		}
 	}
 
-	static void BeamOtelLog(const FLogCategoryBase& Category, const FString& Message, ELogVerbosity::Type VerbosityLevel)
+	static void BeamOtelLog(FName Category, const FString& Message, ELogVerbosity::Type VerbosityLevel)
 	{
 		ANSICHAR StackTrace[65536];
 		FPlatformStackWalk::StackWalkAndDump(StackTrace, UE_ARRAY_COUNT(StackTrace), 0);
-		FLogCategoryName CategoryName = Category.GetCategoryName();
+		FLogCategoryName CategoryName = Category;
 		if ((CategoryName.ToString().Contains("beam") || Message.Contains("beamable")) && VerbosityLevel <= ELogVerbosity::Type::Warning)
 		{
 			BeamLoggingMessageHook.Broadcast(Message, StackTrace, GetOtelLogVerbosityString(VerbosityLevel));
@@ -72,13 +72,13 @@ public:
 { \
 	UE_LOG(CategoryName, Verbosity, TEXT("%s - %s"), \
 		*FBeamPIE_Utilities::BeamLogFormat(Context), *FString::Printf(Format, ##__VA_ARGS__)); \
-	FBeamLogging::BeamOtelLog(CategoryName, FString::Printf(TEXT("%s - %s"), *FBeamPIE_Utilities::BeamLogFormat(Context), *FString::Printf(Format, ##__VA_ARGS__)), ELogVerbosity::Verbosity); \
+	FBeamLogging::BeamOtelLog(FName(TEXT(#CategoryName)), FString::Printf(TEXT("%s - %s"), *FBeamPIE_Utilities::BeamLogFormat(Context), *FString::Printf(Format, ##__VA_ARGS__)), ELogVerbosity::Verbosity); \
 }
 
 
 #define UE_BEAM_LOG(CategoryName, Verbosity, Format, ...) \
 { \
 	UE_LOG(CategoryName, Verbosity, Format, ##__VA_ARGS__); \
-	FBeamLogging::BeamOtelLog(CategoryName, FString::Printf(TEXT("%s"), *FString::Printf(Format, ##__VA_ARGS__)), ELogVerbosity::Verbosity); \
+	FBeamLogging::BeamOtelLog(FName(TEXT(#CategoryName)), FString::Printf(TEXT("%s"), *FString::Printf(Format, ##__VA_ARGS__)), ELogVerbosity::Verbosity); \
 }
 

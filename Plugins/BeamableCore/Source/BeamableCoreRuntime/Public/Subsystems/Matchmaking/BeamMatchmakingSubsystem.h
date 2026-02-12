@@ -233,6 +233,8 @@ public:
 	FBeamOperationHandle CPP_TryJoinQueueWithTagsOperation(FUserSlot UserSlot, const FBeamContentId& GameTypeQueue, FOptionalString Team, TArray<FBeamTag> Tags,
 	                                                       FBeamOperationEventHandlerCode OnOperationEvent);
 
+	
+	
 	/**
 	 * @brief Leaves the given queue. If the user is not in a queue, this fails.
 	 * The user in the given user slot is added to the queue. If that user is in a party:
@@ -250,9 +252,21 @@ public:
 	 */
 	FBeamOperationHandle CPP_TryLeaveQueueOperation(FUserSlot UserSlot, FBeamOperationEventHandlerCode OnOperationEvent);
 
+	/**
+	 * @brief Commits region ping data to the user's stats. This is used by matchmaking to determine optimal server regions.
+	 * The RegionPings map should contain region identifiers as keys and ping times in milliseconds as values.
+	 */
+	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Matchmaking", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
+	FBeamOperationHandle CommitRegionPingOperation(FUserSlot UserSlot, TMap<FString, int32> RegionPings, FBeamOperationEventHandler OnOperationEvent);
+
+	/**
+	 * @copydoc CommitRegionPingOperation 
+	 */
+	FBeamOperationHandle CPP_CommitRegionPingOperation(FUserSlot UserSlot, TMap<FString, int32> RegionPings, FBeamOperationEventHandlerCode OnOperationEvent);
+
 private:
 	// Operation Implementations
-	void TryJoinQueue(FUserSlot Slot, FBeamContentId GameTypeQueue, FOptionalString OptionalTeam, FOptionalArrayOfBeamTag OptionalTags, FBeamOperationHandle Op);
+	void TryJoinQueue(FUserSlot Slot, FBeamContentId GameTypeQueue, FOptionalString Team, FOptionalArrayOfBeamTag Tags, FBeamOperationHandle Op);
 	void TryLeaveQueue(FUserSlot Slot, FBeamOperationHandle Op);
 
 
