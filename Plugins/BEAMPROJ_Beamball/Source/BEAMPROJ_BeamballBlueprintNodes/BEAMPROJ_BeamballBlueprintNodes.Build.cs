@@ -10,27 +10,15 @@ public class BEAMPROJ_BeamballBlueprintNodes : ModuleRules
             new string[]
             {
                 "Core",
-                "Engine",
-                "CoreUObject",
+                "BEAMPROJ_Beamball",
+
                 "BeamableCore",
                 "BeamableCoreRuntime",
-                "UnrealEd",
+                "BeamableCoreBlueprintNodes",
+                
                 "BlueprintGraph",
-                "GraphEditor",
-                "PropertyEditor",
-                "SlateCore",
-                "Slate",
-                "EditorStyle",
-                "Kismet",
-                "KismetCompiler",
-                "Projects", // Required to use IPluginManager in order to configure new Slate styles
-                "ToolMenus",
-                "ToolMenusEditor", 
-                "DeveloperSettings",
-                "BeamableCoreRuntime", 
-                "BeamableCoreBlueprintNodes"
-            }
-        );
+            });
+
 
         PrivateDependencyModuleNames.AddRange(
             new string[]
@@ -38,8 +26,7 @@ public class BEAMPROJ_BeamballBlueprintNodes : ModuleRules
                 "CoreUObject",
                 "Engine",
                 "Slate",
-                "SlateCore",
-            }
-        );
+                "SlateCore",					
+            });
     }
 }

@@ -167,6 +167,20 @@ FBeamOperationHandle UBeamMatchmakingSubsystem::CPP_TryLeaveQueueOperation(FUser
 	return Handle;
 }
 
+FBeamOperationHandle UBeamMatchmakingSubsystem::CommitRegionPingOperation(FUserSlot UserSlot, TMap<FString, int32> RegionPings, FBeamOperationEventHandler OnOperationEvent)
+{
+	const auto Handle = Runtime->RequestTrackerSystem->BeginOperation({UserSlot}, GetClass()->GetFName().ToString(), OnOperationEvent);
+	CommitRegionPing(UserSlot, RegionPings, Handle);
+	return Handle;
+}
+
+FBeamOperationHandle UBeamMatchmakingSubsystem::CPP_CommitRegionPingOperation(FUserSlot UserSlot, TMap<FString, int32> RegionPings, FBeamOperationEventHandlerCode OnOperationEvent)
+{
+	const auto Handle = Runtime->RequestTrackerSystem->CPP_BeginOperation({UserSlot}, GetClass()->GetFName().ToString(), OnOperationEvent);
+	CommitRegionPing(UserSlot, RegionPings, Handle);
+	return Handle;
+}
+
 // OPERATION IMPLEMENTATIONS
 
 void UBeamMatchmakingSubsystem::TryJoinQueue(FUserSlot Slot, FBeamContentId GameTypeQueue, FOptionalString Team, FOptionalArrayOfBeamTag Tags, FBeamOperationHandle Op)
