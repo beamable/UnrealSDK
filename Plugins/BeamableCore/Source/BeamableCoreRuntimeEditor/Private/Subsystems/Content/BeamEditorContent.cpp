@@ -715,7 +715,7 @@ void UBeamEditorContent::ApplyContentSnapshot(FBeamContentManifestId ManifestId,
 	Args += !Realm.AsString.IsEmpty()? FString::Printf(TEXT("--pid %s"), *Realm.AsString) : TEXT("");
 	Args += FString::Printf(TEXT("--name \"%s\""), *Path);
 	Args += DeleteAfterRestore ? TEXT(" --delete-after-restore") : TEXT("");
-	Args += AddAfterRestore ? TEXT(" --add-after-restore") : TEXT("");
+	Args += AddAfterRestore ? TEXT(" --additive-restore") : TEXT("");
 
 	Cli->RunCommandServer(List, {Args}, {});
 }
