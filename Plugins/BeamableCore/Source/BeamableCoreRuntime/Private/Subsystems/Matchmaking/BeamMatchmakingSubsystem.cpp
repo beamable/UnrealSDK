@@ -169,7 +169,7 @@ FBeamOperationHandle UBeamMatchmakingSubsystem::CPP_TryLeaveQueueOperation(FUser
 
 // OPERATION IMPLEMENTATIONS
 
-void UBeamMatchmakingSubsystem::TryJoinQueue(FUserSlot Slot, FBeamContentId GameTypeQueue, FOptionalString OptionalTeam, FOptionalArrayOfBeamTag OptionalTags, FBeamOperationHandle Op)
+void UBeamMatchmakingSubsystem::TryJoinQueue(FUserSlot Slot, FBeamContentId GameTypeQueue, FOptionalString Team, FOptionalArrayOfBeamTag Tags, FBeamOperationHandle Op)
 {
 	// Validate the user is not already in the queue.
 	if (IsUserSlotInQueue(Slot))
@@ -178,197 +178,142 @@ void UBeamMatchmakingSubsystem::TryJoinQueue(FUserSlot Slot, FBeamContentId Game
 		RequestTracker->TriggerOperationError(Op, ErrMsg);
 		return;
 	}
-	
-	auto MatchmakingHookHandle = NewObject<UBeamMatchmakingHookHandle>(GetTransientPackage());
-	MatchmakingHookHandle->Context = this;
 
-	// After we update the pings we start to process the matchmaking request.  
-	MatchmakingHookHandle->OperationHandle = Runtime->RequestTrackerSystem->CPP_BeginOperation({Slot}, GetClass()->GetFName().ToString(), FBeamOperationEventHandlerCode::CreateLambda(
-       [this, Op, Slot, GameTypeQueue, OptionalTeam, OptionalTags, MatchmakingHookHandle](const FBeamOperationEvent& Event)
-       {
-        if (Event.EventType != OET_SUCCESS)
-        {
-            RequestTracker->TriggerOperationError(Op, Event.EventCode);
-            return;
-        }
-        // If there's any ping is the operation that will be triggered when the ping update finishes. 
-        auto CommitOperation = Runtime->RequestTrackerSystem->CPP_BeginOperation(
-               {Slot}, GetClass()->GetFName().ToString(), FBeamOperationEventHandlerCode::CreateLambda(
-                   [this, GameTypeQueue, Op, OptionalTeam, OptionalTags, Slot](const FBeamOperationEvent& CommitEvent)
-                   {
-                   	  if (CommitEvent.EventType != OET_SUCCESS)
-                   	  {
-						   RequestTracker->TriggerOperationError(Op, CommitEvent.EventCode);
-						   return;
-                   	  }
-                       // Validate the content is a valid game type content.
-                       if (!GameTypeQueue.AsString.StartsWith(UBeamGameTypeContent::ContentId))
-                       {
-                           const auto ErrMsg = FString::Printf(
-                               TEXT("ContentId \"%s\" must be a %s."), *GameTypeQueue.AsString,
-                               *UBeamGameTypeContent::StaticClass()->GetFName().ToString());
+	// Validate the content is a valid game type content.
+	if (!GameTypeQueue.AsString.StartsWith(UBeamGameTypeContent::ContentId))
+	{
+		const auto ErrMsg = FString::Printf(TEXT("ContentId \"%s\" must be a %s."), *GameTypeQueue.AsString, *UBeamGameTypeContent::StaticClass()->GetFName().ToString());
 
-                           RequestTracker->TriggerOperationError(Op, ErrMsg);
-                           return;
-                       }
-                   	
-                   	   FOptionalString Team = OptionalTeam;
-                   	   FOptionalArrayOfBeamTag Tags = OptionalTags;
-                   	
-                       UBeamGameTypeContent* GameType;
-                       ContentSubsystem->TryGetContentOfType<UBeamGameTypeContent>(GameTypeQueue, GameType);
+		RequestTracker->TriggerOperationError(Op, ErrMsg);
+		return;
+	}
 
-                       // If the game type is team-based, ensure we are being given a valid team. 
-                       if (GameType->Teams.Num() > 1)
-                       {
-                           if (!Team.IsSet)
-                           {
-                               const auto ErrMsg = FString::Printf(
-                                   TEXT("Game Type \"%s\" expects a team to be passed in."), *GameTypeQueue.AsString);
-                               RequestTracker->TriggerOperationError(Op, ErrMsg);
-                               return;
-                           }
+	UBeamGameTypeContent* GameType;
+	ContentSubsystem->TryGetContentOfType<UBeamGameTypeContent>(GameTypeQueue, GameType);
 
-                           const auto MatchingTeam = GameType->Teams.ContainsByPredicate(
-                               [Team](const FBeamMatchmakingTeamsRule& TeamRule) { return Team.Val.Equals(TeamRule.Name); });
-                           if (!MatchingTeam)
-                           {
-                               const auto ErrMsg = FString::Printf(
-                                   TEXT("Game Type \"%s\" does not have team %s."), *GameTypeQueue.AsString, *Team.Val);
-                               RequestTracker->TriggerOperationError(Op, ErrMsg);
-                               return;
-                           }
-                       }
-                       // If the game type is not team based (as in, has just one team), force it.
-                       else if (GameType->Teams.Num() == 1)
-                       {
-                           Team = FOptionalString{GameType->Teams[0].Name};
-                       }
-                       // If no team is configured, error out.
-                       else
-                       {
-                           const auto ErrMsg = FString::Printf(
-                               TEXT(
-                                   "Game Type must have at least one team configured to tell us how many players are required to form a match."));
-                           RequestTracker->TriggerOperationError(Op, ErrMsg);
-                           return;
-                       }
+	// If the game type is team-based, ensure we are being given a valid team. 
+	if (GameType->Teams.Num() > 1)
+	{
+		if (!Team.IsSet)
+		{
+			const auto ErrMsg = FString::Printf(TEXT("Game Type \"%s\" expects a team to be passed in."), *GameTypeQueue.AsString);
+			RequestTracker->TriggerOperationError(Op, ErrMsg);
+			return;
+		}
 
-                       const auto Handler = FOnPostTicketsFullResponse::CreateLambda(
-                           [this, Slot, Op](const FPostTicketsFullResponse& Resp)
-                           {
-                               if (Resp.State == RS_Retrying) return;
+		const auto MatchingTeam = GameType->Teams.ContainsByPredicate([Team](const FBeamMatchmakingTeamsRule& TeamRule) { return Team.Val.Equals(TeamRule.Name); });
+		if (!MatchingTeam)
+		{
+			const auto ErrMsg = FString::Printf(TEXT("Game Type \"%s\" does not have team %s."), *GameTypeQueue.AsString, *Team.Val);
+			RequestTracker->TriggerOperationError(Op, ErrMsg);
+			return;
+		}
+	}
+	// If the game type is not team based (as in, has just one team), force it.
+	else if (GameType->Teams.Num() == 1)
+	{
+		Team = FOptionalString{GameType->Teams[0].Name};
+	}
+	// If no team is configured, error out.
+	else
+	{
+		const auto ErrMsg = FString::Printf(TEXT("Game Type must have at least one team configured to tell us how many players are required to form a match."));
+		RequestTracker->TriggerOperationError(Op, ErrMsg);
+		return;
+	}
 
-                               if (Resp.State == RS_Success)
-                               {
-                                   const auto Tickets = Resp.SuccessData;
-                                   if (!Tickets->Tickets.IsSet)
-                                   {
-                                       const auto ErrMsg = FString::Printf(
-                                           TEXT("Something went wrong and no ticket was returned. You should never see this."));
-                                       RequestTracker->TriggerOperationError(Op, ErrMsg);
-                                       return;
-                                   }
+	const auto Handler = FOnPostTicketsFullResponse::CreateLambda([this, Slot, Op](const FPostTicketsFullResponse& Resp)
+	{
+		if (Resp.State == RS_Retrying) return;
 
-                                   const auto Ticket = Tickets->Tickets.Val[0];
-                                   const auto TicketId = FGuid{Ticket->TicketId.Val};
-                                   if (!TicketId.IsValid())
-                                   {
-                                       const auto ErrMsg = FString::Printf(
-                                           TEXT(
-                                               "Something went wrong and the returned ticket had no valid GUID. You should never see this."));
-                                       RequestTracker->TriggerOperationError(Op, ErrMsg);
-                                       return;
-                                   }
+		if (Resp.State == RS_Success)
+		{
+			const auto Tickets = Resp.SuccessData;
+			if (!Tickets->Tickets.IsSet)
+			{
+				const auto ErrMsg = FString::Printf(TEXT("Something went wrong and no ticket was returned. You should never see this."));
+				RequestTracker->TriggerOperationError(Op, ErrMsg);
+				return;
+			}
 
-                                   // For players that were added to the queue, check if they are local to this running client and update their matchmaking state.
-                                   TArray<FUserSlot> SlotsInTicket;
-                                   TArray<FBeamGamerTag> GamerTagsInTicket;
-                                   for (FBeamGamerTag GamerTag : Ticket->Players.Val)
-                                   {
-                                       FUserSlot SlotInTicket;
-                                       FBeamRealmUser RealmUser{};
-                                       FString _;
-                                       if (UserSlots->GetUserDataWithGamerTag(GamerTag, RealmUser, SlotInTicket, _, this))
-                                           SlotsInTicket.Add(SlotInTicket);
+			const auto Ticket = Tickets->Tickets.Val[0];
+			const auto TicketId = FGuid{Ticket->TicketId.Val};
+			if (!TicketId.IsValid())
+			{
+				const auto ErrMsg = FString::Printf(TEXT("Something went wrong and the returned ticket had no valid GUID. You should never see this."));
+				RequestTracker->TriggerOperationError(Op, ErrMsg);
+				return;
+			}
 
-                                       GamerTagsInTicket.Add(GamerTag);
-                                   }
+			// For players that were added to the queue, check if they are local to this running client and update their matchmaking state.
+			TArray<FUserSlot> SlotsInTicket;
+			TArray<FBeamGamerTag> GamerTagsInTicket;
+			for (FBeamGamerTag GamerTag : Ticket->Players.Val)
+			{
+				FUserSlot SlotInTicket;
+				FBeamRealmUser RealmUser{};
+				FString _;
+				if (UserSlots->GetUserDataWithGamerTag(GamerTag, RealmUser, SlotInTicket, _, this))
+					SlotsInTicket.Add(SlotInTicket);
 
-                                   FBeamMatchmakingTicket NewTicket;
-                                   NewTicket.TicketId = TicketId;
-                                   NewTicket.SlotsInTicket = SlotsInTicket;
-                                   NewTicket.GamerTagsInTicket = GamerTagsInTicket;
-                                   ContentSubsystem->TryGetContentOfType(
-                                       FBeamContentId{Ticket->MatchType.Val}, NewTicket.GameType);
+				GamerTagsInTicket.Add(GamerTag);
+			}
 
-                                   // Update the requesting slot's state of matchmaking and then complete the operation
-                                   auto SlotState = Slots.Find(Slot);
+			FBeamMatchmakingTicket NewTicket;
+			NewTicket.TicketId = TicketId;
+			NewTicket.SlotsInTicket = SlotsInTicket;
+			NewTicket.GamerTagsInTicket = GamerTagsInTicket;
+			ContentSubsystem->TryGetContentOfType(FBeamContentId{Ticket->MatchType.Val}, NewTicket.GameType);
 
-                                   SlotState->InTicket = TicketId;
-                                   SlotState->LastJoinTime = Ticket->Created.Val;
-                                   LiveTickets.Add(NewTicket);
+			// Update the requesting slot's state of matchmaking and then complete the operation
+			auto SlotState = Slots.Find(Slot);
 
-                                   RequestTracker->TriggerOperationSuccess(Op, TicketId.ToString());
-                               }
-                               else
-                               {
-                                   RequestTracker->TriggerOperationError(Op, Resp.ErrorData.message);
-                               }
-                           });
+			SlotState->InTicket = TicketId;
+			SlotState->LastJoinTime = Ticket->Created.Val;
+			LiveTickets.Add(NewTicket);
 
-                       // We use this to enable compatibility with UE's Real-Time Multiplayer Gameplay Framework
-                       auto TagsVal = Tags.GetValueOrDefault(TArray<FBeamTag>{});
+			RequestTracker->TriggerOperationSuccess(Op, TicketId.ToString());
+		}
+		else
+		{
+			RequestTracker->TriggerOperationError(Op, Resp.ErrorData.message);
+		}
+	});
 
-                       const auto LocalPlayer = Runtime->GetLocalPlayerForSlot(Slot);
-                       if (LocalPlayer && LocalPlayer->GetPreferredUniqueNetId().IsValid())
-                       {
-                           TagsVal.Add(FBeamTag{
-                               UBeamLobbySubsystem::Reserved_PlayerTag_UniqueNetId_Property,
-                               LocalPlayer->GetPreferredUniqueNetId().GetUniqueNetId()->ToString()
-                           });
-                       }
+	// We use this to enable compatibility with UE's Real-Time Multiplayer Gameplay Framework
+	auto TagsVal = Tags.GetValueOrDefault(TArray<FBeamTag>{});
 
-                       // Adding routing key to player ticket
-                       // IF PLAYER IS ALREADY IN A PARTY THIS ROUTING KEY WILL BE DUPLICATED.
-                       UBeamBackend* BeamBackend = GEngine->GetEngineSubsystem<UBeamBackend>();
+	const auto LocalPlayer = Runtime->GetLocalPlayerForSlot(Slot);
+	if (LocalPlayer && LocalPlayer->GetPreferredUniqueNetId().IsValid())
+	{
+		TagsVal.Add(FBeamTag{UBeamLobbySubsystem::Reserved_PlayerTag_UniqueNetId_Property, LocalPlayer->GetPreferredUniqueNetId().GetUniqueNetId()->ToString()});
+	}
 
-                       FString RoutingKey = "";
+	// Adding routing key to player ticket
+	// IF PLAYER IS ALREADY IN A PARTY THIS ROUTING KEY WILL BE DUPLICATED.
+	UBeamBackend* BeamBackend = GEngine->GetEngineSubsystem<UBeamBackend>();
 
-                       if (BeamBackend->CurrentRoutingKeyMaps.Contains(Slot))
-                       {
-                           RoutingKey = BeamBackend->CurrentRoutingKeyMaps[Slot];
-                       }
+	FString RoutingKey = "";
 
-                       TagsVal.Add(FBeamTag{UBeamLobbySubsystem::Reserved_PlayerTag_Routing_Key_Property, RoutingKey});
+	if (BeamBackend->CurrentRoutingKeyMaps.Contains(Slot))
+	{
+		RoutingKey = BeamBackend->CurrentRoutingKeyMaps[Slot];
+	}
 
-                       TMap<FString, UTagList*> TagsMap;
-                       FBeamRealmUser RealmUser;
-                       if (Runtime->TryGetSlotUserData(Slot, RealmUser))
-                       {
-                           auto TagList = NewObject<UTagList>();
-                           TagList->Tags = FOptionalArrayOfBeamTag(TagsVal);
-                           TagsMap.Add(RealmUser.GamerTag.AsString, TagList);
-                       }
+	TagsVal.Add(FBeamTag{UBeamLobbySubsystem::Reserved_PlayerTag_Routing_Key_Property, RoutingKey});
 
-                       FBeamRequestContext Ctx;
-                       const auto Req = UPostTicketsRequest::Make(
-                           FOptionalBool{true}, {}, Team, {}, FOptionalArrayOfBeamContentId{{GameTypeQueue}},
-                           FOptionalMapOfTagList(TagsMap), GetTransientPackage(), {});
-                       MatchmakingApi->CPP_PostTickets(Slot, Req, Handler, Ctx, Op, this);
-                   }));
-           if (MatchmakingHookHandle->PingsPerRegion.Num() > 0)
-           {
-               CommitRegionPing(Slot, MatchmakingHookHandle->PingsPerRegion, CommitOperation);
-           }
-           else
-           {
-               RequestTracker->TriggerOperationSuccess(CommitOperation, "No Pings");
-           }
-       }));
+	TMap<FString, UTagList*> TagsMap;
+	FBeamRealmUser RealmUser;
+	if (Runtime->TryGetSlotUserData(Slot, RealmUser))
+	{
+		auto TagList = NewObject<UTagList>();
+		TagList->Tags = FOptionalArrayOfBeamTag(TagsVal);
+		TagsMap.Add(RealmUser.GamerTag.AsString, TagList);
+	}
 
-	auto Extension = NewObject<UBeamMatchmakingHooks>(GetTransientPackage(), GetDefault<UBeamRuntimeSettings>()->DefaultMatchmakingHook.LoadSynchronous());
-	Extension->UpdatePings(MatchmakingHookHandle);
+	FBeamRequestContext Ctx;
+	const auto Req = UPostTicketsRequest::Make(FOptionalBool{true}, {}, Team, {}, FOptionalArrayOfBeamContentId{{GameTypeQueue}}, FOptionalMapOfTagList(TagsMap), GetTransientPackage(), {});
+	MatchmakingApi->CPP_PostTickets(Slot, Req, Handler, Ctx, Op, this);
 }
 
 void UBeamMatchmakingSubsystem::TryLeaveQueue(FUserSlot Slot, FBeamOperationHandle Op)

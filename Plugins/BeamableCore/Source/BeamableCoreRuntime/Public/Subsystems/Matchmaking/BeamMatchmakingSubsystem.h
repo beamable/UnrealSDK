@@ -252,7 +252,7 @@ public:
 
 private:
 	// Operation Implementations
-	void TryJoinQueue(FUserSlot Slot, FBeamContentId GameTypeQueue, FOptionalString OptionalTeam, FOptionalArrayOfBeamTag OptionalTags, FBeamOperationHandle Op);
+	void TryJoinQueue(FUserSlot Slot, FBeamContentId GameTypeQueue, FOptionalString Team, FOptionalArrayOfBeamTag Tags, FBeamOperationHandle Op);
 	void TryLeaveQueue(FUserSlot Slot, FBeamOperationHandle Op);
 
 
