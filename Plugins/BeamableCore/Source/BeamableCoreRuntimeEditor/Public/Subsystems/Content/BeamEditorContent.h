@@ -23,6 +23,7 @@ DECLARE_MULTICAST_DELEGATE_TwoParams(FBeamContentModified, FBeamContentManifestI
 DECLARE_DYNAMIC_DELEGATE_OneParam(FBeamSnapshotRefreshed, const TArray<UBeamSnapshotLocalView*>&, SnapshotLocalViews);
 DECLARE_DYNAMIC_DELEGATE(FBeamSnapshotRestored);
 DECLARE_DYNAMIC_DELEGATE(FBeamSnapshotCreated);
+DECLARE_DYNAMIC_DELEGATE(FBeamSnapshotRenamed);
 DECLARE_DYNAMIC_DELEGATE(FBeamSnapshotDeleted);
 
 /**
@@ -250,6 +251,9 @@ public:
 	void DeleteContentSnapshot(FBeamContentManifestId ManifestId, FBeamPid Realm, FString Path, FBeamSnapshotDeleted OnSnapshotDeleted);
 
 	UFUNCTION(BlueprintCallable)
+	void RenameContentSnapshot(FBeamContentManifestId ManifestId, FBeamPid Realm, FString OldPath, FString NewName,
+	                           FBeamSnapshotRenamed OnSnapshotRenamed);
+	UFUNCTION(BlueprintCallable)
 	void RefreshContentSnapshots(FBeamContentManifestId ManifestId, FBeamPid Realm, FBeamSnapshotRefreshed OnRefreshCompleted);
 	
 	static FString GetJsonBlobPath(FString RowName, FBeamContentManifestId ManifestId);
@@ -315,6 +319,8 @@ private:
 
 
 	bool GetContentTypeFromId(FBeamContentId Id, FString& TypeName);
+	void ShowNotification(FString Title, FText Body, float ExpireDuration,
+	                      float FadeOutDuration);
 };
 
 #undef LOCTEXT_NAMESPACE
