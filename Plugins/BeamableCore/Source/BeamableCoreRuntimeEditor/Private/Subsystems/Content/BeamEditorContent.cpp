@@ -67,7 +67,6 @@ void UBeamEditorContent::Initialize(FSubsystemCollectionBase& Collection)
 	});
 }
 
-
 void UBeamEditorContent::Deinitialize()
 {
 	Super::Deinitialize();
@@ -691,7 +690,7 @@ bool UBeamEditorContent::TryGetFilteredListOfContent(const FBeamContentManifestI
 void UBeamEditorContent::ApplyContentSnapshot(FBeamContentManifestId ManifestId, FBeamPid Realm, FString Path, bool DeleteAfterRestore, bool AddAfterRestore, FBeamSnapshotRestored OnApplyCompleted)
 {
 	auto List = NewObject<UBeamCliContentRestoreCommand>();
-	List->OnCompleted = [List, OnApplyCompleted](const int& ErrorCode, const FBeamOperationHandle&)
+	List->OnCompleted = [List, OnApplyCompleted, this](const int& ErrorCode, const FBeamOperationHandle&)
 	{
 		if (ErrorCode == 0)
 		{
@@ -699,13 +698,13 @@ void UBeamEditorContent::ApplyContentSnapshot(FBeamContentManifestId ManifestId,
 		}
 		else
 		{
-			UE_LOG(LogBeamContent, Log, TEXT("ERROR applying snapshot: %d"), ErrorCode);
-				// TODO Handle error.
-				for (FBeamCliError Error : List->Errors)
-				{
-					UE_LOG(LogBeamContent, Log, TEXT("ERROR applying snapshot: %s"), *Error.Message);
-				}
-				OnApplyCompleted.ExecuteIfBound();
+			for (FBeamCliError Error : List->Errors)
+			{
+				UE_LOG(LogBeamContent, Log, TEXT("ERROR applying snapshot: %s"), *Error.Message);
+				auto value = FString::Printf(TEXT("ERROR applying snapshot: %s"), *Error.Message);
+				ShowNotification(TEXT("Error"), FText::FromString(value), 5.0f,1.0f);
+			}
+			OnApplyCompleted.ExecuteIfBound();
 		}
 	};
 
@@ -723,7 +722,7 @@ void UBeamEditorContent::ApplyContentSnapshot(FBeamContentManifestId ManifestId,
 void UBeamEditorContent::CreateContentSnapshot(FBeamContentManifestId ManifestId, FBeamPid Realm, FString Name, bool bIsAutoSnapshot, FBeamSnapshotCreated OnSnapshotCreated)
 {
 	auto CreateCmd = NewObject<UBeamCliContentSnapshotCommand>();
-	CreateCmd->OnCompleted = [CreateCmd, OnSnapshotCreated](const int& ErrorCode, const FBeamOperationHandle&)
+	CreateCmd->OnCompleted = [CreateCmd, OnSnapshotCreated, this](const int& ErrorCode, const FBeamOperationHandle&)
 	{
 		if (ErrorCode == 0)
 		{
@@ -731,11 +730,11 @@ void UBeamEditorContent::CreateContentSnapshot(FBeamContentManifestId ManifestId
 		}
 		else
 		{
-			UE_LOG(LogBeamContent, Log, TEXT("ERROR creating snapshot: %d"), ErrorCode);
-			// TODO Handle error.
 			for (FBeamCliError Error : CreateCmd->Errors)
 			{
 				UE_LOG(LogBeamContent, Log, TEXT("ERROR creating snapshot: %s"), *Error.Message);
+				auto value = FString::Printf(TEXT("ERROR creating snapshot: %s"), *Error.Message);
+				ShowNotification(TEXT("Error"), FText::FromString(value), 5.0f,1.0f);
 			}
 			OnSnapshotCreated.ExecuteIfBound();
 		}
@@ -763,19 +762,50 @@ void UBeamEditorContent::DeleteContentSnapshot(FBeamContentManifestId ManifestId
 	{
 		if (FileManager.Delete(*Path, false, true))
 		{
-			UE_LOG(LogBeamContent, Log, TEXT("Successfully deleted snapshot: %s"), *Path);
 			OnSnapshotDeleted.ExecuteIfBound();
 		}
 		else
 		{
 			UE_LOG(LogBeamContent, Error, TEXT("Failed to delete snapshot file: %s"), *Path);
+			auto value = FString::Printf(TEXT("Failed to delete snapshot file: %s"), *Path);
+			ShowNotification(TEXT("Error"), FText::FromString(value), 5.0f,1.0f);
 			OnSnapshotDeleted.ExecuteIfBound();
 		}
 	}
 	else
 	{
 		UE_LOG(LogBeamContent, Warning, TEXT("Snapshot file does not exist: %s"), *Path);
+		auto value = FString::Printf(TEXT("Snapshot file does not exist: %s"), *Path);
+		ShowNotification(TEXT("Error"), FText::FromString(value), 5.0f,1.0f);
 		OnSnapshotDeleted.ExecuteIfBound();
+	}
+}
+
+void UBeamEditorContent::RenameContentSnapshot(FBeamContentManifestId ManifestId, FBeamPid Realm, FString OldPath, FString NewName, FBeamSnapshotRenamed OnSnapshotRenamed)
+{
+	FString NewPath = FPaths::GetPath(OldPath) / NewName + FPaths::GetExtension(OldPath);
+	IFileManager& FileManager = IFileManager::Get();
+
+	if (FileManager.FileExists(*OldPath))
+	{
+		if (FileManager.Move(*NewPath, *OldPath))
+		{
+			OnSnapshotRenamed.ExecuteIfBound();
+		}
+		else
+		{
+			UE_LOG(LogBeamContent, Error, TEXT("Failed to rename snapshot from %s to %s"), *OldPath, *NewPath);
+			auto value = FString::Printf(TEXT("Failed to rename snapshot from %s to %s"), *OldPath, *NewPath);
+			ShowNotification(TEXT("Error"), FText::FromString(value), 5.0f,1.0f);
+			OnSnapshotRenamed.ExecuteIfBound();
+		}
+	}
+	else
+	{
+		UE_LOG(LogBeamContent, Warning, TEXT("Snapshot file does not exist: %s"), *OldPath);
+		auto value = FString::Printf(TEXT("Snapshot file does not exist: %s"), *OldPath);
+		ShowNotification(TEXT("Error"), FText::FromString(value), 5.0f,1.0f);
+		OnSnapshotRenamed.ExecuteIfBound();
 	}
 }
 
@@ -876,7 +906,6 @@ FString UBeamEditorContent::GetJsonBlobPath(FString RowName, FBeamContentManifes
 {
 	return DefaultBeamableProjectContentObjects / GetDefault<UBeamCoreSettings>()->TargetRealm.Pid.AsString / ManifestId.AsString / RowName + TEXT(".json");
 }
-
 
 void UBeamEditorContent::BakeManifest(FBeamContentManifestId Manifest)
 {
@@ -1281,4 +1310,24 @@ bool UBeamEditorContent::GetContentTypeFromId(FBeamContentId Id, FString& TypeNa
 	}
 	TypeName = TEXT("");
 	return false;
+}
+
+void UBeamEditorContent::ShowNotification(FString Title, FText Body, float ExpireDuration, float FadeOutDuration)
+{
+	// Create and send the notification
+	FNotificationInfo Info{FText::FromString(Title)};
+	Info.SubText = Body;
+
+	//Set a default expire duration and other parameters
+	Info.ExpireDuration = ExpireDuration;
+	Info.FadeOutDuration = FadeOutDuration;
+
+	// Set the icon
+	Info.Image = FAppStyle::GetBrush(TEXT("Icons.Error"));
+
+	// We always show this at the top level.
+	Info.ForWindow = FSlateApplication::Get().GetActiveTopLevelWindow();
+
+	//And call Add Notification, this is pretty much it!
+	FSlateNotificationManager::Get().AddNotification(Info);
 }
