@@ -35,6 +35,30 @@ private:
 	UPROPERTY()
 	UBeamResponseCache* ResponseCache;
 
+public:
+    
+	UFUNCTION(BlueprintGetter, BlueprintInternalUseOnly, Category="Beam|BeamFarmMs|Utils|Federation")
+	FString GetFederatedLogin_Id_Google() const { return TEXT("google"); }
+
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|BeamFarmMs|Utils|Federation")
+	void GetFederatedLogin_Data_Google(UPARAM(DisplayName="MicroserviceName") FString& MsName, UPARAM(DisplayName="FederationId") FString& Id)
+	{
+		MsName = GetMicroserviceName();
+		Id = GetFederatedLogin_Id_Google();
+	}
+		
+	UFUNCTION(BlueprintGetter, BlueprintInternalUseOnly, Category="Beam|BeamFarmMs|Utils|Federation")
+	FString GetFederatedLogin_Id_Apple() const { return TEXT("apple"); }
+
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|BeamFarmMs|Utils|Federation")
+	void GetFederatedLogin_Data_Apple(UPARAM(DisplayName="MicroserviceName") FString& MsName, UPARAM(DisplayName="FederationId") FString& Id)
+	{
+		MsName = GetMicroserviceName();
+		Id = GetFederatedLogin_Id_Apple();
+	}
+
+private:
+
 	
 
 	

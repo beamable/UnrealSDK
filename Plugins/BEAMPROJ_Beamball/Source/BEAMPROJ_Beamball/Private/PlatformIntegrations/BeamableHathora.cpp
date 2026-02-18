@@ -1,5 +1,5 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "BeamableHathora.h"
+#include "BEAMPROJ_Beamball/Public/PlatformIntegrations/BeamableHathora.h"
 

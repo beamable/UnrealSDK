@@ -977,7 +977,7 @@ void UBeamEditorContent::BakeManifest(FBeamContentManifestId Manifest)
 }
 
 bool UBeamEditorContent::DeleteCachedContentFolder(FString& ErrorMessage)
-{	
+{
 	const FString CachedContentPath = UBeamContentCache::CACHE_FOLDER();
 
 	// Check if the directory exists
@@ -1118,7 +1118,7 @@ void UBeamEditorContent::RunPsCommand(FBeamOperationHandle FirstEventOp)
 				Info.SubText = FText::FromString(Body);
 
 				//Set a default expire duration and other parameters
-				
+
 				Info.ExpireDuration = 20.0f;
 				Info.FadeOutDuration = 2.0f;
 				Info.Image = ConflictsDetectedOnIds.Num() > 0 ? FAppStyle::GetBrush(TEXT("Icons.Warning")) : FAppStyle::GetBrush(TEXT("Icons.Success"));

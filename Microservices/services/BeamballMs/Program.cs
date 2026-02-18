@@ -16,6 +16,16 @@ namespace Beamable.BeamballMs
 
 			beamConfigBuilder.IncludeRoutes<BeamballMs>(routePrefix: "");
 			
+			// Set up an initialization function that runs when the service is connected and authenticated with beamable but before it accepts traffic.
+			beamConfigBuilder.InitializeServices(async scope =>
+			{
+				await Task.WhenAll(new[]
+				{
+					BeamballMs.InitializeSteam(scope),
+					// BeamballMs.InitializeEOS(scope)
+				});
+			});
+			
 			// Start the microservice and keep the process running
 			await beamConfigBuilder.RunForever();
 		}

@@ -37,6 +37,21 @@
 		{
 			"Name": "BeamableUnrealMicroserviceClients",
 			"Enabled": true
-		}
+		},
+		{
+			"Name": "OnlineSubsystemSteam",
+			"Enabled": true,
+			"Optional": true,
+			"PlatformAllowList": [
+				"Win64",
+				"Mac",
+				"Linux"
+			],
+			"TargetAllowList": [
+				"Game",
+				"Editor",
+				"Client"
+			]
+		}		
 	]
 }

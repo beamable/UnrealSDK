@@ -36,6 +36,40 @@ private:
 	UPROPERTY()
 	UBeamResponseCache* ResponseCache;
 
+public:
+    
+	UFUNCTION(BlueprintGetter, BlueprintInternalUseOnly, Category="Beam|BeamballMs|Utils|Federation")
+	FString GetFederatedPlayerInit_Id_Default() const { return TEXT("default"); }
+
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|BeamballMs|Utils|Federation")
+	void GetFederatedPlayerInit_Data_Default(UPARAM(DisplayName="MicroserviceName") FString& MsName, UPARAM(DisplayName="FederationId") FString& Id)
+	{
+		MsName = GetMicroserviceName();
+		Id = GetFederatedPlayerInit_Id_Default();
+	}
+		
+	UFUNCTION(BlueprintGetter, BlueprintInternalUseOnly, Category="Beam|BeamballMs|Utils|Federation")
+	FString GetFederatedGameServer_Id_Beamball() const { return TEXT("beamball"); }
+
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|BeamballMs|Utils|Federation")
+	void GetFederatedGameServer_Data_Beamball(UPARAM(DisplayName="MicroserviceName") FString& MsName, UPARAM(DisplayName="FederationId") FString& Id)
+	{
+		MsName = GetMicroserviceName();
+		Id = GetFederatedGameServer_Id_Beamball();
+	}
+		
+	UFUNCTION(BlueprintGetter, BlueprintInternalUseOnly, Category="Beam|BeamballMs|Utils|Federation")
+	FString GetFederatedLogin_Id_Steam() const { return TEXT("steam"); }
+
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|BeamballMs|Utils|Federation")
+	void GetFederatedLogin_Data_Steam(UPARAM(DisplayName="MicroserviceName") FString& MsName, UPARAM(DisplayName="FederationId") FString& Id)
+	{
+		MsName = GetMicroserviceName();
+		Id = GetFederatedLogin_Id_Steam();
+	}
+
+private:
+
 	
 	/**
 	 * @brief Private implementation that all overloaded BP UFunctions call.	  

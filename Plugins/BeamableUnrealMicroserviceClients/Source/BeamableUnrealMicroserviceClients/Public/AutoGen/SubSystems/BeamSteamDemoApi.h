@@ -35,6 +35,30 @@ private:
 	UPROPERTY()
 	UBeamResponseCache* ResponseCache;
 
+public:
+    
+	UFUNCTION(BlueprintGetter, BlueprintInternalUseOnly, Category="Beam|SteamDemo|Utils|Federation")
+	FString GetFederatedPlayerInit_Id_Default() const { return TEXT("default"); }
+
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|SteamDemo|Utils|Federation")
+	void GetFederatedPlayerInit_Data_Default(UPARAM(DisplayName="MicroserviceName") FString& MsName, UPARAM(DisplayName="FederationId") FString& Id)
+	{
+		MsName = GetMicroserviceName();
+		Id = GetFederatedPlayerInit_Id_Default();
+	}
+		
+	UFUNCTION(BlueprintGetter, BlueprintInternalUseOnly, Category="Beam|SteamDemo|Utils|Federation")
+	FString GetFederatedLogin_Id_Steam() const { return TEXT("steam"); }
+
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|SteamDemo|Utils|Federation")
+	void GetFederatedLogin_Data_Steam(UPARAM(DisplayName="MicroserviceName") FString& MsName, UPARAM(DisplayName="FederationId") FString& Id)
+	{
+		MsName = GetMicroserviceName();
+		Id = GetFederatedLogin_Id_Steam();
+	}
+
+private:
+
 	
 
 	

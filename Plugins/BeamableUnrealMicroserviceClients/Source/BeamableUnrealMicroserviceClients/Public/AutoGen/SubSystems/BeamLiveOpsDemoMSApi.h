@@ -38,6 +38,20 @@ private:
 	UPROPERTY()
 	UBeamResponseCache* ResponseCache;
 
+public:
+    
+	UFUNCTION(BlueprintGetter, BlueprintInternalUseOnly, Category="Beam|LiveOpsDemoMS|Utils|Federation")
+	FString GetFederatedPlayerInit_Id_Default() const { return TEXT("default"); }
+
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|LiveOpsDemoMS|Utils|Federation")
+	void GetFederatedPlayerInit_Data_Default(UPARAM(DisplayName="MicroserviceName") FString& MsName, UPARAM(DisplayName="FederationId") FString& Id)
+	{
+		MsName = GetMicroserviceName();
+		Id = GetFederatedPlayerInit_Id_Default();
+	}
+
+private:
+
 	
 	/**
 	 * @brief Private implementation that all overloaded BP UFunctions call.	  

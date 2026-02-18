@@ -1,6 +1,6 @@
 #pragma once
 #include "BeamFlow/K2BeamNode_Operation.h"
-#include "BEAMPROJ_Beamball/Public/BeamableHathora.h"
+#include "BEAMPROJ_Beamball/Public/PlatformIntegrations/BeamableHathora.h"
 
 
 #include "K2BeamNode_Subsystem_Hathora.generated.h"

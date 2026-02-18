@@ -1,5 +1,0 @@
-{
-  "BeamCliAllowTelemetry": true,
-  "BeamCliTelemetryLogLevel": "Warning",
-  "BeamCliTelemetryMaxSize": 524288000
-}

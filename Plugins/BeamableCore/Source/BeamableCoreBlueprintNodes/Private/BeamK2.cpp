@@ -881,7 +881,7 @@ void BeamK2::ParseFunctionForNodePins(UEdGraphNode* CustomNode, const UFunction*
 		if (!IsDynamicCast)
 		{
 			Pin = CustomNode->CreatePin(Direction, NAME_None, Param->GetFName());
-
+			Pin->PinFriendlyName = Param->GetDisplayNameText();
 
 			// Make sure it's a hide-able pin here, if it is a hide-able pin in the given function
 			Pin->bAdvancedView = Function->GetMetaData("AdvancedDisplay").Contains(Param->GetFName().ToString());

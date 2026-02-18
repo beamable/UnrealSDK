@@ -37,6 +37,20 @@ private:
 	UPROPERTY()
 	UBeamResponseCache* ResponseCache;
 
+public:
+    
+	UFUNCTION(BlueprintGetter, BlueprintInternalUseOnly, Category="Beam|DiscordSampleMs|Utils|Federation")
+	FString GetFederatedLogin_Id_Discord() const { return TEXT("discord"); }
+
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|DiscordSampleMs|Utils|Federation")
+	void GetFederatedLogin_Data_Discord(UPARAM(DisplayName="MicroserviceName") FString& MsName, UPARAM(DisplayName="FederationId") FString& Id)
+	{
+		MsName = GetMicroserviceName();
+		Id = GetFederatedLogin_Id_Discord();
+	}
+
+private:
+
 	
 	/**
 	 * @brief Private implementation that all overloaded BP UFunctions call.	  

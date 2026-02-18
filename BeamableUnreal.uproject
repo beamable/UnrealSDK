@@ -116,6 +116,20 @@
         "Mac",
         "Linux"
       ]
+    },
+    {
+      "Name": "OnlineSubsystemSteam",
+      "Enabled": true,
+      "PlatformAllowList": [
+        "Win64",
+        "Mac",
+        "Linux"
+      ],
+      "TargetAllowList": [
+        "Game",
+        "Editor",
+        "Client"
+      ]
     }
   ]
 }

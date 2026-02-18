@@ -415,14 +415,14 @@ public:
 			BeamRuntime->InitSDK(OnStarted, OnStartedFailedHandler);
 		}
 		return;
-#endif
-
+#else
 		UBeamPIE* BeamPIE = GEngine->GetEngineSubsystem<UBeamPIE>();
 		if (BeamRuntime->IsGameServer() && BeamPIE->FakeLobbyId.IsEmpty() && !bCustomGameInstanceGuard)
 		{
 			FakeOptions = Options;
 			World->ServerTravel(WaitRoomLevel);
 		}
+#endif
 	}
 
 	/**
@@ -575,8 +575,7 @@ public:
 #if !WITH_EDITOR
 		RequestTracker->TriggerOperationSuccess(Op, TEXT(""));
 		return;
-#endif
-
+#else
 		ensureAlwaysMsgf(CallingContext, TEXT("You must provide a calling context to this function!"));
 
 		// If we don't have a selected setting, don't do anything.
@@ -696,6 +695,7 @@ public:
 			UE_LOG(LogBeamEditor, Log, TEXT("%s Beamable SDK was Initialized. Preparing Instead"), *GetLogArgs(TEXT("Beam PIE Init"), WorldContext));
 			PreparePIE_ApplySelectedSettings(WorldContext, Op);
 		}
+#endif
 	}
 
 	void AutoCreateParty(FWorldContext* WorldContext, FBeamPIE_Settings const* const Settings, FBeamOperationHandle Operation)
@@ -1020,17 +1020,17 @@ public:
 				// Find next team with available slots
 				bool bFoundTeam = false;
 				int32 TeamsChecked = 0;
-		
+
 				while (TeamsChecked < TeamNames.Num())
 				{
 					CurrentTeamIndex = (CurrentTeamIndex + 1) % TeamNames.Num();
 					const FString& CandidateTeam = TeamNames[CurrentTeamIndex];
-			
+
 					// Check if this team has room based on MaxPlayers rule
 					const FBeamMatchmakingTeamsRule* TeamRule = GameTypeContent->Teams.FindByPredicate(
 						[&CandidateTeam](const FBeamMatchmakingTeamsRule& Rule) { return Rule.Name == CandidateTeam; }
 					);
-			
+
 					if (TeamRule && TeamCurrentCount[CandidateTeam] < TeamRule->MaxPlayers)
 					{
 						TeamToPlayerHandlesMap.Add(Player, CandidateTeam);
@@ -1038,10 +1038,10 @@ public:
 						bFoundTeam = true;
 						break;
 					}
-			
+
 					TeamsChecked++;
 				}
-		
+
 				if (!bFoundTeam)
 				{
 					UE_LOG(LogBeamEditor, Warning, TEXT("Could not assign player - all teams are full"));
@@ -1209,8 +1209,7 @@ public:
 #if !WITH_EDITOR
 		RequestTracker->TriggerOperationSuccess(Op, TEXT(""));
 		return;
-#endif
-
+#else
 		// If we don't have a setting selected, we should just complete the operation (this happens in builds).
 		const auto Settings = GetSelectedPIESettings();
 		if (!Settings || Settings->IsDefaultSettings())
@@ -1382,6 +1381,7 @@ public:
 			FBeamRequestContext PresenceContext;
 			PresenceAPI->CPP_PostQuery(ServerSlot, PresenceRequest, PresenceHandler, PresenceContext, {}, WorldContext->World());
 		}
+#endif
 	}
 
 	TArray<FBeamTag> GetBeamTags(TMap<FString, FString> InMap)
@@ -1669,8 +1669,7 @@ public:
 	{
 #if !WITH_EDITOR
 		return false;
-#endif
-
+#else
 		auto CoreSettings = GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot();
 		const auto PieInstanceIdx = FBeamPIE_Utilities::GetPIEInstance(This->GetWorldContext());
 		if (!ClientDelayMapHandles.Contains(PieInstanceIdx))
@@ -1683,6 +1682,7 @@ public:
 		const auto Handle = ClientDelayMapHandles[PieInstanceIdx];
 		auto ReqTracker = GEngine->GetEngineSubsystem<UBeamRequestTracker>();
 		return ReqTracker->IsOperationActive(Handle);
+#endif
 	}
 
 private:
@@ -1697,8 +1697,7 @@ private:
 #if !WITH_EDITOR
 		RequestTracker->TriggerOperationSuccess(Op, TEXT(""));
 		return;
-#endif
-
+#else
 		// When running in the editor/separate-process-PIE-instances... 
 		if (CallingContext)
 		{
@@ -1773,6 +1772,7 @@ private:
 				}
 			}
 		}
+#endif
 	}
 
 	/**
@@ -1945,8 +1945,7 @@ public:
 	{
 #if !WITH_EDITOR
 		return nullptr;
-#endif
-
+#else
 		// If Beam PIE is disabled we just return the default settings which means disabled.
 		if (!GetDefault<UBeamCoreSettings>()->bEnableBeamPIE) return DefaultSettings();
 
@@ -1965,6 +1964,7 @@ public:
 
 		// Guaranteed to exist from editor code.
 		return DefaultSettings();
+#endif
 	}
 
 	/**
@@ -2106,9 +2106,10 @@ namespace BeamPIE
 		{
 #if !WITH_EDITOR
 			return true;
-#endif
+#else
 			const auto PIE = GEngine->GetEngineSubsystem<UBeamPIE>();
 			return PIE->PreparePIE_Advanced_RequiresGameServerOrchestratorSetup(CallingContext);
+#endif
 		}
 	}
 

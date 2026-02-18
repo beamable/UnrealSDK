@@ -7,10 +7,14 @@ using System;
 using UnrealBuildTool;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using EpicGames.Core;
 
 public class BeamableUnrealTarget : TargetRules
 {
+	[CommandLine("-Distribution=")]
+	public string Distribution = "";
+	
 	public BeamableUnrealTarget(TargetInfo Target) : base(Target)
 	{
 		bOverrideBuildEnvironment = true;
@@ -18,15 +22,18 @@ public class BeamableUnrealTarget : TargetRules
 		DefaultBuildSettings = BuildSettingsVersion.Latest;
 		IncludeOrderVersion = EngineIncludeOrderVersion.Latest;
 
+		CommandLine.ParseArguments(Environment.GetCommandLineArgs(), this);
+
 		ExtraModuleNames.AddRange(new string[]
 		{
 			"BeamableUnreal",
 		});
 
 		var samplePluginName = GetCurrBeamProj(Target);
-		Console.WriteLine($"Configuring standalone project as beamproj={samplePluginName}.");
+		var packageOutputDir = Path.Combine(ProjectFile.Directory.FullName, $"Build/{Distribution}");
+		Console.WriteLine($"Configuring standalone project as beamproj={samplePluginName} for distribution={Distribution} and package output stored at {packageOutputDir}.");
 
-		ConfigureIfBeamball(this, samplePluginName);
+		ConfigureIfBeamball(this, samplePluginName, Distribution, packageOutputDir);
 		ConfigureIfBeamFarm(this, samplePluginName);
 		ConfigureIfLiveOpsDemo(this, samplePluginName);
 		ConfigureIfSteamDemo(this, samplePluginName);
@@ -57,7 +64,7 @@ public class BeamableUnrealTarget : TargetRules
 	
 	public const string kBeamProj_Beamball = "BEAMPROJ_Beamball";
 
-	public static void ConfigureIfBeamball(TargetRules TargetRules, string beamProj)
+	public static void ConfigureIfBeamball(TargetRules TargetRules, string beamProj, string distribution = "", string packageOutputDir = "")
 	{
 		if (beamProj == kBeamProj_Beamball)
 		{
@@ -66,6 +73,58 @@ public class BeamableUnrealTarget : TargetRules
 			if (TargetRules.Type == UnrealBuildTool.TargetType.Game)
 			{
 				Beam.ConfigureGame(TargetRules, oss);
+				
+				
+				// Handle builds for each distribution
+				{
+					Console.WriteLine("Setting up Platform Build");
+					if (distribution.Contains("Steam"))
+					{
+						Console.WriteLine("Setting up Platform - Steam");
+						
+						// Set up Steam custom config (so that only the Steam distribution goes on to be have the Steam Subsystem.
+						TargetRules.CustomConfig = "Steam";
+						
+						// Set up a Global define so that we can cut code out of non-steam builds. 
+						TargetRules.GlobalDefinitions.Add("IS_STEAM_DISTRIBUTION=1");
+
+						// Use PackageDir if available, otherwise fallback to Distribution
+						string BasePath = !string.IsNullOrEmpty(packageOutputDir) ? packageOutputDir : "";
+						Console.WriteLine($"Setting up Platform - Steam - {BasePath}");
+
+						// When shipping, we also create the steam_appid.txt file in the packaged directory.
+						if (!string.IsNullOrEmpty(BasePath))
+						{
+							var iniPath = Path.Combine(TargetRules.ProjectFile.Directory.FullName, "Config", "Custom", "Steam", "DefaultEngine.ini");
+							var iniContents = File.ReadAllLines(iniPath);
+							var steamAppIdLine = iniContents.First(c => c.StartsWith("SteamDevAppId"));
+							var steamAppId = steamAppIdLine[(steamAppIdLine.LastIndexOf('=') + 1)..].TrimEnd();
+
+							if (TargetRules.Platform == UnrealTargetPlatform.Win64)
+							{
+								string WinPath = Path.Combine(BasePath, "Windows", "steam_appid.txt");
+								// Windows uses cmd echo
+								TargetRules.PostBuildSteps.Add($"echo {steamAppId} > \"{WinPath}\"");
+							}
+							else if (TargetRules.Platform == UnrealTargetPlatform.Mac)
+							{
+								// Mac requires the file inside the .app bundle
+								string MacPath = Path.Combine(BasePath, "Mac", $"{TargetRules.Name}.app", "Contents", "MacOS", "steam_appid.txt");
+								// macOS uses sh/zsh echo; mkdir -p ensures the path exists inside the bundle
+								TargetRules.PostBuildSteps.Add(string.Format("mkdir -p \"$(dirname '{1}')\" && echo {0} > \"{1}\"", steamAppId, MacPath));
+							}
+							else if (TargetRules.Platform == UnrealTargetPlatform.Linux)
+							{
+								string LinuxPath = Path.Combine(BasePath, "Linux", "steam_appid.txt");
+								// Linux uses sh/bash echo
+								TargetRules.PostBuildSteps.Add($"echo {steamAppId} > \"{LinuxPath}\"");
+							}
+						}
+						
+					}
+					// TODO: Epic one
+				}
+				
 			}
 			else if (TargetRules.Type == UnrealBuildTool.TargetType.Editor)
 			{

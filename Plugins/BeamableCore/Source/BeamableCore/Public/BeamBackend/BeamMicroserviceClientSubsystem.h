@@ -30,7 +30,8 @@ public:
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 	virtual void Deinitialize() override;
 
-	FString GetMicroserviceName() const { return MicroserviceName;}
+	UFUNCTION(BlueprintGetter)
+	FString GetMicroserviceName() const { return MicroserviceName; }	
 };
 
 inline void UBeamMicroserviceClientSubsystem::Initialize(FSubsystemCollectionBase& Collection)

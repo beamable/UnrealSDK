@@ -170,7 +170,7 @@ void UBeamStoreSubsystem::RefreshStoreView(FUserSlot UserSlot, TArray<FBeamConte
 			FBeamPlayerStoreHandle Handle{UserSlot, Store->Symbol};
 			auto StoreView = NewObject<UBeamStoreView>();
 			StoreView->OwnerSlot = UserSlot;
-			StoreView->CurrentStoreView = DuplicateObject<UPlayerStoreView>(Resp.SuccessData->Stores.Last(), GetTransientPackage());
+			StoreView->CurrentStoreView = DuplicateObject<UPlayerStoreView>(Store, GetTransientPackage());
 
 			if (StoreViews.Contains(Handle)) StoreViews[Handle] = StoreView;
 			else StoreViews.Add(Handle, StoreView);
