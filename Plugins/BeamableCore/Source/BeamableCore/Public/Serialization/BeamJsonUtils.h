@@ -4,6 +4,7 @@
 
 #include "BeamSemanticType.h"
 #include "BeamTypeTraits.h"
+#include "GameplayTagContainer.h"
 #include "Misc/DefaultValueHelper.h"
 #include "Serialization/BeamArray.h"
 #include "Serialization/BeamJsonSerializable.h"
@@ -105,6 +106,34 @@ class BEAMABLECORE_API UBeamJsonUtils final : public UBlueprintFunctionLibrary
 				{
 					Serializer->WriteValue(Identifier, val->ToIso8601());
 				}
+				else if constexpr (TIsDerivedFrom<TDataType, FVector>::Value)
+				{
+					Serializer->WriteValue(Identifier, *val);
+				}
+				else if constexpr (TIsDerivedFrom<TDataType, FIntVector>::Value)
+				{
+					Serializer->WriteValue(Identifier, *val);
+				}
+				else if constexpr (TIsDerivedFrom<TDataType, FColor>::Value)
+				{
+					Serializer->WriteValue(Identifier, *val);
+				}
+				else if constexpr (TIsDerivedFrom<TDataType, FLinearColor>::Value)
+				{
+					Serializer->WriteValue(Identifier, *val);
+				}
+				else if constexpr (TIsDerivedFrom<TDataType, FGameplayTag>::Value)
+				{
+					Serializer->WriteValue(Identifier, *val);
+				}
+				else if constexpr (TIsDerivedFrom<TDataType, FGameplayTagContainer>::Value)
+				{
+					Serializer->WriteValue(Identifier, *val);
+				}
+				else if constexpr (TIsDerivedFrom<TDataType, FSoftObjectPath>::Value)
+				{
+					Serializer->WriteValue(Identifier, *val->GetAssetPathString());
+				}
 				else
 				{
 					Serializer->WriteValue(Identifier, *val);
@@ -203,6 +232,34 @@ class BEAMABLECORE_API UBeamJsonUtils final : public UBlueprintFunctionLibrary
 				else if constexpr (std::is_same_v<TDataType, FDateTime>)
 				{
 					Serializer->WriteValue(Value.ToIso8601());
+				}
+				else if constexpr (TIsDerivedFrom<TDataType, FVector>::Value)
+				{
+					Serializer->WriteValue(Value);
+				}
+				else if constexpr (TIsDerivedFrom<TDataType, FIntVector>::Value)
+				{
+					Serializer->WriteValue(Value);
+				}
+				else if constexpr (TIsDerivedFrom<TDataType, FColor>::Value)
+				{
+					Serializer->WriteValue(Value);
+				}
+				else if constexpr (TIsDerivedFrom<TDataType, FLinearColor>::Value)
+				{
+					Serializer->WriteValue(Value);
+				}
+				else if constexpr (TIsDerivedFrom<TDataType, FGameplayTag>::Value)
+				{
+					Serializer->WriteValue(Value);
+				}
+				else if constexpr (TIsDerivedFrom<TDataType, FGameplayTagContainer>::Value)
+				{
+					Serializer->WriteValue(Value);
+				}
+				else if constexpr (TIsDerivedFrom<TDataType, FSoftObjectPath>::Value)
+				{
+					Serializer->WriteValue(Value.GetAssetPathString());
 				}
 				else
 				{
@@ -311,6 +368,34 @@ class BEAMABLECORE_API UBeamJsonUtils final : public UBlueprintFunctionLibrary
 				else if constexpr (std::is_same_v<TMapType, FDateTime>)
 				{
 					Serializer->WriteValue(Kvp.Key, Kvp.Value.ToIso8601());
+				}
+				else if constexpr (TIsDerivedFrom<TMapType, FVector>::Value)
+				{
+					Serializer->WriteValue(Kvp.Key, Kvp.Value);
+				}
+				else if constexpr (TIsDerivedFrom<TMapType, FIntVector>::Value)
+				{
+					Serializer->WriteValue(Kvp.Key, Kvp.Value);
+				}
+				else if constexpr (TIsDerivedFrom<TMapType, FColor>::Value)
+				{
+					Serializer->WriteValue(Kvp.Key, Kvp.Value);
+				}
+				else if constexpr (TIsDerivedFrom<TMapType, FLinearColor>::Value)
+				{
+					Serializer->WriteValue(Kvp.Key, Kvp.Value);
+				}
+				else if constexpr (TIsDerivedFrom<TMapType, FGameplayTag>::Value)
+				{
+					Serializer->WriteValue(Kvp.Key, Kvp.Value);
+				}
+				else if constexpr (TIsDerivedFrom<TMapType, FGameplayTagContainer>::Value)
+				{
+					Serializer->WriteValue(Kvp.Key, Kvp.Value);
+				}
+				else if constexpr (TIsDerivedFrom<TMapType, FSoftObjectPath>::Value)
+				{
+					Serializer->WriteValue(Kvp.Key, Kvp.Value.GetAssetPathString());
 				}
 				else
 				{
@@ -427,6 +512,34 @@ public:
 		else if constexpr (TIsDerivedFrom<TPrimitiveType, FDateTime>::Value)
 		{
 			Serializer->WriteValue(JsonField, ToSerialize.ToIso8601());
+		}
+		else if constexpr (TIsDerivedFrom<TPrimitiveType, FVector>::Value)
+		{
+			Serializer->WriteValue(JsonField, ToSerialize);
+		}
+		else if constexpr (TIsDerivedFrom<TPrimitiveType, FIntVector>::Value)
+		{
+			Serializer->WriteValue(JsonField, ToSerialize);
+		}
+		else if constexpr (TIsDerivedFrom<TPrimitiveType, FColor>::Value)
+		{
+			Serializer->WriteValue(JsonField, ToSerialize);
+		}
+		else if constexpr (TIsDerivedFrom<TPrimitiveType, FLinearColor>::Value)
+		{
+			Serializer->WriteValue(JsonField, ToSerialize);
+		}
+		else if constexpr (TIsDerivedFrom<TPrimitiveType, FGameplayTag>::Value)
+		{
+			Serializer->WriteValue(JsonField, ToSerialize);
+		}
+		else if constexpr (TIsDerivedFrom<TPrimitiveType, FGameplayTagContainer>::Value)
+		{
+			Serializer->WriteValue(JsonField, ToSerialize);
+		}
+		else if constexpr (TIsDerivedFrom<TPrimitiveType, FSoftObjectPath>::Value)
+		{
+			Serializer->WriteValue(JsonField, ToSerialize.GetAssetPathString());
 		}
 		else
 		{
@@ -1577,6 +1690,37 @@ public:
 				Val = JsonField.RightChop(1).LeftChop(1);
 			}
 			FDateTime::ParseIso8601(*Val, ToDeserialize);
+		}else if constexpr (TIsDerivedFrom<TPrimitiveType, FVector>::Value)
+		{
+			const FString Val = JsonField;
+			FDefaultValueHelper::ParseVector(*Val, ToDeserialize);
+		}
+		else if constexpr (TIsDerivedFrom<TPrimitiveType, FIntVector>::Value)
+		{
+			const FString Val = JsonField;
+			ToDeserialize.InitFromString(*Val);
+		}
+		else if constexpr (TIsDerivedFrom<TPrimitiveType, FColor>::Value)
+		{
+			FDefaultValueHelper::ParseColor(*JsonField, ToDeserialize);
+		}
+		else if constexpr (TIsDerivedFrom<TPrimitiveType, FLinearColor>::Value)
+		{
+			FDefaultValueHelper::ParseLinearColor(*JsonField, ToDeserialize);
+		}
+		else if constexpr (TIsDerivedFrom<TPrimitiveType, FGameplayTag>::Value)
+		{
+			// Deserialize the tag from the string representation of the tag that is stored in JsonField
+			ToDeserialize = FGameplayTag::RequestGameplayTag(*JsonField);
+		}
+		else if constexpr (TIsDerivedFrom<TPrimitiveType, FGameplayTagContainer>::Value)
+		{
+			// Deserialize the tag container from the string representation of the tag container that is stored in JsonField
+		}
+		else if constexpr (TIsDerivedFrom<TPrimitiveType, FSoftObjectPath>::Value)
+		{
+			// Deserialize the soft object path from the string representation of the soft object path that is stored in JsonField
+			ToDeserialize = FSoftObjectPath(JsonField);
 		}
 	}
 	template <typename TPrimitiveType>

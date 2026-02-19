@@ -63,7 +63,7 @@ struct BEAMABLECORERUNTIMEEDITOR_API FBeamSnapshotContentEntry
 	FText Name;
 
 	UPROPERTY(BlueprintReadOnly)
-	EBeamLocalContentStatus CurrentStatus;
+	EBeamLocalContentStatus CurrentStatus = EBeamLocalContentStatus::Beam_Invalid;
 };
 
 
