@@ -25,6 +25,7 @@ DECLARE_DYNAMIC_DELEGATE(FBeamSnapshotRestored);
 DECLARE_DYNAMIC_DELEGATE(FBeamSnapshotCreated);
 DECLARE_DYNAMIC_DELEGATE(FBeamSnapshotRenamed);
 DECLARE_DYNAMIC_DELEGATE(FBeamSnapshotDeleted);
+DECLARE_DYNAMIC_DELEGATE(FBeamSnapshotCopied);
 
 /**
  * 
@@ -255,6 +256,9 @@ public:
 	                           FBeamSnapshotRenamed OnSnapshotRenamed);
 	UFUNCTION(BlueprintCallable)
 	void RefreshContentSnapshots(FBeamContentManifestId ManifestId, FBeamPid Realm, FBeamSnapshotRefreshed OnRefreshCompleted);
+	
+	UFUNCTION(BlueprintCallable)
+	void CopyContentSnapshots(FString OldPath, bool bIsSharedSnapshot, FBeamSnapshotCopied OnSnapshotsCopied);
 	
 	static FString GetJsonBlobPath(FString RowName, FBeamContentManifestId ManifestId);
 
