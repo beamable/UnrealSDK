@@ -458,6 +458,9 @@ private:
 	UFUNCTION(BlueprintCallable, Category="Beam")
 	void OpenPortalOnUserData(UDeveloperUserDataStreamData* UserData);
 
+	UFUNCTION(BlueprintCallable, Category="Beam")
+	void OpenPortalOnLogs();
+
 	/**
 	 * @brief Get the current selected enviroment name
 	 */
