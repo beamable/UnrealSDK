@@ -106,33 +106,67 @@ class BEAMABLECORE_API UBeamJsonUtils final : public UBlueprintFunctionLibrary
 				{
 					Serializer->WriteValue(Identifier, val->ToIso8601());
 				}
-				else if constexpr (TIsDerivedFrom<TDataType, FVector>::Value)
+				else if constexpr (std::is_same_v<TDataType, FVector>)
 				{
-					Serializer->WriteValue(Identifier, *val);
+					Serializer->WriteObjectStart(Identifier);
+					Serializer->WriteValue(TEXT("X"), val->X);
+					Serializer->WriteValue(TEXT("Y"), val->Y);
+					Serializer->WriteValue(TEXT("Z"), val->Z);
+					Serializer->WriteObjectEnd();
 				}
-				else if constexpr (TIsDerivedFrom<TDataType, FIntVector>::Value)
+				else if constexpr (std::is_same_v<TDataType, FIntVector>)
 				{
-					Serializer->WriteValue(Identifier, *val);
+					Serializer->WriteObjectStart(Identifier);
+					Serializer->WriteValue(TEXT("X"), val->X);
+					Serializer->WriteValue(TEXT("Y"), val->Y);
+					Serializer->WriteValue(TEXT("Z"), val->Z);
+					Serializer->WriteObjectEnd();
 				}
-				else if constexpr (TIsDerivedFrom<TDataType, FColor>::Value)
+				else if constexpr (std::is_same_v<TDataType, FColor>)
 				{
-					Serializer->WriteValue(Identifier, *val);
+					Serializer->WriteObjectStart(Identifier);
+					Serializer->WriteValue(TEXT("R"), val->R);
+					Serializer->WriteValue(TEXT("G"), val->G);
+					Serializer->WriteValue(TEXT("B"), val->B);
+					Serializer->WriteValue(TEXT("A"), val->A);
+					Serializer->WriteObjectEnd();
 				}
-				else if constexpr (TIsDerivedFrom<TDataType, FLinearColor>::Value)
+				else if constexpr (std::is_same_v<TDataType, FLinearColor>)
 				{
-					Serializer->WriteValue(Identifier, *val);
+					Serializer->WriteObjectStart(Identifier);
+					Serializer->WriteValue(TEXT("R"), val->R);
+					Serializer->WriteValue(TEXT("G"), val->G);
+					Serializer->WriteValue(TEXT("B"), val->B);
+					Serializer->WriteValue(TEXT("A"), val->A);
+					Serializer->WriteObjectEnd();
 				}
-				else if constexpr (TIsDerivedFrom<TDataType, FGameplayTag>::Value)
+				else if constexpr (std::is_same_v<TDataType, FGameplayTag>)
 				{
-					Serializer->WriteValue(Identifier, *val);
+					Serializer->WriteObjectStart(Identifier);
+					Serializer->WriteValue(TEXT("TagName"), val->GetTagName().ToString());
+					Serializer->WriteObjectEnd();
 				}
-				else if constexpr (TIsDerivedFrom<TDataType, FGameplayTagContainer>::Value)
+				else if constexpr (std::is_same_v<TDataType, FGameplayTagContainer>)
 				{
-					Serializer->WriteValue(Identifier, *val);
+					Serializer->WriteObjectStart(Identifier);
+					Serializer->WriteArrayStart(TEXT("GameplayTags"));
+					TArray<FGameplayTag> Tags;
+					val->GetGameplayTagArray(Tags);
+					for (const FGameplayTag& Tag : Tags)
+					{
+						Serializer->WriteObjectStart();
+						Serializer->WriteValue(TEXT("TagName"), Tag.GetTagName().ToString());
+						Serializer->WriteObjectEnd();
+					}
+					Serializer->WriteArrayEnd();
+					Serializer->WriteObjectEnd();
 				}
-				else if constexpr (TIsDerivedFrom<TDataType, FSoftObjectPath>::Value)
+				else if constexpr (std::is_same_v<TDataType, FSoftObjectPath>)
 				{
-					Serializer->WriteValue(Identifier, *val->GetAssetPathString());
+					Serializer->WriteObjectStart(Identifier);
+					Serializer->WriteValue(TEXT("AssetPathName"), val->GetAssetPathString());
+					Serializer->WriteValue(TEXT("SubPathString"), val->GetSubPathString());
+					Serializer->WriteObjectEnd();
 				}
 				else
 				{
@@ -233,33 +267,67 @@ class BEAMABLECORE_API UBeamJsonUtils final : public UBlueprintFunctionLibrary
 				{
 					Serializer->WriteValue(Value.ToIso8601());
 				}
-				else if constexpr (TIsDerivedFrom<TDataType, FVector>::Value)
+				else if constexpr (std::is_same_v<TDataType, FVector>)
 				{
-					Serializer->WriteValue(Value);
+					Serializer->WriteObjectStart();
+					Serializer->WriteValue(TEXT("X"), Value.X);
+					Serializer->WriteValue(TEXT("Y"), Value.Y);
+					Serializer->WriteValue(TEXT("Z"), Value.Z);
+					Serializer->WriteObjectEnd();
 				}
-				else if constexpr (TIsDerivedFrom<TDataType, FIntVector>::Value)
+				else if constexpr (std::is_same_v<TDataType, FIntVector>)
 				{
-					Serializer->WriteValue(Value);
+					Serializer->WriteObjectStart();
+					Serializer->WriteValue(TEXT("X"), Value.X);
+					Serializer->WriteValue(TEXT("Y"), Value.Y);
+					Serializer->WriteValue(TEXT("Z"), Value.Z);
+					Serializer->WriteObjectEnd();
 				}
-				else if constexpr (TIsDerivedFrom<TDataType, FColor>::Value)
+				else if constexpr (std::is_same_v<TDataType, FColor>)
 				{
-					Serializer->WriteValue(Value);
+					Serializer->WriteObjectStart();
+					Serializer->WriteValue(TEXT("R"), Value.R);
+					Serializer->WriteValue(TEXT("G"), Value.G);
+					Serializer->WriteValue(TEXT("B"), Value.B);
+					Serializer->WriteValue(TEXT("A"), Value.A);
+					Serializer->WriteObjectEnd();
 				}
-				else if constexpr (TIsDerivedFrom<TDataType, FLinearColor>::Value)
+				else if constexpr (std::is_same_v<TDataType, FLinearColor>)
 				{
-					Serializer->WriteValue(Value);
+					Serializer->WriteObjectStart();
+					Serializer->WriteValue(TEXT("R"), Value.R);
+					Serializer->WriteValue(TEXT("G"), Value.G);
+					Serializer->WriteValue(TEXT("B"), Value.B);
+					Serializer->WriteValue(TEXT("A"), Value.A);
+					Serializer->WriteObjectEnd();
 				}
-				else if constexpr (TIsDerivedFrom<TDataType, FGameplayTag>::Value)
+				else if constexpr (std::is_same_v<TDataType, FGameplayTag>)
 				{
-					Serializer->WriteValue(Value);
+					Serializer->WriteObjectStart();
+					Serializer->WriteValue(TEXT("TagName"), Value.GetTagName().ToString());
+					Serializer->WriteObjectEnd();
 				}
-				else if constexpr (TIsDerivedFrom<TDataType, FGameplayTagContainer>::Value)
+				else if constexpr (std::is_same_v<TDataType, FGameplayTagContainer>)
 				{
-					Serializer->WriteValue(Value);
+					Serializer->WriteObjectStart();
+					Serializer->WriteArrayStart(TEXT("GameplayTags"));
+					TArray<FGameplayTag> Tags;
+					Value.GetGameplayTagArray(Tags);
+					for (const FGameplayTag& Tag : Tags)
+					{
+						Serializer->WriteObjectStart();
+						Serializer->WriteValue(TEXT("TagName"), Tag.GetTagName().ToString());
+						Serializer->WriteObjectEnd();
+					}
+					Serializer->WriteArrayEnd();
+					Serializer->WriteObjectEnd();
 				}
-				else if constexpr (TIsDerivedFrom<TDataType, FSoftObjectPath>::Value)
+				else if constexpr (std::is_same_v<TDataType, FSoftObjectPath>)
 				{
-					Serializer->WriteValue(Value.GetAssetPathString());
+					Serializer->WriteObjectStart();
+					Serializer->WriteValue(TEXT("AssetPathName"), Value.GetAssetPathString());
+					Serializer->WriteValue(TEXT("SubPathString"), Value.GetSubPathString());
+					Serializer->WriteObjectEnd();
 				}
 				else
 				{
@@ -371,7 +439,11 @@ class BEAMABLECORE_API UBeamJsonUtils final : public UBlueprintFunctionLibrary
 				}
 				else if constexpr (TIsDerivedFrom<TMapType, FVector>::Value)
 				{
-					Serializer->WriteValue(Kvp.Key, Kvp.Value);
+					Serializer->WriteObjectStart(Kvp.Key);
+					Serializer->WriteValue(TEXT("X"), Kvp.Value.X);
+					Serializer->WriteValue(TEXT("Y"), Kvp.Value.Y);
+					Serializer->WriteValue(TEXT("Z"), Kvp.Value.Z);
+					Serializer->WriteObjectEnd();
 				}
 				else if constexpr (TIsDerivedFrom<TMapType, FIntVector>::Value)
 				{
@@ -515,31 +587,65 @@ public:
 		}
 		else if constexpr (TIsDerivedFrom<TPrimitiveType, FVector>::Value)
 		{
-			Serializer->WriteValue(JsonField, ToSerialize);
+			Serializer->WriteObjectStart(JsonField);
+			Serializer->WriteValue(TEXT("X"), ToSerialize.X);
+			Serializer->WriteValue(TEXT("Y"), ToSerialize.Y);
+			Serializer->WriteValue(TEXT("Z"), ToSerialize.Z);
+			Serializer->WriteObjectEnd();
 		}
 		else if constexpr (TIsDerivedFrom<TPrimitiveType, FIntVector>::Value)
 		{
-			Serializer->WriteValue(JsonField, ToSerialize);
+			Serializer->WriteObjectStart(JsonField);
+			Serializer->WriteValue(TEXT("X"), ToSerialize.X);
+			Serializer->WriteValue(TEXT("Y"), ToSerialize.Y);
+			Serializer->WriteValue(TEXT("Z"), ToSerialize.Z);
+			Serializer->WriteObjectEnd();
 		}
 		else if constexpr (TIsDerivedFrom<TPrimitiveType, FColor>::Value)
 		{
-			Serializer->WriteValue(JsonField, ToSerialize);
+			Serializer->WriteObjectStart(JsonField);
+			Serializer->WriteValue(TEXT("R"), ToSerialize.R);
+			Serializer->WriteValue(TEXT("G"), ToSerialize.G);
+			Serializer->WriteValue(TEXT("B"), ToSerialize.B);
+			Serializer->WriteValue(TEXT("A"), ToSerialize.A);
+			Serializer->WriteObjectEnd();
 		}
 		else if constexpr (TIsDerivedFrom<TPrimitiveType, FLinearColor>::Value)
 		{
-			Serializer->WriteValue(JsonField, ToSerialize);
+			Serializer->WriteObjectStart(JsonField);
+			Serializer->WriteValue(TEXT("R"), ToSerialize.R);
+			Serializer->WriteValue(TEXT("G"), ToSerialize.G);
+			Serializer->WriteValue(TEXT("B"), ToSerialize.B);
+			Serializer->WriteValue(TEXT("A"), ToSerialize.A);
+			Serializer->WriteObjectEnd();
 		}
 		else if constexpr (TIsDerivedFrom<TPrimitiveType, FGameplayTag>::Value)
 		{
-			Serializer->WriteValue(JsonField, ToSerialize);
+			Serializer->WriteObjectStart(JsonField);
+			Serializer->WriteValue(TEXT("TagName"), ToSerialize.GetTagName().ToString());
+			Serializer->WriteObjectEnd();
 		}
 		else if constexpr (TIsDerivedFrom<TPrimitiveType, FGameplayTagContainer>::Value)
 		{
-			Serializer->WriteValue(JsonField, ToSerialize);
+			Serializer->WriteObjectStart(JsonField);
+			Serializer->WriteArrayStart(TEXT("GameplayTags"));
+			TArray<FGameplayTag> Tags;
+			ToSerialize.GetGameplayTagArray(Tags);
+			for (const FGameplayTag& Tag : Tags)
+			{
+				Serializer->WriteObjectStart();
+				Serializer->WriteValue(TEXT("TagName"), Tag.GetTagName().ToString());
+				Serializer->WriteObjectEnd();
+			}
+			Serializer->WriteArrayEnd();
+			Serializer->WriteObjectEnd();
 		}
 		else if constexpr (TIsDerivedFrom<TPrimitiveType, FSoftObjectPath>::Value)
 		{
-			Serializer->WriteValue(JsonField, ToSerialize.GetAssetPathString());
+			Serializer->WriteObjectStart(JsonField);
+			Serializer->WriteValue(TEXT("SubPathString"), ToSerialize.GetSubPathString());
+			Serializer->WriteValue(TEXT("AssetPathName"), ToSerialize.GetAssetPathString());
+			Serializer->WriteObjectEnd();
 		}
 		else
 		{
@@ -1185,6 +1291,122 @@ public:
 						FDateTime::ParseIso8601(*Val, Parsed);
 						ParsedArray.Add(Parsed);
 					}
+					else if constexpr (std::is_same_v<TOptionalType, FVector>)
+					{
+						FVector Vector;
+
+						const TSharedPtr<FJsonObject>* JsonObject;
+						if (JsonField->TryGetObject(JsonObject) && JsonObject->IsValid())
+						{
+							(*JsonObject)->TryGetNumberField(TEXT("X"), Vector.X);
+							(*JsonObject)->TryGetNumberField(TEXT("Y"), Vector.Y);
+							(*JsonObject)->TryGetNumberField(TEXT("Z"), Vector.Z);
+						}
+						
+						ParsedArray.Add(Vector);
+					}
+					else if constexpr (std::is_same_v<TDataType, FIntVector>)
+					{
+					    FIntVector Vector;
+
+					    const TSharedPtr<FJsonObject>* JsonObject;
+					    if (ArrayJsonItem->TryGetObject(JsonObject) && JsonObject->IsValid())
+					    {
+					        (*JsonObject)->TryGetNumberField(TEXT("X"), Vector.X);
+					        (*JsonObject)->TryGetNumberField(TEXT("Y"), Vector.Y);
+					        (*JsonObject)->TryGetNumberField(TEXT("Z"), Vector.Z);
+					    }
+					    
+					    ParsedArray.Add(Vector);
+					}
+					else if constexpr (std::is_same_v<TDataType, FColor>)
+					{
+					    FColor Color;
+
+					    const TSharedPtr<FJsonObject>* JsonObject;
+					    if (ArrayJsonItem->TryGetObject(JsonObject) && JsonObject->IsValid())
+					    {
+					        (*JsonObject)->TryGetNumberField(TEXT("R"), Color.R);
+					        (*JsonObject)->TryGetNumberField(TEXT("G"), Color.G);
+					        (*JsonObject)->TryGetNumberField(TEXT("B"), Color.B);
+					        (*JsonObject)->TryGetNumberField(TEXT("A"), Color.A);
+					    }
+					    
+					    ParsedArray.Add(Color);
+					}
+					else if constexpr (std::is_same_v<TDataType, FLinearColor>)
+					{
+					    FLinearColor Color;
+
+					    const TSharedPtr<FJsonObject>* JsonObject;
+					    if (ArrayJsonItem->TryGetObject(JsonObject) && JsonObject->IsValid())
+					    {
+					        (*JsonObject)->TryGetNumberField(TEXT("R"), Color.R);
+					        (*JsonObject)->TryGetNumberField(TEXT("G"), Color.G);
+					        (*JsonObject)->TryGetNumberField(TEXT("B"), Color.B);
+					        (*JsonObject)->TryGetNumberField(TEXT("A"), Color.A);
+					    }
+					    
+					    ParsedArray.Add(Color);
+					}
+					else if constexpr (std::is_same_v<TDataType, FGameplayTag>)
+					{
+					    FGameplayTag Tag;
+
+					    const TSharedPtr<FJsonObject>* JsonObject;
+					    if (ArrayJsonItem->TryGetObject(JsonObject) && JsonObject->IsValid())
+					    {
+					        FString TagName;
+					        (*JsonObject)->TryGetStringField(TEXT("TagName"), TagName);
+					        Tag = FGameplayTag::RequestGameplayTag(FName(*TagName));
+					    }
+					    
+					    ParsedArray.Add(Tag);
+					}
+					else if constexpr (std::is_same_v<TDataType, FGameplayTagContainer>)
+					{
+					    FGameplayTagContainer Container;
+
+					    const TSharedPtr<FJsonObject>* JsonObject;
+					    if (ArrayJsonItem->TryGetObject(JsonObject) && JsonObject->IsValid())
+					    {
+					        const TArray<TSharedPtr<FJsonValue>>* TagsArray;
+					        if ((*JsonObject)->TryGetArrayField(TEXT("GameplayTags"), TagsArray))
+					        {
+					            for (const auto& TagValue : *TagsArray)
+					            {
+					                const TSharedPtr<FJsonObject>* TagObject;
+					                if (TagValue->TryGetObject(TagObject))
+					                {
+					                    FString TagName;
+					                    (*TagObject)->TryGetStringField(TEXT("TagName"), TagName);
+					                    Container.AddTag(FGameplayTag::RequestGameplayTag(FName(*TagName)));
+					                }
+					            }
+					        }
+					    }
+					    
+					    ParsedArray.Add(Container);
+					}
+					else if constexpr (std::is_same_v<TDataType, FSoftObjectPath>)
+					{
+					    FSoftObjectPath SoftPath;
+
+					    const TSharedPtr<FJsonObject>* JsonObject;
+					    if (ArrayJsonItem->TryGetObject(JsonObject) && JsonObject->IsValid())
+					    {
+					        FString AssetPath, SubPath;
+					        (*JsonObject)->TryGetStringField(TEXT("AssetPathName"), AssetPath);
+					        (*JsonObject)->TryGetStringField(TEXT("SubPathString"), SubPath);
+					        SoftPath.SetPath(AssetPath);
+					        if (!SubPath.IsEmpty())
+					        {
+					            SoftPath = FSoftObjectPath(AssetPath + TEXT(":") + SubPath);
+					        }
+					    }
+					    
+					    ParsedArray.Add(SoftPath);
+					}
 				}
 				FBeamOptional::Set(&ToDeserialize, &ParsedArray);
 			}
@@ -1209,6 +1431,122 @@ public:
 					JsonField->TryGetString(Val);
 					FDateTime::ParseIso8601(*Val, dateTime);
 					FBeamOptional::Set(&ToDeserialize, &dateTime);
+				}
+				else if constexpr (std::is_same_v<TOptionalType, FVector>)
+				{
+					FVector Vector;
+
+					const TSharedPtr<FJsonObject>* JsonObject;
+					if (JsonField->TryGetObject(JsonObject) && JsonObject->IsValid())
+					{
+						(*JsonObject)->TryGetNumberField(TEXT("X"), Vector.X);
+						(*JsonObject)->TryGetNumberField(TEXT("Y"), Vector.Y);
+						(*JsonObject)->TryGetNumberField(TEXT("Z"), Vector.Z);
+					}
+
+					FBeamOptional::Set(&ToDeserialize, &Vector);
+				}
+				else if constexpr (std::is_same_v<TOptionalType, FIntVector>)
+				{
+				    FIntVector Vector;
+
+				    const TSharedPtr<FJsonObject>* JsonObject;
+				    if (JsonField->TryGetObject(JsonObject) && JsonObject->IsValid())
+				    {
+				        (*JsonObject)->TryGetNumberField(TEXT("X"), Vector.X);
+				        (*JsonObject)->TryGetNumberField(TEXT("Y"), Vector.Y);
+				        (*JsonObject)->TryGetNumberField(TEXT("Z"), Vector.Z);
+				    }
+
+				    FBeamOptional::Set(&ToDeserialize, &Vector);
+				}
+				else if constexpr (std::is_same_v<TOptionalType, FColor>)
+				{
+				    FColor Color;
+
+				    const TSharedPtr<FJsonObject>* JsonObject;
+				    if (JsonField->TryGetObject(JsonObject) && JsonObject->IsValid())
+				    {
+				        (*JsonObject)->TryGetNumberField(TEXT("R"), Color.R);
+				        (*JsonObject)->TryGetNumberField(TEXT("G"), Color.G);
+				        (*JsonObject)->TryGetNumberField(TEXT("B"), Color.B);
+				        (*JsonObject)->TryGetNumberField(TEXT("A"), Color.A);
+				    }
+
+				    FBeamOptional::Set(&ToDeserialize, &Color);
+				}
+				else if constexpr (std::is_same_v<TOptionalType, FLinearColor>)
+				{
+				    FLinearColor Color;
+
+				    const TSharedPtr<FJsonObject>* JsonObject;
+				    if (JsonField->TryGetObject(JsonObject) && JsonObject->IsValid())
+				    {
+				        (*JsonObject)->TryGetNumberField(TEXT("R"), Color.R);
+				        (*JsonObject)->TryGetNumberField(TEXT("G"), Color.G);
+				        (*JsonObject)->TryGetNumberField(TEXT("B"), Color.B);
+				        (*JsonObject)->TryGetNumberField(TEXT("A"), Color.A);
+				    }
+
+				    FBeamOptional::Set(&ToDeserialize, &Color);
+				}
+				else if constexpr (std::is_same_v<TOptionalType, FGameplayTag>)
+				{
+				    FGameplayTag Tag;
+
+				    const TSharedPtr<FJsonObject>* JsonObject;
+				    if (JsonField->TryGetObject(JsonObject) && JsonObject->IsValid())
+				    {
+				        FString TagName;
+				        (*JsonObject)->TryGetStringField(TEXT("TagName"), TagName);
+				        Tag = FGameplayTag::RequestGameplayTag(FName(*TagName));
+				    }
+
+				    FBeamOptional::Set(&ToDeserialize, &Tag);
+				}
+				else if constexpr (std::is_same_v<TOptionalType, FGameplayTagContainer>)
+				{
+				    FGameplayTagContainer Container;
+
+				    const TSharedPtr<FJsonObject>* JsonObject;
+				    if (JsonField->TryGetObject(JsonObject) && JsonObject->IsValid())
+				    {
+				        const TArray<TSharedPtr<FJsonValue>>* TagsArray;
+				        if ((*JsonObject)->TryGetArrayField(TEXT("GameplayTags"), TagsArray))
+				        {
+				            for (const auto& TagValue : *TagsArray)
+				            {
+				                const TSharedPtr<FJsonObject>* TagObject;
+				                if (TagValue->TryGetObject(TagObject))
+				                {
+				                    FString TagName;
+				                    (*TagObject)->TryGetStringField(TEXT("TagName"), TagName);
+				                    Container.AddTag(FGameplayTag::RequestGameplayTag(FName(*TagName)));
+				                }
+				            }
+				        }
+				    }
+
+				    FBeamOptional::Set(&ToDeserialize, &Container);
+				}
+				else if constexpr (std::is_same_v<TOptionalType, FSoftObjectPath>)
+				{
+				    FSoftObjectPath SoftPath;
+
+				    const TSharedPtr<FJsonObject>* JsonObject;
+				    if (JsonField->TryGetObject(JsonObject) && JsonObject->IsValid())
+				    {
+				        FString AssetPath, SubPath;
+				        (*JsonObject)->TryGetStringField(TEXT("AssetPathName"), AssetPath);
+				        (*JsonObject)->TryGetStringField(TEXT("SubPathString"), SubPath);
+				        SoftPath.SetPath(AssetPath);
+				        if (!SubPath.IsEmpty())
+				        {
+				            SoftPath = FSoftObjectPath(AssetPath + TEXT(":") + SubPath);
+				        }
+				    }
+
+				    FBeamOptional::Set(&ToDeserialize, &SoftPath);
 				}
 				else if constexpr (std::is_same_v<TOptionalType, FString>)
 				{
@@ -1378,6 +1716,114 @@ public:
 				FDateTime Parsed;
 				FDateTime::ParseIso8601(*Val, Parsed);
 				Array.Add(Parsed);
+			}else if constexpr (std::is_same_v<TDataType, FVector>)
+			{
+				FVector Vector;
+
+				const TSharedPtr<FJsonObject>* JsonObject;
+				if (JsonValue->TryGetObject(JsonObject) && JsonObject->IsValid())
+				{
+					(*JsonObject)->TryGetNumberField(TEXT("X"), Vector.X);
+					(*JsonObject)->TryGetNumberField(TEXT("Y"), Vector.Y);
+					(*JsonObject)->TryGetNumberField(TEXT("Z"), Vector.Z);
+				}
+				Array.Add(Vector);
+			}
+			else if constexpr (std::is_same_v<TDataType, FIntVector>)
+			{
+				FIntVector Vector;
+			    
+			    const TSharedPtr<FJsonObject>* JsonObject;
+			    if (JsonValue->TryGetObject(JsonObject) && JsonObject->IsValid())
+			    {
+			        (*JsonObject)->TryGetNumberField(TEXT("X"), Vector.X);
+			        (*JsonObject)->TryGetNumberField(TEXT("Y"), Vector.Y);
+			        (*JsonObject)->TryGetNumberField(TEXT("Z"), Vector.Z);
+			    }
+			    Array.Add(Vector);
+			}
+			else if constexpr (std::is_same_v<TDataType, FColor>)
+			{
+			    FColor Color;
+			    
+			    const TSharedPtr<FJsonObject>* JsonObject;
+			    if (JsonValue->TryGetObject(JsonObject) && JsonObject->IsValid())
+			    {
+			        (*JsonObject)->TryGetNumberField(TEXT("R"), Color.R);
+			        (*JsonObject)->TryGetNumberField(TEXT("G"), Color.G);
+			        (*JsonObject)->TryGetNumberField(TEXT("B"), Color.B);
+			        (*JsonObject)->TryGetNumberField(TEXT("A"), Color.A);
+			    }
+			    Array.Add(Color);
+			}
+			else if constexpr (std::is_same_v<TDataType, FLinearColor>)
+			{
+			    FLinearColor Color;
+			    
+			    const TSharedPtr<FJsonObject>* JsonObject;
+			    if (JsonValue->TryGetObject(JsonObject) && JsonObject->IsValid())
+			    {
+			        (*JsonObject)->TryGetNumberField(TEXT("R"), Color.R);
+			        (*JsonObject)->TryGetNumberField(TEXT("G"), Color.G);
+			        (*JsonObject)->TryGetNumberField(TEXT("B"), Color.B);
+			        (*JsonObject)->TryGetNumberField(TEXT("A"), Color.A);
+			    }
+			    Array.Add(Color);
+			}
+			else if constexpr (std::is_same_v<TDataType, FGameplayTag>)
+			{
+			    FGameplayTag Tag;
+			    
+			    const TSharedPtr<FJsonObject>* JsonObject;
+			    if (JsonValue->TryGetObject(JsonObject) && JsonObject->IsValid())
+			    {
+			        FString TagName;
+			        (*JsonObject)->TryGetStringField(TEXT("TagName"), TagName);
+			        Tag = FGameplayTag::RequestGameplayTag(FName(*TagName));
+			    }
+			    Array.Add(Tag);
+			}
+			else if constexpr (std::is_same_v<TDataType, FGameplayTagContainer>)
+			{
+			    FGameplayTagContainer Container;
+			    
+			    const TSharedPtr<FJsonObject>* JsonObject;
+			    if (JsonValue->TryGetObject(JsonObject) && JsonObject->IsValid())
+			    {
+			        const TArray<TSharedPtr<FJsonValue>>* TagsArray;
+			        if ((*JsonObject)->TryGetArrayField(TEXT("GameplayTags"), TagsArray))
+			        {
+			            for (const auto& TagValue : *TagsArray)
+			            {
+			                const TSharedPtr<FJsonObject>* TagObject;
+			                if (TagValue->TryGetObject(TagObject))
+			                {
+			                    FString TagName;
+			                    (*TagObject)->TryGetStringField(TEXT("TagName"), TagName);
+			                    Container.AddTag(FGameplayTag::RequestGameplayTag(FName(*TagName)));
+			                }
+			            }
+			        }
+			    }
+			    Array.Add(Container);
+			}
+			else if constexpr (std::is_same_v<TDataType, FSoftObjectPath>)
+			{
+			    FSoftObjectPath SoftPath;
+			    
+			    const TSharedPtr<FJsonObject>* JsonObject;
+			    if (JsonValue->TryGetObject(JsonObject) && JsonObject->IsValid())
+			    {
+			        FString AssetPath, SubPath;
+			        (*JsonObject)->TryGetStringField(TEXT("AssetPathName"), AssetPath);
+			        (*JsonObject)->TryGetStringField(TEXT("SubPathString"), SubPath);
+			        SoftPath.SetPath(AssetPath);
+			        if (!SubPath.IsEmpty())
+			        {
+			            SoftPath = FSoftObjectPath(AssetPath + TEXT(":") + SubPath);
+			        }
+			    }
+			    Array.Add(SoftPath);
 			}
 			else if constexpr (std::is_same_v<TDataType, int>)
 			{
@@ -1521,6 +1967,124 @@ public:
 				FDateTime::ParseIso8601(*Val, Parsed);
 				Map.Add(Key, Parsed);
 			}
+			else if constexpr (std::is_same_v<TMapType, FVector>)
+			{
+			    FVector Vector;
+
+			    const TSharedPtr<FJsonObject>* JsonObject;
+			    if (JsonValue->TryGetObject(JsonObject) && JsonObject->IsValid())
+			    {
+			        (*JsonObject)->TryGetNumberField(TEXT("X"), Vector.X);
+			        (*JsonObject)->TryGetNumberField(TEXT("Y"), Vector.Y);
+			        (*JsonObject)->TryGetNumberField(TEXT("Z"), Vector.Z);
+			    }
+
+			    Map.Add(Key, Vector);
+			}
+			else if constexpr (std::is_same_v<TMapType, FIntVector>)
+			{
+			    FIntVector Vector;
+
+			    const TSharedPtr<FJsonObject>* JsonObject;
+			    if (JsonValue->TryGetObject(JsonObject) && JsonObject->IsValid())
+			    {
+			        (*JsonObject)->TryGetNumberField(TEXT("X"), Vector.X);
+			        (*JsonObject)->TryGetNumberField(TEXT("Y"), Vector.Y);
+			        (*JsonObject)->TryGetNumberField(TEXT("Z"), Vector.Z);
+			    }
+
+			    Map.Add(Key, Vector);
+			}
+			else if constexpr (std::is_same_v<TMapType, FColor>)
+			{
+			    FColor Color;
+
+			    const TSharedPtr<FJsonObject>* JsonObject;
+			    if (JsonValue->TryGetObject(JsonObject) && JsonObject->IsValid())
+			    {
+			        int32 R, G, B, A;
+			        (*JsonObject)->TryGetNumberField(TEXT("R"), R);
+			        (*JsonObject)->TryGetNumberField(TEXT("G"), G);
+			        (*JsonObject)->TryGetNumberField(TEXT("B"), B);
+			        (*JsonObject)->TryGetNumberField(TEXT("A"), A);
+			        Color = FColor(R, G, B, A);
+			    }
+
+			    Map.Add(Key, Color);
+			}
+			else if constexpr (std::is_same_v<TMapType, FLinearColor>)
+			{
+			    FLinearColor Color;
+
+			    const TSharedPtr<FJsonObject>* JsonObject;
+			    if (JsonValue->TryGetObject(JsonObject) && JsonObject->IsValid())
+			    {
+			        (*JsonObject)->TryGetNumberField(TEXT("R"), Color.R);
+			        (*JsonObject)->TryGetNumberField(TEXT("G"), Color.G);
+			        (*JsonObject)->TryGetNumberField(TEXT("B"), Color.B);
+			        (*JsonObject)->TryGetNumberField(TEXT("A"), Color.A);
+			    }
+
+			    Map.Add(Key, Color);
+			}
+			else if constexpr (std::is_same_v<TMapType, FGameplayTag>)
+			{
+			    FGameplayTag Tag;
+
+			    const TSharedPtr<FJsonObject>* JsonObject;
+			    if (JsonValue->TryGetObject(JsonObject) && JsonObject->IsValid())
+			    {
+			        FString TagName;
+			        (*JsonObject)->TryGetStringField(TEXT("TagName"), TagName);
+			        Tag = FGameplayTag::RequestGameplayTag(FName(*TagName));
+			    }
+
+			    Map.Add(Key, Tag);
+			}
+			else if constexpr (std::is_same_v<TMapType, FGameplayTagContainer>)
+			{
+			    FGameplayTagContainer Container;
+
+			    const TSharedPtr<FJsonObject>* JsonObject;
+			    if (JsonValue->TryGetObject(JsonObject) && JsonObject->IsValid())
+			    {
+			        const TArray<TSharedPtr<FJsonValue>>* TagsArray;
+			        if ((*JsonObject)->TryGetArrayField(TEXT("GameplayTags"), TagsArray))
+			        {
+			            for (const auto& TagValue : *TagsArray)
+			            {
+			                const TSharedPtr<FJsonObject>* TagObject;
+			                if (TagValue->TryGetObject(TagObject))
+			                {
+			                    FString TagName;
+			                    (*TagObject)->TryGetStringField(TEXT("TagName"), TagName);
+			                    Container.AddTag(FGameplayTag::RequestGameplayTag(FName(*TagName)));
+			                }
+			            }
+			        }
+			    }
+
+			    Map.Add(Key, Container);
+			}
+			else if constexpr (std::is_same_v<TMapType, FSoftObjectPath>)
+			{
+			    FSoftObjectPath SoftPath;
+
+			    const TSharedPtr<FJsonObject>* JsonObject;
+			    if (JsonValue->TryGetObject(JsonObject) && JsonObject->IsValid())
+			    {
+			        FString AssetPath, SubPath;
+			        (*JsonObject)->TryGetStringField(TEXT("AssetPathName"), AssetPath);
+			        (*JsonObject)->TryGetStringField(TEXT("SubPathString"), SubPath);
+			        SoftPath.SetPath(AssetPath);
+			        if (!SubPath.IsEmpty())
+			        {
+			            SoftPath = FSoftObjectPath(AssetPath + TEXT(":") + SubPath);
+			        }
+			    }
+
+			    Map.Add(Key, SoftPath);
+			}
 			else if constexpr (std::is_same_v<TMapType, int>)
 			{
 				FString Val;
@@ -1627,6 +2191,26 @@ public:
 				ToDeserialize = SerializationNameToEnum<TPrimitiveType>(JsonField);
 			}
 		}
+		else if constexpr (TIsTArray<TPrimitiveType>::Value)
+		{
+			TArray<TSharedPtr<FJsonValue>> JsonArray;
+			TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(JsonField);
+			if (FJsonSerializer::Deserialize(Reader, JsonArray))
+			{
+				using TElementType = typename TRemoveReference<decltype(DeclVal<TPrimitiveType>()[0])>::Type;
+				DeserializeArray<TElementType>(JsonArray, ToDeserialize, OuterOwner);
+			}
+		}
+		else if constexpr (TIsTMap<TPrimitiveType>::Value)
+		{
+			TSharedPtr<FJsonObject> JsonObject;
+			TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(JsonField);
+			if (FJsonSerializer::Deserialize(Reader, JsonObject))
+			{
+				using TValueType = typename TPrimitiveType::ValueType;
+				DeserializeMap<TValueType>(JsonObject, ToDeserialize, OuterOwner);
+			}
+		}
 		else if constexpr (std::is_same_v<TPrimitiveType, FGuid>)
 		{
 			FGuid::Parse(JsonField, ToDeserialize);
@@ -1692,35 +2276,95 @@ public:
 			FDateTime::ParseIso8601(*Val, ToDeserialize);
 		}else if constexpr (TIsDerivedFrom<TPrimitiveType, FVector>::Value)
 		{
-			const FString Val = JsonField;
-			FDefaultValueHelper::ParseVector(*Val, ToDeserialize);
+			TSharedPtr<FJsonObject> JsonObject;
+			TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(JsonField);
+			if (FJsonSerializer::Deserialize(Reader, JsonObject) && JsonObject.IsValid())
+			{
+				JsonObject->TryGetNumberField(TEXT("X"), ToDeserialize.X);
+				JsonObject->TryGetNumberField(TEXT("Y"), ToDeserialize.Y);
+				JsonObject->TryGetNumberField(TEXT("Z"), ToDeserialize.Z);
+			}
 		}
 		else if constexpr (TIsDerivedFrom<TPrimitiveType, FIntVector>::Value)
 		{
-			const FString Val = JsonField;
-			ToDeserialize.InitFromString(*Val);
+			TSharedPtr<FJsonObject> JsonObject;
+			TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(JsonField);
+			if (FJsonSerializer::Deserialize(Reader, JsonObject) && JsonObject.IsValid())
+			{
+				JsonObject->TryGetNumberField(TEXT("X"), ToDeserialize.X);
+				JsonObject->TryGetNumberField(TEXT("Y"), ToDeserialize.Y);
+				JsonObject->TryGetNumberField(TEXT("Z"), ToDeserialize.Z);
+			}
 		}
 		else if constexpr (TIsDerivedFrom<TPrimitiveType, FColor>::Value)
 		{
-			FDefaultValueHelper::ParseColor(*JsonField, ToDeserialize);
+			TSharedPtr<FJsonObject> JsonObject;
+			TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(JsonField);
+			if (FJsonSerializer::Deserialize(Reader, JsonObject) && JsonObject.IsValid())
+			{
+				JsonObject->TryGetNumberField(TEXT("R"), ToDeserialize.R);
+				JsonObject->TryGetNumberField(TEXT("G"), ToDeserialize.G);
+				JsonObject->TryGetNumberField(TEXT("B"), ToDeserialize.B);
+				JsonObject->TryGetNumberField(TEXT("A"), ToDeserialize.A);
+			}
 		}
 		else if constexpr (TIsDerivedFrom<TPrimitiveType, FLinearColor>::Value)
 		{
-			FDefaultValueHelper::ParseLinearColor(*JsonField, ToDeserialize);
+			TSharedPtr<FJsonObject> JsonObject;
+			TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(JsonField);
+			if (FJsonSerializer::Deserialize(Reader, JsonObject) && JsonObject.IsValid())
+			{
+				JsonObject->TryGetNumberField(TEXT("R"), ToDeserialize.R);
+				JsonObject->TryGetNumberField(TEXT("G"), ToDeserialize.G);
+				JsonObject->TryGetNumberField(TEXT("B"), ToDeserialize.B);
+				JsonObject->TryGetNumberField(TEXT("A"), ToDeserialize.A);
+			}
 		}
 		else if constexpr (TIsDerivedFrom<TPrimitiveType, FGameplayTag>::Value)
 		{
-			// Deserialize the tag from the string representation of the tag that is stored in JsonField
-			ToDeserialize = FGameplayTag::RequestGameplayTag(*JsonField);
+			TSharedPtr<FJsonObject> JsonObject;
+			TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(JsonField);
+			FString TagName;
+			if (FJsonSerializer::Deserialize(Reader, JsonObject) && JsonObject.IsValid())
+			{
+				JsonObject->TryGetStringField(TEXT("TagName"), TagName);
+				ToDeserialize = FGameplayTag::RequestGameplayTag(*TagName);
+			}
 		}
 		else if constexpr (TIsDerivedFrom<TPrimitiveType, FGameplayTagContainer>::Value)
 		{
-			// Deserialize the tag container from the string representation of the tag container that is stored in JsonField
+			TSharedPtr<FJsonObject> JsonObject;
+			TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(JsonField);
+			if (FJsonSerializer::Deserialize(Reader, JsonObject) && JsonObject.IsValid())
+			{
+				const TArray<TSharedPtr<FJsonValue>>& TagArray = JsonObject->GetArrayField(TEXT("GameplayTags"));
+				ToDeserialize = FGameplayTagContainer();
+
+				for (const TSharedPtr<FJsonValue>& TagValue : TagArray)
+				{
+					if (TagValue->Type == EJson::Object)
+					{
+						FString TagName;
+						TagValue->AsObject()->TryGetStringField(TEXT("TagName"), TagName);
+						FGameplayTag Tag = FGameplayTag::RequestGameplayTag(FName(*TagName));
+						ToDeserialize.AddTag(Tag);
+					}
+				}
+			}
 		}
 		else if constexpr (TIsDerivedFrom<TPrimitiveType, FSoftObjectPath>::Value)
 		{
-			// Deserialize the soft object path from the string representation of the soft object path that is stored in JsonField
-			ToDeserialize = FSoftObjectPath(JsonField);
+	
+			TSharedPtr<FJsonObject> JsonObject;
+			TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(JsonField);
+			if (FJsonSerializer::Deserialize(Reader, JsonObject) && JsonObject.IsValid())
+			{
+				FString AssetPath;
+				JsonObject->TryGetStringField(TEXT("AssetPathName"), AssetPath);
+				
+				ToDeserialize = FSoftObjectPath(AssetPath);
+			}
+	
 		}
 	}
 	template <typename TPrimitiveType>
