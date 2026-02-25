@@ -902,6 +902,99 @@ void UBeamEditorContent::RefreshContentSnapshots(FBeamContentManifestId Manifest
 	Cli->RunCommandServer(List, {Args}, {});
 }
 
+void UBeamEditorContent::CopyContentSnapshots(FString OldPath, bool bIsSharedSnapshot, FBeamSnapshotCopied OnSnapshotsCopied)
+{
+	IFileManager& FileManager = IFileManager::Get();
+	
+	// Check if source file exists
+	if (!FileManager.FileExists(*OldPath))
+	{
+		UE_LOG(LogBeamContent, Error, TEXT("Source snapshot file does not exist: %s"), *OldPath);
+		auto value = FString::Printf(TEXT("Source snapshot file does not exist: %s"), *OldPath);
+		ShowNotification(TEXT("Error"), FText::FromString(value), 5.0f, 1.0f);
+		OnSnapshotsCopied.ExecuteIfBound();
+		return;
+	}
+
+	// Normalize the path to use consistent separators (convert to platform format)
+	FString NormalizedOldPath = OldPath;
+	FPaths::NormalizeFilename(NormalizedOldPath);
+	
+	// Parse the old path to determine source and destination
+	FString NewPath;
+	
+	if (bIsSharedSnapshot)
+	{
+		// Copy from local (.beamable/local/contentSnapshots) to shared (.beamable/shared/contentSnapshots)
+		if (NormalizedOldPath.Contains(TEXT("/local/contentSnapshots/")))
+		{
+			NewPath = NormalizedOldPath.Replace(TEXT("/local/contentSnapshots/"), TEXT("/shared/contentSnapshots/"));
+		}
+		else if (NormalizedOldPath.Contains(TEXT("\\local\\contentSnapshots\\")))
+		{
+			NewPath = NormalizedOldPath.Replace(TEXT("\\local\\contentSnapshots\\"), TEXT("\\shared\\contentSnapshots\\"));
+		}
+		else
+		{
+			UE_LOG(LogBeamContent, Error, TEXT("Invalid local snapshot path format: %s (normalized: %s)"), *OldPath, *NormalizedOldPath);
+			auto value = FString::Printf(TEXT("Invalid local snapshot path format: %s"), *OldPath);
+			ShowNotification(TEXT("Error"), FText::FromString(value), 5.0f, 1.0f);
+			OnSnapshotsCopied.ExecuteIfBound();
+			return;
+		}
+	}
+	else
+	{
+		// Copy from shared (.beamable/shared/contentSnapshots) to local (.beamable/local/contentSnapshots)
+		if (NormalizedOldPath.Contains(TEXT("/shared/contentSnapshots/")))
+		{
+			NewPath = NormalizedOldPath.Replace(TEXT("/shared/contentSnapshots/"), TEXT("/local/contentSnapshots/"));
+		}
+		else if (NormalizedOldPath.Contains(TEXT("\\shared\\contentSnapshots\\")))
+		{
+			NewPath = NormalizedOldPath.Replace(TEXT("\\shared\\contentSnapshots\\"), TEXT("\\local\\contentSnapshots\\"));
+		}
+		else
+		{
+			UE_LOG(LogBeamContent, Error, TEXT("Invalid shared snapshot path format: %s (normalized: %s)"), *OldPath, *NormalizedOldPath);
+			auto value = FString::Printf(TEXT("Invalid shared snapshot path format: %s"), *OldPath);
+			ShowNotification(TEXT("Error"), FText::FromString(value), 5.0f, 1.0f);
+			OnSnapshotsCopied.ExecuteIfBound();
+			return;
+		}
+	}
+
+	// Ensure the destination directory exists
+	FString DestinationDir = FPaths::GetPath(NewPath);
+	if (!FileManager.DirectoryExists(*DestinationDir))
+	{
+		if (!FileManager.MakeDirectory(*DestinationDir, true))
+		{
+			UE_LOG(LogBeamContent, Error, TEXT("Failed to create destination directory: %s"), *DestinationDir);
+			auto value = FString::Printf(TEXT("Failed to create destination directory: %s"), *DestinationDir);
+			ShowNotification(TEXT("Error"), FText::FromString(value), 5.0f, 1.0f);
+			OnSnapshotsCopied.ExecuteIfBound();
+			return;
+		}
+	}
+
+	// Copy the file
+	if (FileManager.Copy(*NewPath, *OldPath, true, true) == COPY_OK)
+	{
+		UE_LOG(LogBeamContent, Log, TEXT("Successfully copied snapshot from %s to %s"), *OldPath, *NewPath);
+		FString SnapshotType = bIsSharedSnapshot ? TEXT("shared") : TEXT("local");
+		auto value = FString::Printf(TEXT("Successfully copied snapshot to %s location"), *SnapshotType);
+		OnSnapshotsCopied.ExecuteIfBound();
+	}
+	else
+	{
+		UE_LOG(LogBeamContent, Error, TEXT("Failed to copy snapshot from %s to %s"), *OldPath, *NewPath);
+		auto value = FString::Printf(TEXT("Failed to copy snapshot from %s to %s"), *OldPath, *NewPath);
+		ShowNotification(TEXT("Error"), FText::FromString(value), 5.0f, 1.0f);
+		OnSnapshotsCopied.ExecuteIfBound();
+	}
+}
+
 FString UBeamEditorContent::GetJsonBlobPath(FString RowName, FBeamContentManifestId ManifestId)
 {
 	return DefaultBeamableProjectContentObjects / GetDefault<UBeamCoreSettings>()->TargetRealm.Pid.AsString / ManifestId.AsString / RowName + TEXT(".json");

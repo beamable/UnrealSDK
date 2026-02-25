@@ -1157,6 +1157,36 @@ void UBeamEditor::OpenPortalOnUserData(UDeveloperUserDataStreamData* UserData)
 	}
 }
 
+void UBeamEditor::OpenPortalOnLogs()
+{
+	FUserSlot MainEditorSlot;
+	FBeamRealmUser Data;
+	if (TryGetMainEditorSlot(MainEditorSlot, Data))
+	{
+		FBeamCustomerProjectData Proj;
+		FBeamProjectRealmData RealmData;
+		GetActiveProjectAndRealmData(Proj, RealmData);
+
+		const auto PortalUrl = GetDefault<UBeamCoreSettings>()->BeamableEnvironment->PortalUrl;
+		const auto RealmCid = Data.RealmHandle.Cid.AsString;
+		const auto ProductionPid = Proj.AllRealms.FindByPredicate([](FBeamProjectRealmData d) { return d.bIsProduction; })->PID.AsString;
+		const auto Pid = Data.RealmHandle.Pid.AsString;
+		const auto RefreshToken = Data.AuthToken.RefreshToken;
+
+		const auto URL = FString::Format(TEXT("{0}/{1}/games/{2}/realms/{3}/logs?refresh_token={4}&pid={5}"),
+		                                 {
+			                                 PortalUrl,
+			                                 RealmCid,
+			                                 ProductionPid,
+			                                 Pid,
+			                                 RefreshToken,
+			                                 Pid
+		                                 });
+
+		FPlatformProcess::LaunchURL(*URL, nullptr, nullptr);
+	}
+}
+
 void UBeamEditor::GetSelectedEnvironment(FString& Environment)
 {
 	if (GetDefault<UBeamCoreSettings>()->BeamableEnvironment.IsValid())
