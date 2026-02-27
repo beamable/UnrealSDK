@@ -985,7 +985,7 @@ public:
 				ToDeserialize = nullptr;
 		}
 	}
-
+	
 	template <typename TDataType>
 	static void DeserializeUStruct(const FString& Identifier, const TSharedPtr<FJsonObject>& OwnerBag, TDataType& ToDeserialize, TWeakObjectPtr<UObject> OuterOwner = (UObject*)GetTransientPackage())
 	{
@@ -2384,5 +2384,23 @@ public:
 		{
 			Settings = Bag->GetObjectField(Identifier);
 		}
+	}
+
+	static bool FromJsonToBag(const FString& JsonString, FJsonDataBag& OutBag)
+	{
+		OutBag = FJsonDataBag();
+			
+		TSharedPtr<FJsonObject> JsonObject;
+		TSharedRef<TJsonReader<>> JsonReader = TJsonReaderFactory<>::Create(JsonString);
+		bool Success = false;
+		if (FJsonSerializer::Deserialize(JsonReader,JsonObject, FJsonSerializer::EFlags::StoreNumbersAsStrings) &&
+			JsonObject.IsValid())
+		{
+			FJsonSerializerReader Serializer(JsonObject);
+			OutBag.Serialize(Serializer, false);
+			Success = true;
+		}
+
+		return Success;
 	}
 };

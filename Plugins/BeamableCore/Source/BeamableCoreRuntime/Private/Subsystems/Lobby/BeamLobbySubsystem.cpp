@@ -257,8 +257,8 @@ bool UBeamLobbySubsystem::TryGetGlobalLobbyDataCasted(ULobby* Lobby, FString Dat
 	}
 	FString Json = Lobby->Data.Val[DataKey];
 
-	FJsonDataBag JsonBag = FJsonDataBag();
-	JsonBag.FromJson(Json);
+	FJsonDataBag JsonBag;
+	UBeamJsonUtils::FromJsonToBag(Json, JsonBag);
 
 	GlobalData = NewObject<UObject>(GetTransientPackage(), CastTarget);
 
@@ -345,8 +345,8 @@ bool UBeamLobbySubsystem::TryGetLobbyPlayerDataCasted(ULobby* Lobby, FBeamGamerT
 						{
 							FString Json = BeamTag.Value.Val;
 
-							FJsonDataBag JsonBag = FJsonDataBag();
-							JsonBag.FromJson(Json);
+							FJsonDataBag JsonBag;
+							UBeamJsonUtils::FromJsonToBag(Json, JsonBag);
 
 							PlayerData = NewObject<UObject>(GetTransientPackage(), CastTarget);
 

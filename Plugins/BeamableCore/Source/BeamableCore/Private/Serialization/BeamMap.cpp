@@ -1,5 +1,7 @@
 ﻿#include "Serialization/BeamMap.h"
 
+#include "Serialization/BeamJsonUtils.h"
+
 void FBeamMap::BeamSerialize(TUnrealJsonSerializer& Serializer) const
 {
 	// For the map case, we simply serialize the map as the entire object --- if we try to wrap it around, we'd get
@@ -22,8 +24,8 @@ void FBeamMap::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) 
 
 void FBeamMap::BeamDeserialize(const FString& JsonString)
 {
-	auto Bag = FJsonDataBag{};
-	Bag.FromJson(JsonString);
+	FJsonDataBag Bag;
+	UBeamJsonUtils::FromJsonToBag(JsonString, Bag);
 	BeamDeserializeElements(Bag.JsonObject);
 }
 

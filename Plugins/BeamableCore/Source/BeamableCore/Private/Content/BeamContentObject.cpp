@@ -117,7 +117,7 @@ void UBeamContentObject::ToBasicJson_Implementation(FString& Serialized)
 
 void UBeamContentObject::FromBasicJson_Implementation(const FString& Json)
 {
-	if (auto Bag = FJsonDataBag(); Bag.FromJson(*Json))
+	if (FJsonDataBag Bag; UBeamJsonUtils::FromJsonToBag(Json, Bag))
 	{
 		UE_LOG(LogBeamContent, Verbose, TEXT("Parsing Content Object: %s"), *Json);
 		ParseBasicJsonObject(Bag.JsonObject);
@@ -138,8 +138,8 @@ void UBeamContentObject::ToPropertiesJson(FString& Serialized)
 
 void UBeamContentObject::FromPropertiesJson(const FString& Json)
 {
-	auto Bag = FJsonDataBag();
-	Bag.FromJson(Json);
+	FJsonDataBag Bag;
+	UBeamJsonUtils::FromJsonToBag(Json, Bag);
 	ParsePropertiesJsonObject(Bag.JsonObject);
 }
 
@@ -306,9 +306,9 @@ void UBeamContentObject::BuildPropertiesJsonObject(FJsonDomBuilder::FObject& Pro
 							BeamJsonSerializable->BeamSerialize(Serializer);
 							Serializer->Close();
 
-							auto Bag = FJsonDataBag{};
-							Bag.FromJson(JsonBody);
-
+							FJsonDataBag Bag;
+							UBeamJsonUtils::FromJsonToBag(JsonBody, Bag);
+							
 							FJsonDomBuilder::FObject JsonObject = FJsonDomBuilder::FObject{};
 							JsonObject.CopyIf(*Bag.JsonObject, [](const FString&, const FJsonValue&) { return true; });
 
@@ -334,9 +334,9 @@ void UBeamContentObject::BuildPropertiesJsonObject(FJsonDomBuilder::FObject& Pro
 								TUnrealJsonSerializer Serializer = TJsonStringWriter<TCondensedJsonPrintPolicy<TCHAR>>::Create(&JsonBody);
 								BeamJsonSerializable->BeamSerialize(Serializer);
 								Serializer->Close();
-
-								auto Bag = FJsonDataBag{};
-								Bag.FromJson(JsonBody);
+								
+								FJsonDataBag Bag;
+								UBeamJsonUtils::FromJsonToBag(JsonBody, Bag);
 
 								FJsonDomBuilder::FObject JsonObject = FJsonDomBuilder::FObject{};
 								JsonObject.CopyIf(*Bag.JsonObject, [](const FString&, const FJsonValue&) { return true; });
@@ -557,8 +557,8 @@ void UBeamContentObject::BuildPropertiesJsonObject(FJsonDomBuilder::FObject& Pro
 				BeamJsonSerializable->BeamSerialize(Serializer);
 				Serializer->Close();
 
-				auto Bag = FJsonDataBag{};
-				Bag.FromJson(JsonBody);
+				FJsonDataBag Bag;
+				UBeamJsonUtils::FromJsonToBag(JsonBody, Bag);
 
 				FJsonDomBuilder::FObject JsonObject = FJsonDomBuilder::FObject{};
 				JsonObject.CopyIf(*Bag.JsonObject, [](const FString&, const FJsonValue&) { return true; });
@@ -605,8 +605,8 @@ void UBeamContentObject::BuildPropertiesJsonObject(FJsonDomBuilder::FObject& Pro
 					BeamJsonSerializable->BeamSerialize(Serializer);
 					Serializer->Close();
 
-					auto Bag = FJsonDataBag{};
-					Bag.FromJson(JsonBody);
+					FJsonDataBag Bag;
+					UBeamJsonUtils::FromJsonToBag(JsonBody, Bag);
 
 					FJsonDomBuilder::FObject JsonObject = FJsonDomBuilder::FObject{};
 					JsonObject.CopyIf(*Bag.JsonObject, [](const FString&, const FJsonValue&) { return true; });
@@ -1443,8 +1443,8 @@ void UBeamContentObject::SerializeArrayProperty(FString PropName, FJsonDomBuilde
 					Data->BeamSerialize(Serializer);
 					Serializer->Close();
 
-					auto Bag = FJsonDataBag{};
-					Bag.FromJson(JsonBody);
+					FJsonDataBag Bag;
+					UBeamJsonUtils::FromJsonToBag(JsonBody, Bag);
 
 					FJsonDomBuilder::FObject JsonObject = FJsonDomBuilder::FObject{};
 					JsonObject.CopyIf(*Bag.JsonObject, [](const FString&, const FJsonValue&) { return true; });
@@ -1487,8 +1487,8 @@ void UBeamContentObject::SerializeArrayProperty(FString PropName, FJsonDomBuilde
 						Data->BeamSerialize(Serializer);
 						Serializer->Close();
 
-						auto Bag = FJsonDataBag{};
-						Bag.FromJson(JsonBody);
+						FJsonDataBag Bag;
+						UBeamJsonUtils::FromJsonToBag(JsonBody, Bag);
 
 						FJsonDomBuilder::FObject JsonObject = FJsonDomBuilder::FObject{};
 						JsonObject.CopyIf(*Bag.JsonObject, [](const FString&, const FJsonValue&) { return true; });
@@ -2037,8 +2037,8 @@ void UBeamContentObject::SerializeMapProperty(FString PropName, FJsonDomBuilder:
 					Data->BeamSerialize(Serializer);
 					Serializer->Close();
 
-					auto Bag = FJsonDataBag{};
-					Bag.FromJson(JsonBody);
+					FJsonDataBag Bag;
+					UBeamJsonUtils::FromJsonToBag(JsonBody, Bag);
 
 					FJsonDomBuilder::FObject JsonObject = FJsonDomBuilder::FObject{};
 					JsonObject.CopyIf(*Bag.JsonObject, [](const FString&, const FJsonValue&) { return true; });
@@ -2077,8 +2077,8 @@ void UBeamContentObject::SerializeMapProperty(FString PropName, FJsonDomBuilder:
 							Data->BeamSerialize(Serializer);
 							Serializer->Close();
 
-							auto Bag = FJsonDataBag{};
-							Bag.FromJson(JsonBody);
+							FJsonDataBag Bag;
+							UBeamJsonUtils::FromJsonToBag(JsonBody, Bag);
 
 							FJsonDomBuilder::FObject JsonObject = FJsonDomBuilder::FObject{};
 							JsonObject.CopyIf(*Bag.JsonObject, [](const FString&, const FJsonValue&) { return true; });

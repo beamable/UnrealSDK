@@ -146,10 +146,11 @@ void UBeamCliCommand::RunServer(const FString Uri, const TArray<FString>& Comman
 				Json.RemoveFromStart(TEXT("data: "));
 
 				UE_LOG(LogBeamCli, Verbose, TEXT("BeamCli Server - Processing JSON message. CMD=%s, JSON=%s"), *CommandLineToExecute, *Json);
-				auto Bag = FJsonDataBag();
+
+				FJsonDataBag Bag;
 				if (!ProcessedMessageIndices.Contains(i))
 				{
-					if (Bag.FromJson(Json))
+					if (UBeamJsonUtils::FromJsonToBag(Json, Bag))
 					{
 						ProcessedMessageIndices.Add(i);
 						UE_LOG(LogBeamCli, Verbose, TEXT("BeamCli Server - Processing JSON message. CMD=%s, JSON=%s"), *CommandLineToExecute, *Json);
@@ -286,8 +287,9 @@ void UBeamCliCommand::PrepareCommandProcess(const TArray<FString>& CommandParams
 		FString MessageJson;
 		while (ConsumeMessageFromOutput(OutCopy, MessageJson))
 		{
-			auto Bag = FJsonDataBag();
-			if (Bag.FromJson(MessageJson))
+			FJsonDataBag Bag;
+			
+			if (UBeamJsonUtils::FromJsonToBag(MessageJson, Bag))
 			{
 				if (bShowReceivedMessageDebug)
 				{

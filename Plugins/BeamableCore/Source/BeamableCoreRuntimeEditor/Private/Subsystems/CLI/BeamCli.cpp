@@ -30,7 +30,7 @@ FBeamOperationHandle UBeamCli::InitializeWhenEditorReady()
 	}
 
 	FJsonDataBag Bag;
-	if (!Bag.FromJson(DotnetTools))
+	if (!UBeamJsonUtils::FromJsonToBag(*DotnetTools, Bag))
 	{
 		const auto Err = FString::Printf(TEXT(
 			"Found .config/dotnet-tools.json is not a valid JSON object. You have likely misconfigured Beamable. Please refer to our Getting Started documentation. It explains what this file is and how to set it up."));
