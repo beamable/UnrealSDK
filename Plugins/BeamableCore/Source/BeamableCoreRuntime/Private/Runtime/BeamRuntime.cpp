@@ -234,7 +234,7 @@ void UBeamRuntime::Initialize(FSubsystemCollectionBase& Collection)
 	});
 
 	// We do some initialization for dedicated servers... 
-	if (GetGameInstance()->IsDedicatedServerInstance())
+	if (GetGameInstance()->IsDedicatedServerInstance() || GetMutableDefault<UBeamCoreSettings>()->bAllowBeamEnvironmentOverride)
 	{
 		// Let's just load up the target realm's PID from the follow hierarchy:
 		//   - If we got an CLI Arg called --beamable-realm-override <Target Realm's PID>, use this argument.

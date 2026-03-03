@@ -98,7 +98,7 @@ public partial class BeamballMs : IFederatedLogin<SteamId>
     {
         // If we find the Steam external identity at this time, it means this account was created via the Steam federation.
         // So, we can get the steam realm config and make a request to get information about that user's steam account.
-        var associatedSteamIdentity = account.external.FirstOrDefault(e => e.providerNamespace == SteamId.Id);
+        var associatedSteamIdentity = account.external?.FirstOrDefault(e => e.providerNamespace == SteamId.Id);
         if (associatedSteamIdentity != null)
         {
             BeamableLogger.Log("Initializing player account via Steam");

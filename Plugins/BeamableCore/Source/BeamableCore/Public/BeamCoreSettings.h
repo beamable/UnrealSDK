@@ -132,6 +132,15 @@ public:
 	bool bPersistRuntimeSlotDataWhenInPIE = true;
 
 	/**
+	 * @brief Whether we should allow the Beam Environment to be overridden by an environment variable or a command line argument.
+	 * Command line argument key: "beamable-customer-override" and "beamable-realm-override"
+	 * Environment variable key: "BEAMABLE_CUSTOMER_OVERRIDE" and "BEAMABLE_REALM_OVERRIDE"
+	 * If this is false, we will ignore any environment variable or command line argument overrides and will always use the environment specified in the settings.
+	 */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="User Slots")
+	bool bAllowBeamEnvironmentOverride = false;
+	
+	/**
 	 * @brief When deserializing content that stores FGameplayTag, should we error out if we fail to convert that tag?
 	 * If this is true, you must guarantee all tags in all content are always valid in your project/build.
 	 * If this is false, non-existent tags will be deserialized as invalid.
