@@ -1576,7 +1576,7 @@ public:
 			{
 #if WITH_EDITOR
 
-				if (HandlePIESessionRequestGuard(ContextWeakPtr, RequestId))
+				if (HandlePIESessionRequestGuard(ContextWeakPtr, RequestId) || !RequestData)
 					return;
 #endif
 
