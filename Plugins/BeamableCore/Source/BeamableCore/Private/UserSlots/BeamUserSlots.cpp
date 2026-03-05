@@ -31,6 +31,79 @@ FString UBeamUserSlots::GetSavedSlotsDirectory()
 	return FPaths::ProjectSavedDir() / TEXT("Beamable") / TEXT("UserSlots");
 }
 
+bool UBeamJwtUtils::GetAccountTokenInfo(const FString& AccessToken, FAccountTokenInfo& OutTokenInfo)
+{
+	// Parse JWT token to extract exp claim
+	TArray<FString> TokenParts;
+	AccessToken.ParseIntoArray(TokenParts, TEXT("."));
+    
+	if (TokenParts.Num() != 3)
+	{
+		// Invalid JWT format, fallback to original calculation
+		return false;
+	}
+    
+	// Decode the payload (second part)
+	FString PayloadBase64 = TokenParts[1];
+    
+	// JWT uses base64url encoding, need to convert to standard base64
+	PayloadBase64.ReplaceInline(TEXT("-"), TEXT("+"));
+	PayloadBase64.ReplaceInline(TEXT("_"), TEXT("/"));
+    
+	// Add padding if needed
+	while (PayloadBase64.Len() % 4 != 0)
+	{
+		PayloadBase64 += TEXT("=");
+	}
+    
+	// Decode base64
+	TArray<uint8> DecodedData;
+	FBase64::Decode(PayloadBase64, DecodedData);
+    
+	// Convert to string
+	FString JsonString = FString(UTF8_TO_TCHAR(DecodedData.GetData()));
+    
+	// Parse JSON
+	FJsonDataBag JsonBag;
+		
+	if (UBeamJsonUtils::FromJsonToBag(JsonString, JsonBag))
+	{
+		bool bSuccess = true;
+		int64 ExpTimestamp = 0;
+		
+		bSuccess &= JsonBag.JsonObject->TryGetNumberField(TEXT("exp"), ExpTimestamp);
+
+		int64 IatTimestamp = 0;
+		bSuccess &= JsonBag.JsonObject->TryGetNumberField(TEXT("iat"), IatTimestamp);
+
+		FString Requester, Customer, Game, Realm, Player, Role, Subject, Issuer;
+		bSuccess &= JsonBag.JsonObject->TryGetStringField(TEXT("requester"), Requester);
+		bSuccess &= JsonBag.JsonObject->TryGetStringField(TEXT("customer"), Customer);
+		bSuccess &= JsonBag.JsonObject->TryGetStringField(TEXT("game"), Game);
+		bSuccess &= JsonBag.JsonObject->TryGetStringField(TEXT("realm"), Realm);
+		bSuccess &= JsonBag.JsonObject->TryGetStringField(TEXT("player"), Player);
+		bSuccess &= JsonBag.JsonObject->TryGetStringField(TEXT("role"), Role);
+		bSuccess &= JsonBag.JsonObject->TryGetStringField(TEXT("sub"), Subject);
+		bSuccess &= JsonBag.JsonObject->TryGetStringField(TEXT("iss"), Issuer);
+
+		OutTokenInfo.Requester = Requester;
+		OutTokenInfo.Customer = Customer;
+		OutTokenInfo.Game = Game;
+		OutTokenInfo.Realm = Realm;
+		OutTokenInfo.GamerTag = FBeamGamerTag(Player);
+		OutTokenInfo.Role = Role;
+		OutTokenInfo.Subject = Subject;
+		OutTokenInfo.ExpirationTime = ExpTimestamp;
+		OutTokenInfo.IssuedAtTime = IatTimestamp;
+		OutTokenInfo.Issuer = Issuer;
+
+		return bSuccess;
+	}
+
+	return false;
+    
+}
+
 FString UBeamUserSlots::GetSavedSlotAuthFilePath(FString NamespacedSlotId)
 {
 	return GetSavedSlotsDirectory() / NamespacedSlotId + TEXT("_Auth.json");

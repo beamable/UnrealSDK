@@ -1581,7 +1581,12 @@ public:
 #endif
 
 				const auto RequestType = RequestData->GetRequestType();
-
+				
+				if (RequestType.Name == TEXT("Unknown"))
+				{
+					return;
+				}
+				
 				EHttpRequestStatus::Type RequestStatus;
 				int32 ResponseCode;
 				FString ContentAsString;
