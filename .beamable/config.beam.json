@@ -25,5 +25,5 @@
     "BeamCliTelemetryLogLevel": "Warning",
     "BeamCliTelemetryMaxSize": 524288000
   },
-  "cliVersion": "0.0.123.42"
+  "cliVersion": "0.0.123.43"
 }

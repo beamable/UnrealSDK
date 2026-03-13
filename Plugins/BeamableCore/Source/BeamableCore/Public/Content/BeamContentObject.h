@@ -11,12 +11,13 @@
 class UContentDefinition;
 struct FLocalContentManifestRow;
 
-UENUM(BlueprintType)
+UENUM(BlueprintType, meta = (Bitflags, UseEnumValuesAsMaskValuesInEditor = "true"))
 enum EBeamContentObjectSupportLevel : uint8
 {
-	FullSupport = 0,
-	PartialSupport = 1,
-	NoSupport = 2,
+	None = 0,
+	FullSupport = 1 << 0,
+	PartialSupport = 1 << 1,
+	NoSupport = 1 << 2,
 };
 
 /**
