@@ -511,7 +511,8 @@ public:
 	                                             const TRequestData* RequestData)
 	{
 		StaticCheckForRequestType<TRequestData>();
-		UE_BEAM_LOG(LogBeamBackend, Verbose, TEXT("Request Preparation - Preparing Request of Type: REQUEST_TYPE=%s"), *RequestData->GetRequestType().Name);
+		if (RequestData)
+			UE_BEAM_LOG(LogBeamBackend, Verbose, TEXT("Request Preparation - Preparing Request of Type: REQUEST_TYPE=%s"), *RequestData->GetRequestType().Name);
 
 		// Get information about the user making the request
 		FUserSlot OutUserSlot;
@@ -1576,7 +1577,7 @@ public:
 			{
 #if WITH_EDITOR
 
-				if (HandlePIESessionRequestGuard(ContextWeakPtr, RequestId) || !RequestData)
+				if (HandlePIESessionRequestGuard(ContextWeakPtr, RequestId) || HandlePIESessionRequestGuard(RequestData, RequestId))
 					return;
 #endif
 

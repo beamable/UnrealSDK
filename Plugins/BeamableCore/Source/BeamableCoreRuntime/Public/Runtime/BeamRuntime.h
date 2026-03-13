@@ -83,8 +83,18 @@ public:
 	}
 };
 
+USTRUCT(BlueprintType)
+struct FBeamAnalyticsParamObject
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Beam|Analytics")
+	FJsonObjectWrapper Fields;
+};
+
 DECLARE_DELEGATE_OneParam(FOnBeamConnectivityEventCode, UBeamConnectivityManager*);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnBeamConnectivityEvent, UBeamConnectivityManager*, Manager);
+
 
 /**
  * Manager that tracks connectivity states and the DAG of FOfflineOperationData to run during the Fixup process.
@@ -1246,6 +1256,35 @@ private:
 	void FillDefaultSignUpInitProperties(TMap<FString, FString>& InitProperties);
 
 public:
+	UFUNCTION(BlueprintCallable, Category="Beam|Analytics", meta=(DefaultToSelf="ContextObject", AutoCreateRefTerm="EventParams"))
+	bool SendAnalyticsEventStringParams(
+		const FString& EventCategory,
+		const FString& EventName,
+		const TArray<FString>& EventParams);
+
+	UFUNCTION(BlueprintCallable, Category="Beam|Analytics", meta=(DefaultToSelf="ContextObject", AutoCreateRefTerm="EventParams"))
+	bool SendAnalyticsEventBeamSerializableUObject(
+		const FString& EventCategory,
+		const FString& EventName,
+		const TArray<TScriptInterface<IBeamJsonSerializableUObject>>& EventParams);
+
+	UFUNCTION(BlueprintCallable, Category="Beam|Analytics", meta=(DefaultToSelf="ContextObject"))
+	bool SendAnalyticsEventForSlotBeamSerializableUObject(
+		const FUserSlot& Slot,
+		const FString& EventCategory,
+		const FString& EventName,
+		const TArray<TScriptInterface<IBeamJsonSerializableUObject>>& EventParams);
+
+	UFUNCTION(BlueprintCallable, Category="Beam|Analytics", meta=(DefaultToSelf="ContextObject", AutoCreateRefTerm="EventParams"))
+	bool SendAnalyticsEventSlotStringParams(
+		const FUserSlot& Slot,
+		const FString& EventCategory,
+		const FString& EventName,
+		const TArray<FString>& EventParams);
+
+	UFUNCTION(BlueprintPure, Category="Beam|Analytics")
+	static FBeamAnalyticsParamObject MakeAnalyticsParamFromJson(const FString& JsonObjectString, bool& bIsValidJsonObject);
+
 	/**
 	 * Sends analytics events to Beamable as the owner user. 
 	 */
@@ -1312,4 +1351,8 @@ public:
 			return NotificationSystem->TryUnsubscribeFromMessage(UserSlot, DefaultNotificationChannel, Key, Handle, this);
 		return false;
 	}
+
+private:
+	static TArray<TSharedRef<FJsonObject>> BuildEventParams(const TArray<TScriptInterface<IBeamJsonSerializableUObject>>& EventParams);
+	static TArray<TSharedRef<FJsonObject>> BuildEventParams(const TArray<FString>& EventParams);
 };

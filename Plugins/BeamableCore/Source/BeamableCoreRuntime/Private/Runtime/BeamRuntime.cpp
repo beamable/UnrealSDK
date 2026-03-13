@@ -2716,6 +2716,142 @@ void UBeamRuntime::EnsureConnectivityManagerForSlot(FUserSlot UserSlot)
 	}
 }
 
+FString SerializeJsonObjectForLog(const TSharedRef<FJsonObject>& JsonObject)
+{
+	FString Out;
+	const TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&Out);
+	if (FJsonSerializer::Serialize(JsonObject, Writer))
+	{
+		return Out;
+	}
+	return TEXT("<serialize_failed>");
+}
+
+bool UBeamRuntime::SendAnalyticsEventStringParams(const FString& EventCategory, const FString& EventName, const TArray<FString>& EventParams)
+{
+	const FString EventOpCode = TEXT("g.core");
+	const TArray<TSharedRef<FJsonObject>> JsonParams = BuildEventParams(EventParams);
+	if (JsonParams.Num() == 0)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("BeamAnalytics SendAnalyticsEvent aborted: zero valid EventParams. OP=%s CATEGORY=%s EVENT=%s"),
+		       *EventOpCode, *EventCategory, *EventName);
+		return false;
+	}
+
+	FString ParamsLog;
+	for (int32 i = 0; i < JsonParams.Num(); i++)
+	{
+		if (i > 0) ParamsLog += TEXT(", ");
+		ParamsLog += SerializeJsonObjectForLog(JsonParams[i]);
+	}
+
+	UE_LOG(LogTemp, Display, TEXT("BeamAnalytics sending owner-slot event. OP=%s CATEGORY=%s EVENT=%s PARAMS=[%s]"),
+	       *EventOpCode, *EventCategory, *EventName, *ParamsLog);
+
+	SendAnalyticsEvent(EventOpCode, EventCategory, EventName, JsonParams);
+	return true;
+}
+
+bool UBeamRuntime::SendAnalyticsEventBeamSerializableUObject(
+	const FString& EventCategory,
+	const FString& EventName,
+	const TArray<TScriptInterface<IBeamJsonSerializableUObject>>& EventParams)
+{
+	const FString EventOpCode = TEXT("g.core");
+	const TArray<TSharedRef<FJsonObject>> JsonParams = BuildEventParams(EventParams);
+	if (JsonParams.Num() == 0)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("BeamAnalytics SendAnalyticsEvent aborted: zero valid EventParams. OP=%s CATEGORY=%s EVENT=%s"),
+		       *EventOpCode, *EventCategory, *EventName);
+		return false;
+	}
+
+	FString ParamsLog;
+	for (int32 i = 0; i < JsonParams.Num(); i++)
+	{
+		if (i > 0) ParamsLog += TEXT(", ");
+		ParamsLog += SerializeJsonObjectForLog(JsonParams[i]);
+	}
+
+	UE_LOG(LogTemp, Display, TEXT("BeamAnalytics sending owner-slot event. OP=%s CATEGORY=%s EVENT=%s PARAMS=[%s]"),
+	       *EventOpCode, *EventCategory, *EventName, *ParamsLog);
+
+	SendAnalyticsEvent(EventOpCode, EventCategory, EventName, JsonParams);
+	return true;
+}
+
+bool UBeamRuntime::SendAnalyticsEventForSlotBeamSerializableUObject(
+	const FUserSlot& Slot,
+	const FString& EventCategory,
+	const FString& EventName,
+	const TArray<TScriptInterface<IBeamJsonSerializableUObject>>& EventParams)
+{
+	const FString EventOpCode = TEXT("g.core");
+	const TArray<TSharedRef<FJsonObject>> JsonParams = BuildEventParams(EventParams);
+	if (JsonParams.Num() == 0)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("BeamAnalytics SendAnalyticsEventForSlot aborted: zero valid EventParams. SLOT=%s OP=%s CATEGORY=%s EVENT=%s"),
+		       *Slot.Name, *EventOpCode, *EventCategory, *EventName);
+		return false;
+	}
+
+	FString ParamsLog;
+	for (int32 i = 0; i < JsonParams.Num(); i++)
+	{
+		if (i > 0) ParamsLog += TEXT(", ");
+		ParamsLog += SerializeJsonObjectForLog(JsonParams[i]);
+	}
+
+	UE_LOG(LogTemp, Display, TEXT("BeamAnalytics sending slot event. SLOT=%s OP=%s CATEGORY=%s EVENT=%s PARAMS=[%s]"),
+	       *Slot.Name, *EventOpCode, *EventCategory, *EventName, *ParamsLog);
+
+	SendAnalyticsEvent(Slot, EventOpCode, EventCategory, EventName, JsonParams);
+	return true;
+}
+
+bool UBeamRuntime::SendAnalyticsEventSlotStringParams(const FUserSlot& Slot, const FString& EventCategory, const FString& EventName, const TArray<FString>& EventParams)
+{
+	const FString EventOpCode = TEXT("g.core");
+	const TArray<TSharedRef<FJsonObject>> JsonParams = BuildEventParams(EventParams);
+	if (JsonParams.Num() == 0)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("BeamAnalytics SendAnalyticsEventForSlot aborted: zero valid EventParams. SLOT=%s OP=%s CATEGORY=%s EVENT=%s"),
+		       *Slot.Name, *EventOpCode, *EventCategory, *EventName);
+		return false;
+	}
+
+	FString ParamsLog;
+	for (int32 i = 0; i < JsonParams.Num(); i++)
+	{
+		if (i > 0) ParamsLog += TEXT(", ");
+		ParamsLog += SerializeJsonObjectForLog(JsonParams[i]);
+	}
+
+	UE_LOG(LogTemp, Display, TEXT("BeamAnalytics sending slot event. SLOT=%s OP=%s CATEGORY=%s EVENT=%s PARAMS=[%s]"),
+	       *Slot.Name, *EventOpCode, *EventCategory, *EventName, *ParamsLog);
+
+	SendAnalyticsEvent(Slot, EventOpCode, EventCategory, EventName, JsonParams);
+	return true;
+}
+
+
+FBeamAnalyticsParamObject UBeamRuntime::MakeAnalyticsParamFromJson(const FString& JsonObjectString, bool& bIsValidJsonObject)
+{
+	FBeamAnalyticsParamObject OutParam;
+	OutParam.Fields.JsonString = JsonObjectString;
+
+	TSharedPtr<FJsonObject> ParsedObject;
+	const TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(JsonObjectString);
+	bIsValidJsonObject = FJsonSerializer::Deserialize(Reader, ParsedObject) && ParsedObject.IsValid();
+
+	if (bIsValidJsonObject)
+	{
+		OutParam.Fields.JsonObject = ParsedObject;
+	}
+
+	return OutParam;
+}
+
 void UBeamRuntime::SendAnalyticsEvent(const FString& EventOpCode, const FString& EventCategory, const FString& EventName, const TArray<TSharedRef<FJsonObject>>& EventParamsObj) const
 {
 	const auto Settings = GetDefault<UBeamCoreSettings>();
@@ -2812,6 +2948,53 @@ void UBeamRuntime::SendAnalyticsEvent(const FUserSlot& Slot, const FString& Even
 	}
 }
 
+TArray<TSharedRef<FJsonObject>> UBeamRuntime::BuildEventParams(const TArray<TScriptInterface<IBeamJsonSerializableUObject>>& EventParams)
+{
+	TArray<TSharedRef<FJsonObject>> JsonParams;
+	JsonParams.Reserve(EventParams.Num());
+
+	for (const TScriptInterface<IBeamJsonSerializableUObject> ParamStruct : EventParams)
+	{
+		if (!ParamStruct.GetObject())
+		{
+			UE_LOG(LogTemp, Warning, TEXT("BeamAnalytics ignored a null struct in EventParams"));
+			continue;
+		}
+		FJsonDomBuilder::FObject Json = FJsonDomBuilder::FObject{};
+		UObject* CallingContext = UE::CoreUObject::Private::DynamicCast<UObject*>(ParamStruct.GetObject());
+
+		UBeamJsonUtils::BuildPropertiesJsonObject(Json, CallingContext);
+
+		const FString PropertiesJson = Json.ToString<TCondensedJsonPrintPolicy>();
+		JsonParams.Add(Json.AsJsonObject());
+	}
+
+	return JsonParams;
+}
+
+TArray<TSharedRef<FJsonObject>> UBeamRuntime::BuildEventParams(const TArray<FString>& EventParams)
+{
+	TArray<TSharedRef<FJsonObject>> JsonParams;
+	JsonParams.Reserve(EventParams.Num());
+
+	for (const FString& ParamString : EventParams)
+	{
+		TSharedPtr<FJsonObject> ParsedObject;
+		const TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(ParamString);
+
+		if (FJsonSerializer::Deserialize(Reader, ParsedObject) && ParsedObject.IsValid())
+		{
+			JsonParams.Add(ParsedObject.ToSharedRef());
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("BeamAnalytics ignored an invalid JSON string in EventParams: %s"), *ParamString);
+		}
+	}
+
+	return JsonParams;
+}
+
 
 void UBeamRuntime::FillDefaultSignUpInitProperties(TMap<FString, FString>& InitProperties)
 {
@@ -2819,4 +3002,3 @@ void UBeamRuntime::FillDefaultSignUpInitProperties(TMap<FString, FString>& InitP
 	InitProperties.Add(TEXT("__beam_sdk_version__"), GetDefault<UBeamCoreSettings>()->BeamableInfoData->Version.ToString());
 	InitProperties.Add(TEXT("__beam_ue_engine_version__"), FEngineVersion::Current().ToString());
 }
-#undef LOCTEXT_NAMESPACE
