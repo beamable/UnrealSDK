@@ -12,20 +12,37 @@
 #include "AutoGen/Arrays/ArrayOfString.h"
 #include "Content/BeamContentCache.h"
 #include "Subsystems/CLI/BeamCli.h"
+#include "Subsystems/CLI/Autogen/StreamData/ContentHistoryChangelistStreamData.h"
+#include "Subsystems/CLI/Autogen/StreamData/ContentHistoryEntriesPageStreamData.h"
+#include "Subsystems/CLI/Autogen/StreamData/ContentHistoryEntryStreamData.h"
 #include "Subsystems/CLI/Autogen/StreamData/LocalContentManifestStreamData.h"
 #include "BeamEditorContent.generated.h"
 
 #define LOCTEXT_NAMESPACE "FBeamEditorContent"
 
 class IDataTableEditor;
+class UBeamContentLocalView;
+class UBeamContentHistoryEntryView;
+class UBeamContentHistoryChangelistView;
+class UBeamContentHistoryChangelistEntryView;
+class UBeamSnapshotLocalView;
 
 DECLARE_MULTICAST_DELEGATE_TwoParams(FBeamContentModified, FBeamContentManifestId, TArray<FBeamContentId>);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FBeamSnapshotRefreshed, const TArray<UBeamSnapshotLocalView*>&, SnapshotLocalViews);
+
 DECLARE_DYNAMIC_DELEGATE(FBeamSnapshotRestored);
+
 DECLARE_DYNAMIC_DELEGATE(FBeamSnapshotCreated);
+
 DECLARE_DYNAMIC_DELEGATE(FBeamSnapshotRenamed);
+
 DECLARE_DYNAMIC_DELEGATE(FBeamSnapshotDeleted);
+
 DECLARE_DYNAMIC_DELEGATE(FBeamSnapshotCopied);
+
+
+
+
 
 /**
  * 
@@ -54,6 +71,15 @@ class BEAMABLECORERUNTIMEEDITOR_API UBeamEditorContent : public UBeamEditorSubsy
 	UPROPERTY()
 	TMap<FBeamContentId, UBeamContentObject*> LoadedContentObjects;
 
+	UPROPERTY()
+	TMap<FBeamContentManifestId, UContentHistoryEntriesPageStreamData*> LocalContentHistoryEntriesCache;
+
+	UPROPERTY()
+	TMap<FString, UContentHistoryChangelistStreamData*> LocalContentHistoryChangelistCache;
+
+	UPROPERTY()
+	TMap<FBeamContentHistoryContentEntryId, UBeamContentObject*> LoadedContentHistoryObjects;
+
 	TArray<TSharedPtr<FName>> AllContentTypeNames;
 
 	UPROPERTY()
@@ -80,7 +106,7 @@ public:
 	/**
 	 * The engine integration is expected to discard all their in-memory state about content and rebuild it with the information in this event.
 	 */
-	inline static const int32 EVT_TYPE_FullRebuild = 0;
+	inline static const int32 EVT_TYPE_CONTENT_PS_FullRebuild = 0;
 
 	/**
 	* The engine integration is expected to discard all their in-memory state about what the local content is in relation to the latest published manifest of this realm.
@@ -88,12 +114,26 @@ public:
 	*
 	* Only <see cref="IsReferenceHeadInRealm"/> and <see cref="RelevantManifestsAgainstLatest"/> is correctly computed here.
 	*/
-	inline static const int32 EVT_TYPE_RemotePublished = 1;
+	inline static const int32 EVT_TYPE_CONTENT_PS_RemotePublished = 1;
 
 	/**
 	 * The engine integration is expected to use <see cref="ToRemoveLocalEntries"/> to update it's in-memory state regarding our reference manifest.
 	 */
-	inline static const int32 EVT_TYPE_ChangedContent = 2;
+	inline static const int32 EVT_TYPE_CONTENT_PS_ChangedContent = 2;
+
+	/**
+	 * Event type for when content history entries (manifest metadata) are loaded or changed.
+	 * The engine integration should update its in-memory state using <see cref="EntriesPage"/> and <see cref="EntriesToRemove"/>.
+	 * Relevant fields: EntriesPage, EntriesToRemove
+	 */
+	inline static const int32 EVT_TYPE_CONTENT_HISTORY_EntriesLoaded = 0;
+
+	/**
+	 * Event type for when changelist data (manifest diffs) are loaded or changed.
+	 * The engine integration should update its in-memory state using <see cref="ChangelistsPage"/> and <see cref="ChangelistsToRemove"/>.
+	 * Relevant fields: ChangelistsPage, ChangelistsToRemove
+	 */
+	inline static const int32 EVT_TYPE_CONTENT_HISTORY_ChangelistsLoaded = 1;
 
 
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
@@ -113,6 +153,15 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FEditorStateChangedEvent OnContentLocalChange;
 
+	UPROPERTY(BlueprintAssignable)
+	FEditorStateChangedEvent OnContentHistoryEntriesUpdated;
+	
+	UPROPERTY(BlueprintAssignable)
+	FEditorStateChangedEvent OnContentHistoryChangelistSynced;
+	
+	UPROPERTY(BlueprintAssignable)
+	FEditorStateChangedEvent OnContentHistoryContentSynced;
+	
 	/**
 	 * This is invoked whenever a content is saved. 
 	 */
@@ -193,8 +242,8 @@ public:
 	                      UBeamContentObject*& ContentObject, FString& ErrMsg);
 
 	UFUNCTION(BlueprintCallable)
-	bool DuplicateContent(const FBeamContentManifestId& ManifestId, FBeamContentId Id,FString& ErrMsg, FString& CreatedId);
-	
+	bool DuplicateContent(const FBeamContentManifestId& ManifestId, FBeamContentId Id, FString& ErrMsg, FString& CreatedId);
+
 	/**
 	 * Tries to get the in-memory deserialized @link UBeamContentObject @endlink instance for the given manifest/content id pair.
 	 *
@@ -237,8 +286,26 @@ public:
 	bool TryRenameContent(const FBeamContentManifestId& ManifestId, const FBeamContentId& ContentId, const FString& NewContentName, FText& Err);
 
 	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
-	bool TryGetFilteredListOfContent(const FBeamContentManifestId ManifestId, const FString& NameFilter, const FString& TypeFilter, const EBeamLocalContentStatus& ContentStatusFilter,
-	                                 TArray<UBeamContentLocalView*>& FoundLocalContent);
+	bool TryGetFilteredListOfContent(FBeamContentManifestId ManifestId, const FString& NameFilter, const FString& TypeFilter, const EBeamLocalContentStatus& ContentStatusFilter,
+	                                 const EBeamContentObjectSupportLevel& SupportLevelFilter, TArray<UBeamContentLocalView*>& FoundLocalContent);
+
+	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
+	bool TryGetFilteredListOfContentHistory(const FBeamContentManifestId ManifestId, const FString& PublishedByFilter, const FString& AffectedContentIdFilter,
+	                                        TArray<UBeamContentHistoryEntryView*>& FoundHistoryEntries);
+
+	/**
+	 * Tries to get a view of a history changelist for the given manifest UID.
+	 * Returns true if the changelist was loaded in memory, false otherwise.
+	 */
+	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
+	bool TryGetHistoryChangelistView(const FBeamContentManifestId& ManifestId, const FString& ManifestUid, UBeamContentHistoryChangelistView*& ChangelistView);
+
+	/**
+	 * Gets a content object from history given a manifest UID and content ID.
+	 * Similar to GetContent but loads from LoadedContentHistoryObjects instead.
+	 */
+	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
+	bool GetHistoryContent(const FString& ManifestUid, const FBeamContentId& ContentId, UBeamContentObject*& ContentObject);
 
 	UFUNCTION(BlueprintCallable)
 	void ApplyContentSnapshot(FBeamContentManifestId ManifestId, FBeamPid Realm, FString Path, bool DeleteAfterRestore, bool AddAfterRestore, FBeamSnapshotRestored
@@ -256,10 +323,13 @@ public:
 	                           FBeamSnapshotRenamed OnSnapshotRenamed);
 	UFUNCTION(BlueprintCallable)
 	void RefreshContentSnapshots(FBeamContentManifestId ManifestId, FBeamPid Realm, FBeamSnapshotRefreshed OnRefreshCompleted);
-	
+
 	UFUNCTION(BlueprintCallable)
 	void CopyContentSnapshots(FString OldPath, bool bIsSharedSnapshot, FBeamSnapshotCopied OnSnapshotsCopied);
-	
+
+	UFUNCTION(BlueprintCallable)
+	void SyncContentHistoryChangelist(FString ManifestUid);
+
 	static FString GetJsonBlobPath(FString RowName, FBeamContentManifestId ManifestId);
 
 	UFUNCTION(BlueprintCallable)
@@ -270,7 +340,7 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Beam Editor Content", meta = (CallInEditor = "true"))
 	bool DeleteCachedContentFolder(FString& ErrorMessage);
-	
+
 
 	/**
 	 * @brief Downloads the remote manifest and content objects to the local cache. This destroys all local changes. 
@@ -312,6 +382,9 @@ private:
 	void UpdateLocalManifestCache(ULocalContentManifestStreamData* ToUpdate, ULocalContentManifestStreamData* ToClear);
 
 	void RunPsCommand(FBeamOperationHandle FirstEventOp);
+	void RunHistoryPsCommand(FBeamOperationHandle FirstEventOp);
+
+	void LoadContentHistoryObject(const FString& ManifestUid, UContentHistoryChangelistEntryStreamData* ContentEntry);
 
 	UClass** FindContentTypeByName(FString TypeName);
 	UClass** FindContentTypeByTypeId(FString TypeId);

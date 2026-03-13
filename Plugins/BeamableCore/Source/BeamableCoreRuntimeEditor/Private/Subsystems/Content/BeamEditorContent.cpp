@@ -16,6 +16,9 @@
 #include "Settings/ProjectPackagingSettings.h"
 #include "Subsystems/BeamEditor.h"
 #include "Subsystems/CLI/BeamCli.h"
+#include "Subsystems/CLI/Autogen/BeamCliContentHistoryCommand.h"
+#include "Subsystems/CLI/Autogen/BeamCliContentHistorySyncChangelistCommand.h"
+#include "Subsystems/CLI/Autogen/BeamCliContentHistorySyncContentCommand.h"
 #include "Subsystems/CLI/Autogen/BeamCliContentLocalManifestCommand.h"
 #include "Subsystems/CLI/Autogen/BeamCliContentPsCommand.h"
 #include "Subsystems/CLI/Autogen/BeamCliContentPublishCommand.h"
@@ -115,11 +118,28 @@ FBeamOperationHandle UBeamEditorContent::OnRealmInitialized(FBeamRealmHandle New
 	}
 
 	// Start up the PS command for the current realm
-	const auto Op = RequestTracker->CPP_BeginOperation({}, GetName(), {});
-	RunPsCommand(Op);
+	const auto PsOp = RequestTracker->CPP_BeginOperation({}, GetName(), {});
+	RunPsCommand(PsOp);
+	const auto HistoryOp = RequestTracker->CPP_BeginOperation({}, GetName(), {});
+	RunHistoryPsCommand(HistoryOp);
+
+	// Wait for both listen commands to be set up 
+	const auto WaitOnOp = RequestTracker->CPP_BeginOperation({}, GetName(), {});
+	RequestTracker->CPP_WaitAll({}, {PsOp, HistoryOp}, {}, FOnWaitCompleteCode::CreateLambda([this, WaitOnOp](FBeamWaitCompleteEvent Evt)
+	{
+		if (RequestTracker->IsWaitSuccessful(Evt))
+			RequestTracker->TriggerOperationSuccess(WaitOnOp, "");
+
+		TArray<FString> Errs;
+		if (RequestTracker->IsWaitFailed(Evt, Errs))
+		{
+			const FString Err = FString::Join(Errs, TEXT("\n"));
+			RequestTracker->TriggerOperationError(WaitOnOp, Err);
+		}
+	}));
 
 	// For now, we just fetch all the manifests that exist.	
-	return Op;
+	return WaitOnOp;
 }
 
 FBeamOperationHandle UBeamEditorContent::PublishManifestOperation(FBeamContentManifestId ManifestId, FBeamOperationEventHandler OnOperationEvent)
@@ -620,6 +640,7 @@ bool UBeamEditorContent::TryRenameContent(const FBeamContentManifestId& Manifest
 bool UBeamEditorContent::TryGetFilteredListOfContent(const FBeamContentManifestId ManifestId, const FString& NameFilter,
                                                      const FString& TypeFilter,
                                                      const EBeamLocalContentStatus& ContentStatusFilter,
+                                                     const EBeamContentObjectSupportLevel& SupportLevelFilter,
                                                      TArray<UBeamContentLocalView*>& FoundLocalContent)
 {
 	if (!LocalManifestCache.Contains(ManifestId))
@@ -637,22 +658,33 @@ bool UBeamEditorContent::TryGetFilteredListOfContent(const FBeamContentManifestI
 
 	for (const auto Row : Rows)
 	{
+		// Find the closest match of all possible C++ classes for this type by walking up the hierarchy of types encoded in the id.
+		UClass* ObjectClass;
+		TEnumAsByte<EBeamContentObjectSupportLevel> SupportLevel;
+		UBeamContentObject::GetClassForTypeId(ContentTypeStringToContentClass, Row->TypeName, ObjectClass, SupportLevel);
+
+		// Use the supported type name for filtering.
+		FString SupportedTypeName = ContentClassToContentTypeString[ObjectClass];
+		
 		const auto bPassNameFilter = NameFilter.IsEmpty() || Row->Name.Contains(NameFilter);
-		const auto bPassTypeFilter = TypeFilter.IsEmpty() || (ContentTypeStringToContentClass.Contains(Row->TypeName) && ContentTypeStringToContentClass[Row->TypeName]->GetName().Contains(TypeFilter));
+		const auto bPassTypeFilter = TypeFilter.IsEmpty() || (ContentTypeStringToContentClass.Contains(SupportedTypeName) && ContentTypeStringToContentClass[SupportedTypeName]->GetName().Contains(TypeFilter));
 		const auto bPassStatusFilter = (static_cast<uint8>(Row->CurrentStatus) & static_cast<uint8>(ContentStatusFilter)) > 0;
+		const auto bPassSupportLevelFilter = SupportLevelFilter == EBeamContentObjectSupportLevel::None || (static_cast<uint8>(SupportLevel) & static_cast<uint8>(SupportLevelFilter)) > 0;
 
-		if (bPassNameFilter && bPassTypeFilter && bPassStatusFilter)
+		if (bPassNameFilter && bPassTypeFilter && bPassStatusFilter && bPassSupportLevelFilter)
 		{
-			Ids.Add(Row->FullId);
-			Names.Add(Row->Name);
-			Types.Add(Row->TypeName);
-			IsInConflicts.Add(Row->IsInConflict);
-			StatusesInManifest.Add(static_cast<EBeamLocalContentStatus>(Row->CurrentStatus));
-
 			UBeamContentObject* Obj = nullptr;
 			FString Err;
-			GetContent(ManifestId, Row->FullId, Obj);
-			ObjectsInManifest.Add(Obj);
+			if (GetContent(ManifestId, Row->FullId, Obj))
+			{
+				Obj->SupportLevel = SupportLevel;
+				ObjectsInManifest.Add(Obj);
+				Ids.Add(Row->FullId);
+				Names.Add(Row->Name);
+				Types.Add(SupportedTypeName);
+				IsInConflicts.Add(Row->IsInConflict);
+				StatusesInManifest.Add(static_cast<EBeamLocalContentStatus>(Row->CurrentStatus));
+			}			
 		}
 	}
 
@@ -687,6 +719,244 @@ bool UBeamEditorContent::TryGetFilteredListOfContent(const FBeamContentManifestI
 	return true;
 }
 
+bool UBeamEditorContent::TryGetFilteredListOfContentHistory(const FBeamContentManifestId ManifestId, const FString& PublishedByFilter, const FString& AffectedContentIdsFilter,
+                                                            TArray<UBeamContentHistoryEntryView*>& FoundHistoryEntries)
+{
+	if (!LocalContentHistoryEntriesCache.Contains(ManifestId))
+		return false;
+
+	const auto* EntriesPage = LocalContentHistoryEntriesCache[ManifestId];
+	if (!EntriesPage)
+		return false;
+
+	for (const auto* Entry : EntriesPage->Entries)
+	{
+		if (!Entry)
+			continue;
+
+		// Apply PublishedBy filter (case-insensitive substring match)
+		const bool bPassPublishedByFilter = PublishedByFilter.IsEmpty() ||
+			Entry->PublishedBy.Contains(PublishedByFilter) ||
+			Entry->PublishedByName.Contains(PublishedByFilter);
+
+		// Apply AffectedContentIds filter (check if any of the filter IDs are in the entry's affected content)
+		bool bPassAffectedContentIdsFilter = AffectedContentIdsFilter.IsEmpty();
+		if (!bPassAffectedContentIdsFilter)
+		{
+			for (const FString& Id : Entry->AffectedContentIds)
+			{
+				if (Id.Contains(AffectedContentIdsFilter))
+				{
+					bPassAffectedContentIdsFilter = true;
+					break;
+				}
+			}
+		}
+
+		// Both filters must pass (AND logic)
+		if (bPassPublishedByFilter && bPassAffectedContentIdsFilter)
+		{
+			auto* HistoryView = NewObject<UBeamContentHistoryEntryView>();
+			HistoryView->ManifestUid = Entry->ManifestUid;
+			HistoryView->PublishedDate = FDateTime::FromUnixTimestamp(Entry->CreatedDate / 1000);
+			HistoryView->PublishedBy = FText::FromString(Entry->PublishedBy);
+			HistoryView->PublishedByName = FText::FromString(Entry->PublishedByName);
+			HistoryView->AffectedContentIds = Entry->AffectedContentIds;
+
+			FoundHistoryEntries.Add(HistoryView);
+		}
+	}
+
+	// Sort by date (newest first)
+	FoundHistoryEntries.Sort([](const UBeamContentHistoryEntryView& A, const UBeamContentHistoryEntryView& B)
+	{
+		return A.PublishedDate > B.PublishedDate;
+	});
+
+	return true;
+}
+
+bool UBeamEditorContent::TryGetHistoryChangelistView(const FBeamContentManifestId& ManifestId, const FString& ManifestUid, UBeamContentHistoryChangelistView*& ChangelistView)
+{
+	// Check if the changelist exists in the cache
+	UContentHistoryChangelistStreamData** ChangelistData = LocalContentHistoryChangelistCache.Find(ManifestUid);
+	if (!ChangelistData || !*ChangelistData)
+	{
+		return false;
+	}
+
+	// Create the view object
+	ChangelistView = NewObject<UBeamContentHistoryChangelistView>();
+	ChangelistView->ManifestUid = (*ChangelistData)->ManifestUid;
+	ChangelistView->PublishedDate = FDateTime::FromUnixTimestamp((*ChangelistData)->PublishedAt / 1000);
+	ChangelistView->PublishedBy = FText::FromString((*ChangelistData)->PublishedBy);
+
+	// Look up PublishedByName from LocalContentHistoryEntriesCache using binary search
+	FText PublishedByName = FText::GetEmpty();
+	if (UContentHistoryEntriesPageStreamData** EntriesPage = LocalContentHistoryEntriesCache.Find(ManifestId))
+	{
+		if (*EntriesPage && (*EntriesPage)->Entries.Num() > 0)
+		{
+			const int64 PublishedAtTimestamp = (*ChangelistData)->PublishedAt;
+			const TArray<UContentHistoryEntryStreamData*>& Entries = (*EntriesPage)->Entries;
+
+			// Binary search for the entry with a matching timestamp
+			int32 Left = 0;
+			int32 Right = Entries.Num() - 1;
+
+			while (Left <= Right)
+			{
+				const int32 Mid = Left + (Right - Left) / 2;
+				const UContentHistoryEntryStreamData* Entry = Entries[Mid];
+
+				if (!Entry) break;
+
+				// Found the timestamp
+				if (Entry->CreatedDate == PublishedAtTimestamp)
+				{
+					// Check if ManifestUid matches
+					if (Entry->ManifestUid == ManifestUid)
+					{
+						PublishedByName = FText::FromString(Entry->PublishedByName);
+						break;
+					}
+
+					// Same timestamp but different ManifestUid - search nearby entries
+					int32 SearchIdx = Mid - 1;
+					while (SearchIdx >= 0 && Entries[SearchIdx] && Entries[SearchIdx]->CreatedDate == PublishedAtTimestamp)
+					{
+						if (Entries[SearchIdx]->ManifestUid == ManifestUid)
+						{
+							PublishedByName = FText::FromString(Entries[SearchIdx]->PublishedByName);
+							break;
+						}
+						SearchIdx--;
+					}
+
+					if (PublishedByName.IsEmpty())
+					{
+						SearchIdx = Mid + 1;
+						while (SearchIdx < Entries.Num() && Entries[SearchIdx] && Entries[SearchIdx]->CreatedDate == PublishedAtTimestamp)
+						{
+							if (Entries[SearchIdx]->ManifestUid == ManifestUid)
+							{
+								PublishedByName = FText::FromString(Entries[SearchIdx]->PublishedByName);
+								break;
+							}
+							SearchIdx++;
+						}
+					}
+					break;
+				}
+				// Still searching... do binary search split
+				else
+				{
+					if (Entry->CreatedDate < PublishedAtTimestamp) Right = Mid - 1;
+					if (Entry->CreatedDate > PublishedAtTimestamp) Left = Mid + 1;
+				}
+			}
+		}
+	}
+	ChangelistView->PublishedByName = PublishedByName;
+
+	// Populate Created content
+	for (const auto& Pair : (*ChangelistData)->Created)
+	{
+		if (!Pair.Value) continue;
+
+		auto* EntryView = NewObject<UBeamContentHistoryChangelistEntryView>();
+		EntryView->FullId = Pair.Value->FullId;
+		EntryView->Name = FText::FromString(Pair.Value->Name);
+		EntryView->TypeName = FText::FromString(Pair.Value->TypeName);
+		EntryView->OldVersion = Pair.Value->OldVersion;
+		EntryView->OldChecksum = Pair.Value->OldChecksum;
+		EntryView->OldTags = Pair.Value->OldTags;
+		EntryView->NewVersion = Pair.Value->NewVersion;
+		EntryView->NewChecksum = Pair.Value->NewChecksum;
+		EntryView->NewTags = Pair.Value->NewTags;
+		EntryView->ChangeDate = FDateTime::FromUnixTimestamp(Pair.Value->ChangeDate / 1000);
+		EntryView->ChangeStatus = static_cast<EBeamLocalContentStatus>(Pair.Value->ChangeStatus);
+
+		FBeamContentHistoryContentEntryId HistoryId;
+		HistoryId.ContentId = FBeamContentId(Pair.Key);
+		HistoryId.ManifestUid = ManifestUid;
+		EntryView->HistoryEntryId = HistoryId;
+
+		ChangelistView->Entries.Add(EntryView);
+	}
+
+	// Populate Modified content
+	for (const auto& Pair : (*ChangelistData)->Modified)
+	{
+		if (!Pair.Value) continue;
+
+		auto* EntryView = NewObject<UBeamContentHistoryChangelistEntryView>();
+		EntryView->FullId = Pair.Value->FullId;
+		EntryView->Name = FText::FromString(Pair.Value->Name);
+		EntryView->TypeName = FText::FromString(Pair.Value->TypeName);
+		EntryView->OldVersion = Pair.Value->OldVersion;
+		EntryView->OldChecksum = Pair.Value->OldChecksum;
+		EntryView->OldTags = Pair.Value->OldTags;
+		EntryView->NewVersion = Pair.Value->NewVersion;
+		EntryView->NewChecksum = Pair.Value->NewChecksum;
+		EntryView->NewTags = Pair.Value->NewTags;
+		EntryView->ChangeDate = FDateTime::FromUnixTimestamp(Pair.Value->ChangeDate / 1000);
+		EntryView->ChangeStatus = static_cast<EBeamLocalContentStatus>(Pair.Value->ChangeStatus);
+
+		FBeamContentHistoryContentEntryId HistoryId;
+		HistoryId.ContentId = FBeamContentId(Pair.Key);
+		HistoryId.ManifestUid = ManifestUid;
+		EntryView->HistoryEntryId = HistoryId;
+
+		ChangelistView->Entries.Add(EntryView);
+	}
+
+	// Populate Removed content
+	for (const auto& Pair : (*ChangelistData)->Removed)
+	{
+		if (!Pair.Value) continue;
+
+		auto* EntryView = NewObject<UBeamContentHistoryChangelistEntryView>();
+		EntryView->FullId = Pair.Value->FullId;
+		EntryView->Name = FText::FromString(Pair.Value->Name);
+		EntryView->TypeName = FText::FromString(Pair.Value->TypeName);
+		EntryView->OldVersion = Pair.Value->OldVersion;
+		EntryView->OldChecksum = Pair.Value->OldChecksum;
+		EntryView->OldTags = Pair.Value->OldTags;
+		EntryView->NewVersion = Pair.Value->NewVersion;
+		EntryView->NewChecksum = Pair.Value->NewChecksum;
+		EntryView->NewTags = Pair.Value->NewTags;
+		EntryView->ChangeDate = FDateTime::FromUnixTimestamp(Pair.Value->ChangeDate / 1000);
+		EntryView->ChangeStatus = static_cast<EBeamLocalContentStatus>(Pair.Value->ChangeStatus);
+
+		FBeamContentHistoryContentEntryId HistoryId;
+		HistoryId.ContentId = FBeamContentId(Pair.Key);
+		HistoryId.ManifestUid = ManifestUid;
+		EntryView->HistoryEntryId = HistoryId;
+
+		ChangelistView->Entries.Add(EntryView);
+	}
+
+	return true;
+}
+
+bool UBeamEditorContent::GetHistoryContent(const FString& ManifestUid, const FBeamContentId& ContentId, UBeamContentObject*& ContentObject)
+{
+	FBeamContentHistoryContentEntryId HistoryId;
+	HistoryId.ContentId = ContentId;
+	HistoryId.ManifestUid = ManifestUid;
+
+	if (UBeamContentObject** FoundObject = LoadedContentHistoryObjects.Find(HistoryId))
+	{
+		ContentObject = *FoundObject;
+		return true;
+	}
+
+	UE_LOG(LogBeamContent, Verbose, TEXT("Failed to find history content with ContentId=%s from ManifestUid=%s."),
+	       *ContentId.AsString, *ManifestUid);
+	return false;
+}
+
 void UBeamEditorContent::ApplyContentSnapshot(FBeamContentManifestId ManifestId, FBeamPid Realm, FString Path, bool DeleteAfterRestore, bool AddAfterRestore, FBeamSnapshotRestored OnApplyCompleted)
 {
 	auto List = NewObject<UBeamCliContentRestoreCommand>();
@@ -702,16 +972,16 @@ void UBeamEditorContent::ApplyContentSnapshot(FBeamContentManifestId ManifestId,
 			{
 				UE_LOG(LogBeamContent, Log, TEXT("ERROR applying snapshot: %s"), *Error.Message);
 				auto value = FString::Printf(TEXT("ERROR applying snapshot: %s"), *Error.Message);
-				ShowNotification(TEXT("Error"), FText::FromString(value), 5.0f,1.0f);
+				ShowNotification(TEXT("Error"), FText::FromString(value), 5.0f, 1.0f);
 			}
 			OnApplyCompleted.ExecuteIfBound();
 		}
 	};
 
 	FString Args;
-	
-	Args += !ManifestId.AsString.IsEmpty()?FString::Printf(TEXT("--manifest-id %s"), *ManifestId.AsString) : TEXT("");
-	Args += !Realm.AsString.IsEmpty()? FString::Printf(TEXT("--pid %s"), *Realm.AsString) : TEXT("");
+
+	Args += !ManifestId.AsString.IsEmpty() ? FString::Printf(TEXT("--manifest-id %s"), *ManifestId.AsString) : TEXT("");
+	Args += !Realm.AsString.IsEmpty() ? FString::Printf(TEXT("--pid %s"), *Realm.AsString) : TEXT("");
 	Args += FString::Printf(TEXT("--name \"%s\""), *Path);
 	Args += DeleteAfterRestore ? TEXT(" --delete-after-restore") : TEXT("");
 	Args += AddAfterRestore ? TEXT(" --additive-restore") : TEXT("");
@@ -734,16 +1004,16 @@ void UBeamEditorContent::CreateContentSnapshot(FBeamContentManifestId ManifestId
 			{
 				UE_LOG(LogBeamContent, Log, TEXT("ERROR creating snapshot: %s"), *Error.Message);
 				auto value = FString::Printf(TEXT("ERROR creating snapshot: %s"), *Error.Message);
-				ShowNotification(TEXT("Error"), FText::FromString(value), 5.0f,1.0f);
+				ShowNotification(TEXT("Error"), FText::FromString(value), 5.0f, 1.0f);
 			}
 			OnSnapshotCreated.ExecuteIfBound();
 		}
 	};
 
 	FString Args;
-	
-	Args += !ManifestId.AsString.IsEmpty()?FString::Printf(TEXT("--manifest-id %s"), *ManifestId.AsString) : TEXT("");
-	Args += !Realm.AsString.IsEmpty()? FString::Printf(TEXT("--pid %s"), *Realm.AsString) : TEXT("");
+
+	Args += !ManifestId.AsString.IsEmpty() ? FString::Printf(TEXT("--manifest-id %s"), *ManifestId.AsString) : TEXT("");
+	Args += !Realm.AsString.IsEmpty() ? FString::Printf(TEXT("--pid %s"), *Realm.AsString) : TEXT("");
 	Args += FString::Printf(TEXT("--name \"%s\""), *Name);
 	if (bIsAutoSnapshot)
 	{
@@ -757,7 +1027,7 @@ void UBeamEditorContent::DeleteContentSnapshot(FBeamContentManifestId ManifestId
 {
 	// Delete the snapshot file directly using File Utilities
 	IFileManager& FileManager = IFileManager::Get();
-	
+
 	if (FileManager.FileExists(*Path))
 	{
 		if (FileManager.Delete(*Path, false, true))
@@ -768,7 +1038,7 @@ void UBeamEditorContent::DeleteContentSnapshot(FBeamContentManifestId ManifestId
 		{
 			UE_LOG(LogBeamContent, Error, TEXT("Failed to delete snapshot file: %s"), *Path);
 			auto value = FString::Printf(TEXT("Failed to delete snapshot file: %s"), *Path);
-			ShowNotification(TEXT("Error"), FText::FromString(value), 5.0f,1.0f);
+			ShowNotification(TEXT("Error"), FText::FromString(value), 5.0f, 1.0f);
 			OnSnapshotDeleted.ExecuteIfBound();
 		}
 	}
@@ -776,7 +1046,7 @@ void UBeamEditorContent::DeleteContentSnapshot(FBeamContentManifestId ManifestId
 	{
 		UE_LOG(LogBeamContent, Warning, TEXT("Snapshot file does not exist: %s"), *Path);
 		auto value = FString::Printf(TEXT("Snapshot file does not exist: %s"), *Path);
-		ShowNotification(TEXT("Error"), FText::FromString(value), 5.0f,1.0f);
+		ShowNotification(TEXT("Error"), FText::FromString(value), 5.0f, 1.0f);
 		OnSnapshotDeleted.ExecuteIfBound();
 	}
 }
@@ -796,7 +1066,7 @@ void UBeamEditorContent::RenameContentSnapshot(FBeamContentManifestId ManifestId
 		{
 			UE_LOG(LogBeamContent, Error, TEXT("Failed to rename snapshot from %s to %s"), *OldPath, *NewPath);
 			auto value = FString::Printf(TEXT("Failed to rename snapshot from %s to %s"), *OldPath, *NewPath);
-			ShowNotification(TEXT("Error"), FText::FromString(value), 5.0f,1.0f);
+			ShowNotification(TEXT("Error"), FText::FromString(value), 5.0f, 1.0f);
 			OnSnapshotRenamed.ExecuteIfBound();
 		}
 	}
@@ -804,14 +1074,13 @@ void UBeamEditorContent::RenameContentSnapshot(FBeamContentManifestId ManifestId
 	{
 		UE_LOG(LogBeamContent, Warning, TEXT("Snapshot file does not exist: %s"), *OldPath);
 		auto value = FString::Printf(TEXT("Snapshot file does not exist: %s"), *OldPath);
-		ShowNotification(TEXT("Error"), FText::FromString(value), 5.0f,1.0f);
+		ShowNotification(TEXT("Error"), FText::FromString(value), 5.0f, 1.0f);
 		OnSnapshotRenamed.ExecuteIfBound();
 	}
 }
 
 void UBeamEditorContent::RefreshContentSnapshots(FBeamContentManifestId ManifestId, FBeamPid Realm, FBeamSnapshotRefreshed OnRefreshCompleted)
 {
-	
 	auto List = NewObject<UBeamCliContentSnapshotListCommand>();
 	List->OnStreamOutput = [OnRefreshCompleted](TArray<UBeamCliContentSnapshotListStreamData*>& StreamData, TArray<long long>&, const FBeamOperationHandle&)
 	{
@@ -833,13 +1102,13 @@ void UBeamEditorContent::RefreshContentSnapshots(FBeamContentManifestId Manifest
 
 				SnapshotView->Contents.Reserve(SharedSnapshot->Contents.Num());
 				const FBeamContentManifestId SnapshotManifestId{SharedSnapshot->ManifestId};
-				
+
 				for (UContentSnapshotListItemStreamData* Content : SharedSnapshot->Contents)
 				{
 					FBeamSnapshotContentEntry LocalViewContent;
 					LocalViewContent.Name = FText::FromString(Content->Name);
 					LocalViewContent.CurrentStatus = static_cast<EBeamLocalContentStatus>(Content->CurrentStatus);
-					
+
 					SnapshotView->Contents.Add(LocalViewContent);
 				}
 
@@ -858,29 +1127,29 @@ void UBeamEditorContent::RefreshContentSnapshots(FBeamContentManifestId Manifest
 				SnapshotView->Realm = FText::FromString(LocalSnapshot->ProjectData->RealmName);
 				SnapshotView->PID = FText::FromString(LocalSnapshot->ProjectData->PID);
 				SnapshotView->Path = LocalSnapshot->Path;
-				
+
 				SnapshotView->Contents.Reserve(LocalSnapshot->Contents.Num());
 				const FBeamContentManifestId SnapshotManifestId{LocalSnapshot->ManifestId};
-				
+
 				for (UContentSnapshotListItemStreamData* Content : LocalSnapshot->Contents)
 				{
 					FBeamSnapshotContentEntry LocalViewContent;
 					LocalViewContent.Name = FText::FromString(Content->Name);
 					LocalViewContent.CurrentStatus = static_cast<EBeamLocalContentStatus>(Content->CurrentStatus);
-					
+
 					SnapshotView->Contents.Add(LocalViewContent);
 				}
 
 				SnapshotLocalViews.Add(SnapshotView);
 			}
 		}
-		
+
 		// TODO: Sort...
 		// TODO: Make sure that the LocalView for the object where this is true "SharedSnapshot->IsAutoSnapshot == true" is always at the top of the list.
-		
+
 		OnRefreshCompleted.ExecuteIfBound(SnapshotLocalViews);
 	};
-	
+
 	List->OnCompleted = [List](const int& ErrorCode, const FBeamOperationHandle&)
 	{
 		if (ErrorCode != 0)
@@ -888,7 +1157,6 @@ void UBeamEditorContent::RefreshContentSnapshots(FBeamContentManifestId Manifest
 			// TODO Handle error.
 			for (FBeamCliError Error : List->Errors)
 			{
-				
 			}
 		}
 	};
@@ -905,7 +1173,7 @@ void UBeamEditorContent::RefreshContentSnapshots(FBeamContentManifestId Manifest
 void UBeamEditorContent::CopyContentSnapshots(FString OldPath, bool bIsSharedSnapshot, FBeamSnapshotCopied OnSnapshotsCopied)
 {
 	IFileManager& FileManager = IFileManager::Get();
-	
+
 	// Check if source file exists
 	if (!FileManager.FileExists(*OldPath))
 	{
@@ -919,10 +1187,10 @@ void UBeamEditorContent::CopyContentSnapshots(FString OldPath, bool bIsSharedSna
 	// Normalize the path to use consistent separators (convert to platform format)
 	FString NormalizedOldPath = OldPath;
 	FPaths::NormalizeFilename(NormalizedOldPath);
-	
+
 	// Parse the old path to determine source and destination
 	FString NewPath;
-	
+
 	if (bIsSharedSnapshot)
 	{
 		// Copy from local (.beamable/local/contentSnapshots) to shared (.beamable/shared/contentSnapshots)
@@ -993,6 +1261,30 @@ void UBeamEditorContent::CopyContentSnapshots(FString OldPath, bool bIsSharedSna
 		ShowNotification(TEXT("Error"), FText::FromString(value), 5.0f, 1.0f);
 		OnSnapshotsCopied.ExecuteIfBound();
 	}
+}
+
+void UBeamEditorContent::SyncContentHistoryChangelist(FString ManifestUid)
+{
+	if (ManifestUid.IsEmpty())
+	{
+		UE_LOG(LogBeamContent, Verbose, TEXT("Skipping content history sync for empty manifest UID"));
+		return;
+	}
+			
+	auto SyncCmd = NewObject<UBeamCliContentHistorySyncChangelistCommand>();
+	SyncCmd->OnCompleted = [SyncCmd](const int& ErrorCode, const FBeamOperationHandle&)
+	{
+		if (ErrorCode != 0)
+		{
+			for (FBeamCliError Error : SyncCmd->Errors)
+			{
+				UE_LOG(LogBeamContent, Error, TEXT("ERROR syncing content history changelist: %s"), *Error.Message);
+			}
+		}
+	};
+
+	FString Args = FString::Printf(TEXT("--manifest-uid %s"), *ManifestUid);
+	Cli->RunCommandServer(SyncCmd, {Args}, {});
 }
 
 FString UBeamEditorContent::GetJsonBlobPath(FString RowName, FBeamContentManifestId ManifestId)
@@ -1156,14 +1448,14 @@ void UBeamEditorContent::RunPsCommand(FBeamOperationHandle FirstEventOp)
 	WatchCommand->OnStreamOutput = [this, FirstEventOp](TArray<UBeamCliContentPsStreamData*>& Stream, TArray<int64>&, const FBeamOperationHandle&)
 	{
 		const auto Data = Stream.Last();
-		if (Data->EventType == EVT_TYPE_FullRebuild)
+		if (Data->EventType == EVT_TYPE_CONTENT_PS_FullRebuild)
 		{
 			RebuildLocalManifestCache(Data->RelevantManifestsAgainstLatest);
 			RequestTracker->TriggerOperationSuccess(FirstEventOp, TEXT(""));
 			OnContentFullRebuild.Broadcast();
 		}
 
-		if (Data->EventType == EVT_TYPE_RemotePublished)
+		if (Data->EventType == EVT_TYPE_CONTENT_PS_RemotePublished)
 		{
 			UE_LOG(LogBeamContent, Display,
 			       TEXT(
@@ -1232,7 +1524,7 @@ void UBeamEditorContent::RunPsCommand(FBeamOperationHandle FirstEventOp)
 			OnContentRemotePublish.Broadcast();
 		}
 
-		if (Data->EventType == EVT_TYPE_ChangedContent)
+		if (Data->EventType == EVT_TYPE_CONTENT_PS_ChangedContent)
 		{
 			const auto ManifestCount = Data->RelevantManifestsAgainstLatest.Num();
 			for (int i = 0; i < ManifestCount; ++i)
@@ -1252,7 +1544,167 @@ void UBeamEditorContent::RunPsCommand(FBeamOperationHandle FirstEventOp)
 			if (WatchCommand->Stream.Num() == 0) RequestTracker->TriggerOperationError(FirstEventOp, TEXT("Failed to fetch initial full-rebuild event"));
 
 			const auto DuplicateCommand = DuplicateObject<UBeamCliContentPsCommand>(WatchCommand, GetTransientPackage());
-			Cli->RunCommand(DuplicateCommand, {TEXT("-w")}, {});
+			const auto ReqProcess = FString::Printf(TEXT("--require-process-id %d"), FPlatformProcess::GetCurrentProcessId());
+			Cli->RunCommand(DuplicateCommand, {TEXT("-w"), ReqProcess}, {});
+		}
+	};
+
+	const auto ReqProcess = FString::Printf(TEXT("--require-process-id %d"), FPlatformProcess::GetCurrentProcessId());
+	Cli->RunCommand(WatchCommand, {TEXT("-w"), ReqProcess}, {});
+}
+
+void UBeamEditorContent::RunHistoryPsCommand(FBeamOperationHandle FirstEventOp)
+{
+	auto WatchCommand = NewObject<UBeamCliContentHistoryCommand>();
+	WatchCommand->OnStreamOutput = [this, FirstEventOp](TArray<UBeamCliContentHistoryStreamData*>& Stream, TArray<int64>&, const FBeamOperationHandle&)
+	{
+		const auto Data = Stream.Last();
+
+		if (Data->EventType == EVT_TYPE_CONTENT_HISTORY_EntriesLoaded)
+		{
+			// Update in-memory state using EntriesPage and EntriesToRemove
+			if (Data->EntriesPage)
+			{
+				// The ManifestId key is always "global" for now
+				const FBeamContentManifestId GlobalManifestId(Global_Manifest_Name);
+
+				// Get or create the cached page
+				UContentHistoryEntriesPageStreamData* CachedPage = LocalContentHistoryEntriesCache.FindOrAdd(GlobalManifestId);
+				if (!CachedPage)
+				{
+					CachedPage = NewObject<UContentHistoryEntriesPageStreamData>(GetTransientPackage());
+					LocalContentHistoryEntriesCache.Add(GlobalManifestId, CachedPage);
+				}
+
+				// Merge the new entries into the cached page
+				for (const auto& Entry : Data->EntriesPage->Entries)
+				{
+					// Remove any existing entry with the same ManifestUid (update case)
+					CachedPage->Entries.RemoveAll([&Entry](const UContentHistoryEntryStreamData* ExistingEntry)
+					{
+						return ExistingEntry && ExistingEntry->ManifestUid == Entry->ManifestUid;
+					});
+
+					// Add the new entry
+					CachedPage->Entries.Add(DuplicateObject<UContentHistoryEntryStreamData>(Entry, GetTransientPackage()));
+					UE_LOG(LogBeamContent, Display, TEXT("Added content history entry: ManifestUid=%s"), *Entry->ManifestUid);
+				}
+
+				// Sort entries by date (newest first)
+				CachedPage->Entries.Sort([](const UContentHistoryEntryStreamData& A, const UContentHistoryEntryStreamData& B)
+				{
+					return A.CreatedDate > B.CreatedDate;
+				});
+
+				// Update the date range
+				if (CachedPage->Entries.Num() > 0)
+				{
+					CachedPage->StartDate = CachedPage->Entries[CachedPage->Entries.Num() - 1]->CreatedDate;
+					CachedPage->EndDate = CachedPage->Entries[0]->CreatedDate;
+				}
+			}
+
+			// Remove entries specified in EntriesToRemove
+			for (const auto& ManifestUidToRemove : Data->EntriesToRemove)
+			{
+				const FBeamContentManifestId GlobalManifestId(Global_Manifest_Name);
+
+				// Find the cached page
+				if (auto* CachedPage = LocalContentHistoryEntriesCache.Find(GlobalManifestId))
+				{
+					// Remove entries with matching ManifestUid
+					(*CachedPage)->Entries.RemoveAll([&ManifestUidToRemove](const UContentHistoryEntryStreamData* Entry)
+					{
+						return Entry && Entry->ManifestUid == ManifestUidToRemove;
+					});
+				}
+			}
+
+			if (RequestTracker->IsOperationActive(FirstEventOp)) RequestTracker->TriggerOperationSuccess(FirstEventOp, TEXT(""));
+			OnContentHistoryEntriesUpdated.Broadcast();
+		}
+
+		if (Data->EventType == EVT_TYPE_CONTENT_HISTORY_ChangelistsLoaded)
+		{
+			// Update in-memory state using ChangelistsPage and ChangelistsToRemove
+			if (Data->ChangelistsPage)
+			{
+				for (const auto& Changelist : Data->ChangelistsPage->Changelists)
+				{
+					// Store changelist keyed by its ManifestUid as FString
+					LocalContentHistoryChangelistCache.Add(Changelist->ManifestUid, DuplicateObject<UContentHistoryChangelistStreamData>(Changelist, GetTransientPackage()));
+
+					// Collect all content IDs from Changelist maps
+					TArray<FString> AllContentIds;
+					TArray<FString> ContentIdsToSync;
+
+					// Add content ids in this changelist to a list
+					for (const auto& Pair : Changelist->Created) AllContentIds.Add(Pair.Key);
+					for (const auto& Pair : Changelist->Modified) AllContentIds.Add(Pair.Key);
+					for (const auto& Pair : Changelist->Removed) AllContentIds.Add(Pair.Key);
+
+					// Filter out content IDs that already exist locally
+					for (const auto& ContentId : AllContentIds)
+					{
+						const auto* Entry = Changelist->Created.Find(ContentId);
+						if (!Entry) Entry = Changelist->Modified.Find(ContentId);
+						if (!Entry) Entry = Changelist->Removed.Find(ContentId);
+
+						if (Entry && *Entry)
+						{
+							// Check if the JSON file exists locally
+							if ((*Entry)->JsonFilePath.IsEmpty() || !FPaths::FileExists((*Entry)->JsonFilePath))
+								ContentIdsToSync.Add(ContentId);
+						}
+					}
+
+					// Only run sync command if there are content IDs to sync
+					if (ContentIdsToSync.Num() > 0)
+					{
+						auto SyncCommand = NewObject<UBeamCliContentHistorySyncContentCommand>();
+						SyncCommand->OnStreamOutput = [this, Changelist](TArray<UBeamCliContentHistorySyncContentStreamData*>& Stream, TArray<int64>&, const FBeamOperationHandle&)
+						{
+							// Content has been synced, now load into memory
+							const auto SyncData = Stream.Last();
+							for (const auto& ContentEntry : SyncData->ContentEntries) LoadContentHistoryObject(Changelist->ManifestUid, ContentEntry);
+							
+							OnContentHistoryContentSynced.Broadcast();
+						};
+
+						const FString ManifestUidArg = FString::Printf(TEXT("--manifest-uid %s"), *Changelist->ManifestUid);
+						const FString ContentIdsArg = FString::Printf(TEXT("--content-ids %s"), *FString::Join(ContentIdsToSync, TEXT(",")));
+						Cli->RunCommandServer(SyncCommand, {ManifestUidArg, ContentIdsArg}, {});
+					}
+					else
+					{
+						// All content exists locally, just load into memory
+						for (const auto& Pair : Changelist->Created) LoadContentHistoryObject(Changelist->ManifestUid, Pair.Value);
+						for (const auto& Pair : Changelist->Modified) LoadContentHistoryObject(Changelist->ManifestUid, Pair.Value);
+						for (const auto& Pair : Changelist->Removed) LoadContentHistoryObject(Changelist->ManifestUid, Pair.Value);
+					}
+				}
+			}
+
+			// Remove changelists specified in ChangelistsToRemove
+			for (const auto& ChangelistToRemove : Data->ChangelistsToRemove)
+			{
+				// Remove the changelist from the cache using the ManifestUid string
+				LocalContentHistoryChangelistCache.Remove(ChangelistToRemove);
+			}
+
+			OnContentHistoryChangelistSynced.Broadcast();
+		}
+	};
+	WatchCommand->OnCompleted = [this, WatchCommand, FirstEventOp](const int& ResCode, const FBeamOperationHandle&)
+	{
+		if (ResCode != 0)
+		{
+			// If we completed without receiving the first event, we trigger an error of the first event.
+			if (WatchCommand->Stream.Num() == 0) RequestTracker->TriggerOperationError(FirstEventOp, TEXT("Failed to fetch initial full-rebuild event"));
+
+			const auto DuplicateCommand = DuplicateObject<UBeamCliContentHistoryCommand>(WatchCommand, GetTransientPackage());
+			const auto ReqProcess = FString::Printf(TEXT("--require-process-id %d"), FPlatformProcess::GetCurrentProcessId());
+			Cli->RunCommand(DuplicateCommand, {TEXT("-w"), ReqProcess}, {});
 		}
 	};
 
@@ -1296,6 +1748,57 @@ UClass** UBeamEditorContent::FindContentTypeByTypeId(FString TypeId)
 	return ContentTypeStringToContentClass.Find(TypeId);
 }
 
+void UBeamEditorContent::LoadContentHistoryObject(const FString& ManifestUid, UContentHistoryChangelistEntryStreamData* ContentEntry)
+{
+	if (!ContentEntry || ContentEntry->JsonFilePath.IsEmpty())
+	{
+		return;
+	}
+
+	// Parse the ManifestUid to create the history entry ID
+	FBeamContentHistoryContentEntryId HistoryId;
+	HistoryId.ContentId = FBeamContentId(ContentEntry->FullId);
+	HistoryId.ManifestUid = ManifestUid;
+
+	// Check if we already have this object loaded - if so, it's a no-op since the file is read-only
+	if (LoadedContentHistoryObjects.Contains(HistoryId)) return;
+
+	// Load the JSON file
+	FString FileContents;
+	if (!FFileHelper::LoadFileToString(FileContents, *ContentEntry->JsonFilePath))
+	{
+		UE_LOG(LogBeamContent, Warning, TEXT("Failed to load content history file: %s"), *ContentEntry->JsonFilePath);
+		return;
+	}
+
+	// Create new content object using the closest valid type
+	UClass* ObjectClass;
+	TEnumAsByte<EBeamContentObjectSupportLevel> SupportLevel;
+	UBeamContentObject::GetClassForTypeId(ContentTypeStringToContentClass, ContentEntry->TypeName, ObjectClass, SupportLevel);
+
+	if (ObjectClass)
+	{
+		UBeamContentObject* ContentObject = NewObject<UBeamContentObject>(GetTransientPackage(), ObjectClass);
+		ContentObject->SupportLevel = SupportLevel;
+		ContentObject->FromBasicJson(FileContents);
+		ContentObject->Id = HistoryId.ContentId.AsString;
+		ContentObject->Version = ContentEntry->NewChecksum;
+		LoadedContentHistoryObjects.Add(HistoryId, ContentObject);
+
+		if (SupportLevel == PartialSupport)
+		{
+			UE_LOG(LogBeamContent, Warning, TEXT("Loaded content history object with partial support. TYPE=%s, CONTENT_ID=%s"), *ContentEntry->TypeName, *ContentEntry->FullId);
+		}
+		else if (SupportLevel == NoSupport)
+		{
+			UE_LOG(LogBeamContent, Warning, TEXT("Loaded content history object with no support (using base type). TYPE=%s, CONTENT_ID=%s"), *ContentEntry->TypeName, *ContentEntry->FullId);
+		}
+	}
+	else
+	{
+		UE_LOG(LogBeamContent, Error, TEXT("Failed to create content history object. TYPE=%s, CONTENT_ID=%s"), *ContentEntry->TypeName, *ContentEntry->FullId);
+	}
+}
 
 bool UBeamEditorContent::TryLoadContentObject(const FBeamContentManifestId& OwnerManifest, FBeamContentId ContentId,
                                               UBeamContentObject*& OutLoadedContentObject)
