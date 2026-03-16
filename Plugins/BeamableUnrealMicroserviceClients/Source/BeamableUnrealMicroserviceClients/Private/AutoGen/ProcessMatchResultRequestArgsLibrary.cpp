@@ -23,21 +23,21 @@ FString UProcessMatchResultRequestArgsLibrary::ProcessMatchResultRequestArgsToJs
 	return Result;
 }	
 
-UProcessMatchResultRequestArgs* UProcessMatchResultRequestArgsLibrary::Make(FString WinnerId, FString LobbyId, UObject* Outer)
+UProcessMatchResultRequestArgs* UProcessMatchResultRequestArgsLibrary::Make(FString LobbyId, TArray<UBeamballTeamInfo*> TeamInfos, UObject* Outer)
 {
 	auto Serializable = NewObject<UProcessMatchResultRequestArgs>(Outer);
-	Serializable->WinnerId = WinnerId;
 	Serializable->LobbyId = LobbyId;
+	Serializable->TeamInfos = TeamInfos;
 	
 	return Serializable;
 }
 
-void UProcessMatchResultRequestArgsLibrary::Break(const UProcessMatchResultRequestArgs* Serializable, FString& WinnerId, FString& LobbyId)
+void UProcessMatchResultRequestArgsLibrary::Break(const UProcessMatchResultRequestArgs* Serializable, FString& LobbyId, TArray<UBeamballTeamInfo*>& TeamInfos)
 {
 	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
 	{
-		WinnerId = Serializable->WinnerId;
 		LobbyId = Serializable->LobbyId;
+		TeamInfos = Serializable->TeamInfos;
 	}
 		
 }

@@ -3,21 +3,21 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
-#include "BeamableUnrealMicroserviceClients/Public/AutoGen/BeamballTeamInfo.h"
 #include "Serialization/BeamJsonUtils.h"
+#include "BeamableUnrealMicroserviceClients/Public/AutoGen/BeamballPlayerInfo.h"
 
-#include "ProcessMatchResultRequestArgs.generated.h"
+#include "BeamballTeamInfo.generated.h"
 
 UCLASS(BlueprintType, Category="Beam", DefaultToInstanced, EditInlineNew)
-class BEAMABLEUNREALMICROSERVICECLIENTS_API UProcessMatchResultRequestArgs : public UObject, public IBeamJsonSerializableUObject
+class BEAMABLEUNREALMICROSERVICECLIENTS_API UBeamballTeamInfo : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Lobby Id", Category="Beam")
-	FString LobbyId = {};
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Team Infos", Category="Beam")
-	TArray<UBeamballTeamInfo*> TeamInfos = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Team Name", Category="Beam")
+	FString TeamName = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Players", Category="Beam")
+	TArray<UBeamballPlayerInfo*> Players = {};
 
 	
 

@@ -167,7 +167,7 @@ void UBeamContentObject::ParseBasicJsonObject(const TSharedPtr<FJsonObject>& Obj
 	Object->TryGetStringArrayField(TEXT("tags"), Tags);
 
 	// We only parse properties IF we are of the correct type to parse it at least partially.
-	if (!SupportLevel)
+	if (SupportLevel != EBeamContentObjectSupportLevel::NoSupport)
 	{
 		const auto Properties = Object->GetObjectField(TEXT("properties"));
 		ParsePropertiesJsonObject(Properties);

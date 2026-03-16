@@ -27,7 +27,7 @@ void UBeamballMsProcessMatchResultRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UBeamballMsProcessMatchResultRequest* UBeamballMsProcessMatchResultRequest::Make(FString _WinnerId, FString _LobbyId, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
+UBeamballMsProcessMatchResultRequest* UBeamballMsProcessMatchResultRequest::Make(FString _LobbyId, TArray<UBeamballTeamInfo*> _TeamInfos, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UBeamballMsProcessMatchResultRequest* Req = NewObject<UBeamballMsProcessMatchResultRequest>(RequestOwner);
 	Req->CustomHeaders = TMap{CustomHeaders};
@@ -37,8 +37,8 @@ UBeamballMsProcessMatchResultRequest* UBeamballMsProcessMatchResultRequest::Make
 	
 	// Makes a body and fill up with parameters (Blank if no body parameters exist)
 	Req->Body = NewObject<UProcessMatchResultRequestArgs>(Req);
-	Req->Body->WinnerId = _WinnerId;
 	Req->Body->LobbyId = _LobbyId;
+	Req->Body->TeamInfos = _TeamInfos;
 	
 
 	return Req;
