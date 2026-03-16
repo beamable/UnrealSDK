@@ -3,7 +3,7 @@
 
 FOptionalRealmsBasicServiceLimits::FOptionalRealmsBasicServiceLimits()
 {
-	Val = nullptr;
+	Val = NewObject<URealmsBasicServiceLimits>(GetTransientPackage());
 	IsSet = false;
 }
 

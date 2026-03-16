@@ -2,6 +2,21 @@
 
 #include "BeamOptional.generated.h"
 
+/**
+ * Base struct for optional types in the Beam system.
+ * 
+ * When creating a subclass of FBeamOptional:
+ * 1. Must be a USTRUCT(BlueprintType) with meta=(BeamOptionalType="YourType") - the BeamOptionalType must match the type of the Val property.
+ * 2. Must have a UPROPERTY "Val" field of the wrapped type (e.g., FBeamFederation Val or UBeamStatComparisonRule* Val).
+ * 3. Must override GetAddr() to return the address of the Val field.
+ * 4. Must override Set(const void* Data) to assign the dereferenced Data to Val and set IsSet to true.
+ * 5. Should provide a default constructor that initializes Val to a default value and sets IsSet to false (default value for UObject properties should be a NewObject).
+ * 6. Should provide an explicit constructor that takes the wrapped type and sets IsSet to true.
+ * 7. For pointer types, use double pointer dereferencing in Set() (e.g., *((UBeamStatComparisonRule**)Data)).
+ * 8. For value types, use single pointer dereferencing in Set() (e.g., *((FBeamFederation*)Data)).
+ * 
+ * See FOptionalBeamFederation and FOptionalBeamStatComparisonRule for examples.
+ */
 USTRUCT(BlueprintType)
 struct BEAMABLECORE_API FBeamOptional
 {

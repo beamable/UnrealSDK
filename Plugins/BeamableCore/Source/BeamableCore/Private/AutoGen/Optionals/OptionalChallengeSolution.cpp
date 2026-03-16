@@ -3,7 +3,7 @@
 
 FOptionalChallengeSolution::FOptionalChallengeSolution()
 {
-	Val = nullptr;
+	Val = NewObject<UChallengeSolution>(GetTransientPackage());
 	IsSet = false;
 }
 

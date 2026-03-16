@@ -27,7 +27,7 @@ void UPostTokensPasswordRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostTokensPasswordRequest* UPostTokensPasswordRequest::Make(FOptionalString _Email, FOptionalString _Password, FOptionalString _Scope, FOptionalBeamCid _CustomerId, FOptionalBeamPid _RealmId, FOptionalContextInfo _Context, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
+UPostTokensPasswordRequest* UPostTokensPasswordRequest::Make(FOptionalString _Email, FOptionalString _Password, FOptionalString _Scope, FOptionalBeamCid _CustomerId, FOptionalBeamPid _RealmId, FOptionalAuthV2ContextInfo _Context, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPostTokensPasswordRequest* Req = NewObject<UPostTokensPasswordRequest>(RequestOwner);
 	Req->CustomHeaders = TMap{CustomHeaders};
@@ -36,7 +36,7 @@ UPostTokensPasswordRequest* UPostTokensPasswordRequest::Make(FOptionalString _Em
 	
 	
 	// Makes a body and fill up with parameters (Blank if no body parameters exist)
-	Req->Body = NewObject<UPasswordAuthRequestBody>(Req);
+	Req->Body = NewObject<UAuthV2PasswordAuthRequestBody>(Req);
 	Req->Body->Email = _Email;
 	Req->Body->Password = _Password;
 	Req->Body->Scope = _Scope;

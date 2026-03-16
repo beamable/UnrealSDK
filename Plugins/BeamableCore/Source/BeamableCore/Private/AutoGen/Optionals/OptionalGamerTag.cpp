@@ -3,7 +3,7 @@
 
 FOptionalGamerTag::FOptionalGamerTag()
 {
-	Val = nullptr;
+	Val = NewObject<UGamerTag>(GetTransientPackage());
 	IsSet = false;
 }
 

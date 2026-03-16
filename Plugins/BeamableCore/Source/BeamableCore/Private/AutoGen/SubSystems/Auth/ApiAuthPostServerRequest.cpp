@@ -36,7 +36,7 @@ UApiAuthPostServerRequest* UApiAuthPostServerRequest::Make(FOptionalString _Clie
 	
 	
 	// Makes a body and fill up with parameters (Blank if no body parameters exist)
-	Req->Body = NewObject<UServerTokenAuthRequestBody>(Req);
+	Req->Body = NewObject<UAuthV2ServerTokenAuthRequestBody>(Req);
 	Req->Body->ClientId = _ClientId;
 	Req->Body->ClientSecret = _ClientSecret;
 	Req->Body->CustomerId = _CustomerId;

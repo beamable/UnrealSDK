@@ -3,7 +3,7 @@
 
 FOptionalMetadataView::FOptionalMetadataView()
 {
-	Val = nullptr;
+	Val = NewObject<UMetadataView>(GetTransientPackage());
 	IsSet = false;
 }
 

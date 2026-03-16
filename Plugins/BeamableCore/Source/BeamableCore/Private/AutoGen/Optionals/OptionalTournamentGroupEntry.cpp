@@ -3,7 +3,7 @@
 
 FOptionalTournamentGroupEntry::FOptionalTournamentGroupEntry()
 {
-	Val = nullptr;
+	Val = NewObject<UTournamentGroupEntry>(GetTransientPackage());
 	IsSet = false;
 }
 

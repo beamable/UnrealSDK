@@ -3,9 +3,10 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
-#include "BeamableCore/Public/AutoGen/Optionals/OptionalContentTagFilter.h"
-#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfPropertyFilterDTO.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalTimeRange.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfString.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfPropertyFilterDTO.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalContentTagFilter.h"
 
 #include "InventoryFiltersDTO.generated.h"
 
@@ -15,12 +16,14 @@ class BEAMABLECORE_API UInventoryFiltersDTO : public UObject, public IBeamJsonSe
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Content Tag Filter", Category="Beam")
-	FOptionalContentTagFilter ContentTagFilter = {};
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Created At", Category="Beam")
-	FOptionalTimeRange CreatedAt = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Updated At", Category="Beam")
 	FOptionalTimeRange UpdatedAt = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Created At", Category="Beam")
+	FOptionalTimeRange CreatedAt = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Content Tag Filter", Category="Beam")
+	FOptionalContentTagFilter ContentTagFilter = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Proxy Ids", Category="Beam")
+	FOptionalArrayOfString ProxyIds = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Property Filters", Category="Beam")
 	FOptionalArrayOfPropertyFilterDTO PropertyFilters = {};
 

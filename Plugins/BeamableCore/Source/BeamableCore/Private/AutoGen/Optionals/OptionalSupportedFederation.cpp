@@ -3,7 +3,7 @@
 
 FOptionalSupportedFederation::FOptionalSupportedFederation()
 {
-	Val = nullptr;
+	Val = NewObject<USupportedFederation>(GetTransientPackage());
 	IsSet = false;
 }
 

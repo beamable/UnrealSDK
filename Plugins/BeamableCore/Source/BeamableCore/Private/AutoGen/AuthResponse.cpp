@@ -4,11 +4,6 @@
 
 
 
-void UAuthResponse::DeserializeRequestResponse(UObject* RequestData, FString ResponseContent)
-{
-	OuterOwner = RequestData;
-	BeamDeserialize(ResponseContent);	
-}
 
 void UAuthResponse::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {

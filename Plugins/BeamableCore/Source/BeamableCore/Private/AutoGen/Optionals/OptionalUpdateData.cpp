@@ -3,7 +3,7 @@
 
 FOptionalUpdateData::FOptionalUpdateData()
 {
-	Val = nullptr;
+	Val = NewObject<UUpdateData>(GetTransientPackage());
 	IsSet = false;
 }
 

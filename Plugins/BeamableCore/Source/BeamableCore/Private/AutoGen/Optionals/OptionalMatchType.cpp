@@ -3,7 +3,7 @@
 
 FOptionalMatchType::FOptionalMatchType()
 {
-	Val = nullptr;
+	Val = NewObject<UMatchType>(GetTransientPackage());
 	IsSet = false;
 }
 

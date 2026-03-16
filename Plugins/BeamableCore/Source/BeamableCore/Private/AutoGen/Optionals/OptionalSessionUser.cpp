@@ -3,7 +3,7 @@
 
 FOptionalSessionUser::FOptionalSessionUser()
 {
-	Val = nullptr;
+	Val = NewObject<USessionUser>(GetTransientPackage());
 	IsSet = false;
 }
 

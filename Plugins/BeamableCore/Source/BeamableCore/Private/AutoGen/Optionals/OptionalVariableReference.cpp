@@ -3,7 +3,7 @@
 
 FOptionalVariableReference::FOptionalVariableReference()
 {
-	Val = nullptr;
+	Val = NewObject<UVariableReference>(GetTransientPackage());
 	IsSet = false;
 }
 

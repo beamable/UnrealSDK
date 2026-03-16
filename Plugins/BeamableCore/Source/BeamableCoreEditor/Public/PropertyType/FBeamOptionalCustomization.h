@@ -37,7 +37,7 @@ public:
 
 		// Find the Val property
 		const auto ValPropertyHandle = StructPropertyHandle->GetChildHandle(FName("Val"));
-		check(ValPropertyHandle.IsValid());
+		checkf(ValPropertyHandle.IsValid(), TEXT("This is likely because the Val UPROPERTY is not marked as EditAnywhere."));
 
 		// then change the HeaderRow to add some Slate widget
 		HeaderRow

@@ -3,7 +3,7 @@
 
 FOptionalContentTagFilter::FOptionalContentTagFilter()
 {
-	Val = nullptr;
+	Val = NewObject<UContentTagFilter>(GetTransientPackage());
 	IsSet = false;
 }
 

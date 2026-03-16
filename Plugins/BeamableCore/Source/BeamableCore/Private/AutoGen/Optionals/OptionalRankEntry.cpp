@@ -3,7 +3,7 @@
 
 FOptionalRankEntry::FOptionalRankEntry()
 {
-	Val = nullptr;
+	Val = NewObject<URankEntry>(GetTransientPackage());
 	IsSet = false;
 }
 

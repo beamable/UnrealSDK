@@ -6,7 +6,7 @@
 
 #include "BeamableCore/Public/AutoGen/SubSystems/BeamAuthApi.h"
 #include "BeamableCore/Public/AutoGen/SubSystems/Auth/PostTokensRefreshTokenRequest.h"
-#include "BeamableCore/Public/AutoGen/AuthResponse.h"
+#include "BeamableCore/Public/AutoGen/AuthV2AuthResponse.h"
 
 #define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_PostTokensRefreshToken"
 
@@ -49,7 +49,7 @@ UClass* UK2BeamNode_ApiRequest_PostTokensRefreshToken::GetRequestClass() const
 
 UClass* UK2BeamNode_ApiRequest_PostTokensRefreshToken::GetResponseClass() const
 {
-	return UAuthResponse::StaticClass();
+	return UAuthV2AuthResponse::StaticClass();
 }
 
 FString UK2BeamNode_ApiRequest_PostTokensRefreshToken::GetRequestSuccessDelegateName() const

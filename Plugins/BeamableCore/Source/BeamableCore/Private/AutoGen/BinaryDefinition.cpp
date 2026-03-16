@@ -10,6 +10,7 @@ void UBinaryDefinition::BeamSerializeProperties(TUnrealJsonSerializer& Serialize
 	UBeamJsonUtils::SerializeSemanticType<FString>(TEXT("id"), &Id, Serializer);
 	UBeamJsonUtils::SerializeRawPrimitive(TEXT("checksum"), Checksum, Serializer);
 	UBeamJsonUtils::SerializeRawPrimitive(TEXT("uploadContentType"), UploadContentType, Serializer);
+	UBeamJsonUtils::SerializeOptional<FString>(TEXT("visibility"), &Visibility, Serializer);
 	UBeamJsonUtils::SerializeOptional<TArray<FString>, FString>(TEXT("tags"), &Tags, Serializer);
 }
 
@@ -18,6 +19,7 @@ void UBinaryDefinition::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Ser
 	UBeamJsonUtils::SerializeSemanticType<FString>(TEXT("id"), &Id, Serializer);
 	UBeamJsonUtils::SerializeRawPrimitive(TEXT("checksum"), Checksum, Serializer);
 	UBeamJsonUtils::SerializeRawPrimitive(TEXT("uploadContentType"), UploadContentType, Serializer);
+	UBeamJsonUtils::SerializeOptional<FString>(TEXT("visibility"), &Visibility, Serializer);
 	UBeamJsonUtils::SerializeOptional<TArray<FString>, FString>(TEXT("tags"), &Tags, Serializer);		
 }
 
@@ -26,6 +28,7 @@ void UBinaryDefinition::BeamDeserializeProperties(const TSharedPtr<FJsonObject>&
 	UBeamJsonUtils::DeserializeSemanticType<FString>(TEXT("id"), Bag, Id, OuterOwner);
 	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("checksum"), Bag, Checksum);
 	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("uploadContentType"), Bag, UploadContentType);
+	UBeamJsonUtils::DeserializeOptional<FString>("visibility", Bag, Visibility, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<TArray<FString>, FString>("tags", Bag, Tags, OuterOwner);
 }
 

@@ -3,7 +3,7 @@
 
 FOptionalEventGroupRewards::FOptionalEventGroupRewards()
 {
-	Val = nullptr;
+	Val = NewObject<UEventGroupRewards>(GetTransientPackage());
 	IsSet = false;
 }
 

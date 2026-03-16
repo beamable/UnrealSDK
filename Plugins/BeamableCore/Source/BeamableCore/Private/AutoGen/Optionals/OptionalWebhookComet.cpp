@@ -3,7 +3,7 @@
 
 FOptionalWebhookComet::FOptionalWebhookComet()
 {
-	Val = nullptr;
+	Val = NewObject<UWebhookComet>(GetTransientPackage());
 	IsSet = false;
 }
 

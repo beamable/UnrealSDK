@@ -23,23 +23,27 @@ FString UManifestDiffSummaryLibrary::ManifestDiffSummaryToJsonString(const UMani
 	return Result;
 }	
 
-UManifestDiffSummary* UManifestDiffSummaryLibrary::Make(FString ManifestUid, FString DiffUrl, int64 CreatedDate, UObject* Outer)
+UManifestDiffSummary* UManifestDiffSummaryLibrary::Make(FString ManifestUid, int64 CreatedDate, TArray<FString> AffectedContentIds, FOptionalString PublishedByName, FOptionalString PublishedBy, UObject* Outer)
 {
 	auto Serializable = NewObject<UManifestDiffSummary>(Outer);
 	Serializable->ManifestUid = ManifestUid;
-	Serializable->DiffUrl = DiffUrl;
 	Serializable->CreatedDate = CreatedDate;
+	Serializable->AffectedContentIds = AffectedContentIds;
+	Serializable->PublishedByName = PublishedByName;
+	Serializable->PublishedBy = PublishedBy;
 	
 	return Serializable;
 }
 
-void UManifestDiffSummaryLibrary::Break(const UManifestDiffSummary* Serializable, FString& ManifestUid, FString& DiffUrl, int64& CreatedDate)
+void UManifestDiffSummaryLibrary::Break(const UManifestDiffSummary* Serializable, FString& ManifestUid, int64& CreatedDate, TArray<FString>& AffectedContentIds, FOptionalString& PublishedByName, FOptionalString& PublishedBy)
 {
 	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
 	{
 		ManifestUid = Serializable->ManifestUid;
-		DiffUrl = Serializable->DiffUrl;
 		CreatedDate = Serializable->CreatedDate;
+		AffectedContentIds = Serializable->AffectedContentIds;
+		PublishedByName = Serializable->PublishedByName;
+		PublishedBy = Serializable->PublishedBy;
 	}
 		
 }

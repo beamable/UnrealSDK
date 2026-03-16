@@ -3,7 +3,7 @@
 
 FOptionalInventoryUpdateDelta::FOptionalInventoryUpdateDelta()
 {
-	Val = nullptr;
+	Val = NewObject<UInventoryUpdateDelta>(GetTransientPackage());
 	IsSet = false;
 }
 

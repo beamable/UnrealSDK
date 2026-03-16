@@ -7,8 +7,8 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-#include "BeamableCore/Public/AutoGen/ServerTokenAuthRequestBody.h"
-#include "BeamableCore/Public/AutoGen/ServerTokenResponse.h"
+#include "BeamableCore/Public/AutoGen/AuthV2ServerTokenAuthRequestBody.h"
+#include "BeamableCore/Public/AutoGen/AuthV2ServerTokenResponse.h"
 
 #include "ApiAuthPostServerRequest.generated.h"
 
@@ -27,7 +27,7 @@ public:
 
 	// Body Params
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="", Category="Beam")
-	UServerTokenAuthRequestBody* Body = {};
+	UAuthV2ServerTokenAuthRequestBody* Body = {};
 
 	// Beam Base Request Declaration
 	UApiAuthPostServerRequest() = default;
@@ -41,7 +41,7 @@ public:
 };
 
 UDELEGATE(BlueprintAuthorityOnly)
-DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnApiAuthPostServerSuccess, FBeamRequestContext, Context, UApiAuthPostServerRequest*, Request, UServerTokenResponse*, Response);
+DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnApiAuthPostServerSuccess, FBeamRequestContext, Context, UApiAuthPostServerRequest*, Request, UAuthV2ServerTokenResponse*, Response);
 
 UDELEGATE(BlueprintAuthorityOnly)
 DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnApiAuthPostServerError, FBeamRequestContext, Context, UApiAuthPostServerRequest*, Request, FBeamErrorResponse, Error);
@@ -49,5 +49,5 @@ DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnApiAuthPostServerError, FBeamRequestCont
 UDELEGATE(BlueprintAuthorityOnly)
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FOnApiAuthPostServerComplete, FBeamRequestContext, Context, UApiAuthPostServerRequest*, Request);
 
-using FApiAuthPostServerFullResponse = FBeamFullResponse<UApiAuthPostServerRequest*, UServerTokenResponse*>;
+using FApiAuthPostServerFullResponse = FBeamFullResponse<UApiAuthPostServerRequest*, UAuthV2ServerTokenResponse*>;
 DECLARE_DELEGATE_OneParam(FOnApiAuthPostServerFullResponse, FApiAuthPostServerFullResponse);

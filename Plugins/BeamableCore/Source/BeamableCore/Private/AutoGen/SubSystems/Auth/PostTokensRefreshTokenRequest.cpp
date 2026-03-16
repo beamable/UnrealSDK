@@ -27,7 +27,7 @@ void UPostTokensRefreshTokenRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostTokensRefreshTokenRequest* UPostTokensRefreshTokenRequest::Make(FOptionalString _RefreshToken, FOptionalBeamCid _CustomerId, FOptionalBeamPid _RealmId, FOptionalContextInfo _Context, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
+UPostTokensRefreshTokenRequest* UPostTokensRefreshTokenRequest::Make(FOptionalString _RefreshToken, FOptionalBeamCid _CustomerId, FOptionalBeamPid _RealmId, FOptionalAuthV2ContextInfo _Context, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPostTokensRefreshTokenRequest* Req = NewObject<UPostTokensRefreshTokenRequest>(RequestOwner);
 	Req->CustomHeaders = TMap{CustomHeaders};
@@ -36,7 +36,7 @@ UPostTokensRefreshTokenRequest* UPostTokensRefreshTokenRequest::Make(FOptionalSt
 	
 	
 	// Makes a body and fill up with parameters (Blank if no body parameters exist)
-	Req->Body = NewObject<URefreshTokenAuthRequestBody>(Req);
+	Req->Body = NewObject<UAuthV2RefreshTokenAuthRequestBody>(Req);
 	Req->Body->RefreshToken = _RefreshToken;
 	Req->Body->CustomerId = _CustomerId;
 	Req->Body->RealmId = _RealmId;

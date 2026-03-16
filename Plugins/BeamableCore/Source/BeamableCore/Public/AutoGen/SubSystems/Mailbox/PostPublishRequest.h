@@ -36,8 +36,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Mailbox|Utils|Make/Break", DisplayName="Make PostPublish",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Body,_Pid,_PlayerId,_Channel,_RealmId,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
-	static UPostPublishRequest* Make(FOptionalString _Body, FOptionalBeamPid _Pid, FOptionalBeamGamerTag _PlayerId, FOptionalString _Channel, FOptionalBeamPid _RealmId, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Mailbox|Utils|Make/Break", DisplayName="Make PostPublish",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_bSingleDelivery,_Body,_Pid,_PlayerId,_Channel,_RealmId,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	static UPostPublishRequest* Make(FOptionalBool _bSingleDelivery, FOptionalString _Body, FOptionalBeamPid _Pid, FOptionalBeamGamerTag _PlayerId, FOptionalString _Channel, FOptionalBeamPid _RealmId, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

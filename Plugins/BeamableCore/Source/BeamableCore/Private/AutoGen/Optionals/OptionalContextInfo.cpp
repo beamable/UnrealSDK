@@ -3,7 +3,7 @@
 
 FOptionalContextInfo::FOptionalContextInfo()
 {
-	Val = nullptr;
+	Val = NewObject<UContextInfo>(GetTransientPackage());
 	IsSet = false;
 }
 

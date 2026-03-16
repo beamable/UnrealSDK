@@ -7,8 +7,8 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-#include "BeamableCore/Public/AutoGen/GuestAuthRequestBody.h"
-#include "BeamableCore/Public/AutoGen/AuthResponse.h"
+#include "BeamableCore/Public/AutoGen/AuthV2GuestAuthRequestBody.h"
+#include "BeamableCore/Public/AutoGen/AuthV2AuthResponse.h"
 
 #include "PostTokensGuestRequest.generated.h"
 
@@ -27,7 +27,7 @@ public:
 
 	// Body Params
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="", Category="Beam")
-	UGuestAuthRequestBody* Body = {};
+	UAuthV2GuestAuthRequestBody* Body = {};
 
 	// Beam Base Request Declaration
 	UPostTokensGuestRequest() = default;
@@ -37,11 +37,11 @@ public:
 	virtual void BuildBody(FString& BodyString) const override;
 
 	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Auth|Utils|Make/Break", DisplayName="Make PostTokensGuest",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Scope,_CustomerId,_RealmId,_Context,_InitProperties,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
-	static UPostTokensGuestRequest* Make(FOptionalString _Scope, FOptionalBeamCid _CustomerId, FOptionalBeamPid _RealmId, FOptionalContextInfo _Context, FOptionalMapOfString _InitProperties, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
+	static UPostTokensGuestRequest* Make(FOptionalString _Scope, FOptionalBeamCid _CustomerId, FOptionalBeamPid _RealmId, FOptionalAuthV2ContextInfo _Context, FOptionalMapOfString _InitProperties, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)
-DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnPostTokensGuestSuccess, FBeamRequestContext, Context, UPostTokensGuestRequest*, Request, UAuthResponse*, Response);
+DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnPostTokensGuestSuccess, FBeamRequestContext, Context, UPostTokensGuestRequest*, Request, UAuthV2AuthResponse*, Response);
 
 UDELEGATE(BlueprintAuthorityOnly)
 DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnPostTokensGuestError, FBeamRequestContext, Context, UPostTokensGuestRequest*, Request, FBeamErrorResponse, Error);
@@ -49,5 +49,5 @@ DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnPostTokensGuestError, FBeamRequestContex
 UDELEGATE(BlueprintAuthorityOnly)
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FOnPostTokensGuestComplete, FBeamRequestContext, Context, UPostTokensGuestRequest*, Request);
 
-using FPostTokensGuestFullResponse = FBeamFullResponse<UPostTokensGuestRequest*, UAuthResponse*>;
+using FPostTokensGuestFullResponse = FBeamFullResponse<UPostTokensGuestRequest*, UAuthV2AuthResponse*>;
 DECLARE_DELEGATE_OneParam(FOnPostTokensGuestFullResponse, FPostTokensGuestFullResponse);

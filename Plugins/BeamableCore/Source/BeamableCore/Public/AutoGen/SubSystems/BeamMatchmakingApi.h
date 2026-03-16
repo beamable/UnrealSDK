@@ -39,6 +39,11 @@ private:
 	UPROPERTY()
 	UBeamResponseCache* ResponseCache;
 
+public:
+    // This section is only used in microservice code generation.
+
+private:
+
 	
 
 	

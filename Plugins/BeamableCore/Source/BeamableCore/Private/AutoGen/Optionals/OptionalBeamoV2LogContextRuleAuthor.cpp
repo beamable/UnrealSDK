@@ -3,7 +3,7 @@
 
 FOptionalBeamoV2LogContextRuleAuthor::FOptionalBeamoV2LogContextRuleAuthor()
 {
-	Val = nullptr;
+	Val = NewObject<UBeamoV2LogContextRuleAuthor>(GetTransientPackage());
 	IsSet = false;
 }
 

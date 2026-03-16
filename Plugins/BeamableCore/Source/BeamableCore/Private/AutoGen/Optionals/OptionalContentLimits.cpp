@@ -3,7 +3,7 @@
 
 FOptionalContentLimits::FOptionalContentLimits()
 {
-	Val = nullptr;
+	Val = NewObject<UContentLimits>(GetTransientPackage());
 	IsSet = false;
 }
 

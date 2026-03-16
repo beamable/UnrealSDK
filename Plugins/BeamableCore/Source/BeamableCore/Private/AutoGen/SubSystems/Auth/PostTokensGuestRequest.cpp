@@ -27,7 +27,7 @@ void UPostTokensGuestRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostTokensGuestRequest* UPostTokensGuestRequest::Make(FOptionalString _Scope, FOptionalBeamCid _CustomerId, FOptionalBeamPid _RealmId, FOptionalContextInfo _Context, FOptionalMapOfString _InitProperties, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
+UPostTokensGuestRequest* UPostTokensGuestRequest::Make(FOptionalString _Scope, FOptionalBeamCid _CustomerId, FOptionalBeamPid _RealmId, FOptionalAuthV2ContextInfo _Context, FOptionalMapOfString _InitProperties, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPostTokensGuestRequest* Req = NewObject<UPostTokensGuestRequest>(RequestOwner);
 	Req->CustomHeaders = TMap{CustomHeaders};
@@ -36,7 +36,7 @@ UPostTokensGuestRequest* UPostTokensGuestRequest::Make(FOptionalString _Scope, F
 	
 	
 	// Makes a body and fill up with parameters (Blank if no body parameters exist)
-	Req->Body = NewObject<UGuestAuthRequestBody>(Req);
+	Req->Body = NewObject<UAuthV2GuestAuthRequestBody>(Req);
 	Req->Body->Scope = _Scope;
 	Req->Body->CustomerId = _CustomerId;
 	Req->Body->RealmId = _RealmId;

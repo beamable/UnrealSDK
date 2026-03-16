@@ -3,7 +3,7 @@
 
 FOptionalRealmsBasicBeamoLimits::FOptionalRealmsBasicBeamoLimits()
 {
-	Val = nullptr;
+	Val = NewObject<URealmsBasicBeamoLimits>(GetTransientPackage());
 	IsSet = false;
 }
 

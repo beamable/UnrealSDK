@@ -19,7 +19,7 @@ FName UK2BeamNode_ApiRequest_BasicSessionGetStatus::GetSelfFunctionName() const
 
 FName UK2BeamNode_ApiRequest_BasicSessionGetStatus::GetRequestFunctionName() const
 {
-	return GET_FUNCTION_NAME_CHECKED(UBeamSessionApi, GetStatus);
+	return GET_FUNCTION_NAME_CHECKED(UBeamSessionApi, BasicSessionGetStatus);
 }
 
 FName UK2BeamNode_ApiRequest_BasicSessionGetStatus::GetMakeFunctionName() const
@@ -34,7 +34,7 @@ FString UK2BeamNode_ApiRequest_BasicSessionGetStatus::GetServiceName() const
 
 FString UK2BeamNode_ApiRequest_BasicSessionGetStatus::GetEndpointName() const
 {
-	return TEXT("GetStatus");
+	return TEXT("BasicSessionGetStatus");
 }
 
 UClass* UK2BeamNode_ApiRequest_BasicSessionGetStatus::GetApiClass() const

@@ -43,6 +43,8 @@ void UBeamEditorContent::Initialize(FSubsystemCollectionBase& Collection)
 
 
 	// Grab all existing ContentObject classes so we can present them as options in the editing UI and correctly parse them.
+	ContentTypeStringToContentClass.Add("", UBeamContentObject::StaticClass());
+	ContentClassToContentTypeString.Add(UBeamContentObject::StaticClass(), "");
 	for (TObjectIterator<UClass> It; It; ++It)
 	{
 		if (It->IsChildOf(UBeamContentObject::StaticClass()) && !It->HasAnyClassFlags(CLASS_Abstract))
@@ -456,6 +458,9 @@ bool UBeamEditorContent::SaveContentObject(const FBeamContentManifestId& Manifes
 	FString PropertiesJsonContent;
 	EditingObject->ToPropertiesJson(PropertiesJsonContent);
 
+	// Log the json
+	UE_LOG(LogBeamContent, Verbose, TEXT("Saving content object with ID: %s"), *PropertiesJsonContent);
+
 	// Tags are saved using a different command from the CLI - Check: ContentTagSetCommand
 	if (!PropertyName.Equals("Tags"))
 	{
@@ -665,7 +670,7 @@ bool UBeamEditorContent::TryGetFilteredListOfContent(const FBeamContentManifestI
 
 		// Use the supported type name for filtering.
 		FString SupportedTypeName = ContentClassToContentTypeString[ObjectClass];
-		
+
 		const auto bPassNameFilter = NameFilter.IsEmpty() || Row->Name.Contains(NameFilter);
 		const auto bPassTypeFilter = TypeFilter.IsEmpty() || (ContentTypeStringToContentClass.Contains(SupportedTypeName) && ContentTypeStringToContentClass[SupportedTypeName]->GetName().Contains(TypeFilter));
 		const auto bPassStatusFilter = (static_cast<uint8>(Row->CurrentStatus) & static_cast<uint8>(ContentStatusFilter)) > 0;
@@ -684,7 +689,7 @@ bool UBeamEditorContent::TryGetFilteredListOfContent(const FBeamContentManifestI
 				Types.Add(SupportedTypeName);
 				IsInConflicts.Add(Row->IsInConflict);
 				StatusesInManifest.Add(static_cast<EBeamLocalContentStatus>(Row->CurrentStatus));
-			}			
+			}
 		}
 	}
 
@@ -1270,15 +1275,28 @@ void UBeamEditorContent::SyncContentHistoryChangelist(FString ManifestUid)
 		UE_LOG(LogBeamContent, Verbose, TEXT("Skipping content history sync for empty manifest UID"));
 		return;
 	}
-			
+
+	// This is initialized here but completed in the HistoryPs callbacks (unless an error occurred).
+	FString Msg = FString::Printf(TEXT("Synchronizing Content History Changelist for manifest %s..."), *ManifestUid);
+	HistoryChangelistSyncSlowTask = new FSlowTask(2, FText::FromString(Msg));
+	HistoryChangelistSyncSlowTask->Initialize();
+	HistoryChangelistSyncSlowTask->MakeDialog();
+
 	auto SyncCmd = NewObject<UBeamCliContentHistorySyncChangelistCommand>();
-	SyncCmd->OnCompleted = [SyncCmd](const int& ErrorCode, const FBeamOperationHandle&)
+	SyncCmd->OnCompleted = [this, SyncCmd](const int& ErrorCode, const FBeamOperationHandle&)
 	{
 		if (ErrorCode != 0)
 		{
 			for (FBeamCliError Error : SyncCmd->Errors)
 			{
 				UE_LOG(LogBeamContent, Error, TEXT("ERROR syncing content history changelist: %s"), *Error.Message);
+			}
+
+			// Close the slow task in the error case.
+			if (HistoryChangelistSyncSlowTask)
+			{
+				HistoryChangelistSyncSlowTask->Destroy();
+				delete HistoryChangelistSyncSlowTask;
 			}
 		}
 	};
@@ -1627,60 +1645,95 @@ void UBeamEditorContent::RunHistoryPsCommand(FBeamOperationHandle FirstEventOp)
 		if (Data->EventType == EVT_TYPE_CONTENT_HISTORY_ChangelistsLoaded)
 		{
 			// Update in-memory state using ChangelistsPage and ChangelistsToRemove
-			if (Data->ChangelistsPage)
+			for (const auto& Changelist : Data->ChangelistsPage->Changelists)
 			{
-				for (const auto& Changelist : Data->ChangelistsPage->Changelists)
+				// Store changelist keyed by its ManifestUid as FString
+				LocalContentHistoryChangelistCache.Add(Changelist->ManifestUid, DuplicateObject<UContentHistoryChangelistStreamData>(Changelist, GetTransientPackage()));
+
+				// Collect all content IDs from Changelist maps
+				TArray<FString> AllContentIds;
+				TArray<FString> ContentIdsToSync;
+				TArray<FString> ContentIdsToNotSync;
+
+				// Add content ids in this changelist to a list
+				for (const auto& Pair : Changelist->Created) AllContentIds.Add(Pair.Key);
+				for (const auto& Pair : Changelist->Modified) AllContentIds.Add(Pair.Key);
+				for (const auto& Pair : Changelist->Removed) AllContentIds.Add(Pair.Key);
+
+				// Filter out content IDs that already exist locally
+				for (const auto& ContentId : AllContentIds)
 				{
-					// Store changelist keyed by its ManifestUid as FString
-					LocalContentHistoryChangelistCache.Add(Changelist->ManifestUid, DuplicateObject<UContentHistoryChangelistStreamData>(Changelist, GetTransientPackage()));
+					const auto* Entry = Changelist->Created.Find(ContentId);
+					if (!Entry) Entry = Changelist->Modified.Find(ContentId);
+					if (!Entry) Entry = Changelist->Removed.Find(ContentId);
 
-					// Collect all content IDs from Changelist maps
-					TArray<FString> AllContentIds;
-					TArray<FString> ContentIdsToSync;
-
-					// Add content ids in this changelist to a list
-					for (const auto& Pair : Changelist->Created) AllContentIds.Add(Pair.Key);
-					for (const auto& Pair : Changelist->Modified) AllContentIds.Add(Pair.Key);
-					for (const auto& Pair : Changelist->Removed) AllContentIds.Add(Pair.Key);
-
-					// Filter out content IDs that already exist locally
-					for (const auto& ContentId : AllContentIds)
+					if (Entry && *Entry)
 					{
-						const auto* Entry = Changelist->Created.Find(ContentId);
-						if (!Entry) Entry = Changelist->Modified.Find(ContentId);
-						if (!Entry) Entry = Changelist->Removed.Find(ContentId);
+						// Check if the JSON file exists locally
+						if ((*Entry)->JsonFilePath.IsEmpty() || !FPaths::FileExists((*Entry)->JsonFilePath))
+							ContentIdsToSync.Add(ContentId);
+						else
+							ContentIdsToNotSync.Add(ContentId);
+					}
+				}
 
-						if (Entry && *Entry)
+				// Only run sync command if there are content IDs to sync
+				if (ContentIdsToSync.Num() > 0)
+				{
+					auto SyncCommand = NewObject<UBeamCliContentHistorySyncContentCommand>();
+					SyncCommand->OnStreamOutput = [this, Changelist](TArray<UBeamCliContentHistorySyncContentStreamData*>& Stream, TArray<int64>&, const FBeamOperationHandle&)
+					{
+						// Content has been synced, now load into memory
+						const auto SyncData = Stream.Last();
+						for (const auto& ContentEntry : SyncData->ContentEntries) LoadContentHistoryObject(Changelist->ManifestUid, ContentEntry);
+
+						if (HistoryChangelistSyncSlowTask)
 						{
-							// Check if the JSON file exists locally
-							if ((*Entry)->JsonFilePath.IsEmpty() || !FPaths::FileExists((*Entry)->JsonFilePath))
-								ContentIdsToSync.Add(ContentId);
+							HistoryChangelistSyncSlowTask->Destroy();
+							delete HistoryChangelistSyncSlowTask;
 						}
-					}
 
-					// Only run sync command if there are content IDs to sync
-					if (ContentIdsToSync.Num() > 0)
+						OnContentHistoryContentSynced.Broadcast();
+					};
+
+					const FString ManifestUidArg = FString::Printf(TEXT("--manifest-uid %s"), *Changelist->ManifestUid);
+					const FString ContentIdsArg = FString::Printf(TEXT("--content-ids %s"), *FString::Join(ContentIdsToSync, TEXT(",")));
+					Cli->RunCommandServer(SyncCommand, {ManifestUidArg, ContentIdsArg}, {});
+
+					if (HistoryChangelistSyncSlowTask)
 					{
-						auto SyncCommand = NewObject<UBeamCliContentHistorySyncContentCommand>();
-						SyncCommand->OnStreamOutput = [this, Changelist](TArray<UBeamCliContentHistorySyncContentStreamData*>& Stream, TArray<int64>&, const FBeamOperationHandle&)
+						FString BulletList;
+						for (const FString& ContentId : ContentIdsToSync)
 						{
-							// Content has been synced, now load into memory
-							const auto SyncData = Stream.Last();
-							for (const auto& ContentEntry : SyncData->ContentEntries) LoadContentHistoryObject(Changelist->ManifestUid, ContentEntry);
-							
-							OnContentHistoryContentSynced.Broadcast();
-						};
+							BulletList += FString::Printf(TEXT("  • %s\n"), *ContentId);
+						}
 
-						const FString ManifestUidArg = FString::Printf(TEXT("--manifest-uid %s"), *Changelist->ManifestUid);
-						const FString ContentIdsArg = FString::Printf(TEXT("--content-ids %s"), *FString::Join(ContentIdsToSync, TEXT(",")));
-						Cli->RunCommandServer(SyncCommand, {ManifestUidArg, ContentIdsArg}, {});
+						FString NotSyncBulletList;
+						for (const FString& ContentId : ContentIdsToNotSync)
+						{
+							NotSyncBulletList += FString::Printf(TEXT("  • %s\n"), *ContentId);
+						}
+
+
+						FString Message = FString::Printf(
+							TEXT("Syncing Content History Changelist\n\n")
+							TEXT("Syncing %d content items:\n%s\n")
+							TEXT("Skipping %d items (already synced):\n%s"),
+							ContentIdsToSync.Num(), *BulletList, ContentIdsToNotSync.Num(), *NotSyncBulletList);
+						HistoryChangelistSyncSlowTask->EnterProgressFrame(1, FText::FromString(Message));
 					}
-					else
+				}
+				else
+				{
+					// All content exists locally, just load into memory
+					for (const auto& Pair : Changelist->Created) LoadContentHistoryObject(Changelist->ManifestUid, Pair.Value);
+					for (const auto& Pair : Changelist->Modified) LoadContentHistoryObject(Changelist->ManifestUid, Pair.Value);
+					for (const auto& Pair : Changelist->Removed) LoadContentHistoryObject(Changelist->ManifestUid, Pair.Value);
+
+					if (HistoryChangelistSyncSlowTask)
 					{
-						// All content exists locally, just load into memory
-						for (const auto& Pair : Changelist->Created) LoadContentHistoryObject(Changelist->ManifestUid, Pair.Value);
-						for (const auto& Pair : Changelist->Modified) LoadContentHistoryObject(Changelist->ManifestUid, Pair.Value);
-						for (const auto& Pair : Changelist->Removed) LoadContentHistoryObject(Changelist->ManifestUid, Pair.Value);
+						HistoryChangelistSyncSlowTask->Destroy();
+						delete HistoryChangelistSyncSlowTask;
 					}
 				}
 			}
@@ -1782,7 +1835,11 @@ void UBeamEditorContent::LoadContentHistoryObject(const FString& ManifestUid, UC
 		ContentObject->SupportLevel = SupportLevel;
 		ContentObject->FromBasicJson(FileContents);
 		ContentObject->Id = HistoryId.ContentId.AsString;
+		
+		
 		ContentObject->Version = ContentEntry->NewChecksum;
+		if (ContentObject->Version.IsEmpty()) ContentObject->Version = ContentEntry->OldChecksum;
+		
 		LoadedContentHistoryObjects.Add(HistoryId, ContentObject);
 
 		if (SupportLevel == PartialSupport)

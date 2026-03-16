@@ -3,7 +3,7 @@
 
 FOptionalBeamoV2SupportedFederation::FOptionalBeamoV2SupportedFederation()
 {
-	Val = nullptr;
+	Val = NewObject<UBeamoV2SupportedFederation>(GetTransientPackage());
 	IsSet = false;
 }
 

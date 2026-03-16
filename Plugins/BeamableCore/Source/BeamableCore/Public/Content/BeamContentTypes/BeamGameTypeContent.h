@@ -205,8 +205,8 @@ struct BEAMABLECORE_API FOptionalBeamStatComparisonRule : public FBeamOptional
 
 inline FOptionalBeamStatComparisonRule::FOptionalBeamStatComparisonRule()
 {
-	Val = nullptr;
-	IsSet = false;
+	Val = NewObject<UBeamStatComparisonRule>(GetTransientPackage());
+	IsSet = false;	
 }
 
 inline FOptionalBeamStatComparisonRule::FOptionalBeamStatComparisonRule(UBeamStatComparisonRule* Val): Val(Val)

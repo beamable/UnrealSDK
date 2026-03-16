@@ -3,12 +3,12 @@
 #include "CoreMinimal.h"
 #include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
+#include "Serialization/BeamJsonUtils.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalBool.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
 #include "BeamableCore/Public/AutoGen/BaseContentReference.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalInt64.h"
 #include "BeamBackend/SemanticTypes/BeamContentManifestId.h"
-#include "Serialization/BeamJsonUtils.h"
 
 #include "ContentBasicManifest.generated.h"
 
@@ -18,6 +18,8 @@ class BEAMABLECORE_API UContentBasicManifest : public UObject, public IBeamJsonS
 	GENERATED_BODY()
 
 public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Affected Content Ids", Category="Beam")
+	FString AffectedContentIds = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Id", Category="Beam")
 	FBeamContentManifestId Id = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Checksum", Category="Beam")

@@ -3,7 +3,7 @@
 
 FOptionalCatalog::FOptionalCatalog()
 {
-	Val = nullptr;
+	Val = NewObject<UCatalog>(GetTransientPackage());
 	IsSet = false;
 }
 

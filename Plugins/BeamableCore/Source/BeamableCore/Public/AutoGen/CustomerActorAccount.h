@@ -27,6 +27,8 @@ public:
 	FOptionalInt64 UpdatedTimeMs = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Email", Category="Beam")
 	FOptionalString Email = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Password Raw", Category="Beam")
+	FOptionalString PasswordRaw = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Password", Category="Beam")
 	FOptionalString Password = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Username", Category="Beam")

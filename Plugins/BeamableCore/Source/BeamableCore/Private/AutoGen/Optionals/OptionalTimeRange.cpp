@@ -3,7 +3,7 @@
 
 FOptionalTimeRange::FOptionalTimeRange()
 {
-	Val = nullptr;
+	Val = NewObject<UTimeRange>(GetTransientPackage());
 	IsSet = false;
 }
 
