@@ -36,7 +36,7 @@ UPostSessionRequest* UPostSessionRequest::Make(FOptionalString _Source, FOptiona
 	
 	
 	// Makes a body and fill up with parameters (Blank if no body parameters exist)
-	Req->Body = NewObject<UStartSessionRequestBody>(Req);
+	Req->Body = NewObject<USessionBasicStartSessionRequestBody>(Req);
 	Req->Body->Source = _Source;
 	Req->Body->Shard = _Shard;
 	Req->Body->Locale = _Locale;

@@ -3,7 +3,7 @@
 
 FOptionalMailRewards::FOptionalMailRewards()
 {
-	Val = nullptr;
+	Val = NewObject<UMailRewards>(GetTransientPackage());
 	IsSet = false;
 }
 

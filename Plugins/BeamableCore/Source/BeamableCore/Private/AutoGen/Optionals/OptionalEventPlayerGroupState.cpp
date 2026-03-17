@@ -3,7 +3,7 @@
 
 FOptionalEventPlayerGroupState::FOptionalEventPlayerGroupState()
 {
-	Val = nullptr;
+	Val = NewObject<UEventPlayerGroupState>(GetTransientPackage());
 	IsSet = false;
 }
 

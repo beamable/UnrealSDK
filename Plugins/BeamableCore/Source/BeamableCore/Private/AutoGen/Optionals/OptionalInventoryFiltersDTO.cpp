@@ -3,7 +3,7 @@
 
 FOptionalInventoryFiltersDTO::FOptionalInventoryFiltersDTO()
 {
-	Val = nullptr;
+	Val = NewObject<UInventoryFiltersDTO>(GetTransientPackage());
 	IsSet = false;
 }
 

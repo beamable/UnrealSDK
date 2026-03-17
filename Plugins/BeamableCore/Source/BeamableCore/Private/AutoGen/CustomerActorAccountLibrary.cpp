@@ -23,13 +23,14 @@ FString UCustomerActorAccountLibrary::CustomerActorAccountToJsonString(const UCu
 	return Result;
 }	
 
-UCustomerActorAccount* UCustomerActorAccountLibrary::Make(FOptionalInt64 AccountId, FOptionalInt64 CreatedTimeMs, FOptionalInt64 UpdatedTimeMs, FOptionalString Email, FOptionalString Password, FOptionalString Username, FOptionalString Country, FOptionalString Language, FOptionalString RoleString, FOptionalString RealmId, FOptionalArrayOfRealmAssociation RealmAssociations, FOptionalArrayOfThirdPartyAssociation ThirdPartyAssociations, FOptionalArrayOfBeamExternalIdentity External, FOptionalArrayOfRoleAssociation Roles, FOptionalArrayOfString DeviceIds, UObject* Outer)
+UCustomerActorAccount* UCustomerActorAccountLibrary::Make(FOptionalInt64 AccountId, FOptionalInt64 CreatedTimeMs, FOptionalInt64 UpdatedTimeMs, FOptionalString Email, FOptionalString PasswordRaw, FOptionalString Password, FOptionalString Username, FOptionalString Country, FOptionalString Language, FOptionalString RoleString, FOptionalString RealmId, FOptionalArrayOfRealmAssociation RealmAssociations, FOptionalArrayOfThirdPartyAssociation ThirdPartyAssociations, FOptionalArrayOfBeamExternalIdentity External, FOptionalArrayOfRoleAssociation Roles, FOptionalArrayOfString DeviceIds, UObject* Outer)
 {
 	auto Serializable = NewObject<UCustomerActorAccount>(Outer);
 	Serializable->AccountId = AccountId;
 	Serializable->CreatedTimeMs = CreatedTimeMs;
 	Serializable->UpdatedTimeMs = UpdatedTimeMs;
 	Serializable->Email = Email;
+	Serializable->PasswordRaw = PasswordRaw;
 	Serializable->Password = Password;
 	Serializable->Username = Username;
 	Serializable->Country = Country;
@@ -45,7 +46,7 @@ UCustomerActorAccount* UCustomerActorAccountLibrary::Make(FOptionalInt64 Account
 	return Serializable;
 }
 
-void UCustomerActorAccountLibrary::Break(const UCustomerActorAccount* Serializable, FOptionalInt64& AccountId, FOptionalInt64& CreatedTimeMs, FOptionalInt64& UpdatedTimeMs, FOptionalString& Email, FOptionalString& Password, FOptionalString& Username, FOptionalString& Country, FOptionalString& Language, FOptionalString& RoleString, FOptionalString& RealmId, FOptionalArrayOfRealmAssociation& RealmAssociations, FOptionalArrayOfThirdPartyAssociation& ThirdPartyAssociations, FOptionalArrayOfBeamExternalIdentity& External, FOptionalArrayOfRoleAssociation& Roles, FOptionalArrayOfString& DeviceIds)
+void UCustomerActorAccountLibrary::Break(const UCustomerActorAccount* Serializable, FOptionalInt64& AccountId, FOptionalInt64& CreatedTimeMs, FOptionalInt64& UpdatedTimeMs, FOptionalString& Email, FOptionalString& PasswordRaw, FOptionalString& Password, FOptionalString& Username, FOptionalString& Country, FOptionalString& Language, FOptionalString& RoleString, FOptionalString& RealmId, FOptionalArrayOfRealmAssociation& RealmAssociations, FOptionalArrayOfThirdPartyAssociation& ThirdPartyAssociations, FOptionalArrayOfBeamExternalIdentity& External, FOptionalArrayOfRoleAssociation& Roles, FOptionalArrayOfString& DeviceIds)
 {
 	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
 	{
@@ -53,6 +54,7 @@ void UCustomerActorAccountLibrary::Break(const UCustomerActorAccount* Serializab
 		CreatedTimeMs = Serializable->CreatedTimeMs;
 		UpdatedTimeMs = Serializable->UpdatedTimeMs;
 		Email = Serializable->Email;
+		PasswordRaw = Serializable->PasswordRaw;
 		Password = Serializable->Password;
 		Username = Serializable->Username;
 		Country = Serializable->Country;

@@ -17,8 +17,8 @@ public:
 	static FString ContentBasicManifestToJsonString(const UContentBasicManifest* Serializable, const bool Pretty);
 
 	UFUNCTION(BlueprintPure, Category="Beam|Content|Utils|Make/Break", DisplayName="Make ContentBasicManifest", meta=(DefaultToSelf="Outer", AdvancedDisplay="bArchived, DiffObjectKey, PublisherAccountId, LastChanged, Uid, Outer", NativeMakeFunc))
-	static UContentBasicManifest* Make(FBeamContentManifestId Id, FString Checksum, int64 Created, TArray<UBaseContentReference*> References, FOptionalBool bArchived, FOptionalString DiffObjectKey, FOptionalInt64 PublisherAccountId, FOptionalInt64 LastChanged, FOptionalString Uid, UObject* Outer);
+	static UContentBasicManifest* Make(FString AffectedContentIds, FBeamContentManifestId Id, FString Checksum, int64 Created, TArray<UBaseContentReference*> References, FOptionalBool bArchived, FOptionalString DiffObjectKey, FOptionalInt64 PublisherAccountId, FOptionalInt64 LastChanged, FOptionalString Uid, UObject* Outer);
 
 	UFUNCTION(BlueprintPure, Category="Beam|Content|Utils|Make/Break", DisplayName="Break ContentBasicManifest", meta=(NativeBreakFunc))
-	static void Break(const UContentBasicManifest* Serializable, FBeamContentManifestId& Id, FString& Checksum, int64& Created, TArray<UBaseContentReference*>& References, FOptionalBool& bArchived, FOptionalString& DiffObjectKey, FOptionalInt64& PublisherAccountId, FOptionalInt64& LastChanged, FOptionalString& Uid);
+	static void Break(const UContentBasicManifest* Serializable, FString& AffectedContentIds, FBeamContentManifestId& Id, FString& Checksum, int64& Created, TArray<UBaseContentReference*>& References, FOptionalBool& bArchived, FOptionalString& DiffObjectKey, FOptionalInt64& PublisherAccountId, FOptionalInt64& LastChanged, FOptionalString& Uid);
 };

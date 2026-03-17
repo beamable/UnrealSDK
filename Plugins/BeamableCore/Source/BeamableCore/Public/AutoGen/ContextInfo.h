@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
-#include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
+#include "Serialization/BeamJsonUtils.h"
 
 #include "ContextInfo.generated.h"
 
@@ -14,9 +14,9 @@ class BEAMABLECORE_API UContextInfo : public UObject, public IBeamJsonSerializab
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Platform", Category="Beam")
-	FOptionalString Platform = {};
+	FString Platform = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Device", Category="Beam")
-	FOptionalString Device = {};
+	FString Device = {};
 
 	
 

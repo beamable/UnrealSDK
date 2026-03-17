@@ -7,7 +7,7 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-#include "BeamableCore/Public/AutoGen/StartSessionRequestBody.h"
+#include "BeamableCore/Public/AutoGen/SessionBasicStartSessionRequestBody.h"
 #include "BeamableCore/Public/AutoGen/StartSessionResponse.h"
 
 #include "PostSessionRequest.generated.h"
@@ -27,7 +27,7 @@ public:
 
 	// Body Params
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="", Category="Beam")
-	UStartSessionRequestBody* Body = {};
+	USessionBasicStartSessionRequestBody* Body = {};
 
 	// Beam Base Request Declaration
 	UPostSessionRequest() = default;

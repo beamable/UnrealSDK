@@ -7,8 +7,8 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-#include "BeamableCore/Public/AutoGen/RefreshTokenAuthRequestBody.h"
-#include "BeamableCore/Public/AutoGen/AuthResponse.h"
+#include "BeamableCore/Public/AutoGen/AuthV2RefreshTokenAuthRequestBody.h"
+#include "BeamableCore/Public/AutoGen/AuthV2AuthResponse.h"
 
 #include "PostTokensRefreshTokenRequest.generated.h"
 
@@ -27,7 +27,7 @@ public:
 
 	// Body Params
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="", Category="Beam")
-	URefreshTokenAuthRequestBody* Body = {};
+	UAuthV2RefreshTokenAuthRequestBody* Body = {};
 
 	// Beam Base Request Declaration
 	UPostTokensRefreshTokenRequest() = default;
@@ -37,11 +37,11 @@ public:
 	virtual void BuildBody(FString& BodyString) const override;
 
 	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Auth|Utils|Make/Break", DisplayName="Make PostTokensRefreshToken",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_RefreshToken,_CustomerId,_RealmId,_Context,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
-	static UPostTokensRefreshTokenRequest* Make(FOptionalString _RefreshToken, FOptionalBeamCid _CustomerId, FOptionalBeamPid _RealmId, FOptionalContextInfo _Context, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
+	static UPostTokensRefreshTokenRequest* Make(FOptionalString _RefreshToken, FOptionalBeamCid _CustomerId, FOptionalBeamPid _RealmId, FOptionalAuthV2ContextInfo _Context, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)
-DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnPostTokensRefreshTokenSuccess, FBeamRequestContext, Context, UPostTokensRefreshTokenRequest*, Request, UAuthResponse*, Response);
+DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnPostTokensRefreshTokenSuccess, FBeamRequestContext, Context, UPostTokensRefreshTokenRequest*, Request, UAuthV2AuthResponse*, Response);
 
 UDELEGATE(BlueprintAuthorityOnly)
 DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnPostTokensRefreshTokenError, FBeamRequestContext, Context, UPostTokensRefreshTokenRequest*, Request, FBeamErrorResponse, Error);
@@ -49,5 +49,5 @@ DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnPostTokensRefreshTokenError, FBeamReques
 UDELEGATE(BlueprintAuthorityOnly)
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FOnPostTokensRefreshTokenComplete, FBeamRequestContext, Context, UPostTokensRefreshTokenRequest*, Request);
 
-using FPostTokensRefreshTokenFullResponse = FBeamFullResponse<UPostTokensRefreshTokenRequest*, UAuthResponse*>;
+using FPostTokensRefreshTokenFullResponse = FBeamFullResponse<UPostTokensRefreshTokenRequest*, UAuthV2AuthResponse*>;
 DECLARE_DELEGATE_OneParam(FOnPostTokensRefreshTokenFullResponse, FPostTokensRefreshTokenFullResponse);

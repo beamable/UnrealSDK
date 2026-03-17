@@ -11,6 +11,7 @@ void UCustomerActorAccount::BeamSerializeProperties(TUnrealJsonSerializer& Seria
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("createdTimeMs"), &CreatedTimeMs, Serializer);
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("updatedTimeMs"), &UpdatedTimeMs, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("email"), &Email, Serializer);
+	UBeamJsonUtils::SerializeOptional<FString>(TEXT("passwordRaw"), &PasswordRaw, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("password"), &Password, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("username"), &Username, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("country"), &Country, Serializer);
@@ -30,6 +31,7 @@ void UCustomerActorAccount::BeamSerializeProperties(TUnrealPrettyJsonSerializer&
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("createdTimeMs"), &CreatedTimeMs, Serializer);
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("updatedTimeMs"), &UpdatedTimeMs, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("email"), &Email, Serializer);
+	UBeamJsonUtils::SerializeOptional<FString>(TEXT("passwordRaw"), &PasswordRaw, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("password"), &Password, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("username"), &Username, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("country"), &Country, Serializer);
@@ -49,6 +51,7 @@ void UCustomerActorAccount::BeamDeserializeProperties(const TSharedPtr<FJsonObje
 	UBeamJsonUtils::DeserializeOptional<int64>("createdTimeMs", Bag, CreatedTimeMs, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<int64>("updatedTimeMs", Bag, UpdatedTimeMs, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("email", Bag, Email, OuterOwner);
+	UBeamJsonUtils::DeserializeOptional<FString>("passwordRaw", Bag, PasswordRaw, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("password", Bag, Password, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("username", Bag, Username, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("country", Bag, Country, OuterOwner);

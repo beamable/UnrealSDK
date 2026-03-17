@@ -23,7 +23,7 @@ FString UContextInfoLibrary::ContextInfoToJsonString(const UContextInfo* Seriali
 	return Result;
 }	
 
-UContextInfo* UContextInfoLibrary::Make(FOptionalString Platform, FOptionalString Device, UObject* Outer)
+UContextInfo* UContextInfoLibrary::Make(FString Platform, FString Device, UObject* Outer)
 {
 	auto Serializable = NewObject<UContextInfo>(Outer);
 	Serializable->Platform = Platform;
@@ -32,7 +32,7 @@ UContextInfo* UContextInfoLibrary::Make(FOptionalString Platform, FOptionalStrin
 	return Serializable;
 }
 
-void UContextInfoLibrary::Break(const UContextInfo* Serializable, FOptionalString& Platform, FOptionalString& Device)
+void UContextInfoLibrary::Break(const UContextInfo* Serializable, FString& Platform, FString& Device)
 {
 	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
 	{

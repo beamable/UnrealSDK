@@ -3,7 +3,7 @@
 
 FOptionalEventPhaseRuntime::FOptionalEventPhaseRuntime()
 {
-	Val = nullptr;
+	Val = NewObject<UEventPhaseRuntime>(GetTransientPackage());
 	IsSet = false;
 }
 

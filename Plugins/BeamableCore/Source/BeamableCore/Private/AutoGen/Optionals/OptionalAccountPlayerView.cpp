@@ -3,7 +3,7 @@
 
 FOptionalAccountPlayerView::FOptionalAccountPlayerView()
 {
-	Val = nullptr;
+	Val = NewObject<UAccountPlayerView>(GetTransientPackage());
 	IsSet = false;
 }
 

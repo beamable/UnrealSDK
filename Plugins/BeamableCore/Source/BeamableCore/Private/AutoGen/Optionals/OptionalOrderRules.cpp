@@ -3,7 +3,7 @@
 
 FOptionalOrderRules::FOptionalOrderRules()
 {
-	Val = nullptr;
+	Val = NewObject<UOrderRules>(GetTransientPackage());
 	IsSet = false;
 }
 

@@ -3,9 +3,10 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfString.h"
 #include "BeamBackend/SemanticTypes/BeamContentId.h"
 #include "Serialization/BeamJsonUtils.h"
-#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfString.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
 
 #include "BinaryDefinition.generated.h"
 
@@ -21,6 +22,8 @@ public:
 	FString Checksum = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Upload Content Type", Category="Beam")
 	FString UploadContentType = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Visibility", Category="Beam")
+	FOptionalString Visibility = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Tags", Category="Beam")
 	FOptionalArrayOfString Tags = {};
 

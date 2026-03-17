@@ -3,7 +3,7 @@
 
 FOptionalMessage::FOptionalMessage()
 {
-	Val = nullptr;
+	Val = NewObject<UMessage>(GetTransientPackage());
 	IsSet = false;
 }
 

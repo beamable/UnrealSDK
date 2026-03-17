@@ -3,10 +3,10 @@
 #include "CoreMinimal.h"
 #include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
-#include "BeamableCore/Public/AutoGen/PaymentTotal.h"
-#include "BeamableCore/Public/AutoGen/LocalDate.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
-#include "Serialization/BeamJsonUtils.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfString.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfPlayerSessionActorPaymentTotal.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalInt32.h"
 
 #include "SessionHistoryResponse.generated.h"
 
@@ -17,17 +17,17 @@ class BEAMABLECORE_API USessionHistoryResponse : public UObject, public IBeamJso
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Date", Category="Beam")
-	ULocalDate* Date = {};
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Days Played", Category="Beam")
-	int32 DaysPlayed = {};
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Payments", Category="Beam")
-	TArray<FString> Payments = {};
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Total Paid", Category="Beam")
-	TArray<UPaymentTotal*> TotalPaid = {};
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Sessions", Category="Beam")
-	TArray<FString> Sessions = {};
+	FOptionalString Date = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Install Date", Category="Beam")
 	FOptionalString InstallDate = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Days Played", Category="Beam")
+	FOptionalInt32 DaysPlayed = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Sessions", Category="Beam")
+	FOptionalArrayOfString Sessions = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Payments", Category="Beam")
+	FOptionalArrayOfString Payments = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Total Paid", Category="Beam")
+	FOptionalArrayOfPlayerSessionActorPaymentTotal TotalPaid = {};
 
 	virtual void DeserializeRequestResponse(UObject* RequestData, FString ResponseContent) override;
 

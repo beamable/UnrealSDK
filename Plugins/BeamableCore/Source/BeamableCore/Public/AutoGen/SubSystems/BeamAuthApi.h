@@ -9,10 +9,20 @@
 
 #include "BeamableCore/Public/AutoGen/SubSystems/Auth/GetTokenRequest.h"
 #include "BeamableCore/Public/AutoGen/SubSystems/Auth/AuthenticateRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Auth/GetOpenidConfigurationRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Auth/GetKeysRequest.h"
 #include "BeamableCore/Public/AutoGen/SubSystems/Auth/PostRefreshTokenRequest.h"
 #include "BeamableCore/Public/AutoGen/SubSystems/Auth/PostTokensRefreshTokenRequest.h"
 #include "BeamableCore/Public/AutoGen/SubSystems/Auth/PostTokensGuestRequest.h"
 #include "BeamableCore/Public/AutoGen/SubSystems/Auth/PostTokensPasswordRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Auth/PostTokensExternalRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Auth/PostTokensDeviceIdRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Auth/ApiAuthGetTokensRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Auth/DeleteTokensRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Auth/ApiAuthGetTokensByTokenIdRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Auth/GetTokensAccessRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Auth/PostTokensAuthCodeRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Auth/PostAuthCodesRequest.h"
 #include "BeamableCore/Public/AutoGen/SubSystems/Auth/ApiAuthPostServerRequest.h"
 #include "BeamableCore/Public/AutoGen/SubSystems/Auth/GetTokenListRequest.h"
 #include "BeamableCore/Public/AutoGen/SubSystems/Auth/PutTokenRevokeRequest.h"
@@ -43,6 +53,11 @@ private:
 	UPROPERTY()
 	UBeamResponseCache* ResponseCache;
 
+public:
+    // This section is only used in microservice code generation.
+
+private:
+
 	
 	/**
 	 * @brief Private implementation that all overloaded BP UFunctions call.	  
@@ -71,6 +86,30 @@ private:
 
 
 	
+	/**
+	 * @brief Private implementation for requests that require authentication that all overloaded BP UFunctions call.	  
+	 */
+	void BP_GetOpenidConfigurationImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, UGetOpenidConfigurationRequest* RequestData,
+	                  const FOnGetOpenidConfigurationSuccess& OnSuccess, const FOnGetOpenidConfigurationError& OnError, const FOnGetOpenidConfigurationComplete& OnComplete, 
+					  int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
+	/**
+	 * @brief Overload version for binding lambdas when in C++ land. Prefer the BP version whenever possible, this is here mostly for quick experimentation purposes.	 
+	 */
+	void CPP_GetOpenidConfigurationImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, UGetOpenidConfigurationRequest* RequestData,
+	                   const FOnGetOpenidConfigurationFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
+		
+	/**
+	 * @brief Private implementation for requests that require authentication that all overloaded BP UFunctions call.	  
+	 */
+	void BP_GetKeysImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, UGetKeysRequest* RequestData,
+	                  const FOnGetKeysSuccess& OnSuccess, const FOnGetKeysError& OnError, const FOnGetKeysComplete& OnComplete, 
+					  int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
+	/**
+	 * @brief Overload version for binding lambdas when in C++ land. Prefer the BP version whenever possible, this is here mostly for quick experimentation purposes.	 
+	 */
+	void CPP_GetKeysImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, UGetKeysRequest* RequestData,
+	                   const FOnGetKeysFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
+		
 	/**
 	 * @brief Private implementation for requests that require authentication that all overloaded BP UFunctions call.	  
 	 */
@@ -118,6 +157,102 @@ private:
 	 */
 	void CPP_PostTokensPasswordImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, UPostTokensPasswordRequest* RequestData,
 	                   const FOnPostTokensPasswordFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
+		
+	/**
+	 * @brief Private implementation for requests that require authentication that all overloaded BP UFunctions call.	  
+	 */
+	void BP_PostTokensExternalImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, UPostTokensExternalRequest* RequestData,
+	                  const FOnPostTokensExternalSuccess& OnSuccess, const FOnPostTokensExternalError& OnError, const FOnPostTokensExternalComplete& OnComplete, 
+					  int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
+	/**
+	 * @brief Overload version for binding lambdas when in C++ land. Prefer the BP version whenever possible, this is here mostly for quick experimentation purposes.	 
+	 */
+	void CPP_PostTokensExternalImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, UPostTokensExternalRequest* RequestData,
+	                   const FOnPostTokensExternalFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
+		
+	/**
+	 * @brief Private implementation for requests that require authentication that all overloaded BP UFunctions call.	  
+	 */
+	void BP_PostTokensDeviceIdImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, UPostTokensDeviceIdRequest* RequestData,
+	                  const FOnPostTokensDeviceIdSuccess& OnSuccess, const FOnPostTokensDeviceIdError& OnError, const FOnPostTokensDeviceIdComplete& OnComplete, 
+					  int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
+	/**
+	 * @brief Overload version for binding lambdas when in C++ land. Prefer the BP version whenever possible, this is here mostly for quick experimentation purposes.	 
+	 */
+	void CPP_PostTokensDeviceIdImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, UPostTokensDeviceIdRequest* RequestData,
+	                   const FOnPostTokensDeviceIdFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
+		
+	/**
+	 * @brief Private implementation for requests that require authentication that all overloaded BP UFunctions call.	  
+	 */
+	void BP_ApiAuthGetTokensImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, UApiAuthGetTokensRequest* RequestData,
+	                  const FOnApiAuthGetTokensSuccess& OnSuccess, const FOnApiAuthGetTokensError& OnError, const FOnApiAuthGetTokensComplete& OnComplete, 
+					  int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
+	/**
+	 * @brief Overload version for binding lambdas when in C++ land. Prefer the BP version whenever possible, this is here mostly for quick experimentation purposes.	 
+	 */
+	void CPP_ApiAuthGetTokensImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, UApiAuthGetTokensRequest* RequestData,
+	                   const FOnApiAuthGetTokensFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
+		
+	/**
+	 * @brief Private implementation for requests that require authentication that all overloaded BP UFunctions call.	  
+	 */
+	void BP_DeleteTokensImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, UDeleteTokensRequest* RequestData,
+	                  const FOnDeleteTokensSuccess& OnSuccess, const FOnDeleteTokensError& OnError, const FOnDeleteTokensComplete& OnComplete, 
+					  int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
+	/**
+	 * @brief Overload version for binding lambdas when in C++ land. Prefer the BP version whenever possible, this is here mostly for quick experimentation purposes.	 
+	 */
+	void CPP_DeleteTokensImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, UDeleteTokensRequest* RequestData,
+	                   const FOnDeleteTokensFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
+		
+	/**
+	 * @brief Private implementation for requests that require authentication that all overloaded BP UFunctions call.	  
+	 */
+	void BP_ApiAuthGetTokensByTokenIdImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, UApiAuthGetTokensByTokenIdRequest* RequestData,
+	                  const FOnApiAuthGetTokensByTokenIdSuccess& OnSuccess, const FOnApiAuthGetTokensByTokenIdError& OnError, const FOnApiAuthGetTokensByTokenIdComplete& OnComplete, 
+					  int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
+	/**
+	 * @brief Overload version for binding lambdas when in C++ land. Prefer the BP version whenever possible, this is here mostly for quick experimentation purposes.	 
+	 */
+	void CPP_ApiAuthGetTokensByTokenIdImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, UApiAuthGetTokensByTokenIdRequest* RequestData,
+	                   const FOnApiAuthGetTokensByTokenIdFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
+		
+	/**
+	 * @brief Private implementation for requests that require authentication that all overloaded BP UFunctions call.	  
+	 */
+	void BP_GetTokensAccessImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, UGetTokensAccessRequest* RequestData,
+	                  const FOnGetTokensAccessSuccess& OnSuccess, const FOnGetTokensAccessError& OnError, const FOnGetTokensAccessComplete& OnComplete, 
+					  int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
+	/**
+	 * @brief Overload version for binding lambdas when in C++ land. Prefer the BP version whenever possible, this is here mostly for quick experimentation purposes.	 
+	 */
+	void CPP_GetTokensAccessImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, UGetTokensAccessRequest* RequestData,
+	                   const FOnGetTokensAccessFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
+		
+	/**
+	 * @brief Private implementation for requests that require authentication that all overloaded BP UFunctions call.	  
+	 */
+	void BP_PostTokensAuthCodeImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, UPostTokensAuthCodeRequest* RequestData,
+	                  const FOnPostTokensAuthCodeSuccess& OnSuccess, const FOnPostTokensAuthCodeError& OnError, const FOnPostTokensAuthCodeComplete& OnComplete, 
+					  int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
+	/**
+	 * @brief Overload version for binding lambdas when in C++ land. Prefer the BP version whenever possible, this is here mostly for quick experimentation purposes.	 
+	 */
+	void CPP_PostTokensAuthCodeImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, UPostTokensAuthCodeRequest* RequestData,
+	                   const FOnPostTokensAuthCodeFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
+		
+	/**
+	 * @brief Private implementation for requests that require authentication that all overloaded BP UFunctions call.	  
+	 */
+	void BP_PostAuthCodesImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, UPostAuthCodesRequest* RequestData,
+	                  const FOnPostAuthCodesSuccess& OnSuccess, const FOnPostAuthCodesError& OnError, const FOnPostAuthCodesComplete& OnComplete, 
+					  int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
+	/**
+	 * @brief Overload version for binding lambdas when in C++ land. Prefer the BP version whenever possible, this is here mostly for quick experimentation purposes.	 
+	 */
+	void CPP_PostAuthCodesImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, UPostAuthCodesRequest* RequestData,
+	                   const FOnPostAuthCodesFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 		
 	/**
 	 * @brief Private implementation for requests that require authentication that all overloaded BP UFunctions call.	  
@@ -194,6 +329,38 @@ public:
 
 	
 	/**
+	 * @brief Makes an authenticated request to the Get /api/.well-known/openid-configuration endpoint of the Auth Service.
+	 *
+	 * PREFER THE UFUNCTION OVERLOAD AS OPPOSED TO THIS. THIS MAINLY EXISTS TO ALLOW LAMBDA BINDING THE HANDLER.
+	 * (Dynamic delegates do not allow for that so... we autogen this one to make experimenting in CPP a bit faster).
+	 * 
+	 * @param UserSlot The Authenticated User Slot that is making this request.
+	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
+	 * @param Handler A callback that defines how to handle success, error and completion.
+     * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight.
+	 * @param OpHandle When made as part of an Operation, you can pass this in and it'll register the request with the operation automatically.
+	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches. 
+	 */
+	void CPP_GetOpenidConfiguration(const FUserSlot& UserSlot, UGetOpenidConfigurationRequest* Request, const FOnGetOpenidConfigurationFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
+
+		
+	/**
+	 * @brief Makes an authenticated request to the Get /api/auth/keys endpoint of the Auth Service.
+	 *
+	 * PREFER THE UFUNCTION OVERLOAD AS OPPOSED TO THIS. THIS MAINLY EXISTS TO ALLOW LAMBDA BINDING THE HANDLER.
+	 * (Dynamic delegates do not allow for that so... we autogen this one to make experimenting in CPP a bit faster).
+	 * 
+	 * @param UserSlot The Authenticated User Slot that is making this request.
+	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
+	 * @param Handler A callback that defines how to handle success, error and completion.
+     * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight.
+	 * @param OpHandle When made as part of an Operation, you can pass this in and it'll register the request with the operation automatically.
+	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches. 
+	 */
+	void CPP_GetKeys(const FUserSlot& UserSlot, UGetKeysRequest* Request, const FOnGetKeysFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
+
+		
+	/**
 	 * @brief Makes an authenticated request to the Post /api/auth/refresh-token endpoint of the Auth Service.
 	 *
 	 * PREFER THE UFUNCTION OVERLOAD AS OPPOSED TO THIS. THIS MAINLY EXISTS TO ALLOW LAMBDA BINDING THE HANDLER.
@@ -255,6 +422,134 @@ public:
 	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches. 
 	 */
 	void CPP_PostTokensPassword(const FUserSlot& UserSlot, UPostTokensPasswordRequest* Request, const FOnPostTokensPasswordFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
+
+		
+	/**
+	 * @brief Makes an authenticated request to the Post /api/auth/tokens/external endpoint of the Auth Service.
+	 *
+	 * PREFER THE UFUNCTION OVERLOAD AS OPPOSED TO THIS. THIS MAINLY EXISTS TO ALLOW LAMBDA BINDING THE HANDLER.
+	 * (Dynamic delegates do not allow for that so... we autogen this one to make experimenting in CPP a bit faster).
+	 * 
+	 * @param UserSlot The Authenticated User Slot that is making this request.
+	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
+	 * @param Handler A callback that defines how to handle success, error and completion.
+     * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight.
+	 * @param OpHandle When made as part of an Operation, you can pass this in and it'll register the request with the operation automatically.
+	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches. 
+	 */
+	void CPP_PostTokensExternal(const FUserSlot& UserSlot, UPostTokensExternalRequest* Request, const FOnPostTokensExternalFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
+
+		
+	/**
+	 * @brief Makes an authenticated request to the Post /api/auth/tokens/device-id endpoint of the Auth Service.
+	 *
+	 * PREFER THE UFUNCTION OVERLOAD AS OPPOSED TO THIS. THIS MAINLY EXISTS TO ALLOW LAMBDA BINDING THE HANDLER.
+	 * (Dynamic delegates do not allow for that so... we autogen this one to make experimenting in CPP a bit faster).
+	 * 
+	 * @param UserSlot The Authenticated User Slot that is making this request.
+	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
+	 * @param Handler A callback that defines how to handle success, error and completion.
+     * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight.
+	 * @param OpHandle When made as part of an Operation, you can pass this in and it'll register the request with the operation automatically.
+	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches. 
+	 */
+	void CPP_PostTokensDeviceId(const FUserSlot& UserSlot, UPostTokensDeviceIdRequest* Request, const FOnPostTokensDeviceIdFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
+
+		
+	/**
+	 * @brief Makes an authenticated request to the Get /api/auth/tokens endpoint of the Auth Service.
+	 *
+	 * PREFER THE UFUNCTION OVERLOAD AS OPPOSED TO THIS. THIS MAINLY EXISTS TO ALLOW LAMBDA BINDING THE HANDLER.
+	 * (Dynamic delegates do not allow for that so... we autogen this one to make experimenting in CPP a bit faster).
+	 * 
+	 * @param UserSlot The Authenticated User Slot that is making this request.
+	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
+	 * @param Handler A callback that defines how to handle success, error and completion.
+     * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight.
+	 * @param OpHandle When made as part of an Operation, you can pass this in and it'll register the request with the operation automatically.
+	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches. 
+	 */
+	void CPP_ApiAuthGetTokens(const FUserSlot& UserSlot, UApiAuthGetTokensRequest* Request, const FOnApiAuthGetTokensFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
+
+		
+	/**
+	 * @brief Makes an authenticated request to the Delete /api/auth/tokens endpoint of the Auth Service.
+	 *
+	 * PREFER THE UFUNCTION OVERLOAD AS OPPOSED TO THIS. THIS MAINLY EXISTS TO ALLOW LAMBDA BINDING THE HANDLER.
+	 * (Dynamic delegates do not allow for that so... we autogen this one to make experimenting in CPP a bit faster).
+	 * 
+	 * @param UserSlot The Authenticated User Slot that is making this request.
+	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
+	 * @param Handler A callback that defines how to handle success, error and completion.
+     * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight.
+	 * @param OpHandle When made as part of an Operation, you can pass this in and it'll register the request with the operation automatically.
+	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches. 
+	 */
+	void CPP_DeleteTokens(const FUserSlot& UserSlot, UDeleteTokensRequest* Request, const FOnDeleteTokensFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
+
+		
+	/**
+	 * @brief Makes an authenticated request to the Get /api/auth/tokens/{tokenId} endpoint of the Auth Service.
+	 *
+	 * PREFER THE UFUNCTION OVERLOAD AS OPPOSED TO THIS. THIS MAINLY EXISTS TO ALLOW LAMBDA BINDING THE HANDLER.
+	 * (Dynamic delegates do not allow for that so... we autogen this one to make experimenting in CPP a bit faster).
+	 * 
+	 * @param UserSlot The Authenticated User Slot that is making this request.
+	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
+	 * @param Handler A callback that defines how to handle success, error and completion.
+     * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight.
+	 * @param OpHandle When made as part of an Operation, you can pass this in and it'll register the request with the operation automatically.
+	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches. 
+	 */
+	void CPP_ApiAuthGetTokensByTokenId(const FUserSlot& UserSlot, UApiAuthGetTokensByTokenIdRequest* Request, const FOnApiAuthGetTokensByTokenIdFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
+
+		
+	/**
+	 * @brief Makes an authenticated request to the Get /api/auth/tokens/access/{tokenId} endpoint of the Auth Service.
+	 *
+	 * PREFER THE UFUNCTION OVERLOAD AS OPPOSED TO THIS. THIS MAINLY EXISTS TO ALLOW LAMBDA BINDING THE HANDLER.
+	 * (Dynamic delegates do not allow for that so... we autogen this one to make experimenting in CPP a bit faster).
+	 * 
+	 * @param UserSlot The Authenticated User Slot that is making this request.
+	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
+	 * @param Handler A callback that defines how to handle success, error and completion.
+     * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight.
+	 * @param OpHandle When made as part of an Operation, you can pass this in and it'll register the request with the operation automatically.
+	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches. 
+	 */
+	void CPP_GetTokensAccess(const FUserSlot& UserSlot, UGetTokensAccessRequest* Request, const FOnGetTokensAccessFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
+
+		
+	/**
+	 * @brief Makes an authenticated request to the Post /api/auth/tokens/auth-code endpoint of the Auth Service.
+	 *
+	 * PREFER THE UFUNCTION OVERLOAD AS OPPOSED TO THIS. THIS MAINLY EXISTS TO ALLOW LAMBDA BINDING THE HANDLER.
+	 * (Dynamic delegates do not allow for that so... we autogen this one to make experimenting in CPP a bit faster).
+	 * 
+	 * @param UserSlot The Authenticated User Slot that is making this request.
+	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
+	 * @param Handler A callback that defines how to handle success, error and completion.
+     * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight.
+	 * @param OpHandle When made as part of an Operation, you can pass this in and it'll register the request with the operation automatically.
+	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches. 
+	 */
+	void CPP_PostTokensAuthCode(const FUserSlot& UserSlot, UPostTokensAuthCodeRequest* Request, const FOnPostTokensAuthCodeFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
+
+		
+	/**
+	 * @brief Makes an authenticated request to the Post /api/auth/auth-codes endpoint of the Auth Service.
+	 *
+	 * PREFER THE UFUNCTION OVERLOAD AS OPPOSED TO THIS. THIS MAINLY EXISTS TO ALLOW LAMBDA BINDING THE HANDLER.
+	 * (Dynamic delegates do not allow for that so... we autogen this one to make experimenting in CPP a bit faster).
+	 * 
+	 * @param UserSlot The Authenticated User Slot that is making this request.
+	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
+	 * @param Handler A callback that defines how to handle success, error and completion.
+     * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight.
+	 * @param OpHandle When made as part of an Operation, you can pass this in and it'll register the request with the operation automatically.
+	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches. 
+	 */
+	void CPP_PostAuthCodes(const FUserSlot& UserSlot, UPostAuthCodesRequest* Request, const FOnPostAuthCodesFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 
 		
 	/**
@@ -336,6 +631,36 @@ public:
 
 	
 	/**
+	 * @brief Makes an authenticated request to the Get /api/.well-known/openid-configuration endpoint of the Auth Service.
+	 *
+	 * @param UserSlot The authenticated UserSlot with the user making the request. 
+	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
+	 * @param OnSuccess What to do if the requests receives a successful response.
+	 * @param OnError What to do if the request receives an error response.
+	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
+	 * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight.
+	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches.
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Auth|Utils|Make/Break", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="OpHandle,CallingContext",AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete,OpHandle", BeamFlowFunction))
+	void GetOpenidConfiguration(FUserSlot UserSlot, UGetOpenidConfigurationRequest* Request, const FOnGetOpenidConfigurationSuccess& OnSuccess, const FOnGetOpenidConfigurationError& OnError, const FOnGetOpenidConfigurationComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr);
+
+		
+	/**
+	 * @brief Makes an authenticated request to the Get /api/auth/keys endpoint of the Auth Service.
+	 *
+	 * @param UserSlot The authenticated UserSlot with the user making the request. 
+	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
+	 * @param OnSuccess What to do if the requests receives a successful response.
+	 * @param OnError What to do if the request receives an error response.
+	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
+	 * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight.
+	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches.
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Auth|Utils|Make/Break", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="OpHandle,CallingContext",AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete,OpHandle", BeamFlowFunction))
+	void GetKeys(FUserSlot UserSlot, UGetKeysRequest* Request, const FOnGetKeysSuccess& OnSuccess, const FOnGetKeysError& OnError, const FOnGetKeysComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr);
+
+		
+	/**
 	 * @brief Makes an authenticated request to the Post /api/auth/refresh-token endpoint of the Auth Service.
 	 *
 	 * @param UserSlot The authenticated UserSlot with the user making the request. 
@@ -393,6 +718,126 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Auth|Utils|Make/Break", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="OpHandle,CallingContext",AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete,OpHandle", BeamFlowFunction))
 	void PostTokensPassword(FUserSlot UserSlot, UPostTokensPasswordRequest* Request, const FOnPostTokensPasswordSuccess& OnSuccess, const FOnPostTokensPasswordError& OnError, const FOnPostTokensPasswordComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr);
+
+		
+	/**
+	 * @brief Makes an authenticated request to the Post /api/auth/tokens/external endpoint of the Auth Service.
+	 *
+	 * @param UserSlot The authenticated UserSlot with the user making the request. 
+	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
+	 * @param OnSuccess What to do if the requests receives a successful response.
+	 * @param OnError What to do if the request receives an error response.
+	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
+	 * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight.
+	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches.
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Auth|Utils|Make/Break", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="OpHandle,CallingContext",AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete,OpHandle", BeamFlowFunction))
+	void PostTokensExternal(FUserSlot UserSlot, UPostTokensExternalRequest* Request, const FOnPostTokensExternalSuccess& OnSuccess, const FOnPostTokensExternalError& OnError, const FOnPostTokensExternalComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr);
+
+		
+	/**
+	 * @brief Makes an authenticated request to the Post /api/auth/tokens/device-id endpoint of the Auth Service.
+	 *
+	 * @param UserSlot The authenticated UserSlot with the user making the request. 
+	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
+	 * @param OnSuccess What to do if the requests receives a successful response.
+	 * @param OnError What to do if the request receives an error response.
+	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
+	 * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight.
+	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches.
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Auth|Utils|Make/Break", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="OpHandle,CallingContext",AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete,OpHandle", BeamFlowFunction))
+	void PostTokensDeviceId(FUserSlot UserSlot, UPostTokensDeviceIdRequest* Request, const FOnPostTokensDeviceIdSuccess& OnSuccess, const FOnPostTokensDeviceIdError& OnError, const FOnPostTokensDeviceIdComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr);
+
+		
+	/**
+	 * @brief Makes an authenticated request to the Get /api/auth/tokens endpoint of the Auth Service.
+	 *
+	 * @param UserSlot The authenticated UserSlot with the user making the request. 
+	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
+	 * @param OnSuccess What to do if the requests receives a successful response.
+	 * @param OnError What to do if the request receives an error response.
+	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
+	 * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight.
+	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches.
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Auth|Utils|Make/Break", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="OpHandle,CallingContext",AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete,OpHandle", BeamFlowFunction))
+	void ApiAuthGetTokens(FUserSlot UserSlot, UApiAuthGetTokensRequest* Request, const FOnApiAuthGetTokensSuccess& OnSuccess, const FOnApiAuthGetTokensError& OnError, const FOnApiAuthGetTokensComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr);
+
+		
+	/**
+	 * @brief Makes an authenticated request to the Delete /api/auth/tokens endpoint of the Auth Service.
+	 *
+	 * @param UserSlot The authenticated UserSlot with the user making the request. 
+	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
+	 * @param OnSuccess What to do if the requests receives a successful response.
+	 * @param OnError What to do if the request receives an error response.
+	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
+	 * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight.
+	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches.
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Auth|Utils|Make/Break", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="OpHandle,CallingContext",AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete,OpHandle", BeamFlowFunction))
+	void DeleteTokens(FUserSlot UserSlot, UDeleteTokensRequest* Request, const FOnDeleteTokensSuccess& OnSuccess, const FOnDeleteTokensError& OnError, const FOnDeleteTokensComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr);
+
+		
+	/**
+	 * @brief Makes an authenticated request to the Get /api/auth/tokens/{tokenId} endpoint of the Auth Service.
+	 *
+	 * @param UserSlot The authenticated UserSlot with the user making the request. 
+	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
+	 * @param OnSuccess What to do if the requests receives a successful response.
+	 * @param OnError What to do if the request receives an error response.
+	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
+	 * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight.
+	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches.
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Auth|Utils|Make/Break", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="OpHandle,CallingContext",AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete,OpHandle", BeamFlowFunction))
+	void ApiAuthGetTokensByTokenId(FUserSlot UserSlot, UApiAuthGetTokensByTokenIdRequest* Request, const FOnApiAuthGetTokensByTokenIdSuccess& OnSuccess, const FOnApiAuthGetTokensByTokenIdError& OnError, const FOnApiAuthGetTokensByTokenIdComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr);
+
+		
+	/**
+	 * @brief Makes an authenticated request to the Get /api/auth/tokens/access/{tokenId} endpoint of the Auth Service.
+	 *
+	 * @param UserSlot The authenticated UserSlot with the user making the request. 
+	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
+	 * @param OnSuccess What to do if the requests receives a successful response.
+	 * @param OnError What to do if the request receives an error response.
+	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
+	 * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight.
+	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches.
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Auth|Utils|Make/Break", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="OpHandle,CallingContext",AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete,OpHandle", BeamFlowFunction))
+	void GetTokensAccess(FUserSlot UserSlot, UGetTokensAccessRequest* Request, const FOnGetTokensAccessSuccess& OnSuccess, const FOnGetTokensAccessError& OnError, const FOnGetTokensAccessComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr);
+
+		
+	/**
+	 * @brief Makes an authenticated request to the Post /api/auth/tokens/auth-code endpoint of the Auth Service.
+	 *
+	 * @param UserSlot The authenticated UserSlot with the user making the request. 
+	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
+	 * @param OnSuccess What to do if the requests receives a successful response.
+	 * @param OnError What to do if the request receives an error response.
+	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
+	 * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight.
+	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches.
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Auth|Utils|Make/Break", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="OpHandle,CallingContext",AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete,OpHandle", BeamFlowFunction))
+	void PostTokensAuthCode(FUserSlot UserSlot, UPostTokensAuthCodeRequest* Request, const FOnPostTokensAuthCodeSuccess& OnSuccess, const FOnPostTokensAuthCodeError& OnError, const FOnPostTokensAuthCodeComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr);
+
+		
+	/**
+	 * @brief Makes an authenticated request to the Post /api/auth/auth-codes endpoint of the Auth Service.
+	 *
+	 * @param UserSlot The authenticated UserSlot with the user making the request. 
+	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
+	 * @param OnSuccess What to do if the requests receives a successful response.
+	 * @param OnError What to do if the request receives an error response.
+	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
+	 * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight.
+	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches.
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Auth|Utils|Make/Break", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="OpHandle,CallingContext",AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete,OpHandle", BeamFlowFunction))
+	void PostAuthCodes(FUserSlot UserSlot, UPostAuthCodesRequest* Request, const FOnPostAuthCodesSuccess& OnSuccess, const FOnPostAuthCodesError& OnError, const FOnPostAuthCodesComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr);
 
 		
 	/**

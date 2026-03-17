@@ -12,6 +12,7 @@ void UContentBasicManifest::DeserializeRequestResponse(UObject* RequestData, FSt
 
 void UContentBasicManifest::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("affectedContentIds"), AffectedContentIds, Serializer);
 	UBeamJsonUtils::SerializeSemanticType<FString>(TEXT("id"), &Id, Serializer);
 	UBeamJsonUtils::SerializeRawPrimitive(TEXT("checksum"), Checksum, Serializer);
 	UBeamJsonUtils::SerializeRawPrimitive(TEXT("created"), Created, Serializer);
@@ -25,6 +26,7 @@ void UContentBasicManifest::BeamSerializeProperties(TUnrealJsonSerializer& Seria
 
 void UContentBasicManifest::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("affectedContentIds"), AffectedContentIds, Serializer);
 	UBeamJsonUtils::SerializeSemanticType<FString>(TEXT("id"), &Id, Serializer);
 	UBeamJsonUtils::SerializeRawPrimitive(TEXT("checksum"), Checksum, Serializer);
 	UBeamJsonUtils::SerializeRawPrimitive(TEXT("created"), Created, Serializer);
@@ -38,6 +40,7 @@ void UContentBasicManifest::BeamSerializeProperties(TUnrealPrettyJsonSerializer&
 
 void UContentBasicManifest::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("affectedContentIds"), Bag, AffectedContentIds);
 	UBeamJsonUtils::DeserializeSemanticType<FString>(TEXT("id"), Bag, Id, OuterOwner);
 	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("checksum"), Bag, Checksum);
 	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("created"), Bag, Created);

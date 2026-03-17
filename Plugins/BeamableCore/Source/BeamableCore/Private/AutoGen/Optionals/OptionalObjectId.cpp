@@ -3,7 +3,7 @@
 
 FOptionalObjectId::FOptionalObjectId()
 {
-	Val = nullptr;
+	Val = NewObject<UObjectId>(GetTransientPackage());
 	IsSet = false;
 }
 

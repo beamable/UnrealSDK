@@ -6,6 +6,7 @@
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalBeamPid.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalBeamGamerTag.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalBool.h"
 
 #include "MessageRequestBody.generated.h"
 
@@ -15,6 +16,8 @@ class BEAMABLECORE_API UMessageRequestBody : public UObject, public IBeamJsonSer
 	GENERATED_BODY()
 
 public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Single Delivery", Category="Beam")
+	FOptionalBool bSingleDelivery = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Body", Category="Beam")
 	FOptionalString Body = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Pid", Category="Beam")

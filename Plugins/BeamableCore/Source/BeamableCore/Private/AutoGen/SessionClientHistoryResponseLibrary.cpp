@@ -23,25 +23,25 @@ FString USessionClientHistoryResponseLibrary::SessionClientHistoryResponseToJson
 	return Result;
 }	
 
-USessionClientHistoryResponse* USessionClientHistoryResponseLibrary::Make(ULocalDate* Date, int32 DaysPlayed, TArray<FString> Sessions, FOptionalString InstallDate, UObject* Outer)
+USessionClientHistoryResponse* USessionClientHistoryResponseLibrary::Make(FOptionalString Date, FOptionalString InstallDate, FOptionalInt32 DaysPlayed, FOptionalArrayOfString Sessions, UObject* Outer)
 {
 	auto Serializable = NewObject<USessionClientHistoryResponse>(Outer);
 	Serializable->Date = Date;
+	Serializable->InstallDate = InstallDate;
 	Serializable->DaysPlayed = DaysPlayed;
 	Serializable->Sessions = Sessions;
-	Serializable->InstallDate = InstallDate;
 	
 	return Serializable;
 }
 
-void USessionClientHistoryResponseLibrary::Break(const USessionClientHistoryResponse* Serializable, ULocalDate*& Date, int32& DaysPlayed, TArray<FString>& Sessions, FOptionalString& InstallDate)
+void USessionClientHistoryResponseLibrary::Break(const USessionClientHistoryResponse* Serializable, FOptionalString& Date, FOptionalString& InstallDate, FOptionalInt32& DaysPlayed, FOptionalArrayOfString& Sessions)
 {
 	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
 	{
 		Date = Serializable->Date;
+		InstallDate = Serializable->InstallDate;
 		DaysPlayed = Serializable->DaysPlayed;
 		Sessions = Serializable->Sessions;
-		InstallDate = Serializable->InstallDate;
 	}
 		
 }

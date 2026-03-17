@@ -3,7 +3,7 @@
 
 FOptionalEntitlementClaimWindow::FOptionalEntitlementClaimWindow()
 {
-	Val = nullptr;
+	Val = NewObject<UEntitlementClaimWindow>(GetTransientPackage());
 	IsSet = false;
 }
 

@@ -23,9 +23,10 @@ FString UMessageRequestBodyLibrary::MessageRequestBodyToJsonString(const UMessag
 	return Result;
 }	
 
-UMessageRequestBody* UMessageRequestBodyLibrary::Make(FOptionalString Body, FOptionalBeamPid Pid, FOptionalBeamGamerTag PlayerId, FOptionalString Channel, FOptionalBeamPid RealmId, UObject* Outer)
+UMessageRequestBody* UMessageRequestBodyLibrary::Make(FOptionalBool bSingleDelivery, FOptionalString Body, FOptionalBeamPid Pid, FOptionalBeamGamerTag PlayerId, FOptionalString Channel, FOptionalBeamPid RealmId, UObject* Outer)
 {
 	auto Serializable = NewObject<UMessageRequestBody>(Outer);
+	Serializable->bSingleDelivery = bSingleDelivery;
 	Serializable->Body = Body;
 	Serializable->Pid = Pid;
 	Serializable->PlayerId = PlayerId;
@@ -35,10 +36,11 @@ UMessageRequestBody* UMessageRequestBodyLibrary::Make(FOptionalString Body, FOpt
 	return Serializable;
 }
 
-void UMessageRequestBodyLibrary::Break(const UMessageRequestBody* Serializable, FOptionalString& Body, FOptionalBeamPid& Pid, FOptionalBeamGamerTag& PlayerId, FOptionalString& Channel, FOptionalBeamPid& RealmId)
+void UMessageRequestBodyLibrary::Break(const UMessageRequestBody* Serializable, FOptionalBool& bSingleDelivery, FOptionalString& Body, FOptionalBeamPid& Pid, FOptionalBeamGamerTag& PlayerId, FOptionalString& Channel, FOptionalBeamPid& RealmId)
 {
 	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
 	{
+		bSingleDelivery = Serializable->bSingleDelivery;
 		Body = Serializable->Body;
 		Pid = Serializable->Pid;
 		PlayerId = Serializable->PlayerId;

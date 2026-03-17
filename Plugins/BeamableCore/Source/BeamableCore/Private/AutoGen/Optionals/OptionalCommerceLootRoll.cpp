@@ -3,7 +3,7 @@
 
 FOptionalCommerceLootRoll::FOptionalCommerceLootRoll()
 {
-	Val = nullptr;
+	Val = NewObject<UCommerceLootRoll>(GetTransientPackage());
 	IsSet = false;
 }
 

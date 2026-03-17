@@ -3002,3 +3002,5 @@ void UBeamRuntime::FillDefaultSignUpInitProperties(TMap<FString, FString>& InitP
 	InitProperties.Add(TEXT("__beam_sdk_version__"), GetDefault<UBeamCoreSettings>()->BeamableInfoData->Version.ToString());
 	InitProperties.Add(TEXT("__beam_ue_engine_version__"), FEngineVersion::Current().ToString());
 }
+
+#undef LOCTEXT_NAMESPACE

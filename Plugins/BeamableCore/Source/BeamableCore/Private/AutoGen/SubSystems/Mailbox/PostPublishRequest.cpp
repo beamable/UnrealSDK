@@ -27,7 +27,7 @@ void UPostPublishRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostPublishRequest* UPostPublishRequest::Make(FOptionalString _Body, FOptionalBeamPid _Pid, FOptionalBeamGamerTag _PlayerId, FOptionalString _Channel, FOptionalBeamPid _RealmId, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
+UPostPublishRequest* UPostPublishRequest::Make(FOptionalBool _bSingleDelivery, FOptionalString _Body, FOptionalBeamPid _Pid, FOptionalBeamGamerTag _PlayerId, FOptionalString _Channel, FOptionalBeamPid _RealmId, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPostPublishRequest* Req = NewObject<UPostPublishRequest>(RequestOwner);
 	Req->CustomHeaders = TMap{CustomHeaders};
@@ -37,6 +37,7 @@ UPostPublishRequest* UPostPublishRequest::Make(FOptionalString _Body, FOptionalB
 	
 	// Makes a body and fill up with parameters (Blank if no body parameters exist)
 	Req->Body = NewObject<UMessageRequestBody>(Req);
+	Req->Body->bSingleDelivery = _bSingleDelivery;
 	Req->Body->Body = _Body;
 	Req->Body->Pid = _Pid;
 	Req->Body->PlayerId = _PlayerId;

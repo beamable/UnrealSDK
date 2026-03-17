@@ -57,7 +57,7 @@ struct BEAMABLECORE_API FOptionalBeamFederation : public FBeamOptional
 {
 	GENERATED_BODY()
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 	FBeamFederation Val;
 
 	FOptionalBeamFederation();
