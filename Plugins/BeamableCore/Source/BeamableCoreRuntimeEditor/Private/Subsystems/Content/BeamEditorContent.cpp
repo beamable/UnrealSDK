@@ -1697,7 +1697,7 @@ void UBeamEditorContent::RunHistoryPsCommand(FBeamOperationHandle FirstEventOp)
 					};
 
 					const FString ManifestUidArg = FString::Printf(TEXT("--manifest-uid %s"), *Changelist->ManifestUid);
-					const FString ContentIdsArg = FString::Printf(TEXT("--content-ids %s"), *FString::Join(ContentIdsToSync, TEXT(",")));
+					const FString ContentIdsArg = FString::Printf(TEXT("--content-ids %s"), *FString::Join(ContentIdsToSync, TEXT(" ")));
 					Cli->RunCommandServer(SyncCommand, {ManifestUidArg, ContentIdsArg}, {});
 
 					if (HistoryChangelistSyncSlowTask)
