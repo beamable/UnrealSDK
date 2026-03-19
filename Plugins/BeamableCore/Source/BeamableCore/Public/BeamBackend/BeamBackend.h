@@ -14,6 +14,7 @@
 #include "BeamBackend/RequestType.h"
 #include "BeamBackend/BeamFullResponse.h"
 #include "Interfaces/IHttpResponse.h"
+#include "PIE/BeamPIE_Utilities.h"
 
 #include "UserSlots/BeamUserSlots.h"
 
@@ -48,6 +49,12 @@ typedef TFunction<void (FHttpRequestPtr request, FHttpResponsePtr response, bool
  */
 struct FRequestToRetry
 {
+
+	/**
+	 * @brief The route to the request sent 
+	 */
+	FString Route;
+	
 	/**
 	 * @brief The unique request id.
 	 */
@@ -77,6 +84,45 @@ struct FRequestToRetry
 	 * @brief A custom error code independent of the HTTP status code.
 	 */
 	FString ErrorCode;
+	FRequestToRetry() = default;
+
+	FRequestToRetry(const FString& Route, FBeamRequestId RequestId, int32 IsBlueprintCompatible, int32 ResponseCode, const FBeamRealmHandle& RealmHandle, const FBeamAuthToken& AuthToken, const FString& ErrorCode)
+		: Route(Route),
+		  RequestId(RequestId),
+		  IsBlueprintCompatible(IsBlueprintCompatible),
+		  ResponseCode(ResponseCode),
+		  RealmHandle(RealmHandle),
+		  AuthToken(AuthToken),
+		  ErrorCode(ErrorCode)
+	{
+	}
+
+	FRequestToRetry(FBeamRequestId RequestId, int32 IsBlueprintCompatible, int32 ResponseCode, const FBeamRealmHandle& RealmHandle)
+		: RequestId(RequestId),
+		  IsBlueprintCompatible(IsBlueprintCompatible),
+		  ResponseCode(ResponseCode),
+		  RealmHandle(RealmHandle)
+	{
+	}
+
+	FRequestToRetry(FBeamRequestId RequestId, int32 IsBlueprintCompatible, int32 ResponseCode, const FBeamRealmHandle& RealmHandle, const FBeamAuthToken& AuthToken)
+		: RequestId(RequestId),
+		  IsBlueprintCompatible(IsBlueprintCompatible),
+		  ResponseCode(ResponseCode),
+		  RealmHandle(RealmHandle),
+		  AuthToken(AuthToken)
+	{
+	}
+
+	FRequestToRetry(FBeamRequestId RequestId, int32 IsBlueprintCompatible, int32 ResponseCode, const FBeamRealmHandle& RealmHandle, const FBeamAuthToken& AuthToken, const FString& ErrorCode)
+		: RequestId(RequestId),
+		  IsBlueprintCompatible(IsBlueprintCompatible),
+		  ResponseCode(ResponseCode),
+		  RealmHandle(RealmHandle),
+		  AuthToken(AuthToken),
+		  ErrorCode(ErrorCode)
+	{
+	}
 
 	friend bool operator==(const FRequestToRetry& Lhs, const FRequestToRetry& RHS)
 	{
@@ -893,7 +939,7 @@ public:
 		// Update the context to pass into the response callbacks.
 		auto Context = *InFlightRequestContexts.Find(RequestId);
 		Context.ResponseCode = ResponseCode;
-
+	
 
 		// If the request was cancelled, we'll only run the OnComplete call 
 		if (InFlightRequestsCancelled.Contains(RequestId))
@@ -975,6 +1021,8 @@ public:
 				Retry.IsBlueprintCompatible = 1;
 				Retry.ResponseCode = ResponseCode;
 				Retry.ErrorCode = ErrorData.error;
+				RequestData->BuildRoute(Retry.Route);
+				
 				EnqueuedRetries.Enqueue(Retry);
 			}
 
@@ -994,7 +1042,7 @@ public:
 			// We log the error only if neither callback was set OR if we are configured to do so.
 			if (AlwaysLogErrorResponses || (!bExecutedGlobalHandler && !ExecutedCallsiteHandler))
 			{
-				UE_BEAM_LOG(LogBeamBackend, Error,
+				UE_BEAM_LOG_PIE(GetWorld(), LogBeamBackend, Error,
 				       TEXT(
 					       "Beamable Request Failed | REQUEST_ID=%lld, RESPONSE_CODE=%d, NUM_FAILURES=%d, WILL_RETRY=%s, RESPONSE_BODY=%s"
 				       ), RequestId, ResponseCode,
@@ -1245,6 +1293,7 @@ public:
 				Retry.IsBlueprintCompatible = 1;
 				Retry.ResponseCode = ResponseCode;
 				Retry.ErrorCode = ErrorData.error;
+				RequestData->BuildRoute(Retry.Route);
 				EnqueuedRetries.Enqueue(Retry);
 			}
 
@@ -1269,7 +1318,7 @@ public:
 				// We log the error only if neither callback was set OR if we are configured to do so.
 				if (AlwaysLogErrorResponses || (!bExecutedGlobalHandler && !ExecutedCallsiteHandler))
 				{
-					UE_BEAM_LOG(LogBeamBackend, Error,
+					UE_BEAM_LOG_PIE(GetWorld(), LogBeamBackend, Error,
 					       TEXT(
 						       "Beamable Request Failed | REQUEST_ID=%lld, USER_SLOT=%s, RESPONSE_CODE=%d, NUM_FAILURES=%d, WILL_RETRY=%s, RESPONSE_BODY=%s"
 					       ),
@@ -1512,7 +1561,7 @@ public:
 				// We log the error only if neither callback was set OR if we are configured to do so.
 				if (AlwaysLogErrorResponses && FullResponse.State == RS_Error)
 				{
-					UE_BEAM_LOG(LogBeamBackend, Error, TEXT( "Beamable Request Failed | REQUEST_ID=%lld, REQUEST_TYPE=%s, RESPONSE_CODE=%d, NUM_FAILURES=%d, RESPONSE_BODY=%s" ),
+					UE_BEAM_LOG_PIE(GetWorld(), LogBeamBackend, Error, TEXT( "Beamable Request Failed | REQUEST_ID=%lld, REQUEST_TYPE=%s, RESPONSE_CODE=%d, NUM_FAILURES=%d, RESPONSE_BODY=%s" ),
 					       RequestId, *RequestType.Name, ResponseCode, CurrFailedCount, *ContentAsString);
 				}
 
@@ -1577,7 +1626,7 @@ public:
 			{
 #if WITH_EDITOR
 
-				if (HandlePIESessionRequestGuard(ContextWeakPtr, RequestId) || HandlePIESessionRequestGuard(RequestData, RequestId))
+				if (HandlePIESessionRequestGuard(ContextWeakPtr, RequestId))
 					return;
 #endif
 
@@ -1722,6 +1771,7 @@ public:
 			// If we should still retry (-1 == infinite retry)
 			if (bWillRetry)
 			{
+				
 				// Enqueue a request to try again
 				FRequestToRetry Retry;
 				Retry.RequestId = RequestId;
@@ -1730,6 +1780,8 @@ public:
 				Retry.IsBlueprintCompatible = 0;
 				Retry.ResponseCode = ResponseCode;
 				Retry.ErrorCode = FullResponse.ErrorData.error;
+				RequestData->BuildRoute(Retry.Route);
+				
 				EnqueuedRetries.Enqueue(Retry);
 
 				// Set the state to retrying instead of error.
@@ -1784,7 +1836,7 @@ public:
 				// We log the error only if neither callback was set OR if we are configured to do so.
 				if (AlwaysLogErrorResponses && FullResponse.State == RS_Error)
 				{
-					UE_BEAM_LOG(LogBeamBackend, Error,
+					UE_BEAM_LOG_PIE(GetWorld(), LogBeamBackend, Error,
 					       TEXT( "Beamable Request Failed | REQUEST_ID=%lld, REQUEST_TYPE=%s, USER_SLOT=%s, RESPONSE_CODE=%d, NUM_FAILURES=%d, WILL_RETRY=%s, RESPONSE_BODY=%s" ),
 					       RequestId, *RequestType.Name, *UserSlotLog, ResponseCode, CurrFailedCount, bWillRetry ? TEXT("true") : TEXT("false"), *ContentAsString);
 				}

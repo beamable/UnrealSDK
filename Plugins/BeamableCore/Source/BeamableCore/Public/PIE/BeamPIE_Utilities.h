@@ -60,7 +60,7 @@ public:
 	{
 		if (Context == nullptr || Context->GetWorld() == nullptr)
 		{
-			return "";
+			return *FString::Printf(TEXT("[IsServer: %d]"), IsRunningDedicatedServer());
 		}
 		
 		return BeamLogFormat(GEngine->GetWorldContextFromWorld(Context->GetWorld()));

@@ -365,7 +365,7 @@ bool UBeamBackend::TickRetryQueue(float DeltaTime)
 		ProcessingReq.AccumulatedTime += DeltaTime;
 		if (ProcessingReq.AccumulatedTime >= ProcessingReq.TimeToWait)
 		{
-			const auto RequestToRetry = InFlightProcessingRequest.Value.RequestToRetry;
+			const auto RequestToRetry = ProcessingReq.RequestToRetry;
 			const auto ReqId = RequestToRetry.RequestId;
 			const auto ReqContext = InFlightRequestContexts.FindChecked(ReqId);
 			const auto RetryConfig = ReqContext.RetryConfiguration;
@@ -392,8 +392,8 @@ bool UBeamBackend::TickRetryQueue(float DeltaTime)
 			// "InvalidTokenError", "TokenValidationError", "ExpiredTokenError"
 			if (AUTH_ERROR_CODE_RETRY_ALLOWED.Contains(RequestToRetry.ErrorCode))
 			{
-				// Make sure that any request to Beamable that fails due to unauthorized access actually sent a user in the first place. 
-				check(!ReqAuthToken.RefreshToken.IsEmpty())
+				// Make sure that any request to Beamable that fails due to unauthorized access actually sent a user in the first place.
+				checkf(!ReqAuthToken.RefreshToken.IsEmpty(), TEXT("Beamable Retry Queue | Access Token: %s | Refresh Token: %s | Error Code: %s | Route: %s | Expires %lld"), *ReqAuthToken.AccessToken, *ReqAuthToken.RefreshToken, *RequestToRetry.ErrorCode, *RequestToRetry.Route, RequestToRetry.AuthToken.ExpiresIn);
 
 				// Create Login Refresh Token Request.
 				TUnrealRequestPtr ReAuthRequest = FHttpModule::Get().CreateRequest();
@@ -417,6 +417,7 @@ bool UBeamBackend::TickRetryQueue(float DeltaTime)
 						const auto WasMadeWithUserSlot = BeamUserSlots->GetUserDataWithRefreshTokenAndPid(
 							ReqAuthToken.RefreshToken, ReqRealmHandle.Pid, RealmUserData, UserSlot, NamespacedSlotId);
 
+						
 						const auto ResponseCode = Response->GetResponseCode();
 						const auto ResponseBody = Response->GetContentAsString();
 
@@ -447,7 +448,9 @@ bool UBeamBackend::TickRetryQueue(float DeltaTime)
 							{
 								FUserSlot NonNamespacedSlot;
 								UBeamUserSlots::GetSlotIdFromNamespacedSlotId(UserSlot.Name, NonNamespacedSlot);
+
 								UE_BEAM_LOG(LogBeamBackend, Verbose, TEXT("Identified User Slot and Re-authing it. REQUEST_ID=%lld, USER_SLOT=%s"), ReqId, *NonNamespacedSlot.Name);
+								
 								// Re-auth the user at the found slot so that subsequent requests use the new token rather than this one.
 								BeamUserSlots->SetAuthenticationDataAtNamespacedSlot(NamespacedSlotId, NewToken.AccessToken, NewToken.RefreshToken, FDateTime::UtcNow().ToUnixTimestamp(),
 								                                                     NewToken.ExpiresIn, RealmUserData.RealmHandle.Cid, RealmUserData.RealmHandle.Pid);

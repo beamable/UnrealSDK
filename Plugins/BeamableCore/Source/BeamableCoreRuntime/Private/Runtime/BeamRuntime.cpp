@@ -2530,6 +2530,8 @@ void UBeamRuntime::LoadCachedUserAtSlot(FUserSlot UserSlot, FBeamOperationHandle
 		{
 			const FOnBasicAccountsGetMeFullResponse Handler = FOnBasicAccountsGetMeFullResponse::CreateLambda([this, UserSlot, AuthOp](const FBasicAccountsGetMeFullResponse& Resp)
 			{
+				if (Resp.State == RS_Retrying) return;
+				
 				if (Resp.State == EBeamFullResponseState::RS_Success)
 				{
 					RunPostAuthenticationSetup(UserSlot, Resp.SuccessData, AuthOp);

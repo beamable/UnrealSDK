@@ -2071,17 +2071,26 @@ void UBeamLobbySubsystem::AcceptUserIntoGameServer(const FUserSlot& Slot, const 
 
 		// TODO: This means that whenever local players disconnect, we'll need to clear their UserSlot out. 
 		const auto CurrMappingIdx = FPlatformAtomics::InterlockedIncrement(&AutoIncrementServerMappingSlotsIdx);
+		FUserSlot UserSlot = FUserSlot::MakeServerMappingSlot(CurrMappingIdx);
+		const auto TargetRealm = GetDefault<UBeamCoreSettings>()->TargetRealm;
 
+		// We are setting the authentication data in the UserSlot for the case of the token is expired the flow of retry and get a new token works properly.
+		UserSlots->SetAuthenticationDataAtSlot(UserSlot, ConnectingAccessToken, ConnectingRefreshToken,
+														   FDateTime::UtcNow().ToUnixTimestamp(), ConnectingTokenExpiresIn, TargetRealm.Cid, TargetRealm.Pid, this);
+		UserSlots->SetGamerTagAtSlot(UserSlot, ConnectingGamerTag, this);
+						
 		/// ... prepare and make a GetMe request using the provided access token.
 		const auto AccountsApi = GEngine->GetEngineSubsystem<UBeamAccountsApi>();
 		const auto Req = UBasicAccountsGetMeRequest::Make(GetTransientPackage(), {});
 		GEngine->GetEngineSubsystem<UBeamBackend>()->OverrideRequestAuthorization(Req, ConnectingAccessToken);
 		FBeamRequestContext Ctx;
 		AccountsApi->CPP_GetMe(
-			GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot(),
+			UserSlot,
 			Req,
 			FOnBasicAccountsGetMeFullResponse::CreateLambda([this, CurrMappingIdx, ConnectingAccessToken, ConnectingRefreshToken,ConnectingTokenExpiresIn, TargetLobby, Op, UniqueId](FBasicAccountsGetMeFullResponse Resp)
 			{
+				if (Resp.State == RS_Retrying) return;
+				
 				if (Resp.State == RS_Error)
 				{
 					RequestTracker->TriggerOperationError(Op, TEXT("FAILED_TO_VALIDATE_TOKEN"));

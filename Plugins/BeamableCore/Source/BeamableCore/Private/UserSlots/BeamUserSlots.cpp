@@ -220,7 +220,7 @@ bool UBeamUserSlots::GetUserDataAtSlot(FUserSlot SlotId, FBeamRealmUser& OutUser
 	OutUserData.AccountId = -1;
 	OutUserData.GamerTag = -1;
 	OutUserData.Email = TEXT("");
-	OutUserData.AuthToken = FBeamAuthToken{TEXT(""), TEXT(""), 0};
+	OutUserData.AuthToken = FBeamAuthToken{TEXT(""), TEXT(""), 3};
 	OutUserData.RealmHandle = FBeamRealmHandle{FString(""), FString("")};
 
 	return false;
@@ -246,7 +246,7 @@ bool UBeamUserSlots::GetUserDataWithGamerTag(const FBeamGamerTag& GamerTag, FBea
 	OutUserData.AccountId = -1;
 	OutUserData.GamerTag = -1;
 	OutUserData.Email = TEXT("");
-	OutUserData.AuthToken = FBeamAuthToken{TEXT(""), TEXT(""), 0};
+	OutUserData.AuthToken = FBeamAuthToken{TEXT(""), TEXT(""), 2};
 	OutUserData.RealmHandle = FBeamRealmHandle{FString(""), FString("")};
 
 	OutUserSlot.Name = TEXT("");
@@ -270,7 +270,7 @@ bool UBeamUserSlots::GetUserDataWithRefreshTokenAndPid(const FString& RefreshTok
 	OutUserData.AccountId = -1;
 	OutUserData.GamerTag = -1;
 	OutUserData.Email = TEXT("");
-	OutUserData.AuthToken = FBeamAuthToken{TEXT(""), TEXT(""), 0};
+	OutUserData.AuthToken = FBeamAuthToken{TEXT(""), TEXT(""), 1};
 	OutUserData.RealmHandle = FBeamRealmHandle{FString(""), FString("")};
 
 	OutUserSlot.Name = TEXT("");
@@ -280,6 +280,7 @@ bool UBeamUserSlots::GetUserDataWithRefreshTokenAndPid(const FString& RefreshTok
 void UBeamUserSlots::SetAuthenticationDataAtNamespacedSlot(const FString& NamespacedSlotId, const FString& AccessToken, const FString& RefreshToken, const int64& IssuedAt, const int64& ExpiresIn,
                                                            const FBeamCid& Cid, const FBeamPid& Pid)
 {
+	
 	const auto AuthenticatedUser = FBeamAuthToken{AccessToken, RefreshToken, ExpiresIn, IssuedAt};
 	const auto UserRealmData = FBeamRealmHandle{Cid, Pid};
 	const auto RealmUser = FBeamRealmUser{-1, -1, TEXT(""), UserRealmData, AuthenticatedUser};
