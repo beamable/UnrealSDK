@@ -749,7 +749,7 @@ void UBeamContentSubsystem::OnBeamableStarting_Implementation(FBeamOperationHand
 					auto ContentHook = NewObject<UBeamContentHooks>(GetTransientPackage(), ContentHookPtr.LoadSynchronous());
 					ContentHook->SetContext(this);
 
-					if (ContentHook->ContentFilter(IndividualDownloadedData))
+					if (IndividualDownloadedData && ContentHook->ContentFilter(IndividualDownloadedData))
 					{
 						ContentHook->OnLoadBeamContent(IndividualDownloadedData);
 						UE_LOG(LogTemp, Warning, TEXT("DOWNLOADED CONTENT %s"), *IndividualDownloadedData->ContentId);
