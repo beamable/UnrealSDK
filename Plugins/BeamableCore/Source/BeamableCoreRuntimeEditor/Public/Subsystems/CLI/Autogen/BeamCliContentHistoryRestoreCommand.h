@@ -2,75 +2,48 @@
 
 #include "Subsystems/CLI/BeamCliCommand.h"
 #include "Serialization/BeamJsonUtils.h"
-#include "Subsystems/CLI/Autogen/StreamData/ContentHistoryEntriesPageStreamData.h"
-#include "Subsystems/CLI/Autogen/StreamData/ContentHistoryEntryStreamData.h"
-#include "Subsystems/CLI/Autogen/StreamData/ContentHistoryChangelistPageStreamData.h"
-#include "Subsystems/CLI/Autogen/StreamData/ContentHistoryChangelistStreamData.h"
-#include "Subsystems/CLI/Autogen/StreamData/ContentHistoryChangelistEntryStreamData.h"
-#include "BeamCliContentHistoryCommand.generated.h"
+
+#include "BeamCliContentHistoryRestoreCommand.generated.h"
 
 
 UCLASS(BlueprintType)
-class UBeamCliContentHistoryStreamData : public UObject, public IBeamJsonSerializableUObject
+class UBeamCliContentHistoryRestoreStreamData : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:	
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	int32 EventType = {};
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	UContentHistoryEntriesPageStreamData* EntriesPage = {};
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	UContentHistoryChangelistPageStreamData* ChangelistsPage = {};
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TArray<FString> EntriesToRemove = {};
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TArray<FString> ChangelistsToRemove = {};
+	TArray<FString> RestoredContentIds = {};
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
 	{
-		UBeamJsonUtils::SerializeRawPrimitive(TEXT("EventType"), EventType, Serializer);
-		UBeamJsonUtils::SerializeUObject<UContentHistoryEntriesPageStreamData*>("EntriesPage", EntriesPage, Serializer);
-		UBeamJsonUtils::SerializeUObject<UContentHistoryChangelistPageStreamData*>("ChangelistsPage", ChangelistsPage, Serializer);
-		UBeamJsonUtils::SerializeArray<FString>(TEXT("EntriesToRemove"), EntriesToRemove, Serializer);
-		UBeamJsonUtils::SerializeArray<FString>(TEXT("ChangelistsToRemove"), ChangelistsToRemove, Serializer);	
+		UBeamJsonUtils::SerializeArray<FString>(TEXT("RestoredContentIds"), RestoredContentIds, Serializer);	
 	}
 
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
 	{
-		UBeamJsonUtils::SerializeRawPrimitive(TEXT("EventType"), EventType, Serializer);
-		UBeamJsonUtils::SerializeUObject<UContentHistoryEntriesPageStreamData*>("EntriesPage", EntriesPage, Serializer);
-		UBeamJsonUtils::SerializeUObject<UContentHistoryChangelistPageStreamData*>("ChangelistsPage", ChangelistsPage, Serializer);
-		UBeamJsonUtils::SerializeArray<FString>(TEXT("EntriesToRemove"), EntriesToRemove, Serializer);
-		UBeamJsonUtils::SerializeArray<FString>(TEXT("ChangelistsToRemove"), ChangelistsToRemove, Serializer);	
+		UBeamJsonUtils::SerializeArray<FString>(TEXT("RestoredContentIds"), RestoredContentIds, Serializer);	
 	}
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("EventType"), Bag, EventType);
-		UBeamJsonUtils::DeserializeUObject<UContentHistoryEntriesPageStreamData*>("EntriesPage", Bag, EntriesPage, OuterOwner);
-		UBeamJsonUtils::DeserializeUObject<UContentHistoryChangelistPageStreamData*>("ChangelistsPage", Bag, ChangelistsPage, OuterOwner);
-		UBeamJsonUtils::DeserializeArray<FString>(TEXT("EntriesToRemove"), Bag, EntriesToRemove, OuterOwner);
-		UBeamJsonUtils::DeserializeArray<FString>(TEXT("ChangelistsToRemove"), Bag, ChangelistsToRemove, OuterOwner);	
+		UBeamJsonUtils::DeserializeArray<FString>(TEXT("RestoredContentIds"), Bag, RestoredContentIds, OuterOwner);	
 	}
 };
 
 
 /**
  Description:
-  [INTERNAL] Fetches and caches locally the entire list of content publishes to this realm. Can be run in watch mode for continuous updates regarding new downloaded content changelists and new content entries
+  [INTERNAL] Restores local content files from history, overwriting them with the version from the specified manifest UID. If content IDs are not provided, restores all content in the manifest
 
 Usage:
-  Beamable.Tools content history [command] [options]
+  Beamable.Tools content history restore [options]
 
 Options:
-  -w, --watch                                When true, the command will run forever and watch the state of the program
   --manifest-ids <manifest-ids>              Inform a subset of ','-separated manifest ids for which to return data. By default, will return just the global manifest [default: global]
-  --require-process-id <require-process-id>  Listens to the given process id. Terminates this long-running command when the it no longer is running
-  --from-date <from-date>                    Filter entries from this Unix timestamp (milliseconds)
-  --to-date <to-date>                        Filter entries to this Unix timestamp (milliseconds)
-  --manifest-uids <manifest-uids>            Filter by specific manifest UIDs
+  --manifest-uid <manifest-uid> (REQUIRED)   The manifest UID from history to restore content from
+  --content-ids <content-ids>                The content IDs to restore. If not provided, restores all content in the manifest
   --dryrun                                   [DEPRECATED] Run as much of the command as possible without making any network calls
   --cid <cid>                                CID (CustomerId) to use (found in Portal->Account); defaults to whatever is in '.beamable/config.beam.json'
   --engine <engine>                          If passed, sets the engine integration that is calling for the command
@@ -95,23 +68,19 @@ Options:
   --dotnet-path <dotnet-path>                a custom location for dotnet [default: dotnet]
   -?, -h, --help                             Show help and usage information
 
-Commands:
-  restore          [INTERNAL] Restores local content files from history, overwriting them with the version from the specified manifest UID. If content IDs are not provided, restores all content in the manifest
-  sync-changelist  [INTERNAL] Syncs a changelist for a given manifest UID. If already cached locally, touches the file to trigger a watching history command
-  sync-content     [INTERNAL] Syncs content files for a given manifest UID. If content IDs are not provided, syncs all content in the manifest
 
 
  */
 UCLASS()
-class UBeamCliContentHistoryCommand : public UBeamCliCommand
+class UBeamCliContentHistoryRestoreCommand : public UBeamCliCommand
 {
 	GENERATED_BODY()
 
 public:
 	inline static FString StreamType = FString(TEXT("stream"));
-	UPROPERTY() TArray<UBeamCliContentHistoryStreamData*> Stream;
+	UPROPERTY() TArray<UBeamCliContentHistoryRestoreStreamData*> Stream;
 	UPROPERTY() TArray<int64> Timestamps;
-	TFunction<void (TArray<UBeamCliContentHistoryStreamData*>& StreamData, TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnStreamOutput;	
+	TFunction<void (TArray<UBeamCliContentHistoryRestoreStreamData*>& StreamData, TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnStreamOutput;	
 
 	TFunction<void (const int& ResCode, const FBeamOperationHandle& Op)> OnCompleted;
 	virtual bool HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer) override;

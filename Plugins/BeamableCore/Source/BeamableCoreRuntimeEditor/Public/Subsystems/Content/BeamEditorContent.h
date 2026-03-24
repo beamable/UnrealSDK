@@ -332,6 +332,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SyncContentHistoryChangelist(FString ManifestUid);
 
+	UFUNCTION(BlueprintCallable)
+	void RestoreContentFromHistory(FString ManifestUid, TArray<FBeamContentId> ContentIds);
+
 	static FString GetJsonBlobPath(FString RowName, FBeamContentManifestId ManifestId);
 
 	UFUNCTION(BlueprintCallable)

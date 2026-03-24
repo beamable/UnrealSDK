@@ -17,6 +17,7 @@
 #include "Subsystems/BeamEditor.h"
 #include "Subsystems/CLI/BeamCli.h"
 #include "Subsystems/CLI/Autogen/BeamCliContentHistoryCommand.h"
+#include "Subsystems/CLI/Autogen/BeamCliContentHistoryRestoreCommand.h"
 #include "Subsystems/CLI/Autogen/BeamCliContentHistorySyncChangelistCommand.h"
 #include "Subsystems/CLI/Autogen/BeamCliContentHistorySyncContentCommand.h"
 #include "Subsystems/CLI/Autogen/BeamCliContentLocalManifestCommand.h"
@@ -678,18 +679,17 @@ bool UBeamEditorContent::TryGetFilteredListOfContent(const FBeamContentManifestI
 
 		if (bPassNameFilter && bPassTypeFilter && bPassStatusFilter && bPassSupportLevelFilter)
 		{
+			Ids.Add(Row->FullId);
+			Names.Add(Row->Name);
+			Types.Add(SupportedTypeName);
+			IsInConflicts.Add(Row->IsInConflict);
+			StatusesInManifest.Add(static_cast<EBeamLocalContentStatus>(Row->CurrentStatus));
+
 			UBeamContentObject* Obj = nullptr;
 			FString Err;
-			if (GetContent(ManifestId, Row->FullId, Obj))
-			{
-				Obj->SupportLevel = SupportLevel;
-				ObjectsInManifest.Add(Obj);
-				Ids.Add(Row->FullId);
-				Names.Add(Row->Name);
-				Types.Add(SupportedTypeName);
-				IsInConflicts.Add(Row->IsInConflict);
-				StatusesInManifest.Add(static_cast<EBeamLocalContentStatus>(Row->CurrentStatus));
-			}
+			GetContent(ManifestId, Row->FullId, Obj);
+			ObjectsInManifest.Add(Obj);			
+			if (Obj) Obj->SupportLevel = SupportLevel;
 		}
 	}
 
@@ -1296,13 +1296,59 @@ void UBeamEditorContent::SyncContentHistoryChangelist(FString ManifestUid)
 			if (HistoryChangelistSyncSlowTask)
 			{
 				HistoryChangelistSyncSlowTask->Destroy();
-				delete HistoryChangelistSyncSlowTask;
+				if (HistoryChangelistSyncSlowTask)
+				{
+					delete HistoryChangelistSyncSlowTask;
+				}
 			}
 		}
 	};
 
 	FString Args = FString::Printf(TEXT("--manifest-uid %s"), *ManifestUid);
 	Cli->RunCommandServer(SyncCmd, {Args}, {});
+}
+
+void UBeamEditorContent::RestoreContentFromHistory(FString ManifestUid, TArray<FBeamContentId> ContentIds)
+{
+	if (ManifestUid.IsEmpty())
+	{
+		UE_LOG(LogBeamContent, Warning, TEXT("Cannot restore content: manifest UID is empty"));
+		return;
+	}
+
+	auto RestoreCmd = NewObject<UBeamCliContentHistoryRestoreCommand>();
+	RestoreCmd->OnCompleted = [this, RestoreCmd](const int& ErrorCode, const FBeamOperationHandle&)
+	{
+		if (ErrorCode == 0)
+		{
+			UE_LOG(LogBeamContent, Log, TEXT("Content restored successfully from history"));
+		}
+		else
+		{
+			for (FBeamCliError Error : RestoreCmd->Errors)
+			{
+				UE_LOG(LogBeamContent, Error, TEXT("ERROR restoring content from history: %s"), *Error.Message);
+				auto value = FString::Printf(TEXT("ERROR restoring content from history: %s"), *Error.Message);
+				ShowNotification(TEXT("Error"), FText::FromString(value), 5.0f, 1.0f);
+			}
+		}
+	};
+
+	FString Args = FString::Printf(TEXT("--manifest-uid %s"), *ManifestUid);
+
+	// Only add --content-ids if the array is not empty
+	if (ContentIds.Num() > 0)
+	{
+		TArray<FString> IdStrings;
+		for (const FBeamContentId& Id : ContentIds)
+		{
+			IdStrings.Add(Id.AsString);
+		}
+		FString ContentIdsArg = FString::Join(IdStrings, TEXT(" "));
+		Args += FString::Printf(TEXT(" --content-ids %s"), *ContentIdsArg);
+	}
+
+	Cli->RunCommandServer(RestoreCmd, {Args}, {});
 }
 
 FString UBeamEditorContent::GetJsonBlobPath(FString RowName, FBeamContentManifestId ManifestId)
@@ -1686,14 +1732,11 @@ void UBeamEditorContent::RunHistoryPsCommand(FBeamOperationHandle FirstEventOp)
 						// Content has been synced, now load into memory
 						const auto SyncData = Stream.Last();
 						for (const auto& ContentEntry : SyncData->ContentEntries) LoadContentHistoryObject(Changelist->ManifestUid, ContentEntry);
-
-						if (HistoryChangelistSyncSlowTask)
-						{
-							HistoryChangelistSyncSlowTask->Destroy();
-							delete HistoryChangelistSyncSlowTask;
-						}
-
 						OnContentHistoryContentSynced.Broadcast();
+					};
+					SyncCommand->OnCompleted = [this](const int& ErrorCode, const FBeamOperationHandle& )
+					{
+						if (HistoryChangelistSyncSlowTask) HistoryChangelistSyncSlowTask->EnterProgressFrame();
 					};
 
 					const FString ManifestUidArg = FString::Printf(TEXT("--manifest-uid %s"), *Changelist->ManifestUid);
@@ -1730,11 +1773,7 @@ void UBeamEditorContent::RunHistoryPsCommand(FBeamOperationHandle FirstEventOp)
 					for (const auto& Pair : Changelist->Modified) LoadContentHistoryObject(Changelist->ManifestUid, Pair.Value);
 					for (const auto& Pair : Changelist->Removed) LoadContentHistoryObject(Changelist->ManifestUid, Pair.Value);
 
-					if (HistoryChangelistSyncSlowTask)
-					{
-						HistoryChangelistSyncSlowTask->Destroy();
-						delete HistoryChangelistSyncSlowTask;
-					}
+					if (HistoryChangelistSyncSlowTask) HistoryChangelistSyncSlowTask->EnterProgressFrame(2);
 				}
 			}
 
@@ -1835,11 +1874,11 @@ void UBeamEditorContent::LoadContentHistoryObject(const FString& ManifestUid, UC
 		ContentObject->SupportLevel = SupportLevel;
 		ContentObject->FromBasicJson(FileContents);
 		ContentObject->Id = HistoryId.ContentId.AsString;
-		
-		
+
+
 		ContentObject->Version = ContentEntry->NewChecksum;
 		if (ContentObject->Version.IsEmpty()) ContentObject->Version = ContentEntry->OldChecksum;
-		
+
 		LoadedContentHistoryObjects.Add(HistoryId, ContentObject);
 
 		if (SupportLevel == PartialSupport)
