@@ -85,6 +85,7 @@ class BEAMABLECORERUNTIMEEDITOR_API UBeamEditorContent : public UBeamEditorSubsy
 	UPROPERTY()
 	UEditorAssetSubsystem* EditorAssetSubsystem;
 	
+	
 	FSlowTask* HistoryChangelistSyncSlowTask;
 
 

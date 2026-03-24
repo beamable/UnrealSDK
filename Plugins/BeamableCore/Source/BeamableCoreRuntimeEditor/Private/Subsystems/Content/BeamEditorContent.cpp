@@ -1690,6 +1690,7 @@ void UBeamEditorContent::RunHistoryPsCommand(FBeamOperationHandle FirstEventOp)
 
 		if (Data->EventType == EVT_TYPE_CONTENT_HISTORY_ChangelistsLoaded)
 		{
+			bool bIsSynchronizingContent = false;
 			// Update in-memory state using ChangelistsPage and ChangelistsToRemove
 			for (const auto& Changelist : Data->ChangelistsPage->Changelists)
 			{
@@ -1736,13 +1737,21 @@ void UBeamEditorContent::RunHistoryPsCommand(FBeamOperationHandle FirstEventOp)
 					};
 					SyncCommand->OnCompleted = [this](const int& ErrorCode, const FBeamOperationHandle& )
 					{
-						if (HistoryChangelistSyncSlowTask) HistoryChangelistSyncSlowTask->EnterProgressFrame();
+						// After content sync completes, close the slow task
+						if (HistoryChangelistSyncSlowTask)
+						{
+							HistoryChangelistSyncSlowTask->EnterProgressFrame();
+							HistoryChangelistSyncSlowTask->Destroy();
+							delete HistoryChangelistSyncSlowTask;
+							HistoryChangelistSyncSlowTask = nullptr;
+						}
 					};
 
 					const FString ManifestUidArg = FString::Printf(TEXT("--manifest-uid %s"), *Changelist->ManifestUid);
 					const FString ContentIdsArg = FString::Printf(TEXT("--content-ids %s"), *FString::Join(ContentIdsToSync, TEXT(" ")));
 					Cli->RunCommandServer(SyncCommand, {ManifestUidArg, ContentIdsArg}, {});
-
+					bIsSynchronizingContent = true;
+					
 					if (HistoryChangelistSyncSlowTask)
 					{
 						FString BulletList;
@@ -1773,7 +1782,6 @@ void UBeamEditorContent::RunHistoryPsCommand(FBeamOperationHandle FirstEventOp)
 					for (const auto& Pair : Changelist->Modified) LoadContentHistoryObject(Changelist->ManifestUid, Pair.Value);
 					for (const auto& Pair : Changelist->Removed) LoadContentHistoryObject(Changelist->ManifestUid, Pair.Value);
 
-					if (HistoryChangelistSyncSlowTask) HistoryChangelistSyncSlowTask->EnterProgressFrame(2);
 				}
 			}
 
@@ -1782,6 +1790,18 @@ void UBeamEditorContent::RunHistoryPsCommand(FBeamOperationHandle FirstEventOp)
 			{
 				// Remove the changelist from the cache using the ManifestUid string
 				LocalContentHistoryChangelistCache.Remove(ChangelistToRemove);
+			}
+
+			// If NOT syncing content, close the task now after state is updated
+			if (!bIsSynchronizingContent)
+			{
+				if (HistoryChangelistSyncSlowTask)
+				{
+					HistoryChangelistSyncSlowTask->EnterProgressFrame(2);
+					HistoryChangelistSyncSlowTask->Destroy();
+					delete HistoryChangelistSyncSlowTask;
+					HistoryChangelistSyncSlowTask = nullptr;
+				}
 			}
 
 			OnContentHistoryChangelistSynced.Broadcast();
