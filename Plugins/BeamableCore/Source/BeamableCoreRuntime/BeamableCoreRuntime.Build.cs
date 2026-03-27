@@ -21,7 +21,8 @@ public class BeamableCoreRuntime : ModuleRules
 				"DeveloperSettings",
 				"HTTP", 
 				"OnlineSubsystem",
-				"CoreOnline"
+				"CoreOnline",
+				"GameplayTags"
 			}
 		);
 

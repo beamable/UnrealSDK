@@ -175,7 +175,6 @@ public:
 	inline static const FString Reserved_LoginOpt_GamerTag_Required = TEXT("LogOptBeamGamerTag");
 	inline static const FString Reserved_LoginOpt_AccessToken_Required = TEXT("LogOptBeamAccessToken");
 	inline static const FString Reserved_LoginOpt_RefreshToken_Required = TEXT("LogOptBeamRefreshToken");
-	inline static const FString Reserved_LoginOpt_ExpiresIn_Required = TEXT("LogOptBeamExpiresIn");
 	inline static const FString Reserved_LoginOpt_LobbyId_Optional = TEXT("LogOptLobbyId");
 
 	UPROPERTY()
@@ -489,7 +488,7 @@ public:
 	 * @copybrief PrepareLoginOptions
 	 */
 	UFUNCTION(BlueprintCallable)
-	FString PrepareLoginOptionsFull(const FString& Options, const FString& AccessToken, const FString& RefreshToken, int64 ExpiresIn, const FBeamGamerTag& GamerTag, FString LobbyId) const;
+	FString PrepareLoginOptionsFull(const FString& Options, const FString& AccessToken, const FString& RefreshToken, const FBeamGamerTag& GamerTag, FString LobbyId) const;
 
 	/**
 	 * For integration with other implementations of Unreal's Gameplay Framework.

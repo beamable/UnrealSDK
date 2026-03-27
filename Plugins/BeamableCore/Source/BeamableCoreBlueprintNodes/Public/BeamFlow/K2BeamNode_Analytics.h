@@ -71,7 +71,9 @@ public:
 		FText BaseTooltip = {};
 		if (Function != nullptr)
 		{
+#if WITH_EDITOR
 			return FText::FromString(ObjectTools::GetDefaultTooltipForFunction(Function));
+#endif
 		}
 
 		return Super::GetTooltipText();

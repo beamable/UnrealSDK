@@ -669,10 +669,10 @@ FString UBeamLobbySubsystem::PrepareLoginOptions(const FUserSlot& Slot, const FS
 		ULobby* Lobby;
 		if (this->TryGetCurrentLobby(Slot, Lobby))
 		{
-			return PrepareLoginOptionsFull(Options, User.AuthToken.AccessToken, User.AuthToken.RefreshToken, User.AuthToken.ExpiresIn, User.GamerTag.AsLong, Lobby->LobbyId.Val);
+			return PrepareLoginOptionsFull(Options, User.AuthToken.AccessToken, User.AuthToken.RefreshToken, User.GamerTag.AsLong, Lobby->LobbyId.Val);
 		}
 
-		return PrepareLoginOptionsFull(Options, User.AuthToken.AccessToken, User.AuthToken.RefreshToken, User.AuthToken.ExpiresIn, User.GamerTag.AsLong, FString{});
+		return PrepareLoginOptionsFull(Options, User.AuthToken.AccessToken, User.AuthToken.RefreshToken, User.GamerTag.AsLong, FString{});
 	}
 	return Options;
 }
@@ -707,7 +707,7 @@ FString UBeamLobbySubsystem::PrepareLoginOptionsByLocalPlayerIndex(int32 LocalPl
 }
 
 
-FString UBeamLobbySubsystem::PrepareLoginOptionsFull(const FString& Options, const FString& AccessToken, const FString& RefreshToken, int64 ExpiresIn, const FBeamGamerTag& GamerTag, FString LobbyId) const
+FString UBeamLobbySubsystem::PrepareLoginOptionsFull(const FString& Options, const FString& AccessToken, const FString& RefreshToken, const FBeamGamerTag& GamerTag, FString LobbyId) const
 {
 	FString NewOptions = Options;
 
@@ -719,9 +719,6 @@ FString UBeamLobbySubsystem::PrepareLoginOptionsFull(const FString& Options, con
 
 	if (!UGameplayStatics::HasOption(NewOptions, Reserved_LoginOpt_RefreshToken_Required))
 		NewOptions += FString::Printf(TEXT("?%s=%s"), *Reserved_LoginOpt_RefreshToken_Required, *RefreshToken);
-
-	if (!UGameplayStatics::HasOption(NewOptions, Reserved_LoginOpt_ExpiresIn_Required))
-		NewOptions += FString::Printf(TEXT("?%s=%lld"), *Reserved_LoginOpt_ExpiresIn_Required, ExpiresIn);
 
 	if (!LobbyId.IsEmpty())
 	{
@@ -1974,10 +1971,7 @@ void UBeamLobbySubsystem::AcceptUserIntoGameServer(const FUserSlot& Slot, const 
 
 		const auto bHasRefreshToken = UGameplayStatics::HasOption(Options, Reserved_LoginOpt_RefreshToken_Required);
 		if (!bHasRefreshToken) Errs.Add(TEXT("MISSING_REFRESH_TOKEN_OPT"));
-
-		const auto bHasExpiresIn = UGameplayStatics::HasOption(Options, Reserved_LoginOpt_ExpiresIn_Required);
-		if (!bHasExpiresIn) Errs.Add(TEXT("MISSING_EXPIRES_IN_OPT"));
-
+		
 
 		// If we failed to receive any of the options, we error out here.
 		if (Errs.Num() > 0)
@@ -1991,7 +1985,6 @@ void UBeamLobbySubsystem::AcceptUserIntoGameServer(const FUserSlot& Slot, const 
 		if (ConnectingGamerTag.IsEmpty()) ConnectingGamerTag = UniqueId.GetUniqueNetId()->ToString();
 		const FString& ConnectingAccessToken = UGameplayStatics::ParseOption(Options, Reserved_LoginOpt_AccessToken_Required);
 		const FString& ConnectingRefreshToken = UGameplayStatics::ParseOption(Options, Reserved_LoginOpt_RefreshToken_Required);
-		const int32& ConnectingTokenExpiresIn = UGameplayStatics::GetIntOption(Options, Reserved_LoginOpt_ExpiresIn_Required, 30000);
 		const FString& ConnectingToLobby = UGameplayStatics::ParseOption(Options, Reserved_LoginOpt_LobbyId_Optional);
 
 		ULobby* TargetLobby = nullptr;
@@ -2076,7 +2069,7 @@ void UBeamLobbySubsystem::AcceptUserIntoGameServer(const FUserSlot& Slot, const 
 
 		// We are setting the authentication data in the UserSlot for the case of the token is expired the flow of retry and get a new token works properly.
 		UserSlots->SetAuthenticationDataAtSlot(UserSlot, ConnectingAccessToken, ConnectingRefreshToken,
-														   FDateTime::UtcNow().ToUnixTimestamp(), ConnectingTokenExpiresIn, TargetRealm.Cid, TargetRealm.Pid, this);
+														   FDateTime::UtcNow().ToUnixTimestamp(), 120000, TargetRealm.Cid, TargetRealm.Pid, this);
 		UserSlots->SetGamerTagAtSlot(UserSlot, ConnectingGamerTag, this);
 						
 		/// ... prepare and make a GetMe request using the provided access token.
@@ -2087,7 +2080,7 @@ void UBeamLobbySubsystem::AcceptUserIntoGameServer(const FUserSlot& Slot, const 
 		AccountsApi->CPP_GetMe(
 			UserSlot,
 			Req,
-			FOnBasicAccountsGetMeFullResponse::CreateLambda([this, CurrMappingIdx, ConnectingAccessToken, ConnectingRefreshToken,ConnectingTokenExpiresIn, TargetLobby, Op, UniqueId](FBasicAccountsGetMeFullResponse Resp)
+			FOnBasicAccountsGetMeFullResponse::CreateLambda([this, CurrMappingIdx, ConnectingAccessToken, ConnectingRefreshToken, TargetLobby, Op, UniqueId](FBasicAccountsGetMeFullResponse Resp)
 			{
 				if (Resp.State == RS_Retrying) return;
 				
@@ -2112,7 +2105,7 @@ void UBeamLobbySubsystem::AcceptUserIntoGameServer(const FUserSlot& Slot, const 
 
 						const auto TargetRealm = GetDefault<UBeamCoreSettings>()->TargetRealm;
 						UserSlots->SetAuthenticationDataAtSlot(MappingSlot, ConnectingAccessToken, ConnectingRefreshToken,
-						                                       FDateTime::UtcNow().ToUnixTimestamp(), ConnectingTokenExpiresIn, TargetRealm.Cid, TargetRealm.Pid, this);
+						                                       FDateTime::UtcNow().ToUnixTimestamp(), 120000, TargetRealm.Cid, TargetRealm.Pid, this);
 						UserSlots->SetGamerTagAtSlot(MappingSlot, RequestingGamerTag, this);
 						UserSlots->SetEmailAtSlot(MappingSlot, Resp.SuccessData->Email.GetValueOrDefault(DefaultStr), this);
 

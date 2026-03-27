@@ -97,7 +97,10 @@ class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_Operation : public UK2BeamNode_
 		FText BaseTooltip = {};
 		if (Function != nullptr)
 		{
+#if WITH_EDITOR
 			return FText::FromString(ObjectTools::GetDefaultTooltipForFunction(Function));
+#endif
+			
 		}
 
 		return Super::GetTooltipText();

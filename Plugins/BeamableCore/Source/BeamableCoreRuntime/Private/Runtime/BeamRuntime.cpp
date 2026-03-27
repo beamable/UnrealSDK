@@ -2955,7 +2955,7 @@ TArray<TSharedRef<FJsonObject>> UBeamRuntime::BuildEventParams(const TArray<TScr
 	TArray<TSharedRef<FJsonObject>> JsonParams;
 	JsonParams.Reserve(EventParams.Num());
 
-	for (const TScriptInterface<IBeamJsonSerializableUObject> ParamStruct : EventParams)
+	for (const TScriptInterface<IBeamJsonSerializableUObject>& ParamStruct : EventParams)
 	{
 		if (!ParamStruct.GetObject())
 		{

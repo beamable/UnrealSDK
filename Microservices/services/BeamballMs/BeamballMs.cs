@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
@@ -32,9 +33,10 @@ namespace Beamable.BeamballMs
     public class BeamballFederation : IFederationId
     {
     }
-    
+
     [Microservice("BeamballMs")]
-    public partial class BeamballMs : Microservice, IFederatedPlayerInit<DefaultFederation>, IFederatedGameServer<BeamballFederation>
+    public partial class BeamballMs : Microservice, IFederatedPlayerInit<DefaultFederation>,
+        IFederatedGameServer<BeamballFederation>
     {
         public async Promise<PlayerInitResult> CreatePlayer(Account account, Dictionary<string, string> properties)
         {
@@ -57,7 +59,8 @@ namespace Beamable.BeamballMs
             // Kick off tasks to fill out the appropriate starting data
             //  - Each of these functions are no-ops if the account is NOT being created with its expected identity.
             //  - This is just an example pattern for this sample; don't try to reuse it if it doesn't fit your player initialization logic.   
-            await Task.WhenAll(new[]{
+            await Task.WhenAll(new[]
+            {
                 CreatePlayerEmail(account, properties, startingStats, startingInventory),
                 CreatePlayerSteam(account, properties, startingStats, startingInventory),
                 // CreatePlayerEOS(account, properties, startingStats, startingInventory)
@@ -65,19 +68,21 @@ namespace Beamable.BeamballMs
 
             // Make just two requests with all the starting stats and starting inventory.
             var userAPI = AssumeNewUser(gamerTag);
-            await userAPI.Services.Stats.SetStats(StatsDomainType.Client, StatsAccessType.Public, gamerTag, startingStats);
+            await userAPI.Services.Stats.SetStats(StatsDomainType.Client, StatsAccessType.Public, gamerTag,
+                startingStats);
             await userAPI.Services.Inventory.Update(startingInventory);
 
             return new PlayerInitResult();
         }
 
 
-        private async Task CreatePlayerEmail(Account account, Dictionary<string, string> properties, Dictionary<string, string> outStartingStats, InventoryUpdateBuilder outStartingInventory)
+        private async Task CreatePlayerEmail(Account account, Dictionary<string, string> properties,
+            Dictionary<string, string> outStartingStats, InventoryUpdateBuilder outStartingInventory)
         {
             if (account.email.HasNonEmptyValue)
             {
                 var emailSplited = account.email.GetOrThrow().Split("@");
-                if (emailSplited.Length > 0) outStartingStats["player_name"] =  emailSplited[0];
+                if (emailSplited.Length > 0) outStartingStats["player_name"] = emailSplited[0];
             }
 
             await Task.CompletedTask;
@@ -91,7 +96,7 @@ namespace Beamable.BeamballMs
             var isDynamicMatch = lobby.matchType.Value.id.Value.Contains("dynamic_match");
 
             var playerTeams = new Dictionary<string, string>();
-
+            
             // If this is a dynamic match, assign players to teams here.
             // TODO: It is not considering the Party for the teams in the dynamic match.
             if (isDynamicMatch)
@@ -121,11 +126,33 @@ namespace Beamable.BeamballMs
                         var gamerTags = lobby.players.Value.Select(p => long.Parse(p.playerId)).ToArray();
 
                         var assumedFakeLeader = AssumeNewUser(gamerTags.First());
+                        // get the ping times for each player
+                        var tasks = new List<Promise<Dictionary<string, string>>>(gamerTags.Length);
+                        tasks.AddRange(gamerTags.Select(tag =>assumedFakeLeader.Services.Stats.GetFilteredStats(StatsDomainType.Client, StatsAccessType.Public, tag, new string[] { "beam.edgegap.location" })));
+                        var pingStats = await Promise.Sequence(tasks);
 
-                        string region = await lobby.GetBestRegionFromLobby(assumedFakeLeader.Services.Stats);
+                        List<EdgegapLocation> edgegapLocations = new List<EdgegapLocation>(); 
+                        
+                        if (pingStats.Count != 0)
+                        {
+                            foreach (var ping in pingStats)
+                            {
+                                if (ping.TryGetValue("beam.edgegap.location", out var value))
+                                {
+                                    var locationSplit = value.Split(";");
+                                    
+                                    edgegapLocations.Add(new EdgegapLocation()
+                                    {
+                                        longitude = double.Parse(locationSplit[0]),
+                                        latitude = double.Parse(locationSplit[1])
+                                    });
+                                }
+                            }
+                        }
+                        
 
-                        // Create the Hathora Room
-                        var hathoraRoom = await CreateHathoraGameServer(realmConfig, l.lobbyId.Value, region);
+                        // Create the Edgegap Room
+                        var edgegapRoom = await CreateEdgegapServer(realmConfig, l.lobbyId.Value, edgegapLocations);
 
                         // Start polling until its active or the initialization timed out.
                         var pollingInterval = TimeSpan.FromSeconds(1);
@@ -135,23 +162,31 @@ namespace Beamable.BeamballMs
                         var maxWaitTime = TimeSpan.FromSeconds(60);
 
                         // Spin for up-to-2-minutes and checking every "PollingInterval" for the connection to become active.
-                        while (hathoraRoom.status != "active" && (DateTime.Now - startedAt).TotalSeconds < (maxWaitTime).TotalSeconds)
+                        while (edgegapRoom.status != "Ready" &&
+                               (DateTime.Now - startedAt).TotalSeconds < (maxWaitTime).TotalSeconds)
                         {
-                            BeamableLogger.Log($"Room {l.lobbyId.Value} status: {hathoraRoom.status}");
+                            BeamableLogger.Log($"Room {l.lobbyId.Value} status: {edgegapRoom.status}");
                             await Task.Delay(pollingInterval);
-                            hathoraRoom = await PollHathoraGameServer(realmConfig, l.lobbyId.Value);
+                            edgegapRoom = await PollEdgegapGameServer(realmConfig, edgegapRoom.request_id);
+
+                            if (edgegapRoom.status == "Error")
+                            {
+                                throw new Exception("Error On Edgegap Room Provisioning");
+                            }
                         }
 
                         // It took to long to provision the server.
-                        if (hathoraRoom.status != "active")
+                        if (edgegapRoom.status != "Ready")
                         {
-                            BeamableLogger.LogError($"Failed to provision game server in time for room. ROOM_ID={l.lobbyId.Value}, LAST_HATHORA_CONN_UPDATE={JsonUtility.ToJson(hathoraRoom)}");
-                            throw new MicroserviceException(503, "FAILED_TO_PROVISION_GAME_SERVER_BEFORE_TIMEOUT", JsonUtility.ToJson(hathoraRoom));
+                            BeamableLogger.LogError(
+                                $"Failed to provision game server in time for room. ROOM_ID={l.lobbyId.Value}, LAST_EDGEGAP_CONN_UPDATE={JsonUtility.ToJson(edgegapRoom)}");
+                            throw new MicroserviceException(503, "FAILED_TO_PROVISION_GAME_SERVER_BEFORE_TIMEOUT",
+                                JsonUtility.ToJson(edgegapRoom));
                         }
 
-                        // Set the hathora room information as the connection string for this lobby --- the Unreal SDK has utilities to read these properties.
+                        // Set the edgegap room information as the connection string for this lobby --- the Unreal SDK has utilities to read these properties.
                         // You can always pass them via your own properties.
-                        connInfo.SetConnectionString(hathoraRoom.exposedPort.host, hathoraRoom.exposedPort.port.ToString());
+                        connInfo.SetConnectionString(edgegapRoom.ip, edgegapRoom.port.ToString());
                     }
 
                     return connInfo;
@@ -169,11 +204,13 @@ namespace Beamable.BeamballMs
                     //   - it allows the game-server to avoid fetching things once it boots up, but it increases the size of the lobby data structure.
                     //   - for most cases, this is a fine trade-off to make; but, think about your own case's specifics as you decided.
                     var data = new Dictionary<string, string>();
-                    var existingSkinData = lp.tags.GetOrElse([]).FirstOrDefault(t => t.name.GetOrElse("") == "beamable.selected_skin");
+                    var existingSkinData = lp.tags.GetOrElse([])
+                        .FirstOrDefault(t => t.name.GetOrElse("") == "beamable.selected_skin");
                     if (existingSkinData == null)
                     {
                         var gamerTag = long.Parse(lp.playerId.Value);
-                        var selectedSkin = await Services.Stats.GetStat(StatsDomainType.Client, StatsAccessType.Public, gamerTag, "beamable.selected_skin");
+                        var selectedSkin = await Services.Stats.GetStat(StatsDomainType.Client, StatsAccessType.Public,
+                            gamerTag, "beamable.selected_skin");
                         if (!string.IsNullOrEmpty(selectedSkin))
                         {
                             data["beamable.selected_skin"] = selectedSkin;
@@ -202,8 +239,9 @@ namespace Beamable.BeamballMs
             BeamableLogger.Log("Creating match result for lobby " + lobbyId);
 
             var beamLobbyApi = Provider.GetService<IBeamLobbyApi>();
-            if (!Guid.TryParse(lobbyId, out var lobbyGuid)) 
-                throw new MicroserviceException(500, "INVALID_LOBBY_ID", $"Provided Lobby ID was invalid. INVALID={lobbyId}.");
+            if (!Guid.TryParse(lobbyId, out var lobbyGuid))
+                throw new MicroserviceException(500, "INVALID_LOBBY_ID",
+                    $"Provided Lobby ID was invalid. INVALID={lobbyId}.");
 
             Api.Autogenerated.Models.Lobby lobby = await beamLobbyApi.Get(lobbyGuid);
             var lobbyPlayers = lobby.players.GetOrElse([]);
@@ -242,10 +280,10 @@ namespace Beamable.BeamballMs
             foreach (var player in lobbyPlayers)
             {
                 var gamerTag = long.Parse(player.playerId.Value);
-                
+
                 // Find player's team
                 var playerTeam = teamInfos.FirstOrDefault(t => t.Players.Any(p => p.GamerTag == player.playerId.Value));
-                
+
                 bool isWinner = !isDraw && playerTeam != null && playerTeam.TeamName == winningTeam;
 
                 if (isWinner)
@@ -254,27 +292,33 @@ namespace Beamable.BeamballMs
                     var rankedPoints = rng.Next(50, 100);
                     var coins = rng.Next(10, 25);
 
-                    using (var newUser = AssumeNewUser(gamerTag))
-                    {
-                        updates.Add(newUser.Services.Leaderboards.SetScore("leaderboards.global", rankedPoints).TaskFromPromise());
-                        updates.Add(newUser.Services.Inventory.AddCurrency("currency.coins", coins).TaskFromPromise());
-                    }
+                    var newUser = AssumeNewUser(gamerTag);
+                    
+                    updates.Add(newUser.Services.Leaderboards.SetScore("leaderboards.global", rankedPoints)
+                        .TaskFromPromise());
+                    updates.Add(newUser.Services.Inventory.AddCurrency("currency.coins", coins).TaskFromPromise());
+                    
 
-                    result.PerPlayerMatchResults.Add(player.playerId.Value, 
-                        new PerPlayerMatchResult() { MatchResult = BeamballMatchResultEnum.Win, RankEarned = rankedPoints, CoinsEarned = coins });
+                    result.PerPlayerMatchResults.Add(player.playerId.Value,
+                        new PerPlayerMatchResult()
+                        {
+                            MatchResult = BeamballMatchResultEnum.Win, RankEarned = rankedPoints, CoinsEarned = coins
+                        });
                 }
                 else
                 {
                     if (isDraw)
                     {
-                        result.PerPlayerMatchResults.Add(player.playerId.Value, 
-                            new PerPlayerMatchResult() { MatchResult = BeamballMatchResultEnum.Draw, RankEarned = 0, CoinsEarned = 0 });
+                        result.PerPlayerMatchResults.Add(player.playerId.Value,
+                            new PerPlayerMatchResult()
+                                { MatchResult = BeamballMatchResultEnum.Draw, RankEarned = 0, CoinsEarned = 0 });
 
                     }
                     else
                     {
-                        result.PerPlayerMatchResults.Add(player.playerId.Value, 
-                            new PerPlayerMatchResult() { MatchResult = BeamballMatchResultEnum.Lose, RankEarned = 0, CoinsEarned = 0 });
+                        result.PerPlayerMatchResults.Add(player.playerId.Value,
+                            new PerPlayerMatchResult()
+                                { MatchResult = BeamballMatchResultEnum.Lose, RankEarned = 0, CoinsEarned = 0 });
                     }
                 }
             }
@@ -291,200 +335,153 @@ namespace Beamable.BeamballMs
 
             return result;
         }
+
         /// <summary>
-        /// Utility function defining defaults and keys for the "hathora_integration" realm-config namespace.
+        /// Utility function defining defaults and keys for the "edgegap_integration" realm-config namespace.
         /// These must be correctly set up in your realm for this microservice to work. 
         /// </summary>
-        private static HathoraRealmConfig GetHathoraRealmConfig(RealmConfig config)
+        private static EdgegapRealmConfig GetEdgegapRealmConfig(RealmConfig config)
         {
-            const string kNamespaceHathoraIntegration = "hathora_integration";
-            const string kKeyAppID = "app_id";
-            const string kKeyDevToken = "dev_token";
+            const string kNamespaceEdgegapIntegration = "edgegap_integration";
+            const string kKeyAppKey = "app_key";
+            const string kKeyAppName = "app_name";
+            const string kKeyAppVersion = "app_version";
             const string kKeyFallbackRegion = "fallback_region";
-            const string kKeyHathoraURL = "hathora_url";
+            const string kKeyEdgegapURL = "edgegap_url";
 
 
-            var hathoraRealmConfig = new HathoraRealmConfig
+            var edgegapRealmConfig = new EdgegapRealmConfig()
             {
-                AppId = config.GetSetting(kNamespaceHathoraIntegration, kKeyAppID),
-                DeveloperToken = config.GetSetting(kNamespaceHathoraIntegration, kKeyDevToken),
-                FallbackRegion = config.GetSetting(kNamespaceHathoraIntegration, kKeyFallbackRegion, "Seattle"),
-                HathoraURL = new Uri(config.GetSetting(kNamespaceHathoraIntegration, kKeyHathoraURL, "https://api.hathora.dev"))
+                AppName = config.GetSetting(kNamespaceEdgegapIntegration, kKeyAppName),
+                AppKey = config.GetSetting(kNamespaceEdgegapIntegration, kKeyAppKey),
+                AppVersion = config.GetSetting(kNamespaceEdgegapIntegration, kKeyAppVersion),
+                FallbackRegion = config.GetSetting(kNamespaceEdgegapIntegration, kKeyFallbackRegion, "Seattle"),
+                EdgegapURL = new Uri(config.GetSetting(kNamespaceEdgegapIntegration, kKeyEdgegapURL,
+                    "https://api.edgegap.com"))
             };
 
-            return hathoraRealmConfig;
+            return edgegapRealmConfig;
         }
 
-        /// <summary>
-        /// Takes in the roomId (in our case, the LobbyId) and calls the Hathora API based on realm-config settings and awaits for the response.
-        /// </summary>
-        private static async Task<HathoraConnectionInfo> CreateHathoraGameServer(RealmConfig config, string roomId, string region = null)
+        public static async Task<EdgegapConnectionInfo> CreateEdgegapServer(RealmConfig config,
+            string lobbyId, List<EdgegapLocation> edgegapLocations)
         {
-            var hathoraRealmConfig = GetHathoraRealmConfig(config);
-            var createUri = new Uri(hathoraRealmConfig.HathoraURL, $"/rooms/v2/{hathoraRealmConfig.AppId}/create?roomId={roomId}");
+            var edgegapRealmConfig = GetEdgegapRealmConfig(config);
 
-            var body = new HathoraCreateRoomRequest
+            var url = "https://api.edgegap.com/v2/deployments";
+
+            var body = new EdgegapCreateDeploymentRequestV2
             {
-                roomConfig = "",
-                region = region ?? hathoraRealmConfig.FallbackRegion
+                application = edgegapRealmConfig.AppName,
+                version = edgegapRealmConfig.AppVersion,
+
+                // required in v2
+                users = edgegapLocations.Select(item => new EdgegapUser()
+                {
+                    user_type = "geo_coordinates",
+                    user_data = new EdgegapUserData
+                    {
+                        latitude = (float)item.latitude,
+                        longitude = (float)item.longitude
+                    }
+                }).ToArray(),
+
+                environment_variables = new[]
+                {
+                    new EdgegapEnvVar
+                    {
+                        key = "BEAMABLE_DEDICATED_SERVER_INSTANCE_LOBBY_ID",
+                        value = lobbyId,
+                        is_hidden = false
+                    }
+                }
             };
 
-            var serialized = JsonUtility.ToJson(body);
-            var requestContent = new StringContent(serialized, Encoding.UTF8, "application/json");
+            var json = JsonConvert.SerializeObject(body);
 
-            var http = new HttpClient() { DefaultRequestHeaders = { { "Authorization", $"Bearer {hathoraRealmConfig.DeveloperToken}" } } };
-            var response = await http.PostAsync(createUri, requestContent);
+            var http = new HttpClient();
+            http.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("token", edgegapRealmConfig.AppKey);
+
+            var response = await http.PostAsync(
+                url,
+                new StringContent(json, Encoding.UTF8, "application/json")
+            );
+
             var content = await response.Content.ReadAsStringAsync();
-            BeamableLogger.Log("Create Room Hathora Response: " + content);
+
             if (!response.IsSuccessStatusCode)
-            {
                 throw new Exception(content);
-            }
 
-            return JsonUtility.FromJson<HathoraConnectionInfo>(content);
+            return JsonConvert.DeserializeObject<EdgegapConnectionInfo>(content);
         }
-
-        /// <summary>
-        /// Takes in the roomId (in our case, the LobbyId) and calls the Hathora API to get their room's connection information/state.
+        
+        //Takes in the requestId and calls the Edgegap API to get their connection information/state.
         /// We use this to wait until the server is provisioned before notifying players that the match is ready.
-        /// </summary>
-        private static async Task<HathoraConnectionInfo> PollHathoraGameServer(RealmConfig config, string roomId)
+        private static async Task<EdgegapConnectionInfo> PollEdgegapGameServer(
+            RealmConfig config,
+            string requestId)
         {
-            var hathoraRealmConfig = GetHathoraRealmConfig(config);
-            var getUri = new Uri(hathoraRealmConfig.HathoraURL, $"/rooms/v2/{hathoraRealmConfig.AppId}/connectioninfo/{roomId}");
+            var edgegapRealmConfig = GetEdgegapRealmConfig(config);
 
-            var http = new HttpClient() { DefaultRequestHeaders = { { "Authorization", $"Bearer {hathoraRealmConfig.DeveloperToken}" } } };
+            var getUri = new Uri(
+                edgegapRealmConfig.EdgegapURL,
+                $"v1/status/{requestId}"
+            );
+
+            var http = new HttpClient();
+            
+            http.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("token", edgegapRealmConfig.AppKey);
+
             var response = await http.GetAsync(getUri);
             var content = await response.Content.ReadAsStringAsync();
-            BeamableLogger.Log("Get ConnectionInfo Hathora Response: " + content);
+
+            BeamableLogger.Log("Get ConnectionInfo Edgegap Response: " + content);
+
             if (!response.IsSuccessStatusCode)
             {
-                throw new Exception(content);
+                return new EdgegapConnectionInfo()
+                {
+                    request_id = requestId,
+                    status = "Error",
+                    ip = "",
+                    port = 0
+                };
             }
 
-            return JsonUtility.FromJson<HathoraConnectionInfo>(content);
+            var deployment =
+                JsonConvert.DeserializeObject<EdgegapDeploymentStatusResponse>(content);
+
+            string ip = "";
+            int port = 0;
+
+            if (deployment?.ports != null &&
+                deployment.ports.TryGetValue("gameport", out var gamePort))
+            {
+                ip = gamePort.link.Split(":")[0];
+                port = int.Parse(gamePort.link.Split(":")[1]);
+            }
+
+            return new EdgegapConnectionInfo
+            {
+                request_id = requestId,
+                status = deployment?.current_status_label,
+                ports = deployment?.ports,
+                ip = ip,
+                port = port
+            };
         }
     }
-
+    
     [Serializable]
-    public class HathoraRealmConfig
+    public class EdgegapRealmConfig
     {
-        public string AppId;
-        public string DeveloperToken;
+        public string AppName;
+        public string AppKey;
+        public string AppVersion;
         public string FallbackRegion;
-        public Uri HathoraURL;
-    }
-
-    [Serializable]
-    public class HathoraCreateRoomRequest
-    {
-        public string roomConfig;
-        public string region;
-    }
-
-    [Serializable]
-    public class HathoraPortInfo
-    {
-        public string host;
-        public string name;
-        public int port;
-        public string transportType;
-    }
-
-    [Serializable]
-    public class HathoraConnectionInfo
-    {
-        public string processId;
-        public string roomId;
-        public string status;
-        public HathoraPortInfo exposedPort;
-        public List<HathoraPortInfo> additionalExposedPorts;
-    }
-
-    [Serializable]
-    public class HathoraPingTimes
-    {
-        [JsonProperty("Los_Angeles")] public int LosAngeles;
-
-        [JsonProperty("Chicago")] public int Chicago;
-
-        [JsonProperty("Washington_DC")] public int WashingtonDc;
-
-        [JsonProperty("Seattle")] public int Seattle;
-
-        [JsonProperty("London")] public int London;
-
-        [JsonProperty("Frankfurt")] public int Frankfurt;
-
-        [JsonProperty("Sao_Paulo")] public int SaoPaulo;
-
-        [JsonProperty("Tokyo")] public int Tokyo;
-
-        [JsonProperty("Sydney")] public int Sydney;
-
-        [JsonProperty("Singapore")] public int Singapore;
-
-        [JsonProperty("Mumbai")] public int Mumbai;
-
-        // create a + operator
-        public static HathoraPingTimes operator +(HathoraPingTimes a, HathoraPingTimes b)
-        {
-            return new HathoraPingTimes
-            {
-                LosAngeles = a.LosAngeles + b.LosAngeles,
-                Chicago = a.Chicago + b.Chicago,
-                WashingtonDc = a.WashingtonDc + b.WashingtonDc,
-                Seattle = a.Seattle + b.Seattle,
-                London = a.London + b.London,
-                Frankfurt = a.Frankfurt + b.Frankfurt,
-                SaoPaulo = a.SaoPaulo + b.SaoPaulo,
-                Tokyo = a.Tokyo + b.Tokyo,
-                Sydney = a.Sydney + b.Sydney,
-                Singapore = a.Singapore + b.Singapore,
-                Mumbai = a.Mumbai + b.Mumbai
-            };
-        }
-
-        public static HathoraPingTimes operator /(HathoraPingTimes a, int b)
-        {
-            return new HathoraPingTimes
-            {
-                LosAngeles = a.LosAngeles / b,
-                Chicago = a.Chicago / b,
-                WashingtonDc = a.WashingtonDc / b,
-                Seattle = a.Seattle / b,
-                London = a.London / b,
-                Frankfurt = a.Frankfurt / b,
-                SaoPaulo = a.SaoPaulo / b,
-                Tokyo = a.Tokyo / b,
-                Sydney = a.Sydney / b,
-                Singapore = a.Singapore / b,
-                Mumbai = a.Mumbai / b
-            };
-        }
-
-        public List<KeyValuePair<string, int>> GetSortedPingTimes()
-        {
-            var pings = new List<KeyValuePair<string, int>>
-            {
-                new KeyValuePair<string, int>("Los_Angeles", LosAngeles),
-                new KeyValuePair<string, int>("Chicago", Chicago),
-                new KeyValuePair<string, int>("Washington_DC", WashingtonDc),
-                new KeyValuePair<string, int>("Seattle", Seattle),
-                new KeyValuePair<string, int>("London", London),
-                new KeyValuePair<string, int>("Frankfurt", Frankfurt),
-                new KeyValuePair<string, int>("Sao_Paulo", SaoPaulo),
-                new KeyValuePair<string, int>("Tokyo", Tokyo),
-                new KeyValuePair<string, int>("Sydney", Sydney),
-                new KeyValuePair<string, int>("Singapore", Singapore),
-                new KeyValuePair<string, int>("Mumbai", Mumbai),
-            };
-
-            // Sort the list by ping value
-            pings.Sort((firstPair, nextPair) => { return firstPair.Value.CompareTo(nextPair.Value); });
-
-            return pings;
-        }
+        public Uri EdgegapURL;
     }
     
     [Serializable]
@@ -520,5 +517,97 @@ namespace Beamable.BeamballMs
         public BeamballMatchResultEnum MatchResult;
         public int RankEarned;
         public int CoinsEarned;
+    }
+    
+    public class EdgegapCreateDeploymentRequestV2
+    {
+        public string application;
+        public string version;
+        public EdgegapUser[] users;
+        public EdgegapEnvVar[] environment_variables;
+    }
+    
+    public class EdgegapUser
+    {
+        public string user_type;
+        public EdgegapUserData user_data;
+    }
+    
+    public class EdgegapUserData
+    {
+        // public string ip_address;
+        public float latitude;
+        public float longitude;
+    }
+    
+    public class EdgegapEnvVar
+    {
+        public string key;
+        public string value;
+        public bool is_hidden;
+    }
+    
+    public class EdgegapConnectionInfo
+    {
+        public string request_id;
+        public string status;
+
+        public Dictionary<string, EdgegapPort> ports;
+        
+        public string ip;
+        public int port;
+
+        public bool IsReady => status == "READY";
+    }
+    
+    public class EdgegapDeploymentStatusResponse
+    {
+        public string request_id { get; set; }
+        public string fqdn { get; set; }
+        public string app_name { get; set; }
+        public string app_version { get; set; }
+
+        public string current_status { get; set; }
+        public string current_status_label { get; set; }
+
+        public bool running { get; set; }
+        
+        public bool error { get; set; }
+
+        public string public_ip { get; set; }
+        public bool whitelisting_active { get; set; }
+
+        public Dictionary<string, EdgegapPort> ports { get; set; }
+
+        public string command { get; set; }
+        public string arguments { get; set; }
+
+        public int max_duration { get; set; }
+
+        public string last_status { get; set; }
+        public string last_status_label { get; set; }
+
+        public EdgegapLocation location { get; set; }
+    }
+    
+    public class EdgegapPort
+    {
+        public string protocol { get; set; }
+        public string name { get; set; }
+        public bool tls_upgrade { get; set; }
+        public string link { get; set; }
+        public string proxy { get; set; }
+    }
+    
+    public class EdgegapLocation
+    {
+        public string city { get; set; }
+        public string country { get; set; }
+        public string continent { get; set; }
+        public string administrative_division { get; set; }
+        public string timezone { get; set; }
+
+        public double latitude { get; set; }
+        public double longitude { get; set; }
     }
 }

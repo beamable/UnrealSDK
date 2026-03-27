@@ -14,7 +14,6 @@ public class BeamableCoreBlueprintNodes : ModuleRules
 				"CoreUObject",
 				"BeamableCore",
 				"BeamableCoreRuntime",
-				"UnrealEd",
 				"BlueprintGraph",
 				"GraphEditor",
 				"PropertyEditor",
@@ -26,7 +25,8 @@ public class BeamableCoreBlueprintNodes : ModuleRules
 				"Projects", // Required to use IPluginManager in order to configure new Slate styles
 				"ToolMenus",
 				"ToolMenusEditor", 
-				"DeveloperSettings"
+				"DeveloperSettings",
+				"UnrealEd",
 			}
 		);
 

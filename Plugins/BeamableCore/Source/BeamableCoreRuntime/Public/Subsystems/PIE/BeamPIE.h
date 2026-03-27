@@ -1618,10 +1618,9 @@ public:
 		{
 			const auto AccessToken = SlotSerializedAuthData.AccessToken;
 			const auto RefreshToken = SlotSerializedAuthData.RefreshToken;
-			const auto ExpiresIn = SlotSerializedAuthData.ExpiresIn;
 			const auto GamerTag = SlotSerializedAccountData.GamerTag;
 
-			NewOption = Lobby->PrepareLoginOptionsFull(Options, AccessToken, RefreshToken, ExpiresIn, GamerTag, FString{});
+			NewOption = Lobby->PrepareLoginOptionsFull(Options, AccessToken, RefreshToken, GamerTag, FString{});
 			if (CurrSlotIdx == OrderedSlots.Num() - 1)
 			{
 				PreLoginExpectingUserSlotInPieIndex = 0;

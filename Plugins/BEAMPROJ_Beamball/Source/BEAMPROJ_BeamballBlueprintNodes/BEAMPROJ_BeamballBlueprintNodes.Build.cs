@@ -16,7 +16,9 @@ public class BEAMPROJ_BeamballBlueprintNodes : ModuleRules
                 "BeamableCoreRuntime",
                 "BeamableCoreBlueprintNodes",
                 
+
                 "BlueprintGraph",
+                "UnrealEd"
             });
 
 

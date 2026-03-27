@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "ObjectTools.h"
+
 #include "BeamFlow/K2BeamNode_BeamFlow.h"
 #include "K2BeamNode_GetLocalState.generated.h"
 
@@ -56,7 +57,10 @@ public:
 		FText BaseTooltip = {};
 		if (Function != nullptr)
 		{
+			#if WITH_EDITOR
 			return FText::FromString(ObjectTools::GetDefaultTooltipForFunction(Function));
+			#endif
+			
 		}
 
 		return Super::GetTooltipText();
