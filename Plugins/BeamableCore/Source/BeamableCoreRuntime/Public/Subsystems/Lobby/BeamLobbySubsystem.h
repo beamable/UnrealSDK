@@ -288,7 +288,7 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
 	bool TryGetPlayerLobby(FBeamGamerTag GamerTag, ULobby*& Lobby);
-	
+
 	/**
 	 *  Try to get a specific data from a ULobby* Object.
 	 *  The default value is what will be return in case of it fail to get the value.
@@ -380,7 +380,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
 	bool TryGetTeamWithIndexFromLobby(FBeamGamerTag GamerTag, FString& OutTeam);
-	
+
 	/**
 	 * Call this to begin building a set of batched updates to a lobby the player is in.
 	 * After this call, use the various PrepareUpdate______ functions to build out the update.
@@ -822,6 +822,8 @@ private:
 	void InitializeLobbyInfoForSlot(const FUserSlot& UserSlot, const FBeamRealmUser& BeamRealmUser);
 	void UpdateLobbyPlayerInfo(FUserSlot Slot, const ULobby* LobbyData);
 	void ReplaceOrAddKnownLobbyData(ULobby* LobbyData);
+	void RemoveKnownLobbyData(ULobby* LobbyData);
+	void RemoveKnownLobbyData(FString LobbyId);
 	void ClearLobbyForSlot(FUserSlot Slot);
 
 	bool GuardSlotIsInLobby(const FUserSlot& Slot, UBeamLobbyState*& LobbyState);

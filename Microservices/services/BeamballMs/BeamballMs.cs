@@ -14,6 +14,7 @@ using Beamable.Common.Api.Inventory;
 using Beamable.Common.Api.Stats;
 using Beamable.Common.Content;
 using Beamable.Common.Dependencies;
+using Beamable.Experimental.Api.Lobbies;
 using Beamable.Server;
 using Beamable.Server.Api.Leaderboards;
 using Beamable.Server.Api.RealmConfig;
@@ -183,7 +184,9 @@ namespace Beamable.BeamballMs
                             throw new MicroserviceException(503, "FAILED_TO_PROVISION_GAME_SERVER_BEFORE_TIMEOUT",
                                 JsonUtility.ToJson(edgegapRoom));
                         }
-
+                        
+                        connInfo.globalData.Add("edgegap_request_id", edgegapRoom.request_id);
+                        
                         // Set the edgegap room information as the connection string for this lobby --- the Unreal SDK has utilities to read these properties.
                         // You can always pass them via your own properties.
                         connInfo.SetConnectionString(edgegapRoom.ip, edgegapRoom.port.ToString());
@@ -332,6 +335,27 @@ namespace Beamable.BeamballMs
                 BeamableLogger.LogError(e);
                 throw;
             }
+            
+            // Remove all players from lobby
+            
+            List<Task> removeLobbyTaskList = new List<Task>();
+            foreach (var player in lobbyPlayers)
+            {
+                removeLobbyTaskList.Add(beamLobbyApi.Delete(lobbyGuid, new RemoveFromLobby()
+                {
+                    playerId = player.playerId.Value
+                }).TaskFromPromise());
+            }
+            
+            await Task.WhenAll(removeLobbyTaskList);
+            
+            // Delete Server after the end of the match
+            var realmConfig = await Services.RealmConfig.GetRealmConfigSettings();
+
+            if (lobby.data.Value.TryGetValue("edgegap_request_id", out var requestId))
+            {
+                await DeleteEdgegapServer(realmConfig, requestId);
+            }
 
             return result;
         }
@@ -361,6 +385,30 @@ namespace Beamable.BeamballMs
             };
 
             return edgegapRealmConfig;
+        }
+        
+        public static async Task<bool> DeleteEdgegapServer(RealmConfig config,
+            string requestId)
+        {
+            var edgegapRealmConfig = GetEdgegapRealmConfig(config);
+
+            var url = "https://api.edgegap.com/v1/stop/" + requestId;
+            
+            
+            var http = new HttpClient();
+            http.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("token", edgegapRealmConfig.AppKey);
+
+            var response = await http.DeleteAsync(
+                url
+            );
+
+            await response.Content.ReadAsStringAsync();
+
+            if (!response.IsSuccessStatusCode)
+                return false;
+
+            return true;
         }
 
         public static async Task<EdgegapConnectionInfo> CreateEdgegapServer(RealmConfig config,

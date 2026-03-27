@@ -490,19 +490,19 @@ bool UBeamLobbySubsystem::TryGetTeamWithIndexFromLobby(FBeamGamerTag GamerTag, F
 					{
 						TeamCount.Add(BeamTag.Value.Val, 0);
 					}
-					
+
 					if (LobbyPlayer->PlayerId.Val == GamerTag)
 					{
 						OutTeam = BeamTag.Value.Val + FString::FromInt(TeamCount[BeamTag.Value.Val]);
 						return true;
 					}
-					
-					TeamCount[BeamTag.Value.Val] ++;
+
+					TeamCount[BeamTag.Value.Val]++;
 				}
 			}
 		}
 	}
-	
+
 
 	return false;
 }
@@ -1971,7 +1971,7 @@ void UBeamLobbySubsystem::AcceptUserIntoGameServer(const FUserSlot& Slot, const 
 
 		const auto bHasRefreshToken = UGameplayStatics::HasOption(Options, Reserved_LoginOpt_RefreshToken_Required);
 		if (!bHasRefreshToken) Errs.Add(TEXT("MISSING_REFRESH_TOKEN_OPT"));
-		
+
 
 		// If we failed to receive any of the options, we error out here.
 		if (Errs.Num() > 0)
@@ -2069,9 +2069,9 @@ void UBeamLobbySubsystem::AcceptUserIntoGameServer(const FUserSlot& Slot, const 
 
 		// We are setting the authentication data in the UserSlot for the case of the token is expired the flow of retry and get a new token works properly.
 		UserSlots->SetAuthenticationDataAtSlot(UserSlot, ConnectingAccessToken, ConnectingRefreshToken,
-														   FDateTime::UtcNow().ToUnixTimestamp(), 120000, TargetRealm.Cid, TargetRealm.Pid, this);
+		                                       FDateTime::UtcNow().ToUnixTimestamp(), 120000, TargetRealm.Cid, TargetRealm.Pid, this);
 		UserSlots->SetGamerTagAtSlot(UserSlot, ConnectingGamerTag, this);
-						
+
 		/// ... prepare and make a GetMe request using the provided access token.
 		const auto AccountsApi = GEngine->GetEngineSubsystem<UBeamAccountsApi>();
 		const auto Req = UBasicAccountsGetMeRequest::Make(GetTransientPackage(), {});
@@ -2083,7 +2083,7 @@ void UBeamLobbySubsystem::AcceptUserIntoGameServer(const FUserSlot& Slot, const 
 			FOnBasicAccountsGetMeFullResponse::CreateLambda([this, CurrMappingIdx, ConnectingAccessToken, ConnectingRefreshToken, TargetLobby, Op, UniqueId](FBasicAccountsGetMeFullResponse Resp)
 			{
 				if (Resp.State == RS_Retrying) return;
-				
+
 				if (Resp.State == RS_Error)
 				{
 					RequestTracker->TriggerOperationError(Op, TEXT("FAILED_TO_VALIDATE_TOKEN"));
@@ -2417,6 +2417,12 @@ void UBeamLobbySubsystem::OnLobbyUpdatedHandler(FLobbyUpdateNotificationMessage 
 						UE_LOG(LogBeamLobby, Error, TEXT("You should not be seeing this. LOBBY_ID=%s, USER_SLOT=%s"), *LobbyId.ToString(EGuidFormats::DigitsWithHyphensLower), *Slot.Name);
 					}
 				}
+				else
+				{
+					ClearLobbyForSlot(Slot);
+
+					RemoveKnownLobbyData(Msg.LobbyId.ToString());
+				}
 			}), LobbyId);
 		}
 	}
@@ -2501,6 +2507,18 @@ void UBeamLobbySubsystem::ReplaceOrAddKnownLobbyData(ULobby* LobbyData)
 		KnownLobbies[ExistingLobbyIdx] = LobbyData;
 	else
 		KnownLobbies.Add(LobbyData);
+}
+
+void UBeamLobbySubsystem::RemoveKnownLobbyData(ULobby* LobbyData)
+{
+	if (const auto ExistingLobbyIdx = KnownLobbies.IndexOfByPredicate([LobbyData](const ULobby* Lob) { return Lob->LobbyId.Val.Equals(LobbyData->LobbyId.Val); }); ExistingLobbyIdx != INDEX_NONE)
+		KnownLobbies.RemoveAt(ExistingLobbyIdx);
+}
+
+void UBeamLobbySubsystem::RemoveKnownLobbyData(FString LobbyId)
+{
+	if (const auto ExistingLobbyIdx = KnownLobbies.IndexOfByPredicate([LobbyId](const ULobby* Lob) { return Lob->LobbyId.Val.Equals(LobbyId); }); ExistingLobbyIdx != INDEX_NONE)
+		KnownLobbies.RemoveAt(ExistingLobbyIdx);
 }
 
 void UBeamLobbySubsystem::ClearLobbyForSlot(FUserSlot Slot)
