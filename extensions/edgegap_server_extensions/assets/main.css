@@ -1,0 +1,205 @@
+:root {
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+  .table-wrap.svelte-1vjxqu {
+    width: 100%;
+    overflow-x: auto;
+    margin-top: 0.75rem;
+  }
+
+  table.svelte-1vjxqu {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  th.svelte-1vjxqu,
+  td.svelte-1vjxqu {
+    padding: 0.6rem 0.5rem;
+    border-bottom: 1px solid #e5e7eb;
+    text-align: left;
+    font-size: 0.9rem;
+    vertical-align: top;
+  }
+
+  .details-panel.svelte-1vjxqu {
+    margin-top: 0.9rem;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 8px;
+    padding: 0.8rem;
+    background: rgba(255,255,255,0.05);
+  }
+
+  .error.svelte-1vjxqu {
+    color: #b00020;
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+  }
+
+  .placeholder.svelte-1vjxqu {
+    color: rgba(255,255,255,0.4);
+    font-style: italic;
+    margin-top: 0.75rem;
+  }
+
+  .details-header.svelte-1vjxqu {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .details-header.svelte-1vjxqu h4:where(.svelte-1vjxqu) {
+    margin: 0;
+  }
+
+  .request-id-badge.svelte-1vjxqu {
+    font-family: monospace;
+    font-size: 0.78rem;
+    background: rgba(100,160,255,0.15);
+    color: #7eb8ff;
+    padding: 0.15rem 0.5rem;
+    border-radius: 4px;
+  }
+
+  .details-grid.svelte-1vjxqu {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+    gap: 0.6rem;
+    margin-bottom: 0.6rem;
+  }
+
+  .detail-section.svelte-1vjxqu {
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 6px;
+    padding: 0.55rem 0.7rem;
+  }
+
+  .detail-section-full.svelte-1vjxqu {
+    margin-top: 0.5rem;
+  }
+
+  .detail-section.svelte-1vjxqu h5:where(.svelte-1vjxqu) {
+    margin: 0 0 0.35rem 0;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: rgba(255,255,255,0.45);
+  }
+
+  .detail-row.svelte-1vjxqu {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 0.5rem;
+    padding: 0.12rem 0;
+    font-size: 0.82rem;
+  }
+
+  .detail-label.svelte-1vjxqu {
+    color: rgba(255,255,255,0.5);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .detail-value.svelte-1vjxqu {
+    font-weight: 500;
+    text-align: right;
+    word-break: break-all;
+  }
+
+  .detail-mono.svelte-1vjxqu {
+    font-family: monospace;
+    font-size: 0.8rem;
+  }
+
+  .status-badge.svelte-1vjxqu {
+    font-size: 0.72rem;
+    padding: 0.1rem 0.45rem;
+    border-radius: 999px;
+    font-weight: 600;
+  }
+
+  .status-running.svelte-1vjxqu {
+    background: #dcfce7;
+    color: #15803d;
+  }
+
+  .status-stopped.svelte-1vjxqu {
+    background: #fee2e2;
+    color: #b91c1c;
+  }
+
+  .error-text.svelte-1vjxqu {
+    color: #b00020;
+  }
+
+  .inner-table.svelte-1vjxqu {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.82rem;
+  }
+
+  .inner-table.svelte-1vjxqu th:where(.svelte-1vjxqu),
+  .inner-table.svelte-1vjxqu td:where(.svelte-1vjxqu) {
+    padding: 0.3rem 0.45rem;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    text-align: left;
+  }
+
+  .inner-table.svelte-1vjxqu th:where(.svelte-1vjxqu) {
+    font-weight: 600;
+    color: rgba(255,255,255,0.45);
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .protocol-badge.svelte-1vjxqu {
+    font-size: 0.68rem;
+    padding: 0.1rem 0.35rem;
+    border-radius: 4px;
+    background: rgba(255,255,255,0.12);
+    color: rgba(255,255,255,0.85);
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+
+  .location-info.svelte-1vjxqu {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    font-size: 0.85rem;
+  }
+
+  .detail-muted.svelte-1vjxqu {
+    color: rgba(255,255,255,0.35);
+    font-size: 0.78rem;
+  }
+
+  .tags-list.svelte-1vjxqu {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+  }
+
+  .tag-pill.svelte-1vjxqu {
+    font-size: 0.72rem;
+    padding: 0.15rem 0.5rem;
+    background: rgba(255,255,255,0.12);
+    border-radius: 999px;
+    color: rgba(255,255,255,0.8);
+  }
+
+  .details-panel.svelte-1vjxqu a:where(.svelte-1vjxqu) {
+    color: #7eb8ff;
+    text-decoration: none;
+  }
+
+  .details-panel.svelte-1vjxqu a:where(.svelte-1vjxqu):hover {
+    text-decoration: underline;
+  }
