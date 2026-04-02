@@ -1,4 +1,4 @@
-(function() {
+(function(sdk, api) {
   "use strict";
   const DEV = false;
   var is_array = Array.isArray;
@@ -99,11 +99,6 @@
       throw new Error(`https://svelte.dev/e/effect_update_depth_exceeded`);
     }
   }
-  function props_invalid_value(key) {
-    {
-      throw new Error(`https://svelte.dev/e/props_invalid_value`);
-    }
-  }
   function state_descriptors_fixed() {
     {
       throw new Error(`https://svelte.dev/e/state_descriptors_fixed`);
@@ -127,11 +122,9 @@
   const EACH_ITEM_REACTIVE = 1;
   const EACH_INDEX_REACTIVE = 1 << 1;
   const EACH_ITEM_IMMUTABLE = 1 << 4;
-  const PROPS_IS_IMMUTABLE = 1;
   const PROPS_IS_RUNES = 1 << 1;
   const PROPS_IS_UPDATED = 1 << 2;
   const PROPS_IS_BINDABLE = 1 << 3;
-  const PROPS_IS_LAZY_INITIAL = 1 << 4;
   const TEMPLATE_FRAGMENT = 1;
   const TEMPLATE_USE_IMPORT_NODE = 1 << 1;
   const UNINITIALIZED = /* @__PURE__ */ Symbol();
@@ -272,174 +265,7 @@
     clear_marked(effect.deps);
     set_signal_status(effect, CLEAN);
   }
-  function subscribe_to_store(store, run2, invalidate) {
-    if (store == null) {
-      run2(void 0);
-      if (invalidate) invalidate(void 0);
-      return noop;
-    }
-    const unsub = untrack(
-      () => store.subscribe(
-        run2,
-        // @ts-expect-error
-        invalidate
-      )
-    );
-    return unsub.unsubscribe ? () => unsub.unsubscribe() : unsub;
-  }
-  const subscriber_queue = [];
-  function readable(value, start) {
-    return {
-      subscribe: writable(value, start).subscribe
-    };
-  }
-  function writable(value, start = noop) {
-    let stop = null;
-    const subscribers = /* @__PURE__ */ new Set();
-    function set2(new_value) {
-      if (safe_not_equal(value, new_value)) {
-        value = new_value;
-        if (stop) {
-          const run_queue = !subscriber_queue.length;
-          for (const subscriber of subscribers) {
-            subscriber[1]();
-            subscriber_queue.push(subscriber, value);
-          }
-          if (run_queue) {
-            for (let i = 0; i < subscriber_queue.length; i += 2) {
-              subscriber_queue[i][0](subscriber_queue[i + 1]);
-            }
-            subscriber_queue.length = 0;
-          }
-        }
-      }
-    }
-    function update(fn) {
-      set2(fn(
-        /** @type {T} */
-        value
-      ));
-    }
-    function subscribe(run2, invalidate = noop) {
-      const subscriber = [run2, invalidate];
-      subscribers.add(subscriber);
-      if (subscribers.size === 1) {
-        stop = start(set2, update) || noop;
-      }
-      run2(
-        /** @type {T} */
-        value
-      );
-      return () => {
-        subscribers.delete(subscriber);
-        if (subscribers.size === 0 && stop) {
-          stop();
-          stop = null;
-        }
-      };
-    }
-    return { set: set2, update, subscribe };
-  }
-  function derived$1(stores, fn, initial_value) {
-    const single = !Array.isArray(stores);
-    const stores_array = single ? [stores] : stores;
-    if (!stores_array.every(Boolean)) {
-      throw new Error("derived() expects stores as input, got a falsy value");
-    }
-    const auto = fn.length < 2;
-    return readable(initial_value, (set2, update) => {
-      let started = false;
-      const values = [];
-      let pending = 0;
-      let cleanup = noop;
-      const sync = () => {
-        if (pending) {
-          return;
-        }
-        cleanup();
-        const result = fn(single ? values[0] : values, set2, update);
-        if (auto) {
-          set2(result);
-        } else {
-          cleanup = typeof result === "function" ? result : noop;
-        }
-      };
-      const unsubscribers = stores_array.map(
-        (store, i) => subscribe_to_store(
-          store,
-          (value) => {
-            values[i] = value;
-            pending &= ~(1 << i);
-            if (started) {
-              sync();
-            }
-          },
-          () => {
-            pending |= 1 << i;
-          }
-        )
-      );
-      started = true;
-      sync();
-      return function stop() {
-        run_all(unsubscribers);
-        cleanup();
-        started = false;
-      };
-    });
-  }
-  function get$1(store) {
-    let value;
-    subscribe_to_store(store, (_) => value = _)();
-    return value;
-  }
   let is_store_binding = false;
-  let IS_UNMOUNTED = /* @__PURE__ */ Symbol();
-  function store_get(store, store_name, stores) {
-    const entry = stores[store_name] ??= {
-      store: null,
-      source: /* @__PURE__ */ mutable_source(void 0),
-      unsubscribe: noop
-    };
-    if (entry.store !== store && !(IS_UNMOUNTED in stores)) {
-      entry.unsubscribe();
-      entry.store = store ?? null;
-      if (store == null) {
-        entry.source.v = void 0;
-        entry.unsubscribe = noop;
-      } else {
-        var is_synchronous_callback = true;
-        entry.unsubscribe = subscribe_to_store(store, (v) => {
-          if (is_synchronous_callback) {
-            entry.source.v = v;
-          } else {
-            set(entry.source, v);
-          }
-        });
-        is_synchronous_callback = false;
-      }
-    }
-    if (store && IS_UNMOUNTED in stores) {
-      return get$1(store);
-    }
-    return get(entry.source);
-  }
-  function setup_stores() {
-    const stores = {};
-    function cleanup() {
-      teardown(() => {
-        for (var store_name in stores) {
-          const ref = stores[store_name];
-          ref.unsubscribe();
-        }
-        define_property(stores, IS_UNMOUNTED, {
-          enumerable: false,
-          value: true
-        });
-      });
-    }
-    return [stores, cleanup];
-  }
   function capture_store_binding(fn) {
     var previous_is_store_binding = is_store_binding;
     try {
@@ -3775,9 +3601,6 @@
     var classname = value == null ? "" : "" + value;
     return classname === "" ? null : classname;
   }
-  function to_style(value, styles) {
-    return String(value);
-  }
   function set_class(dom, is_html, value, hash, prev_classes, next_classes) {
     var prev = dom.__className;
     if (prev !== value || prev === void 0) {
@@ -3792,21 +3615,6 @@
       dom.__className = value;
     }
     return next_classes;
-  }
-  function set_style(dom, value, prev_styles, next_styles) {
-    var prev = dom.__style;
-    if (prev !== value) {
-      var next_style_attr = to_style(value);
-      {
-        if (next_style_attr == null) {
-          dom.removeAttribute("style");
-        } else {
-          dom.style.cssText = next_style_attr;
-        }
-      }
-      dom.__style = value;
-    }
-    return next_styles;
   }
   const IS_CUSTOM_ELEMENT = /* @__PURE__ */ Symbol("is custom element");
   const IS_HTML = /* @__PURE__ */ Symbol("is html");
@@ -3937,7 +3745,6 @@
   function prop(props, key, flags2, fallback) {
     var runes = !legacy_mode_flag || (flags2 & PROPS_IS_RUNES) !== 0;
     var bindable = (flags2 & PROPS_IS_BINDABLE) !== 0;
-    var lazy = (flags2 & PROPS_IS_LAZY_INITIAL) !== 0;
     var fallback_value = (
       /** @type {V} */
       fallback
@@ -3946,38 +3753,23 @@
     var get_fallback = () => {
       if (fallback_dirty) {
         fallback_dirty = false;
-        fallback_value = lazy ? untrack(
-          /** @type {() => V} */
-          fallback
-        ) : (
-          /** @type {V} */
-          fallback
-        );
+        fallback_value = /** @type {V} */
+        fallback;
       }
       return fallback_value;
     };
     let setter;
-    if (bindable) {
+    {
       var is_entry_props = STATE_SYMBOL in props || LEGACY_PROPS in props;
       setter = get_descriptor(props, key)?.set ?? (is_entry_props && key in props ? (v) => props[key] = v : void 0);
     }
     var initial_value;
     var is_store_sub = false;
-    if (bindable) {
+    {
       [initial_value, is_store_sub] = capture_store_binding(() => (
         /** @type {V} */
         props[key]
       ));
-    } else {
-      initial_value = /** @type {V} */
-      props[key];
-    }
-    if (initial_value === void 0 && fallback !== void 0) {
-      initial_value = get_fallback();
-      if (setter) {
-        if (runes) props_invalid_value();
-        setter(initial_value);
-      }
     }
     var getter;
     if (runes) {
@@ -4022,11 +3814,11 @@
       );
     }
     var overridden = false;
-    var d = ((flags2 & PROPS_IS_IMMUTABLE) !== 0 ? derived : derived_safe_equal)(() => {
+    var d = /* @__PURE__ */ derived_safe_equal(() => {
       overridden = false;
       return getter();
     });
-    if (bindable) get(d);
+    get(d);
     var parent_effect = (
       /** @type {Effect} */
       active_effect
@@ -4088,13 +3880,9 @@
     window[e2.beamId] = { mount: (t2, n) => e2.onMount(t2, n), unmount: (t2) => e2.onUnmount(t2) };
   }
   const t = { registerExtension: e };
-  const Context = writable({
-    beam: null
-  });
-  const Beam = derived$1(Context, ($ctx) => $ctx.beam);
   var root_1 = /* @__PURE__ */ from_html(`<beam-progress-linear></beam-progress-linear>`, 2);
   var root_2 = /* @__PURE__ */ from_html(`<beam-alert> </beam-alert>`, 2);
-  var root_4$1 = /* @__PURE__ */ from_html(`<tr><td class="svelte-1vjxqu"> </td><td class="svelte-1vjxqu"> </td><td class="svelte-1vjxqu"> </td><td class="svelte-1vjxqu"> </td><td class="svelte-1vjxqu"><beam-btn>Check More Info</beam-btn></td></tr>`, 2);
+  var root_4 = /* @__PURE__ */ from_html(`<tr><td class="svelte-1vjxqu"> </td><td class="svelte-1vjxqu"> </td><td class="svelte-1vjxqu"> </td><td class="svelte-1vjxqu"> </td><td class="svelte-1vjxqu"><beam-btn>Check More Info</beam-btn></td></tr>`, 2);
   var root_7 = /* @__PURE__ */ from_html(`<div class="detail-row svelte-1vjxqu"><span class="detail-label svelte-1vjxqu">Error</span> <span class="detail-value svelte-1vjxqu"> </span></div>`);
   var root_10 = /* @__PURE__ */ from_html(`<a target="_blank" rel="noopener noreferrer"> </a>`);
   var root_9 = /* @__PURE__ */ from_html(`<tr><td class="svelte-1vjxqu"> </td><td class="detail-mono svelte-1vjxqu"> </td><td class="detail-mono svelte-1vjxqu"> </td><td class="svelte-1vjxqu"><beam-chip> </beam-chip></td><td class="detail-mono svelte-1vjxqu"><!></td></tr>`, 2);
@@ -4103,14 +3891,15 @@
   var root_13 = /* @__PURE__ */ from_html(`<beam-card><beam-card-subtitle> </beam-card-subtitle> <beam-data-table></beam-data-table></beam-card>`, 2);
   var root_15 = /* @__PURE__ */ from_html(`<beam-chip> </beam-chip>`, 2);
   var root_14 = /* @__PURE__ */ from_html(`<beam-card><beam-card-subtitle>Tags</beam-card-subtitle> <div class="section-content svelte-1vjxqu"><div class="tags-list svelte-1vjxqu"></div></div></beam-card>`, 2);
-  var root_6$1 = /* @__PURE__ */ from_html(`<div class="details-grid svelte-1vjxqu"><beam-card><beam-card-subtitle>Status</beam-card-subtitle> <div class="section-content svelte-1vjxqu"><div class="detail-row svelte-1vjxqu"><span class="detail-label svelte-1vjxqu">Running</span> <beam-chip> </beam-chip></div> <div class="detail-row svelte-1vjxqu"><span class="detail-label svelte-1vjxqu">Current</span> <span class="detail-value svelte-1vjxqu"> </span></div> <div class="detail-row svelte-1vjxqu"><span class="detail-label svelte-1vjxqu">Last</span> <span class="detail-value svelte-1vjxqu"> </span></div> <!></div></beam-card> <beam-card><beam-card-subtitle>Application</beam-card-subtitle> <div class="section-content svelte-1vjxqu"><div class="detail-row svelte-1vjxqu"><span class="detail-label svelte-1vjxqu">App</span> <span class="detail-value svelte-1vjxqu"> </span></div> <div class="detail-row svelte-1vjxqu"><span class="detail-label svelte-1vjxqu">Version</span> <span class="detail-value svelte-1vjxqu"> </span></div> <div class="detail-row svelte-1vjxqu"><span class="detail-label svelte-1vjxqu">FQDN</span> <span class="detail-value detail-mono svelte-1vjxqu"> </span></div> <div class="detail-row svelte-1vjxqu"><span class="detail-label svelte-1vjxqu">Public IP</span> <span class="detail-value detail-mono svelte-1vjxqu"> </span></div></div></beam-card> <beam-card><beam-card-subtitle>Timing</beam-card-subtitle> <div class="section-content svelte-1vjxqu"><div class="detail-row svelte-1vjxqu"><span class="detail-label svelte-1vjxqu">Started</span> <span class="detail-value svelte-1vjxqu"> </span></div> <div class="detail-row svelte-1vjxqu"><span class="detail-label svelte-1vjxqu">Elapsed</span> <span class="detail-value svelte-1vjxqu"> </span></div> <div class="detail-row svelte-1vjxqu"><span class="detail-label svelte-1vjxqu">Max Duration</span> <span class="detail-value svelte-1vjxqu"> </span></div> <div class="detail-row svelte-1vjxqu"><span class="detail-label svelte-1vjxqu">Whitelisting</span> <span class="detail-value svelte-1vjxqu"> </span></div></div></beam-card> <beam-card><beam-card-subtitle>Capacity</beam-card-subtitle> <div class="section-content svelte-1vjxqu"><div class="detail-row svelte-1vjxqu"><span class="detail-label svelte-1vjxqu">Sockets Used</span> <span class="detail-value svelte-1vjxqu"> </span></div></div></beam-card></div> <!> <!> <!> <!>`, 3);
+  var root_6 = /* @__PURE__ */ from_html(`<div class="details-grid svelte-1vjxqu"><beam-card><beam-card-subtitle>Status</beam-card-subtitle> <div class="section-content svelte-1vjxqu"><div class="detail-row svelte-1vjxqu"><span class="detail-label svelte-1vjxqu">Running</span> <beam-chip> </beam-chip></div> <div class="detail-row svelte-1vjxqu"><span class="detail-label svelte-1vjxqu">Current</span> <span class="detail-value svelte-1vjxqu"> </span></div> <div class="detail-row svelte-1vjxqu"><span class="detail-label svelte-1vjxqu">Last</span> <span class="detail-value svelte-1vjxqu"> </span></div> <!></div></beam-card> <beam-card><beam-card-subtitle>Application</beam-card-subtitle> <div class="section-content svelte-1vjxqu"><div class="detail-row svelte-1vjxqu"><span class="detail-label svelte-1vjxqu">App</span> <span class="detail-value svelte-1vjxqu"> </span></div> <div class="detail-row svelte-1vjxqu"><span class="detail-label svelte-1vjxqu">Version</span> <span class="detail-value svelte-1vjxqu"> </span></div> <div class="detail-row svelte-1vjxqu"><span class="detail-label svelte-1vjxqu">FQDN</span> <span class="detail-value detail-mono svelte-1vjxqu"> </span></div> <div class="detail-row svelte-1vjxqu"><span class="detail-label svelte-1vjxqu">Public IP</span> <span class="detail-value detail-mono svelte-1vjxqu"> </span></div></div></beam-card> <beam-card><beam-card-subtitle>Timing</beam-card-subtitle> <div class="section-content svelte-1vjxqu"><div class="detail-row svelte-1vjxqu"><span class="detail-label svelte-1vjxqu">Started</span> <span class="detail-value svelte-1vjxqu"> </span></div> <div class="detail-row svelte-1vjxqu"><span class="detail-label svelte-1vjxqu">Elapsed</span> <span class="detail-value svelte-1vjxqu"> </span></div> <div class="detail-row svelte-1vjxqu"><span class="detail-label svelte-1vjxqu">Max Duration</span> <span class="detail-value svelte-1vjxqu"> </span></div> <div class="detail-row svelte-1vjxqu"><span class="detail-label svelte-1vjxqu">Whitelisting</span> <span class="detail-value svelte-1vjxqu"> </span></div></div></beam-card> <beam-card><beam-card-subtitle>Capacity</beam-card-subtitle> <div class="section-content svelte-1vjxqu"><div class="detail-row svelte-1vjxqu"><span class="detail-label svelte-1vjxqu">Sockets Used</span> <span class="detail-value svelte-1vjxqu"> </span></div></div></beam-card></div> <!> <!> <!> <!>`, 3);
   var root_16 = /* @__PURE__ */ from_html(`<beam-alert>No additional details available for this server.</beam-alert>`, 2);
-  var root_5$1 = /* @__PURE__ */ from_html(`<beam-card><beam-card-text><div class="details-header svelte-1vjxqu"><h4 class="svelte-1vjxqu">Server Details</h4> <beam-chip> </beam-chip></div> <!></beam-card-text></beam-card>`, 2);
+  var root_5 = /* @__PURE__ */ from_html(`<beam-card><beam-card-text><div class="details-header svelte-1vjxqu"><h4 class="svelte-1vjxqu">Server Details</h4> <beam-chip> </beam-chip></div> <!></beam-card-text></beam-card>`, 2);
   var root_3 = /* @__PURE__ */ from_html(`<beam-simple-table><table class="svelte-1vjxqu"><thead><tr><th class="svelte-1vjxqu">Request ID</th><th class="svelte-1vjxqu">FQDN</th><th class="svelte-1vjxqu">Running</th><th class="svelte-1vjxqu">State</th><th class="svelte-1vjxqu">Action</th></tr></thead><tbody></tbody></table></beam-simple-table> <!>`, 3);
   var root_17 = /* @__PURE__ */ from_html(`<beam-alert>Load servers to see running instances and statuses.</beam-alert>`, 2);
-  var root$2 = /* @__PURE__ */ from_html(`<beam-card><beam-card-title>Edgegap Dedicated Servers</beam-card-title> <!> <!> <!></beam-card>`, 2);
+  var root = /* @__PURE__ */ from_html(`<beam-card><beam-card-title>Edgegap Dedicated Servers</beam-card-title> <!> <!> <!></beam-card>`, 2);
   function EdgegapServers($$anchor, $$props) {
     push($$props, false);
+    let context = prop($$props, "context", 8);
     let loading = /* @__PURE__ */ mutable_source(false);
     let error = /* @__PURE__ */ mutable_source("");
     let apiToken = "";
@@ -4119,13 +3908,17 @@
     let selectedRequestId = /* @__PURE__ */ mutable_source(null);
     let refreshInterval = null;
     async function getApiToken() {
-      return "";
+      if (apiToken) return apiToken;
+      const beamInstance = await context().beam;
+      const response = await api.realmsGetConfigBasic(beamInstance.requester);
+      const token = response.body.config["edgegap_integration|app_key"];
+      if (!token) throw new Error('Edgegap API token not found in realm config. Add "edgegap_integration|app_key" to your Beamable realm configuration.');
+      apiToken = token;
+      return token;
     }
     async function authHeaderValue() {
-      if (!apiToken) {
-        apiToken = await getApiToken();
-      }
-      return apiToken.trim().toLowerCase().startsWith("token ") ? apiToken.trim() : `token ${apiToken.trim()}`;
+      const token = await getApiToken();
+      return token.toLowerCase().startsWith("token ") ? token : `token ${token}`;
     }
     async function edgegapGet(path) {
       const response = await fetch(`https://api.edgegap.com${path}`, {
@@ -4150,9 +3943,6 @@
       set(loading, true);
       set(error, "");
       try {
-        if (!apiToken.trim()) {
-          apiToken = await getApiToken();
-        }
         const listResponse = await edgegapGet("/v1/deployments");
         const newDeployments = Array.isArray(listResponse?.data) ? listResponse.data : [];
         const newDetails = {};
@@ -4188,18 +3978,16 @@
     }
     function runningLabel(deployment) {
       const details = get(deploymentDetails)[deployment.request_id];
-      if (details?.running === true) return "Running";
-      if (details?.running === false) return "Stopped";
-      if (deployment?.ready === true) return "Running";
-      if (deployment?.ready === false) return "Starting";
+      if (details?.running != null) return details.running ? "Running" : "Stopped";
+      if (deployment?.ready != null) return deployment.ready ? "Running" : "Starting";
       return "Unknown";
     }
-    function stateLabel(deployment) {
-      const details = get(deploymentDetails)[deployment.request_id];
-      return details?.current_status || details?.last_status || (deployment?.ready ? "Status.READY" : "Status.UNKNOWN");
+    function stateLabel({ request_id, ready }) {
+      const d = get(deploymentDetails)[request_id];
+      return d?.current_status ?? d?.last_status ?? (ready ? "Status.READY" : "Status.UNKNOWN");
     }
     init();
-    var beam_card = root$2();
+    var beam_card = root();
     var beam_card_title = child(beam_card);
     var node = sibling(beam_card_title, 2);
     {
@@ -4209,7 +3997,7 @@
         append($$anchor2, beam_progress_linear);
       };
       if_block(node, ($$render) => {
-        if (get(loading) && get(deployments).length === 0) $$render(consequent);
+        if (get(loading), get(deployments), untrack(() => get(loading) && get(deployments).length === 0)) $$render(consequent);
       });
     }
     var node_1 = sibling(node, 2);
@@ -4234,7 +4022,7 @@
         var table = child(beam_simple_table);
         var tbody = sibling(child(table));
         each(tbody, 5, () => get(deployments), index, ($$anchor3, deployment) => {
-          var tr = root_4$1();
+          var tr = root_4();
           var td = child(tr);
           var text_1 = child(td);
           var td_1 = sibling(td);
@@ -4247,14 +4035,14 @@
           var beam_btn = child(td_4);
           template_effect(
             ($0, $1) => {
-              set_text(text_1, get(deployment).request_id);
-              set_text(text_2, get(deployment).fqdn || "N/A");
+              set_text(text_1, (get(deployment), untrack(() => get(deployment).request_id)));
+              set_text(text_2, (get(deployment), untrack(() => get(deployment).fqdn || "N/A")));
               set_text(text_3, $0);
               set_text(text_4, $1);
             },
             [
-              () => runningLabel(get(deployment)),
-              () => stateLabel(get(deployment))
+              () => (get(deployment), untrack(() => runningLabel(get(deployment)))),
+              () => (get(deployment), untrack(() => stateLabel(get(deployment))))
             ]
           );
           event("click", beam_btn, () => showMoreInfo(get(deployment).request_id));
@@ -4264,7 +4052,7 @@
         var node_3 = sibling(beam_simple_table, 2);
         {
           var consequent_9 = ($$anchor3) => {
-            var beam_card_1 = root_5$1();
+            var beam_card_1 = root_5();
             set_custom_element_data(beam_card_1, "outlined", true);
             set_class(beam_card_1, 1, "details-panel svelte-1vjxqu");
             var beam_card_text = child(beam_card_1);
@@ -4276,8 +4064,8 @@
             var node_4 = sibling(div, 2);
             {
               var consequent_8 = ($$anchor4) => {
-                const d = /* @__PURE__ */ derived_safe_equal(() => get(deploymentDetails)[get(selectedRequestId)]);
-                var fragment_1 = root_6$1();
+                const d = /* @__PURE__ */ derived_safe_equal(() => (get(deploymentDetails), get(selectedRequestId), untrack(() => get(deploymentDetails)[get(selectedRequestId)])));
+                var fragment_1 = root_6();
                 var div_1 = first_child(fragment_1);
                 var beam_card_2 = child(div_1);
                 set_custom_element_data(beam_card_2, "outlined", true);
@@ -4287,7 +4075,7 @@
                 var div_3 = child(div_2);
                 var beam_chip_1 = sibling(child(div_3), 2);
                 set_custom_element_data(beam_chip_1, "small", true);
-                template_effect(() => set_custom_element_data(beam_chip_1, "color", get(d).running ? "success" : "error"));
+                template_effect(() => set_custom_element_data(beam_chip_1, "color", (deep_read_state(get(d)), untrack(() => get(d).running ? "success" : "error"))));
                 var text_6 = child(beam_chip_1);
                 var div_4 = sibling(div_3, 2);
                 var span = sibling(child(div_4), 2);
@@ -4301,11 +4089,11 @@
                     var div_6 = root_7();
                     var span_2 = sibling(child(div_6), 2);
                     var text_9 = child(span_2);
-                    template_effect(() => set_text(text_9, get(d).error_detail || "Unknown error"));
+                    template_effect(() => set_text(text_9, (deep_read_state(get(d)), untrack(() => get(d).error_detail || "Unknown error"))));
                     append($$anchor5, div_6);
                   };
                   if_block(node_5, ($$render) => {
-                    if (get(d).error) $$render(consequent_2);
+                    if (deep_read_state(get(d)), untrack(() => get(d).error)) $$render(consequent_2);
                   });
                 }
                 var beam_card_3 = sibling(beam_card_2, 2);
@@ -4361,50 +4149,56 @@
                     set_custom_element_data(beam_simple_table_1, "dense", true);
                     var table_1 = child(beam_simple_table_1);
                     var tbody_1 = sibling(child(table_1));
-                    each(tbody_1, 5, () => Object.values(get(d).ports), index, ($$anchor6, port) => {
-                      var tr_1 = root_9();
-                      var td_5 = child(tr_1);
-                      var text_19 = child(td_5);
-                      var td_6 = sibling(td_5);
-                      var text_20 = child(td_6);
-                      var td_7 = sibling(td_6);
-                      var text_21 = child(td_7);
-                      var td_8 = sibling(td_7);
-                      var beam_chip_2 = child(td_8);
-                      set_custom_element_data(beam_chip_2, "x-small", true);
-                      var text_22 = child(beam_chip_2);
-                      var td_9 = sibling(td_8);
-                      var node_7 = child(td_9);
-                      {
-                        var consequent_3 = ($$anchor7) => {
-                          var a = root_10();
-                          var text_23 = child(a);
-                          template_effect(() => {
-                            set_attribute(a, "href", get(port).link);
-                            set_text(text_23, get(port).link);
+                    each(
+                      tbody_1,
+                      5,
+                      () => (deep_read_state(get(d)), untrack(() => Object.values(get(d).ports))),
+                      index,
+                      ($$anchor6, port) => {
+                        var tr_1 = root_9();
+                        var td_5 = child(tr_1);
+                        var text_19 = child(td_5);
+                        var td_6 = sibling(td_5);
+                        var text_20 = child(td_6);
+                        var td_7 = sibling(td_6);
+                        var text_21 = child(td_7);
+                        var td_8 = sibling(td_7);
+                        var beam_chip_2 = child(td_8);
+                        set_custom_element_data(beam_chip_2, "x-small", true);
+                        var text_22 = child(beam_chip_2);
+                        var td_9 = sibling(td_8);
+                        var node_7 = child(td_9);
+                        {
+                          var consequent_3 = ($$anchor7) => {
+                            var a = root_10();
+                            var text_23 = child(a);
+                            template_effect(() => {
+                              set_attribute(a, "href", (get(port), untrack(() => get(port).link)));
+                              set_text(text_23, (get(port), untrack(() => get(port).link)));
+                            });
+                            append($$anchor7, a);
+                          };
+                          var alternate = ($$anchor7) => {
+                            var text_24 = text("N/A");
+                            append($$anchor7, text_24);
+                          };
+                          if_block(node_7, ($$render) => {
+                            if (get(port), untrack(() => get(port).link)) $$render(consequent_3);
+                            else $$render(alternate, -1);
                           });
-                          append($$anchor7, a);
-                        };
-                        var alternate = ($$anchor7) => {
-                          var text_24 = text("N/A");
-                          append($$anchor7, text_24);
-                        };
-                        if_block(node_7, ($$render) => {
-                          if (get(port).link) $$render(consequent_3);
-                          else $$render(alternate, -1);
+                        }
+                        template_effect(() => {
+                          set_text(text_19, (get(port), untrack(() => get(port).name)));
+                          set_text(text_20, (get(port), untrack(() => get(port).internal)));
+                          set_text(text_21, (get(port), untrack(() => get(port).external)));
+                          set_text(text_22, (get(port), untrack(() => get(port).protocol)));
                         });
+                        append($$anchor6, tr_1);
                       }
-                      template_effect(() => {
-                        set_text(text_19, get(port).name);
-                        set_text(text_20, get(port).internal);
-                        set_text(text_21, get(port).external);
-                        set_text(text_22, get(port).protocol);
-                      });
-                      append($$anchor6, tr_1);
-                    });
+                    );
                     append($$anchor5, beam_card_6);
                   };
-                  var d_1 = /* @__PURE__ */ user_derived(() => get(d).ports && Object.keys(get(d).ports).length > 0);
+                  var d_1 = /* @__PURE__ */ user_derived(() => (deep_read_state(get(d)), untrack(() => get(d).ports && Object.keys(get(d).ports).length > 0)));
                   if_block(node_6, ($$render) => {
                     if (get(d_1)) $$render(consequent_4);
                   });
@@ -4428,18 +4222,18 @@
                         set_text(text_26, $1);
                       },
                       [
-                        () => [
+                        () => (deep_read_state(get(d)), untrack(() => [
                           get(d).location.city,
                           get(d).location.administrative_division,
                           get(d).location.country
-                        ].filter(Boolean).join(", "),
-                        () => [get(d).location.continent, get(d).location.timezone].filter(Boolean).join(" · ")
+                        ].filter(Boolean).join(", "))),
+                        () => (deep_read_state(get(d)), untrack(() => [get(d).location.continent, get(d).location.timezone].filter(Boolean).join(" · ")))
                       ]
                     );
                     append($$anchor5, beam_card_7);
                   };
                   if_block(node_8, ($$render) => {
-                    if (get(d).location) $$render(consequent_5);
+                    if (deep_read_state(get(d)), untrack(() => get(d).location)) $$render(consequent_5);
                   });
                 }
                 var node_9 = sibling(node_8, 2);
@@ -4459,21 +4253,21 @@
                       { text: "Kind", value: "kind" },
                       { text: "Users", value: "user_count" }
                     ]);
-                    template_effect(() => set_custom_element_data(beam_data_table, "items", get(d).sessions.map((s) => ({
+                    template_effect(() => set_custom_element_data(beam_data_table, "items", (deep_read_state(get(d)), untrack(() => get(d).sessions.map((s) => ({
                       session_id: s.session_id,
                       status: s.status,
                       ready: s.ready ? "Yes" : "No",
                       linked: s.linked ? "Yes" : "No",
                       kind: s.kind,
                       user_count: s.user_count
-                    }))));
+                    }))))));
                     set_custom_element_data(beam_data_table, "dense", true);
                     set_custom_element_data(beam_data_table, "hide-default-footer", true);
-                    template_effect(() => set_text(text_27, `Sessions (${get(d).sessions.length ?? ""})`));
+                    template_effect(() => set_text(text_27, `Sessions (${(deep_read_state(get(d)), untrack(() => get(d).sessions.length)) ?? ""})`));
                     append($$anchor5, beam_card_8);
                   };
                   if_block(node_9, ($$render) => {
-                    if (get(d).sessions && get(d).sessions.length > 0) $$render(consequent_6);
+                    if (deep_read_state(get(d)), untrack(() => get(d).sessions && get(d).sessions.length > 0)) $$render(consequent_6);
                   });
                 }
                 var node_10 = sibling(node_9, 2);
@@ -4485,7 +4279,7 @@
                     var beam_card_subtitle_7 = child(beam_card_9);
                     var div_21 = sibling(beam_card_subtitle_7, 2);
                     var div_22 = child(div_21);
-                    each(div_22, 5, () => get(d).tags, index, ($$anchor6, tag) => {
+                    each(div_22, 5, () => (deep_read_state(get(d)), untrack(() => get(d).tags)), index, ($$anchor6, tag) => {
                       var beam_chip_3 = root_15();
                       set_custom_element_data(beam_chip_3, "small", true);
                       var text_28 = child(beam_chip_3);
@@ -4495,22 +4289,22 @@
                     append($$anchor5, beam_card_9);
                   };
                   if_block(node_10, ($$render) => {
-                    if (get(d).tags && get(d).tags.length > 0) $$render(consequent_7);
+                    if (deep_read_state(get(d)), untrack(() => get(d).tags && get(d).tags.length > 0)) $$render(consequent_7);
                   });
                 }
                 template_effect(() => {
-                  set_text(text_6, get(d).running ? "Running" : "Stopped");
-                  set_text(text_7, get(d).current_status || "N/A");
-                  set_text(text_8, get(d).last_status || "N/A");
-                  set_text(text_10, get(d).app_name || "N/A");
-                  set_text(text_11, get(d).app_version || "N/A");
-                  set_text(text_12, get(d).fqdn || "N/A");
-                  set_text(text_13, get(d).public_ip || "N/A");
-                  set_text(text_14, get(d).start_time || "N/A");
-                  set_text(text_15, get(d).elapsed_time != null ? `${get(d).elapsed_time}s` : "N/A");
-                  set_text(text_16, get(d).max_duration != null ? `${get(d).max_duration}h` : "N/A");
-                  set_text(text_17, get(d).whitelisting_active ? "Active" : "Inactive");
-                  set_text(text_18, `${get(d).sockets_usage ?? "N/A" ?? ""} / ${get(d).sockets ?? "N/A" ?? ""}`);
+                  set_text(text_6, (deep_read_state(get(d)), untrack(() => get(d).running ? "Running" : "Stopped")));
+                  set_text(text_7, (deep_read_state(get(d)), untrack(() => get(d).current_status || "N/A")));
+                  set_text(text_8, (deep_read_state(get(d)), untrack(() => get(d).last_status || "N/A")));
+                  set_text(text_10, (deep_read_state(get(d)), untrack(() => get(d).app_name || "N/A")));
+                  set_text(text_11, (deep_read_state(get(d)), untrack(() => get(d).app_version || "N/A")));
+                  set_text(text_12, (deep_read_state(get(d)), untrack(() => get(d).fqdn || "N/A")));
+                  set_text(text_13, (deep_read_state(get(d)), untrack(() => get(d).public_ip || "N/A")));
+                  set_text(text_14, (deep_read_state(get(d)), untrack(() => get(d).start_time || "N/A")));
+                  set_text(text_15, (deep_read_state(get(d)), untrack(() => get(d).elapsed_time != null ? `${get(d).elapsed_time}s` : "N/A")));
+                  set_text(text_16, (deep_read_state(get(d)), untrack(() => get(d).max_duration != null ? `${get(d).max_duration}h` : "N/A")));
+                  set_text(text_17, (deep_read_state(get(d)), untrack(() => get(d).whitelisting_active ? "Active" : "Inactive")));
+                  set_text(text_18, `${(deep_read_state(get(d)), untrack(() => get(d).sockets_usage ?? "N/A")) ?? ""} / ${(deep_read_state(get(d)), untrack(() => get(d).sockets ?? "N/A")) ?? ""}`);
                 });
                 append($$anchor4, fragment_1);
               };
@@ -4522,7 +4316,7 @@
                 append($$anchor4, beam_alert_1);
               };
               if_block(node_4, ($$render) => {
-                if (get(deploymentDetails)[get(selectedRequestId)]) $$render(consequent_8);
+                if (get(deploymentDetails), get(selectedRequestId), untrack(() => get(deploymentDetails)[get(selectedRequestId)])) $$render(consequent_8);
                 else $$render(alternate_1, -1);
               });
             }
@@ -4543,132 +4337,23 @@
         append($$anchor2, beam_alert_2);
       };
       if_block(node_2, ($$render) => {
-        if (get(deployments).length > 0) $$render(consequent_10);
+        if (get(deployments), untrack(() => get(deployments).length > 0)) $$render(consequent_10);
         else if (!get(loading)) $$render(consequent_11, 1);
       });
     }
     append($$anchor, beam_card);
     pop();
   }
-  var root_4 = /* @__PURE__ */ from_html(`<p class="error svelte-cfzthe"> </p>`);
-  var root_5 = /* @__PURE__ */ from_html(`<beam-data-table></beam-data-table>`, 2);
-  var root_6 = /* @__PURE__ */ from_html(`<p class="placeholder svelte-cfzthe">Click the button to load player data.</p>`);
-  var root$1 = /* @__PURE__ */ from_html(`<beam-card><beam-card-actions><beam-btn><!></beam-btn> <!></beam-card-actions> <!></beam-card>`, 2);
-  function BeamableInit($$anchor, $$props) {
-    push($$props, false);
-    const $Beam = () => store_get(Beam, "$Beam", $$stores);
-    const [$$stores, $$cleanup] = setup_stores();
-    let loading = /* @__PURE__ */ mutable_source(false);
-    let error = /* @__PURE__ */ mutable_source(null);
-    let playerData = prop($$props, "playerData", 12, null);
-    async function init$1() {
-      set(loading, true);
-      set(error, null);
-      try {
-        playerData({
-          cid: $Beam().cid,
-          pid: $Beam().pid,
-          playerId: $Beam().player.id
-        });
-      } catch (err) {
-        console.error("Failed to init player:", err);
-        set(error, err.message);
-      } finally {
-        set(loading, false);
-      }
-    }
-    init();
-    var beam_card = root$1();
-    var beam_card_actions = child(beam_card);
-    var beam_btn = child(beam_card_actions);
-    template_effect(() => set_custom_element_data(beam_btn, "disabled", get(loading) || playerData() ? true : null));
-    template_effect(() => set_custom_element_data(beam_btn, "loading", get(loading) ? true : null));
-    var node = child(beam_btn);
-    {
-      var consequent = ($$anchor2) => {
-        var text$1 = text("Initializing...");
-        append($$anchor2, text$1);
-      };
-      var consequent_1 = ($$anchor2) => {
-        var text_1 = text("Player Loaded");
-        append($$anchor2, text_1);
-      };
-      var alternate = ($$anchor2) => {
-        var text_2 = text("Initialize Player");
-        append($$anchor2, text_2);
-      };
-      if_block(node, ($$render) => {
-        if (get(loading)) $$render(consequent);
-        else if (playerData()) $$render(consequent_1, 1);
-        else $$render(alternate, -1);
-      });
-    }
-    var node_1 = sibling(beam_btn, 2);
-    {
-      var consequent_2 = ($$anchor2) => {
-        var p = root_4();
-        var text_3 = child(p);
-        template_effect(() => set_text(text_3, get(error)));
-        append($$anchor2, p);
-      };
-      if_block(node_1, ($$render) => {
-        if (get(error)) $$render(consequent_2);
-      });
-    }
-    var node_2 = sibling(beam_card_actions, 2);
-    {
-      var consequent_3 = ($$anchor2) => {
-        var beam_data_table = root_5();
-        set_custom_element_data(beam_data_table, "headers", [
-          { text: "Key", value: "key", sortable: false },
-          { text: "Value", value: "value", sortable: false }
-        ]);
-        template_effect(() => set_custom_element_data(beam_data_table, "items", (deep_read_state(playerData()), untrack(() => [
-          { key: "CID", value: playerData().cid },
-          { key: "PID", value: playerData().pid },
-          { key: "Player ID", value: playerData().playerId }
-        ]))));
-        set_custom_element_data(beam_data_table, "dense", true);
-        set_custom_element_data(beam_data_table, "hide-default-footer", true);
-        append($$anchor2, beam_data_table);
-      };
-      var alternate_1 = ($$anchor2) => {
-        var p_1 = root_6();
-        append($$anchor2, p_1);
-      };
-      if_block(node_2, ($$render) => {
-        if (playerData()) $$render(consequent_3);
-        else $$render(alternate_1, -1);
-      });
-    }
-    event("click", beam_btn, init$1);
-    append($$anchor, beam_card);
-    pop();
-    $$cleanup();
-  }
-  var root = /* @__PURE__ */ from_html(`<!> <!> <beam-card><beam-card-title>edgegap_extensions</beam-card-title> <beam-card-text><div style="padding: 18px"><div> </div> <beam-btn>Click</beam-btn></div></beam-card-text></beam-card>`, 3);
   function App($$anchor, $$props) {
     push($$props, false);
     let context = prop($$props, "context", 8);
-    let beam = /* @__PURE__ */ mutable_source();
-    context().beam.then((b) => set(beam, b));
+    context().beam.then((b) => b);
     init();
-    var fragment = root();
-    var node = first_child(fragment);
-    EdgegapServers(node, {});
-    var node_1 = sibling(node, 2);
-    BeamableInit(node_1, {});
-    var beam_card = sibling(node_1, 2);
-    set_style(beam_card, "margin-bottom: 20px");
-    var beam_card_title = child(beam_card);
-    var beam_card_text = sibling(beam_card_title, 2);
-    var div = child(beam_card_text);
-    var div_1 = child(div);
-    var text2 = child(div_1);
-    var beam_btn = sibling(div_1, 2);
-    set_custom_element_data(beam_btn, "color", "primary");
-    template_effect(() => set_text(text2, `Player ID ${(get(beam), untrack(() => get(beam)?.player.id)) ?? ""}`));
-    append($$anchor, fragment);
+    EdgegapServers($$anchor, {
+      get context() {
+        return context();
+      }
+    });
     pop();
   }
   t.registerExtension({
@@ -4683,4 +4368,4 @@
       unmount(instance);
     }
   });
-})();
+})(window["@beamable/sdk-1.0.0"], window["@beamable/sdk/api-1.0.0"]);

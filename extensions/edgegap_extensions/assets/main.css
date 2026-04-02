@@ -113,14 +113,3 @@
     flex-wrap: wrap;
     gap: 0.35rem;
   }
-
-  .error.svelte-cfzthe {
-    color: red;
-    margin-top: 0.5rem;
-    font-size: 0.9rem;
-  }
-
-  .placeholder.svelte-cfzthe {
-    color: #666;
-    font-style: italic;
-  }

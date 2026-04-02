@@ -1,7 +1,11 @@
-<script>
+<script lang="ts">
   import { onMount, onDestroy } from 'svelte'
-  import { Beam, Context } from '../store.js'
-  // import { realmsGetConfigBasic } from 'beamable-sdk/api'
+  
+  import { type ExtensionContext } from '@beamable/portal-toolkit'
+  import { realmsGetConfigBasic } from '@beamable/sdk/api'
+
+  export let context: ExtensionContext
+
 
   let loading = false
   let error = ''
@@ -14,22 +18,21 @@
   let refreshInterval = null
 
   async function getApiToken() {
-  
-    // const response = await realmsGetConfigBasic($Beam)
-    
-    // console.log('Realms config response:', response);
 
-    return "";
+    if(apiToken) return apiToken;
+
+    const beamInstance = await context.beam
+    const response = await realmsGetConfigBasic(beamInstance.requester)
+    const token = response.body.config['edgegap_integration|app_key']
+    if (!token) throw new Error('Edgegap API token not found in realm config. Add "edgegap_integration|app_key" to your Beamable realm configuration.')
+    apiToken = token;
+    return token
   }
 
   async function authHeaderValue() {
 
-    if (!apiToken) {
-        apiToken = await getApiToken()
-    }
-    return apiToken.trim().toLowerCase().startsWith('token ')
-      ? apiToken.trim()
-      : `token ${apiToken.trim()}`
+    const token = await getApiToken();
+    return token.toLowerCase().startsWith('token ') ? token : `token ${token}`
   }
 
   async function edgegapGet(path) {
@@ -47,7 +50,7 @@
         const payload = await response.json()
         message = payload?.message || payload?.error || message
       } catch (_) {
-        // Keep fallback message when response body is not JSON.
+        
       }
       throw new Error(message)
     }
@@ -60,10 +63,6 @@
     error = ''
 
     try {
-      if (!apiToken.trim()) {
-        apiToken = await getApiToken()
-      }
-
       const listResponse = await edgegapGet('/v1/deployments')
       const newDeployments = Array.isArray(listResponse?.data) ? listResponse.data : []
 
@@ -110,16 +109,14 @@
 
   function runningLabel(deployment) {
     const details = deploymentDetails[deployment.request_id]
-    if (details?.running === true) return 'Running'
-    if (details?.running === false) return 'Stopped'
-    if (deployment?.ready === true) return 'Running'
-    if (deployment?.ready === false) return 'Starting'
+    if (details?.running != null) return details.running ? 'Running' : 'Stopped'
+    if (deployment?.ready != null) return deployment.ready ? 'Running' : 'Starting'
     return 'Unknown'
   }
 
-  function stateLabel(deployment) {
-    const details = deploymentDetails[deployment.request_id]
-    return details?.current_status || details?.last_status || (deployment?.ready ? 'Status.READY' : 'Status.UNKNOWN')
+  function stateLabel({ request_id, ready }) {
+    const d = deploymentDetails[request_id]
+    return d?.current_status ?? d?.last_status ?? (ready ? 'Status.READY' : 'Status.UNKNOWN')
   }
 </script>
 
