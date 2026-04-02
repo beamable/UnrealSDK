@@ -1,0 +1,126 @@
+:root {
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+  .details-panel.svelte-1vjxqu {
+    margin-top: 0.9rem;
+  }
+
+  .details-header.svelte-1vjxqu {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .details-header.svelte-1vjxqu h4:where(.svelte-1vjxqu) {
+    margin: 0;
+  }
+
+  .details-grid.svelte-1vjxqu {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+    gap: 0.6rem;
+    margin-bottom: 0.6rem;
+  }
+
+  /* force custom elements to behave as block for CSS grid */
+  .details-grid.svelte-1vjxqu beam-card:where(.svelte-1vjxqu),
+  .section-card.svelte-1vjxqu {
+    display: block;
+  }
+
+  /* tint gives contrast against the outer panel in both light and dark themes */
+  .section-card.svelte-1vjxqu {
+    background: color-mix(in srgb, currentColor 6%, transparent) !important;
+  }
+
+  .section-content.svelte-1vjxqu {
+    padding: 0 0.7rem 0.6rem;
+  }
+
+  .detail-section-full.svelte-1vjxqu {
+    margin-top: 0.5rem;
+    display: block;
+  }
+
+  .detail-row.svelte-1vjxqu {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 0.5rem;
+    padding: 0.12rem 0;
+    font-size: 0.82rem;
+  }
+
+  /* opacity-based so it works in both light and dark themes */
+  .detail-label.svelte-1vjxqu {
+    opacity: 0.6;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .detail-value.svelte-1vjxqu {
+    font-weight: 500;
+    text-align: right;
+    word-break: break-all;
+  }
+
+  .detail-mono.svelte-1vjxqu {
+    font-family: monospace;
+    font-size: 0.8rem;
+  }
+
+  /* table cell alignment for beam-simple-table */
+  table.svelte-1vjxqu {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  th.svelte-1vjxqu,
+  td.svelte-1vjxqu {
+    padding: 0.5rem 0.6rem;
+    text-align: left;
+    vertical-align: middle;
+    font-size: 0.85rem;
+  }
+
+  th.svelte-1vjxqu {
+    font-weight: 600;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    opacity: 0.55;
+  }
+
+  .location-info.svelte-1vjxqu {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    font-size: 0.85rem;
+  }
+
+  .detail-muted.svelte-1vjxqu {
+    opacity: 0.45;
+    font-size: 0.78rem;
+  }
+
+  .tags-list.svelte-1vjxqu {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+  }
+
+  .error.svelte-cfzthe {
+    color: red;
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+  }
+
+  .placeholder.svelte-cfzthe {
+    color: #666;
+    font-style: italic;
+  }
