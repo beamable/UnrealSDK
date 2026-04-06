@@ -332,16 +332,17 @@
 
     </beam-card>
 
-    <beam-card-text>
-      <div class="link-group">
-        <a href="https://docs.edgegap.com/unreal-engine" target="_blank" rel="noopener noreferrer">
-          <beam-btn outlined>EdgeGap Unreal Setup Guide</beam-btn>
-        </a>
-        <a href="https://docs.edgegap.com/api" target="_blank" rel="noopener noreferrer">
-          <beam-btn outlined>EdgeGap API Reference</beam-btn>
-        </a>
-      </div>
-    </beam-card-text>
+    <beam-card>
+      <beam-card-actions>
+        <beam-btn href="https://docs.edgegap.com/unreal-engine" target="_blank"  style="margin-right: 0.5rem;">
+          EdgeGap Unreal Setup Guide
+        </beam-btn>
+
+        <beam-btn href="https://docs.edgegap.com/api" target="_blank">
+          EdgeGap API Reference
+        </beam-btn>
+      </beam-card-actions>
+    </beam-card>
   </beam-card>
 
 <!-- ── Error ──────────────────────────────────────────────────────────────────── -->

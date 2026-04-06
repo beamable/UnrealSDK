@@ -4435,7 +4435,7 @@
   var root_14 = /* @__PURE__ */ from_html(`<beam-alert> </beam-alert>`, 2);
   var root_12 = /* @__PURE__ */ from_html(`<div class="pick-list svelte-1os7kbn"></div> <!>`, 1);
   var root_10 = /* @__PURE__ */ from_html(`<beam-card-subtitle> </beam-card-subtitle> <div class="section-content svelte-1os7kbn"><!></div> <beam-card-actions><beam-btn>Back</beam-btn></beam-card-actions>`, 3);
-  var root_2 = /* @__PURE__ */ from_html(`<beam-card><beam-card-title>Edgegap Overview</beam-card-title> <beam-card><!></beam-card> <beam-card-text><div class="link-group svelte-1os7kbn"><a href="https://docs.edgegap.com/unreal-engine" target="_blank" rel="noopener noreferrer" class="svelte-1os7kbn"><beam-btn>EdgeGap Unreal Setup Guide</beam-btn></a> <a href="https://docs.edgegap.com/api" target="_blank" rel="noopener noreferrer" class="svelte-1os7kbn"><beam-btn>EdgeGap API Reference</beam-btn></a></div></beam-card-text></beam-card>`, 2);
+  var root_2 = /* @__PURE__ */ from_html(`<beam-card><beam-card-title>Edgegap Overview</beam-card-title> <beam-card><!></beam-card> <beam-card><beam-card-actions><beam-btn>EdgeGap Unreal Setup Guide</beam-btn> <beam-btn>EdgeGap API Reference</beam-btn></beam-card-actions></beam-card></beam-card>`, 2);
   var root_15 = /* @__PURE__ */ from_html(`<beam-card><beam-card-title>Edgegap Overview</beam-card-title> <beam-card-text><beam-alert> </beam-alert></beam-card-text> <beam-card-actions><beam-btn>Retry</beam-btn></beam-card-actions></beam-card>`, 2);
   var root_17 = /* @__PURE__ */ from_html(`<div class="detail-row svelte-1os7kbn"><span class="detail-label svelte-1os7kbn">Last Updated</span> <span class="detail-value svelte-1os7kbn"> </span></div>`);
   var root_18 = /* @__PURE__ */ from_html(`<div class="detail-row svelte-1os7kbn"><span class="detail-label svelte-1os7kbn">CPU / Memory</span> <span class="detail-value svelte-1os7kbn"> </span></div>`);
@@ -4829,94 +4829,95 @@
             else if (get(wizardStep) === 3) $$render(consequent_8, 2);
           });
         }
-        var beam_card_text = sibling(beam_card_2, 2);
-        var div_6 = child(beam_card_text);
-        var a = child(div_6);
-        var beam_btn_3 = child(a);
-        set_custom_element_data(beam_btn_3, "outlined", true);
-        var a_1 = sibling(a, 2);
-        var beam_btn_4 = child(a_1);
-        set_custom_element_data(beam_btn_4, "outlined", true);
+        var beam_card_3 = sibling(beam_card_2, 2);
+        var beam_card_actions_3 = child(beam_card_3);
+        var beam_btn_3 = child(beam_card_actions_3);
+        set_custom_element_data(beam_btn_3, "href", "https://docs.edgegap.com/unreal-engine");
+        set_custom_element_data(beam_btn_3, "target", "_blank");
+        set_style(beam_btn_3, "margin-right: 0.5rem;");
+        var beam_btn_4 = sibling(beam_btn_3, 2);
+        set_custom_element_data(beam_btn_4, "href", "https://docs.edgegap.com/api");
+        set_custom_element_data(beam_btn_4, "target", "_blank");
         append($$anchor2, beam_card_1);
       };
       var consequent_10 = ($$anchor2) => {
-        var beam_card_3 = root_15();
-        var beam_card_title_2 = child(beam_card_3);
-        var beam_card_text_1 = sibling(beam_card_title_2, 2);
-        var beam_alert_3 = child(beam_card_text_1);
+        var beam_card_4 = root_15();
+        var beam_card_title_2 = child(beam_card_4);
+        var beam_card_text = sibling(beam_card_title_2, 2);
+        var beam_alert_3 = child(beam_card_text);
         set_custom_element_data(beam_alert_3, "type", "error");
         set_custom_element_data(beam_alert_3, "dense", true);
         var text_10 = child(beam_alert_3);
-        var beam_card_actions_3 = sibling(beam_card_text_1, 2);
-        var beam_btn_5 = child(beam_card_actions_3);
+        var beam_card_actions_4 = sibling(beam_card_text, 2);
+        var beam_btn_5 = child(beam_card_actions_4);
         set_custom_element_data(beam_btn_5, "role", "button");
         set_custom_element_data(beam_btn_5, "tabindex", "0");
         template_effect(() => set_text(text_10, get(error)));
         event("click", beam_btn_5, loadConfig);
         event("keydown", beam_btn_5, (e2) => (e2.key === "Enter" || e2.key === " ") && loadConfig());
-        append($$anchor2, beam_card_3);
+        append($$anchor2, beam_card_4);
       };
       var consequent_16 = ($$anchor2) => {
         const envMap = /* @__PURE__ */ derived_safe_equal(() => (get(versionInfo), untrack(() => currentEnvMap(get(versionInfo).envs))));
-        var beam_card_4 = root_16();
-        var beam_card_title_3 = child(beam_card_4);
-        var beam_card_5 = sibling(beam_card_title_3, 2);
-        attribute_effect(beam_card_5, () => ({ class: "section", ...{ outlined: "" } }), void 0, void 0, void 0, "svelte-1os7kbn");
-        var beam_card_subtitle_3 = child(beam_card_5);
-        var div_7 = sibling(beam_card_subtitle_3, 2);
-        var div_8 = child(div_7);
-        var span_3 = sibling(child(div_8), 2);
+        var beam_card_5 = root_16();
+        var beam_card_title_3 = child(beam_card_5);
+        var beam_card_6 = sibling(beam_card_title_3, 2);
+        attribute_effect(beam_card_6, () => ({ class: "section", ...{ outlined: "" } }), void 0, void 0, void 0, "svelte-1os7kbn");
+        var beam_card_subtitle_3 = child(beam_card_6);
+        var div_6 = sibling(beam_card_subtitle_3, 2);
+        var div_7 = child(div_6);
+        var span_3 = sibling(child(div_7), 2);
         var text_11 = child(span_3);
-        var div_9 = sibling(div_8, 2);
-        var beam_chip_2 = sibling(child(div_9), 2);
+        var div_8 = sibling(div_7, 2);
+        var beam_chip_2 = sibling(child(div_8), 2);
         set_custom_element_data(beam_chip_2, "small", true);
         template_effect(() => set_custom_element_data(beam_chip_2, "color", (get(appInfo), untrack(() => get(appInfo).is_active ? "success" : "error"))));
         var text_12 = child(beam_chip_2);
-        var node_7 = sibling(div_9, 2);
+        var node_7 = sibling(div_8, 2);
         {
           var consequent_11 = ($$anchor3) => {
-            var div_10 = root_17();
-            var span_4 = sibling(child(div_10), 2);
+            var div_9 = root_17();
+            var span_4 = sibling(child(div_9), 2);
             var text_13 = child(span_4);
             template_effect(() => set_text(text_13, (get(appInfo), untrack(() => get(appInfo).last_updated))));
-            append($$anchor3, div_10);
+            append($$anchor3, div_9);
           };
           if_block(node_7, ($$render) => {
             if (get(appInfo), untrack(() => get(appInfo).last_updated)) $$render(consequent_11);
           });
         }
-        var beam_card_6 = sibling(beam_card_5, 2);
-        attribute_effect(beam_card_6, () => ({ class: "section", ...{ outlined: "" } }), void 0, void 0, void 0, "svelte-1os7kbn");
-        var beam_card_subtitle_4 = child(beam_card_6);
+        var beam_card_7 = sibling(beam_card_6, 2);
+        attribute_effect(beam_card_7, () => ({ class: "section", ...{ outlined: "" } }), void 0, void 0, void 0, "svelte-1os7kbn");
+        var beam_card_subtitle_4 = child(beam_card_7);
         var text_14 = child(beam_card_subtitle_4);
-        var div_11 = sibling(beam_card_subtitle_4, 2);
-        var div_12 = child(div_11);
-        var beam_chip_3 = sibling(child(div_12), 2);
+        var div_10 = sibling(beam_card_subtitle_4, 2);
+        var div_11 = child(div_10);
+        var beam_chip_3 = sibling(child(div_11), 2);
         set_custom_element_data(beam_chip_3, "small", true);
         template_effect(() => set_custom_element_data(beam_chip_3, "color", (get(versionInfo), untrack(() => get(versionInfo).is_active ? "success" : "error"))));
         var text_15 = child(beam_chip_3);
-        var div_13 = sibling(div_12, 2);
-        var span_5 = sibling(child(div_13), 2);
+        var div_12 = sibling(div_11, 2);
+        var span_5 = sibling(child(div_12), 2);
         var text_16 = child(span_5);
-        var node_8 = sibling(div_13, 2);
+        var node_8 = sibling(div_12, 2);
         {
           var consequent_12 = ($$anchor3) => {
-            var div_14 = root_18();
-            var span_6 = sibling(child(div_14), 2);
+            var div_13 = root_18();
+            var span_6 = sibling(child(div_13), 2);
             var text_17 = child(span_6);
             template_effect(() => set_text(text_17, `${(get(versionInfo), untrack(() => get(versionInfo).req_cpu)) ?? ""} vCPU units / ${(get(versionInfo), untrack(() => get(versionInfo).req_memory)) ?? ""} MB`));
-            append($$anchor3, div_14);
+            append($$anchor3, div_13);
           };
           if_block(node_8, ($$render) => {
             if (get(versionInfo), untrack(() => get(versionInfo).req_cpu != null)) $$render(consequent_12);
           });
         }
-        var beam_card_subtitle_5 = sibling(div_11, 2);
-        var div_15 = sibling(beam_card_subtitle_5, 2);
-        each(div_15, 5, () => REQUIRED_ENV_KEYS, index, ($$anchor3, envKey) => {
+        var beam_card_subtitle_5 = sibling(div_10, 2);
+        var div_14 = sibling(beam_card_subtitle_5, 2);
+        each(div_14, 5, () => REQUIRED_ENV_KEYS, index, ($$anchor3, envKey) => {
           const isSet = /* @__PURE__ */ derived_safe_equal(() => get(envKey) in get(envMap));
-          var div_16 = root_19();
-          var code = child(div_16);
+          var div_15 = root_19();
+          var code = child(div_15);
           var text_18 = child(code);
           var beam_chip_4 = sibling(code, 2);
           set_custom_element_data(beam_chip_4, "x-small", true);
@@ -4926,16 +4927,16 @@
             set_text(text_18, get(envKey));
             set_text(text_19, get(isSet) ? "Set" : "Missing");
           });
-          append($$anchor3, div_16);
+          append($$anchor3, div_15);
         });
-        var node_9 = sibling(beam_card_6, 2);
+        var node_9 = sibling(beam_card_7, 2);
         {
           var consequent_15 = ($$anchor3) => {
-            var beam_card_7 = root_20();
-            attribute_effect(beam_card_7, () => ({ class: "section", ...{ outlined: "" } }), void 0, void 0, void 0, "svelte-1os7kbn");
-            var beam_card_subtitle_6 = child(beam_card_7);
-            var div_17 = sibling(beam_card_subtitle_6, 2);
-            var p_1 = child(div_17);
+            var beam_card_8 = root_20();
+            attribute_effect(beam_card_8, () => ({ class: "section", ...{ outlined: "" } }), void 0, void 0, void 0, "svelte-1os7kbn");
+            var beam_card_subtitle_6 = child(beam_card_8);
+            var div_16 = sibling(beam_card_subtitle_6, 2);
+            var p_1 = child(div_16);
             var strong = sibling(child(p_1), 7);
             var text_20 = child(strong);
             var node_10 = sibling(p_1, 2);
@@ -4966,8 +4967,8 @@
                 if (get(envSetupSuccess)) $$render(consequent_14);
               });
             }
-            var beam_card_actions_4 = sibling(div_17, 2);
-            var beam_btn_6 = child(beam_card_actions_4);
+            var beam_card_actions_5 = sibling(div_16, 2);
+            var beam_btn_6 = child(beam_card_actions_5);
             set_custom_element_data(beam_btn_6, "role", "button");
             set_custom_element_data(beam_btn_6, "tabindex", "0");
             set_custom_element_data(beam_btn_6, "color", "primary");
@@ -4987,7 +4988,7 @@
             event("keydown", beam_btn_6, (e2) => (e2.key === "Enter" || e2.key === " ") && setupEnvVars());
             event("click", beam_btn_7, loadConfig);
             event("keydown", beam_btn_7, (e2) => (e2.key === "Enter" || e2.key === " ") && !get(envSetupLoading) && loadConfig());
-            append($$anchor3, beam_card_7);
+            append($$anchor3, beam_card_8);
           };
           var d = /* @__PURE__ */ user_derived(() => (deep_read_state(get(envMap)), untrack(() => REQUIRED_ENV_KEYS.some((k) => !(k in get(envMap))))));
           if_block(node_9, ($$render) => {
@@ -5001,7 +5002,7 @@
           set_text(text_15, (get(versionInfo), untrack(() => get(versionInfo).is_active ? "Active" : "Inactive")));
           set_text(text_16, `${(get(versionInfo), untrack(() => get(versionInfo).docker_image)) ?? ""}:${(get(versionInfo), untrack(() => get(versionInfo).docker_tag)) ?? ""}`);
         });
-        append($$anchor2, beam_card_4);
+        append($$anchor2, beam_card_5);
       };
       if_block(node, ($$render) => {
         if (get(loading)) $$render(consequent);
