@@ -20,7 +20,7 @@
   async function getApiToken() {
 
     if(apiToken) return apiToken;
-
+    
     const beamInstance = await context.beam
     const response = await realmsGetConfigBasic(beamInstance.requester)
     const token = response.body.config['edgegap_integration|app_key']
