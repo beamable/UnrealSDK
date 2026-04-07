@@ -1,15 +1,15 @@
-﻿// Copyright Epic Games, Inc. All Rights Reserved.
+// Copyright Epic Games, Inc. All Rights Reserved.
 
-#include "BEAMPROJ_SteamDemo.h"
+#include "CustomReplacementTypes.h"
 
-#define LOCTEXT_NAMESPACE "FBEAMPROJ_SteamDemoModule"
+#define LOCTEXT_NAMESPACE "FCustomReplacementTypesModule"
 
-void FBEAMPROJ_SteamDemoModule::StartupModule()
+void FCustomReplacementTypesModule::StartupModule()
 {
 	// This code will execute after your module is loaded into memory; the exact timing is specified in the .uplugin file per-module
 }
 
-void FBEAMPROJ_SteamDemoModule::ShutdownModule()
+void FCustomReplacementTypesModule::ShutdownModule()
 {
 	// This function may be called during shutdown to clean up your module.  For modules that support dynamic reloading,
 	// we call this function before unloading the module.
@@ -17,4 +17,4 @@ void FBEAMPROJ_SteamDemoModule::ShutdownModule()
 
 #undef LOCTEXT_NAMESPACE
 	
-IMPLEMENT_MODULE(FBEAMPROJ_SteamDemoModule, BEAMPROJ_SteamDemo)
+IMPLEMENT_MODULE(FCustomReplacementTypesModule, CustomReplacementTypes)

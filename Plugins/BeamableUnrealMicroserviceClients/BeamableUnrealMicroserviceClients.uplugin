@@ -23,6 +23,11 @@
 			"Name": "BeamableUnrealMicroserviceClientsBp",
 			"Type": "UncookedOnly",
 			"LoadingPhase": "Default"
+		},
+		{
+			"Name": "CustomReplacementTypes",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
 		}
 	],
 	"Plugins": [

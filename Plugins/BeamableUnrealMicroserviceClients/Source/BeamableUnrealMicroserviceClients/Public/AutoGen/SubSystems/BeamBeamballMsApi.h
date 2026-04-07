@@ -60,6 +60,16 @@ public:
 	}
 		
 	UFUNCTION(BlueprintGetter, BlueprintInternalUseOnly, Category="Beam|BeamballMs|Utils|Federation")
+	FString GetFederatedLogin_Id_Eos() const { return TEXT("eos"); }
+
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|BeamballMs|Utils|Federation")
+	void GetFederatedLogin_Data_Eos(UPARAM(DisplayName="MicroserviceName") FString& MsName, UPARAM(DisplayName="FederationId") FString& Id)
+	{
+		MsName = GetMicroserviceName();
+		Id = GetFederatedLogin_Id_Eos();
+	}
+		
+	UFUNCTION(BlueprintGetter, BlueprintInternalUseOnly, Category="Beam|BeamballMs|Utils|Federation")
 	FString GetFederatedLogin_Id_Steam() const { return TEXT("steam"); }
 
 	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|BeamballMs|Utils|Federation")

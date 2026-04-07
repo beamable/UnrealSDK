@@ -2,9 +2,9 @@
 
 using UnrealBuildTool;
 
-public class BeamableUnrealMicroserviceClients : ModuleRules
+public class CustomReplacementTypes : ModuleRules
 {
-	public BeamableUnrealMicroserviceClients(ReadOnlyTargetRules Target) : base(Target)
+	public CustomReplacementTypes(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
 
@@ -18,8 +18,6 @@ public class BeamableUnrealMicroserviceClients : ModuleRules
 
 				"Json",
 				"JsonUtilities",
-
-				"CustomReplacementTypes"
 			});
 
 
@@ -31,11 +29,6 @@ public class BeamableUnrealMicroserviceClients : ModuleRules
 				"Slate",
 				"SlateCore",					
 			});
-	}
-
-	public static void AddMicroserviceClients(ModuleRules Rules)
-	{
-		Rules.PublicDependencyModuleNames.AddRange(new[] { "BeamableUnrealMicroserviceClients" });
 	}
 	
 }

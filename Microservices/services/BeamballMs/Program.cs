@@ -22,7 +22,7 @@ namespace Beamable.BeamballMs
 				await Task.WhenAll(new[]
 				{
 					BeamballMs.InitializeSteam(scope),
-					// BeamballMs.InitializeEOS(scope)
+					BeamballMs.InitializeEos(scope)
 				});
 			});
 			
