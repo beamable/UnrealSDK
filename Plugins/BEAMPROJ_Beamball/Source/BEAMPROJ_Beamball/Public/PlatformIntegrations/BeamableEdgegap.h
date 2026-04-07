@@ -7,11 +7,14 @@
 #include "Subsystems/Stats/BeamStatsSubsystem.h"
 #include "Http.h"
 #include "HttpModule.h"
+#include "AutoGen/SubSystems/BeamBeamballMsApi.h"
+#include "AutoGen/SubSystems/BeamballMs/BeamballMsSetEdgegapLocationRequest.h"
 
 #include "BeamableEdgegap.generated.h"
 
 /**
- * 
+ * On edgegap you required to pass the geolocation of the player to be able to manage the server deployment and make sure players are connecting to the closest server. This subsystem is responsible for getting the geolocation of the player and updating it in the stats subsystem, so it can be used for edgegap management.
+ * We use a free API to get the geolocation from the IP address, as we don't need a very accurate location for this purpose, just an approximate location.
  */
 UCLASS(Blueprintable)
 class BEAMPROJ_BEAMBALL_API UBeamableEdgegap : public UBeamRuntimeSubsystem
@@ -24,6 +27,7 @@ public:
 
 	/**
 	 * Get geolocation for edgegap management of server deployment.
+	 * That is mainly used to update the "beam.edgegap.location" stat, which is used by edgegap to manage the server deployment and make sure players are connecting to the closest server.
 	 */
 	UFUNCTION(BlueprintCallable)
 	FBeamOperationHandle UpdateGeolocationStatOperation(FUserSlot UserSlot, FBeamOperationEventHandler OnOperationEvent)
@@ -31,7 +35,7 @@ public:
 		auto OperationHandler = Runtime->RequestTrackerSystem->BeginOperation({}, GetClass()->GetFName().ToString(), OnOperationEvent);
 
 		FHttpRequestRef Request = FHttpModule::Get().CreateRequest();
-
+		// We use that API to get to location from IP, as it's a free and simple API that doesn't require an API key. We just need to get an approximate location for server purposes, so it's good enough for our use case.
 		Request->SetURL("http://ip-api.com/json/");
 		Request->SetVerb("GET");
 
@@ -52,20 +56,30 @@ public:
 					float Lon;
 					Obj->TryGetNumberField(TEXT("lon"), Lon);
 
-					GetWorld()->GetGameInstance()->GetSubsystem<UBeamStatsSubsystem>()->CPP_SetStatOperation(UserSlot, "beam.edgegap.location", FString::Printf(TEXT("%f;%f"), Lat, Lon),
-					                                                                                         FBeamOperationEventHandlerCode::CreateLambda([OperationHandler, this](const FBeamOperationEvent& Event)
-					                                                                                         {
-						                                                                                         if (Event.EventType == OET_SUCCESS)
-						                                                                                         {
-							                                                                                         Runtime->RequestTrackerSystem->TriggerOperationSuccess(
-								                                                                                         OperationHandler, "Successfully updated location stat");
-						                                                                                         }
-						                                                                                         else
-						                                                                                         {
-							                                                                                         Runtime->RequestTrackerSystem->TriggerOperationError(
-								                                                                                         OperationHandler, "Error on updated location stat");
-						                                                                                         }
-					                                                                                         }));
+
+					UBeamballMsSetEdgegapLocationRequest* RequestObject = UBeamballMsSetEdgegapLocationRequest::Make(Lat, Lon, this, {});
+
+					FBeamRequestContext Ctx;
+
+					auto RequestOperation = Runtime->RequestTrackerSystem->CPP_BeginOperation({UserSlot}, GetName(), {});
+
+					GEngine->GetEngineSubsystem<UBeamBeamballMsApi>()->CPP_SetEdgegapLocation(UserSlot, RequestObject, FOnBeamballMsSetEdgegapLocationFullResponse::CreateLambda(
+						                                                                          [OperationHandler, this](FBeamballMsSetEdgegapLocationFullResponse Event)
+						                                                                          {
+							                                                                          if (Event.State == EBeamFullResponseState::RS_Retrying)
+								                                                                          return;
+
+							                                                                          if (Event.State == RS_Success)
+							                                                                          {
+								                                                                          Runtime->RequestTrackerSystem->TriggerOperationSuccess(
+									                                                                          OperationHandler, "Successfully updated location stat");
+							                                                                          }
+							                                                                          else
+							                                                                          {
+								                                                                          Runtime->RequestTrackerSystem->TriggerOperationError(
+									                                                                          OperationHandler, "Error on updated location stat");
+							                                                                          }
+						                                                                          }), Ctx, RequestOperation, this);
 				}
 			});
 
@@ -77,10 +91,10 @@ public:
 	/**
 	 * @copydoc UpdateGeolocationStatOperation
 	*/
-	FBeamOperationHandle CPP_RefreshPingsOperation(FUserSlot UserSlot, FBeamOperationEventHandlerCode OnOperationEvent)
+	FBeamOperationHandle CPP_UpdateGeolocationStatOperation(FUserSlot UserSlot, FBeamOperationEventHandlerCode OnOperationEvent)
 	{
 		auto OperationHandler = Runtime->RequestTrackerSystem->CPP_BeginOperation({}, GetClass()->GetFName().ToString(), OnOperationEvent);
-		
+
 		FHttpRequestRef Request = FHttpModule::Get().CreateRequest();
 
 		Request->SetURL("http://ip-api.com/json/");
@@ -103,20 +117,29 @@ public:
 					float Lon;
 					Obj->TryGetNumberField(TEXT("lon"), Lon);
 
-					GetWorld()->GetGameInstance()->GetSubsystem<UBeamStatsSubsystem>()->CPP_SetStatOperation(UserSlot, "beam.edgegap.location", FString::Printf(TEXT("%f;%f"), Lat, Lon),
-					                                                                                         FBeamOperationEventHandlerCode::CreateLambda([OperationHandler, this](const FBeamOperationEvent& Event)
-					                                                                                         {
-						                                                                                         if (Event.EventType == OET_SUCCESS)
-						                                                                                         {
-							                                                                                         Runtime->RequestTrackerSystem->TriggerOperationSuccess(
-								                                                                                         OperationHandler, "Successfully updated location stat");
-						                                                                                         }
-						                                                                                         else
-						                                                                                         {
-							                                                                                         Runtime->RequestTrackerSystem->TriggerOperationError(
-								                                                                                         OperationHandler, "Error on updated location stat");
-						                                                                                         }
-					                                                                                         }));
+					UBeamballMsSetEdgegapLocationRequest* RequestObject = UBeamballMsSetEdgegapLocationRequest::Make(Lat, Lon, this, {});
+
+					FBeamRequestContext Ctx;
+
+					auto RequestOperation = Runtime->RequestTrackerSystem->CPP_BeginOperation({UserSlot}, GetName(), {});
+
+					GEngine->GetEngineSubsystem<UBeamBeamballMsApi>()->CPP_SetEdgegapLocation(UserSlot, RequestObject, FOnBeamballMsSetEdgegapLocationFullResponse::CreateLambda(
+						                                                                          [OperationHandler, this](FBeamballMsSetEdgegapLocationFullResponse Event)
+						                                                                          {
+							                                                                          if (Event.State == EBeamFullResponseState::RS_Retrying)
+								                                                                          return;
+
+							                                                                          if (Event.State == RS_Success)
+							                                                                          {
+								                                                                          Runtime->RequestTrackerSystem->TriggerOperationSuccess(
+									                                                                          OperationHandler, "Successfully updated location stat");
+							                                                                          }
+							                                                                          else
+							                                                                          {
+								                                                                          Runtime->RequestTrackerSystem->TriggerOperationError(
+									                                                                          OperationHandler, "Error on updated location stat");
+							                                                                          }
+						                                                                          }), Ctx, RequestOperation, this);
 				}
 			});
 
