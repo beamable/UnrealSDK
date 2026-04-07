@@ -63,6 +63,8 @@ public:
 
 					auto RequestOperation = Runtime->RequestTrackerSystem->CPP_BeginOperation({UserSlot}, GetName(), {});
 
+					// We are calling the microservice directly here, because the stats api only accept set stat operations for client public type.
+					// And to keep the privacy of the location we set it as a private stat.
 					GEngine->GetEngineSubsystem<UBeamBeamballMsApi>()->CPP_SetEdgegapLocation(UserSlot, RequestObject, FOnBeamballMsSetEdgegapLocationFullResponse::CreateLambda(
 						                                                                          [OperationHandler, this](FBeamballMsSetEdgegapLocationFullResponse Event)
 						                                                                          {
@@ -123,6 +125,8 @@ public:
 
 					auto RequestOperation = Runtime->RequestTrackerSystem->CPP_BeginOperation({UserSlot}, GetName(), {});
 
+					// We are calling the microservice directly here, because the stats api only accept set stat operations for client public type.
+					// And to keep the privacy of the location we set it as a private stat.
 					GEngine->GetEngineSubsystem<UBeamBeamballMsApi>()->CPP_SetEdgegapLocation(UserSlot, RequestObject, FOnBeamballMsSetEdgegapLocationFullResponse::CreateLambda(
 						                                                                          [OperationHandler, this](FBeamballMsSetEdgegapLocationFullResponse Event)
 						                                                                          {
