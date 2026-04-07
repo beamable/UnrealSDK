@@ -51,7 +51,28 @@
 				"Game",
 				"Editor",
 				"Client"
+			],
+			"TargetDenyList": [
+				"BeamableUnrealEOS"
 			]
-		}		
+		},
+		{
+			"Name": "OnlineServicesEOS",
+			"Enabled": true,
+			"Optional": true,
+			"PlatformAllowList": [
+				"Win64",
+				"Mac",
+				"Linux"
+			],
+			"TargetAllowList": [
+				"Game",
+				"Editor",
+				"Client"
+			],
+			"TargetDenyList": [
+				"BeamableUnrealSteam"
+			]
+		}
 	]
 }

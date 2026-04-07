@@ -64,7 +64,7 @@ namespace Beamable.BeamballMs
             {
                 CreatePlayerEmail(account, properties, startingStats, startingInventory),
                 CreatePlayerSteam(account, properties, startingStats, startingInventory),
-                // CreatePlayerEOS(account, properties, startingStats, startingInventory)
+                CreatePlayerEos(account, properties, startingStats, startingInventory),
             });
 
             // Make just two requests with all the starting stats and starting inventory.
@@ -97,7 +97,7 @@ namespace Beamable.BeamballMs
             var isDynamicMatch = lobby.matchType.Value.id.Value.Contains("dynamic_match");
 
             var playerTeams = new Dictionary<string, string>();
-            
+
             // If this is a dynamic match, assign players to teams here.
             // TODO: It is not considering the Party for the teams in the dynamic match.
             if (isDynamicMatch)
@@ -129,11 +129,11 @@ namespace Beamable.BeamballMs
                         var assumedFakeLeader = AssumeNewUser(gamerTags.First());
                         // get the ping times for each player
                         var tasks = new List<Promise<Dictionary<string, string>>>(gamerTags.Length);
-                        tasks.AddRange(gamerTags.Select(tag =>assumedFakeLeader.Services.Stats.GetFilteredStats(StatsDomainType.Client, StatsAccessType.Public, tag, new string[] { "beam.edgegap.location" })));
+                        tasks.AddRange(gamerTags.Select(tag => assumedFakeLeader.Services.Stats.GetFilteredStats(StatsDomainType.Client, StatsAccessType.Public, tag, new string[] { "beam.edgegap.location" })));
                         var pingStats = await Promise.Sequence(tasks);
 
-                        List<EdgegapLocation> edgegapLocations = new List<EdgegapLocation>(); 
-                        
+                        List<EdgegapLocation> edgegapLocations = new List<EdgegapLocation>();
+
                         if (pingStats.Count != 0)
                         {
                             foreach (var ping in pingStats)
@@ -141,7 +141,7 @@ namespace Beamable.BeamballMs
                                 if (ping.TryGetValue("beam.edgegap.location", out var value))
                                 {
                                     var locationSplit = value.Split(";");
-                                    
+
                                     edgegapLocations.Add(new EdgegapLocation()
                                     {
                                         longitude = double.Parse(locationSplit[0]),
@@ -150,7 +150,7 @@ namespace Beamable.BeamballMs
                                 }
                             }
                         }
-                        
+
 
                         // Create the Edgegap Room
                         var edgegapRoom = await CreateEdgegapServer(realmConfig, l.lobbyId.Value, edgegapLocations);
@@ -184,9 +184,9 @@ namespace Beamable.BeamballMs
                             throw new MicroserviceException(503, "FAILED_TO_PROVISION_GAME_SERVER_BEFORE_TIMEOUT",
                                 JsonUtility.ToJson(edgegapRoom));
                         }
-                        
+
                         connInfo.globalData.Add("edgegap_request_id", edgegapRoom.request_id);
-                        
+
                         // Set the edgegap room information as the connection string for this lobby --- the Unreal SDK has utilities to read these properties.
                         // You can always pass them via your own properties.
                         connInfo.SetConnectionString(edgegapRoom.ip, edgegapRoom.port.ToString());
@@ -296,11 +296,11 @@ namespace Beamable.BeamballMs
                     var coins = rng.Next(10, 25);
 
                     var newUser = AssumeNewUser(gamerTag);
-                    
+
                     updates.Add(newUser.Services.Leaderboards.SetScore("leaderboards.global", rankedPoints)
                         .TaskFromPromise());
                     updates.Add(newUser.Services.Inventory.AddCurrency("currency.coins", coins).TaskFromPromise());
-                    
+
 
                     result.PerPlayerMatchResults.Add(player.playerId.Value,
                         new PerPlayerMatchResult()
@@ -315,7 +315,6 @@ namespace Beamable.BeamballMs
                         result.PerPlayerMatchResults.Add(player.playerId.Value,
                             new PerPlayerMatchResult()
                                 { MatchResult = BeamballMatchResultEnum.Draw, RankEarned = 0, CoinsEarned = 0 });
-
                     }
                     else
                     {
@@ -335,9 +334,9 @@ namespace Beamable.BeamballMs
                 BeamableLogger.LogError(e);
                 throw;
             }
-            
+
             // Remove all players from lobby
-            
+
             List<Task> removeLobbyTaskList = new List<Task>();
             foreach (var player in lobbyPlayers)
             {
@@ -346,9 +345,9 @@ namespace Beamable.BeamballMs
                     playerId = player.playerId.Value
                 }).TaskFromPromise());
             }
-            
+
             await Task.WhenAll(removeLobbyTaskList);
-            
+
             // Delete Server after the end of the match
             var realmConfig = await Services.RealmConfig.GetRealmConfigSettings();
 
@@ -386,15 +385,15 @@ namespace Beamable.BeamballMs
 
             return edgegapRealmConfig;
         }
-        
+
         public static async Task<bool> DeleteEdgegapServer(RealmConfig config,
             string requestId)
         {
             var edgegapRealmConfig = GetEdgegapRealmConfig(config);
 
             var url = "https://api.edgegap.com/v1/stop/" + requestId;
-            
-            
+
+
             var http = new HttpClient();
             http.DefaultRequestHeaders.Authorization =
                 new AuthenticationHeaderValue("token", edgegapRealmConfig.AppKey);
@@ -463,7 +462,7 @@ namespace Beamable.BeamballMs
 
             return JsonConvert.DeserializeObject<EdgegapConnectionInfo>(content);
         }
-        
+
         //Takes in the requestId and calls the Edgegap API to get their connection information/state.
         /// We use this to wait until the server is provisioned before notifying players that the match is ready.
         private static async Task<EdgegapConnectionInfo> PollEdgegapGameServer(
@@ -478,7 +477,7 @@ namespace Beamable.BeamballMs
             );
 
             var http = new HttpClient();
-            
+
             http.DefaultRequestHeaders.Authorization =
                 new AuthenticationHeaderValue("token", edgegapRealmConfig.AppKey);
 
@@ -521,7 +520,7 @@ namespace Beamable.BeamballMs
             };
         }
     }
-    
+
     [Serializable]
     public class EdgegapRealmConfig
     {
@@ -531,20 +530,21 @@ namespace Beamable.BeamballMs
         public string FallbackRegion;
         public Uri EdgegapURL;
     }
-    
+
     [Serializable]
     public class BeamballTeamInfo
     {
         public string TeamName;
         public List<BeamballPlayerInfo> Players;
     }
+
     [Serializable]
     public class BeamballPlayerInfo
     {
         public string GamerTag;
         public int Life;
     }
-    
+
     [Serializable]
     public enum BeamballMatchResultEnum
     {
@@ -552,7 +552,7 @@ namespace Beamable.BeamballMs
         Lose,
         Draw
     }
-    
+
     [Serializable]
     public class MatchResult
     {
@@ -566,7 +566,7 @@ namespace Beamable.BeamballMs
         public int RankEarned;
         public int CoinsEarned;
     }
-    
+
     public class EdgegapCreateDeploymentRequestV2
     {
         public string application;
@@ -574,40 +574,40 @@ namespace Beamable.BeamballMs
         public EdgegapUser[] users;
         public EdgegapEnvVar[] environment_variables;
     }
-    
+
     public class EdgegapUser
     {
         public string user_type;
         public EdgegapUserData user_data;
     }
-    
+
     public class EdgegapUserData
     {
         // public string ip_address;
         public float latitude;
         public float longitude;
     }
-    
+
     public class EdgegapEnvVar
     {
         public string key;
         public string value;
         public bool is_hidden;
     }
-    
+
     public class EdgegapConnectionInfo
     {
         public string request_id;
         public string status;
 
         public Dictionary<string, EdgegapPort> ports;
-        
+
         public string ip;
         public int port;
 
         public bool IsReady => status == "READY";
     }
-    
+
     public class EdgegapDeploymentStatusResponse
     {
         public string request_id { get; set; }
@@ -619,7 +619,7 @@ namespace Beamable.BeamballMs
         public string current_status_label { get; set; }
 
         public bool running { get; set; }
-        
+
         public bool error { get; set; }
 
         public string public_ip { get; set; }
@@ -637,7 +637,7 @@ namespace Beamable.BeamballMs
 
         public EdgegapLocation location { get; set; }
     }
-    
+
     public class EdgegapPort
     {
         public string protocol { get; set; }
@@ -646,7 +646,7 @@ namespace Beamable.BeamballMs
         public string link { get; set; }
         public string proxy { get; set; }
     }
-    
+
     public class EdgegapLocation
     {
         public string city { get; set; }

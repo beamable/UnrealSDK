@@ -8,11 +8,15 @@ public class BeamableUnrealServerTarget : TargetRules
 	public BeamableUnrealServerTarget(TargetInfo Target) : base(Target)
 	{
 		bOverrideBuildEnvironment = true;
+		bUseLoggingInShipping = true;
+		bUseChecksInShipping = false;
+		bBuildWithEditorOnlyData = false;
+		bUsesSlate = false;
+		bCompileCEF3 = false;
 
 		Type = TargetType.Server;
 		DefaultBuildSettings = BuildSettingsVersion.Latest;
 		IncludeOrderVersion = EngineIncludeOrderVersion.Latest;
-		bUsesSteam = false; // Set to true if using Steam
 
 
 		// Only include the core and necessary modules for the server build
@@ -29,15 +33,8 @@ public class BeamableUnrealServerTarget : TargetRules
 		Console.WriteLine($"Configuring server project as beamproj={samplePluginName}.");
 		BeamableUnrealTarget.ConfigureIfBeamball(this, samplePluginName);
 		BeamableUnrealTarget.ConfigureIfBeamFarm(this, samplePluginName);
-		BeamableUnrealTarget.ConfigureIfSteamDemo(this, samplePluginName);
 		BeamableUnrealTarget.ConfigureIfLiveOpsDemo(this, samplePluginName);
 		BeamableUnrealTarget.ConfigureIfDiscordDemo(this, samplePluginName);
 
-		bOverrideBuildEnvironment = true;
-		bUseLoggingInShipping = true;
-		bUseChecksInShipping = false;
-		bBuildWithEditorOnlyData = false;
-		bUsesSlate = false;
-		bCompileCEF3 = false;
 	}
 }

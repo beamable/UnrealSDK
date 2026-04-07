@@ -21,7 +21,12 @@ public class BEAMPROJ_Beamball : ModuleRules
 
 				// We'll need to use microservices from this module
 				"BeamableUnrealMicroserviceClients",
-				"HTTP"
+				"HTTP",
+
+				// Dependencies for EOS plugin
+				"CoreOnline",
+				"OnlineServicesInterface",
+				"OnlineServicesEOS"
 			}
 		);
 
