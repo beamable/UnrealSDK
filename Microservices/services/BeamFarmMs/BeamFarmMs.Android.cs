@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Beamable.Common;
-using Beamable.Server;
 using Newtonsoft.Json.Linq;
 
 namespace Beamable.BeamFarmMs
@@ -14,8 +13,15 @@ namespace Beamable.BeamFarmMs
 		
 	}
 	
-	public partial class BeamFarmMs : IFederatedLogin<GoogleFederation>, IFederatedLogin<AppleFederation>
+	public partial class BeamFarmMs : IFederatedLogin<GoogleFederation>
 	{
+		/// <summary>
+		/// We are validating the token provided by the client by calling Google's token verification endpoint and return the userId (sub) provided in the response as the authenticated userId.
+		/// </summary>
+		/// <param name="token"></param>
+		/// <param name="challenge"></param>
+		/// <param name="solution"></param>
+		/// <returns></returns>
 		async Promise<FederatedAuthenticationResponse> IFederatedLogin<GoogleFederation>.Authenticate(string token, string challenge, string solution)
 		{
 			return new FederatedAuthenticationResponse()
@@ -24,6 +30,11 @@ namespace Beamable.BeamFarmMs
 			};
 		}
 		
+		/// <summary>
+		/// Token validation is done by calling Google's token verification endpoint and passing the token provided by the client. If the token is valid, we return the userId (sub) provided in the response as the authenticated userId.
+		/// </summary>
+		/// <param name="idToken"></param>
+		/// <returns></returns>
 		public async Task<string> GetGoogleUidFromIdTokenAsync(string idToken)
 		{
 			try

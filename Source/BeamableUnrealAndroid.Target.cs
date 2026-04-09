@@ -25,25 +25,58 @@ public class BeamableUnrealAndroidTarget : BeamableUnrealTarget
 
 				if (File.Exists(iniPath))
 				{
-					var iniContents = File.ReadAllLines(iniPath);
+					var iniContents = File.ReadAllLines(iniPath).ToList();
 					
-					// Read Google OAuth configuration
-					var googleClientIdLine = iniContents.FirstOrDefault(c => c.Trim().StartsWith("GoogleClientId"));
-					var googleServerClientIdLine = iniContents.FirstOrDefault(c => c.Trim().StartsWith("GoogleServerClientId"));
+					// Read Google OAuth configuration for Android
+					var googleClientIdLine = iniContents.FirstOrDefault(c => c.Trim().StartsWith("ClientId-Android"));
+					var googleServerClientIdLine = iniContents.FirstOrDefault(c => c.Trim().StartsWith("ServerClientId-Android"));
 
 					// Setup Google configuration for Android
 					if (googleClientIdLine != null && googleServerClientIdLine != null)
 					{
-						var googleClientId = googleClientIdLine[(googleClientIdLine.LastIndexOf('=') + 1)..].TrimEnd();
-						var googleServerClientId = googleServerClientIdLine[(googleServerClientIdLine.LastIndexOf('=') + 1)..].TrimEnd();
-
-						string googleConfigContent = $"{{\\\"google_client_id\\\":\\\"{googleClientId}\\\",\\\"google_server_client_id\\\":\\\"{googleServerClientId}\\\"}}";
-
 						if (Platform == UnrealTargetPlatform.Android)
 						{
-							string androidPath = Path.Combine(basePath, "Android", "googleconfig.json");
-							string androidDir = Path.GetDirectoryName(androidPath);
-							PostBuildSteps.Add($"if not exist \"{androidDir}\" mkdir \"{androidDir}\" && echo {googleConfigContent} > \"{androidPath}\"");
+							// Update DefaultEngine.ini to set Android as default online subsystem
+							bool foundOnlineSubsystemSection = false;
+							bool updatedDefaultPlatform = false;
+							
+							for (int i = 0; i < iniContents.Count; i++)
+							{
+								if (iniContents[i].Trim() == "[OnlineSubsystem]")
+								{
+									foundOnlineSubsystemSection = true;
+								}
+								else if (foundOnlineSubsystemSection && iniContents[i].Trim().StartsWith("DefaultPlatformService="))
+								{
+									iniContents[i] = "DefaultPlatformService=Google";
+									updatedDefaultPlatform = true;
+									break;
+								}
+								else if (foundOnlineSubsystemSection && iniContents[i].Trim().StartsWith("["))
+								{
+									// Hit next section without finding DefaultPlatformService
+									iniContents.Insert(i, "DefaultPlatformService=Google");
+									updatedDefaultPlatform = true;
+									break;
+								}
+							}
+							
+							// If [OnlineSubsystem] section doesn't exist, add it
+							if (!foundOnlineSubsystemSection)
+							{
+								iniContents.Add("");
+								iniContents.Add("[OnlineSubsystem]");
+								iniContents.Add("DefaultPlatformService=Google");
+								iniContents.Add("NativePlatformService=Google");
+							}
+							else if (!updatedDefaultPlatform)
+							{
+								// Section exists but no DefaultPlatformService found, add at end
+								iniContents.Add("DefaultPlatformService=Google");
+							}
+							
+							// Write updated ini file
+							File.WriteAllLines(iniPath, iniContents);
 						}
 					}
 				}
