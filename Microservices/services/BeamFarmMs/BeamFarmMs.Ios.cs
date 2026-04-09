@@ -16,12 +16,25 @@ namespace Beamable.BeamFarmMs
     public class AppleFederation : IFederationId
     {
     }
+    
+    [FederationId("gamecenter")]
+    public class GameCenterFederation : IFederationId
+    {
+    }
 
-    public partial class BeamFarmMs : IFederatedLogin<AppleFederation>
+    public partial class BeamFarmMs : IFederatedLogin<AppleFederation>, IFederatedLogin<GameCenterFederation>
     {
         private const string APPLE_ISSUER = "https://appleid.apple.com";
         private const string APPLE_KEYS_URL = "https://appleid.apple.com/auth/keys";
 
+        async Promise<FederatedAuthenticationResponse> IFederatedLogin<GameCenterFederation>.Authenticate(string userId, string challenge, string solution)
+        {
+            return new FederatedAuthenticationResponse()
+            {
+                user_id = userId
+            };
+        }
+        
         async Promise<FederatedAuthenticationResponse> IFederatedLogin<AppleFederation>.Authenticate(
             string token,
             string challenge,
@@ -96,6 +109,8 @@ namespace Beamable.BeamFarmMs
                 })
                 .ToList();
         }
+
+     
     }
 
     public class AppleKey
