@@ -236,7 +236,7 @@ public partial class BeamballMs : IFederatedLogin<EpicOnlineServicesId>
     {
         // If we find the Epic external identity at this time, it means this account was created via the Epic federation.
         // So, we can get the Epic realm config and make a request to get information about that user's Epic account.
-        var associatedEpicIdentity = account.external.FirstOrDefault(e => e.providerNamespace == EpicOnlineServicesId.Id);
+        var associatedEpicIdentity = account.external?.FirstOrDefault(e => e.providerNamespace == EpicOnlineServicesId.Id);
         if (associatedEpicIdentity != null)
         {
             BeamableLogger.Log("Initializing player account via Epic");

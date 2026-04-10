@@ -773,17 +773,15 @@ void UBeamMicroservicesEditor::SetupLogTail(FLocalMicroserviceData* RunningServi
 		RunningService->TailLogsCommand->OnStreamOutput = [this, BeamoId](const TArray<UBeamCliProjectLogsStreamData*>& Arr, const TArray<int64>&, const FBeamOperationHandle&)
 		{
 			auto LoggingService = LocalMicroserviceData.Find(BeamoId);
-			TArray<UBeamCliLogEntry*> Entries;
-			for (const auto& LogStream : Arr)
-			{
-				UBeamCliLogEntry* Log = NewObject<UBeamCliLogEntry>();
-				Log->LogLevel = LogStream->LogLevel;
-				Log->Message = LogStream->Message;
-				FDefaultValueHelper::ParseInt64(LogStream->TimeStamp, Log->Timestamp);
-
-				Entries.Add(Log);
-			}
-			AppendToLogs(LoggingService, Entries);
+		
+			const auto& LogStream = Arr.Last();
+			
+			UBeamCliLogEntry* Log = NewObject<UBeamCliLogEntry>();
+			Log->LogLevel = LogStream->LogLevel;
+			Log->Message = LogStream->Message;
+			FDefaultValueHelper::ParseInt64(LogStream->TimeStamp, Log->Timestamp);
+			
+			AppendToLogs(LoggingService, {Log});
 		};
 		const auto ReqProcess = FString::Printf(TEXT("--require-process-id %d"), FPlatformProcess::GetCurrentProcessId());
 		Cli->RunCommand(RunningService->TailLogsCommand, {BeamoId, ReqProcess}, {});
