@@ -1526,7 +1526,7 @@ public:
 	}
 
 	/**
-	 * When integrating with a game server orchestrator SDK (Hathora, Agones, etc...), you only need to run them
+	 * When integrating with a game server orchestrator SDK (Edgegap, Agones, etc...), you only need to run them
 	 * if you are NOT running a dedicated server locally.
 	 *
 	 * This function is meant to be called in your dedicated server's start up flow (typically in a GameMode's BeginPlay) in order to decide whether your orchestrator's SDK needs initialization or not.
@@ -2095,7 +2095,7 @@ namespace BeamPIE
 	*  - Get the Lobby ID using your Orchestrator's SDK or our BeamMultiplayer::GetLobbyIdFromCLArgs utility (when passing it via CLArgs). 
 	*  - Call BeamMultiplayer::RegisterLobbyWithServer and handle the operation's success/failure according to your game's needs. 
 	*  
-			// Setup Hathora, Agones, GameLyft, whatever you need to extract from your game server orchestrator's SDK, the Beamable Lobby Id your federation gave it.
+			// Setup Edgegap, Agones, GameLyft, whatever you need to extract from your game server orchestrator's SDK, the Beamable Lobby Id your federation gave it.
 			// Once you have the lobby
 			
 	 * @param CallingContext 

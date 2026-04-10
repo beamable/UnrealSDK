@@ -29,7 +29,7 @@ namespace Beamable.BeamFarmMs
         /// <param name="challenge"></param>
         /// <param name="solution"></param>
         /// <returns></returns>
-        public async Promise<FederatedAuthenticationResponse> Authenticate(string userId, string challenge, string solution)
+        async Promise<FederatedAuthenticationResponse> IFederatedLogin<GameCenterFederation>.Authenticate(string userId, string challenge, string solution)
         {
             return new FederatedAuthenticationResponse()
             {
