@@ -47,7 +47,7 @@ void UBeamLobbySubsystem::OnBeamableStarting_Implementation(FBeamOperationHandle
 		}
 
 		// If no CLArg or EnvVar are provided, we assume the user will run multiple matches per server and will make the calls to RefreshLobbyDataOperation from their integration with their game server orchestrator
-		// (Hathora, GameLift, etc...)
+		// (Edgegap, GameLift, etc...)
 		if (LobbyIdStr.IsEmpty())
 		{
 			UE_LOG(LogBeamLobby, Display, TEXT("No LobbyId was provided to this dedicated server instance. "
@@ -905,7 +905,7 @@ FGuid UBeamLobbySubsystem::GetLobbyIdFromCLArgs()
 	}
 
 	// If no CLArg or EnvVar are provided, we assume the user will run multiple matches per server and will make the calls to RefreshLobbyDataOperation from their integration with their game server orchestrator
-	// (Hathora, GameLift, etc...)
+	// (Edgegap, GameLift, etc...)
 	if (LobbyIdStr.IsEmpty())
 	{
 		UE_LOG(LogBeamLobby, Warning, TEXT("No LobbyId was provided via CLArgs/EnvVars. "

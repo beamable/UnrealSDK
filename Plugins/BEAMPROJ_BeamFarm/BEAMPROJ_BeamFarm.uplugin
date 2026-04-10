@@ -31,15 +31,29 @@
     },
     {
       "Name": "OnlineSubsystemGoogle",
-      "Enabled": true
+      "Enabled": true,
+      "SupportedTargetPlatforms": [
+        "Android",
+        "Win64",
+        "Mac",
+        "Linux",
+        "IOS"
+      ]
     },
     {
       "Name": "OnlineSubsystemApple",
-      "Enabled": true
+      "Enabled": true,
+      "SupportedTargetPlatforms": [
+        "IOS",
+        "Mac"
+      ]
     },
     {
       "Name": "OnlineSubsystemIOS",
-      "Enabled": true
+      "Enabled": true,
+      "SupportedTargetPlatforms": [
+        "IOS"
+      ]
     },
     {
       "Name" : "OnlineSubsystemUtils",

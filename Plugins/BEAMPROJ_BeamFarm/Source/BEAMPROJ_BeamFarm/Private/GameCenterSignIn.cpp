@@ -1,9 +1,9 @@
-#include "AppleSignIn.h"
+#include "GameCenterSignIn.h"
 
 #include "OnlineSubsystem.h"
 #include "Interfaces/OnlineIdentityInterface.h"
 
-void UAppleSignIn::Login(APlayerController* PlayerController, FOnAppleEventComplete OnLoginSuccess, FOnAppleEventComplete OnLoginFail)
+void UGameCenterSignIn::LoginGameCenter(APlayerController* PlayerController, FOnGameCenterEventComplete OnLoginSuccess, FOnGameCenterEventComplete OnLoginFail)
 {
 	IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get(IOS_SUBSYSTEM);
 		
@@ -38,7 +38,7 @@ void UAppleSignIn::Login(APlayerController* PlayerController, FOnAppleEventCompl
 	Identity->Login(ControllerId, FOnlineAccountCredentials{});
 }
 
-FString UAppleSignIn::GetUserId(APlayerController* PlayerController)
+FString UGameCenterSignIn::GetGameCenterUserId(APlayerController* PlayerController)
 {
 	IOnlineSubsystem* Subsystem = IOnlineSubsystem::Get(IOS_SUBSYSTEM);
 	IOnlineIdentityPtr Identity = Subsystem->GetIdentityInterface();
@@ -47,6 +47,6 @@ FString UAppleSignIn::GetUserId(APlayerController* PlayerController)
 
 	UE_LOG(LogTemp, Warning, TEXT("PLAYER ID: %s"), *Identity->GetUniquePlayerId(ControllerId)->ToString());
 	
-	// Getting the token from the online subsystem
+	// Getting the user id from the online subsystem
 	return *Identity->GetUniquePlayerId(ControllerId)->ToString();
 }

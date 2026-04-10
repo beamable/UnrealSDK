@@ -22,8 +22,16 @@ public class BeamableUnrealSteamTarget : BeamableUnrealTarget
 			if (!string.IsNullOrEmpty(basePath))
 			{
 				var iniPath = Path.Combine(ProjectFile.Directory.FullName, "Config", "DefaultEngine.ini");
+		
 				var iniContents = File.ReadAllLines(iniPath);
+				
+				if(!iniContents.Any(c => c.StartsWith("SteamDevAppId")))
+                {
+                    return;
+                }
+				
 				var steamAppIdLine = iniContents.First(c => c.StartsWith("SteamDevAppId"));
+				
 				var steamAppId = steamAppIdLine[(steamAppIdLine.LastIndexOf('=') + 1)..].TrimEnd();
 
 				if (Platform == UnrealTargetPlatform.Win64)

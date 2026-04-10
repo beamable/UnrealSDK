@@ -199,7 +199,7 @@ public static class Beam
 
 		/// <summary>
 		/// Any additional Modules you'll like to be added to the `Build.cs` file of the OnlineSubsystemBeamable module.
-		/// The primary case for this is adding third-party SDKs you wish to integrate with Beamable (Discord, Hathora, etc...).
+		/// The primary case for this is adding third-party SDKs you wish to integrate with Beamable (Discord, Edgegap, etc...).
 		/// </summary>
 		public string[] AdditionalHookModules;
 
