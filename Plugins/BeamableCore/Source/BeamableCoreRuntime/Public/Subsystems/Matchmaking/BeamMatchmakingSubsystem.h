@@ -67,8 +67,8 @@ struct FBeamMatchmakingTicket
 };
 
 
-DECLARE_DELEGATE_TwoParams(FOnMatchmakingTicketUpdatedCode, FBeamGamerTag, const FBeamMatchmakingTicket&)
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnMatchmakingTicketUpdated, FBeamGamerTag, GamerTag, const FBeamMatchmakingTicket&, Ticket);
+DECLARE_DELEGATE_OneParam(FOnMatchmakingTicketUpdatedCode, const FBeamMatchmakingTicket&)
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnMatchmakingTicketUpdated, const FBeamMatchmakingTicket&, Ticket);
 
 
 USTRUCT(BlueprintType)

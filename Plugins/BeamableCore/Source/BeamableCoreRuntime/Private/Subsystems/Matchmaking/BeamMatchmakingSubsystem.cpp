@@ -425,8 +425,8 @@ void UBeamMatchmakingSubsystem::OnMatchmakingRemoteUpdateReceived(FMatchmakingRe
 					if (UserSlots->GetUserDataAtSlot(UserSlot, RealmUser, this))
 					{
 						// Trigger the system level callbacks for "my party leader in another client joined and I now know that"			
-						const auto _ = OnMatchSearchStartedCode.ExecuteIfBound(RealmUser.GamerTag, NewTicket);
-						OnMatchSearchStarted.Broadcast(RealmUser.GamerTag, NewTicket);
+						const auto _ = OnMatchSearchStartedCode.ExecuteIfBound(NewTicket);
+						OnMatchSearchStarted.Broadcast(NewTicket);
 					}
 					else
 					{
@@ -482,9 +482,9 @@ void UBeamMatchmakingSubsystem::OnMatchmakingUpdateReceived(FMatchmakingUpdateNo
 							// Trigger this ticket's OnMatchReady callback.
 							TArray<FOnMatchmakingTicketUpdatedCode> CodeCallbacks;
 							OnMatchReadyCode.MultiFind(MsgTicketId, CodeCallbacks, true);
-							for (auto Callback : CodeCallbacks) auto _ = Callback.ExecuteIfBound(RealmUser.GamerTag, Ticket);
-
-							OnMatchReady.Broadcast(RealmUser.GamerTag, Ticket);
+							for (auto Callback : CodeCallbacks) auto _ = Callback.ExecuteIfBound(Ticket);
+							
+							OnMatchReady.Broadcast(Ticket);
 						}
 						else
 						{
@@ -502,9 +502,9 @@ void UBeamMatchmakingSubsystem::OnMatchmakingUpdateReceived(FMatchmakingUpdateNo
 						FBeamRealmUser RealmUser;
 						if (UserSlots->GetUserDataAtSlot(UserSlot, RealmUser, this))
 						{
-							for (auto Callback : CodeCallbacks) auto _ = Callback.ExecuteIfBound(RealmUser.GamerTag, Ticket);
+							for (auto Callback : CodeCallbacks) auto _ = Callback.ExecuteIfBound(Ticket);
 
-							OnMatchCancelled.Broadcast(RealmUser.GamerTag, Ticket);
+							OnMatchCancelled.Broadcast(Ticket);
 						}
 						else
 						{
@@ -531,9 +531,9 @@ void UBeamMatchmakingSubsystem::OnMatchmakingUpdateReceived(FMatchmakingUpdateNo
 			FBeamRealmUser RealmUser;
 			if (UserSlots->GetUserDataAtSlot(UserSlot, RealmUser, this))
 			{
-				for (auto Callback : CodeCallbacks) auto _ = Callback.ExecuteIfBound(RealmUser.GamerTag, LiveTicket);
+				for (auto Callback : CodeCallbacks) auto _ = Callback.ExecuteIfBound(LiveTicket);
 
-				OnMatchCancelled.Broadcast(RealmUser.GamerTag, LiveTicket);
+				OnMatchCancelled.Broadcast(LiveTicket);
 			}
 			else
 			{
@@ -558,9 +558,9 @@ void UBeamMatchmakingSubsystem::OnMatchmakingTimeoutReceived(FMatchmakingTimeout
 		FBeamRealmUser RealmUser;
 		if (UserSlots->GetUserDataAtSlot(UserSlot, RealmUser, this))
 		{
-			for (auto Callback : CodeCallbacks) auto _ = Callback.ExecuteIfBound(RealmUser.GamerTag, LiveTicket);
+			for (auto Callback : CodeCallbacks) auto _ = Callback.ExecuteIfBound(LiveTicket);
 
-			OnMatchTimedOut.Broadcast(RealmUser.GamerTag, LiveTicket);
+			OnMatchTimedOut.Broadcast(LiveTicket);
 		}
 		else
 		{
@@ -591,7 +591,7 @@ void UBeamMatchmakingSubsystem::InvalidateLiveTicket(FBeamMatchmakingTicket& Liv
 	if (UserSlots->GetUserDataAtSlot(UserSlot, RealmUser, this))
 	{
 		// Trigger the BP Cleanup for this ticket
-		OnMatchTicketInvalidated.Broadcast(RealmUser.GamerTag, InvalidatedTicket);
+		OnMatchTicketInvalidated.Broadcast(InvalidatedTicket);
 	}
 
 	// Auto-Cleanup the C++ delegates.	
