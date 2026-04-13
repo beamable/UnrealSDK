@@ -22,7 +22,11 @@ public class BeamableUnrealSteamTarget : BeamableUnrealTarget
 			if (!string.IsNullOrEmpty(basePath))
 			{
 				var iniPath = Path.Combine(ProjectFile.Directory.FullName, "Config", "DefaultEngine.ini");
-		
+				if(!File.Exists(iniPath))
+				{
+					Console.WriteLine($"Could not find {iniPath} to set up steam_appid.txt");
+					return;
+				}
 				var iniContents = File.ReadAllLines(iniPath);
 				
 				if(!iniContents.Any(c => c.StartsWith("SteamDevAppId")))
