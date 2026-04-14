@@ -1,7 +1,7 @@
 
 #include "BeamableCore/Public/AutoGen/SessionClientHistoryResponse.h"
 #include "Serialization/BeamJsonUtils.h"
-#include "Misc/DefaultValueHelper.h"
+
 
 
 void USessionClientHistoryResponse::DeserializeRequestResponse(UObject* RequestData, FString ResponseContent)
@@ -12,26 +12,26 @@ void USessionClientHistoryResponse::DeserializeRequestResponse(UObject* RequestD
 
 void USessionClientHistoryResponse::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	UBeamJsonUtils::SerializeUObject<ULocalDate*>("date", Date, Serializer);
-	UBeamJsonUtils::SerializeRawPrimitive(TEXT("daysPlayed"), DaysPlayed, Serializer);
-	UBeamJsonUtils::SerializeArray<FString>(TEXT("sessions"), Sessions, Serializer);
+	UBeamJsonUtils::SerializeOptional<FString>(TEXT("date"), &Date, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("installDate"), &InstallDate, Serializer);
+	UBeamJsonUtils::SerializeOptional<int32>(TEXT("daysPlayed"), &DaysPlayed, Serializer);
+	UBeamJsonUtils::SerializeOptional<TArray<FString>, FString>(TEXT("sessions"), &Sessions, Serializer);
 }
 
 void USessionClientHistoryResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	UBeamJsonUtils::SerializeUObject<ULocalDate*>("date", Date, Serializer);
-	UBeamJsonUtils::SerializeRawPrimitive(TEXT("daysPlayed"), DaysPlayed, Serializer);
-	UBeamJsonUtils::SerializeArray<FString>(TEXT("sessions"), Sessions, Serializer);
-	UBeamJsonUtils::SerializeOptional<FString>(TEXT("installDate"), &InstallDate, Serializer);		
+	UBeamJsonUtils::SerializeOptional<FString>(TEXT("date"), &Date, Serializer);
+	UBeamJsonUtils::SerializeOptional<FString>(TEXT("installDate"), &InstallDate, Serializer);
+	UBeamJsonUtils::SerializeOptional<int32>(TEXT("daysPlayed"), &DaysPlayed, Serializer);
+	UBeamJsonUtils::SerializeOptional<TArray<FString>, FString>(TEXT("sessions"), &Sessions, Serializer);		
 }
 
 void USessionClientHistoryResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeUObject<ULocalDate*>("date", Bag, Date, OuterOwner);
-	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("daysPlayed"), Bag, DaysPlayed);
-	UBeamJsonUtils::DeserializeArray<FString>(TEXT("sessions"), Bag, Sessions, OuterOwner);
+	UBeamJsonUtils::DeserializeOptional<FString>("date", Bag, Date, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("installDate", Bag, InstallDate, OuterOwner);
+	UBeamJsonUtils::DeserializeOptional<int32>("daysPlayed", Bag, DaysPlayed, OuterOwner);
+	UBeamJsonUtils::DeserializeOptional<TArray<FString>, FString>("sessions", Bag, Sessions, OuterOwner);
 }
 
 

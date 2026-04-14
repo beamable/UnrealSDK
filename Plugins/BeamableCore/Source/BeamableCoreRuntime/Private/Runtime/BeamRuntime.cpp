@@ -234,7 +234,7 @@ void UBeamRuntime::Initialize(FSubsystemCollectionBase& Collection)
 	});
 
 	// We do some initialization for dedicated servers... 
-	if (GetGameInstance()->IsDedicatedServerInstance())
+	if (GetGameInstance()->IsDedicatedServerInstance() || GetMutableDefault<UBeamCoreSettings>()->bAllowBeamEnvironmentOverride)
 	{
 		// Let's just load up the target realm's PID from the follow hierarchy:
 		//   - If we got an CLI Arg called --beamable-realm-override <Target Realm's PID>, use this argument.
@@ -464,7 +464,7 @@ void UBeamRuntime::PIEExecuteRequestImpl(int64 ActiveRequestId, const UObject* C
 
 
 	UBeamBackend* BeamBackend = GEngine->GetEngineSubsystem<UBeamBackend>();
-	
+
 	class UWorld* World = CallingContext->GetWorld();
 	if (!World)
 	{
@@ -1683,7 +1683,7 @@ FBeamGamerTag UBeamRuntime::GetGamerTagByPlayerController(const AController* Con
 {
 	if (ensureAlwaysMsgf(IsClient(), TEXT("Not supported in the server. Please use the similar APIs from UBeamLobbySubsystem instead.")))
 	{
-		if (Controller->IsLocalController())
+		if (Controller && Controller->IsLocalController())
 		{
 			if (auto PlayerCtrl = Cast<APlayerController>(Controller))
 			{
@@ -2047,71 +2047,83 @@ void UBeamRuntime::AttachFederated(FUserSlot UserSlot, FString MicroserviceId, F
 		return;
 	}
 
-	const auto CheckIdentityAvailableHandler = FOnGetAvailableExternalIdentityFullResponse::CreateLambda(
-		[this,UserSlot, Op, MicroserviceId, FederationId, FederatedUserId, FederatedAuthToken](FGetAvailableExternalIdentityFullResponse Resp)
-		{
-			if (Resp.State == RS_Retrying) return;
-
-			if (Resp.State == RS_Success)
+	const auto AttachToUser = [this, UserSlot, MicroserviceId, FederationId, FederatedUserId, FederatedAuthToken, Op]()
+	{
+		const auto AttachIdentityHandler = FOnPostExternalIdentityFullResponse::CreateLambda(
+			[this, UserSlot, MicroserviceId, FederationId, FederatedUserId, FederatedAuthToken, Op ](FPostExternalIdentityFullResponse Resp)
 			{
-				const auto bIsAvailable = Resp.SuccessData->bAvailable;
-				UE_LOG(LogTemp, Warning, TEXT("Is Available Identity Id: %s, %s"), *FederatedUserId, bIsAvailable ? TEXT("true") : TEXT("false"));
+				if (Resp.State == RS_Retrying) return;
 
-				// If the Federated Identity has never been assigned in this realm, we attach it to the account at the given slot. 
-				if (bIsAvailable)
+				if (Resp.State == RS_Success)
 				{
-					const auto AttachIdentityHandler = FOnPostExternalIdentityFullResponse::CreateLambda(
-						[this, UserSlot, MicroserviceId, FederationId, FederatedUserId, FederatedAuthToken, Op ](FPostExternalIdentityFullResponse Resp)
-						{
-							if (Resp.State == RS_Retrying) return;
+					// If it is a 2F auth we will trigger the sub event and then call the success when entire flow finish
+					if (Resp.SuccessData->ChallengeToken.IsSet)
+					{
+						const auto ChallengeSolution = NewObject<UBeamMultiFactorLoginData>(GetTransientPackage());
 
-							if (Resp.State == RS_Success)
-							{
-								// If it is a 2F auth we will trigger the sub event and then call the success when entire flow finish
-								if (Resp.SuccessData->ChallengeToken.IsSet)
-								{
-									const auto ChallengeSolution = NewObject<UBeamMultiFactorLoginData>(GetTransientPackage());
+						ChallengeSolution->MicroserviceId = MicroserviceId;
+						ChallengeSolution->FederationId = FederationId;
+						ChallengeSolution->FederatedUserId = FederatedUserId;
+						ChallengeSolution->FederatedUserAuthToken = FederatedAuthToken;
+						ChallengeSolution->ChallengeToken = Resp.SuccessData->ChallengeToken.Val;
+						ChallengeSolution->OperationHandler = Op;
 
-									ChallengeSolution->MicroserviceId = MicroserviceId;
-									ChallengeSolution->FederationId = FederationId;
-									ChallengeSolution->FederatedUserId = FederatedUserId;
-									ChallengeSolution->FederatedUserAuthToken = FederatedAuthToken;
-									ChallengeSolution->ChallengeToken = Resp.SuccessData->ChallengeToken.Val;
-									ChallengeSolution->OperationHandler = Op;
+						RequestTrackerSystem->TriggerOperationEventWithData(Op, OET_SUCCESS, GetOperationEventID_MultiFactorAuthTriggered(), TEXT("2FA_AUTH"), ChallengeSolution);
+					}
+					else
+					{
+						UE_LOG(LogTemp, Warning, TEXT("Successfully Attached Id! Result = %s"), *Resp.SuccessData->Result);
 
-									RequestTrackerSystem->TriggerOperationEventWithData(Op, OET_SUCCESS, GetOperationEventID_MultiFactorAuthTriggered(), TEXT("2FA_AUTH"), ChallengeSolution);
-								}
-								else
-								{
-									UE_LOG(LogTemp, Warning, TEXT("Successfully Attached Id! Result = %s"), *Resp.SuccessData->Result);
+						AttachLocalIdentity(UserSlot, FederatedUserId, MicroserviceId, FederationId);
 
-									AttachLocalIdentity(UserSlot, FederatedUserId, MicroserviceId, FederationId);
-
-									// Trigger the operation as successful
-									GEngine->GetEngineSubsystem<UBeamRequestTracker>()->TriggerOperationSuccess(Op, TEXT(""));
-								}
-							}
-
-							if (Resp.State == RS_Error)
-							{
-								UE_LOG(LogTemp, Error, TEXT("Failed to Attach Id! Result = %s"), *Resp.ErrorData.message);
-								GEngine->GetEngineSubsystem<UBeamRequestTracker>()->TriggerOperationError(Op, Resp.ErrorData.message);
-							}
-						});
-					const auto _ = AttachIdentityToUser(UserSlot, MicroserviceId, FederationId, FederatedAuthToken, Op, AttachIdentityHandler);
+						// Trigger the operation as successful
+						GEngine->GetEngineSubsystem<UBeamRequestTracker>()->TriggerOperationSuccess(Op, TEXT(""));
+					}
 				}
-				// If it has been assigned in this realm (a user exists in this realm for this Federated Identity id), we log in with that user account into the requesting slot.			 
-				else
+
+				if (Resp.State == RS_Error)
 				{
-					// If this external id is already in use in this realm, we error out.
-					GEngine->GetEngineSubsystem<UBeamRequestTracker>()->TriggerOperationError(Op, TEXT("EXTERNAL_IDENTITY_IN_USE"));
+					UE_LOG(LogTemp, Error, TEXT("Failed to Attach Id! Result = %s"), *Resp.ErrorData.message);
+					GEngine->GetEngineSubsystem<UBeamRequestTracker>()->TriggerOperationError(Op, Resp.ErrorData.message);
 				}
-				return;
-			}
-			GEngine->GetEngineSubsystem<UBeamRequestTracker>()->TriggerOperationError(Op, Resp.ErrorData.message);
-		});
+			});
+		const auto _ = AttachIdentityToUser(UserSlot, MicroserviceId, FederationId, FederatedAuthToken, Op, AttachIdentityHandler);
+	};
+	// If the FederatedUserId is not empty we check the availability if it is empty we assume that we be treat in the federation.
+	if (!FederatedUserId.IsEmpty())
+	{
+		const auto CheckIdentityAvailableHandler = FOnGetAvailableExternalIdentityFullResponse::CreateLambda(
+			[this, Op, FederatedUserId, AttachToUser](FGetAvailableExternalIdentityFullResponse Resp)
+			{
+				if (Resp.State == RS_Retrying) return;
 
-	const auto _ = CheckFederatedIdentityAvailable(MicroserviceId, FederationId, FederatedUserId, Op, CheckIdentityAvailableHandler);
+				if (Resp.State == RS_Success)
+				{
+					const auto bIsAvailable = Resp.SuccessData->bAvailable;
+					UE_LOG(LogTemp, Warning, TEXT("Is Available Identity Id: %s, %s"), *FederatedUserId, bIsAvailable ? TEXT("true") : TEXT("false"));
+
+					// If the Federated Identity has never been assigned in this realm, we attach it to the account at the given slot. 
+					if (bIsAvailable)
+					{
+						AttachToUser();
+					}
+					// If it has been assigned in this realm (a user exists in this realm for this Federated Identity id), we log in with that user account into the requesting slot.			 
+					else
+					{
+						// If this external id is already in use in this realm, we error out.
+						GEngine->GetEngineSubsystem<UBeamRequestTracker>()->TriggerOperationError(Op, TEXT("EXTERNAL_IDENTITY_IN_USE"));
+					}
+					return;
+				}
+				GEngine->GetEngineSubsystem<UBeamRequestTracker>()->TriggerOperationError(Op, Resp.ErrorData.message);
+			});
+
+		const auto _ = CheckFederatedIdentityAvailable(MicroserviceId, FederationId, FederatedUserId, Op, CheckIdentityAvailableHandler);
+	}
+	else
+	{
+		AttachToUser();
+	}
 }
 
 void UBeamRuntime::AttachEmailAndPassword(FUserSlot UserSlot, FString Email, FString Password, FBeamOperationHandle Op)
@@ -2464,21 +2476,21 @@ void UBeamRuntime::RunPostAuthenticationSetup_CacheLocalAccountInfo(const UAccou
 	if (Email.IsSet) UserSlotSystem->SetEmailAtSlot(UserSlot, Email.Val, this);
 	if (ExternalIds.IsSet) UserSlotSystem->SetExternalIdsAtSlot(UserSlot, ExternalIds.Val, this);
 	UserSlotSystem->SaveSlot(UserSlot, this);
-	
+
 	FBeamRealmUser BeamRealmUser;
 	if (ensureAlways(UserSlotSystem->GetUserDataAtSlot(UserSlot, BeamRealmUser, this)))
 	{
-		const FOnGetClientDefaultsFullResponse HandlerConfig = FOnGetClientDefaultsFullResponse::CreateUObject(this, &UBeamRuntime::RunPostAuthenticationSetup_PrepareNotificationService, UserSlot,
+		const FOnGetRealmsClientDefaultsFullResponse HandlerConfig = FOnGetRealmsClientDefaultsFullResponse::CreateUObject(this, &UBeamRuntime::RunPostAuthenticationSetup_PrepareNotificationService, UserSlot,
 		                                                                                                                   BeamRealmUser, Op);
 
-		UGetClientDefaultsRequest* GetClientDefaultsReq = UGetClientDefaultsRequest::Make(this, {});
+		UGetRealmsClientDefaultsRequest* GetClientDefaultsReq = UGetRealmsClientDefaultsRequest::Make(BeamRealmUser.RealmHandle.Cid.AsString, BeamRealmUser.RealmHandle.Pid.AsString, this, {});
 		FBeamRequestContext GetClientDefaultsCtx;
 
-		GEngine->GetEngineSubsystem<UBeamRealmsApi>()->CPP_GetClientDefaults(GetClientDefaultsReq, HandlerConfig, GetClientDefaultsCtx, Op, this);
+		GEngine->GetEngineSubsystem<UBeamCustomerApi>()->CPP_GetRealmsClientDefaults(UserSlot, GetClientDefaultsReq, HandlerConfig, GetClientDefaultsCtx, Op, this);
 	}
 }
 
-void UBeamRuntime::RunPostAuthenticationSetup_PrepareNotificationService(FGetClientDefaultsFullResponse Resp, FUserSlot UserSlot, FBeamRealmUser BeamRealmUser, FBeamOperationHandle Op)
+void UBeamRuntime::RunPostAuthenticationSetup_PrepareNotificationService(FGetRealmsClientDefaultsFullResponse Resp, FUserSlot UserSlot, FBeamRealmUser BeamRealmUser, FBeamOperationHandle Op)
 {
 	if (Resp.State == RS_Retrying) return;
 
@@ -2518,6 +2530,8 @@ void UBeamRuntime::LoadCachedUserAtSlot(FUserSlot UserSlot, FBeamOperationHandle
 		{
 			const FOnBasicAccountsGetMeFullResponse Handler = FOnBasicAccountsGetMeFullResponse::CreateLambda([this, UserSlot, AuthOp](const FBasicAccountsGetMeFullResponse& Resp)
 			{
+				if (Resp.State == RS_Retrying) return;
+				
 				if (Resp.State == EBeamFullResponseState::RS_Success)
 				{
 					RunPostAuthenticationSetup(UserSlot, Resp.SuccessData, AuthOp);
@@ -2704,6 +2718,142 @@ void UBeamRuntime::EnsureConnectivityManagerForSlot(FUserSlot UserSlot)
 	}
 }
 
+FString SerializeJsonObjectForLog(const TSharedRef<FJsonObject>& JsonObject)
+{
+	FString Out;
+	const TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&Out);
+	if (FJsonSerializer::Serialize(JsonObject, Writer))
+	{
+		return Out;
+	}
+	return TEXT("<serialize_failed>");
+}
+
+bool UBeamRuntime::SendAnalyticsEventStringParams(const FString& EventCategory, const FString& EventName, const TArray<FString>& EventParams)
+{
+	const FString EventOpCode = TEXT("g.core");
+	const TArray<TSharedRef<FJsonObject>> JsonParams = BuildEventParams(EventParams);
+	if (JsonParams.Num() == 0)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("BeamAnalytics SendAnalyticsEvent aborted: zero valid EventParams. OP=%s CATEGORY=%s EVENT=%s"),
+		       *EventOpCode, *EventCategory, *EventName);
+		return false;
+	}
+
+	FString ParamsLog;
+	for (int32 i = 0; i < JsonParams.Num(); i++)
+	{
+		if (i > 0) ParamsLog += TEXT(", ");
+		ParamsLog += SerializeJsonObjectForLog(JsonParams[i]);
+	}
+
+	UE_LOG(LogTemp, Display, TEXT("BeamAnalytics sending owner-slot event. OP=%s CATEGORY=%s EVENT=%s PARAMS=[%s]"),
+	       *EventOpCode, *EventCategory, *EventName, *ParamsLog);
+
+	SendAnalyticsEvent(EventOpCode, EventCategory, EventName, JsonParams);
+	return true;
+}
+
+bool UBeamRuntime::SendAnalyticsEventBeamSerializableUObject(
+	const FString& EventCategory,
+	const FString& EventName,
+	const TArray<TScriptInterface<IBeamJsonSerializableUObject>>& EventParams)
+{
+	const FString EventOpCode = TEXT("g.core");
+	const TArray<TSharedRef<FJsonObject>> JsonParams = BuildEventParams(EventParams);
+	if (JsonParams.Num() == 0)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("BeamAnalytics SendAnalyticsEvent aborted: zero valid EventParams. OP=%s CATEGORY=%s EVENT=%s"),
+		       *EventOpCode, *EventCategory, *EventName);
+		return false;
+	}
+
+	FString ParamsLog;
+	for (int32 i = 0; i < JsonParams.Num(); i++)
+	{
+		if (i > 0) ParamsLog += TEXT(", ");
+		ParamsLog += SerializeJsonObjectForLog(JsonParams[i]);
+	}
+
+	UE_LOG(LogTemp, Display, TEXT("BeamAnalytics sending owner-slot event. OP=%s CATEGORY=%s EVENT=%s PARAMS=[%s]"),
+	       *EventOpCode, *EventCategory, *EventName, *ParamsLog);
+
+	SendAnalyticsEvent(EventOpCode, EventCategory, EventName, JsonParams);
+	return true;
+}
+
+bool UBeamRuntime::SendAnalyticsEventForSlotBeamSerializableUObject(
+	const FUserSlot& Slot,
+	const FString& EventCategory,
+	const FString& EventName,
+	const TArray<TScriptInterface<IBeamJsonSerializableUObject>>& EventParams)
+{
+	const FString EventOpCode = TEXT("g.core");
+	const TArray<TSharedRef<FJsonObject>> JsonParams = BuildEventParams(EventParams);
+	if (JsonParams.Num() == 0)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("BeamAnalytics SendAnalyticsEventForSlot aborted: zero valid EventParams. SLOT=%s OP=%s CATEGORY=%s EVENT=%s"),
+		       *Slot.Name, *EventOpCode, *EventCategory, *EventName);
+		return false;
+	}
+
+	FString ParamsLog;
+	for (int32 i = 0; i < JsonParams.Num(); i++)
+	{
+		if (i > 0) ParamsLog += TEXT(", ");
+		ParamsLog += SerializeJsonObjectForLog(JsonParams[i]);
+	}
+
+	UE_LOG(LogTemp, Display, TEXT("BeamAnalytics sending slot event. SLOT=%s OP=%s CATEGORY=%s EVENT=%s PARAMS=[%s]"),
+	       *Slot.Name, *EventOpCode, *EventCategory, *EventName, *ParamsLog);
+
+	SendAnalyticsEvent(Slot, EventOpCode, EventCategory, EventName, JsonParams);
+	return true;
+}
+
+bool UBeamRuntime::SendAnalyticsEventSlotStringParams(const FUserSlot& Slot, const FString& EventCategory, const FString& EventName, const TArray<FString>& EventParams)
+{
+	const FString EventOpCode = TEXT("g.core");
+	const TArray<TSharedRef<FJsonObject>> JsonParams = BuildEventParams(EventParams);
+	if (JsonParams.Num() == 0)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("BeamAnalytics SendAnalyticsEventForSlot aborted: zero valid EventParams. SLOT=%s OP=%s CATEGORY=%s EVENT=%s"),
+		       *Slot.Name, *EventOpCode, *EventCategory, *EventName);
+		return false;
+	}
+
+	FString ParamsLog;
+	for (int32 i = 0; i < JsonParams.Num(); i++)
+	{
+		if (i > 0) ParamsLog += TEXT(", ");
+		ParamsLog += SerializeJsonObjectForLog(JsonParams[i]);
+	}
+
+	UE_LOG(LogTemp, Display, TEXT("BeamAnalytics sending slot event. SLOT=%s OP=%s CATEGORY=%s EVENT=%s PARAMS=[%s]"),
+	       *Slot.Name, *EventOpCode, *EventCategory, *EventName, *ParamsLog);
+
+	SendAnalyticsEvent(Slot, EventOpCode, EventCategory, EventName, JsonParams);
+	return true;
+}
+
+
+FBeamAnalyticsParamObject UBeamRuntime::MakeAnalyticsParamFromJson(const FString& JsonObjectString, bool& bIsValidJsonObject)
+{
+	FBeamAnalyticsParamObject OutParam;
+	OutParam.Fields.JsonString = JsonObjectString;
+
+	TSharedPtr<FJsonObject> ParsedObject;
+	const TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(JsonObjectString);
+	bIsValidJsonObject = FJsonSerializer::Deserialize(Reader, ParsedObject) && ParsedObject.IsValid();
+
+	if (bIsValidJsonObject)
+	{
+		OutParam.Fields.JsonObject = ParsedObject;
+	}
+
+	return OutParam;
+}
+
 void UBeamRuntime::SendAnalyticsEvent(const FString& EventOpCode, const FString& EventCategory, const FString& EventName, const TArray<TSharedRef<FJsonObject>>& EventParamsObj) const
 {
 	const auto Settings = GetDefault<UBeamCoreSettings>();
@@ -2800,11 +2950,59 @@ void UBeamRuntime::SendAnalyticsEvent(const FUserSlot& Slot, const FString& Even
 	}
 }
 
+TArray<TSharedRef<FJsonObject>> UBeamRuntime::BuildEventParams(const TArray<TScriptInterface<IBeamJsonSerializableUObject>>& EventParams)
+{
+	TArray<TSharedRef<FJsonObject>> JsonParams;
+	JsonParams.Reserve(EventParams.Num());
+
+	for (const TScriptInterface<IBeamJsonSerializableUObject>& ParamStruct : EventParams)
+	{
+		if (!ParamStruct.GetObject())
+		{
+			UE_LOG(LogTemp, Warning, TEXT("BeamAnalytics ignored a null struct in EventParams"));
+			continue;
+		}
+		FJsonDomBuilder::FObject Json = FJsonDomBuilder::FObject{};
+		UObject* CallingContext = UE::CoreUObject::Private::DynamicCast<UObject*>(ParamStruct.GetObject());
+
+		UBeamJsonUtils::BuildPropertiesJsonObject(Json, CallingContext);
+
+		const FString PropertiesJson = Json.ToString<TCondensedJsonPrintPolicy>();
+		JsonParams.Add(Json.AsJsonObject());
+	}
+
+	return JsonParams;
+}
+
+TArray<TSharedRef<FJsonObject>> UBeamRuntime::BuildEventParams(const TArray<FString>& EventParams)
+{
+	TArray<TSharedRef<FJsonObject>> JsonParams;
+	JsonParams.Reserve(EventParams.Num());
+
+	for (const FString& ParamString : EventParams)
+	{
+		TSharedPtr<FJsonObject> ParsedObject;
+		const TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(ParamString);
+
+		if (FJsonSerializer::Deserialize(Reader, ParsedObject) && ParsedObject.IsValid())
+		{
+			JsonParams.Add(ParsedObject.ToSharedRef());
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("BeamAnalytics ignored an invalid JSON string in EventParams: %s"), *ParamString);
+		}
+	}
+
+	return JsonParams;
+}
+
 
 void UBeamRuntime::FillDefaultSignUpInitProperties(TMap<FString, FString>& InitProperties)
 {
 	InitProperties.Add(TEXT("__beam_game_project_version__"), GEngine->GetEngineSubsystem<UBeamBackend>()->GetProjectAppVersion());
-	InitProperties.Add(TEXT("__beam_sdk_version__"), GetDefault<UBeamCoreSettings>()->BeamableEnvironment->Version.ToString());
+	InitProperties.Add(TEXT("__beam_sdk_version__"), GetDefault<UBeamCoreSettings>()->BeamableInfoData->Version.ToString());
 	InitProperties.Add(TEXT("__beam_ue_engine_version__"), FEngineVersion::Current().ToString());
 }
+
 #undef LOCTEXT_NAMESPACE

@@ -11,6 +11,8 @@
 #include "K2Node_CustomEvent.h"
 #include "KismetCompiler.h"
 #include "SourceCodeNavigation.h"
+#include "UserSlots/UserSlot.h"
+#include "UserSlots/BeamUserSlots.h"
 
 void UK2BeamNode_EventRegister::GetMenuActions(FBlueprintActionDatabaseRegistrar& ActionRegistrar) const
 {
@@ -42,7 +44,7 @@ void UK2BeamNode_EventRegister::AllocateDefaultPins()
 	UClass* ReferenceClass = GetRuntimeSubsystemClass();
 	if (ShouldUsesObject())
 	{
-		const auto ObjectPin = CreatePin(EGPD_Input, UEdGraphSchema_K2::PC_Object, UObject::StaticClass(), UEdGraphSchema_K2::PN_ObjectToCast);
+		CreatePin(EGPD_Input, UEdGraphSchema_K2::PC_Object, UObject::StaticClass(), UEdGraphSchema_K2::PN_ObjectToCast);
 
 		auto ObjectClass = GetClassFromObject();
 		if (ObjectClass)
@@ -59,7 +61,39 @@ void UK2BeamNode_EventRegister::AllocateDefaultPins()
 		{
 			if (ShowAsExecuteProperty(DelegateProp))
 			{
-				BeamK2::CreateExecutePinFromEventProperty(this, DelegateProp);
+				const UEdGraphSchema_K2* K2Schema = GetDefault<UEdGraphSchema_K2>();
+				const bool bShouldConvert = ShouldConvertGamerTagToUserSlot(DelegateProp);
+
+				// Create the execution pin
+				CreatePin(EGPD_Output, UEdGraphSchema_K2::PC_Exec, DelegateProp->GetFName());
+
+				// Create parameter pins
+				UFunction* SignatureFunction = DelegateProp->SignatureFunction;
+				if (SignatureFunction)
+				{
+					for (TFieldIterator<FProperty> PropIt(SignatureFunction); PropIt && (PropIt->PropertyFlags & CPF_Parm); ++PropIt)
+					{
+						FProperty* Param = *PropIt;
+
+						// Check if this is a FBeamGamerTag and conversion is enabled
+						const FString ParamCppType = Param->GetCPPType();
+						const bool bIsGamerTag = ParamCppType.Contains(TEXT("FBeamGamerTag"));
+						
+						FString ParamName = DelegateProp->GetName() + TEXT(" - ") + (bShouldConvert && bIsGamerTag ? "UserSlot":  Param->GetName());
+
+						if (bShouldConvert && bIsGamerTag)
+						{
+							// Create FUserSlot pin instead
+							CreatePin(EGPD_Output, UEdGraphSchema_K2::PC_Struct, FUserSlot::StaticStruct(), *ParamName);
+						}
+						else
+						{
+							// Create normal pin with the original type
+							UEdGraphPin* ParamPin = CreatePin(EGPD_Output, UEdGraphSchema_K2::PC_Wildcard, *ParamName);
+							K2Schema->ConvertPropertyToPinType(Param, /*out*/ ParamPin->PinType);
+						}
+					}
+				}
 			}
 			else
 			{
@@ -114,6 +148,12 @@ void UK2BeamNode_EventRegister::PostEditChangeProperty(FPropertyChangedEvent& Pr
 
 	const auto ShowEventPropName = GET_MEMBER_NAME_CHECKED(UK2BeamNode_EventRegister, EventPinsAsExecute);
 	if (PropertyChangedEvent.Property && PropertyChangedEvent.Property->GetNameCPP().Equals(ShowEventPropName.ToString()))
+	{
+		ReconstructNode();
+	}
+
+	const auto ConvertPropName = GET_MEMBER_NAME_CHECKED(UK2BeamNode_EventRegister, ConvertGamerTagToUserSlot);
+	if (PropertyChangedEvent.Property && PropertyChangedEvent.Property->GetNameCPP().Equals(ConvertPropName.ToString()))
 	{
 		ReconstructNode();
 	}
@@ -207,17 +247,62 @@ void UK2BeamNode_EventRegister::ExpandNode(FKismetCompilerContext& CompilerConte
 				DelegatePinsMap.Add(DelegateProp->GetName(), CustomEventNode->GetDelegatePin());
 				//This gives you the function signature that any delegate bound to this must match
 
+				const bool bShouldConvert = ShouldConvertGamerTagToUserSlot(DelegateProp);
+
 				if (UFunction* SignatureFunction = DelegateProp->SignatureFunction)
 				{
 					for (TFieldIterator<FProperty> Property(SignatureFunction); Property && (Property->PropertyFlags & CPF_Parm); ++Property)
 					{
 						FProperty* ParamProperty = *Property;
-
-						FString ParamName = DelegateProp->GetName() + TEXT(" - ") + ParamProperty->GetName();
-
+						
 						auto CustomEventPin = CustomEventNode->FindPin(ParamProperty->GetName());
+						
+						// Check if this is a FBeamGamerTag and conversion is enabled
+						const FString ParamCppType = ParamProperty->GetCPPType();
+						const bool bIsGamerTag = ParamCppType.Contains(TEXT("FBeamGamerTag"));
+						
+						FString ParamName = DelegateProp->GetName() + TEXT(" - ") + (bShouldConvert && bIsGamerTag ? "UserSlot":  ParamProperty->GetName());
 
-						CompilerContext.MovePinLinksToIntermediate(*FindPin(ParamName), *CustomEventPin);
+						auto NodeOutputPin = FindPin(ParamName);
+						
+						if (bShouldConvert && bIsGamerTag)
+						{
+							// Create GetSelf call to get UBeamUserSlots instance
+							UK2Node_CallFunction* GetUserSlotsNode = BeamK2::CreateCallFunctionNode(
+								this, CompilerContext, SourceGraph,
+								GET_FUNCTION_NAME_CHECKED(UBeamUserSlots, GetSelf),
+								UBeamUserSlots::StaticClass()
+							);
+
+							// Create TryGetUserSlot function call node
+							UK2Node_CallFunction* TryGetUserSlotNode = BeamK2::CreateCallFunctionNode(
+								this, CompilerContext, SourceGraph,
+								GET_FUNCTION_NAME_CHECKED(UBeamUserSlots, GetUserSlot),
+								UBeamUserSlots::StaticClass()
+							);
+
+							// Connect GetSelf output to TryGetUserSlot self pin
+							auto GetUserSlots_ReturnPin = GetUserSlotsNode->GetReturnValuePin();
+							auto TryGetUserSlot_SelfPin = K2Schema->FindSelfPin(*TryGetUserSlotNode, EGPD_Input);
+							K2Schema->TryCreateConnection(GetUserSlots_ReturnPin, TryGetUserSlot_SelfPin);
+
+							// Connect GamerTag output from CustomEvent to TryGetUserSlot input
+							auto TryGetUserSlot_GamerTagPin = TryGetUserSlotNode->FindPinChecked(TEXT("GamerTag"));
+							K2Schema->TryCreateConnection(CustomEventPin, TryGetUserSlot_GamerTagPin);
+
+							const auto SubsystemReturnPin = CallGetSubsystem->GetReturnValuePin();
+							auto TryGetUserSlot_CallingContext = TryGetUserSlotNode->FindPinChecked(TEXT("CallingContext"));
+							K2Schema->TryCreateConnection(SubsystemReturnPin, TryGetUserSlot_CallingContext);
+
+							// Connect TryGetUserSlot OutUserSlot output to the node's output pin
+							auto TryGetUserSlot_OutUserSlotPin = TryGetUserSlotNode->GetReturnValuePin();
+							CompilerContext.MovePinLinksToIntermediate(*NodeOutputPin, *TryGetUserSlot_OutUserSlotPin);
+						}
+						else
+						{
+							// Normal connection without conversion
+							CompilerContext.MovePinLinksToIntermediate(*NodeOutputPin, *CustomEventPin);
+						}
 					}
 				}
 			}
@@ -296,7 +381,7 @@ void UK2BeamNode_EventRegister::ExpandNode(FKismetCompilerContext& CompilerConte
 			CompilerContext.MovePinLinksToIntermediate(*FindPin(DelegateProp->GetName() + TEXT("_Unbind")), *RemoveDelegate_ExecPin);
 
 			UEdGraphPin* ThenUnbind = FindPin(FName("Then_Unbind"));
-			
+
 			if (ThenUnbind && ThenUnbind->LinkedTo.Num() > 0 && K2Schema->TryCreateConnection(ThenUnbind->LinkedTo[0], RemoveDelegateNode->GetThenPin()))
 			{
 				auto UnbindThenPin = ThenUnbind->LinkedTo[0];
@@ -387,6 +472,20 @@ bool UK2BeamNode_EventRegister::ShowUnbindAsExecuteProperty(FMulticastDelegatePr
 		EventUnbindPinsAsExecute.Add(Name, false);
 	}
 	return EventUnbindPinsAsExecute[Name];
+}
+
+bool UK2BeamNode_EventRegister::ShouldConvertGamerTagToUserSlot(FMulticastDelegateProperty* DelegateProp)
+{
+	if (!DelegateProp->HasAnyPropertyFlags(CPF_BlueprintAssignable))
+	{
+		return false;
+	}
+	FName Name = DelegateProp->GetFName();
+	if (!ConvertGamerTagToUserSlot.Contains(Name))
+	{
+		ConvertGamerTagToUserSlot.Add(Name, false);
+	}
+	return ConvertGamerTagToUserSlot[Name];
 }
 
 UClass* UK2BeamNode_EventRegister::GetClassFromObject() const

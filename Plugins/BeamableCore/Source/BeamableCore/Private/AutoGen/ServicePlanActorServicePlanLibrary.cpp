@@ -23,23 +23,25 @@ FString UServicePlanActorServicePlanLibrary::ServicePlanActorServicePlanToJsonSt
 	return Result;
 }	
 
-UServicePlanActorServicePlan* UServicePlanActorServicePlanLibrary::Make(FString Name, UServicePlanActorDataDomain* DataDomain, FOptionalServicePlanActorServiceLimits ServiceLimits, UObject* Outer)
+UServicePlanActorServicePlan* UServicePlanActorServicePlanLibrary::Make(FString Name, UServicePlanActorDataDomain* DataDomain, FOptionalServicePlanActorServiceLimits ServiceLimits, FOptionalDateTime Created, UObject* Outer)
 {
 	auto Serializable = NewObject<UServicePlanActorServicePlan>(Outer);
 	Serializable->Name = Name;
 	Serializable->DataDomain = DataDomain;
 	Serializable->ServiceLimits = ServiceLimits;
+	Serializable->Created = Created;
 	
 	return Serializable;
 }
 
-void UServicePlanActorServicePlanLibrary::Break(const UServicePlanActorServicePlan* Serializable, FString& Name, UServicePlanActorDataDomain*& DataDomain, FOptionalServicePlanActorServiceLimits& ServiceLimits)
+void UServicePlanActorServicePlanLibrary::Break(const UServicePlanActorServicePlan* Serializable, FString& Name, UServicePlanActorDataDomain*& DataDomain, FOptionalServicePlanActorServiceLimits& ServiceLimits, FOptionalDateTime& Created)
 {
 	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
 	{
 		Name = Serializable->Name;
 		DataDomain = Serializable->DataDomain;
 		ServiceLimits = Serializable->ServiceLimits;
+		Created = Serializable->Created;
 	}
 		
 }

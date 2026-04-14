@@ -37,7 +37,7 @@ class BEAMABLECORERUNTIMEEDITOR_API UBeamUserDeveloperManagerEditor : public UBe
 	static constexpr int32 CLI_ERROR_SAVE_FILE = 300;
 
 	const FString DEVELOPER_USER_NEW_USER_NAME = "New User";
-	
+
 	GENERATED_BODY()
 
 
@@ -80,7 +80,7 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable)
 	UDeveloperUserDataStreamData* GetUserWithGamerTag(FBeamGamerTag GamerTag);
-	
+
 	/**
 	 * Delete a user from the local files
 	 * OBS: It will NOT delete the user from the portal
@@ -101,14 +101,14 @@ public:
 	UFUNCTION(BlueprintCallable)
 	FString GetNextNewUserAlias();
 
-	
+
 	/**
 	 * Create a new user
 	 */
 	UFUNCTION(BlueprintCallable)
 	void CreateNewUserOperation(FString Alias, EBeamDeveloperUserType DeveloperUserType, FBeamOperationEventHandler OperationEventHandle);
 
-	
+
 	/**
 	 * Create a new user and copy the stats and inventory to the created user from a template gamer tag
 	 */
@@ -127,7 +127,7 @@ public:
 	void TriggerOnPreBeginPIE(ULevelEditorPlaySettings* PlaySettings, const FBeamPIE_Settings* Settings);
 
 	bool IsValidUser(FBeamGamerTag GamerTag);
-	
+
 	/**
 	 * A utility that cast a soft object path to a UWorld Soft Pointer
 	 */
@@ -154,7 +154,7 @@ public:
 		TArray<FBeamPIE_UserSlotHandle> AssignedUserArray;
 		AssignedUsers.GenerateKeyArray(AssignedUserArray);
 
-		AssignedUserArray.Sort([](const FBeamPIE_UserSlotHandle& A, const  FBeamPIE_UserSlotHandle& B)
+		AssignedUserArray.Sort([](const FBeamPIE_UserSlotHandle& A, const FBeamPIE_UserSlotHandle& B)
 		{
 			if (A.PIEIndex != B.PIEIndex)
 			{
@@ -163,13 +163,33 @@ public:
 
 			return A.Slot.Name.Compare(B.Slot.Name) < 0;
 		});
-		
+
+		return AssignedUserArray;
+	}
+
+	UFUNCTION(BlueprintCallable)
+	static TArray<FBeamPIE_UserSlotHandle> GetSortedKeysPartyUsers(TMap<FBeamPIE_UserSlotHandle, FBeamPIE_PlayerPartySettings> BeamPartyUsers)
+	{
+		TArray<FBeamPIE_UserSlotHandle> AssignedUserArray;
+		BeamPartyUsers.GenerateKeyArray(AssignedUserArray);
+
+		AssignedUserArray.Sort([](const FBeamPIE_UserSlotHandle& A, const FBeamPIE_UserSlotHandle& B)
+		{
+			if (A.PIEIndex != B.PIEIndex)
+			{
+				return A.PIEIndex < B.PIEIndex;
+			}
+
+			return A.Slot.Name.Compare(B.Slot.Name) < 0;
+		});
+
 		return AssignedUserArray;
 	}
 
 
 	UFUNCTION(BlueprintCallable)
-	static bool TryGetValidUserSlotHandle(int SelectedPIEIndex, bool CreateCopyOnPIE, FString SelectedSlotName, TMap<FBeamPIE_UserSlotHandle, FBeamPIE_PerUserSetting> AssignedUsers, FBeamPIE_UserSlotHandle& UserSlotHandle)
+	static bool TryGetValidUserSlotHandle(int SelectedPIEIndex, bool CreateCopyOnPIE, FString SelectedSlotName, TMap<FBeamPIE_UserSlotHandle, FBeamPIE_PerUserSetting> AssignedUsers,
+	                                      FBeamPIE_UserSlotHandle& UserSlotHandle)
 	{
 		auto UserSlots = GetDefault<UBeamCoreSettings>()->RuntimeUserSlots;
 
@@ -195,9 +215,43 @@ public:
 		{
 			return false;
 		}
-		
-		
+
+
 		UserSlotHandle = FBeamPIE_UserSlotHandle(SelectedPIEIndex, CreateCopyOnPIE, UserSlots[0]);
+		return true;
+	}
+
+	UFUNCTION(BlueprintCallable)
+	static bool TryGetValidPartySlotHandle(int SelectedPIEIndex, FString SelectedSlotName, TMap<FBeamPIE_UserSlotHandle, FBeamPIE_PlayerPartySettings> PartyPlayerSettings,
+	                                       TMap<FBeamPIE_UserSlotHandle, FBeamPIE_PerUserSetting> AssignedUsers, FBeamPIE_UserSlotHandle& UserSlotHandle)
+	{
+		auto UserSlots = GetDefault<UBeamCoreSettings>()->RuntimeUserSlots;
+
+		TArray<FBeamPIE_UserSlotHandle> UserSlotHandles;
+
+		for (auto AssignedUser : AssignedUsers)
+		{
+			if (AssignedUser.Key.PIEIndex == SelectedPIEIndex)
+			{
+				UserSlotHandles.Add(AssignedUser.Key);
+				UserSlots.Remove(AssignedUser.Key.Slot);
+			}
+		}
+
+		if (UserSlotHandles.Num() == 0)
+		{
+			UserSlotHandle = FBeamPIE_UserSlotHandle(SelectedPIEIndex, false, FUserSlot(SelectedSlotName));
+			return true;
+		}
+
+		// There's no remaining user slot
+		if (UserSlots.Num() == 0)
+		{
+			return false;
+		}
+
+
+		UserSlotHandle = FBeamPIE_UserSlotHandle(SelectedPIEIndex, false, UserSlots[0]);
 		return true;
 	}
 
@@ -212,7 +266,6 @@ public:
 	{
 		FPropertyEditorClipboard::ClipboardCopy(*CopyText);
 	}
-
 
 protected:
 	void RunPsCommand(FBeamOperationHandle OperationHandle);

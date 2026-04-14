@@ -14,9 +14,12 @@ public class BeamableUnrealMicroserviceClients : ModuleRules
 				"Core",
 				"BeamableCore",
 				"BeamableCoreRuntime",
+				"GameplayTags",
 
 				"Json",
 				"JsonUtilities",
+
+				"CustomReplacementTypes"
 			});
 
 

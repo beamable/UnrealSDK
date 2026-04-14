@@ -23,9 +23,10 @@ FString UContentBasicManifestLibrary::ContentBasicManifestToJsonString(const UCo
 	return Result;
 }	
 
-UContentBasicManifest* UContentBasicManifestLibrary::Make(FBeamContentManifestId Id, FString Checksum, int64 Created, TArray<UBaseContentReference*> References, FOptionalBool bArchived, FOptionalString DiffObjectKey, FOptionalInt64 PublisherAccountId, FOptionalInt64 LastChanged, FOptionalString Uid, UObject* Outer)
+UContentBasicManifest* UContentBasicManifestLibrary::Make(FString AffectedContentIds, FBeamContentManifestId Id, FString Checksum, int64 Created, TArray<UBaseContentReference*> References, FOptionalBool bArchived, FOptionalString DiffObjectKey, FOptionalInt64 PublisherAccountId, FOptionalInt64 LastChanged, FOptionalString Uid, UObject* Outer)
 {
 	auto Serializable = NewObject<UContentBasicManifest>(Outer);
+	Serializable->AffectedContentIds = AffectedContentIds;
 	Serializable->Id = Id;
 	Serializable->Checksum = Checksum;
 	Serializable->Created = Created;
@@ -39,10 +40,11 @@ UContentBasicManifest* UContentBasicManifestLibrary::Make(FBeamContentManifestId
 	return Serializable;
 }
 
-void UContentBasicManifestLibrary::Break(const UContentBasicManifest* Serializable, FBeamContentManifestId& Id, FString& Checksum, int64& Created, TArray<UBaseContentReference*>& References, FOptionalBool& bArchived, FOptionalString& DiffObjectKey, FOptionalInt64& PublisherAccountId, FOptionalInt64& LastChanged, FOptionalString& Uid)
+void UContentBasicManifestLibrary::Break(const UContentBasicManifest* Serializable, FString& AffectedContentIds, FBeamContentManifestId& Id, FString& Checksum, int64& Created, TArray<UBaseContentReference*>& References, FOptionalBool& bArchived, FOptionalString& DiffObjectKey, FOptionalInt64& PublisherAccountId, FOptionalInt64& LastChanged, FOptionalString& Uid)
 {
 	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
 	{
+		AffectedContentIds = Serializable->AffectedContentIds;
 		Id = Serializable->Id;
 		Checksum = Serializable->Checksum;
 		Created = Serializable->Created;

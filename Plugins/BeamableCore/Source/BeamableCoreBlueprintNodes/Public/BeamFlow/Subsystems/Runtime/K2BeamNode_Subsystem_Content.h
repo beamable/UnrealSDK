@@ -165,6 +165,26 @@ class UK2BeamNode_Operation_FetchContentManifest : public UK2BeamNode_Operation
 	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamContentSubsystem, FetchContentManifestOperation); }
 
 	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamContentSubsystem::StaticClass(); }
+
+protected:
+	virtual TMap<FName, UClass*> GetOperationEventCastClass(EBeamOperationEventType Type) const override
+	{
+		auto CastClasses = Super::GetOperationEventCastClass(Type);
+		if (Type == EBeamOperationEventType::OET_SUCCESS)
+		{
+			CastClasses.Add(UBeamContentSubsystem::GetOperationEventID_Download_Individual_Content(), UBeamIndividualContentDownloadData::StaticClass());
+		}
+		return CastClasses;
+	}
+	virtual TArray<FName> GetOperationEventIds(EBeamOperationEventType Type) const override
+	{
+		auto CastClasses = Super::GetOperationEventIds(Type);
+		if (Type == EBeamOperationEventType::OET_SUCCESS)
+		{
+			CastClasses.Add(UBeamContentSubsystem::GetOperationEventID_Download_Individual_Content());
+		}
+		return CastClasses;
+	}
 };
 
 #undef LOCTEXT_NAMESPACE
@@ -183,6 +203,26 @@ class UK2BeamNode_Operation_FetchIndividualContentBatch : public UK2BeamNode_Ope
 	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamContentSubsystem, FetchIndividualContentBatchOperation); }
 
 	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamContentSubsystem::StaticClass(); }
+
+protected:
+	virtual TMap<FName, UClass*> GetOperationEventCastClass(EBeamOperationEventType Type) const override
+	{
+		auto CastClasses = Super::GetOperationEventCastClass(Type);
+		if (Type == EBeamOperationEventType::OET_SUCCESS)
+		{
+			CastClasses.Add(UBeamContentSubsystem::GetOperationEventID_Download_Individual_Content(), UBeamIndividualContentDownloadData::StaticClass());
+		}
+		return CastClasses;
+	}
+	virtual TArray<FName> GetOperationEventIds(EBeamOperationEventType Type) const override
+	{
+		auto CastClasses = Super::GetOperationEventIds(Type);
+		if (Type == EBeamOperationEventType::OET_SUCCESS)
+		{
+			CastClasses.Add(UBeamContentSubsystem::GetOperationEventID_Download_Individual_Content());
+		}
+		return CastClasses;
+	}
 };
 
 #undef LOCTEXT_NAMESPACE

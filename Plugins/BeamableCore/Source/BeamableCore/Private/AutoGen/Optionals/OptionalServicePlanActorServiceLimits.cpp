@@ -3,7 +3,7 @@
 
 FOptionalServicePlanActorServiceLimits::FOptionalServicePlanActorServiceLimits()
 {
-	Val = nullptr;
+	Val = NewObject<UServicePlanActorServiceLimits>(GetTransientPackage());
 	IsSet = false;
 }
 

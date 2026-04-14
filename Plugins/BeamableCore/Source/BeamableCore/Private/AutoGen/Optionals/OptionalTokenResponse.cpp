@@ -3,7 +3,7 @@
 
 FOptionalTokenResponse::FOptionalTokenResponse()
 {
-	Val = nullptr;
+	Val = NewObject<UTokenResponse>(GetTransientPackage());
 	IsSet = false;
 }
 

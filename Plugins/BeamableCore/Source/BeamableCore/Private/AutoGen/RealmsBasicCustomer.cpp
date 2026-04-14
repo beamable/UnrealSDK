@@ -19,6 +19,7 @@ void URealmsBasicCustomer::BeamSerializeProperties(TUnrealJsonSerializer& Serial
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("updated"), &Updated, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("crm_link"), &CrmLink, Serializer);
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("created"), &Created, Serializer);
+	UBeamJsonUtils::SerializeOptional<TMap<FString, FString>, FString>(TEXT("config"), &Config, Serializer);
 }
 
 void URealmsBasicCustomer::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
@@ -34,7 +35,8 @@ void URealmsBasicCustomer::BeamSerializeProperties(TUnrealPrettyJsonSerializer& 
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("alias"), &Alias, Serializer);
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("updated"), &Updated, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("crm_link"), &CrmLink, Serializer);
-	UBeamJsonUtils::SerializeOptional<int64>(TEXT("created"), &Created, Serializer);		
+	UBeamJsonUtils::SerializeOptional<int64>(TEXT("created"), &Created, Serializer);
+	UBeamJsonUtils::SerializeOptional<TMap<FString, FString>, FString>(TEXT("config"), &Config, Serializer);		
 }
 
 void URealmsBasicCustomer::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
@@ -51,6 +53,7 @@ void URealmsBasicCustomer::BeamDeserializeProperties(const TSharedPtr<FJsonObjec
 	UBeamJsonUtils::DeserializeOptional<int64>("updated", Bag, Updated, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("crm_link", Bag, CrmLink, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<int64>("created", Bag, Created, OuterOwner);
+	UBeamJsonUtils::DeserializeOptional<TMap<FString, FString>, FString>("config", Bag, Config, OuterOwner);
 }
 
 

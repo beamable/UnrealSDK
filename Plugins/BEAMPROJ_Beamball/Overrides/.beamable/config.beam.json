@@ -1,0 +1,29 @@
+{
+  "host": "https://api.beamable.com",
+  "cid": "1752011665993752",
+  "pid": "DE_1885450253346843",
+  "additionalProjectPaths": [],
+  "ignoredProjectPaths": [],
+  "linkedProjects": {
+    "unityProjectsPaths": [],
+    "unrealProjectsPaths": [
+      {
+        "CoreProjectName": "BeamableUnrealMicroserviceClients",
+        "BlueprintNodesProjectName": "BeamableUnrealMicroserviceClientsBp",
+        "Path": "",
+        "SourceFilesPath": "Plugins/BeamableUnrealMicroserviceClients/",
+        "MsCoreHeaderPath": "Source/BeamableUnrealMicroserviceClients/Public/",
+        "MsCoreCppPath": "Source/BeamableUnrealMicroserviceClients/Private/",
+        "MsBlueprintNodesHeaderPath": "Source/BeamableUnrealMicroserviceClientsBp/Public/",
+        "MsBlueprintNodesCppPath": "Source/BeamableUnrealMicroserviceClientsBp/Private/",
+        "BeamableBackendGenerationPassFile": "Plugins/BeamableCore/Source/BeamableCore_GenerationPass.json"
+      }
+    ]
+  },
+  "otelConfig": {
+    "BeamCliAllowTelemetry": true,
+    "BeamCliTelemetryLogLevel": "Warning",
+    "BeamCliTelemetryMaxSize": 524288000
+  },
+  "cliVersion": "0.0.123.1"
+}

@@ -3,7 +3,7 @@
 
 FOptionalBeamoBasicManifestChecksum::FOptionalBeamoBasicManifestChecksum()
 {
-	Val = nullptr;
+	Val = NewObject<UBeamoBasicManifestChecksum>(GetTransientPackage());
 	IsSet = false;
 }
 

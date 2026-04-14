@@ -40,7 +40,7 @@ const TArray<FString> UBeamBackend::AUTH_ERROR_CODE_RETRY_ALLOWED = TArray<FStri
 
 void UBeamBackend::Initialize(FSubsystemCollectionBase& Collection)
 {
-	UE_LOG(LogBeamBackend, Log, TEXT("Initializing UBeamBackend Subsystem!"));
+	UE_BEAM_LOG(LogBeamBackend, Log, TEXT("Initializing UBeamBackend Subsystem!"));
 
 	// Initializing InFlightRequestID to -1 since we increment, then use it.
 	InFlightRequestId = -1;
@@ -109,13 +109,13 @@ void UBeamBackend::TryTriggerRequestCompleteDelegates(const int64& RequestId)
 {
 	if (InFlightRequestContexts.Find(RequestId)->BeamStatus == AS_Completed)
 	{
-		UE_LOG(LogBeamBackend, Verbose,
+		UE_BEAM_LOG(LogBeamBackend, Verbose,
 		       TEXT("Checking OnRequestIdCompleted Delegates | REQUEST_ID=%lld, DELEGATE_COUNT=%d"), RequestId,
 		       TickOnRequestIdCompletedDelegates.Num());
 		for (const auto& OnRequestIdCompleted : TickOnRequestIdCompletedDelegates)
 		{
 			const auto bDidRun = OnRequestIdCompleted.ExecuteIfBound(RequestId);
-			UE_LOG(LogBeamBackend, Verbose,
+			UE_BEAM_LOG(LogBeamBackend, Verbose,
 			       TEXT("Tried to invoke OnRequestIdCompleted Delegate | REQUEST_ID=%lld, DID_RUN=%s"), RequestId,
 			       bDidRun ? TEXT("true") : TEXT("false"));
 		}
@@ -161,7 +161,7 @@ TUnrealRequestPtr UBeamBackend::CreateUnpreparedRequest(int64& OutRequestId, con
 		Req->SetHeader(FString(HEADER_TIMEOUT), FString::Printf(TEXT("%lld"), timeoutInMilliseconds));
 	}
 
-	UE_LOG(LogBeamBackend, Verbose, TEXT("Request Preparation: TIMEOUT_HEADER=%lld"), RetryConfig.Timeout);
+	UE_BEAM_LOG(LogBeamBackend, Verbose, TEXT("Request Preparation: TIMEOUT_HEADER=%lld"), RetryConfig.Timeout);
 
 	// Prepares the Backend system to handle this request.
 	InFlightRequests.Add(OutRequestId, Req);
@@ -217,7 +217,8 @@ void UBeamBackend::PrepareBeamableRequestToRealm(const TUnrealRequestPtr& Unreal
 		UnrealRequest->SetHeader(HEADER_ENGINE_TYPE, FString::Printf(TEXT("UnrealEditor-%s"), *UGameplayStatics::GetPlatformName()));
 	}
 
-	UnrealRequest->SetHeader(HEADER_BEAMABLE_VERSION, BeamEnvironment->Data->Version.ToString());
+	UnrealRequest->SetHeader(HEADER_BEAMABLE_VERSION, GetDefault<UBeamCoreSettings>()->BeamableInfoData.LoadSynchronous()->Version.ToString());
+
 	UnrealRequest->SetHeader(HEADER_UNREAL_VERSION, FEngineVersion::Current().ToString());
 	UnrealRequest->SetHeader(HEADER_APPLICATION_VERSION, GetProjectAppVersion());
 
@@ -232,11 +233,11 @@ void UBeamBackend::PrepareBeamableRequestToRealm(const TUnrealRequestPtr& Unreal
 			                         : FString::Format(
 				                         TEXT("{0}.{1}"), {RealmHandle.Cid.AsString, RealmHandle.Pid.AsString});
 		UnrealRequest->SetHeader(HEADER_REQUEST_SCOPE, ScopeHeader);
-		UE_LOG(LogBeamBackend, Verbose, TEXT("Request Preparation: SCOPE_HEADER=%s"), *ScopeHeader);
+		UE_BEAM_LOG(LogBeamBackend, Verbose, TEXT("Request Preparation: SCOPE_HEADER=%s"), *ScopeHeader);
 	}
 	else
 	{
-		UE_LOG(LogBeamBackend, Verbose, TEXT("Request Preparation: Skipped SCOPE_HEADER as no CID was found."));
+		UE_BEAM_LOG(LogBeamBackend, Verbose, TEXT("Request Preparation: Skipped SCOPE_HEADER as no CID was found."));
 	}
 }
 
@@ -253,7 +254,7 @@ void UBeamBackend::PrepareBeamableRequestToRealmWithAuthToken(const TUnrealReque
 		const auto AuthTokenHeader = FString::Format(*HEADER_VALUE_AUTHORIZATION, {AuthToken.AccessToken});
 		UnrealRequest->SetHeader(HEADER_AUTHORIZATION, AuthTokenHeader);
 
-		UE_LOG(LogBeamBackend, Verbose, TEXT("Request Preparation - Auth: AUTH_HEADER=%s"), *AuthTokenHeader);
+		UE_BEAM_LOG(LogBeamBackend, Verbose, TEXT("Request Preparation - Auth: AUTH_HEADER=%s"), *AuthTokenHeader);
 	}
 	else
 	{
@@ -268,7 +269,7 @@ void UBeamBackend::PrepareBeamableRequestToRealmWithAuthToken(const TUnrealReque
 					                         DedicatedServerRealm.Cid.AsString, DedicatedServerRealm.Pid.AsString
 				                         });
 		UnrealRequest->SetHeader(HEADER_REQUEST_SCOPE, ScopeHeader);
-		UE_LOG(LogBeamBackend, Verbose, TEXT("Request Preparation - Target Realm Header: SCOPE_HEADER=%s"),
+		UE_BEAM_LOG(LogBeamBackend, Verbose, TEXT("Request Preparation - Target Realm Header: SCOPE_HEADER=%s"),
 		       *ScopeHeader);
 	}
 }
@@ -285,7 +286,7 @@ void UBeamBackend::PrepareBeamableRequestToRealmWithRoutingKey(const TUnrealRequ
 			RoutingKey = CurrentRoutingKeyMaps[OwnerUserSlot];
 			Request->SetHeader(HEADER_ROUTING_KEY_MAP, RoutingKey);
 		}
-		UE_LOG(LogBeamBackend, Verbose, TEXT("Request Preparation - Set Routing Key Map: ROUTING_KEY_MAP=%s"), *RoutingKey);
+		UE_BEAM_LOG(LogBeamBackend, Verbose, TEXT("Request Preparation - Set Routing Key Map: ROUTING_KEY_MAP=%s"), *RoutingKey);
 	}
 	else
 	{
@@ -300,7 +301,7 @@ void UBeamBackend::PrepareBeamableRequestToRealmWithRoutingKey(const TUnrealRequ
 			RoutingKey = CurrentRoutingKeyMaps[Slot];
 			Request->SetHeader(HEADER_ROUTING_KEY_MAP, RoutingKey);
 		}
-		UE_LOG(LogBeamBackend, Verbose, TEXT("Request Preparation - Set Routing Key Map: ROUTING_KEY_MAP=%s"), *RoutingKey);
+		UE_BEAM_LOG(LogBeamBackend, Verbose, TEXT("Request Preparation - Set Routing Key Map: ROUTING_KEY_MAP=%s"), *RoutingKey);
 	}
 }
 
@@ -308,7 +309,7 @@ bool UBeamBackend::HandlePIESessionRequestGuard(FWeakObjectPtr ContextWeakPtr, i
 {
 	if (!ContextWeakPtr.IsValid())
 	{
-		UE_LOG(LogBeamBackend, Warning, TEXT("Ignoring Beamable Request made during terminated PIE Session | REQUEST_ID=%lld"), RequestId);
+		UE_BEAM_LOG(LogBeamBackend, Warning, TEXT("Ignoring Beamable Request made during terminated PIE Session | REQUEST_ID=%lld"), RequestId);
 		return true;
 	}
 	return false;
@@ -316,7 +317,7 @@ bool UBeamBackend::HandlePIESessionRequestGuard(FWeakObjectPtr ContextWeakPtr, i
 
 void UBeamBackend::DefaultExecuteRequestImpl(int64 ActiveRequestId, const UObject* CallingContext)
 {
-	UE_LOG(LogBeamBackend, Verbose, TEXT("Sending Request via Unreal HttpRequest's ProcessRequest. REQUEST_ID=%llu"),
+	UE_BEAM_LOG(LogBeamBackend, Verbose, TEXT("Sending Request via Unreal HttpRequest's ProcessRequest. REQUEST_ID=%llu"),
 	       ActiveRequestId);
 	if (InFlightRequests[ActiveRequestId]->ProcessRequest())
 	{
@@ -351,7 +352,7 @@ bool UBeamBackend::TickRetryQueue(float DeltaTime)
 		const auto TimeToWait = RetryFalloffIdx >= 0 ? RetryConfig.RetryFalloffValues[CurrRetryIdx] : 0;
 
 		// Log the failed request and add it to the list of requests we have to retry.
-		UE_LOG(LogBeamBackend, Verbose, TEXT("Beamable Retry Queue | Failed Request so we are waiting for %.2f before trying again. REQUEST_ID=%lld, ERROR_CODE=%s"),
+		UE_BEAM_LOG(LogBeamBackend, Verbose, TEXT("Beamable Retry Queue | Failed Request so we are waiting for %.2f before trying again. REQUEST_ID=%lld, ERROR_CODE=%s"),
 		       TimeToWait, ReqId, *FailedRequestCtx.ErrorCode);
 		InFlightProcessingRequests.Add(ReqId, FProcessingRequestRetry{FailedRequestCtx, TimeToWait, 0.0f});
 	}
@@ -364,7 +365,7 @@ bool UBeamBackend::TickRetryQueue(float DeltaTime)
 		ProcessingReq.AccumulatedTime += DeltaTime;
 		if (ProcessingReq.AccumulatedTime >= ProcessingReq.TimeToWait)
 		{
-			const auto RequestToRetry = InFlightProcessingRequest.Value.RequestToRetry;
+			const auto RequestToRetry = ProcessingReq.RequestToRetry;
 			const auto ReqId = RequestToRetry.RequestId;
 			const auto ReqContext = InFlightRequestContexts.FindChecked(ReqId);
 			const auto RetryConfig = ReqContext.RetryConfiguration;
@@ -391,8 +392,8 @@ bool UBeamBackend::TickRetryQueue(float DeltaTime)
 			// "InvalidTokenError", "TokenValidationError", "ExpiredTokenError"
 			if (AUTH_ERROR_CODE_RETRY_ALLOWED.Contains(RequestToRetry.ErrorCode))
 			{
-				// Make sure that any request to Beamable that fails due to unauthorized access actually sent a user in the first place. 
-				check(!ReqAuthToken.RefreshToken.IsEmpty())
+				// Make sure that any request to Beamable that fails due to unauthorized access actually sent a user in the first place.
+				checkf(!ReqAuthToken.RefreshToken.IsEmpty(), TEXT("Beamable Retry Queue | Access Token: %s | Refresh Token: %s | Error Code: %s | Route: %s | Expires %lld"), *ReqAuthToken.AccessToken, *ReqAuthToken.RefreshToken, *RequestToRetry.ErrorCode, *RequestToRetry.Route, RequestToRetry.AuthToken.ExpiresIn);
 
 				// Create Login Refresh Token Request.
 				TUnrealRequestPtr ReAuthRequest = FHttpModule::Get().CreateRequest();
@@ -416,6 +417,7 @@ bool UBeamBackend::TickRetryQueue(float DeltaTime)
 						const auto WasMadeWithUserSlot = BeamUserSlots->GetUserDataWithRefreshTokenAndPid(
 							ReqAuthToken.RefreshToken, ReqRealmHandle.Pid, RealmUserData, UserSlot, NamespacedSlotId);
 
+						
 						const auto ResponseCode = Response->GetResponseCode();
 						const auto ResponseBody = Response->GetContentAsString();
 
@@ -446,7 +448,9 @@ bool UBeamBackend::TickRetryQueue(float DeltaTime)
 							{
 								FUserSlot NonNamespacedSlot;
 								UBeamUserSlots::GetSlotIdFromNamespacedSlotId(UserSlot.Name, NonNamespacedSlot);
-								UE_LOG(LogBeamBackend, Verbose, TEXT("Identified User Slot and Re-authing it. REQUEST_ID=%lld, USER_SLOT=%s"), ReqId, *NonNamespacedSlot.Name);
+
+								UE_BEAM_LOG(LogBeamBackend, Verbose, TEXT("Identified User Slot and Re-authing it. REQUEST_ID=%lld, USER_SLOT=%s"), ReqId, *NonNamespacedSlot.Name);
+								
 								// Re-auth the user at the found slot so that subsequent requests use the new token rather than this one.
 								BeamUserSlots->SetAuthenticationDataAtNamespacedSlot(NamespacedSlotId, NewToken.AccessToken, NewToken.RefreshToken, FDateTime::UtcNow().ToUnixTimestamp(),
 								                                                     NewToken.ExpiresIn, RealmUserData.RealmHandle.Cid, RealmUserData.RealmHandle.Pid);
@@ -474,13 +478,13 @@ bool UBeamBackend::TickRetryQueue(float DeltaTime)
 						// ...would allow for users to use level blueprints to subscribe to this effectively defining ("when a user fails re-auth in this level, this is what happens".												
 						else
 						{
-							UE_LOG(LogBeamBackend, Verbose, TEXT("Discarding Request since the user failed to re-authenticated. REQUEST_ID=%lld" ), ReqId);
+							UE_BEAM_LOG(LogBeamBackend, Verbose, TEXT("Discarding Request since the user failed to re-authenticated. REQUEST_ID=%lld" ), ReqId);
 
 							// If the failed re-auth was made using a user slot, we clear that slot.
 							if (WasMadeWithUserSlot)
 							{
 								BeamUserSlots->ClearUserAtSlot(UserSlot, USCR_FailedAuthentication, true);
-								UE_LOG(LogBeamBackend, Verbose, TEXT("Invalidated user data as the user failed to re-authenticated. USER_SLOT=%s" ), *UserSlot.Name);
+								UE_BEAM_LOG(LogBeamBackend, Verbose, TEXT("Invalidated user data as the user failed to re-authenticated. USER_SLOT=%s" ), *UserSlot.Name);
 							}
 
 							// Make it so it'll fail immediately instead of trying to the request again and then re-process the request.
@@ -504,7 +508,7 @@ bool UBeamBackend::TickRetryQueue(float DeltaTime)
 			else if (RetryConfig.HttpResponseCodes.Contains(RequestToRetry.ResponseCode) || RetryConfig.CustomErrorCodes.Contains(RequestToRetry.ErrorCode))
 			{
 				// If we should just retry, simply send out the request again.
-				UE_LOG(LogBeamBackend, Verbose, TEXT("Beamable Retry Queue | Failed Request so we are resending it! REQUEST_STATUS=%d."), FailedReq->GetStatus());
+				UE_BEAM_LOG(LogBeamBackend, Verbose, TEXT("Beamable Retry Queue | Failed Request so we are resending it! REQUEST_STATUS=%d."), FailedReq->GetStatus());
 				FailedReq->ProcessRequest();
 			}
 
@@ -539,7 +543,7 @@ bool UBeamBackend::TickRetryQueue(float DeltaTime)
 	// Log out all requests that were actually sent out and removed from the InFlightProcessingRequests list.
 	if (RetriesSentOutStr.Num() > 0)
 	{
-		UE_LOG(LogBeamBackend, Verbose,
+		UE_BEAM_LOG(LogBeamBackend, Verbose,
 		       TEXT("Beamable Retry Queue | Successfully sent out these requests. REQ_IDS=[%s]"),
 		       *FString::Join(RetriesSentOutStr, TEXT(",")));
 	}
@@ -583,7 +587,7 @@ bool UBeamBackend::CleanUpRequestData()
 	TArray<FString> ReqIdsToCleanUpStr;
 	for (const auto& IdToCleanUp : ReqIdsToCleanUp)
 	{
-		UE_LOG(LogBeamBackend, Verbose,
+		UE_BEAM_LOG(LogBeamBackend, Verbose,
 		       TEXT("Beamable CleanUp | Cleaning up all Request Data associated with Request. REQUEST_ID=%llu"),
 		       IdToCleanUp);
 
@@ -613,7 +617,7 @@ bool UBeamBackend::CleanUpRequestData()
 			InFlightRequestsCancelled.Remove(IdToCleanUp);
 	}
 
-	UE_LOG(LogBeamBackend, Verbose,
+	UE_BEAM_LOG(LogBeamBackend, Verbose,
 	       TEXT("Beamable CleanUp | Successfully cleaned up all Request Data. REQ_IDS=[%s]"),
 	       *FString::Join(ReqIdsToCleanUpStr, TEXT(",")));
 
@@ -682,7 +686,7 @@ bool UBeamBackend::ExtractDataFromResponse(const FHttpRequestPtr Request, const 
 
 void UBeamBackend::DedicatedServerExecuteRequestImpl(int64 ActiveRequestId, const UObject* CallingContext)
 {
-	UE_LOG(LogBeamBackend, Verbose,
+	UE_BEAM_LOG(LogBeamBackend, Verbose,
 	       TEXT("Sending Signed Request via Unreal HttpRequest's ProcessRequest . REQUEST_ID=%llu"), ActiveRequestId);
 
 	const auto HttpRequest = InFlightRequests[ActiveRequestId];
@@ -714,7 +718,7 @@ void UBeamBackend::DedicatedServerExecuteRequestImpl(int64 ActiveRequestId, cons
 	const auto Signature = FBase64::Encode(Digest, 16);
 	HttpRequest->SetHeader(HEADER_SIGNATURE, Signature);
 
-	UE_LOG(LogBeamBackend, Verbose, TEXT(
+	UE_BEAM_LOG(LogBeamBackend, Verbose, TEXT(
 		       "Sending Signed Request via Unreal HttpRequest's ProcessRequest."
 		       " REQUEST_ID=%llu, SCOPE=%s, PID=%s, URL=%s, BODY=%s, REALM_SECRET=%s, SIG_PARTS=%s, SIGNATURE=%s"
 	       ), ActiveRequestId, *HttpRequest->GetHeader(HEADER_REQUEST_SCOPE), *Pid, *Url, *Body, *Secret, *SigPartsUTF16, *Signature)
@@ -772,7 +776,7 @@ bool UBeamBackend::IsSuccessfulResponse(int32 ResponseCode)
 
 TUnrealRequestPtr UBeamBackend::CreateGenericBeamRequest(int64& OutRequestId, const FBeamRetryConfig& RetryConfig, const UGenericBeamRequest* RequestData)
 {
-	UE_LOG(LogBeamBackend, Verbose, TEXT("Request Preparation - Preparing NonBeam Request: VERB=%s, URI=%s, BODY=%s"), *RequestData->Verb, *RequestData->URL, *RequestData->Body);
+	UE_BEAM_LOG(LogBeamBackend, Verbose, TEXT("Request Preparation - Preparing NonBeam Request: VERB=%s, URI=%s, BODY=%s"), *RequestData->Verb, *RequestData->URL, *RequestData->Body);
 
 	// Ensures we get a valid Next Id even if requests get made from multiple threads.
 	int64 ReqId;
@@ -808,7 +812,7 @@ void UBeamBackend::SetRoutingKeyMap(TArray<FString> BeamoIds, TArray<FString> Ta
 	{
 		Mappings.Add(BeamoIds[i] + TEXT(":") + TargetKeys[i]);
 	}
-
+	Mappings.Sort();
 	SetRoutingKeyMap(FString::Join(Mappings, TEXT(",")));
 }
 
@@ -821,7 +825,7 @@ void UBeamBackend::SetRoutingKeyMap(FUserSlot Slot, TArray<FString> BeamoIds, TA
 	{
 		Mappings.Add(BeamoIds[i] + TEXT(":") + TargetKeys[i]);
 	}
-
+	Mappings.Sort();
 	SetRoutingKeyMap(Slot, FString::Join(Mappings, TEXT(",")));
 }
 
@@ -861,12 +865,12 @@ bool UBeamBackend::GetRetryConfigForRequestType(const FRequestType& RequestType,
 	// If there's a retry config for this specific type of request...
 	if (bRequestHasSpecialConfig)
 	{
-		UE_LOG(LogBeamBackend, Verbose, TEXT("Found Config for Request Type!\nREQUEST_TYPE=%s"), *RequestType.Name);
+		UE_BEAM_LOG(LogBeamBackend, Verbose, TEXT("Found Config for Request Type!\nREQUEST_TYPE=%s"), *RequestType.Name);
 		Config = PerTypeRetryConfigs.FindRef(RequestType);
 	}
 	else
 	{
-		UE_LOG(LogBeamBackend, Verbose,
+		UE_BEAM_LOG(LogBeamBackend, Verbose,
 		       TEXT("Falling back to Default Retry Configuration when getting config for Request Type!\nREQUEST_TYPE=%s"
 		       ), *RequestType.Name);
 		Config = DefaultRetryConfig;
@@ -881,12 +885,12 @@ bool UBeamBackend::GetRetryConfigForUserSlot(const FUserSlot& Slot, FBeamRetryCo
 	// If there's a retry config for this specific type of request...
 	if (bUserHasSpecialConfig)
 	{
-		UE_LOG(LogBeamBackend, Verbose, TEXT("Found Config for User Slot!\nUSER_SLOT=%s"), *Slot.Name);
+		UE_BEAM_LOG(LogBeamBackend, Verbose, TEXT("Found Config for User Slot!\nUSER_SLOT=%s"), *Slot.Name);
 		Config = PerUserRetryConfig.FindRef(Slot);
 	}
 	else
 	{
-		UE_LOG(LogBeamBackend, Verbose,
+		UE_BEAM_LOG(LogBeamBackend, Verbose,
 		       TEXT("Falling back to Default Retry Configuration when getting config for User Slot!\nUSER_SLOT=%s"),
 		       *Slot.Name);
 		Config = DefaultRetryConfig;
@@ -903,7 +907,7 @@ bool UBeamBackend::GetRetryConfigForUserSlotAndRequestType(const FRequestType& R
 		RequestType.Name + "₢" + Slot.Name);
 	if (bUserHasSpecialConfigForRequestType)
 	{
-		UE_LOG(LogBeamBackend, Verbose,
+		UE_BEAM_LOG(LogBeamBackend, Verbose,
 		       TEXT("Found Config for User Slot and Request Type!\nUSER_SLOT=%s, REQUEST_TYPE=%s"), *Slot.Name,
 		       *RequestType.Name);
 		Config = PerUserPerTypeRetryConfig.FindRef(RequestType.Name + "₢" + Slot.Name);
@@ -913,7 +917,7 @@ bool UBeamBackend::GetRetryConfigForUserSlotAndRequestType(const FRequestType& R
 		// If there's a retry config for this specific type of request...
 		if (PerTypeRetryConfigs.Contains(RequestType))
 		{
-			UE_LOG(LogBeamBackend, Verbose,
+			UE_BEAM_LOG(LogBeamBackend, Verbose,
 			       TEXT(
 				       "Falling back to RequestType-only Config when getting config for User Slot and Request Type!\nUSER_SLOT=%s, REQUEST_TYPE=%s"
 			       ), *Slot.Name,
@@ -925,7 +929,7 @@ bool UBeamBackend::GetRetryConfigForUserSlotAndRequestType(const FRequestType& R
 			// If there's a retry config for requests from this user...
 			if (PerUserRetryConfig.Contains(Slot.Name))
 			{
-				UE_LOG(LogBeamBackend, Verbose,
+				UE_BEAM_LOG(LogBeamBackend, Verbose,
 				       TEXT(
 					       "Falling back to User-only Config when getting config for User Slot and Request Type!\nUSER_SLOT=%s, REQUEST_TYPE=%s"
 				       ), *Slot.Name,
@@ -934,7 +938,7 @@ bool UBeamBackend::GetRetryConfigForUserSlotAndRequestType(const FRequestType& R
 			}
 			else
 			{
-				UE_LOG(LogBeamBackend, Verbose,
+				UE_BEAM_LOG(LogBeamBackend, Verbose,
 				       TEXT(
 					       "Falling back to Default Retry Configuration when getting config for User Slot and Request Type!\nUSER_SLOT=%s, REQUEST_TYPE=%s"
 				       ), *Slot.Name,
@@ -956,7 +960,7 @@ void UBeamBackend::SetRetryConfigForRequestType(const FRequestType& RequestType,
 
 	FString RetryString;
 	FJsonObjectConverter::UStructToJsonObjectString(RetryConfig, RetryString);
-	UE_LOG(LogBeamBackend, Verbose, TEXT("Setting retry config for RequestType.\nREQUEST_TYPE=%s, Config=%s"),
+	UE_BEAM_LOG(LogBeamBackend, Verbose, TEXT("Setting retry config for RequestType.\nREQUEST_TYPE=%s, Config=%s"),
 	       *RequestType.Name, *RetryString);
 }
 
@@ -969,7 +973,7 @@ void UBeamBackend::SetRetryConfigForUserSlot(const FUserSlot Slot, const FBeamRe
 
 	FString RetryString;
 	FJsonObjectConverter::UStructToJsonObjectString(RetryConfig, RetryString);
-	UE_LOG(LogBeamBackend, Verbose, TEXT("Setting retry config for UserSlot.\nUSER_SLOT=%s, RETRY_CONFIG=%s"),
+	UE_BEAM_LOG(LogBeamBackend, Verbose, TEXT("Setting retry config for UserSlot.\nUSER_SLOT=%s, RETRY_CONFIG=%s"),
 	       *Slot.Name, *RetryString);
 }
 
@@ -984,7 +988,7 @@ void UBeamBackend::SetRetryConfigForUserSlotAndRequestType(const FUserSlot& Slot
 
 	FString RetryString;
 	FJsonObjectConverter::UStructToJsonObjectString(RetryConfig, RetryString);
-	UE_LOG(LogBeamBackend, Verbose,
+	UE_BEAM_LOG(LogBeamBackend, Verbose,
 	       TEXT("Setting retry config for UserSlot and RequestType.\nUSER_SLOT=%s, REQUEST_TYPE=%s, RETRY_CONFIG=%s"),
 	       *Slot.Name, *RequestType.Name, *RetryString);
 }
@@ -994,7 +998,7 @@ void UBeamBackend::ResetRetryConfigForRequestType(const FRequestType& RequestTyp
 	if (PerTypeRetryConfigs.Contains(RequestType))
 		PerTypeRetryConfigs.Remove(RequestType);
 
-	UE_LOG(LogBeamBackend, Verbose, TEXT("Reseting retry config for RequestType.\nREQUEST_TYPE=%s"), *RequestType.Name);
+	UE_BEAM_LOG(LogBeamBackend, Verbose, TEXT("Reseting retry config for RequestType.\nREQUEST_TYPE=%s"), *RequestType.Name);
 }
 
 void UBeamBackend::ResetRetryConfigForUserSlot(const FUserSlot& Slot)
@@ -1002,7 +1006,7 @@ void UBeamBackend::ResetRetryConfigForUserSlot(const FUserSlot& Slot)
 	if (PerUserRetryConfig.Contains(Slot))
 		PerUserRetryConfig.Remove(Slot);
 
-	UE_LOG(LogBeamBackend, Verbose, TEXT("Reseting retry config for UserSlot.\nUSER_SLOT=%s"), *Slot.Name);
+	UE_BEAM_LOG(LogBeamBackend, Verbose, TEXT("Reseting retry config for UserSlot.\nUSER_SLOT=%s"), *Slot.Name);
 }
 
 void UBeamBackend::ResetRetryConfigForUserSlotAndRequestType(const FUserSlot& Slot, const FRequestType& RequestType)
@@ -1011,7 +1015,7 @@ void UBeamBackend::ResetRetryConfigForUserSlotAndRequestType(const FUserSlot& Sl
 	if (PerUserPerTypeRetryConfig.Contains(Key))
 		PerUserPerTypeRetryConfig.Remove(Key);
 
-	UE_LOG(LogBeamBackend, Verbose,
+	UE_BEAM_LOG(LogBeamBackend, Verbose,
 	       TEXT("Reseting retry config for UserSlot and Request Type.\nUSER_SLOT=%s, REQUEST_TYPE=%s"), *Slot.Name,
 	       *RequestType.Name);
 }

@@ -107,30 +107,21 @@ void UBeamStoreSubsystem::PerformPurchase(FUserSlot UserSlot, FBeamContentId Sto
 	{
 		if (Resp.State == RS_Retrying)
 			return;
-
+		
 		if (Resp.State != RS_Success)
 		{
 			UE_LOG(LogBeamStore, Verbose, TEXT("[BeamStore] Request failed: %s"), *Resp.ErrorData.error);
 			RequestTracker->TriggerOperationError(Op, Resp.ErrorData.error);
 			return;
 		}
-
+		
 		UE_LOG(LogBeamStore, Verbose, TEXT("[BeamStore] Request succesfull: %s"), *Resp.SuccessData->Result);
-		const auto InventoryHandler = FBeamOperationEventHandlerCode::CreateLambda([this, Op, UserSlot](FBeamOperationEvent Evt)
-		{
-			if (Evt.EventType == OET_SUCCESS)
-				UE_LOG(LogBeamStore, Verbose, TEXT("[BeamStore] Inventory updated"));
-
-			if (Evt.EventType == OET_ERROR)
-				UE_LOG(LogBeamStore, Error, TEXT("[BeamStore] Purchase successful,but failed to update local inventory data"));
-
-			// Whether we successfully fetched the inventory or not, we should trigger the purchase operation as a success.
-			// TODO: Ideally, we should be updating the local inventory state manually here instead of making a request to fetch it since we have all the info to apply locally. 
-			RequestTracker->TriggerOperationSuccess(Op, {});
-		});
 
 		const auto Inventory = UBeamInventorySubsystem::GetSelf(this);
-		Inventory->CPP_FetchAllInventoryOperation(UserSlot, InventoryHandler);
+
+		Inventory->CPP_LocalMergeInventoryView(UserSlot, Resp.SuccessData->Deltas.Val);
+
+		RequestTracker->TriggerOperationSuccess(Op, {});
 	});
 	FBeamRequestContext Ctx;
 	CommerceApi->CPP_PostPurchase(UserSlot, Request, Handler, Ctx, Op, this);
@@ -179,7 +170,7 @@ void UBeamStoreSubsystem::RefreshStoreView(FUserSlot UserSlot, TArray<FBeamConte
 			FBeamPlayerStoreHandle Handle{UserSlot, Store->Symbol};
 			auto StoreView = NewObject<UBeamStoreView>();
 			StoreView->OwnerSlot = UserSlot;
-			StoreView->CurrentStoreView = DuplicateObject<UPlayerStoreView>(Resp.SuccessData->Stores.Last(), GetTransientPackage());
+			StoreView->CurrentStoreView = DuplicateObject<UPlayerStoreView>(Store, GetTransientPackage());
 
 			if (StoreViews.Contains(Handle)) StoreViews[Handle] = StoreView;
 			else StoreViews.Add(Handle, StoreView);

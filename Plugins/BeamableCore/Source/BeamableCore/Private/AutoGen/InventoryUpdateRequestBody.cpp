@@ -8,7 +8,9 @@
 void UInventoryUpdateRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeOptional<bool>(TEXT("applyVipBonus"), &bApplyVipBonus, Serializer);
+	UBeamJsonUtils::SerializeOptional<bool>(TEXT("includeDeltas"), &bIncludeDeltas, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("transaction"), &Transaction, Serializer);
+	UBeamJsonUtils::SerializeOptional<TArray<FString>, FString>(TEXT("scopes"), &Scopes, Serializer);
 	UBeamJsonUtils::SerializeOptional<TArray<UItemUpdateRequestBody*>, UItemUpdateRequestBody*>(TEXT("updateItems"), &UpdateItems, Serializer);
 	UBeamJsonUtils::SerializeOptional<TArray<UItemCreateRequestBody*>, UItemCreateRequestBody*>(TEXT("newItems"), &NewItems, Serializer);
 	UBeamJsonUtils::SerializeOptional<TArray<UItemDeleteRequestBody*>, UItemDeleteRequestBody*>(TEXT("deleteItems"), &DeleteItems, Serializer);
@@ -19,7 +21,9 @@ void UInventoryUpdateRequestBody::BeamSerializeProperties(TUnrealJsonSerializer&
 void UInventoryUpdateRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeOptional<bool>(TEXT("applyVipBonus"), &bApplyVipBonus, Serializer);
+	UBeamJsonUtils::SerializeOptional<bool>(TEXT("includeDeltas"), &bIncludeDeltas, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("transaction"), &Transaction, Serializer);
+	UBeamJsonUtils::SerializeOptional<TArray<FString>, FString>(TEXT("scopes"), &Scopes, Serializer);
 	UBeamJsonUtils::SerializeOptional<TArray<UItemUpdateRequestBody*>, UItemUpdateRequestBody*>(TEXT("updateItems"), &UpdateItems, Serializer);
 	UBeamJsonUtils::SerializeOptional<TArray<UItemCreateRequestBody*>, UItemCreateRequestBody*>(TEXT("newItems"), &NewItems, Serializer);
 	UBeamJsonUtils::SerializeOptional<TArray<UItemDeleteRequestBody*>, UItemDeleteRequestBody*>(TEXT("deleteItems"), &DeleteItems, Serializer);
@@ -30,7 +34,9 @@ void UInventoryUpdateRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSeria
 void UInventoryUpdateRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	UBeamJsonUtils::DeserializeOptional<bool>("applyVipBonus", Bag, bApplyVipBonus, OuterOwner);
+	UBeamJsonUtils::DeserializeOptional<bool>("includeDeltas", Bag, bIncludeDeltas, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("transaction", Bag, Transaction, OuterOwner);
+	UBeamJsonUtils::DeserializeOptional<TArray<FString>, FString>("scopes", Bag, Scopes, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<TArray<UItemUpdateRequestBody*>, UItemUpdateRequestBody*>("updateItems", Bag, UpdateItems, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<TArray<UItemCreateRequestBody*>, UItemCreateRequestBody*>("newItems", Bag, NewItems, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<TArray<UItemDeleteRequestBody*>, UItemDeleteRequestBody*>("deleteItems", Bag, DeleteItems, OuterOwner);

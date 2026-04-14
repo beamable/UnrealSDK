@@ -23,21 +23,21 @@ FString UPerPlayerMatchResultLibrary::PerPlayerMatchResultToJsonString(const UPe
 	return Result;
 }	
 
-UPerPlayerMatchResult* UPerPlayerMatchResultLibrary::Make(bool bWon, int32 RankEarned, int32 CoinsEarned, UObject* Outer)
+UPerPlayerMatchResult* UPerPlayerMatchResultLibrary::Make(EBeamballMatchResultEnum MatchResult, int32 RankEarned, int32 CoinsEarned, UObject* Outer)
 {
 	auto Serializable = NewObject<UPerPlayerMatchResult>(Outer);
-	Serializable->bWon = bWon;
+	Serializable->MatchResult = MatchResult;
 	Serializable->RankEarned = RankEarned;
 	Serializable->CoinsEarned = CoinsEarned;
 	
 	return Serializable;
 }
 
-void UPerPlayerMatchResultLibrary::Break(const UPerPlayerMatchResult* Serializable, bool& bWon, int32& RankEarned, int32& CoinsEarned)
+void UPerPlayerMatchResultLibrary::Break(const UPerPlayerMatchResult* Serializable, EBeamballMatchResultEnum& MatchResult, int32& RankEarned, int32& CoinsEarned)
 {
 	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
 	{
-		bWon = Serializable->bWon;
+		MatchResult = Serializable->MatchResult;
 		RankEarned = Serializable->RankEarned;
 		CoinsEarned = Serializable->CoinsEarned;
 	}

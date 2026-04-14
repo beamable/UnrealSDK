@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 
 #include "BeamEnvironment.h"
+#include "BeamInfoData.h"
 #include "BeamBackend/BeamRealmHandle.h"
 #include "BeamBackend/BeamRetryConfig.h"
 #include "BeamBackend/ResponseCache/BeamCacheConfig.h"
@@ -23,11 +24,17 @@ class BEAMABLECORE_API UBeamCoreSettings : public UDeveloperSettings
 public:
 	UBeamCoreSettings();
 
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "General")
+	bool BeamableDeveloper = false;
+
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "General|Info")
+	TSoftObjectPtr<UBeamInfoData> BeamableInfoData;
+	
 	/* Soft path will be converted to content reference before use */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "General", AdvancedDisplay)
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "General|Environment")
 	TSoftObjectPtr<UBeamEnvironmentData> BeamableEnvironment;
 
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "General", AdvancedDisplay)
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "General|Environment")
 	TArray<TSoftObjectPtr<UBeamEnvironmentData>> BeamablePossibleEnvironments;
 
 	/**
@@ -124,6 +131,15 @@ public:
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="User Slots")
 	bool bPersistRuntimeSlotDataWhenInPIE = true;
 
+	/**
+	 * @brief Whether we should allow the Beam Environment to be overridden by an environment variable or a command line argument.
+	 * Command line argument key: "beamable-customer-override" and "beamable-realm-override"
+	 * Environment variable key: "BEAMABLE_CUSTOMER_OVERRIDE" and "BEAMABLE_REALM_OVERRIDE"
+	 * If this is false, we will ignore any environment variable or command line argument overrides and will always use the environment specified in the settings.
+	 */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="User Slots")
+	bool bAllowBeamEnvironmentOverride = false;
+	
 	/**
 	 * @brief When deserializing content that stores FGameplayTag, should we error out if we fail to convert that tag?
 	 * If this is true, you must guarantee all tags in all content are always valid in your project/build.

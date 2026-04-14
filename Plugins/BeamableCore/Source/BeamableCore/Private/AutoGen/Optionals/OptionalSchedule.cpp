@@ -3,7 +3,7 @@
 
 FOptionalSchedule::FOptionalSchedule()
 {
-	Val = nullptr;
+	Val = NewObject<USchedule>(GetTransientPackage());
 	IsSet = false;
 }
 

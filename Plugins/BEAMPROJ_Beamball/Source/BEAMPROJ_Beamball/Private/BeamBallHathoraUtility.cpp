@@ -1,1 +1,0 @@
-﻿#include "BeamBallHathoraUtility.h"

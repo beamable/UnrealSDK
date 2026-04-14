@@ -9,6 +9,7 @@
 #include "BeamBackend/SemanticTypes/BeamGamerTag.h"
 #include "BeamBackend/ReplacementTypes/BeamExternalIdentity.h"
 #include "RequestTracker/BeamOperationHandle.h"
+#include "Serialization/BeamJsonUtils.h"
 #include "BeamUserSlots.generated.h"
 
 /**
@@ -16,6 +17,53 @@
  * These are never guaranteed to be the same across sessions.
  */
 typedef int FBeamUserIdx;
+
+USTRUCT(BlueprintType)
+struct FAccountTokenInfo
+{
+	GENERATED_BODY()
+    
+	UPROPERTY(BlueprintReadWrite)
+	FString Requester;
+    
+	UPROPERTY(BlueprintReadWrite)
+	FString Customer;
+    
+	UPROPERTY(BlueprintReadWrite)
+	FString Game;
+    
+	UPROPERTY(BlueprintReadWrite)
+	FString Realm;
+    
+	UPROPERTY(BlueprintReadWrite)
+	FBeamGamerTag GamerTag;
+    
+	UPROPERTY(BlueprintReadWrite)
+	FString Role;
+    
+	UPROPERTY(BlueprintReadWrite)
+	FString Subject;
+    
+	UPROPERTY(BlueprintReadWrite)
+	FDateTime ExpirationTime = 0;
+    
+	UPROPERTY(BlueprintReadWrite)
+	FDateTime IssuedAtTime = 0;
+    
+	UPROPERTY(BlueprintReadWrite)
+	FString Issuer;
+	
+};
+
+UCLASS()
+class BEAMABLECORE_API UBeamJwtUtils : public UBlueprintFunctionLibrary
+{
+	GENERATED_BODY()
+
+public:
+	UFUNCTION(BlueprintCallable, Category="Beam")
+	static bool GetAccountTokenInfo(const FString& AccessToken, FAccountTokenInfo& OutTokenInfo);
+};
 
 USTRUCT(BlueprintType)
 struct FUserSlotAuthData
@@ -64,6 +112,12 @@ struct FUserSlotAuthData
 	bool IsExpired() const
 	{
 		const FDateTime Now = FDateTime::UtcNow();
+		FAccountTokenInfo AccountTokenInfo;
+		if (UBeamJwtUtils::GetAccountTokenInfo(AccessToken, AccountTokenInfo))
+		{
+			return Now >= AccountTokenInfo.ExpirationTime;
+		}
+		// Fallback if parsing fails
 		const FDateTime Expiration = FDateTime::FromUnixTimestamp(IssuedAt) + FTimespan::FromMilliseconds(ExpiresIn);
 		return Now >= Expiration;
 	}
@@ -149,6 +203,9 @@ private:
 	static FString GetSavedSlotAccountFilePath(FString NamespacedSlotId);
 
 public:
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, meta=(DefaultToSelf="CallingContext"))
+	static UBeamUserSlots* GetSelf(const UObject* CallingContext) { return GEngine->GetEngineSubsystem<UBeamUserSlots>(); }
+
 	/** @brief Initializes the subsystem.  */
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 
@@ -187,6 +244,12 @@ public:
 	UFUNCTION(BlueprintPure, Category="Beam", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
 	TArray<FUserSlot> GetKnownSlots();
 
+	/**
+	 * @brief Tries to find the a FUserSlot that contains the user with the given FBeamGamerTag.
+	 */
+	UFUNCTION(BlueprintPure)
+	FUserSlot GetUserSlot(FBeamGamerTag GamerTag, const UObject* CallingContext);
+	
 	/**
 	 * @brief Tries to get the user currently  mapped to the given slot.	  
 	 * @return True, if there is a user mapped. False, if no user mapped was found. 
@@ -301,7 +364,7 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable)
 	void DeleteUserSlotCacheForPIE();
-
+	
 	/**
 	 * Returned by TryLoadSavedUserAtSlot when no slot was found.
 	 */

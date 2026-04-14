@@ -14,7 +14,7 @@ public:
 	/**
 	* @brief Constructs an FOptionalDateTime struct from the given value.	  
 	*/
-	UFUNCTION(BlueprintPure, Category="Beam|Beamo|Utils|Optionals", meta=(DisplayName="Make Optional DateTime", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Admin|Utils|Optionals", meta=(DisplayName="Make Optional DateTime", NativeMakeFunc))
 	static FOptionalDateTime MakeOptional(FDateTime Value);
 
 	/**
@@ -22,7 +22,7 @@ public:
 	 * @param Value The FDateTime to convert.
 	 * @return An optional with the DateTime set as it's value.
 	 */
-	UFUNCTION(BlueprintPure, Category="Beam|Beamo|Utils|Optionals", meta = (DisplayName="DateTime To Optional", CompactNodeTitle = "->", BlueprintAutocast))
+	UFUNCTION(BlueprintPure, Category="Beam|Admin|Utils|Optionals", meta = (DisplayName="DateTime To Optional", CompactNodeTitle = "->", BlueprintAutocast))
 	static FOptionalDateTime Conv_OptionalFromValue(FDateTime Value);
 	
 	/**
@@ -31,7 +31,7 @@ public:
 	 * @param Value The value in the optional. 
 	 * @return Whether or not the value was set. We provide no guarantees on what the value is if the optional is not set. 
 	 */
-	UFUNCTION(BlueprintCallable, Category="Beam|Beamo|Utils|Optionals", meta=(DisplayName="Optional Has Value", ExpandBoolAsExecs="ReturnValue"))
+	UFUNCTION(BlueprintCallable, Category="Beam|Admin|Utils|Optionals", meta=(DisplayName="Optional Has Value", ExpandBoolAsExecs="ReturnValue"))
 	static bool HasValue(const FOptionalDateTime& Optional, FDateTime& Value);
 
 	/**
@@ -41,7 +41,7 @@ public:
 	 * @param WasSet Whether or not the value was set. When false, the return value is the given DefaultValue.   
 	 * @return The default value, if the Optional IS NOT set. The optional value, otherwise.
 	 */
-	UFUNCTION(BlueprintPure, Category="Beam|Beamo|Utils|Optionals", meta=(DisplayName="Get Optional's DateTime Value"))
+	UFUNCTION(BlueprintPure, Category="Beam|Admin|Utils|Optionals", meta=(DisplayName="Get Optional's DateTime Value"))
 	static FDateTime GetOptionalValue(const FOptionalDateTime& Optional, FDateTime DefaultValue, bool& WasSet);
 
 	

@@ -6,6 +6,9 @@
 
 #include "BeamPIE_LobbySettings.generated.h"
 
+
+
+
 USTRUCT(BlueprintType)
 struct BEAMABLECORE_API FBeamPIE_LobbySettings
 {
@@ -35,4 +38,3 @@ struct BEAMABLECORE_API FBeamPIE_LobbySettings
 	// UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(EditCondition="bShouldAutoCreateLobby", EditConditionHides))
 	// TMap<FBeamPIE_UserSlotHandle, FBeamPIE_LobbyPlayerSettings> PerPlayerSettings = {};
 };
-

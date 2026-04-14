@@ -3,7 +3,7 @@
 
 FOptionalPlayerReward::FOptionalPlayerReward()
 {
-	Val = nullptr;
+	Val = NewObject<UPlayerReward>(GetTransientPackage());
 	IsSet = false;
 }
 

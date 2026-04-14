@@ -6,6 +6,7 @@
 #include "Serialization/BeamJsonUtils.h"
 #include "BeamableCore/Public/AutoGen/ServicePlanActorDataDomain.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalServicePlanActorServiceLimits.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalDateTime.h"
 
 #include "ServicePlanActorServicePlan.generated.h"
 
@@ -21,6 +22,8 @@ public:
 	UServicePlanActorDataDomain* DataDomain = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Service Limits", Category="Beam")
 	FOptionalServicePlanActorServiceLimits ServiceLimits = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Created", Category="Beam")
+	FOptionalDateTime Created = {};
 
 	virtual void DeserializeRequestResponse(UObject* RequestData, FString ResponseContent) override;
 

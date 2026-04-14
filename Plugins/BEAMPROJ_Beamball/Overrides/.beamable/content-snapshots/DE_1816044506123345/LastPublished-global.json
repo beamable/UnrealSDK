@@ -1,0 +1,43 @@
+{
+  "SnapshotTimestamp": 1759265165889,
+  "ManifestId": "global",
+  "ProjectData": {
+    "PID": "DE_1816044506123345",
+    "RealmName": "SteamDemo"
+  },
+  "Author": {
+    "Email": "felipe@beamable.com",
+    "AccountId": 1852385846262784
+  },
+  "IsAutoSnapshot": true,
+  "contents": {
+    "currency.coins": {
+      "properties": {
+        "clientPermission": {
+          "data": {
+            "write_self": false
+          }
+        },
+        "startingAmount": {
+          "data": 250
+        }
+      },
+      "tags": [],
+      "Checksum": "7a0307469aa8de5c3792c1d716fa0e0b85234104"
+    },
+    "currency.gems": {
+      "properties": {
+        "clientPermission": {
+          "data": {
+            "write_self": false
+          }
+        },
+        "startingAmount": {
+          "data": 0
+        }
+      },
+      "tags": [],
+      "Checksum": "45a33a8eb77cccf05272cd3de381ef0d059a8089"
+    }
+  }
+}

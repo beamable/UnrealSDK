@@ -9,7 +9,7 @@
 
 #include "Serialization/BeamJsonUtils.h"
 #include "BeamableCore/Public/AutoGen/PurchaseRequestBody.h"
-#include "BeamableCore/Public/AutoGen/CommonResponse.h"
+#include "BeamableCore/Public/AutoGen/InventoryUpdateResponse.h"
 
 #include "PostPurchaseRequest.generated.h"
 
@@ -43,7 +43,7 @@ public:
 };
 
 UDELEGATE(BlueprintAuthorityOnly)
-DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnPostPurchaseSuccess, FBeamRequestContext, Context, UPostPurchaseRequest*, Request, UCommonResponse*, Response);
+DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnPostPurchaseSuccess, FBeamRequestContext, Context, UPostPurchaseRequest*, Request, UInventoryUpdateResponse*, Response);
 
 UDELEGATE(BlueprintAuthorityOnly)
 DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnPostPurchaseError, FBeamRequestContext, Context, UPostPurchaseRequest*, Request, FBeamErrorResponse, Error);
@@ -51,5 +51,5 @@ DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnPostPurchaseError, FBeamRequestContext, 
 UDELEGATE(BlueprintAuthorityOnly)
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FOnPostPurchaseComplete, FBeamRequestContext, Context, UPostPurchaseRequest*, Request);
 
-using FPostPurchaseFullResponse = FBeamFullResponse<UPostPurchaseRequest*, UCommonResponse*>;
+using FPostPurchaseFullResponse = FBeamFullResponse<UPostPurchaseRequest*, UInventoryUpdateResponse*>;
 DECLARE_DELEGATE_OneParam(FOnPostPurchaseFullResponse, FPostPurchaseFullResponse);

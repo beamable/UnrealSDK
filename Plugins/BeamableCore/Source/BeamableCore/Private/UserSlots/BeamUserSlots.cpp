@@ -31,6 +31,79 @@ FString UBeamUserSlots::GetSavedSlotsDirectory()
 	return FPaths::ProjectSavedDir() / TEXT("Beamable") / TEXT("UserSlots");
 }
 
+bool UBeamJwtUtils::GetAccountTokenInfo(const FString& AccessToken, FAccountTokenInfo& OutTokenInfo)
+{
+	// Parse JWT token to extract exp claim
+	TArray<FString> TokenParts;
+	AccessToken.ParseIntoArray(TokenParts, TEXT("."));
+    
+	if (TokenParts.Num() != 3)
+	{
+		// Invalid JWT format, fallback to original calculation
+		return false;
+	}
+    
+	// Decode the payload (second part)
+	FString PayloadBase64 = TokenParts[1];
+    
+	// JWT uses base64url encoding, need to convert to standard base64
+	PayloadBase64.ReplaceInline(TEXT("-"), TEXT("+"));
+	PayloadBase64.ReplaceInline(TEXT("_"), TEXT("/"));
+    
+	// Add padding if needed
+	while (PayloadBase64.Len() % 4 != 0)
+	{
+		PayloadBase64 += TEXT("=");
+	}
+    
+	// Decode base64
+	TArray<uint8> DecodedData;
+	FBase64::Decode(PayloadBase64, DecodedData);
+    
+	// Convert to string
+	FString JsonString = FString(UTF8_TO_TCHAR(DecodedData.GetData()));
+    
+	// Parse JSON
+	FJsonDataBag JsonBag;
+		
+	if (UBeamJsonUtils::FromJsonToBag(JsonString, JsonBag))
+	{
+		bool bSuccess = true;
+		int64 ExpTimestamp = 0;
+		
+		bSuccess &= JsonBag.JsonObject->TryGetNumberField(TEXT("exp"), ExpTimestamp);
+
+		int64 IatTimestamp = 0;
+		bSuccess &= JsonBag.JsonObject->TryGetNumberField(TEXT("iat"), IatTimestamp);
+
+		FString Requester, Customer, Game, Realm, Player, Role, Subject, Issuer;
+		bSuccess &= JsonBag.JsonObject->TryGetStringField(TEXT("requester"), Requester);
+		bSuccess &= JsonBag.JsonObject->TryGetStringField(TEXT("customer"), Customer);
+		bSuccess &= JsonBag.JsonObject->TryGetStringField(TEXT("game"), Game);
+		bSuccess &= JsonBag.JsonObject->TryGetStringField(TEXT("realm"), Realm);
+		bSuccess &= JsonBag.JsonObject->TryGetStringField(TEXT("player"), Player);
+		bSuccess &= JsonBag.JsonObject->TryGetStringField(TEXT("role"), Role);
+		bSuccess &= JsonBag.JsonObject->TryGetStringField(TEXT("sub"), Subject);
+		bSuccess &= JsonBag.JsonObject->TryGetStringField(TEXT("iss"), Issuer);
+
+		OutTokenInfo.Requester = Requester;
+		OutTokenInfo.Customer = Customer;
+		OutTokenInfo.Game = Game;
+		OutTokenInfo.Realm = Realm;
+		OutTokenInfo.GamerTag = FBeamGamerTag(Player);
+		OutTokenInfo.Role = Role;
+		OutTokenInfo.Subject = Subject;
+		OutTokenInfo.ExpirationTime = ExpTimestamp;
+		OutTokenInfo.IssuedAtTime = IatTimestamp;
+		OutTokenInfo.Issuer = Issuer;
+
+		return bSuccess;
+	}
+
+	return false;
+    
+}
+
 FString UBeamUserSlots::GetSavedSlotAuthFilePath(FString NamespacedSlotId)
 {
 	return GetSavedSlotsDirectory() / NamespacedSlotId + TEXT("_Auth.json");
@@ -123,6 +196,16 @@ TArray<FUserSlot> UBeamUserSlots::GetKnownSlots()
 	return KnownSlots;
 }
 
+FUserSlot UBeamUserSlots::GetUserSlot(FBeamGamerTag GamerTag, const UObject* CallingContext)
+{
+	FBeamRealmUser _;
+	FString __;
+	FUserSlot OutUserSlot;
+	GetUserDataWithGamerTag(GamerTag, _, OutUserSlot, __, CallingContext);
+	return OutUserSlot;
+}
+
+
 bool UBeamUserSlots::GetUserDataAtSlot(FUserSlot SlotId, FBeamRealmUser& OutUserData, const UObject* CallingContext) const
 {
 	if (const FString NamespacedSlotId = GetNamespacedSlotId(SlotId, CallingContext); AuthenticatedUserMapping.Contains(NamespacedSlotId))
@@ -137,7 +220,7 @@ bool UBeamUserSlots::GetUserDataAtSlot(FUserSlot SlotId, FBeamRealmUser& OutUser
 	OutUserData.AccountId = -1;
 	OutUserData.GamerTag = -1;
 	OutUserData.Email = TEXT("");
-	OutUserData.AuthToken = FBeamAuthToken{TEXT(""), TEXT(""), 0};
+	OutUserData.AuthToken = FBeamAuthToken{TEXT(""), TEXT(""), 3};
 	OutUserData.RealmHandle = FBeamRealmHandle{FString(""), FString("")};
 
 	return false;
@@ -163,7 +246,7 @@ bool UBeamUserSlots::GetUserDataWithGamerTag(const FBeamGamerTag& GamerTag, FBea
 	OutUserData.AccountId = -1;
 	OutUserData.GamerTag = -1;
 	OutUserData.Email = TEXT("");
-	OutUserData.AuthToken = FBeamAuthToken{TEXT(""), TEXT(""), 0};
+	OutUserData.AuthToken = FBeamAuthToken{TEXT(""), TEXT(""), 2};
 	OutUserData.RealmHandle = FBeamRealmHandle{FString(""), FString("")};
 
 	OutUserSlot.Name = TEXT("");
@@ -187,7 +270,7 @@ bool UBeamUserSlots::GetUserDataWithRefreshTokenAndPid(const FString& RefreshTok
 	OutUserData.AccountId = -1;
 	OutUserData.GamerTag = -1;
 	OutUserData.Email = TEXT("");
-	OutUserData.AuthToken = FBeamAuthToken{TEXT(""), TEXT(""), 0};
+	OutUserData.AuthToken = FBeamAuthToken{TEXT(""), TEXT(""), 1};
 	OutUserData.RealmHandle = FBeamRealmHandle{FString(""), FString("")};
 
 	OutUserSlot.Name = TEXT("");
@@ -197,6 +280,7 @@ bool UBeamUserSlots::GetUserDataWithRefreshTokenAndPid(const FString& RefreshTok
 void UBeamUserSlots::SetAuthenticationDataAtNamespacedSlot(const FString& NamespacedSlotId, const FString& AccessToken, const FString& RefreshToken, const int64& IssuedAt, const int64& ExpiresIn,
                                                            const FBeamCid& Cid, const FBeamPid& Pid)
 {
+	
 	const auto AuthenticatedUser = FBeamAuthToken{AccessToken, RefreshToken, ExpiresIn, IssuedAt};
 	const auto UserRealmData = FBeamRealmHandle{Cid, Pid};
 	const auto RealmUser = FBeamRealmUser{-1, -1, TEXT(""), UserRealmData, AuthenticatedUser};

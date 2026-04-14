@@ -3,7 +3,7 @@
 
 FOptionalGatewayLimits::FOptionalGatewayLimits()
 {
-	Val = nullptr;
+	Val = NewObject<UGatewayLimits>(GetTransientPackage());
 	IsSet = false;
 }
 

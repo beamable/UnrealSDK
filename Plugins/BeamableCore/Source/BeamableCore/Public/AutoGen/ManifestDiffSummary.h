@@ -4,6 +4,7 @@
 
 #include "Serialization/BeamJsonSerializable.h"
 #include "Serialization/BeamJsonUtils.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
 
 #include "ManifestDiffSummary.generated.h"
 
@@ -15,10 +16,14 @@ class BEAMABLECORE_API UManifestDiffSummary : public UObject, public IBeamJsonSe
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Manifest Uid", Category="Beam")
 	FString ManifestUid = {};
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Diff Url", Category="Beam")
-	FString DiffUrl = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Created Date", Category="Beam")
 	int64 CreatedDate = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Affected Content Ids", Category="Beam")
+	TArray<FString> AffectedContentIds = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Published By Name", Category="Beam")
+	FOptionalString PublishedByName = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Published By", Category="Beam")
+	FOptionalString PublishedBy = {};
 
 	
 

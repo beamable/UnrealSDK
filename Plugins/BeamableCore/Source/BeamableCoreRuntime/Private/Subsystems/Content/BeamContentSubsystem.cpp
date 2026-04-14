@@ -11,9 +11,12 @@
 #include "Content/DownloadContentState.h"
 #include "Kismet/GameplayStatics.h"
 #include "Engine/AssetManager.h"
+#include "Framework/Notifications/NotificationManager.h"
 #include "UObject/UObjectGlobals.h"
 
+
 #if WITH_EDITOR
+#include "Widgets/Notifications/SNotificationList.h"
 #include "BeamableCoreRuntimeEditor/Public/Subsystems/Content/BeamEditorContent.h"
 #endif
 
@@ -732,7 +735,34 @@ void UBeamContentSubsystem::InitializeWhenUnrealReady_Implementation(FBeamOperat
 
 void UBeamContentSubsystem::OnBeamableStarting_Implementation(FBeamOperationHandle& ResultOp)
 {
-	FBeamOperationHandle Op = GEngine->GetEngineSubsystem<UBeamRequestTracker>()->CPP_BeginOperation({}, GetName(), {});
+	FBeamOperationEventHandlerCode Event = FBeamOperationEventHandlerCode::CreateLambda([this](FBeamOperationEvent Evt)
+	{
+		if (Evt.EventId == GetOperationEventID_Download_Individual_Content())
+		{
+			auto IndividualDownloadedData = static_cast<UBeamIndividualContentDownloadData*>(Evt.EventData.GetObject());
+
+			if (Evt.EventType == OET_SUCCESS)
+			{
+				auto ContentHookPtr = GetDefault<UBeamRuntimeSettings>()->DefaultContentHook;
+				if (ContentHookPtr.IsValid())
+				{
+					auto ContentHook = NewObject<UBeamContentHooks>(GetTransientPackage(), ContentHookPtr.LoadSynchronous());
+					ContentHook->SetContext(this);
+
+					if (IndividualDownloadedData && ContentHook->ContentFilter(IndividualDownloadedData))
+					{
+						ContentHook->OnLoadBeamContent(IndividualDownloadedData);
+						UE_LOG(LogTemp, Warning, TEXT("DOWNLOADED CONTENT %s"), *IndividualDownloadedData->ContentId);
+					}
+				}
+			}
+			else if (Evt.EventType == OET_ERROR)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("DOWNLOADED CONTENT FAIL %s"), *IndividualDownloadedData->ContentId);
+			}
+		}
+	});
+	FBeamOperationHandle Op = GEngine->GetEngineSubsystem<UBeamRequestTracker>()->CPP_BeginOperation({}, GetName(), Event);
 
 	const auto ManifestId = FBeamContentManifestId{TEXT("global")};
 	const auto bShouldDownloadIndividuals = GetDefault<UBeamRuntimeSettings>()->bDownloadIndividualContentOnStart;
@@ -809,6 +839,9 @@ void UBeamContentSubsystem::DownloadContentObjects(const FBeamContentManifestId 
 			const auto ContentTypeId = ContentEntry.ContentId.GetTypeId();
 			const auto FilteredContents = StringFilterMap.Find(ContentTypeId);
 
+			UBeamIndividualContentDownloadData* ContentDownloadData = NewObject<UBeamIndividualContentDownloadData>();
+			ContentDownloadData->ContentId = ContentEntry.ContentId.AsString;
+
 			// We should only try to download if the user did...
 			const auto bShouldDownload = !FilteredContents || // Not enter a specific list of contents of this type to download
 				!FilteredContents->IsSet || // Not enter a specific list of contents of this type to download				
@@ -833,7 +866,7 @@ void UBeamContentSubsystem::DownloadContentObjects(const FBeamContentManifestId 
 					// For each download that we'll make, register a lambda that:
 					//  - Tries to save the downloaded file to the local '.beamable' folder.
 					//  - Checks to see if it was the last download and, if so, invoke the appropriate on success/error callback.
-					const auto IndividualContentHandler = FOnGenericBeamRequestFullResponse::CreateLambda([this, Op, ManifestId, ContentEntry](FGenericBeamRequestFullResponse Resp)
+					const auto IndividualContentHandler = FOnGenericBeamRequestFullResponse::CreateLambda([this, Op, ManifestId, ContentEntry, ContentDownloadData](FGenericBeamRequestFullResponse Resp)
 					{
 						if (Resp.State == RS_Success)
 						{
@@ -844,6 +877,7 @@ void UBeamContentSubsystem::DownloadContentObjects(const FBeamContentManifestId 
 							const auto Id = ContentEntry.ContentId;
 							const auto Tags = ContentEntry.Tags;
 							const auto ContentTypeId = Id.GetTypeId();
+
 
 							// Fix-up since Unreal's JSON serializer expects true/false/null values to be upper case... Its not the correct spec, but... it is what it is... 
 							ResponseJson.ReplaceInline(TEXT("\":true"), TEXT("\":True"));
@@ -874,14 +908,14 @@ void UBeamContentSubsystem::DownloadContentObjects(const FBeamContentManifestId 
 							       *LiveContentCache->Hashes.FindChecked(Id),
 							       *ManifestId.AsString)
 
-							Runtime->RequestTrackerSystem->TriggerOperationEvent(Op, OET_SUCCESS, FName(TEXT("DOWNLOADED_INDIVIDUAL_CONTENT_SUCCESS")), ContentEntry.ContentId.AsString,
-							                                                     Resp.Context.RequestId);
+							Runtime->RequestTrackerSystem->TriggerOperationEventWithData(Op, OET_SUCCESS, GetOperationEventID_Download_Individual_Content(), ContentEntry.ContentId.AsString, ContentDownloadData,
+							                                                             Resp.Context.RequestId);
 						}
 
 						if (Resp.State == RS_Error)
 						{
-							Runtime->RequestTrackerSystem->TriggerOperationEvent(Op, OET_SUCCESS, FName(TEXT("DOWNLOADED_INDIVIDUAL_CONTENT_FAILED")), ContentEntry.ContentId.AsString,
-							                                                     Resp.Context.RequestId);
+							Runtime->RequestTrackerSystem->TriggerOperationEventWithData(Op, OET_ERROR, GetOperationEventID_Download_Individual_Content(), ContentEntry.ContentId.AsString, ContentDownloadData,
+							                                                             Resp.Context.RequestId);
 						}
 					});
 
@@ -892,6 +926,14 @@ void UBeamContentSubsystem::DownloadContentObjects(const FBeamContentManifestId 
 					const auto ReqId = GenericApi->CPP_ExecuteNonBeamRequest(Req, IndividualContentHandler, Op, this);
 					IndividualDownloadRequests.Add(ReqId);
 				}
+				else
+				{
+					Runtime->RequestTrackerSystem->TriggerOperationEventWithData(Op, OET_SUCCESS, GetOperationEventID_Download_Individual_Content(), ContentEntry.ContentId.AsString, ContentDownloadData);
+				}
+			}
+			else
+			{
+				Runtime->RequestTrackerSystem->TriggerOperationEventWithData(Op, OET_SUCCESS, GetOperationEventID_Download_Individual_Content(), ContentEntry.ContentId.AsString, ContentDownloadData);
 			}
 		}
 	}
@@ -911,7 +953,7 @@ void UBeamContentSubsystem::DownloadContentObjects(const FBeamContentManifestId 
 				}
 
 				if (this->Runtime->RequestTrackerSystem->IsWaitSuccessful(Evt))
-				{					
+				{
 					const FString CachedContentPath = GetCachedContentPath();
 					UBeamContentCache* SavedContent = LiveContent[ManifestId];
 
@@ -1207,15 +1249,15 @@ void UBeamContentSubsystem::FetchContentManifest(FBeamContentManifestId Manifest
 					const auto DownloadOpHandler = FBeamOperationEventHandlerCode::CreateLambda([this, ManifestId, Op](FBeamOperationEvent Evt)
 					{
 						// If all content was downloaded correctly.
-						if (Evt.EventType == OET_SUCCESS && Evt.EventId == NAME_None)
+						if (Evt.EventType == OET_SUCCESS)
 						{
 							ContentManifestsUpdated.Broadcast({ManifestId});
-							GEngine->GetEngineSubsystem<UBeamRequestTracker>()->TriggerOperationSuccess(Op, {});
+							GEngine->GetEngineSubsystem<UBeamRequestTracker>()->TriggerOperationEventWithData(Op, Evt.EventType, Evt.EventId, Evt.EventCode, Evt.EventData, Evt.RequestId);
 						}
 
-						if (Evt.EventType == OET_ERROR && Evt.EventId == NAME_None)
+						if (Evt.EventType == OET_ERROR)
 						{
-							GEngine->GetEngineSubsystem<UBeamRequestTracker>()->TriggerOperationError(Op, {});
+							GEngine->GetEngineSubsystem<UBeamRequestTracker>()->TriggerOperationEventWithData(Op, Evt.EventType, Evt.EventId, Evt.EventCode, Evt.EventData, Evt.RequestId);
 						}
 					});
 					const auto DownloadOp = Runtime->RequestTrackerSystem->CPP_BeginOperation({}, GetName(), DownloadOpHandler);
@@ -1237,7 +1279,15 @@ void UBeamContentSubsystem::FetchContentManifest(FBeamContentManifestId Manifest
 
 		if (Resp.State == RS_Error)
 		{
-			GEngine->GetEngineSubsystem<UBeamRequestTracker>()->TriggerOperationError(Op, {});
+			// If backend return a 404 with that message that means the user never publish any content on this realm
+			if (Resp.ErrorData.status == 404 && Resp.ErrorData.message.Contains("Unable to load the requested manifest.")){
+
+				CreateEmptyManifest();
+				GEngine->GetEngineSubsystem<UBeamRequestTracker>()->TriggerOperationSuccess(Op, {});
+			}else
+			{
+				GEngine->GetEngineSubsystem<UBeamRequestTracker>()->TriggerOperationError(Op, {});
+			}
 		}
 	});
 
@@ -1357,4 +1407,43 @@ FString UBeamContentSubsystem::GetCachedContentPath()
 FString UBeamContentSubsystem::GetBakedContentPath(UBeamCoreSettings* CoreSettings)
 {
 	return FPaths::ProjectContentDir() + CoreSettings->BakedContentFolderName + "/" + CoreSettings->GlobalBakedContentFileName;
+}
+
+void UBeamContentSubsystem::CreateEmptyManifest()
+{
+#if WITH_EDITOR
+	FNotificationInfo Info(FText::FromString("Warning: You init your SDK without publish any content! Please publish any content."));
+	Info.bFireAndForget = true;
+	Info.FadeOutDuration = 1.0f;
+	Info.ExpireDuration = 6.0f;
+	Info.bUseSuccessFailIcons = false;
+	Info.bUseThrobber = false;
+	Info.bUseLargeFont = false;
+	Info.Image = FCoreStyle::Get().GetBrush("NotificationList.DefaultMessage");
+
+	FSlateNotificationManager::Get().AddNotification(Info);
+#endif
+				
+	FString ManifestId = "EmptyManifest";
+	
+	UBeamContentCache* Cache = NewObject<UBeamContentCache>();
+	Cache->ManifestId = FBeamContentManifestId(ManifestId);
+	Cache->LatestRemoteManifest = {};
+
+	const auto NumEntries = Cache->LatestRemoteManifest.Num();
+	Cache->Cache.Reserve(NumEntries);
+	Cache->Hashes.Reserve(NumEntries);
+
+	TMap<FBeamContentId, FString> CurrentLocalHashes = {};
+	if (LiveContent.Contains(ManifestId))
+	{
+		CurrentLocalHashes = LiveContent[ManifestId]->Hashes;
+		LiveContent[ManifestId]->LatestRemoteManifest = Cache->LatestRemoteManifest;
+	}
+	else
+	{
+		LiveContent.Add(ManifestId, Cache);
+	}
+
+	ContentManifestsUpdated.Broadcast({ManifestId});
 }

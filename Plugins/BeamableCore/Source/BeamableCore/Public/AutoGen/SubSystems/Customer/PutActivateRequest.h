@@ -7,7 +7,7 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-#include "BeamableCore/Public/AutoGen/HtmlResponse.h"
+#include "BeamableCore/Public/AutoGen/ApiCustomersActivatePutCustomerResponse.h"
 
 #include "PutActivateRequest.generated.h"
 
@@ -39,7 +39,7 @@ public:
 };
 
 UDELEGATE(BlueprintAuthorityOnly)
-DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnPutActivateSuccess, FBeamRequestContext, Context, UPutActivateRequest*, Request, UHtmlResponse*, Response);
+DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnPutActivateSuccess, FBeamRequestContext, Context, UPutActivateRequest*, Request, UApiCustomersActivatePutCustomerResponse*, Response);
 
 UDELEGATE(BlueprintAuthorityOnly)
 DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnPutActivateError, FBeamRequestContext, Context, UPutActivateRequest*, Request, FBeamErrorResponse, Error);
@@ -47,5 +47,5 @@ DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnPutActivateError, FBeamRequestContext, C
 UDELEGATE(BlueprintAuthorityOnly)
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FOnPutActivateComplete, FBeamRequestContext, Context, UPutActivateRequest*, Request);
 
-using FPutActivateFullResponse = FBeamFullResponse<UPutActivateRequest*, UHtmlResponse*>;
+using FPutActivateFullResponse = FBeamFullResponse<UPutActivateRequest*, UApiCustomersActivatePutCustomerResponse*>;
 DECLARE_DELEGATE_OneParam(FOnPutActivateFullResponse, FPutActivateFullResponse);

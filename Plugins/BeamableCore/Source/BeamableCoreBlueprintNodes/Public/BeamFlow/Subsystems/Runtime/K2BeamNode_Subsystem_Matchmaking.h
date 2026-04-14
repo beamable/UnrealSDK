@@ -189,3 +189,23 @@ class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_Operation_TryLeaveQueue : publi
 };
 
 #undef LOCTEXT_NAMESPACE
+
+#define LOCTEXT_NAMESPACE "UK2BeamNode_Operation_CommitRegionPingOperation"
+
+UCLASS(meta=(BeamFlowNode))
+class UK2BeamNode_Operation_CommitRegionPingOperation : public UK2BeamNode_Operation
+{
+	GENERATED_BODY()
+
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Matchamaking - Operation - CommitRegionPingOperation"); }
+
+	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamMatchmakingSubsystem, GetSelf); }
+
+	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamMatchmakingSubsystem, CommitRegionPingOperation); }
+
+	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamMatchmakingSubsystem::StaticClass(); }
+
+	virtual bool IsNodeSafeToIgnore() const override { return false; }
+};
+
+#undef LOCTEXT_NAMESPACE

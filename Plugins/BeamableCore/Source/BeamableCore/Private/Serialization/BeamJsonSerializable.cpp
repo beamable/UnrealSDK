@@ -1,4 +1,6 @@
 ﻿#include "Serialization/BeamJsonSerializable.h"
+
+#include "Serialization/BeamJsonUtils.h"
 FBeamJsonSerializableUStruct::~FBeamJsonSerializableUStruct() = default;
 
 void FBeamJsonSerializableUStruct::BeamSerialize(TUnrealJsonSerializer& Serializer) const
@@ -27,8 +29,8 @@ void FBeamJsonSerializableUStruct::BeamSerializeProperties(TUnrealPrettyJsonSeri
 
 void FBeamJsonSerializableUStruct::BeamDeserialize(const FString& JsonString)
 {
-	auto Bag = FJsonDataBag{};
-	Bag.FromJson(JsonString);
+	FJsonDataBag Bag;
+	UBeamJsonUtils::FromJsonToBag(JsonString, Bag);
 	BeamDeserializeProperties(Bag.JsonObject);
 }
 
@@ -77,8 +79,8 @@ void IBeamJsonSerializableUObject::BeamSerializeProperties(TUnrealPrettyJsonSeri
 
 void IBeamJsonSerializableUObject::BeamDeserialize(const FString& JsonString)
 {
-	auto Bag = FJsonDataBag{};
-	Bag.FromJson(JsonString);
+	FJsonDataBag Bag;
+	UBeamJsonUtils::FromJsonToBag(JsonString, Bag);
 	BeamDeserializeProperties(Bag.JsonObject);
 }
 

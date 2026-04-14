@@ -13,7 +13,7 @@
 /**
  * 
  */
-UCLASS(NotBlueprintable, NotBlueprintType, Hidden, meta=(BeamFlowNode))
+UCLASS(NotBlueprintable, NotBlueprintType, meta=(BeamFlowNode))
 class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_BeamFlow : public UK2Node
 {
 	GENERATED_BODY()

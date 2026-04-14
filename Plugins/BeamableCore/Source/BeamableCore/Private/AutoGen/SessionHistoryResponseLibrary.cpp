@@ -23,29 +23,29 @@ FString USessionHistoryResponseLibrary::SessionHistoryResponseToJsonString(const
 	return Result;
 }	
 
-USessionHistoryResponse* USessionHistoryResponseLibrary::Make(ULocalDate* Date, int32 DaysPlayed, TArray<FString> Payments, TArray<UPaymentTotal*> TotalPaid, TArray<FString> Sessions, FOptionalString InstallDate, UObject* Outer)
+USessionHistoryResponse* USessionHistoryResponseLibrary::Make(FOptionalString Date, FOptionalString InstallDate, FOptionalInt32 DaysPlayed, FOptionalArrayOfString Sessions, FOptionalArrayOfString Payments, FOptionalArrayOfPlayerSessionActorPaymentTotal TotalPaid, UObject* Outer)
 {
 	auto Serializable = NewObject<USessionHistoryResponse>(Outer);
 	Serializable->Date = Date;
+	Serializable->InstallDate = InstallDate;
 	Serializable->DaysPlayed = DaysPlayed;
+	Serializable->Sessions = Sessions;
 	Serializable->Payments = Payments;
 	Serializable->TotalPaid = TotalPaid;
-	Serializable->Sessions = Sessions;
-	Serializable->InstallDate = InstallDate;
 	
 	return Serializable;
 }
 
-void USessionHistoryResponseLibrary::Break(const USessionHistoryResponse* Serializable, ULocalDate*& Date, int32& DaysPlayed, TArray<FString>& Payments, TArray<UPaymentTotal*>& TotalPaid, TArray<FString>& Sessions, FOptionalString& InstallDate)
+void USessionHistoryResponseLibrary::Break(const USessionHistoryResponse* Serializable, FOptionalString& Date, FOptionalString& InstallDate, FOptionalInt32& DaysPlayed, FOptionalArrayOfString& Sessions, FOptionalArrayOfString& Payments, FOptionalArrayOfPlayerSessionActorPaymentTotal& TotalPaid)
 {
 	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
 	{
 		Date = Serializable->Date;
+		InstallDate = Serializable->InstallDate;
 		DaysPlayed = Serializable->DaysPlayed;
+		Sessions = Serializable->Sessions;
 		Payments = Serializable->Payments;
 		TotalPaid = Serializable->TotalPaid;
-		Sessions = Serializable->Sessions;
-		InstallDate = Serializable->InstallDate;
 	}
 		
 }

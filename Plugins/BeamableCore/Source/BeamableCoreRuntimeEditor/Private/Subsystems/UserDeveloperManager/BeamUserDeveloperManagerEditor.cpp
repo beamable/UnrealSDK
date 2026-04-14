@@ -20,7 +20,7 @@ void UBeamUserDeveloperManagerEditor::Initialize(FSubsystemCollectionBase& Colle
 	Super::Initialize(Collection);
 	BeamUserSlots = GEngine->GetEngineSubsystem<UBeamUserSlots>();
 
-	BeamCli = GEditor->GetEditorSubsystem<UBeamCli>();
+	BeamCli = Collection.InitializeDependency<UBeamCli>();
 
 	UserSlotAuthenticatedHandler = BeamUserSlots->GlobalUserSlotAuthenticatedCodeHandler.AddUObject(this, &UBeamUserDeveloperManagerEditor::TriggerOnUserSlotAuthenticated);
 }
@@ -510,7 +510,7 @@ void UBeamUserDeveloperManagerEditor::UpdateDeveloperUserInfo(FBeamGamerTag Game
 	UpdateInfoCommand->OnCompleted = [this](const int&, const FBeamOperationHandle&)
 	{
 	};
-
+	
 	FString TagsStr = "";
 
 	for (auto tag : Tags)

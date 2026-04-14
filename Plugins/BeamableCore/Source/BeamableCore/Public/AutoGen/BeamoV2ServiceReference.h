@@ -8,6 +8,7 @@
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalInt32.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfBeamoV2ServiceDependencyReference.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfBeamoV2ServiceComponent.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalBeamoV2LogProvider.h"
 
 #include "BeamoV2ServiceReference.generated.h"
 
@@ -33,6 +34,8 @@ public:
 	FOptionalInt32 ContainerHealthCheckPort = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Image Cpu Arch", Category="Beam")
 	FOptionalString ImageCpuArch = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Log Provider", Category="Beam")
+	FOptionalBeamoV2LogProvider LogProvider = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Checksum", Category="Beam")
 	FOptionalString Checksum = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Dependencies", Category="Beam")

@@ -20,10 +20,14 @@ void UPutPartyRequest::BuildRoute(FString& RouteString) const
 
 void UPutPartyRequest::BuildBody(FString& BodyString) const
 {
-	
+	ensureAlways(Body);
+
+	TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<TCHAR>>::Create(&BodyString);
+	Body->BeamSerialize(JsonSerializer);
+	JsonSerializer->Close();
 }
 
-UPutPartyRequest* UPutPartyRequest::Make(FGuid _Id, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
+UPutPartyRequest* UPutPartyRequest::Make(FGuid _Id, FOptionalArrayOfBeamTag _MemberTags, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPutPartyRequest* Req = NewObject<UPutPartyRequest>(RequestOwner);
 	Req->CustomHeaders = TMap{CustomHeaders};
@@ -33,6 +37,8 @@ UPutPartyRequest* UPutPartyRequest::Make(FGuid _Id, UObject* RequestOwner, TMap<
 	
 	
 	// Makes a body and fill up with parameters (Blank if no body parameters exist)
+	Req->Body = NewObject<UPartyMemberTags>(Req);
+	Req->Body->MemberTags = _MemberTags;
 	
 
 	return Req;

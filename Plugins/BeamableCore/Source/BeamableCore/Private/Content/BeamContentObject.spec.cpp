@@ -641,7 +641,7 @@ void FBeamContentObjectSpec::Define()
 			FString Json = FString{};
 			ContentObject->ToBasicJson(Json);
 
-			if (auto Bag = FJsonDataBag(); Bag.FromJson(*Json))
+			if (FJsonDataBag Bag; UBeamJsonUtils::FromJsonToBag(*Json, Bag))
 			{
 				const auto Props = Bag.GetField(TEXT("properties"))->AsObject();
 				TestEqual("String-based FText serialized correctly", Props->GetObjectField(TEXT("StringText"))->GetStringField(TEXT("data")), TestStringText);

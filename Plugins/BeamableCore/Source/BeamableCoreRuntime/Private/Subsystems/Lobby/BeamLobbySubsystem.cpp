@@ -47,7 +47,7 @@ void UBeamLobbySubsystem::OnBeamableStarting_Implementation(FBeamOperationHandle
 		}
 
 		// If no CLArg or EnvVar are provided, we assume the user will run multiple matches per server and will make the calls to RefreshLobbyDataOperation from their integration with their game server orchestrator
-		// (Hathora, GameLift, etc...)
+		// (Edgegap, GameLift, etc...)
 		if (LobbyIdStr.IsEmpty())
 		{
 			UE_LOG(LogBeamLobby, Display, TEXT("No LobbyId was provided to this dedicated server instance. "
@@ -164,9 +164,9 @@ bool UBeamLobbySubsystem::TryGetCurrentSlotPasscode(FUserSlot Slot, FString& Pas
 
 bool UBeamLobbySubsystem::TryGetLobbyById(FGuid LobbyId, ULobby*& Lobby)
 {
-	if (const auto ExistingLobbyIdx = KnownLobbies.IndexOfByPredicate([LobbyId](const ULobby* Lobby)
+	if (const auto ExistingLobbyIdx = KnownLobbies.IndexOfByPredicate([LobbyId](const ULobby* Lob)
 	{
-		return Lobby->LobbyId.Val == LobbyId.ToString(EGuidFormats::DigitsWithHyphensLower);
+		return Lob->LobbyId.Val == LobbyId.ToString(EGuidFormats::DigitsWithHyphensLower);
 	}); ExistingLobbyIdx != INDEX_NONE)
 	{
 		Lobby = KnownLobbies[ExistingLobbyIdx];
@@ -201,6 +201,23 @@ bool UBeamLobbySubsystem::TryGetCurrentLobby(FUserSlot Slot, ULobby*& Lobby)
 	}
 
 	Lobby = nullptr;
+	return false;
+}
+
+bool UBeamLobbySubsystem::TryGetPlayerLobby(FBeamGamerTag GamerTag, ULobby*& Lobby)
+{
+	for (auto KnownLobby : KnownLobbies)
+	{
+		for (auto Player : KnownLobby->Players.Val)
+		{
+			if (Player->PlayerId.Val == GamerTag)
+			{
+				Lobby = KnownLobby;
+				return true;
+			}
+		}
+	}
+
 	return false;
 }
 
@@ -240,8 +257,8 @@ bool UBeamLobbySubsystem::TryGetGlobalLobbyDataCasted(ULobby* Lobby, FString Dat
 	}
 	FString Json = Lobby->Data.Val[DataKey];
 
-	FJsonDataBag JsonBag = FJsonDataBag();
-	JsonBag.FromJson(Json);
+	FJsonDataBag JsonBag;
+	UBeamJsonUtils::FromJsonToBag(Json, JsonBag);
 
 	GlobalData = NewObject<UObject>(GetTransientPackage(), CastTarget);
 
@@ -328,8 +345,8 @@ bool UBeamLobbySubsystem::TryGetLobbyPlayerDataCasted(ULobby* Lobby, FBeamGamerT
 						{
 							FString Json = BeamTag.Value.Val;
 
-							FJsonDataBag JsonBag = FJsonDataBag();
-							JsonBag.FromJson(Json);
+							FJsonDataBag JsonBag;
+							UBeamJsonUtils::FromJsonToBag(Json, JsonBag);
 
 							PlayerData = NewObject<UObject>(GetTransientPackage(), CastTarget);
 
@@ -428,8 +445,65 @@ void UBeamLobbySubsystem::GetAllLobbies(TArray<ULobby*>& Lobbies, TArray<FBeamLo
 
 bool UBeamLobbySubsystem::TryGetCurrentLobbyState(FUserSlot Slot, UBeamLobbyState*& Lobby)
 {
+	if (!LocalPlayerLobbyInfo.Contains(Slot))
+		return false;
 	Lobby = LocalPlayerLobbyInfo.FindChecked(Slot);
 	if (Lobby->LobbyId.IsValid()) return true;
+	return false;
+}
+
+bool UBeamLobbySubsystem::TryGetTeamFromLobby(FBeamGamerTag GamerTag, FString& OutTeam)
+{
+	for (auto Lobby : KnownLobbies)
+	{
+		for (auto LobbyPlayer : Lobby->Players.Val)
+		{
+			if (LobbyPlayer->PlayerId.Val == GamerTag)
+			{
+				for (auto BeamTag : LobbyPlayer->Tags.Val)
+				{
+					if (BeamTag.Name.Val == "team")
+					{
+						OutTeam = BeamTag.Value.Val;
+						return true;
+					}
+				}
+			}
+		}
+	}
+
+	return false;
+}
+
+bool UBeamLobbySubsystem::TryGetTeamWithIndexFromLobby(FBeamGamerTag GamerTag, FString& OutTeam)
+{
+	TMap<FString, int> TeamCount;
+	for (auto Lobby : KnownLobbies)
+	{
+		for (auto LobbyPlayer : Lobby->Players.Val)
+		{
+			for (auto BeamTag : LobbyPlayer->Tags.Val)
+			{
+				if (BeamTag.Name.Val == "team")
+				{
+					if (!TeamCount.Contains(BeamTag.Value.Val))
+					{
+						TeamCount.Add(BeamTag.Value.Val, 0);
+					}
+
+					if (LobbyPlayer->PlayerId.Val == GamerTag)
+					{
+						OutTeam = BeamTag.Value.Val + FString::FromInt(TeamCount[BeamTag.Value.Val]);
+						return true;
+					}
+
+					TeamCount[BeamTag.Value.Val]++;
+				}
+			}
+		}
+	}
+
+
 	return false;
 }
 
@@ -460,13 +534,13 @@ bool UBeamLobbySubsystem::TryRemoveLocalPlayerState(const AController* Controlle
 	if (IsValid(this) && ensureAlwaysMsgf(!Runtime->IsClient(), TEXT("The TryRemoveLocalPlayerState only runs on Server!")))
 	{
 		auto GamerTag = GetGamerTagByPlayerController(Controller);
-	
+
 		if (Server_GamerTagToNetId.Contains(GamerTag))
 		{
 			FString NetId = Server_GamerTagToNetId[GamerTag];
 			Server_GamerTagToNetId.Remove(GamerTag);
 			Server_NetIdToGamerTag.Remove(NetId);
-			
+
 			return true;
 		}
 	}
@@ -595,10 +669,10 @@ FString UBeamLobbySubsystem::PrepareLoginOptions(const FUserSlot& Slot, const FS
 		ULobby* Lobby;
 		if (this->TryGetCurrentLobby(Slot, Lobby))
 		{
-			return PrepareLoginOptionsFull(Options, User.AuthToken.AccessToken, User.AuthToken.RefreshToken, User.AuthToken.ExpiresIn, User.GamerTag.AsLong, Lobby->LobbyId.Val);
+			return PrepareLoginOptionsFull(Options, User.AuthToken.AccessToken, User.AuthToken.RefreshToken, User.GamerTag.AsLong, Lobby->LobbyId.Val);
 		}
 
-		return PrepareLoginOptionsFull(Options, User.AuthToken.AccessToken, User.AuthToken.RefreshToken, User.AuthToken.ExpiresIn, User.GamerTag.AsLong, FString{});
+		return PrepareLoginOptionsFull(Options, User.AuthToken.AccessToken, User.AuthToken.RefreshToken, User.GamerTag.AsLong, FString{});
 	}
 	return Options;
 }
@@ -633,7 +707,7 @@ FString UBeamLobbySubsystem::PrepareLoginOptionsByLocalPlayerIndex(int32 LocalPl
 }
 
 
-FString UBeamLobbySubsystem::PrepareLoginOptionsFull(const FString& Options, const FString& AccessToken, const FString& RefreshToken, int64 ExpiresIn, const FBeamGamerTag& GamerTag, FString LobbyId) const
+FString UBeamLobbySubsystem::PrepareLoginOptionsFull(const FString& Options, const FString& AccessToken, const FString& RefreshToken, const FBeamGamerTag& GamerTag, FString LobbyId) const
 {
 	FString NewOptions = Options;
 
@@ -645,9 +719,6 @@ FString UBeamLobbySubsystem::PrepareLoginOptionsFull(const FString& Options, con
 
 	if (!UGameplayStatics::HasOption(NewOptions, Reserved_LoginOpt_RefreshToken_Required))
 		NewOptions += FString::Printf(TEXT("?%s=%s"), *Reserved_LoginOpt_RefreshToken_Required, *RefreshToken);
-
-	if (!UGameplayStatics::HasOption(NewOptions, Reserved_LoginOpt_ExpiresIn_Required))
-		NewOptions += FString::Printf(TEXT("?%s=%lld"), *Reserved_LoginOpt_ExpiresIn_Required, ExpiresIn);
 
 	if (!LobbyId.IsEmpty())
 	{
@@ -834,7 +905,7 @@ FGuid UBeamLobbySubsystem::GetLobbyIdFromCLArgs()
 	}
 
 	// If no CLArg or EnvVar are provided, we assume the user will run multiple matches per server and will make the calls to RefreshLobbyDataOperation from their integration with their game server orchestrator
-	// (Hathora, GameLift, etc...)
+	// (Edgegap, GameLift, etc...)
 	if (LobbyIdStr.IsEmpty())
 	{
 		UE_LOG(LogBeamLobby, Warning, TEXT("No LobbyId was provided via CLArgs/EnvVars. "
@@ -1613,7 +1684,7 @@ void UBeamLobbySubsystem::UpdatePlayerTags(const FUserSlot& Slot, FBeamGamerTag 
 
 	// Make the request.
 	const auto LobbyId = LobbyState->LobbyId;
-	const auto Handler = FOnPutTagsFullResponse::CreateLambda([this, Slot, Op, LobbyId, TargetPlayer, Tags](FPutTagsFullResponse Resp)
+	const auto Handler = FOnApiLobbyPutTagsByIdFullResponse::CreateLambda([this, Slot, Op, LobbyId, TargetPlayer, Tags](FApiLobbyPutTagsByIdFullResponse Resp)
 	{
 		// If we are invoking this before retrying, we just don't do anything 
 		if (Resp.State == RS_Retrying) return;
@@ -1901,9 +1972,6 @@ void UBeamLobbySubsystem::AcceptUserIntoGameServer(const FUserSlot& Slot, const 
 		const auto bHasRefreshToken = UGameplayStatics::HasOption(Options, Reserved_LoginOpt_RefreshToken_Required);
 		if (!bHasRefreshToken) Errs.Add(TEXT("MISSING_REFRESH_TOKEN_OPT"));
 
-		const auto bHasExpiresIn = UGameplayStatics::HasOption(Options, Reserved_LoginOpt_ExpiresIn_Required);
-		if (!bHasExpiresIn) Errs.Add(TEXT("MISSING_EXPIRES_IN_OPT"));
-
 
 		// If we failed to receive any of the options, we error out here.
 		if (Errs.Num() > 0)
@@ -1917,7 +1985,6 @@ void UBeamLobbySubsystem::AcceptUserIntoGameServer(const FUserSlot& Slot, const 
 		if (ConnectingGamerTag.IsEmpty()) ConnectingGamerTag = UniqueId.GetUniqueNetId()->ToString();
 		const FString& ConnectingAccessToken = UGameplayStatics::ParseOption(Options, Reserved_LoginOpt_AccessToken_Required);
 		const FString& ConnectingRefreshToken = UGameplayStatics::ParseOption(Options, Reserved_LoginOpt_RefreshToken_Required);
-		const int32& ConnectingTokenExpiresIn = UGameplayStatics::GetIntOption(Options, Reserved_LoginOpt_ExpiresIn_Required, 30000);
 		const FString& ConnectingToLobby = UGameplayStatics::ParseOption(Options, Reserved_LoginOpt_LobbyId_Optional);
 
 		ULobby* TargetLobby = nullptr;
@@ -1997,6 +2064,13 @@ void UBeamLobbySubsystem::AcceptUserIntoGameServer(const FUserSlot& Slot, const 
 
 		// TODO: This means that whenever local players disconnect, we'll need to clear their UserSlot out. 
 		const auto CurrMappingIdx = FPlatformAtomics::InterlockedIncrement(&AutoIncrementServerMappingSlotsIdx);
+		FUserSlot UserSlot = FUserSlot::MakeServerMappingSlot(CurrMappingIdx);
+		const auto TargetRealm = GetDefault<UBeamCoreSettings>()->TargetRealm;
+
+		// We are setting the authentication data in the UserSlot for the case of the token is expired the flow of retry and get a new token works properly.
+		UserSlots->SetAuthenticationDataAtSlot(UserSlot, ConnectingAccessToken, ConnectingRefreshToken,
+		                                       FDateTime::UtcNow().ToUnixTimestamp(), 120000, TargetRealm.Cid, TargetRealm.Pid, this);
+		UserSlots->SetGamerTagAtSlot(UserSlot, ConnectingGamerTag, this);
 
 		/// ... prepare and make a GetMe request using the provided access token.
 		const auto AccountsApi = GEngine->GetEngineSubsystem<UBeamAccountsApi>();
@@ -2004,10 +2078,12 @@ void UBeamLobbySubsystem::AcceptUserIntoGameServer(const FUserSlot& Slot, const 
 		GEngine->GetEngineSubsystem<UBeamBackend>()->OverrideRequestAuthorization(Req, ConnectingAccessToken);
 		FBeamRequestContext Ctx;
 		AccountsApi->CPP_GetMe(
-			GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot(),
+			UserSlot,
 			Req,
-			FOnBasicAccountsGetMeFullResponse::CreateLambda([this, CurrMappingIdx, ConnectingAccessToken, ConnectingRefreshToken,ConnectingTokenExpiresIn, TargetLobby, Op, UniqueId](FBasicAccountsGetMeFullResponse Resp)
+			FOnBasicAccountsGetMeFullResponse::CreateLambda([this, CurrMappingIdx, ConnectingAccessToken, ConnectingRefreshToken, TargetLobby, Op, UniqueId](FBasicAccountsGetMeFullResponse Resp)
 			{
+				if (Resp.State == RS_Retrying) return;
+
 				if (Resp.State == RS_Error)
 				{
 					RequestTracker->TriggerOperationError(Op, TEXT("FAILED_TO_VALIDATE_TOKEN"));
@@ -2029,7 +2105,7 @@ void UBeamLobbySubsystem::AcceptUserIntoGameServer(const FUserSlot& Slot, const 
 
 						const auto TargetRealm = GetDefault<UBeamCoreSettings>()->TargetRealm;
 						UserSlots->SetAuthenticationDataAtSlot(MappingSlot, ConnectingAccessToken, ConnectingRefreshToken,
-						                                       FDateTime::UtcNow().ToUnixTimestamp(), ConnectingTokenExpiresIn, TargetRealm.Cid, TargetRealm.Pid, this);
+						                                       FDateTime::UtcNow().ToUnixTimestamp(), 120000, TargetRealm.Cid, TargetRealm.Pid, this);
 						UserSlots->SetGamerTagAtSlot(MappingSlot, RequestingGamerTag, this);
 						UserSlots->SetEmailAtSlot(MappingSlot, Resp.SuccessData->Email.GetValueOrDefault(DefaultStr), this);
 
@@ -2180,13 +2256,13 @@ FBeamRequestContext UBeamLobbySubsystem::RequestUpdateLobbyMetadata(const FUserS
 }
 
 FBeamRequestContext UBeamLobbySubsystem::RequestUpdatePlayerTag(const FUserSlot& UserSlot, FGuid LobbyId, FBeamGamerTag PlayerId, TArray<FBeamTag> PlayerTags, bool bShouldReplace,
-                                                                FBeamOperationHandle Op, FOnPutTagsFullResponse Handler) const
+                                                                FBeamOperationHandle Op, FOnApiLobbyPutTagsByIdFullResponse Handler) const
 {
-	const auto Req = UPutTagsRequest::Make(LobbyId,
-	                                       FOptionalBeamGamerTag(PlayerId),
-	                                       FOptionalBool(bShouldReplace),
-	                                       PlayerTags.Num() > 0 ? FOptionalArrayOfBeamTag(PlayerTags) : FOptionalArrayOfBeamTag(),
-	                                       GetTransientPackage(), {});
+	const auto Req = UApiLobbyPutTagsByIdRequest::Make(LobbyId,
+	                                                   FOptionalBeamGamerTag(PlayerId),
+	                                                   FOptionalBool(bShouldReplace),
+	                                                   PlayerTags.Num() > 0 ? FOptionalArrayOfBeamTag(PlayerTags) : FOptionalArrayOfBeamTag(),
+	                                                   GetTransientPackage(), {});
 
 	// Make the request
 	FBeamRequestContext Ctx;
@@ -2341,6 +2417,12 @@ void UBeamLobbySubsystem::OnLobbyUpdatedHandler(FLobbyUpdateNotificationMessage 
 						UE_LOG(LogBeamLobby, Error, TEXT("You should not be seeing this. LOBBY_ID=%s, USER_SLOT=%s"), *LobbyId.ToString(EGuidFormats::DigitsWithHyphensLower), *Slot.Name);
 					}
 				}
+				else
+				{
+					ClearLobbyForSlot(Slot);
+
+					RemoveKnownLobbyData(Msg.LobbyId.ToString());
+				}
 			}), LobbyId);
 		}
 	}
@@ -2425,6 +2507,18 @@ void UBeamLobbySubsystem::ReplaceOrAddKnownLobbyData(ULobby* LobbyData)
 		KnownLobbies[ExistingLobbyIdx] = LobbyData;
 	else
 		KnownLobbies.Add(LobbyData);
+}
+
+void UBeamLobbySubsystem::RemoveKnownLobbyData(ULobby* LobbyData)
+{
+	if (const auto ExistingLobbyIdx = KnownLobbies.IndexOfByPredicate([LobbyData](const ULobby* Lob) { return Lob->LobbyId.Val.Equals(LobbyData->LobbyId.Val); }); ExistingLobbyIdx != INDEX_NONE)
+		KnownLobbies.RemoveAt(ExistingLobbyIdx);
+}
+
+void UBeamLobbySubsystem::RemoveKnownLobbyData(FString LobbyId)
+{
+	if (const auto ExistingLobbyIdx = KnownLobbies.IndexOfByPredicate([LobbyId](const ULobby* Lob) { return Lob->LobbyId.Val.Equals(LobbyId); }); ExistingLobbyIdx != INDEX_NONE)
+		KnownLobbies.RemoveAt(ExistingLobbyIdx);
 }
 
 void UBeamLobbySubsystem::ClearLobbyForSlot(FUserSlot Slot)

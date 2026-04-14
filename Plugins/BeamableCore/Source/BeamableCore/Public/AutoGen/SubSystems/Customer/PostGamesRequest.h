@@ -8,7 +8,7 @@
 #include "BeamBackend/BeamFullResponse.h"
 
 #include "Serialization/BeamJsonUtils.h"
-#include "BeamableCore/Public/AutoGen/NewGameRequestBody.h"
+#include "BeamableCore/Public/AutoGen/CustomerActorNewGameRequestBody.h"
 #include "BeamableCore/Public/AutoGen/RealmView.h"
 
 #include "PostGamesRequest.generated.h"
@@ -29,7 +29,7 @@ public:
 
 	// Body Params
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="", Category="Beam")
-	UNewGameRequestBody* Body = {};
+	UCustomerActorNewGameRequestBody* Body = {};
 
 	// Beam Base Request Declaration
 	UPostGamesRequest() = default;
@@ -38,8 +38,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Customer|Utils|Make/Break", DisplayName="Make PostGames",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="RequestOwner", AutoCreateRefTerm="CustomHeaders"))
-	static UPostGamesRequest* Make(FString _CustomerId, FString _GameName, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Customer|Utils|Make/Break", DisplayName="Make PostGames",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_bIsHidden,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	static UPostGamesRequest* Make(FString _CustomerId, FString _GameName, FOptionalBool _bIsHidden, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

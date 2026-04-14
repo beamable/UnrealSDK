@@ -3,7 +3,7 @@
 
 FOptionalServicePlanActorBeamoLimits::FOptionalServicePlanActorBeamoLimits()
 {
-	Val = nullptr;
+	Val = NewObject<UServicePlanActorBeamoLimits>(GetTransientPackage());
 	IsSet = false;
 }
 

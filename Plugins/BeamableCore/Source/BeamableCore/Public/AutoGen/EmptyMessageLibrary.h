@@ -13,10 +13,10 @@ class BEAMABLECORE_API UEmptyMessageLibrary : public UBlueprintFunctionLibrary
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Customer|Utils|Json", DisplayName="EmptyMessage To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Admin|Utils|Json", DisplayName="EmptyMessage To JSON String")
 	static FString EmptyMessageToJsonString(const UEmptyMessage* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Customer|Utils|Make/Break", DisplayName="Make EmptyMessage", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Admin|Utils|Make/Break", DisplayName="Make EmptyMessage", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static UEmptyMessage* Make(UObject* Outer);
 
 	

@@ -27,7 +27,7 @@ void UPostRealmsRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostRealmsRequest* UPostRealmsRequest::Make(FString _CustomerId, FString _Name, FOptionalBool _bSharded, FOptionalString _Plan, FOptionalString _Parent, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
+UPostRealmsRequest* UPostRealmsRequest::Make(FString _CustomerId, FString _Name, FOptionalBool _bIsHidden, FOptionalBool _bSharded, FOptionalString _Plan, FOptionalString _Parent, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPostRealmsRequest* Req = NewObject<UPostRealmsRequest>(RequestOwner);
 	Req->CustomHeaders = TMap{CustomHeaders};
@@ -39,6 +39,7 @@ UPostRealmsRequest* UPostRealmsRequest::Make(FString _CustomerId, FString _Name,
 	// Makes a body and fill up with parameters (Blank if no body parameters exist)
 	Req->Body = NewObject<UCreateRealmRequestBody>(Req);
 	Req->Body->Name = _Name;
+	Req->Body->bIsHidden = _bIsHidden;
 	Req->Body->bSharded = _bSharded;
 	Req->Body->Plan = _Plan;
 	Req->Body->Parent = _Parent;

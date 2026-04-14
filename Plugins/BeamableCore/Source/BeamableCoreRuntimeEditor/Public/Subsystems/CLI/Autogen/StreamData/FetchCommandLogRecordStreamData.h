@@ -21,13 +21,16 @@ public:
 	FString ServiceName = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString Message = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TMap<FString, FString> LogAttributes = {};
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
 	{
 		UBeamJsonUtils::SerializeRawPrimitive(TEXT("Timestamp"), Timestamp, Serializer);
 		UBeamJsonUtils::SerializeRawPrimitive(TEXT("LogLevel"), LogLevel, Serializer);
 		UBeamJsonUtils::SerializeRawPrimitive(TEXT("ServiceName"), ServiceName, Serializer);
-		UBeamJsonUtils::SerializeRawPrimitive(TEXT("Message"), Message, Serializer);	
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("Message"), Message, Serializer);
+		UBeamJsonUtils::SerializeMap<FString>(TEXT("LogAttributes"), LogAttributes, Serializer);	
 	}
 
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
@@ -35,7 +38,8 @@ public:
 		UBeamJsonUtils::SerializeRawPrimitive(TEXT("Timestamp"), Timestamp, Serializer);
 		UBeamJsonUtils::SerializeRawPrimitive(TEXT("LogLevel"), LogLevel, Serializer);
 		UBeamJsonUtils::SerializeRawPrimitive(TEXT("ServiceName"), ServiceName, Serializer);
-		UBeamJsonUtils::SerializeRawPrimitive(TEXT("Message"), Message, Serializer);	
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("Message"), Message, Serializer);
+		UBeamJsonUtils::SerializeMap<FString>(TEXT("LogAttributes"), LogAttributes, Serializer);	
 	}
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
@@ -43,7 +47,8 @@ public:
 		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("Timestamp"), Bag, Timestamp);
 		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("LogLevel"), Bag, LogLevel);
 		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("ServiceName"), Bag, ServiceName);
-		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("Message"), Bag, Message);	
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("Message"), Bag, Message);
+		UBeamJsonUtils::DeserializeMap<FString>(TEXT("LogAttributes"), Bag, LogAttributes, OuterOwner);	
 	}
 };
 

@@ -75,4 +75,28 @@ class UK2BeamOperation_Editor_Microservices_Stop : public UK2BeamNode_Operation
 	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamMicroservicesEditor::StaticClass(); }	
 };
 
+
+UCLASS(meta=(BeamFlowNode))
+class UK2BeamOperation_Editor_Microservices_Export : public UK2BeamNode_Operation
+{
+	GENERATED_BODY()
+
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override
+	{
+		return LOCTEXT("Title", "Editor Operation - Microservices - Export Docker Compose");
+	}
+
+	virtual FName GetSubsystemSelfFunctionName() const override
+	{
+		return GET_FUNCTION_NAME_CHECKED(UBeamMicroservicesEditor, GetSelf);
+	}
+
+	virtual FName GetOperationFunctionName() const override
+	{
+		return GET_FUNCTION_NAME_CHECKED(UBeamMicroservicesEditor, ExportDockerComposeOperation);
+	}
+
+	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamMicroservicesEditor::StaticClass(); }	
+};
+
 #undef LOCTEXT_NAMESPACE

@@ -1,0 +1,63 @@
+﻿{
+  "FileVersion": 3,
+  "Version": 1,
+  "VersionName": "1.0",
+  "FriendlyName": "BEAMPROJ_BeamFarm",
+  "Description": "",
+  "Category": "Other",
+  "CreatedBy": "",
+  "CreatedByURL": "",
+  "DocsURL": "",
+  "MarketplaceURL": "",
+  "CanContainContent": true,
+  "IsBetaVersion": false,
+  "IsExperimentalVersion": false,
+  "Installed": false,
+  "Modules": [
+    {
+      "Name": "BEAMPROJ_BeamFarm",
+      "Type": "Runtime",
+      "LoadingPhase": "Default"
+    }
+  ],
+  "Plugins": [
+    {
+      "Name": "BeamableCore",
+      "Enabled": true
+    },
+    {
+      "Name": "BeamableUnrealMicroserviceClients",
+      "Enabled": true
+    },
+    {
+      "Name": "OnlineSubsystemGoogle",
+      "Enabled": true,
+      "SupportedTargetPlatforms": [
+        "Android",
+        "Win64",
+        "Mac",
+        "Linux",
+        "IOS"
+      ]
+    },
+    {
+      "Name": "OnlineSubsystemApple",
+      "Enabled": true,
+      "SupportedTargetPlatforms": [
+        "IOS",
+        "Mac"
+      ]
+    },
+    {
+      "Name": "OnlineSubsystemIOS",
+      "Enabled": true,
+      "SupportedTargetPlatforms": [
+        "IOS"
+      ]
+    },
+    {
+      "Name" : "OnlineSubsystemUtils",
+      "Enabled" : true
+    }
+  ]
+}

@@ -4,8 +4,9 @@
 
 #include "Serialization/BeamJsonSerializable.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalMapOfInt64.h"
-#include "BeamableCore/Public/AutoGen/Optionals/OptionalMapOfArrayOfCurrencyProperty.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalBool.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfString.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalMapOfArrayOfCurrencyProperty.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfItemUpdateRequestBody.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfItemCreateRequestBody.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
@@ -21,8 +22,12 @@ class BEAMABLECORE_API UInventoryUpdateRequestBody : public UObject, public IBea
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Apply Vip Bonus", Category="Beam")
 	FOptionalBool bApplyVipBonus = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Include Deltas", Category="Beam")
+	FOptionalBool bIncludeDeltas = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Transaction", Category="Beam")
 	FOptionalString Transaction = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Scopes", Category="Beam")
+	FOptionalArrayOfString Scopes = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Update Items", Category="Beam")
 	FOptionalArrayOfItemUpdateRequestBody UpdateItems = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="New Items", Category="Beam")

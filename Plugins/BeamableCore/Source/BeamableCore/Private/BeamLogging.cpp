@@ -11,7 +11,8 @@ DEFINE_LOG_CATEGORY(LogBeamEditor);
 DEFINE_LOG_CATEGORY(LogBeamRuntime);
 
 DEFINE_LOG_CATEGORY(LogBeamContent);
-DEFINE_LOG_CATEGORY(LogBeamMicroservices);
+DEFINE_LOG_CATEGORY(LogBeamEditorMs);
+DEFINE_LOG_CATEGORY(LogBeamMs);
 
 DEFINE_LOG_CATEGORY(LogBeamStats);
 DEFINE_LOG_CATEGORY(LogBeamLobby);
@@ -21,3 +22,5 @@ DEFINE_LOG_CATEGORY(LogBeamParty);
 DEFINE_LOG_CATEGORY(LogBeamFriend);
 
 DEFINE_LOG_CATEGORY(LogBeamCli);
+
+FOnBeamLogging FBeamLogging::BeamLoggingMessageHook;

@@ -12,10 +12,24 @@ public class BEAMPROJ_Beamball : ModuleRules
 			new string[]
 			{
 				"Core",
-				"HathoraSDK"
+
+				// Dependencies for Steam
+				"OnlineSubsystem",
+				"OnlineSubsystemUtils",
+				"OnlineSubsystemSteam",
+				"Steamworks",
+
+				// We'll need to use microservices from this module
+				"BeamableUnrealMicroserviceClients",
+				"HTTP",
+
+				// Dependencies for EOS plugin
+				"CoreOnline",
+				"OnlineServicesInterface",
+				"OnlineServicesEOS"
 			}
 		);
-		
+
 		PrivateDependencyModuleNames.AddRange(
 			new string[]
 			{
@@ -23,10 +37,11 @@ public class BEAMPROJ_Beamball : ModuleRules
 				"Engine",
 				"Slate",
 				"SlateCore",
-				// ... add private dependencies that you statically link with here ...	
+				// ... add private dependencies that you statically link with here ...
 			}
 		);
-		
+
 		Beam.AddRuntimeModuleDependencies(this);
+		BeamableUnrealMicroserviceClients.AddMicroserviceClients(this);
 	}
 }

@@ -32,6 +32,16 @@ public:
 	static FString GetSaveSlotForManifest(FBeamContentManifestId Id) { return FString::Printf(TEXT("BEAM_SAVE_CONTENT_MANIFEST_%s"), *Id.AsString); }
 };
 
+UCLASS(BlueprintType)
+class UBeamIndividualContentDownloadData : public UObject, public IBeamOperationEventData
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(BlueprintReadWrite)
+	FString ContentId;
+};
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnContentManifestsUpdated, TArray<FBeamContentManifestId>, UpdatedManifests);
 
 UCLASS(BlueprintType)
@@ -65,6 +75,9 @@ class BEAMABLECORERUNTIME_API UBeamContentSubsystem : public UBeamRuntimeSubsyst
 	TMap<UClass*, TArray<UClass*>> RecursivePropertyTypes;
 
 public:
+	UFUNCTION(BlueprintCallable)
+	static inline FName GetOperationEventID_Download_Individual_Content() { return FName("DOWNLOADED_INDIVIDUAL_CONTENT_SUCCESS"); }
+	
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;	
 
 	/**
@@ -89,7 +102,8 @@ private:
 	 */
 	void DownloadContentObjects(FBeamContentManifestId ManifestId, TArray<FBeamRemoteContentManifestEntry> Rows, TMap<FBeamContentId, FString> Checksums,
 	                            bool bIgnoreFilterMap, FBeamOperationHandle Op);
-
+	
+	void CreateEmptyManifest();
 	// Static helpers
 public:
 	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
@@ -247,7 +261,9 @@ public:
 	void FetchIndividualContent(FBeamContentManifestId ManifestId, TArray<FBeamContentId> ContentToDownloadFetch, FBeamOperationHandle Op);
 
 	bool EnforceLinks(FBeamContentManifestId ManifestId, TArray<FBeamRemoteContentManifestEntry> ManifestRows, TArray<FBeamContentId>& OutLinksToFetch);
-
+	
 	static FString GetCachedContentPath();
 	static FString GetBakedContentPath(UBeamCoreSettings* CoreSettings);
+
+
 };

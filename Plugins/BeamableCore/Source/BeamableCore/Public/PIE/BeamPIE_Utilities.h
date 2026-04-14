@@ -27,18 +27,6 @@ public:
 		return true;
 	}
 
-	/**
-	 * Checks if the FContext is valid
-	 */
-	static bool IsValidContext(FWorldContext* Context)
-	{
-		bool bIsValid = Context != nullptr && Context->WorldType != EWorldType::None && Context->World();
-		if (!bIsValid)
-		{
-			UE_LOG(LogBeamEditor, Warning, TEXT("This delegate called was made during terminated PIE Session"));
-		}
-		return bIsValid;
-	}
 	
 	static bool CheckPIEMapFilter(FString MapName, FBeamPIE_Settings PIESetting)
 	{
@@ -62,9 +50,7 @@ public:
 		}
 		return false;
 	}
-	// UE_LOG(CategoryName, Verbosity, TEXT("%s - %s"), \
-	// 	*FString::Printf(TEXT("[Index: %d, IsServer: %d, NetMode: %d]"), FBeamPIE_Utilities::GetPIEInstance(Ctx), \
-	// 	FBeamPIE_Utilities::IsRunningOnServer(Ctx->World()), Ctx->World()->GetNetMode()), *FString::Printf(Format, ##__VA_ARGS__)); 
+
 	static FString BeamLogFormat(FWorldContext* WorldContext)
 	{
 		 return *FString::Printf(TEXT("[Index: %d, IsServer: %d, NetMode: %d]"), GetPIEInstance(WorldContext), IsRunningOnServer(WorldContext->World()), WorldContext->World()->GetNetMode());
@@ -74,11 +60,12 @@ public:
 	{
 		if (Context == nullptr || Context->GetWorld() == nullptr)
 		{
-			return "";
+			return *FString::Printf(TEXT("[IsServer: %d]"), IsRunningDedicatedServer());
 		}
+		
 		return BeamLogFormat(GEngine->GetWorldContextFromWorld(Context->GetWorld()));
 	}
-	
+
 	/**
 	 * This will return either @link FWorldContext::PIEInstance @endlink or the Instance based on whether we've
 	 * extracted from the CLArgs Unreal passes to separate-process-PIEs.

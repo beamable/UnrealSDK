@@ -15,6 +15,7 @@ void UBeamoV2ServiceReference::BeamSerializeProperties(TUnrealJsonSerializer& Se
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("comments"), &Comments, Serializer);
 	UBeamJsonUtils::SerializeOptional<int32>(TEXT("containerHealthCheckPort"), &ContainerHealthCheckPort, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("imageCpuArch"), &ImageCpuArch, Serializer);
+	UBeamJsonUtils::SerializeOptional<EBeamBeamoV2LogProvider>(TEXT("logProvider"), &LogProvider, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("checksum"), &Checksum, Serializer);
 	UBeamJsonUtils::SerializeOptional<TArray<UBeamoV2ServiceDependencyReference*>, UBeamoV2ServiceDependencyReference*>(TEXT("dependencies"), &Dependencies, Serializer);
 	UBeamJsonUtils::SerializeOptional<TArray<UBeamoV2ServiceComponent*>, UBeamoV2ServiceComponent*>(TEXT("components"), &Components, Serializer);
@@ -30,6 +31,7 @@ void UBeamoV2ServiceReference::BeamSerializeProperties(TUnrealPrettyJsonSerializ
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("comments"), &Comments, Serializer);
 	UBeamJsonUtils::SerializeOptional<int32>(TEXT("containerHealthCheckPort"), &ContainerHealthCheckPort, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("imageCpuArch"), &ImageCpuArch, Serializer);
+	UBeamJsonUtils::SerializeOptional<EBeamBeamoV2LogProvider>(TEXT("logProvider"), &LogProvider, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("checksum"), &Checksum, Serializer);
 	UBeamJsonUtils::SerializeOptional<TArray<UBeamoV2ServiceDependencyReference*>, UBeamoV2ServiceDependencyReference*>(TEXT("dependencies"), &Dependencies, Serializer);
 	UBeamJsonUtils::SerializeOptional<TArray<UBeamoV2ServiceComponent*>, UBeamoV2ServiceComponent*>(TEXT("components"), &Components, Serializer);		
@@ -45,6 +47,7 @@ void UBeamoV2ServiceReference::BeamDeserializeProperties(const TSharedPtr<FJsonO
 	UBeamJsonUtils::DeserializeOptional<FString>("comments", Bag, Comments, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<int32>("containerHealthCheckPort", Bag, ContainerHealthCheckPort, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("imageCpuArch", Bag, ImageCpuArch, OuterOwner);
+	UBeamJsonUtils::DeserializeOptional<EBeamBeamoV2LogProvider>("logProvider", Bag, LogProvider, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("checksum", Bag, Checksum, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<TArray<UBeamoV2ServiceDependencyReference*>, UBeamoV2ServiceDependencyReference*>("dependencies", Bag, Dependencies, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<TArray<UBeamoV2ServiceComponent*>, UBeamoV2ServiceComponent*>("components", Bag, Components, OuterOwner);

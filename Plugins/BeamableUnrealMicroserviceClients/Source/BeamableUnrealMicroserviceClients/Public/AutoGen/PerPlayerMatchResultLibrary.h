@@ -17,8 +17,8 @@ public:
 	static FString PerPlayerMatchResultToJsonString(const UPerPlayerMatchResult* Serializable, const bool Pretty);
 
 	UFUNCTION(BlueprintPure, Category="Beam|BeamballMs|Utils|Make/Break", DisplayName="Make PerPlayerMatchResult", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
-	static UPerPlayerMatchResult* Make(bool bWon, int32 RankEarned, int32 CoinsEarned, UObject* Outer);
+	static UPerPlayerMatchResult* Make(EBeamballMatchResultEnum MatchResult, int32 RankEarned, int32 CoinsEarned, UObject* Outer);
 
 	UFUNCTION(BlueprintPure, Category="Beam|BeamballMs|Utils|Make/Break", DisplayName="Break PerPlayerMatchResult", meta=(NativeBreakFunc))
-	static void Break(const UPerPlayerMatchResult* Serializable, bool& bWon, int32& RankEarned, int32& CoinsEarned);
+	static void Break(const UPerPlayerMatchResult* Serializable, EBeamballMatchResultEnum& MatchResult, int32& RankEarned, int32& CoinsEarned);
 };

@@ -3,7 +3,7 @@
 
 FOptionalLeaderboardCohortSettings::FOptionalLeaderboardCohortSettings()
 {
-	Val = nullptr;
+	Val = NewObject<ULeaderboardCohortSettings>(GetTransientPackage());
 	IsSet = false;
 }
 

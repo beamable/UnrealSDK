@@ -7,32 +7,32 @@
 
 void UThirdPartyAssociation::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	UBeamJsonUtils::SerializeRawPrimitive(TEXT("name"), Name, Serializer);
-	UBeamJsonUtils::SerializeRawPrimitive(TEXT("userAppId"), UserAppId, Serializer);
-	UBeamJsonUtils::SerializeRawPrimitive(TEXT("appId"), AppId, Serializer);
-	UBeamJsonUtils::SerializeMap<FString>(TEXT("meta"), Meta, Serializer);
-	UBeamJsonUtils::SerializeOptional<FString>(TEXT("email"), &Email, Serializer);
+	UBeamJsonUtils::SerializeOptional<FString>(TEXT("name"), &Name, Serializer);
+	UBeamJsonUtils::SerializeOptional<FString>(TEXT("appId"), &AppId, Serializer);
+	UBeamJsonUtils::SerializeOptional<FString>(TEXT("userAppId"), &UserAppId, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("userBusinessId"), &UserBusinessId, Serializer);
+	UBeamJsonUtils::SerializeOptional<FString>(TEXT("email"), &Email, Serializer);
+	UBeamJsonUtils::SerializeOptional<TMap<FString, FString>, FString>(TEXT("meta"), &Meta, Serializer);
 }
 
 void UThirdPartyAssociation::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	UBeamJsonUtils::SerializeRawPrimitive(TEXT("name"), Name, Serializer);
-	UBeamJsonUtils::SerializeRawPrimitive(TEXT("userAppId"), UserAppId, Serializer);
-	UBeamJsonUtils::SerializeRawPrimitive(TEXT("appId"), AppId, Serializer);
-	UBeamJsonUtils::SerializeMap<FString>(TEXT("meta"), Meta, Serializer);
+	UBeamJsonUtils::SerializeOptional<FString>(TEXT("name"), &Name, Serializer);
+	UBeamJsonUtils::SerializeOptional<FString>(TEXT("appId"), &AppId, Serializer);
+	UBeamJsonUtils::SerializeOptional<FString>(TEXT("userAppId"), &UserAppId, Serializer);
+	UBeamJsonUtils::SerializeOptional<FString>(TEXT("userBusinessId"), &UserBusinessId, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("email"), &Email, Serializer);
-	UBeamJsonUtils::SerializeOptional<FString>(TEXT("userBusinessId"), &UserBusinessId, Serializer);		
+	UBeamJsonUtils::SerializeOptional<TMap<FString, FString>, FString>(TEXT("meta"), &Meta, Serializer);		
 }
 
 void UThirdPartyAssociation::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("name"), Bag, Name);
-	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("userAppId"), Bag, UserAppId);
-	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("appId"), Bag, AppId);
-	UBeamJsonUtils::DeserializeMap<FString>(TEXT("meta"), Bag, Meta, OuterOwner);
-	UBeamJsonUtils::DeserializeOptional<FString>("email", Bag, Email, OuterOwner);
+	UBeamJsonUtils::DeserializeOptional<FString>("name", Bag, Name, OuterOwner);
+	UBeamJsonUtils::DeserializeOptional<FString>("appId", Bag, AppId, OuterOwner);
+	UBeamJsonUtils::DeserializeOptional<FString>("userAppId", Bag, UserAppId, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("userBusinessId", Bag, UserBusinessId, OuterOwner);
+	UBeamJsonUtils::DeserializeOptional<FString>("email", Bag, Email, OuterOwner);
+	UBeamJsonUtils::DeserializeOptional<TMap<FString, FString>, FString>("meta", Bag, Meta, OuterOwner);
 }
 
 

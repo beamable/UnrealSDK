@@ -3,7 +3,7 @@
 
 FOptionalFederationInfo::FOptionalFederationInfo()
 {
-	Val = nullptr;
+	Val = NewObject<UFederationInfo>(GetTransientPackage());
 	IsSet = false;
 }
 

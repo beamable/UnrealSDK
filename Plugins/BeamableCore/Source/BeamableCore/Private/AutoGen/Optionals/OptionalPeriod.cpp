@@ -3,7 +3,7 @@
 
 FOptionalPeriod::FOptionalPeriod()
 {
-	Val = nullptr;
+	Val = NewObject<UPeriod>(GetTransientPackage());
 	IsSet = false;
 }
 

@@ -17,6 +17,8 @@ class BEAMABLECORE_API UCreateRealmRequestBody : public UObject, public IBeamJso
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Name", Category="Beam")
 	FString Name = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Is Hidden", Category="Beam")
+	FOptionalBool bIsHidden = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Sharded", Category="Beam")
 	FOptionalBool bSharded = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Plan", Category="Beam")

@@ -3,7 +3,7 @@
 
 FOptionalSendNotification::FOptionalSendNotification()
 {
-	Val = nullptr;
+	Val = NewObject<USendNotification>(GetTransientPackage());
 	IsSet = false;
 }
 

@@ -6,6 +6,7 @@
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalBeamGamerTag.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalInt32.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfBeamTag.h"
 
 #include "CreateParty.generated.h"
 
@@ -21,6 +22,8 @@ public:
 	FOptionalBeamGamerTag Leader = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Max Size", Category="Beam")
 	FOptionalInt32 MaxSize = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Member Tags", Category="Beam")
+	FOptionalArrayOfBeamTag MemberTags = {};
 
 	
 

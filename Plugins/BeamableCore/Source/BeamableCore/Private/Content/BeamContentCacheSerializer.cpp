@@ -106,6 +106,7 @@ FArchive* UBeamContentCacheSerializer::GetDefaultContentCacheSerializer(TArray<u
 
 bool UBeamContentCacheSerializer::SerializeBeamContentCacheHeader(FBeamContentCacheSerializationContext& Ctx)
 {
+
 	const auto GetProjectAppVersion = []()
 	{
 		FString AppVersion;
@@ -119,7 +120,7 @@ bool UBeamContentCacheSerializer::SerializeBeamContentCacheHeader(FBeamContentCa
 		FString AppVersion = GetProjectAppVersion();
 
 		Ctx.TargetAr << AppVersion;
-		Ctx.TargetAr << GetDefault<UBeamCoreSettings>()->BeamableEnvironment->Version;
+		Ctx.TargetAr << GetDefault<UBeamCoreSettings>()->BeamableInfoData->Version;
 	}
 	else
 	{
@@ -135,7 +136,7 @@ bool UBeamContentCacheSerializer::SerializeBeamContentCacheHeader(FBeamContentCa
 		}
 
 		FBeamPackageVersion SdkVersion;
-		FBeamPackageVersion CurrSdkVersion = GetDefault<UBeamCoreSettings>()->BeamableEnvironment->Version;
+		FBeamPackageVersion CurrSdkVersion = GetDefault<UBeamCoreSettings>()->BeamableInfoData.LoadSynchronous()->Version;
 		Ctx.TargetAr << SdkVersion;
 		if (!CurrSdkVersion.Equals(SdkVersion))
 		{

@@ -23,29 +23,29 @@ FString UInFlightFailureLibrary::InFlightFailureToJsonString(const UInFlightFail
 	return Result;
 }	
 
-UInFlightFailure* UInFlightFailureLibrary::Make(FString ServiceObjectId, int64 Timestamp, FString ServiceName, UInFlightMessage* InFlightMessage, FString LastError, FString Id, UObject* Outer)
+UInFlightFailure* UInFlightFailureLibrary::Make(FString Id, FString ServiceObjectId, FString ServiceName, UInFlightMessage* InFlightMessage, FString LastError, FOptionalDateTime Timestamp, UObject* Outer)
 {
 	auto Serializable = NewObject<UInFlightFailure>(Outer);
+	Serializable->Id = Id;
 	Serializable->ServiceObjectId = ServiceObjectId;
-	Serializable->Timestamp = Timestamp;
 	Serializable->ServiceName = ServiceName;
 	Serializable->InFlightMessage = InFlightMessage;
 	Serializable->LastError = LastError;
-	Serializable->Id = Id;
+	Serializable->Timestamp = Timestamp;
 	
 	return Serializable;
 }
 
-void UInFlightFailureLibrary::Break(const UInFlightFailure* Serializable, FString& ServiceObjectId, int64& Timestamp, FString& ServiceName, UInFlightMessage*& InFlightMessage, FString& LastError, FString& Id)
+void UInFlightFailureLibrary::Break(const UInFlightFailure* Serializable, FString& Id, FString& ServiceObjectId, FString& ServiceName, UInFlightMessage*& InFlightMessage, FString& LastError, FOptionalDateTime& Timestamp)
 {
 	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
 	{
+		Id = Serializable->Id;
 		ServiceObjectId = Serializable->ServiceObjectId;
-		Timestamp = Serializable->Timestamp;
 		ServiceName = Serializable->ServiceName;
 		InFlightMessage = Serializable->InFlightMessage;
 		LastError = Serializable->LastError;
-		Id = Serializable->Id;
+		Timestamp = Serializable->Timestamp;
 	}
 		
 }

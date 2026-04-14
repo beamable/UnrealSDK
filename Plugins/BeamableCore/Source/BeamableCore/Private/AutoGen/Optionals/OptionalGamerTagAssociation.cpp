@@ -3,7 +3,7 @@
 
 FOptionalGamerTagAssociation::FOptionalGamerTagAssociation()
 {
-	Val = nullptr;
+	Val = NewObject<UGamerTagAssociation>(GetTransientPackage());
 	IsSet = false;
 }
 

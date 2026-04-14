@@ -84,39 +84,17 @@ namespace BeamMultiplayer
 
 	void Authentication::PreLoginAsync(const AGameModeBase* GameMode, const FString& Options, const FString& Address, const FUniqueNetIdRepl& UniqueId, const FBeamOperationEventHandlerCode& OperationHandler)
 	{
-		const auto LobbySubsystem = GameMode->GetGameInstance()->GetSubsystem<UBeamLobbySubsystem>();
+		const auto Lobby = GameMode->GetGameInstance()->GetSubsystem<UBeamLobbySubsystem>();
 		const auto ServerSlot = GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot();
 
-		const auto WorldContext = GEngine->GetWorldContextFromWorld(GameMode->GetWorld());
 		if (!ensureAlwaysMsgf(
 			UniqueId.IsValid(),
 			TEXT("Failed to received a valid UniqueId --- please ensure that you have UBeamRuntimeSettings::bUseBeamableGamerTagsAsUniqueNetIds set to 'true' OR have another UniqueId set up correctly.")))
 		{
-			UE_BEAM_LOG(WorldContext, LogBeamLobby, Error,
+			UE_BEAM_LOG_PIE(GEngine->GetWorldContextFromWorld(GameMode->GetWorld()), LogBeamLobby, Error,
 			            TEXT("Failed to binding UniqueId for user. OPTIONS=%s, Address=%s"), *Options, *Address);
 		}
-		const FString& ConnectingToLobby = UGameplayStatics::ParseOption(Options, UBeamLobbySubsystem::Reserved_LoginOpt_LobbyId_Optional);
 
-		FGuid LobbyGuid;
-		if (!FGuid::Parse(ConnectingToLobby, LobbyGuid))
-		{
-			UE_BEAM_LOG(WorldContext, LogBeamLobby, Error, TEXT("Wasn't able to parse the Lobby Id from the Options."));
-		}
-
-		FTSTicker::GetCoreTicker().AddTicker(FTickerDelegate::CreateLambda([=](const float)
-		{
-			if (!FBeamPIE_Utilities::IsValidContext(WorldContext)) return false;
-
-			ULobby* Lobby;
-			if(LobbySubsystem->TryGetLobbyById(LobbyGuid, Lobby))
-			{
-				LobbySubsystem->CPP_AcceptUserIntoGameServerOperation(ServerSlot, Options, Address, UniqueId, OperationHandler);
-				return false;
-			}
-			
-			return true;
-		}), 0.2f);
-	
-	
+		Lobby->CPP_AcceptUserIntoGameServerOperation(ServerSlot, Options, Address, UniqueId, OperationHandler);
 	}
 }

@@ -86,6 +86,8 @@ struct FBeamMatchmakingState
 	FDateTime LastJoinTime;
 };
 
+DEFINE_BEAM_OPERATION_HOOK_OneParam(FOnBeamableTryJoinMatchmakingQueueParallel, FBeamOperationHandle);
+DEFINE_BEAM_OPERATION_HOOK_OneParam(FOnBeamableTryJoinMatchmakingQueueSequentially, FBeamOperationHandle);
 
 /**
  * 
@@ -94,6 +96,10 @@ UCLASS(BlueprintType)
 class BEAMABLECORERUNTIME_API UBeamMatchmakingSubsystem : public UBeamRuntimeSubsystem
 {
 	GENERATED_BODY()
+
+	const FString StatRegionPingKey = "beam.region.pings";
+
+	friend class UBeamDefaultMatchmakingHooks;
 
 	UPROPERTY()
 	UBeamMatchmakingApi* MatchmakingApi;
@@ -205,6 +211,7 @@ public:
 	 */
 	FBeamOperationHandle CPP_TryJoinQueueOperation(FUserSlot UserSlot, const FBeamContentId& GameTypeQueue, FOptionalString Team, FBeamOperationEventHandlerCode OnOperationEvent);
 
+
 	/**
 	 * @brief Joins the given game type queue.
 	 * The user in the given user slot is added to the queue. If that user is in a party:
@@ -226,6 +233,8 @@ public:
 	FBeamOperationHandle CPP_TryJoinQueueWithTagsOperation(FUserSlot UserSlot, const FBeamContentId& GameTypeQueue, FOptionalString Team, TArray<FBeamTag> Tags,
 	                                                       FBeamOperationEventHandlerCode OnOperationEvent);
 
+	
+	
 	/**
 	 * @brief Leaves the given queue. If the user is not in a queue, this fails.
 	 * The user in the given user slot is added to the queue. If that user is in a party:
@@ -243,6 +252,18 @@ public:
 	 */
 	FBeamOperationHandle CPP_TryLeaveQueueOperation(FUserSlot UserSlot, FBeamOperationEventHandlerCode OnOperationEvent);
 
+	/**
+	 * @brief Commits region ping data to the user's stats. This is used by matchmaking to determine optimal server regions.
+	 * The RegionPings map should contain region identifiers as keys and ping times in milliseconds as values.
+	 */
+	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Matchmaking", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
+	FBeamOperationHandle CommitRegionPingOperation(FUserSlot UserSlot, TMap<FString, int32> RegionPings, FBeamOperationEventHandler OnOperationEvent);
+
+	/**
+	 * @copydoc CommitRegionPingOperation 
+	 */
+	FBeamOperationHandle CPP_CommitRegionPingOperation(FUserSlot UserSlot, TMap<FString, int32> RegionPings, FBeamOperationEventHandlerCode OnOperationEvent);
+
 private:
 	// Operation Implementations
 	void TryJoinQueue(FUserSlot Slot, FBeamContentId GameTypeQueue, FOptionalString Team, FOptionalArrayOfBeamTag Tags, FBeamOperationHandle Op);
@@ -251,9 +272,13 @@ private:
 
 	// Notification Handlers
 	void OnMatchmakingRemoteUpdateReceived(FMatchmakingRemoteUpdateNotificationMessage Msg, FUserSlot UserSlot);
-	void OnMatchmakingUpdateReceived(FMatchmakingUpdateNotificationMessage Msg);
-	void OnMatchmakingTimeoutReceived(FMatchmakingTimeoutNotificationMessage Msg);
+	void OnMatchmakingUpdateReceived(FMatchmakingUpdateNotificationMessage Msg, FUserSlot UserSlot);
+	void OnMatchmakingTimeoutReceived(FMatchmakingTimeoutNotificationMessage Msg, FUserSlot UserSlot);
 
 	// Utility Functions
-	void InvalidateLiveTicket(FBeamMatchmakingTicket& LiveTicket);
+	void InvalidateLiveTicket(FBeamMatchmakingTicket& LiveTicket, FUserSlot UserSlot);
+
+	void CommitRegionPing(FUserSlot UserSlot, TMap<FString, int32> RegionPings, FBeamOperationHandle OperationHandle);
+
+	static FString ConvertRegionPingsToJson(TMap<FString, int32> RegionPings);
 };

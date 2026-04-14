@@ -15,13 +15,15 @@ void UInventoryView::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) 
 	UBeamJsonUtils::SerializeArray<UCurrencyView*>(TEXT("currencies"), Currencies, Serializer);
 	UBeamJsonUtils::SerializeArray<UItemGroup*>(TEXT("items"), Items, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("scope"), &Scope, Serializer);
+	UBeamJsonUtils::SerializeOptional<UInventoryFiltersDTO*>(TEXT("itemFilters"), &ItemFilters, Serializer);
 }
 
 void UInventoryView::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeArray<UCurrencyView*>(TEXT("currencies"), Currencies, Serializer);
 	UBeamJsonUtils::SerializeArray<UItemGroup*>(TEXT("items"), Items, Serializer);
-	UBeamJsonUtils::SerializeOptional<FString>(TEXT("scope"), &Scope, Serializer);		
+	UBeamJsonUtils::SerializeOptional<FString>(TEXT("scope"), &Scope, Serializer);
+	UBeamJsonUtils::SerializeOptional<UInventoryFiltersDTO*>(TEXT("itemFilters"), &ItemFilters, Serializer);		
 }
 
 void UInventoryView::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
@@ -29,6 +31,7 @@ void UInventoryView::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Ba
 	UBeamJsonUtils::DeserializeArray<UCurrencyView*>(TEXT("currencies"), Bag, Currencies, OuterOwner);
 	UBeamJsonUtils::DeserializeArray<UItemGroup*>(TEXT("items"), Bag, Items, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("scope", Bag, Scope, OuterOwner);
+	UBeamJsonUtils::DeserializeOptional<UInventoryFiltersDTO*>("itemFilters", Bag, ItemFilters, OuterOwner);
 }
 
 

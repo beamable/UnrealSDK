@@ -146,16 +146,18 @@ void UBeamCliCommand::RunServer(const FString Uri, const TArray<FString>& Comman
 				Json.RemoveFromStart(TEXT("data: "));
 
 				UE_LOG(LogBeamCli, Verbose, TEXT("BeamCli Server - Processing JSON message. CMD=%s, JSON=%s"), *CommandLineToExecute, *Json);
-				auto Bag = FJsonDataBag();
+
+				FJsonDataBag Bag;
 				if (!ProcessedMessageIndices.Contains(i))
 				{
-					if (Bag.FromJson(Json))
+					if (UBeamJsonUtils::FromJsonToBag(Json, Bag))
 					{
 						ProcessedMessageIndices.Add(i);
 						UE_LOG(LogBeamCli, Verbose, TEXT("BeamCli Server - Processing JSON message. CMD=%s, JSON=%s"), *CommandLineToExecute, *Json);
 
 						const auto ReceivedStreamType = Bag.GetString(TEXT("type"));
-						const auto Timestamp = static_cast<int64>(Bag.GetField(TEXT("ts"))->AsNumber());
+						auto TimestampField = Bag.GetField(TEXT("ts"));
+						const auto Timestamp = static_cast<int64>(TimestampField->AsNumber());
 						const auto DataJson = Bag.JsonObject->GetObjectField(TEXT("data")).ToSharedRef();
 
 						// If the command itself handles the data, we don't fall back to these other handlings  
@@ -285,10 +287,14 @@ void UBeamCliCommand::PrepareCommandProcess(const TArray<FString>& CommandParams
 		FString MessageJson;
 		while (ConsumeMessageFromOutput(OutCopy, MessageJson))
 		{
-			auto Bag = FJsonDataBag();
-			if (Bag.FromJson(MessageJson))
+			FJsonDataBag Bag;
+			
+			if (UBeamJsonUtils::FromJsonToBag(MessageJson, Bag))
 			{
-				UE_LOG(LogBeamCli, Display, TEXT("BeamCli Command - Message Received. CMD=%s, MESSAGE=%s"), *Params, *MessageJson);
+				if (bShowReceivedMessageDebug)
+				{
+					UE_LOG(LogBeamCli, Display, TEXT("BeamCli Command - Message Received. CMD=%s, MESSAGE=%s"), *Params, *MessageJson);
+				}
 				
 				const auto ReceivedStreamType = Bag.GetString(TEXT("type"));
 				const auto Timestamp = static_cast<int64>(Bag.GetField(TEXT("ts"))->AsNumber());

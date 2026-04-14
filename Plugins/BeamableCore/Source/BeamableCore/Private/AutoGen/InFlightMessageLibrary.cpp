@@ -23,33 +23,33 @@ FString UInFlightMessageLibrary::InFlightMessageToJsonString(const UInFlightMess
 	return Result;
 }	
 
-UInFlightMessage* UInFlightMessageLibrary::Make(FString Method, FString Body, FString Path, FString Service, FString Id, FOptionalBool bLimitFailureRetries, FOptionalInt64 GamerTag, FOptionalString Shard, UObject* Outer)
+UInFlightMessage* UInFlightMessageLibrary::Make(FString Service, FString Id, FString Method, FString Path, FString Body, FOptionalBool bLimitFailureRetries, FOptionalString Shard, FOptionalInt64 GamerTag, UObject* Outer)
 {
 	auto Serializable = NewObject<UInFlightMessage>(Outer);
-	Serializable->Method = Method;
-	Serializable->Body = Body;
-	Serializable->Path = Path;
 	Serializable->Service = Service;
 	Serializable->Id = Id;
+	Serializable->Method = Method;
+	Serializable->Path = Path;
+	Serializable->Body = Body;
 	Serializable->bLimitFailureRetries = bLimitFailureRetries;
-	Serializable->GamerTag = GamerTag;
 	Serializable->Shard = Shard;
+	Serializable->GamerTag = GamerTag;
 	
 	return Serializable;
 }
 
-void UInFlightMessageLibrary::Break(const UInFlightMessage* Serializable, FString& Method, FString& Body, FString& Path, FString& Service, FString& Id, FOptionalBool& bLimitFailureRetries, FOptionalInt64& GamerTag, FOptionalString& Shard)
+void UInFlightMessageLibrary::Break(const UInFlightMessage* Serializable, FString& Service, FString& Id, FString& Method, FString& Path, FString& Body, FOptionalBool& bLimitFailureRetries, FOptionalString& Shard, FOptionalInt64& GamerTag)
 {
 	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
 	{
-		Method = Serializable->Method;
-		Body = Serializable->Body;
-		Path = Serializable->Path;
 		Service = Serializable->Service;
 		Id = Serializable->Id;
+		Method = Serializable->Method;
+		Path = Serializable->Path;
+		Body = Serializable->Body;
 		bLimitFailureRetries = Serializable->bLimitFailureRetries;
-		GamerTag = Serializable->GamerTag;
 		Shard = Serializable->Shard;
+		GamerTag = Serializable->GamerTag;
 	}
 		
 }

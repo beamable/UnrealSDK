@@ -13,12 +13,12 @@ class BEAMABLECORE_API USessionClientHistoryResponseLibrary : public UBlueprintF
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Session|Utils|Json", DisplayName="SessionClientHistoryResponse To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|PlayerSession|Utils|Json", DisplayName="SessionClientHistoryResponse To JSON String")
 	static FString SessionClientHistoryResponseToJsonString(const USessionClientHistoryResponse* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Session|Utils|Make/Break", DisplayName="Make SessionClientHistoryResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="InstallDate, Outer", NativeMakeFunc))
-	static USessionClientHistoryResponse* Make(ULocalDate* Date, int32 DaysPlayed, TArray<FString> Sessions, FOptionalString InstallDate, UObject* Outer);
+	UFUNCTION(BlueprintPure, Category="Beam|PlayerSession|Utils|Make/Break", DisplayName="Make SessionClientHistoryResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Date, InstallDate, DaysPlayed, Sessions, Outer", NativeMakeFunc))
+	static USessionClientHistoryResponse* Make(FOptionalString Date, FOptionalString InstallDate, FOptionalInt32 DaysPlayed, FOptionalArrayOfString Sessions, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Session|Utils|Make/Break", DisplayName="Break SessionClientHistoryResponse", meta=(NativeBreakFunc))
-	static void Break(const USessionClientHistoryResponse* Serializable, ULocalDate*& Date, int32& DaysPlayed, TArray<FString>& Sessions, FOptionalString& InstallDate);
+	UFUNCTION(BlueprintPure, Category="Beam|PlayerSession|Utils|Make/Break", DisplayName="Break SessionClientHistoryResponse", meta=(NativeBreakFunc))
+	static void Break(const USessionClientHistoryResponse* Serializable, FOptionalString& Date, FOptionalString& InstallDate, FOptionalInt32& DaysPlayed, FOptionalArrayOfString& Sessions);
 };

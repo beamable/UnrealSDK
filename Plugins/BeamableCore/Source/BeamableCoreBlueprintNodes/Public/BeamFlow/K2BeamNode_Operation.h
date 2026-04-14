@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "K2BeamNode_BeamFlow.h"
 #include "K2BeamNode_GetLocalState.h"
+#include "K2BeamNode_WaitAll.h"
 #include "K2Node_BreakStruct.h"
 #include "K2Node_CallFunction.h"
 #include "RequestTracker/BeamOperation.h"
@@ -25,8 +26,8 @@ enum EOperationNodeModes
 /**
  * 
  */
-UCLASS(NotBlueprintable, NotBlueprintType, Hidden, meta=(BeamFlowNode))
-class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_Operation : public UK2BeamNode_BeamFlow
+UCLASS(NotBlueprintable, NotBlueprintType, meta=(BeamFlowNode))
+class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_Operation : public UK2BeamNode_BeamFlow, public IK2Node_AddPinInterface
 {
 	GENERATED_BODY()
 
@@ -52,6 +53,8 @@ class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_Operation : public UK2BeamNode_
 
 	const FString Operation_DataPinInSynchronousFlowMessage = FString::Format(*Operation_InvalidPinInFlowMessage,
 	                                                                          {TEXT("Synchronous"), *OP_Operation_Event.ToString(), TEXT("any Non-Synchronous")});
+	UPROPERTY()
+	int32 NumPins = 0;
 
 
 	/**
@@ -94,26 +97,49 @@ class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_Operation : public UK2BeamNode_
 		FText BaseTooltip = {};
 		if (Function != nullptr)
 		{
+#if WITH_EDITOR
 			return FText::FromString(ObjectTools::GetDefaultTooltipForFunction(Function));
+#endif
+			
 		}
 
 		return Super::GetTooltipText();
 	}
-	 
+
+	void PropagatePinType(UEdGraphPin* const& Pin) const;
+
+	FName GetDependencyPinName();
 
 	//UK2Node impl
+
+	UEdGraphPin* CreateContextInputPin();
+
+	virtual void AddInputPin() override;
+	virtual void RemoveInputPin(UEdGraphPin* Pin) override;
+	virtual bool CanRemovePin(const UEdGraphPin* Pin) const override;
+	virtual void NotifyPinConnectionListChanged(UEdGraphPin* Pin) override;
+	virtual void PostReconstructNode() override;
+
+	virtual void GetNodeContextMenuActions(UToolMenu* Menu, UGraphNodeContextMenuContext* Context) const override;
+
+
 	virtual void AllocateDefaultPins() override;
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
+
 	virtual void ExpandNode(FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph) override;
 	virtual bool CanJumpToDefinition() const override { return true; };
 	virtual void JumpToDefinition() const override;
 	virtual FString GetPinMetaData(FName InPinName, FName InKey) override;
 	//BeamFlowNode impl
 
+	/**
+	 * @brief Utility that creates a wait all node and connect the dependency pins. 	 
+	 */
+	UK2BeamNode_WaitAll* CreateWaitAllNodeNode(UEdGraphNode* Node, FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph);
 
 protected:
 	virtual FText GetKeywords() const override { return FText::FromString(FString::Printf(TEXT("Beam %s"), *GetServiceName())); };
-	
+
 	virtual FName GetCornerIcon() const override;
 
 	/**
@@ -143,7 +169,7 @@ protected:
 	 * */
 	virtual TMap<FName, UClass*> GetOperationEventCastClass(EBeamOperationEventType Type) const;
 
-	
+
 	/**
 	 * Returns the list of possible values for FBeamOperationEvent.EventCode given the type of the event (success/error/etc).
 	 * Must always include NAME_None as its first value (the base implementation guarantees this) so call it if you override this to expose other events. 
@@ -197,7 +223,8 @@ protected:
 	                                   const TArray<TArray<UEdGraphNode*>>& PerFlowEventNodes);
 
 	void ExpandBeamFlowSubEvents(FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph, const UEdGraphSchema_K2* K2Schema,
-	                             const TArray<FName>& EventIds, const TMap<FName, UClass*>& EventDataCasts, const TArray<FName>& EventsFlowPinNames, UK2Node_BreakStruct* BreakOperationResultNode, UEdGraphPin* SubEventSwitchExecPin, FName BaseExecPinName);
+	                             const TArray<FName>& EventIds, const TMap<FName, UClass*>& EventDataCasts, const TArray<FName>& EventsFlowPinNames, UK2Node_BreakStruct* BreakOperationResultNode,
+	                             UEdGraphPin* SubEventSwitchExecPin, FName BaseExecPinName);
 };
 
 #undef LOCTEXT_NAMESPACE

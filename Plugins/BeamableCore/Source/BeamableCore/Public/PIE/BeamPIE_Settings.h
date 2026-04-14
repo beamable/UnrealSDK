@@ -5,6 +5,7 @@
 
 #include "BeamPIE_Settings.generated.h"
 
+
 USTRUCT(BlueprintType)
 struct BEAMABLECORE_API FBeamPIE_Settings
 {
@@ -30,7 +31,6 @@ struct BEAMABLECORE_API FBeamPIE_Settings
 	// Lobby
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FBeamPIE_LobbySettings FakeLobby;
-
 
 	bool IsDefaultSettings() const { return SettingsId == DefaultPieSettingsGuid; }
 };

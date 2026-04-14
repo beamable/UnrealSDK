@@ -27,7 +27,7 @@ void UPutPreviewRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPutPreviewRequest* UPutPreviewRequest::Make(FBeamGamerTag _ObjectId, FOptionalBool _bApplyVipBonus, FOptionalString _Transaction, FOptionalArrayOfItemUpdateRequestBody _UpdateItems, FOptionalArrayOfItemCreateRequestBody _NewItems, FOptionalArrayOfItemDeleteRequestBody _DeleteItems, FOptionalMapOfInt64 _Currencies, FOptionalMapOfArrayOfCurrencyProperty _CurrencyProperties, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
+UPutPreviewRequest* UPutPreviewRequest::Make(FBeamGamerTag _ObjectId, FOptionalBool _bApplyVipBonus, FOptionalBool _bIncludeDeltas, FOptionalString _Transaction, FOptionalArrayOfString _Scopes, FOptionalArrayOfItemUpdateRequestBody _UpdateItems, FOptionalArrayOfItemCreateRequestBody _NewItems, FOptionalArrayOfItemDeleteRequestBody _DeleteItems, FOptionalMapOfInt64 _Currencies, FOptionalMapOfArrayOfCurrencyProperty _CurrencyProperties, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPutPreviewRequest* Req = NewObject<UPutPreviewRequest>(RequestOwner);
 	Req->CustomHeaders = TMap{CustomHeaders};
@@ -39,7 +39,9 @@ UPutPreviewRequest* UPutPreviewRequest::Make(FBeamGamerTag _ObjectId, FOptionalB
 	// Makes a body and fill up with parameters (Blank if no body parameters exist)
 	Req->Body = NewObject<UInventoryUpdateRequestBody>(Req);
 	Req->Body->bApplyVipBonus = _bApplyVipBonus;
+	Req->Body->bIncludeDeltas = _bIncludeDeltas;
 	Req->Body->Transaction = _Transaction;
+	Req->Body->Scopes = _Scopes;
 	Req->Body->UpdateItems = _UpdateItems;
 	Req->Body->NewItems = _NewItems;
 	Req->Body->DeleteItems = _DeleteItems;

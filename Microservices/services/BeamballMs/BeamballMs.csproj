@@ -2,9 +2,9 @@
   <PropertyGroup Label="Beamable Settings">
     <!-- All Microservices must have the value, "service" -->
     <BeamProjectType>service</BeamProjectType>
-    <BeamServiceGroup>BEAMPROJ_Beamball</BeamServiceGroup>    
+    <BeamServiceGroup>BEAMPROJ_Beamball</BeamServiceGroup>
     <BeamEnabled>true</BeamEnabled>
-    <EnableUnrealBlueprintCompatibility>true</EnableUnrealBlueprintCompatibility>      
+    <EnableUnrealBlueprintCompatibility>true</EnableUnrealBlueprintCompatibility>
   </PropertyGroup>
   <!-- These are special Beamable parameters that we use to keep the beamable packages in-sync to the CLI version your project is using. -->
   <!-- This makes it so your microservices are auto-updated whenever you update the CLI installed in your project. -->
@@ -22,5 +22,11 @@
   <ItemGroup Label="Nuget References">
     <PackageReference Include="Beamable.Microservice.Runtime" Version="$(BeamableVersion)" />
     <PackageReference Include="Beamable.Microservice.SourceGen" Version="$(BeamableVersion)" OutputItemType="Analyzer" />
+    <PackageReference Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" Version="8.17.0" />
+    <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="8.17.0" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.17.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\BeamballDb\BeamballDb.csproj" />
   </ItemGroup>
 </Project>

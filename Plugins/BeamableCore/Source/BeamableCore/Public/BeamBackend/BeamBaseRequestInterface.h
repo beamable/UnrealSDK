@@ -27,7 +27,16 @@ public:
 
 	virtual FRequestType GetRequestType() const
 	{
-		return FRequestType{this->_getUObject()->GetClass()->GetAuthoredName()};
+		UClass::WithinClass::Super* GetUObject = this->_getUObject();
+		if (GetUObject)
+		{
+			FString AuthoredName = GetUObject->GetClass()->GetAuthoredName();
+			return FRequestType{AuthoredName};
+		}
+		else
+		{
+			return FRequestType{TEXT("Unknown")};
+		}
 	}
 
 	virtual void BuildVerb(FString& VerbString) const

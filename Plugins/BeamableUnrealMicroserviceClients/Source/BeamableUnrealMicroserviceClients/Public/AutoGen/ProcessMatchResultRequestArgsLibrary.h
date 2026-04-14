@@ -17,8 +17,8 @@ public:
 	static FString ProcessMatchResultRequestArgsToJsonString(const UProcessMatchResultRequestArgs* Serializable, const bool Pretty);
 
 	UFUNCTION(BlueprintPure, Category="Beam|BeamballMs|Utils|Make/Break", DisplayName="Make ProcessMatchResultRequestArgs", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
-	static UProcessMatchResultRequestArgs* Make(FString WinnerId, FString LobbyId, UObject* Outer);
+	static UProcessMatchResultRequestArgs* Make(FString LobbyId, TArray<UBeamballTeamInfo*> TeamInfos, UObject* Outer);
 
 	UFUNCTION(BlueprintPure, Category="Beam|BeamballMs|Utils|Make/Break", DisplayName="Break ProcessMatchResultRequestArgs", meta=(NativeBreakFunc))
-	static void Break(const UProcessMatchResultRequestArgs* Serializable, FString& WinnerId, FString& LobbyId);
+	static void Break(const UProcessMatchResultRequestArgs* Serializable, FString& LobbyId, TArray<UBeamballTeamInfo*>& TeamInfos);
 };

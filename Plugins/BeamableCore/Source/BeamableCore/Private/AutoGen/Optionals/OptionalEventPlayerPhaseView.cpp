@@ -3,7 +3,7 @@
 
 FOptionalEventPlayerPhaseView::FOptionalEventPlayerPhaseView()
 {
-	Val = nullptr;
+	Val = NewObject<UEventPlayerPhaseView>(GetTransientPackage());
 	IsSet = false;
 }
 

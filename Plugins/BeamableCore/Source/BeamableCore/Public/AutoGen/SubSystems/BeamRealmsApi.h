@@ -20,7 +20,7 @@
 #include "BeamableCore/Public/AutoGen/SubSystems/Realms/PutProjectRequest.h"
 #include "BeamableCore/Public/AutoGen/SubSystems/Realms/DeleteProjectRequest.h"
 #include "BeamableCore/Public/AutoGen/SubSystems/Realms/BasicRealmsGetGamesRequest.h"
-#include "BeamableCore/Public/AutoGen/SubSystems/Realms/GetConfigRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Realms/BasicRealmsGetConfigRequest.h"
 #include "BeamableCore/Public/AutoGen/SubSystems/Realms/PostConfigRequest.h"
 #include "BeamableCore/Public/AutoGen/SubSystems/Realms/PutConfigRequest.h"
 #include "BeamableCore/Public/AutoGen/SubSystems/Realms/PutProjectRenameRequest.h"
@@ -66,6 +66,11 @@ private:
 
 	UPROPERTY()
 	UBeamResponseCache* ResponseCache;
+
+public:
+    // This section is only used in microservice code generation.
+
+private:
 
 	
 	/**
@@ -236,14 +241,14 @@ private:
 	/**
 	 * @brief Private implementation for requests that require authentication that all overloaded BP UFunctions call.	  
 	 */
-	void BP_GetConfigImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, UGetConfigRequest* RequestData,
-	                  const FOnGetConfigSuccess& OnSuccess, const FOnGetConfigError& OnError, const FOnGetConfigComplete& OnComplete, 
+	void BP_GetConfigImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, UBasicRealmsGetConfigRequest* RequestData,
+	                  const FOnBasicRealmsGetConfigSuccess& OnSuccess, const FOnBasicRealmsGetConfigError& OnError, const FOnBasicRealmsGetConfigComplete& OnComplete, 
 					  int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 	/**
 	 * @brief Overload version for binding lambdas when in C++ land. Prefer the BP version whenever possible, this is here mostly for quick experimentation purposes.	 
 	 */
-	void CPP_GetConfigImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, UGetConfigRequest* RequestData,
-	                   const FOnGetConfigFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
+	void CPP_GetConfigImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, UBasicRealmsGetConfigRequest* RequestData,
+	                   const FOnBasicRealmsGetConfigFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 		
 	/**
 	 * @brief Private implementation for requests that require authentication that all overloaded BP UFunctions call.	  
@@ -694,7 +699,7 @@ public:
 	 * @param OpHandle When made as part of an Operation, you can pass this in and it'll register the request with the operation automatically.
 	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches. 
 	 */
-	void CPP_GetConfig(const FUserSlot& UserSlot, UGetConfigRequest* Request, const FOnGetConfigFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
+	void CPP_GetConfig(const FUserSlot& UserSlot, UBasicRealmsGetConfigRequest* Request, const FOnBasicRealmsGetConfigFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 
 		
 	/**
@@ -1202,7 +1207,7 @@ public:
 	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches.
 	 */
 	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Realms|Utils|Make/Break", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="OpHandle,CallingContext",AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete,OpHandle", BeamFlowFunction))
-	void GetConfig(FUserSlot UserSlot, UGetConfigRequest* Request, const FOnGetConfigSuccess& OnSuccess, const FOnGetConfigError& OnError, const FOnGetConfigComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr);
+	void GetConfig(FUserSlot UserSlot, UBasicRealmsGetConfigRequest* Request, const FOnBasicRealmsGetConfigSuccess& OnSuccess, const FOnBasicRealmsGetConfigError& OnError, const FOnBasicRealmsGetConfigComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr);
 
 		
 	/**

@@ -8,6 +8,8 @@
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfBeamGamerTag.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalInt32.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfString.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalDateTime.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalMapOfTagList.h"
 
 #include "Party.generated.h"
 
@@ -25,10 +27,14 @@ public:
 	FOptionalBeamGamerTag Leader = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Max Size", Category="Beam")
 	FOptionalInt32 MaxSize = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Created", Category="Beam")
+	FOptionalDateTime Created = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Members", Category="Beam")
 	FOptionalArrayOfBeamGamerTag Members = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Pending Invites", Category="Beam")
 	FOptionalArrayOfString PendingInvites = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Members Tags", Category="Beam")
+	FOptionalMapOfTagList MembersTags = {};
 
 	virtual void DeserializeRequestResponse(UObject* RequestData, FString ResponseContent) override;
 

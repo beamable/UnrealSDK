@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
+#include "BeamableUnrealMicroserviceClients/Public/AutoGen/Enums/BeamballMatchResultEnum.h"
 #include "Serialization/BeamJsonUtils.h"
 
 #include "PerPlayerMatchResult.generated.h"
@@ -13,8 +14,8 @@ class BEAMABLEUNREALMICROSERVICECLIENTS_API UPerPlayerMatchResult : public UObje
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Won", Category="Beam")
-	bool bWon = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Match Result", Category="Beam")
+	EBeamballMatchResultEnum MatchResult = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Rank Earned", Category="Beam")
 	int32 RankEarned = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Coins Earned", Category="Beam")

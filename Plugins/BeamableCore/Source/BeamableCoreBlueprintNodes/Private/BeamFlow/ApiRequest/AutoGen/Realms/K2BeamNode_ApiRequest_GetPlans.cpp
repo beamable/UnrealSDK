@@ -6,7 +6,7 @@
 
 #include "BeamableCore/Public/AutoGen/SubSystems/BeamRealmsApi.h"
 #include "BeamableCore/Public/AutoGen/SubSystems/Realms/GetPlansRequest.h"
-#include "BeamableCore/Public/AutoGen/ServicePlansResponse.h"
+#include "BeamableCore/Public/AutoGen/RealmsBasicServicePlansResponse.h"
 
 #define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_GetPlans"
 
@@ -49,7 +49,7 @@ UClass* UK2BeamNode_ApiRequest_GetPlans::GetRequestClass() const
 
 UClass* UK2BeamNode_ApiRequest_GetPlans::GetResponseClass() const
 {
-	return UServicePlansResponse::StaticClass();
+	return URealmsBasicServicePlansResponse::StaticClass();
 }
 
 FString UK2BeamNode_ApiRequest_GetPlans::GetRequestSuccessDelegateName() const

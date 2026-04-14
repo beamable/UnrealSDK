@@ -15,6 +15,8 @@ private:
 	void GenerateHiddenDelegateCheckboxes(IDetailLayoutBuilder& DetailBuilder, UK2BeamNode_EventRegister* Node);
 
 	void GenerateShowDelegateAsExecuteCheckboxes(IDetailLayoutBuilder& DetailBuilder, UK2BeamNode_EventRegister* Node);
-	
+
 	void GenerateShowUnbindAsExecuteCheckboxes(IDetailLayoutBuilder& DetailBuilder, UK2BeamNode_EventRegister* Node);
+
+	void GenerateConvertGamerTagToUserSlotCheckboxes(IDetailLayoutBuilder& DetailBuilder, UK2BeamNode_EventRegister* Node);
 };

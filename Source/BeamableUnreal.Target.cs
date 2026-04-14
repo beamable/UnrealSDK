@@ -7,6 +7,7 @@ using System;
 using UnrealBuildTool;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using EpicGames.Core;
 
 public class BeamableUnrealTarget : TargetRules
@@ -27,8 +28,8 @@ public class BeamableUnrealTarget : TargetRules
 		Console.WriteLine($"Configuring standalone project as beamproj={samplePluginName}.");
 
 		ConfigureIfBeamball(this, samplePluginName);
+		ConfigureIfBeamFarm(this, samplePluginName);
 		ConfigureIfLiveOpsDemo(this, samplePluginName);
-		ConfigureIfSteamDemo(this, samplePluginName);
 		ConfigureIfDiscordDemo(this, samplePluginName);
 	}
 
@@ -81,11 +82,11 @@ public class BeamableUnrealTarget : TargetRules
 		}
 	}
 	
-	public const string kBeamProj_LiveOpsDemo = "BEAMPROJ_LiveOpsDemo";
+	public const string kBeamProj_BeamFarm = "BEAMPROJ_BeamFarm";
 
-	public static void ConfigureIfLiveOpsDemo(TargetRules TargetRules, string beamProj)
+	public static void ConfigureIfBeamFarm(TargetRules TargetRules, string beamProj)
 	{
-		if (beamProj == kBeamProj_LiveOpsDemo)
+		if (beamProj == kBeamProj_BeamFarm)
 		{
 			var oss = Beam.OssConfig.Disabled();
 
@@ -108,15 +109,13 @@ public class BeamableUnrealTarget : TargetRules
 		}
 	}
 	
+	public const string kBeamProj_LiveOpsDemo = "BEAMPROJ_LiveOpsDemo";
 
-	public const string kBeamProj_SteamDemo = "BEAMPROJ_SteamDemo";
-
-	public static void ConfigureIfSteamDemo(TargetRules TargetRules, string beamProj)
+	public static void ConfigureIfLiveOpsDemo(TargetRules TargetRules, string beamProj)
 	{
-		if (beamProj == kBeamProj_SteamDemo)
+		if (beamProj == kBeamProj_LiveOpsDemo)
 		{
 			var oss = Beam.OssConfig.Disabled();
-			TargetRules.bUsesSteam = true;
 
 			if (TargetRules.Type == UnrealBuildTool.TargetType.Game)
 			{
@@ -200,7 +199,7 @@ public static class Beam
 
 		/// <summary>
 		/// Any additional Modules you'll like to be added to the `Build.cs` file of the OnlineSubsystemBeamable module.
-		/// The primary case for this is adding third-party SDKs you wish to integrate with Beamable (Discord, Hathora, etc...).
+		/// The primary case for this is adding third-party SDKs you wish to integrate with Beamable (Discord, Edgegap, etc...).
 		/// </summary>
 		public string[] AdditionalHookModules;
 

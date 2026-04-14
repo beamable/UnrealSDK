@@ -83,8 +83,18 @@ public:
 	}
 };
 
+USTRUCT(BlueprintType)
+struct FBeamAnalyticsParamObject
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Beam|Analytics")
+	FJsonObjectWrapper Fields;
+};
+
 DECLARE_DELEGATE_OneParam(FOnBeamConnectivityEventCode, UBeamConnectivityManager*);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnBeamConnectivityEvent, UBeamConnectivityManager*, Manager);
+
 
 /**
  * Manager that tracks connectivity states and the DAG of FOfflineOperationData to run during the Fixup process.
@@ -286,16 +296,6 @@ class BEAMABLECORERUNTIME_API UBeamRuntime : public UGameInstanceSubsystem
 	friend class UBeamPIE;
 
 	GENERATED_BODY()
-
-
-	UFUNCTION(BlueprintPure)
-	FString PrintIsso(const FUniqueNetIdRepl& Repl)
-	{
-		if (Repl.IsValid())
-			return Repl.GetUniqueNetId().Get()->ToString();
-
-		return FString(TEXT("BUGADO"));
-	}
 
 	/** @brief Initializes the subsystem.  */
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
@@ -621,7 +621,7 @@ public:
 	 * If no user is signed in, returns an empty @link FBeamGamerTag @endlink.
 	 */
 	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
-	bool TryGetSlotGamerTag(FUserSlot Slot, FBeamGamerTag& GamerTag) const
+	bool TryGetSlotGamerTag(FUserSlot Slot, FBeamGamerTag& GamerTag)
 	{
 		FBeamRealmUser Data;
 		if (UserSlotSystem->GetUserDataAtSlot(Slot, Data, this))
@@ -1202,7 +1202,7 @@ private:
 	void AuthenticateWithToken(FUserSlot UserSlot, const UTokenResponse* Token, const UAccountPlayerView* OptionalAccountData, FBeamOperationHandle Op);
 	void RunPostAuthenticationSetup(FUserSlot UserSlot, const UAccountPlayerView* OptionalAccountData, FBeamOperationHandle Op);
 	void RunPostAuthenticationSetup_CacheLocalAccountInfo(const UAccountPlayerView* AccountPlayerView, FUserSlot UserSlot, FBeamOperationHandle Op);
-	void RunPostAuthenticationSetup_PrepareNotificationService(FGetClientDefaultsFullResponse Resp, FUserSlot UserSlot, FBeamRealmUser BeamRealmUser, FBeamOperationHandle Op);
+	void RunPostAuthenticationSetup_PrepareNotificationService(FGetRealmsClientDefaultsFullResponse Resp, FUserSlot UserSlot, FBeamRealmUser BeamRealmUser, FBeamOperationHandle Op);
 
 	// Reusable Helper Functions
 	void LoadCachedUserAtSlot(FUserSlot UserSlot, FBeamOperationHandle AuthOp, FSimpleDelegate RunIfNoUser);
@@ -1246,6 +1246,35 @@ private:
 	void FillDefaultSignUpInitProperties(TMap<FString, FString>& InitProperties);
 
 public:
+	UFUNCTION(BlueprintCallable, Category="Beam|Analytics", meta=(DefaultToSelf="ContextObject", AutoCreateRefTerm="EventParams"))
+	bool SendAnalyticsEventStringParams(
+		const FString& EventCategory,
+		const FString& EventName,
+		const TArray<FString>& EventParams);
+
+	UFUNCTION(BlueprintCallable, Category="Beam|Analytics", meta=(DefaultToSelf="ContextObject", AutoCreateRefTerm="EventParams"))
+	bool SendAnalyticsEventBeamSerializableUObject(
+		const FString& EventCategory,
+		const FString& EventName,
+		const TArray<TScriptInterface<IBeamJsonSerializableUObject>>& EventParams);
+
+	UFUNCTION(BlueprintCallable, Category="Beam|Analytics", meta=(DefaultToSelf="ContextObject"))
+	bool SendAnalyticsEventForSlotBeamSerializableUObject(
+		const FUserSlot& Slot,
+		const FString& EventCategory,
+		const FString& EventName,
+		const TArray<TScriptInterface<IBeamJsonSerializableUObject>>& EventParams);
+
+	UFUNCTION(BlueprintCallable, Category="Beam|Analytics", meta=(DefaultToSelf="ContextObject", AutoCreateRefTerm="EventParams"))
+	bool SendAnalyticsEventSlotStringParams(
+		const FUserSlot& Slot,
+		const FString& EventCategory,
+		const FString& EventName,
+		const TArray<FString>& EventParams);
+
+	UFUNCTION(BlueprintPure, Category="Beam|Analytics")
+	static FBeamAnalyticsParamObject MakeAnalyticsParamFromJson(const FString& JsonObjectString, bool& bIsValidJsonObject);
+
 	/**
 	 * Sends analytics events to Beamable as the owner user. 
 	 */
@@ -1312,4 +1341,8 @@ public:
 			return NotificationSystem->TryUnsubscribeFromMessage(UserSlot, DefaultNotificationChannel, Key, Handle, this);
 		return false;
 	}
+
+private:
+	static TArray<TSharedRef<FJsonObject>> BuildEventParams(const TArray<TScriptInterface<IBeamJsonSerializableUObject>>& EventParams);
+	static TArray<TSharedRef<FJsonObject>> BuildEventParams(const TArray<FString>& EventParams);
 };

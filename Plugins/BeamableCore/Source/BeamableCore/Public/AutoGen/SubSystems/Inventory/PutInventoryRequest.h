@@ -9,7 +9,7 @@
 
 #include "BeamBackend/SemanticTypes/BeamGamerTag.h"
 #include "BeamableCore/Public/AutoGen/InventoryUpdateRequestBody.h"
-#include "BeamableCore/Public/AutoGen/CommonResponse.h"
+#include "BeamableCore/Public/AutoGen/InventoryUpdateResponse.h"
 
 #include "PutInventoryRequest.generated.h"
 
@@ -38,12 +38,12 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Inventory|Utils|Make/Break", DisplayName="Make PutInventory",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_bApplyVipBonus,_Transaction,_UpdateItems,_NewItems,_DeleteItems,_Currencies,_CurrencyProperties,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
-	static UPutInventoryRequest* Make(FBeamGamerTag _ObjectId, FOptionalBool _bApplyVipBonus, FOptionalString _Transaction, FOptionalArrayOfItemUpdateRequestBody _UpdateItems, FOptionalArrayOfItemCreateRequestBody _NewItems, FOptionalArrayOfItemDeleteRequestBody _DeleteItems, FOptionalMapOfInt64 _Currencies, FOptionalMapOfArrayOfCurrencyProperty _CurrencyProperties, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Inventory|Utils|Make/Break", DisplayName="Make PutInventory",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_bApplyVipBonus,_bIncludeDeltas,_Transaction,_Scopes,_UpdateItems,_NewItems,_DeleteItems,_Currencies,_CurrencyProperties,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	static UPutInventoryRequest* Make(FBeamGamerTag _ObjectId, FOptionalBool _bApplyVipBonus, FOptionalBool _bIncludeDeltas, FOptionalString _Transaction, FOptionalArrayOfString _Scopes, FOptionalArrayOfItemUpdateRequestBody _UpdateItems, FOptionalArrayOfItemCreateRequestBody _NewItems, FOptionalArrayOfItemDeleteRequestBody _DeleteItems, FOptionalMapOfInt64 _Currencies, FOptionalMapOfArrayOfCurrencyProperty _CurrencyProperties, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)
-DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnPutInventorySuccess, FBeamRequestContext, Context, UPutInventoryRequest*, Request, UCommonResponse*, Response);
+DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnPutInventorySuccess, FBeamRequestContext, Context, UPutInventoryRequest*, Request, UInventoryUpdateResponse*, Response);
 
 UDELEGATE(BlueprintAuthorityOnly)
 DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnPutInventoryError, FBeamRequestContext, Context, UPutInventoryRequest*, Request, FBeamErrorResponse, Error);
@@ -51,5 +51,5 @@ DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnPutInventoryError, FBeamRequestContext, 
 UDELEGATE(BlueprintAuthorityOnly)
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FOnPutInventoryComplete, FBeamRequestContext, Context, UPutInventoryRequest*, Request);
 
-using FPutInventoryFullResponse = FBeamFullResponse<UPutInventoryRequest*, UCommonResponse*>;
+using FPutInventoryFullResponse = FBeamFullResponse<UPutInventoryRequest*, UInventoryUpdateResponse*>;
 DECLARE_DELEGATE_OneParam(FOnPutInventoryFullResponse, FPutInventoryFullResponse);

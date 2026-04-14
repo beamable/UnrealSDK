@@ -3,7 +3,7 @@
 
 FOptionalSessionLanguageContext::FOptionalSessionLanguageContext()
 {
-	Val = nullptr;
+	Val = NewObject<USessionLanguageContext>(GetTransientPackage());
 	IsSet = false;
 }
 

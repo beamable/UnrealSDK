@@ -13,7 +13,7 @@
 #include "AutoGen/SubSystems/Lobby/PostLobbiesRequest.h"
 #include "AutoGen/SubSystems/Lobby/PutLobbyRequest.h"
 #include "AutoGen/SubSystems/Lobby/PutPasscodeRequest.h"
-#include "AutoGen/SubSystems/Lobby/PutTagsRequest.h"
+#include "AutoGen/SubSystems/Lobby/ApiLobbyPutTagsByIdRequest.h"
 #include "BeamNotifications/SubSystems/BeamLobbyNotifications.h"
 #include "Kismet/GameplayStatics.h"
 #include "Runtime/BeamRuntimeSubsystem.h"
@@ -169,11 +169,12 @@ public:
 	inline static const FString Reserved_Listen_Server_Property = TEXT("__beam_listen_server_lobby__");
 
 	inline static const FString Reserved_PlayerTag_UniqueNetId_Property = TEXT("__beam_unreal_unique_net_id__");
+	inline static const FString Reserved_PlayerTag_Team_Property = TEXT("team");
+	inline static const FString Reserved_PlayerTag_Routing_Key_Property = TEXT("__beam_routing_key_tag__");
 
 	inline static const FString Reserved_LoginOpt_GamerTag_Required = TEXT("LogOptBeamGamerTag");
 	inline static const FString Reserved_LoginOpt_AccessToken_Required = TEXT("LogOptBeamAccessToken");
 	inline static const FString Reserved_LoginOpt_RefreshToken_Required = TEXT("LogOptBeamRefreshToken");
-	inline static const FString Reserved_LoginOpt_ExpiresIn_Required = TEXT("LogOptBeamExpiresIn");
 	inline static const FString Reserved_LoginOpt_LobbyId_Optional = TEXT("LogOptLobbyId");
 
 	UPROPERTY()
@@ -283,6 +284,12 @@ public:
 	bool TryGetCurrentLobby(FUserSlot Slot, ULobby*& Lobby);
 
 	/**
+	 * Tries to get whatever the current local data for the given gamer tag's current lobby. If you want a guarantee that this data is up-to-date call, [CPP_]RefreshLobbyOperation first.
+	 */
+	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
+	bool TryGetPlayerLobby(FBeamGamerTag GamerTag, ULobby*& Lobby);
+
+	/**
 	 *  Try to get a specific data from a ULobby* Object.
 	 *  The default value is what will be return in case of it fail to get the value.
 	 */
@@ -367,6 +374,12 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
 	bool TryGetCurrentLobbyState(FUserSlot Slot, UBeamLobbyState*& Lobby);
+
+	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
+	bool TryGetTeamFromLobby(FBeamGamerTag GamerTag, FString& OutTeam);
+
+	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
+	bool TryGetTeamWithIndexFromLobby(FBeamGamerTag GamerTag, FString& OutTeam);
 
 	/**
 	 * Call this to begin building a set of batched updates to a lobby the player is in.
@@ -475,7 +488,7 @@ public:
 	 * @copybrief PrepareLoginOptions
 	 */
 	UFUNCTION(BlueprintCallable)
-	FString PrepareLoginOptionsFull(const FString& Options, const FString& AccessToken, const FString& RefreshToken, int64 ExpiresIn, const FBeamGamerTag& GamerTag, FString LobbyId) const;
+	FString PrepareLoginOptionsFull(const FString& Options, const FString& AccessToken, const FString& RefreshToken, const FBeamGamerTag& GamerTag, FString LobbyId) const;
 
 	/**
 	 * For integration with other implementations of Unreal's Gameplay Framework.
@@ -794,7 +807,7 @@ private:
 	                                               FOptionalBeamContentId MatchType, FOptionalBeamGamerTag NewHost, FOptionalInt32 MaxPlayers, FOptionalMapOfString GlobalDataUpdates,
 	                                               FOptionalArrayOfString GlobalDataDeletes, FBeamOperationHandle Op, FOnApiLobbyPutMetadataByIdFullResponse Handler) const;
 	FBeamRequestContext RequestUpdatePlayerTag(const FUserSlot& UserSlot, FGuid LobbyId, FBeamGamerTag PlayerId, TArray<FBeamTag> PlayerTags, bool bShouldReplace, FBeamOperationHandle Op,
-	                                           FOnPutTagsFullResponse Handler) const;
+	                                           FOnApiLobbyPutTagsByIdFullResponse Handler) const;
 	FBeamRequestContext RequestDeletePlayerTags(const FUserSlot& UserSlot, FGuid LobbyId, FBeamGamerTag PlayerId, TArray<FBeamTag> PlayerTags, FBeamOperationHandle Op,
 	                                            FOnDeleteTagsFullResponse Handler) const;
 	FBeamRequestContext RequestPostServer(const FUserSlot& UserSlot, FGuid LobbyId, FOptionalBeamContentId SelectedMatchType, FBeamOperationHandle Op, FOnApiLobbyPostServerByIdFullResponse Handler) const;
@@ -809,6 +822,8 @@ private:
 	void InitializeLobbyInfoForSlot(const FUserSlot& UserSlot, const FBeamRealmUser& BeamRealmUser);
 	void UpdateLobbyPlayerInfo(FUserSlot Slot, const ULobby* LobbyData);
 	void ReplaceOrAddKnownLobbyData(ULobby* LobbyData);
+	void RemoveKnownLobbyData(ULobby* LobbyData);
+	void RemoveKnownLobbyData(FString LobbyId);
 	void ClearLobbyForSlot(FUserSlot Slot);
 
 	bool GuardSlotIsInLobby(const FUserSlot& Slot, UBeamLobbyState*& LobbyState);

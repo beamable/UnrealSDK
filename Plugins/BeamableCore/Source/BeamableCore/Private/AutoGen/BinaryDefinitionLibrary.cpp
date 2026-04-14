@@ -23,24 +23,26 @@ FString UBinaryDefinitionLibrary::BinaryDefinitionToJsonString(const UBinaryDefi
 	return Result;
 }	
 
-UBinaryDefinition* UBinaryDefinitionLibrary::Make(FBeamContentId Id, FString Checksum, FString UploadContentType, FOptionalArrayOfString Tags, UObject* Outer)
+UBinaryDefinition* UBinaryDefinitionLibrary::Make(FBeamContentId Id, FString Checksum, FString UploadContentType, FOptionalString Visibility, FOptionalArrayOfString Tags, UObject* Outer)
 {
 	auto Serializable = NewObject<UBinaryDefinition>(Outer);
 	Serializable->Id = Id;
 	Serializable->Checksum = Checksum;
 	Serializable->UploadContentType = UploadContentType;
+	Serializable->Visibility = Visibility;
 	Serializable->Tags = Tags;
 	
 	return Serializable;
 }
 
-void UBinaryDefinitionLibrary::Break(const UBinaryDefinition* Serializable, FBeamContentId& Id, FString& Checksum, FString& UploadContentType, FOptionalArrayOfString& Tags)
+void UBinaryDefinitionLibrary::Break(const UBinaryDefinition* Serializable, FBeamContentId& Id, FString& Checksum, FString& UploadContentType, FOptionalString& Visibility, FOptionalArrayOfString& Tags)
 {
 	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
 	{
 		Id = Serializable->Id;
 		Checksum = Serializable->Checksum;
 		UploadContentType = Serializable->UploadContentType;
+		Visibility = Serializable->Visibility;
 		Tags = Serializable->Tags;
 	}
 		
