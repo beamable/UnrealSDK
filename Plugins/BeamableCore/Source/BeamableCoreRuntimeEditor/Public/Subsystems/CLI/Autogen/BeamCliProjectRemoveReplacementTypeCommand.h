@@ -23,7 +23,6 @@ Options:
   --engine-sdk-version <engine-sdk-version>  The version of the Beamable's SDK running in that Engine
   --engine-version <engine-version>          The version of the engine that is calling the CLI
   --pid <pid>                                PID (Realm ID) to use (found in Portal -> Games -> Any Realm's details); defaults to whatever is in '.beamable/config.beam.json'
-
   -q, --quiet                                When true, skip input waiting and use default arguments (or error if no defaults are possible) [default: False]
   --host <host>                              This option defines the target Beamable environment. Needed for private cloud customers to target their exclusive Beamable environment. Ignorable by everyone else. Stored in '.beamable/config.beam.json'
   --access-token <access-token>              The access token to use for the requests. It overwrites the logged in user stored in auth.beam.json for THIS INVOCATION ONLY
@@ -42,11 +41,6 @@ Options:
   --dotnet-path <dotnet-path>                a custom location for dotnet [default: dotnet]
   -?, -h, --help                             Show help and usage information
 
-Commands:
-  get    Downloads the otel collector
-  ps     Starts a stream of messages containing the status of the collector
-  start  Starts the collector process
-  stop   Stops the collector running process
 
 
  */

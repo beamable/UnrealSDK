@@ -26,6 +26,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<FString> Groups = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString ServiceType = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<UFederationInstanceStreamData*> Federations = {};
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
@@ -36,6 +38,7 @@ public:
 		UBeamJsonUtils::SerializeRawPrimitive(TEXT("routingKey"), RoutingKey, Serializer);
 		UBeamJsonUtils::SerializeRawPrimitive(TEXT("startedByAccountId"), StartedByAccountId, Serializer);
 		UBeamJsonUtils::SerializeArray<FString>(TEXT("groups"), Groups, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("serviceType"), ServiceType, Serializer);
 		UBeamJsonUtils::SerializeArray<UFederationInstanceStreamData*>(TEXT("federations"), Federations, Serializer);	
 	}
 
@@ -47,6 +50,7 @@ public:
 		UBeamJsonUtils::SerializeRawPrimitive(TEXT("routingKey"), RoutingKey, Serializer);
 		UBeamJsonUtils::SerializeRawPrimitive(TEXT("startedByAccountId"), StartedByAccountId, Serializer);
 		UBeamJsonUtils::SerializeArray<FString>(TEXT("groups"), Groups, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("serviceType"), ServiceType, Serializer);
 		UBeamJsonUtils::SerializeArray<UFederationInstanceStreamData*>(TEXT("federations"), Federations, Serializer);	
 	}
 
@@ -58,6 +62,7 @@ public:
 		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("routingKey"), Bag, RoutingKey);
 		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("startedByAccountId"), Bag, StartedByAccountId);
 		UBeamJsonUtils::DeserializeArray<FString>(TEXT("groups"), Bag, Groups, OuterOwner);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("serviceType"), Bag, ServiceType);
 		UBeamJsonUtils::DeserializeArray<UFederationInstanceStreamData*>(TEXT("federations"), Bag, Federations, OuterOwner);	
 	}
 };

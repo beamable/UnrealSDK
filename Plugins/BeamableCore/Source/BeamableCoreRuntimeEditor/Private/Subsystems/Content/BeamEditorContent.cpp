@@ -865,7 +865,7 @@ bool UBeamEditorContent::TryGetHistoryChangelistView(const FBeamContentManifestI
 	ChangelistView->PublishedByName = PublishedByName;
 
 	// Populate Created content
-	for (const auto& Pair : (*ChangelistData)->Created)
+	for (const auto& Pair : (*ChangelistData)->Added)
 	{
 		if (!Pair.Value) continue;
 
@@ -1720,14 +1720,14 @@ void UBeamEditorContent::RunHistoryPsCommand(FBeamOperationHandle FirstEventOp)
 				TArray<FString> ContentIdsToNotSync;
 
 				// Add content ids in this changelist to a list
-				for (const auto& Pair : Changelist->Created) AllContentIds.Add(Pair.Key);
+				for (const auto& Pair : Changelist->Added) AllContentIds.Add(Pair.Key);
 				for (const auto& Pair : Changelist->Modified) AllContentIds.Add(Pair.Key);
 				for (const auto& Pair : Changelist->Removed) AllContentIds.Add(Pair.Key);
 
 				// Filter out content IDs that already exist locally
 				for (const auto& ContentId : AllContentIds)
 				{
-					const auto* Entry = Changelist->Created.Find(ContentId);
+					const auto* Entry = Changelist->Added.Find(ContentId);
 					if (!Entry) Entry = Changelist->Modified.Find(ContentId);
 					if (!Entry) Entry = Changelist->Removed.Find(ContentId);
 
@@ -1795,7 +1795,7 @@ void UBeamEditorContent::RunHistoryPsCommand(FBeamOperationHandle FirstEventOp)
 				else
 				{
 					// All content exists locally, just load into memory
-					for (const auto& Pair : Changelist->Created) LoadContentHistoryObject(Changelist->ManifestUid, Pair.Value);
+					for (const auto& Pair : Changelist->Added) LoadContentHistoryObject(Changelist->ManifestUid, Pair.Value);
 					for (const auto& Pair : Changelist->Modified) LoadContentHistoryObject(Changelist->ManifestUid, Pair.Value);
 					for (const auto& Pair : Changelist->Removed) LoadContentHistoryObject(Changelist->ManifestUid, Pair.Value);
 
@@ -1913,8 +1913,8 @@ void UBeamEditorContent::LoadContentHistoryObject(const FString& ManifestUid, UC
 		ContentObject->Id = HistoryId.ContentId.AsString;
 
 
-		ContentObject->Version = ContentEntry->NewChecksum;
-		if (ContentObject->Version.IsEmpty()) ContentObject->Version = ContentEntry->OldChecksum;
+		ContentObject->Version = ContentEntry->NewVersion;
+		if (ContentObject->Version.IsEmpty()) ContentObject->Version = ContentEntry->OldVersion;
 
 		LoadedContentHistoryObjects.Add(HistoryId, ContentObject);
 

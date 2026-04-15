@@ -96,7 +96,7 @@ Options:
   -?, -h, --help                             Show help and usage information
 
 Commands:
-  restore          [INTERNAL] Restores local content files from history, overwriting them with the version from the specified manifest UID. If content IDs are not provided, restores all content in the manifest
+  restore-content  [INTERNAL] Restores local content files from history, overwriting them with the version from the specified manifest UID. If content IDs are not provided, restores all content in the manifest
   sync-changelist  [INTERNAL] Syncs a changelist for a given manifest UID. If already cached locally, touches the file to trigger a watching history command
   sync-content     [INTERNAL] Syncs content files for a given manifest UID. If content IDs are not provided, syncs all content in the manifest
 

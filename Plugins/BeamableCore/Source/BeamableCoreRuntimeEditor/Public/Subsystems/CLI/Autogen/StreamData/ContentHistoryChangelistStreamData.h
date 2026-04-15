@@ -22,7 +22,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int64 PublishedAt = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TMap<FString, UContentHistoryChangelistEntryStreamData*> Created = {};
+	TMap<FString, UContentHistoryChangelistEntryStreamData*> Added = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TMap<FString, UContentHistoryChangelistEntryStreamData*> Removed = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -34,7 +34,7 @@ public:
 		UBeamJsonUtils::SerializeRawPrimitive(TEXT("PreviousManifestUid"), PreviousManifestUid, Serializer);
 		UBeamJsonUtils::SerializeRawPrimitive(TEXT("PublishedBy"), PublishedBy, Serializer);
 		UBeamJsonUtils::SerializeRawPrimitive(TEXT("PublishedAt"), PublishedAt, Serializer);
-		UBeamJsonUtils::SerializeMap<UContentHistoryChangelistEntryStreamData*>(TEXT("Created"), Created, Serializer);
+		UBeamJsonUtils::SerializeMap<UContentHistoryChangelistEntryStreamData*>(TEXT("Added"), Added, Serializer);
 		UBeamJsonUtils::SerializeMap<UContentHistoryChangelistEntryStreamData*>(TEXT("Removed"), Removed, Serializer);
 		UBeamJsonUtils::SerializeMap<UContentHistoryChangelistEntryStreamData*>(TEXT("Modified"), Modified, Serializer);	
 	}
@@ -45,7 +45,7 @@ public:
 		UBeamJsonUtils::SerializeRawPrimitive(TEXT("PreviousManifestUid"), PreviousManifestUid, Serializer);
 		UBeamJsonUtils::SerializeRawPrimitive(TEXT("PublishedBy"), PublishedBy, Serializer);
 		UBeamJsonUtils::SerializeRawPrimitive(TEXT("PublishedAt"), PublishedAt, Serializer);
-		UBeamJsonUtils::SerializeMap<UContentHistoryChangelistEntryStreamData*>(TEXT("Created"), Created, Serializer);
+		UBeamJsonUtils::SerializeMap<UContentHistoryChangelistEntryStreamData*>(TEXT("Added"), Added, Serializer);
 		UBeamJsonUtils::SerializeMap<UContentHistoryChangelistEntryStreamData*>(TEXT("Removed"), Removed, Serializer);
 		UBeamJsonUtils::SerializeMap<UContentHistoryChangelistEntryStreamData*>(TEXT("Modified"), Modified, Serializer);	
 	}
@@ -56,7 +56,7 @@ public:
 		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("PreviousManifestUid"), Bag, PreviousManifestUid);
 		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("PublishedBy"), Bag, PublishedBy);
 		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("PublishedAt"), Bag, PublishedAt);
-		UBeamJsonUtils::DeserializeMap<UContentHistoryChangelistEntryStreamData*>(TEXT("Created"), Bag, Created, OuterOwner);
+		UBeamJsonUtils::DeserializeMap<UContentHistoryChangelistEntryStreamData*>(TEXT("Added"), Bag, Added, OuterOwner);
 		UBeamJsonUtils::DeserializeMap<UContentHistoryChangelistEntryStreamData*>(TEXT("Removed"), Bag, Removed, OuterOwner);
 		UBeamJsonUtils::DeserializeMap<UContentHistoryChangelistEntryStreamData*>(TEXT("Modified"), Bag, Modified, OuterOwner);	
 	}

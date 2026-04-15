@@ -3,24 +3,30 @@
 #include "Subsystems/CLI/BeamCliCommand.h"
 #include "Serialization/BeamJsonUtils.h"
 
-#include "BeamCliProjectOpenSwaggerCommand.generated.h"
+#include "BeamCliProjectNewPortalExtensionCommand.generated.h"
 
 
 
 /**
  Description:
-  Opens the swagger page for a given service
+  Creates a new Portal Extension App
 
 Usage:
-  Beamable.Tools project open-swagger [<service-name>] [options]
+  Beamable.Tools project new portal-extension <name> [options]
 
 Arguments:
-  <service-name>  Name of the service to open swagger to []
+  <name>  Name of the new project
 
 Options:
-  -k, --routing-key <routing-key>            The routing key for the service instance we want. If not passed, defaults to the local service [default: desktop-54b40oj_1910319127a20db68aaed69cf2155dce]
-  -r, --remote                               When set, enforces the routing key to be the one for the service deployed to the realm. Cannot be specified when --routing-key is also set
-  --src-tool <src-tool>                      A hint to the Portal page which tool is being used [default: cli]
+  --sln <sln>                                Relative path to the .sln file to use for the new project. If the .sln file does not exist, it will be created. When no option is configured, if this command is executing inside a .beamable folder, then the first .sln found in .beamable/.. will be used. If no .sln is found, the .sln path will be <name>.sln. If no .beamable folder exists, then the <project>/<project>.sln will be used [default: Microservices\Microservices.sln]
+  --service-directory <service-directory>    Relative path to directory where project should be created. Defaults to "SOLUTION_DIR/services"
+  --mount-page <mount-page>                  Specify the page that the portal extension should added
+  --mount-selector <mount-selector>          Specify the place on the page that the portal extension should added
+  --mount-group <mount-group>                Specify the navigation group of the extension. This is only valid when the extension is a full page
+  --mount-label <mount-label>                Specify the navigation label of the extension. This is only valid when the extension is a full page
+  --mount-icon <mount-icon>                  Specify the Material Design Icon (mdi) that will be used for the extension's navigation. This is only valid when the extension is a full page
+  --mount-group-order <mount-group-order>    Specify the order of the mount group
+  --mount-label-order <mount-label-order>    Specify the order of the mount label
   --dryrun                                   [DEPRECATED] Run as much of the command as possible without making any network calls
   --cid <cid>                                CID (CustomerId) to use (found in Portal->Account); defaults to whatever is in '.beamable/config.beam.json'
   --engine <engine>                          If passed, sets the engine integration that is calling for the command
@@ -50,7 +56,7 @@ Options:
 
  */
 UCLASS()
-class UBeamCliProjectOpenSwaggerCommand : public UBeamCliCommand
+class UBeamCliProjectNewPortalExtensionCommand : public UBeamCliCommand
 {
 	GENERATED_BODY()
 
