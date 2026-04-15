@@ -3,24 +3,47 @@
 #include "Subsystems/CLI/BeamCliCommand.h"
 #include "Serialization/BeamJsonUtils.h"
 
-#include "BeamCliProjectOpenSwaggerCommand.generated.h"
+#include "BeamCliContentHistoryRestoreContentCommand.generated.h"
 
+
+UCLASS(BlueprintType)
+class UBeamCliContentHistoryRestoreContentStreamData : public UObject, public IBeamJsonSerializableUObject
+{
+	GENERATED_BODY()
+
+public:	
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<FString> RestoredContentIds = {};
+
+	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
+	{
+		UBeamJsonUtils::SerializeArray<FString>(TEXT("RestoredContentIds"), RestoredContentIds, Serializer);	
+	}
+
+	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
+	{
+		UBeamJsonUtils::SerializeArray<FString>(TEXT("RestoredContentIds"), RestoredContentIds, Serializer);	
+	}
+
+	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
+	{
+		UBeamJsonUtils::DeserializeArray<FString>(TEXT("RestoredContentIds"), Bag, RestoredContentIds, OuterOwner);	
+	}
+};
 
 
 /**
  Description:
-  Opens the swagger page for a given service
+  [INTERNAL] Restores local content files from history, overwriting them with the version from the specified manifest UID. If content IDs are not provided, restores all content in the manifest
 
 Usage:
-  Beamable.Tools project open-swagger [<service-name>] [options]
-
-Arguments:
-  <service-name>  Name of the service to open swagger to []
+  Beamable.Tools content history restore-content [options]
 
 Options:
-  -k, --routing-key <routing-key>            The routing key for the service instance we want. If not passed, defaults to the local service [default: desktop-54b40oj_1910319127a20db68aaed69cf2155dce]
-  -r, --remote                               When set, enforces the routing key to be the one for the service deployed to the realm. Cannot be specified when --routing-key is also set
-  --src-tool <src-tool>                      A hint to the Portal page which tool is being used [default: cli]
+  --manifest-ids <manifest-ids>              Inform a subset of ','-separated manifest ids for which to return data. By default, will return just the global manifest [default: global]
+  --manifest-uid <manifest-uid>              The manifest UID from history to restore content from
+  --content-ids <content-ids>                The content IDs to restore. If not provided, restores all content in the manifest
   --dryrun                                   [DEPRECATED] Run as much of the command as possible without making any network calls
   --cid <cid>                                CID (CustomerId) to use (found in Portal->Account); defaults to whatever is in '.beamable/config.beam.json'
   --engine <engine>                          If passed, sets the engine integration that is calling for the command
@@ -47,15 +70,17 @@ Options:
 
 
 
-
  */
 UCLASS()
-class UBeamCliProjectOpenSwaggerCommand : public UBeamCliCommand
+class UBeamCliContentHistoryRestoreContentCommand : public UBeamCliCommand
 {
 	GENERATED_BODY()
 
 public:
-		
+	inline static FString StreamType = FString(TEXT("stream"));
+	UPROPERTY() TArray<UBeamCliContentHistoryRestoreContentStreamData*> Stream;
+	UPROPERTY() TArray<int64> Timestamps;
+	TFunction<void (TArray<UBeamCliContentHistoryRestoreContentStreamData*>& StreamData, TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnStreamOutput;	
 
 	TFunction<void (const int& ResCode, const FBeamOperationHandle& Op)> OnCompleted;
 	virtual bool HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer) override;

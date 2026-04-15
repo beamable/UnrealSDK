@@ -2,25 +2,47 @@
 
 #include "Subsystems/CLI/BeamCliCommand.h"
 #include "Serialization/BeamJsonUtils.h"
+#include "Subsystems/CLI/Autogen/StreamData/RemotePortalConfigurationStreamData.h"
+#include "Subsystems/CLI/Autogen/StreamData/MountSiteConfigStreamData.h"
+#include "Subsystems/CLI/Autogen/StreamData/MountSiteSelectorStreamData.h"
+#include "BeamCliPortalExtensionListMountSitesCommand.generated.h"
 
-#include "BeamCliProjectOpenSwaggerCommand.generated.h"
 
+UCLASS(BlueprintType)
+class UBeamCliPortalExtensionListMountSitesStreamData : public UObject, public IBeamJsonSerializableUObject
+{
+	GENERATED_BODY()
+
+public:	
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	URemotePortalConfigurationStreamData* Config = {};
+
+	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
+	{
+		UBeamJsonUtils::SerializeUObject<URemotePortalConfigurationStreamData*>("config", Config, Serializer);	
+	}
+
+	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
+	{
+		UBeamJsonUtils::SerializeUObject<URemotePortalConfigurationStreamData*>("config", Config, Serializer);	
+	}
+
+	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
+	{
+		UBeamJsonUtils::DeserializeUObject<URemotePortalConfigurationStreamData*>("config", Bag, Config, OuterOwner);	
+	}
+};
 
 
 /**
  Description:
-  Opens the swagger page for a given service
+  List the available mount sites on the Portal
 
 Usage:
-  Beamable.Tools project open-swagger [<service-name>] [options]
-
-Arguments:
-  <service-name>  Name of the service to open swagger to []
+  Beamable.Tools portal extension list-mount-sites [options]
 
 Options:
-  -k, --routing-key <routing-key>            The routing key for the service instance we want. If not passed, defaults to the local service [default: desktop-54b40oj_1910319127a20db68aaed69cf2155dce]
-  -r, --remote                               When set, enforces the routing key to be the one for the service deployed to the realm. Cannot be specified when --routing-key is also set
-  --src-tool <src-tool>                      A hint to the Portal page which tool is being used [default: cli]
   --dryrun                                   [DEPRECATED] Run as much of the command as possible without making any network calls
   --cid <cid>                                CID (CustomerId) to use (found in Portal->Account); defaults to whatever is in '.beamable/config.beam.json'
   --engine <engine>                          If passed, sets the engine integration that is calling for the command
@@ -47,15 +69,17 @@ Options:
 
 
 
-
  */
 UCLASS()
-class UBeamCliProjectOpenSwaggerCommand : public UBeamCliCommand
+class UBeamCliPortalExtensionListMountSitesCommand : public UBeamCliCommand
 {
 	GENERATED_BODY()
 
 public:
-		
+	inline static FString StreamType = FString(TEXT("stream"));
+	UPROPERTY() TArray<UBeamCliPortalExtensionListMountSitesStreamData*> Stream;
+	UPROPERTY() TArray<int64> Timestamps;
+	TFunction<void (TArray<UBeamCliPortalExtensionListMountSitesStreamData*>& StreamData, TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnStreamOutput;	
 
 	TFunction<void (const int& ResCode, const FBeamOperationHandle& Op)> OnCompleted;
 	virtual bool HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer) override;

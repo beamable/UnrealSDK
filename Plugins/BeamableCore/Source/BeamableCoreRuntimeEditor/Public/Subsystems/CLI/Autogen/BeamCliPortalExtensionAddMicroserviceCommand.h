@@ -3,24 +3,22 @@
 #include "Subsystems/CLI/BeamCliCommand.h"
 #include "Serialization/BeamJsonUtils.h"
 
-#include "BeamCliProjectOpenSwaggerCommand.generated.h"
+#include "BeamCliPortalExtensionAddMicroserviceCommand.generated.h"
 
 
 
 /**
  Description:
-  Opens the swagger page for a given service
+  [INTERNAL] Adds microservice as a dependency for the specified Portal Extension
 
 Usage:
-  Beamable.Tools project open-swagger [<service-name>] [options]
+  Beamable.Tools portal extension add-microservice <extension> <microservice> [options]
 
 Arguments:
-  <service-name>  Name of the service to open swagger to []
+  <extension>     The Portal Extension name that the microservice will be added to
+  <microservice>  The Microservice that will be a new dependency of the specified Portal Extension
 
 Options:
-  -k, --routing-key <routing-key>            The routing key for the service instance we want. If not passed, defaults to the local service [default: desktop-54b40oj_1910319127a20db68aaed69cf2155dce]
-  -r, --remote                               When set, enforces the routing key to be the one for the service deployed to the realm. Cannot be specified when --routing-key is also set
-  --src-tool <src-tool>                      A hint to the Portal page which tool is being used [default: cli]
   --dryrun                                   [DEPRECATED] Run as much of the command as possible without making any network calls
   --cid <cid>                                CID (CustomerId) to use (found in Portal->Account); defaults to whatever is in '.beamable/config.beam.json'
   --engine <engine>                          If passed, sets the engine integration that is calling for the command
@@ -50,7 +48,7 @@ Options:
 
  */
 UCLASS()
-class UBeamCliProjectOpenSwaggerCommand : public UBeamCliCommand
+class UBeamCliPortalExtensionAddMicroserviceCommand : public UBeamCliCommand
 {
 	GENERATED_BODY()
 

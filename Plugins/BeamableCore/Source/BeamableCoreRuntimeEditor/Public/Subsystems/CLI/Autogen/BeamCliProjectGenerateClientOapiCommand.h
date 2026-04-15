@@ -43,7 +43,9 @@ Usage:
 Options:
   --ids <ids>                                The list of services to include, defaults to all local services (separated by whitespace). To use NO services, use the --exact-ids flag
   --exact-ids                                By default, a blank --ids option maps to ALL available ids. When the --exact-ids flag is given, a blank --ids option maps to NO ids
+  --server                                   Instructs the generator to write code for a server, not a client
   --output-dir <output-dir>                  Directory to write the output client at
+  --oapi-path <oapi-path>                    Path to an existing beam_openApi.json file; skips manifest lookup when provided
   --dryrun                                   [DEPRECATED] Run as much of the command as possible without making any network calls
   --cid <cid>                                CID (CustomerId) to use (found in Portal->Account); defaults to whatever is in '.beamable/config.beam.json'
   --engine <engine>                          If passed, sets the engine integration that is calling for the command
