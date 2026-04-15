@@ -1303,6 +1303,23 @@ void UBeamEditorContent::SyncContentHistoryChangelist(FString ManifestUid)
 			}
 		}
 	};
+	
+	SyncCmd->OnErrorsStreamOutput = [this](const TArray<FBeamCliError>& Errors, const TArray<long long>& , const FBeamOperationHandle& )
+	{
+		for (FBeamCliError Error : Errors)
+		{
+			UE_LOG(LogBeamContent, Error, TEXT("ERROR syncing content history changelist: %s"), *Error.Message);
+		}
+		// Close the slow task in the error case.
+		if (HistoryChangelistSyncSlowTask)
+		{
+			HistoryChangelistSyncSlowTask->Destroy();
+			if (HistoryChangelistSyncSlowTask)
+			{
+				delete HistoryChangelistSyncSlowTask;
+			}
+		}
+	};
 
 	FString Args = FString::Printf(TEXT("--manifest-uid %s"), *ManifestUid);
 	Cli->RunCommandServer(SyncCmd, {Args}, {});
