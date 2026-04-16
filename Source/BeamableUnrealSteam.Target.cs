@@ -27,22 +27,24 @@ public class BeamableUnrealSteamTarget : BeamableUnrealTarget
 					Console.WriteLine($"Could not find {iniPath} to set up steam_appid.txt");
 					return;
 				}
-				var iniContents = File.ReadAllLines(iniPath);
 				
-				if(!iniContents.Any(c => c.StartsWith("SteamDevAppId")))
-                {
-                    return;
-                }
+				Console.WriteLine($"Reading ini file at {iniPath} to set up steam_appid.txt");
+				var iniContents = File.ReadAllLines(iniPath);
+				if(!iniContents.Any(c => c.StartsWith("SteamDevAppId"))) return;
+				
 				
 				var steamAppIdLine = iniContents.First(c => c.StartsWith("SteamDevAppId"));
-				
 				var steamAppId = steamAppIdLine[(steamAppIdLine.LastIndexOf('=') + 1)..].TrimEnd();
+				Console.WriteLine($"Found steam app id ({steamAppId}) at ini file {iniPath}. Setting up.");
 
 				if (Platform == UnrealTargetPlatform.Win64)
 				{
+					Console.WriteLine($"Preparing Windows PostBuildSteps.");
 					string WinPath = Path.Combine(basePath, "Windows", "steam_appid.txt");
 					string WinDir = Path.GetDirectoryName(WinPath);
-					PostBuildSteps.Add($"if not exist \"{WinDir}\" mkdir \"{WinDir}\" && echo {steamAppId} > \"{WinPath}\"");
+					PostBuildSteps.Add($"if not exist \"{WinDir}\" mkdir \"{WinDir}\"");
+					PostBuildSteps.Add($"echo {steamAppId}> \"{WinPath}\"");
+					PostBuildSteps.Add($"echo Steam App ID content: && type \"{WinPath}\"");
 				}
 				else if (Platform == UnrealTargetPlatform.Mac)
 				{

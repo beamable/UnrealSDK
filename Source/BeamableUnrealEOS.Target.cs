@@ -44,7 +44,8 @@ public class BeamableUnrealEOSTarget : BeamableUnrealTarget
 						{
 							string WinPath = Path.Combine(basePath, "Windows", "eosconfig.json");
 							string WinDir = Path.GetDirectoryName(WinPath);
-							PostBuildSteps.Add($"if not exist \"{WinDir}\" mkdir \"{WinDir}\" && echo {eosConfigContent} > \"{WinPath}\"");
+							PostBuildSteps.Add($"if not exist \"{WinDir}\" mkdir \"{WinDir}\"");
+							PostBuildSteps.Add($"echo {eosConfigContent}> \"{WinPath}\"");
 						}
 						else if (Platform == UnrealTargetPlatform.Mac)
 						{
