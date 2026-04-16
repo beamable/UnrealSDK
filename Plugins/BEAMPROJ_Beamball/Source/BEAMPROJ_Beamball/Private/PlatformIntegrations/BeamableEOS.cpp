@@ -99,7 +99,8 @@ namespace
 void UBeamableEOS::Initialize(FSubsystemCollectionBase& Collection)
 {
 	Super::Initialize(Collection);
-
+	// Specifically for MAC we need to load the module before calling any EOS functions to ensure the SDK is properly initialized
+	FModuleManager::Get().LoadModule("OnlineServicesEOS");	
 	// Initialize the cache arrays to match the size of RuntimeUserSlots
 	const UBeamCoreSettings* CoreSettings = GetDefault<UBeamCoreSettings>();
 	if (CoreSettings)
