@@ -46,7 +46,7 @@ public class BeamableUnrealSteamTarget : BeamableUnrealTarget
 				}
 				else if (Platform == UnrealTargetPlatform.Mac)
 				{
-					string MacPath = Path.Combine(basePath, "Mac", $"{Name}.app", "Contents", "MacOS", "steam_appid.txt");
+					string MacPath = Path.Combine(basePath, "Mac", $"{Name}.app", "Contents", "UE", Name, "Binaries", "Mac", "steam_appid.txt");
 					PostBuildSteps.Add(string.Format("mkdir -p \"$(dirname '{1}')\" && echo {0} > \"{1}\"", steamAppId, MacPath));
 				}
 				else if (Platform == UnrealTargetPlatform.Linux)
