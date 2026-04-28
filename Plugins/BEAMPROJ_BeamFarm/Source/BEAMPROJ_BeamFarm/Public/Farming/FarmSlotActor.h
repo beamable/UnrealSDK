@@ -1,0 +1,100 @@
+// Copyright Beamable, Inc. All Rights Reserved.
+
+#pragma once
+
+#include "CoreMinimal.h"
+#include "GameFramework/Actor.h"
+#include "Farming/FarmTypes.h"
+#include "FarmSlotActor.generated.h"
+
+class UBoxComponent;
+class UPaperSpriteComponent;
+class UPaperSprite;
+
+/**
+ * A single plantable slot in a farm plot.
+ *
+ * Assign EmptySprite, GrowingSprite, and ReadyToHarvestSprite in the Blueprint
+ * Details panel — CropSpriteComp swaps between them automatically as the slot
+ * state changes. No Blueprint event override is required for the basic case.
+ *
+ * Override OnStateChanged in Blueprint for additional logic (sounds, particles).
+ * Override OnHarvestFeedback for a pop/collect animation before the slot resets.
+ *
+ * Clicking/touching this actor routes to UFarmingComponent on the owning Pawn.
+ * Enable bEnableClickEvents and bEnableTouchEvents on the PlayerController.
+ */
+UCLASS(Blueprintable, BlueprintType)
+class BEAMPROJ_BEAMFARM_API AFarmSlotActor : public AActor
+{
+	GENERATED_BODY()
+
+public:
+	AFarmSlotActor();
+
+	// Collision box for mouse/touch detection. Resize to match your sprite in BP.
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "BeamFarm|Slot|Components")
+	TObjectPtr<UBoxComponent> InteractionBox;
+
+	// Displays EmptySprite / GrowingSprite / ReadyToHarvestSprite depending on state.
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "BeamFarm|Slot|Components")
+	TObjectPtr<UPaperSpriteComponent> CropSpriteComp;
+
+	// Shown when no crop is planted. Leave null to hide the component when empty.
+	// Growing and ReadyToHarvest sprites come from FFarmCropData on the planted crop.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BeamFarm|Slot|Sprites")
+	TObjectPtr<UPaperSprite> EmptySprite;
+
+	UPROPERTY(BlueprintReadOnly, Category = "BeamFarm|Slot")
+	EFarmSlotState SlotState;
+
+	UPROPERTY(BlueprintReadOnly, Category = "BeamFarm|Slot")
+	FFarmCropData PlantedCrop;
+
+	// Fired whenever SlotState changes.
+	UPROPERTY(BlueprintAssignable, Category = "BeamFarm|Slot")
+	FOnFarmSlotStateChangedDelegate OnSlotStateChanged;
+
+	// Plants a crop and starts the grow timer. No-op if slot is not Empty.
+	UFUNCTION(BlueprintCallable, Category = "BeamFarm|Slot")
+	void PlantCrop(const FFarmCropData& CropData);
+
+	// Resets the slot to Empty. Only valid when SlotState == ReadyToHarvest.
+	// Does NOT add items to inventory — UFarmingComponent::OnItemsHarvested handles that.
+	UFUNCTION(BlueprintCallable, Category = "BeamFarm|Slot")
+	void Harvest();
+
+	// Returns grow progress in [0, 1]. Returns 1 if ReadyToHarvest, 0 if Empty.
+	UFUNCTION(BlueprintPure, Category = "BeamFarm|Slot")
+	float GetGrowProgress() const;
+
+	// Override in Blueprint for extra state-change logic (sounds, particles).
+	// The sprite swap on CropSpriteComp already happens before this is called.
+	UFUNCTION(BlueprintImplementableEvent, Category = "BeamFarm|Slot")
+	void OnStateChanged(EFarmSlotState NewState);
+
+	// Override in Blueprint for collect animation/feedback.
+	// Fires before the slot resets — PlantedCrop is still valid here.
+	UFUNCTION(BlueprintImplementableEvent, Category = "BeamFarm|Slot")
+	void OnHarvestFeedback();
+
+	// Override in Blueprint for extra click logic (sound, highlight) without breaking routing.
+	UFUNCTION(BlueprintImplementableEvent, Category = "BeamFarm|Slot")
+	void OnSlotClicked();
+
+protected:
+	virtual void BeginPlay() override;
+
+private:
+	FTimerHandle GrowTimerHandle;
+	float PlantedTimestamp = 0.f;
+
+	void UpdateSprite(EFarmSlotState NewState);
+	void SetSlotState(EFarmSlotState NewState);
+
+	UFUNCTION()
+	void OnGrowTimerComplete();
+
+	UFUNCTION()
+	void HandleActorClicked(AActor* TouchedActor, FKey ButtonPressed);
+};
