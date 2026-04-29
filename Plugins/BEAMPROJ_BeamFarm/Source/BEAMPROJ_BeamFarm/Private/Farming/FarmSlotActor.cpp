@@ -5,7 +5,6 @@
 #include "Components/BoxComponent.h"
 #include "PaperSpriteComponent.h"
 #include "PaperSprite.h"
-#include "GameFramework/PlayerController.h"
 #include "TimerManager.h"
 #include "Engine/World.h"
 
@@ -117,15 +116,29 @@ void AFarmSlotActor::OnGrowTimerComplete()
 
 void AFarmSlotActor::HandleActorClicked(AActor* TouchedActor, FKey ButtonPressed)
 {
+	// Visual/audio feedback only — the interaction itself is deferred until the character
+	// walks within InteractionRadius (handled by ABeamFarmPlayerController).
 	OnSlotClicked();
+}
 
-	APlayerController* PC = GetWorld()->GetFirstPlayerController();
-	if (!PC)
+FVector AFarmSlotActor::GetInteractionPoint_Implementation() const
+{
+	return GetActorLocation();
+}
+
+float AFarmSlotActor::GetInteractionRadius_Implementation() const
+{
+	return InteractionRadius;
+}
+
+void AFarmSlotActor::Interact_Implementation(APawn* InstigatorPawn)
+{
+	if (!InstigatorPawn)
 	{
 		return;
 	}
 
-	UFarmingComponent* FarmComp = PC->GetPawn()->FindComponentByClass<UFarmingComponent>();
+	UFarmingComponent* FarmComp = InstigatorPawn->FindComponentByClass<UFarmingComponent>();
 	if (FarmComp)
 	{
 		FarmComp->InteractWithSlot(this);

@@ -27,7 +27,7 @@ public class BEAMPROJ_BeamFarm : ModuleRules
 		PublicDependencyModuleNames.AddRange(
 			new string[]
 			{
-				"Core", "OnlineSubsystem", "Paper2D",  "InputCore"
+				"Core", "OnlineSubsystem", "Paper2D", "InputCore", "AIModule"
 				// ... add other public dependencies that you statically link with here ...
 			}
 		);
@@ -39,7 +39,7 @@ public class BEAMPROJ_BeamFarm : ModuleRules
 				"CoreUObject",
 				"Engine",
 				"Slate",
-				"SlateCore",
+				"SlateCore", "AIModule", "NavigationSystem"
 				// ... add private dependencies that you statically link with here ...
 			}
 		);

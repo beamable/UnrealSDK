@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Farming/FarmTypes.h"
+#include "Interaction/BeamFarmInteractable.h"
 #include "FarmSlotActor.generated.h"
 
 class UBoxComponent;
@@ -21,11 +22,12 @@ class UPaperSprite;
  * Override OnStateChanged in Blueprint for additional logic (sounds, particles).
  * Override OnHarvestFeedback for a pop/collect animation before the slot resets.
  *
- * Clicking/touching this actor routes to UFarmingComponent on the owning Pawn.
- * Enable bEnableClickEvents and bEnableTouchEvents on the PlayerController.
+ * Implements IBeamFarmInteractable — ABeamFarmPlayerController moves the character
+ * within InteractionRadius before calling UFarmingComponent::InteractWithSlot().
+ * Clicking the slot still fires OnSlotClicked() immediately for visual feedback.
  */
 UCLASS(Blueprintable, BlueprintType)
-class BEAMPROJ_BEAMFARM_API AFarmSlotActor : public AActor
+class BEAMPROJ_BEAMFARM_API AFarmSlotActor : public AActor, public IBeamFarmInteractable
 {
 	GENERATED_BODY()
 
@@ -44,6 +46,10 @@ public:
 	// Growing and ReadyToHarvest sprites come from FFarmCropData on the planted crop.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BeamFarm|Slot|Sprites")
 	TObjectPtr<UPaperSprite> EmptySprite;
+
+	// How close (cm) the character must be before the farming interaction triggers.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BeamFarm|Slot")
+	float InteractionRadius = 150.f;
 
 	UPROPERTY(BlueprintReadOnly, Category = "BeamFarm|Slot")
 	EFarmSlotState SlotState;
@@ -81,6 +87,11 @@ public:
 	// Override in Blueprint for extra click logic (sound, highlight) without breaking routing.
 	UFUNCTION(BlueprintImplementableEvent, Category = "BeamFarm|Slot")
 	void OnSlotClicked();
+
+	// IBeamFarmInteractable
+	virtual FVector GetInteractionPoint_Implementation() const override;
+	virtual float GetInteractionRadius_Implementation() const override;
+	virtual void Interact_Implementation(APawn* InstigatorPawn) override;
 
 protected:
 	virtual void BeginPlay() override;
