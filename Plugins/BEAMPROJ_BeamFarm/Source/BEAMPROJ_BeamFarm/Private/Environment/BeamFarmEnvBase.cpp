@@ -16,4 +16,22 @@ ABeamFarmEnvBase::ABeamFarmEnvBase()
 
 	SpriteComp = CreateDefaultSubobject<UPaperSpriteComponent>(TEXT("SpriteComp"));
 	SpriteComp->SetupAttachment(SceneRoot);
+
+	EntryPoint = CreateDefaultSubobject<USceneComponent>(TEXT("EntryPoint"));
+	EntryPoint->SetupAttachment(SceneRoot);
+}
+
+FVector ABeamFarmEnvBase::GetInteractionPoint_Implementation() const
+{
+	return EntryPoint->GetComponentLocation();
+}
+
+float ABeamFarmEnvBase::GetInteractionRadius_Implementation() const
+{
+	return 100.f;
+}
+
+void ABeamFarmEnvBase::Interact_Implementation(APawn* InstigatorPawn)
+{
+	// Default no-op — override in Blueprint subclasses to open a menu, play animation, etc.
 }
