@@ -8,19 +8,20 @@
 #include "FarmingComponent.generated.h"
 
 class AFarmSlotActor;
+class UBeamPlantContent;
+class UBeamContentSubsystem;
 
 /**
  * Attach to your Character/Pawn to handle all farming interactions.
  *
  * Workflow:
  *   1. Player opens inventory and selects a seed item.
- *   2. Inventory widget calls SetSelectedCrop(CropData) — enters Planting state.
+ *   2. Inventory widget calls SetSelectedCrop(PlantContent) — enters Planting state.
  *   3. Player clicks any empty slot → slot is planted, OnSeedConsumed fires (deduct from inventory here).
  *   4. Player clicks any ReadyToHarvest slot → harvested, OnItemsHarvested fires (add to inventory here).
  *   5. Player deselects seed in inventory (or calls ClearSelectedCrop) → returns to Idle.
  *
- * Use CropDataTable to look up FFarmCropData by SeedItemContentId when the inventory
- * widget only knows the Beamable item content ID.
+ * Uses UBeamContentSubsystem to look up UBeamPlantContent by SeedItemContentId.
  *
  * Requires bEnableClickEvents = true and bEnableTouchEvents = true on the PlayerController.
  */
@@ -32,23 +33,19 @@ class BEAMPROJ_BEAMFARM_API UFarmingComponent : public UActorComponent
 public:
 	UFarmingComponent();
 
-	// DataTable with rows of type FFarmCropData. Used by FindCropBySeedId and GetAllCrops.
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BeamFarm|Farming")
-	TObjectPtr<UDataTable> CropDataTable;
-
 	UPROPERTY(BlueprintReadOnly, Category = "BeamFarm|Farming")
 	EFarmingInteractionState FarmingState;
 
 	// The crop currently selected from inventory. Valid only during Planting state.
 	UPROPERTY(BlueprintReadOnly, Category = "BeamFarm|Farming")
-	FFarmCropData SelectedCrop;
+	TObjectPtr<UBeamPlantContent> SelectedCrop;
 
 	// Call this from your inventory widget when the player selects a seed item.
 	UFUNCTION(BlueprintCallable, Category = "BeamFarm|Farming")
-	void SetSelectedCrop(const FFarmCropData& CropData);
+	void SetSelectedCrop(UBeamPlantContent* PlantContent);
 
-	// Convenience: look up a crop in CropDataTable by its SeedItemContentId, then select it.
-	// Returns false if no matching row is found.
+	// Convenience: look up a plant in the content system by its SeedItemContentId, then select it.
+	// Returns false if no matching plant content is found.
 	UFUNCTION(BlueprintCallable, Category = "BeamFarm|Farming")
 	bool SetSelectedCropBySeedId(const FString& SeedItemContentId);
 
@@ -64,13 +61,13 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "BeamFarm|Farming")
 	void InteractWithSlot(AFarmSlotActor* Slot);
 
-	// Returns all rows from CropDataTable — useful for populating inventory UIs.
-	UFUNCTION(BlueprintPure, Category = "BeamFarm|Farming")
-	TArray<FFarmCropData> GetAllCrops() const;
+	// Returns all plant content objects loaded in the content system.
+	UFUNCTION(BlueprintCallable, Category = "BeamFarm|Farming")
+	TArray<UBeamPlantContent*> GetAllPlants();
 
-	// Looks up a single crop row by SeedItemContentId. Returns false if not found.
-	UFUNCTION(BlueprintPure, Category = "BeamFarm|Farming")
-	bool FindCropBySeedId(const FString& SeedItemContentId, FFarmCropData& OutCropData) const;
+	// Looks up a single plant by SeedItemContentId. Returns false if not found.
+	UFUNCTION(BlueprintCallable, Category = "BeamFarm|Farming")
+	bool FindPlantBySeedId(const FString& SeedItemContentId, UBeamPlantContent*& OutPlantContent);
 
 	// Implement in Blueprint: remove one seed (SeedItemContentId) from Beamable inventory.
 	UFUNCTION(BlueprintImplementableEvent, Category = "BeamFarm|Farming")
@@ -90,4 +87,8 @@ public:
 
 private:
 	void SetFarmingState(EFarmingInteractionState NewState);
+
+	// Cached reference to the content subsystem
+	UPROPERTY()
+	TObjectPtr<UBeamContentSubsystem> ContentSubsystem;
 };

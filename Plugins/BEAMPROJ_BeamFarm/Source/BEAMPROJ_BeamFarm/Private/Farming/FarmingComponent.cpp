@@ -1,8 +1,10 @@
 // Copyright Beamable, Inc. All Rights Reserved.
 
 #include "Farming/FarmingComponent.h"
+#include "Subsystems/Content/BeamContentSubsystem.h"
+#include "Contents/BeamPlantContent.h"
 #include "Farming/FarmSlotActor.h"
-#include "Engine/DataTable.h"
+#include "Engine/World.h"
 
 UFarmingComponent::UFarmingComponent()
 {
@@ -10,16 +12,16 @@ UFarmingComponent::UFarmingComponent()
 	FarmingState = EFarmingInteractionState::Idle;
 }
 
-void UFarmingComponent::SetSelectedCrop(const FFarmCropData& CropData)
+void UFarmingComponent::SetSelectedCrop(UBeamPlantContent* PlantContent)
 {
-	SelectedCrop = CropData;
+	SelectedCrop = PlantContent;
 	SetFarmingState(EFarmingInteractionState::Planting);
 }
 
 bool UFarmingComponent::SetSelectedCropBySeedId(const FString& SeedItemContentId)
 {
-	FFarmCropData Found;
-	if (!FindCropBySeedId(SeedItemContentId, Found))
+	UBeamPlantContent* Found = nullptr;
+	if (!FindPlantBySeedId(SeedItemContentId, Found))
 	{
 		return false;
 	}
@@ -29,13 +31,13 @@ bool UFarmingComponent::SetSelectedCropBySeedId(const FString& SeedItemContentId
 
 void UFarmingComponent::ClearSelectedCrop()
 {
-	SelectedCrop = FFarmCropData{};
+	SelectedCrop = nullptr;
 	SetFarmingState(EFarmingInteractionState::Idle);
 }
 
 bool UFarmingComponent::HasSelectedCrop() const
 {
-	return !SelectedCrop.CropId.IsNone();
+	return SelectedCrop != nullptr;
 }
 
 void UFarmingComponent::InteractWithSlot(AFarmSlotActor* Slot)
@@ -47,8 +49,13 @@ void UFarmingComponent::InteractWithSlot(AFarmSlotActor* Slot)
 
 	if (Slot->SlotState == EFarmSlotState::ReadyToHarvest)
 	{
-		const FString ItemId = Slot->PlantedCrop.HarvestItemContentId;
-		const int32 Yield = Slot->PlantedCrop.HarvestYield;
+		if (!Slot->PlantedCrop)
+		{
+			return;
+		}
+
+		const FString ItemId = Slot->PlantedCrop->HarvestItemContentId;
+		const int32 Yield = Slot->PlantedCrop->HarvestYield;
 		Slot->Harvest();
 		OnItemsHarvested(Slot, ItemId, Yield);
 		return;
@@ -67,45 +74,72 @@ void UFarmingComponent::InteractWithSlot(AFarmSlotActor* Slot)
 	}
 
 	Slot->PlantCrop(SelectedCrop);
-	OnSeedConsumed(SelectedCrop.SeedItemContentId, 1);
+	OnSeedConsumed(SelectedCrop->SeedItemContentId, 1);
 }
 
-TArray<FFarmCropData> UFarmingComponent::GetAllCrops() const
+TArray<UBeamPlantContent*> UFarmingComponent::GetAllPlants()
 {
-	TArray<FFarmCropData> Result;
-	if (!CropDataTable)
-	{
-		return Result;
-	}
+	TArray<UBeamPlantContent*> Result;
 
-	for (const FName& RowName : CropDataTable->GetRowNames())
+	// Get or cache the content subsystem
+	if (!ContentSubsystem)
 	{
-		if (const FFarmCropData* Row = CropDataTable->FindRow<FFarmCropData>(RowName, TEXT("")))
+		ContentSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UBeamContentSubsystem>();
+		if (!ContentSubsystem)
 		{
-			Result.Add(*Row);
+			UE_LOG(LogTemp, Warning, TEXT("UFarmingComponent::GetAllPlants - Could not get BeamContentSubsystem"));
+			return Result;
 		}
 	}
+
+	// Get all plant content IDs
+	TArray<FBeamContentId> PlantIds;
+	ContentSubsystem->GetIdsOfContentType(UBeamPlantContent::StaticClass(), PlantIds, true);
+
+	// Convert to plant content objects
+	for (const FBeamContentId& PlantId : PlantIds)
+	{
+		UBeamPlantContent* PlantContent = nullptr;
+		if (ContentSubsystem->TryGetContentOfType<UBeamPlantContent>(PlantId, PlantContent) && PlantContent)
+		{
+			Result.Add(PlantContent);
+		}
+	}
+
 	return Result;
 }
 
-bool UFarmingComponent::FindCropBySeedId(const FString& SeedItemContentId, FFarmCropData& OutCropData) const
+bool UFarmingComponent::FindPlantBySeedId(const FString& SeedItemContentId, UBeamPlantContent*& OutPlantContent)
 {
-	if (!CropDataTable)
+	// Get or cache the content subsystem
+	if (!ContentSubsystem)
 	{
-		return false;
+		ContentSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UBeamContentSubsystem>();
+		if (!ContentSubsystem)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("UFarmingComponent::FindPlantBySeedId - Could not get BeamContentSubsystem"));
+			return false;
+		}
 	}
 
-	for (const FName& RowName : CropDataTable->GetRowNames())
+	// Get all plant content IDs
+	TArray<FBeamContentId> PlantIds;
+	ContentSubsystem->GetIdsOfContentType(UBeamPlantContent::StaticClass(), PlantIds, true);
+
+	// Search for matching SeedItemContentId
+	for (const FBeamContentId& PlantId : PlantIds)
 	{
-		if (const FFarmCropData* Row = CropDataTable->FindRow<FFarmCropData>(RowName, TEXT("")))
+		UBeamPlantContent* PlantContent = nullptr;
+		if (ContentSubsystem->TryGetContentOfType<UBeamPlantContent>(PlantId, PlantContent) && PlantContent)
 		{
-			if (Row->SeedItemContentId == SeedItemContentId)
+			if (PlantContent->SeedItemContentId == SeedItemContentId)
 			{
-				OutCropData = *Row;
+				OutPlantContent = PlantContent;
 				return true;
 			}
 		}
 	}
+
 	return false;
 }
 

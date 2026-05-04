@@ -11,19 +11,31 @@ class UPaperSprite;
 UENUM(BlueprintType)
 enum class EFarmSlotState : uint8
 {
-	Empty          UMETA(DisplayName = "Empty"),
-	Growing        UMETA(DisplayName = "Growing"),
+	Empty UMETA(DisplayName = "Empty"),
+	Growing UMETA(DisplayName = "Growing"),
 	ReadyToHarvest UMETA(DisplayName = "Ready To Harvest"),
 };
 
 UENUM(BlueprintType)
 enum class EFarmingInteractionState : uint8
 {
-	Idle     UMETA(DisplayName = "Idle"),
+	Idle UMETA(DisplayName = "Idle"),
 	Planting UMETA(DisplayName = "Planting"),
 };
 
-USTRUCT(BlueprintType)
+/**
+ * DEPRECATED: FFarmCropData is deprecated in favor of UBeamPlantContent.
+ * 
+ * The farming system now uses UBeamPlantContent (itemplant content type) instead of DataTables.
+ * This struct is kept for backward compatibility only.
+ * 
+ * Migration:
+ * 1. Create UBeamPlantContent assets using Beamable content tools
+ * 2. Set the same properties in UBeamPlantContent
+ * 3. Remove references to CropDataTable from UFarmingComponent
+ * 4. Use GetAllPlants() and FindPlantBySeedId() instead
+ */
+USTRUCT(BlueprintType, meta = (DeprecatedNode, DeprecationMessage = "Use UBeamPlantContent instead"))
 struct BEAMPROJ_BEAMFARM_API FFarmCropData : public FTableRowBase
 {
 	GENERATED_BODY()

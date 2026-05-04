@@ -11,13 +11,14 @@
 class UBoxComponent;
 class UPaperSpriteComponent;
 class UPaperSprite;
+class UBeamPlantContent;
 
 /**
  * A single plantable slot in a farm plot.
  *
- * Assign EmptySprite, GrowingSprite, and ReadyToHarvestSprite in the Blueprint
- * Details panel — CropSpriteComp swaps between them automatically as the slot
- * state changes. No Blueprint event override is required for the basic case.
+ * Assign EmptySprite in the Blueprint Details panel.
+ * GrowingSprite and ReadyToHarvestSprite come from UBeamPlantContent.
+ * CropSpriteComp swaps between them automatically as the slot state changes.
  *
  * Override OnStateChanged in Blueprint for additional logic (sounds, particles).
  * Override OnHarvestFeedback for a pop/collect animation before the slot resets.
@@ -43,7 +44,7 @@ public:
 	TObjectPtr<UPaperSpriteComponent> CropSpriteComp;
 
 	// Shown when no crop is planted. Leave null to hide the component when empty.
-	// Growing and ReadyToHarvest sprites come from FFarmCropData on the planted crop.
+	// Growing and ReadyToHarvest sprites come from UBeamPlantContent on the planted crop.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BeamFarm|Slot|Sprites")
 	TObjectPtr<UPaperSprite> EmptySprite;
 
@@ -55,7 +56,7 @@ public:
 	EFarmSlotState SlotState;
 
 	UPROPERTY(BlueprintReadOnly, Category = "BeamFarm|Slot")
-	FFarmCropData PlantedCrop;
+	TObjectPtr<UBeamPlantContent> PlantedCrop;
 
 	// Fired whenever SlotState changes.
 	UPROPERTY(BlueprintAssignable, Category = "BeamFarm|Slot")
@@ -63,7 +64,7 @@ public:
 
 	// Plants a crop and starts the grow timer. No-op if slot is not Empty.
 	UFUNCTION(BlueprintCallable, Category = "BeamFarm|Slot")
-	void PlantCrop(const FFarmCropData& CropData);
+	void PlantCrop(UBeamPlantContent* PlantContent);
 
 	// Resets the slot to Empty. Only valid when SlotState == ReadyToHarvest.
 	// Does NOT add items to inventory — UFarmingComponent::OnItemsHarvested handles that.
