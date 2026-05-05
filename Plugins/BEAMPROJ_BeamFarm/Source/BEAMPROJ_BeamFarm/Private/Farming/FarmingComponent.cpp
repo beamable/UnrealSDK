@@ -3,6 +3,7 @@
 #include "Farming/FarmingComponent.h"
 #include "Subsystems/Content/BeamContentSubsystem.h"
 #include "Contents/BeamPlantContent.h"
+#include "Contents/BeamPlantRawMaterial.h"
 #include "Farming/FarmSlotActor.h"
 #include "Engine/World.h"
 
@@ -125,6 +126,10 @@ bool UFarmingComponent::FindPlantBySeedId(const FString& SeedItemContentId, UBea
 	// Get all plant content IDs
 	TArray<FBeamContentId> PlantIds;
 	ContentSubsystem->GetIdsOfContentType(UBeamPlantContent::StaticClass(), PlantIds, true);
+	
+	// Get all plant content IDs
+	TArray<FBeamContentId> PlantRawIds;
+	ContentSubsystem->GetIdsOfContentType(UBeamPlantRawMaterial::StaticClass(), PlantRawIds, true);
 
 	// Search for matching SeedItemContentId
 	for (const FBeamContentId& PlantId : PlantIds)
@@ -139,6 +144,7 @@ bool UFarmingComponent::FindPlantBySeedId(const FString& SeedItemContentId, UBea
 			}
 		}
 	}
+	
 
 	return false;
 }

@@ -39,7 +39,8 @@ public class BEAMPROJ_BeamFarm : ModuleRules
 				"CoreUObject",
 				"Engine",
 				"Slate",
-				"SlateCore", "AIModule", "NavigationSystem"
+				"SlateCore", "AIModule", "NavigationSystem",
+				"BeamableCore", "BeamableCoreRuntime"
 				// ... add private dependencies that you statically link with here ...
 			}
 		);
