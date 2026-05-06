@@ -2,7 +2,7 @@
 
 #include "Farming/FarmSlotActor.h"
 #include "Farming/FarmingComponent.h"
-#include "Contents/BeamPlantContent.h"
+#include "BeamPlantData.h"
 #include "Components/BoxComponent.h"
 #include "PaperSpriteComponent.h"
 #include "PaperSprite.h"
@@ -40,21 +40,21 @@ void AFarmSlotActor::BeginPlay()
 	UpdateSprite(EFarmSlotState::Empty);
 }
 
-void AFarmSlotActor::PlantCrop(UBeamPlantContent* PlantContent)
+void AFarmSlotActor::PlantCrop(const FBeamPlantData& PlantData)
 {
-	if (SlotState != EFarmSlotState::Empty || !PlantContent)
+	if (SlotState != EFarmSlotState::Empty || PlantData.SeedItemContentId.IsEmpty())
 	{
 		return;
 	}
 
-	PlantedCrop = PlantContent;
+	PlantedCrop = PlantData;
 	PlantedTimestamp = GetWorld()->GetTimeSeconds();
 
 	SetSlotState(EFarmSlotState::Growing);
 
 	FTimerDelegate TimerDelegate;
 	TimerDelegate.BindUObject(this, &AFarmSlotActor::OnGrowTimerComplete);
-	GetWorldTimerManager().SetTimer(GrowTimerHandle, TimerDelegate, PlantContent->GrowTimeSeconds, false);
+	GetWorldTimerManager().SetTimer(GrowTimerHandle, TimerDelegate, PlantData.GrowTimeSeconds, false);
 }
 
 void AFarmSlotActor::Harvest()
@@ -66,7 +66,7 @@ void AFarmSlotActor::Harvest()
 
 	OnHarvestFeedback();
 
-	PlantedCrop = nullptr;
+	PlantedCrop = FBeamPlantData();
 	PlantedTimestamp = 0.f;
 
 	SetSlotState(EFarmSlotState::Empty);
@@ -83,13 +83,13 @@ float AFarmSlotActor::GetGrowProgress() const
 		return 1.f;
 	}
 
-	if (!PlantedCrop)
+	if (PlantedCrop.SeedItemContentId.IsEmpty())
 	{
 		return 0.f;
 	}
 
 	const float Elapsed = GetWorld()->GetTimeSeconds() - PlantedTimestamp;
-	return FMath::Clamp(Elapsed / FMath::Max(PlantedCrop->GrowTimeSeconds, 1.f), 0.f, 1.f);
+	return FMath::Clamp(Elapsed / FMath::Max(PlantedCrop.GrowTimeSeconds, 1.f), 0.f, 1.f);
 }
 
 void AFarmSlotActor::UpdateSprite(EFarmSlotState NewState)
@@ -102,10 +102,10 @@ void AFarmSlotActor::UpdateSprite(EFarmSlotState NewState)
 		TargetSprite = EmptySprite;
 		break;
 	case EFarmSlotState::Growing:
-		TargetSprite = PlantedCrop ? PlantedCrop->GrowingSprite.LoadSynchronous() : nullptr;
+		TargetSprite = !PlantedCrop.SeedItemContentId.IsEmpty() ? PlantedCrop.GrowingSprite.LoadSynchronous() : nullptr;
 		break;
 	case EFarmSlotState::ReadyToHarvest:
-		TargetSprite = PlantedCrop ? PlantedCrop->ReadyToHarvestSprite.LoadSynchronous() : nullptr;
+		TargetSprite = !PlantedCrop.SeedItemContentId.IsEmpty() ? PlantedCrop.ReadyToHarvestSprite.LoadSynchronous() : nullptr;
 		break;
 	}
 

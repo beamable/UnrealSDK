@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "Farming/FarmTypes.h"
+#include "BeamPlantData.h"
 #include "FarmingComponent.generated.h"
 
 class AFarmSlotActor;
@@ -38,11 +39,11 @@ public:
 
 	// The crop currently selected from inventory. Valid only during Planting state.
 	UPROPERTY(BlueprintReadOnly, Category = "BeamFarm|Farming")
-	TObjectPtr<UBeamPlantContent> SelectedCrop;
+	FBeamPlantData SelectedCrop;
 
 	// Call this from your inventory widget when the player selects a seed item.
 	UFUNCTION(BlueprintCallable, Category = "BeamFarm|Farming")
-	void SetSelectedCrop(UBeamPlantContent* PlantContent);
+	void SetSelectedCrop(const FBeamPlantData& PlantContent);
 
 	// Convenience: look up a plant in the content system by its SeedItemContentId, then select it.
 	// Returns false if no matching plant content is found.
@@ -61,13 +62,13 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "BeamFarm|Farming")
 	void InteractWithSlot(AFarmSlotActor* Slot);
 
-	// Returns all plant content objects loaded in the content system.
+	// Returns all plant data from content objects loaded in the content system.
 	UFUNCTION(BlueprintCallable, Category = "BeamFarm|Farming")
-	TArray<UBeamPlantContent*> GetAllPlants();
+	TArray<FBeamPlantData> GetAllPlants();
 
 	// Looks up a single plant by SeedItemContentId. Returns false if not found.
 	UFUNCTION(BlueprintCallable, Category = "BeamFarm|Farming")
-	bool FindPlantBySeedId(const FString& SeedItemContentId, UBeamPlantContent*& OutPlantContent);
+	bool FindPlantBySeedId(const FString& SeedItemContentId, FBeamPlantData& OutPlantData);
 
 	// Implement in Blueprint: remove one seed (SeedItemContentId) from Beamable inventory.
 	UFUNCTION(BlueprintImplementableEvent, Category = "BeamFarm|Farming")

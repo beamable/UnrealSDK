@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "Farming/FarmTypes.h"
 #include "Interaction/BeamFarmInteractable.h"
+#include "BeamPlantData.h"
 #include "FarmSlotActor.generated.h"
 
 class UBoxComponent;
@@ -56,7 +57,7 @@ public:
 	EFarmSlotState SlotState;
 
 	UPROPERTY(BlueprintReadOnly, Category = "BeamFarm|Slot")
-	TObjectPtr<UBeamPlantContent> PlantedCrop;
+	FBeamPlantData PlantedCrop;
 
 	// Fired whenever SlotState changes.
 	UPROPERTY(BlueprintAssignable, Category = "BeamFarm|Slot")
@@ -64,7 +65,7 @@ public:
 
 	// Plants a crop and starts the grow timer. No-op if slot is not Empty.
 	UFUNCTION(BlueprintCallable, Category = "BeamFarm|Slot")
-	void PlantCrop(UBeamPlantContent* PlantContent);
+	void PlantCrop(const FBeamPlantData& PlantData);
 
 	// Resets the slot to Empty. Only valid when SlotState == ReadyToHarvest.
 	// Does NOT add items to inventory — UFarmingComponent::OnItemsHarvested handles that.

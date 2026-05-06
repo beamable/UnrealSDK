@@ -27,7 +27,7 @@ public class BEAMPROJ_BeamFarm : ModuleRules
 		PublicDependencyModuleNames.AddRange(
 			new string[]
 			{
-				"Core", "OnlineSubsystem", "Paper2D", "InputCore", "AIModule"
+				"Core", "OnlineSubsystem", "Paper2D", "InputCore", "AIModule", "Json", "JsonUtilities"
 				// ... add other public dependencies that you statically link with here ...
 			}
 		);

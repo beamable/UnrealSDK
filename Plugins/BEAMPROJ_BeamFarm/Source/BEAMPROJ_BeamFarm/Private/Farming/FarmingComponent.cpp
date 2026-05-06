@@ -4,6 +4,7 @@
 #include "Subsystems/Content/BeamContentSubsystem.h"
 #include "Contents/BeamPlantContent.h"
 #include "Contents/BeamPlantRawMaterial.h"
+#include "BeamPlantData.h"
 #include "Farming/FarmSlotActor.h"
 #include "Engine/World.h"
 
@@ -13,15 +14,15 @@ UFarmingComponent::UFarmingComponent()
 	FarmingState = EFarmingInteractionState::Idle;
 }
 
-void UFarmingComponent::SetSelectedCrop(UBeamPlantContent* PlantContent)
+void UFarmingComponent::SetSelectedCrop(const FBeamPlantData& PlantData)
 {
-	SelectedCrop = PlantContent;
+	SelectedCrop = PlantData;
 	SetFarmingState(EFarmingInteractionState::Planting);
 }
 
 bool UFarmingComponent::SetSelectedCropBySeedId(const FString& SeedItemContentId)
 {
-	UBeamPlantContent* Found = nullptr;
+	FBeamPlantData Found;
 	if (!FindPlantBySeedId(SeedItemContentId, Found))
 	{
 		return false;
@@ -32,13 +33,13 @@ bool UFarmingComponent::SetSelectedCropBySeedId(const FString& SeedItemContentId
 
 void UFarmingComponent::ClearSelectedCrop()
 {
-	SelectedCrop = nullptr;
+	SelectedCrop = FBeamPlantData();
 	SetFarmingState(EFarmingInteractionState::Idle);
 }
 
 bool UFarmingComponent::HasSelectedCrop() const
 {
-	return SelectedCrop != nullptr;
+	return !SelectedCrop.SeedItemContentId.IsEmpty();
 }
 
 void UFarmingComponent::InteractWithSlot(AFarmSlotActor* Slot)
@@ -50,13 +51,13 @@ void UFarmingComponent::InteractWithSlot(AFarmSlotActor* Slot)
 
 	if (Slot->SlotState == EFarmSlotState::ReadyToHarvest)
 	{
-		if (!Slot->PlantedCrop)
+		if (Slot->PlantedCrop.SeedItemContentId.IsEmpty())
 		{
 			return;
 		}
 
-		const FString ItemId = Slot->PlantedCrop->HarvestItemContentId;
-		const int32 Yield = Slot->PlantedCrop->HarvestYield;
+		const FString ItemId = Slot->PlantedCrop.HarvestItemContentId;
+		const int32 Yield = Slot->PlantedCrop.HarvestYield;
 		Slot->Harvest();
 		OnItemsHarvested(Slot, ItemId, Yield);
 		return;
@@ -75,12 +76,12 @@ void UFarmingComponent::InteractWithSlot(AFarmSlotActor* Slot)
 	}
 
 	Slot->PlantCrop(SelectedCrop);
-	OnSeedConsumed(SelectedCrop->SeedItemContentId, 1);
+	OnSeedConsumed(SelectedCrop.SeedItemContentId, 1);
 }
 
-TArray<UBeamPlantContent*> UFarmingComponent::GetAllPlants()
+TArray<FBeamPlantData> UFarmingComponent::GetAllPlants()
 {
-	TArray<UBeamPlantContent*> Result;
+	TArray<FBeamPlantData> Result;
 
 	// Get or cache the content subsystem
 	if (!ContentSubsystem)
@@ -97,20 +98,33 @@ TArray<UBeamPlantContent*> UFarmingComponent::GetAllPlants()
 	TArray<FBeamContentId> PlantIds;
 	ContentSubsystem->GetIdsOfContentType(UBeamPlantContent::StaticClass(), PlantIds, true);
 
-	// Convert to plant content objects
+	// Convert to plant data
 	for (const FBeamContentId& PlantId : PlantIds)
 	{
 		UBeamPlantContent* PlantContent = nullptr;
 		if (ContentSubsystem->TryGetContentOfType<UBeamPlantContent>(PlantId, PlantContent) && PlantContent)
 		{
-			Result.Add(PlantContent);
+			Result.Add(PlantContent->PlantData);
+		}
+	}
+
+	// Also get raw material plants
+	TArray<FBeamContentId> PlantRawIds;
+	ContentSubsystem->GetIdsOfContentType(UBeamPlantRawMaterial::StaticClass(), PlantRawIds, true);
+
+	for (const FBeamContentId& PlantId : PlantRawIds)
+	{
+		UBeamPlantRawMaterial* PlantContent = nullptr;
+		if (ContentSubsystem->TryGetContentOfType<UBeamPlantRawMaterial>(PlantId, PlantContent) && PlantContent)
+		{
+			Result.Add(PlantContent->PlantData);
 		}
 	}
 
 	return Result;
 }
 
-bool UFarmingComponent::FindPlantBySeedId(const FString& SeedItemContentId, UBeamPlantContent*& OutPlantContent)
+bool UFarmingComponent::FindPlantBySeedId(const FString& SeedItemContentId, FBeamPlantData& OutPlantData)
 {
 	// Get or cache the content subsystem
 	if (!ContentSubsystem)
@@ -131,20 +145,34 @@ bool UFarmingComponent::FindPlantBySeedId(const FString& SeedItemContentId, UBea
 	TArray<FBeamContentId> PlantRawIds;
 	ContentSubsystem->GetIdsOfContentType(UBeamPlantRawMaterial::StaticClass(), PlantRawIds, true);
 
-	// Search for matching SeedItemContentId
+	// Search for matching SeedItemContentId in UBeamPlantContent
 	for (const FBeamContentId& PlantId : PlantIds)
 	{
 		UBeamPlantContent* PlantContent = nullptr;
 		if (ContentSubsystem->TryGetContentOfType<UBeamPlantContent>(PlantId, PlantContent) && PlantContent)
 		{
-			if (PlantContent->SeedItemContentId == SeedItemContentId)
+			if (PlantContent->PlantData.SeedItemContentId == SeedItemContentId)
 			{
-				OutPlantContent = PlantContent;
+				OutPlantData = PlantContent->PlantData;
 				return true;
 			}
 		}
 	}
 	
+	// Search for matching SeedItemContentId in UBeamPlantRawMaterial
+	for (const FBeamContentId& PlantId : PlantRawIds)
+	{
+		UBeamPlantRawMaterial* PlantContent = nullptr;
+		if (ContentSubsystem->TryGetContentOfType<UBeamPlantRawMaterial>(PlantId, PlantContent) && PlantContent)
+		{
+			if (PlantContent->PlantData.SeedItemContentId == SeedItemContentId)
+			{
+				OutPlantData = PlantContent->PlantData;
+				return true;
+			}
+		}
+	}
+
 
 	return false;
 }
