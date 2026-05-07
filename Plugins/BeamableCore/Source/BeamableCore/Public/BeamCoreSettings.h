@@ -10,6 +10,7 @@
 #include "BeamBackend/BeamRetryConfig.h"
 #include "BeamBackend/ResponseCache/BeamCacheConfig.h"
 #include "Content/BeamContentCacheSerializer.h"
+#include "Analytics/BeamAnalyticsEvent.h"
 #include "BeamCoreSettings.generated.h"
 
 class UBeamContentCacheSerializer;
@@ -206,4 +207,33 @@ public:
 
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Experimental")
 	bool bEnableBeamPIE = false;
+
+	/**
+	 * @brief Size in bytes of the analytics memory-mapped ring buffer at Saved/BeamAnalytics/events.mmap.
+	 * The buffer is sized at startup; if it fills before a flush, additional events are kept in an
+	 * in-memory queue that is dropped on crash.
+	 */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Analytics", meta=(ClampMin="65536"))
+	int64 AnalyticsMappedFileSizeBytes = 4 * 1024 * 1024;
+
+	/**
+	 * @brief Interval in seconds between automatic analytics flushes. Use FlushAnalytics on the
+	 * UBeamAnalyticsSubsystem to trigger a flush manually.
+	 */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Analytics", meta=(ClampMin="0.0"))
+	float AnalyticsFlushIntervalSeconds = 10.f;
+
+	/**
+	 * @brief Fallback config applied to any FBeamAnalyticsEvent subtype that does not have a matching
+	 * entry in AnalyticsEventConfigs.
+	 */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Analytics")
+	FBeamAnalyticsEventConfig AnalyticsFallbackConfig;
+
+	/**
+	 * @brief Per-event-type config. EventType must derive from FBeamAnalyticsEvent. The first matching
+	 * entry wins; later duplicates are ignored.
+	 */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Analytics")
+	TArray<FBeamAnalyticsEventConfig> AnalyticsEventConfigs;
 };

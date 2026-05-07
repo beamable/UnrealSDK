@@ -1275,16 +1275,6 @@ public:
 	UFUNCTION(BlueprintPure, Category="Beam|Analytics")
 	static FBeamAnalyticsParamObject MakeAnalyticsParamFromJson(const FString& JsonObjectString, bool& bIsValidJsonObject);
 
-	/**
-	 * Sends analytics events to Beamable as the owner user. 
-	 */
-	void SendAnalyticsEvent(const FString& EventOpCode, const FString& EventCategory, const FString& EventName, const TArray<TSharedRef<FJsonObject>>& EventParamsObj) const;
-
-	/**
-	 * Sends analytics events to Beamable. 
-	 */
-	void SendAnalyticsEvent(const FUserSlot& Slot, const FString& EventOpCode, const FString& EventCategory, const FString& EventName, const TArray<TSharedRef<FJsonObject>>& EventParamsObj) const;
-
 	// Game Server Utilities
 public:
 	UFUNCTION(BlueprintPure)
