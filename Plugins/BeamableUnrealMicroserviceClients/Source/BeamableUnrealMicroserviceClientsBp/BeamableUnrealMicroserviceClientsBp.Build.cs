@@ -19,7 +19,7 @@ public class BeamableUnrealMicroserviceClientsBp : ModuleRules
                 "BeamableCoreBlueprintNodes",
                 
                 "BlueprintGraph",
-                "UnrealEd"
+				"UnrealEd"
 			});
 
 

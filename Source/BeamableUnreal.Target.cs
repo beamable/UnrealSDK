@@ -30,7 +30,6 @@ public class BeamableUnrealTarget : TargetRules
 		ConfigureIfBeamball(this, samplePluginName);
 		ConfigureIfBeamFarm(this, samplePluginName);
 		ConfigureIfLiveOpsDemo(this, samplePluginName);
-		ConfigureIfDiscordDemo(this, samplePluginName);
 	}
 
 	public static string GetCurrBeamProj(TargetInfo Target)
@@ -136,32 +135,6 @@ public class BeamableUnrealTarget : TargetRules
 		}
 	}
 
-	public const string kBeamProj_DiscordDemo = "BEAMPROJ_DiscordDemo";
-
-	public static void ConfigureIfDiscordDemo(TargetRules TargetRules, string beamProj)
-	{
-		if (beamProj == kBeamProj_DiscordDemo)
-		{
-			var oss = Beam.OssConfig.Disabled();
-
-			if (TargetRules.Type == UnrealBuildTool.TargetType.Game)
-			{
-				Beam.ConfigureGame(TargetRules, oss);
-			}
-			else if (TargetRules.Type == UnrealBuildTool.TargetType.Editor)
-			{
-				Beam.ConfigureEditor(TargetRules, oss);
-			}
-			else if (TargetRules.Type == UnrealBuildTool.TargetType.Server)
-			{
-				Beam.ConfigureServer(TargetRules, oss);
-			}
-			else
-			{
-				throw new ArgumentOutOfRangeException();
-			}
-		}
-	}
 }
 
 /* BEAMABLE CODE TO COPY PASTE START */

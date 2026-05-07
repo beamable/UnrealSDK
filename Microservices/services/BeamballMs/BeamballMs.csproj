@@ -18,6 +18,8 @@
   <PropertyGroup Label="Dotnet Settings">
     <!-- net8.0 is the LTS version until 2026. To update your net version, update the <TargetFramework> when Beamable announces support. -->
     <TargetFramework>net8.0</TargetFramework>
+    <!-- Necessary for the Discord .NET SDK to work. -->
+    <InvariantGlobalization>false</InvariantGlobalization>
   </PropertyGroup>
   <ItemGroup Label="Nuget References">
     <PackageReference Include="Beamable.Microservice.Runtime" Version="$(BeamableVersion)" />
@@ -25,6 +27,7 @@
     <PackageReference Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" Version="8.17.0" />
     <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="8.17.0" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.17.0" />
+    <PackageReference Include="Discord.Net" Version="3.15.2" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BeamballDb\BeamballDb.csproj" />

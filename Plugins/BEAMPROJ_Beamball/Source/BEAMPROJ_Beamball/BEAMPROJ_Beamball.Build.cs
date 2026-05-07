@@ -1,5 +1,6 @@
 ﻿// Copyright Epic Games, Inc. All Rights Reserved.
 
+using System.IO;
 using UnrealBuildTool;
 
 public class BEAMPROJ_Beamball : ModuleRules
@@ -26,7 +27,7 @@ public class BEAMPROJ_Beamball : ModuleRules
 				// Dependencies for EOS plugin
 				"CoreOnline",
 				"OnlineServicesInterface",
-				"OnlineServicesEOS"
+				"OnlineServicesEOS",
 			}
 		);
 
@@ -37,11 +38,33 @@ public class BEAMPROJ_Beamball : ModuleRules
 				"Engine",
 				"Slate",
 				"SlateCore",
-				// ... add private dependencies that you statically link with here ...
 			}
 		);
 
 		Beam.AddRuntimeModuleDependencies(this);
 		BeamableUnrealMicroserviceClients.AddMicroserviceClients(this);
+
+
+		// Discord Dependencies
+		{
+			if (Target.Platform == UnrealTargetPlatform.Win64)
+			{
+				PublicAdditionalLibraries.Add(Path.Combine("$(PluginDir)", "Binaries", "Win64", "discord_game_sdk.dll.lib"));
+				RuntimeDependencies.Add("$(TargetOutputDir)/discord_game_sdk.dll", Path.Combine("$(PluginDir)", "Binaries", "Win64", "discord_game_sdk.dll"));
+				RuntimeDependencies.Add("$(TargetOutputDir)/discord_game_sdk.dll.lib", Path.Combine("$(PluginDir)", "Binaries", "Win64", "discord_game_sdk.dll.lib"));
+			}
+
+			if (Target.Platform == UnrealTargetPlatform.Linux)
+			{
+				PublicAdditionalLibraries.Add(Path.Combine("$(PluginDir)", "Binaries", "Linux", "discord_game_sdk.so"));
+				RuntimeDependencies.Add("$(TargetOutputDir)/discord_game_sdk.so", Path.Combine("$(PluginDir)", "Binaries", "Linux", "discord_game_sdk.so"));
+			}
+
+			if (Target.Platform == UnrealTargetPlatform.Mac)
+			{
+				PublicAdditionalLibraries.Add(Path.Combine("$(PluginDir)", "Binaries", "Mac", "discord_game_sdk.dylib"));
+				RuntimeDependencies.Add("$(TargetOutputDir)/discord_game_sdk.dylib", Path.Combine("$(PluginDir)", "Binaries", "Mac", "discord_game_sdk.dylib"));
+			}
+		}
 	}
 }

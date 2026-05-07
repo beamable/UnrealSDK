@@ -49,15 +49,7 @@
 			"Enabled": false
 		},
 		{
-			"Name": "DiscordSDK",
-			"Enabled": false
-		},
-		{
 			"Name": "BEAMPROJ_LiveOpsDemo",
-			"Enabled": false
-		},
-		{
-			"Name": "BEAMPROJ_DiscordDemo",
 			"Enabled": false
 		},
 		{

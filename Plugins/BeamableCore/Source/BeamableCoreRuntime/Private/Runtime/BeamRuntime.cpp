@@ -3005,4 +3005,67 @@ void UBeamRuntime::FillDefaultSignUpInitProperties(TMap<FString, FString>& InitP
 	InitProperties.Add(TEXT("__beam_ue_engine_version__"), FEngineVersion::Current().ToString());
 }
 
+FBeamDelegateHandle UBeamRuntime::SubscribeToCustomNotification_DynamicStruct(
+	const FUserSlot& UserSlot, FString Key, UScriptStruct* MessageType,
+	const FOnBeamCustomNotificationStructDynamic& Handler, UObject* ContextObject)
+{
+	UE_LOG(LogBeamNotifications, Verbose, TEXT("SubscribeToCustomNotification_DynamicStruct requested. SLOT=%s, CONTEXT=%s, MSG_TYPE=%s"),
+	       *UserSlot.Name, *Key, MessageType ? *MessageType->GetName() : TEXT("<null>"));
+
+	FBeamWebSocketHandle DefaultHandle;
+	if (!GetDefaultNotificationChannel(UserSlot, DefaultHandle))
+	{
+		UE_LOG(LogBeamNotifications, Warning, TEXT("SubscribeToCustomNotification_DynamicStruct: no default notification channel for slot — is the user signed in? SLOT=%s, CONTEXT=%s"),
+		       *UserSlot.Name, *Key);
+		return {};
+	}
+
+	FDelegateHandle Handle;
+	UObject* Ctx = ContextObject ? ContextObject : static_cast<UObject*>(this);
+	if (NotificationSystem->TrySubscribeForMessage_DynamicStruct(UserSlot, DefaultHandle.Id, Key, MessageType, Handler, Handle, Ctx))
+	{
+		UE_LOG(LogBeamNotifications, Verbose, TEXT("SubscribeToCustomNotification_DynamicStruct succeeded. SLOT=%s, SOCKET=%s, CONTEXT=%s"),
+		       *UserSlot.Name, *DefaultHandle.Id.ToString(), *Key);
+		return FBeamDelegateHandle(Handle);
+	}
+
+	UE_LOG(LogBeamNotifications, Warning, TEXT("SubscribeToCustomNotification_DynamicStruct: subscribe rejected. SLOT=%s, SOCKET=%s, CONTEXT=%s"),
+	       *UserSlot.Name, *DefaultHandle.Id.ToString(), *Key);
+	return {};
+}
+
+FBeamDelegateHandle UBeamRuntime::SubscribeToCustomNotification_DynamicObject(
+	const FUserSlot& UserSlot, FString Key, UClass* MessageClass,
+	const FOnBeamCustomNotificationObjectDynamic& Handler, UObject* ContextObject)
+{
+	UE_LOG(LogBeamNotifications, Verbose, TEXT("SubscribeToCustomNotification_DynamicObject requested. SLOT=%s, CONTEXT=%s, MSG_CLASS=%s"),
+	       *UserSlot.Name, *Key, MessageClass ? *MessageClass->GetName() : TEXT("<null>"));
+
+	FBeamWebSocketHandle DefaultHandle;
+	if (!GetDefaultNotificationChannel(UserSlot, DefaultHandle))
+	{
+		UE_LOG(LogBeamNotifications, Warning, TEXT("SubscribeToCustomNotification_DynamicObject: no default notification channel for slot — is the user signed in? SLOT=%s, CONTEXT=%s"),
+		       *UserSlot.Name, *Key);
+		return {};
+	}
+
+	FDelegateHandle Handle;
+	UObject* Ctx = ContextObject ? ContextObject : static_cast<UObject*>(this);
+	if (NotificationSystem->TrySubscribeForMessage_DynamicObject(UserSlot, DefaultHandle.Id, Key, MessageClass, Handler, Handle, Ctx))
+	{
+		UE_LOG(LogBeamNotifications, Verbose, TEXT("SubscribeToCustomNotification_DynamicObject succeeded. SLOT=%s, SOCKET=%s, CONTEXT=%s"),
+		       *UserSlot.Name, *DefaultHandle.Id.ToString(), *Key);
+		return FBeamDelegateHandle(Handle);
+	}
+
+	UE_LOG(LogBeamNotifications, Warning, TEXT("SubscribeToCustomNotification_DynamicObject: subscribe rejected. SLOT=%s, SOCKET=%s, CONTEXT=%s"),
+	       *UserSlot.Name, *DefaultHandle.Id.ToString(), *Key);
+	return {};
+}
+
+bool UBeamRuntime::UnsubscribeToCustomNotification_BP(const FUserSlot& UserSlot, FString Key, FBeamDelegateHandle Handle)
+{
+	return UnsubscribeToCustomNotification(UserSlot, Key, Handle.Handle);
+}
+
 #undef LOCTEXT_NAMESPACE

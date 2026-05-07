@@ -48,13 +48,13 @@ public:
 	}
 		
 	UFUNCTION(BlueprintGetter, BlueprintInternalUseOnly, Category="Beam|BeamFarmMs|Utils|Federation")
-	FString GetFederatedLogin_Id_Apple() const { return TEXT("apple"); }
+	FString GetFederatedLogin_Id_Gamecenter() const { return TEXT("gamecenter"); }
 
 	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|BeamFarmMs|Utils|Federation")
-	void GetFederatedLogin_Data_Apple(UPARAM(DisplayName="MicroserviceName") FString& MsName, UPARAM(DisplayName="FederationId") FString& Id)
+	void GetFederatedLogin_Data_Gamecenter(UPARAM(DisplayName="MicroserviceName") FString& MsName, UPARAM(DisplayName="FederationId") FString& Id)
 	{
 		MsName = GetMicroserviceName();
-		Id = GetFederatedLogin_Id_Apple();
+		Id = GetFederatedLogin_Id_Gamecenter();
 	}
 
 private:

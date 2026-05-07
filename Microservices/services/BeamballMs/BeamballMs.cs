@@ -47,6 +47,7 @@ namespace Beamable.BeamballMs
                 CreatePlayerEmail(account, properties, startingStats, startingInventory),
                 CreatePlayerSteam(account, properties, startingStats, startingInventory),
                 CreatePlayerEos(account, properties, startingStats, startingInventory),
+                CreatePlayerDiscord(account, properties, startingStats, startingInventory),
             });
 
             // Make just two requests with all the starting stats and starting inventory.
