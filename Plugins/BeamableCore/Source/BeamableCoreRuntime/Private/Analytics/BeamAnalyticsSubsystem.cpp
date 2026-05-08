@@ -498,7 +498,7 @@ void UBeamAnalyticsSubsystem::PostAnalyticsBatch(const FUserSlot& Slot, const TA
 		Req->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
 
 	const FString Url = FString::Format(
-		TEXT("https://{0}/report/custom_batch/{1}/{2}/{3}"),
+		TEXT("{0}/report/custom_batch/{1}/{2}/{3}"),
 		{Settings->BeamableEnvironment->APIUrl, Settings->TargetRealm.Cid.AsString, Settings->TargetRealm.Pid.AsString, UserData.GamerTag.AsString});
 	Req->SetURL(Url);
 	Req->SetVerb(TEXT("POST"));
