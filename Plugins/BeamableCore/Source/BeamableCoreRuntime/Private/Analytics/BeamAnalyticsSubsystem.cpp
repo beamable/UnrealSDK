@@ -355,8 +355,63 @@ void UBeamAnalyticsSubsystem::DoFlush()
 		UScriptStruct* StructType = *Found;
 		const FBeamAnalyticsEventConfig& Cfg = ResolveConfig(StructType);
 
-		TArray<FBeamAnalyticsEventEnvelope> Valid = MoveTemp(Group);
+		TArray<FBeamAnalyticsEventEnvelope> Valid;
 		TArray<FBeamAnalyticsEventEnvelope> Invalid;
+		Valid.Reserve(Group.Num());
+
+		// One reusable temp instance per type. We Initialize/Destroy around each
+		// envelope so generated Validate overrides see a freshly-deserialized event
+		// (and so any UPROPERTY heap state from the previous envelope doesn't leak).
+		const int32 StructSize  = StructType->GetStructureSize();
+		const int32 StructAlign = StructType->GetMinAlignment();
+		void* TempMemory = FMemory::Malloc(StructSize, StructAlign);
+
+		for (FBeamAnalyticsEventEnvelope& Env : Group)
+		{
+			TSharedPtr<FJsonObject> Payload;
+			const TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(Env.PayloadJson);
+			const bool bDeserialized = FJsonSerializer::Deserialize(Reader, Payload) && Payload.IsValid();
+
+			bool bValid = false;
+			FBeamValidationContext Context;
+
+			if (bDeserialized)
+			{
+				StructType->InitializeStruct(TempMemory);
+				FBeamAnalyticsEvent* Event = static_cast<FBeamAnalyticsEvent*>(TempMemory);
+				Event->BeamDeserializeProperties(Payload);
+				Event->Validate(Context);
+				bValid = Context.IsValid();
+				StructType->DestroyStruct(TempMemory);
+			}
+
+			if (bValid)
+			{
+				Valid.Add(MoveTemp(Env));
+			}
+			else
+			{
+				if (!bDeserialized)
+				{
+					UE_LOG(LogBeamAnalytics, Warning, TEXT("Invalid analytics event (%s): payload is not valid JSON."), *Env.TypeName);
+				}
+				else
+				{
+					for (const FBeamValidationResult& Fail : Context.FailResults)
+					{
+						for (const FString& Err : Fail.Errors)
+						{
+							UE_LOG(LogBeamAnalytics, Verbose, TEXT("Invalid analytics event (%s): [%s] %s"),
+								*Env.TypeName, *Fail.PropertyName, *Err);
+						}
+					}
+				}
+				Invalid.Add(MoveTemp(Env));
+			}
+		}
+
+		FMemory::Free(TempMemory);
+
 		if (Invalid.Num() > 0)
 		{
 			HandleInvalidEvents(StructType, Cfg, Invalid);
@@ -437,14 +492,14 @@ void UBeamAnalyticsSubsystem::PostAnalyticsBatch(const FUserSlot& Slot, const TA
 	const auto* Settings = GetDefault<UBeamCoreSettings>();
 
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> Req = FHttpModule::Get().CreateRequest();
-
+	
 	const FString AuthHeader = FString::Format(*UBeamBackend::HEADER_VALUE_AUTHORIZATION, {UserData.AuthToken.AccessToken});
 	Req->SetHeader(UBeamBackend::HEADER_AUTHORIZATION, AuthHeader);
-	Req->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
+		Req->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
 
 	const FString Url = FString::Format(
-		TEXT("https://api.beamable.com/report/custom_batch/{0}/{1}/{2}"),
-		{Settings->TargetRealm.Cid.AsString, Settings->TargetRealm.Pid.AsString, UserData.GamerTag.AsString});
+		TEXT("https://{0}/report/custom_batch/{1}/{2}/{3}"),
+		{Settings->BeamableEnvironment->APIUrl, Settings->TargetRealm.Cid.AsString, Settings->TargetRealm.Pid.AsString, UserData.GamerTag.AsString});
 	Req->SetURL(Url);
 	Req->SetVerb(TEXT("POST"));
 

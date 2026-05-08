@@ -21,10 +21,69 @@ enum class EBeamAnalyticsLogVerbosity : uint8
 	VeryVerbose
 };
 
+/**
+ * Per-property validation result. Populated by generated event Validate()
+ * overrides via UBeamValidators helpers, then handed to FBeamValidationContext.
+ */
 USTRUCT(BlueprintType)
-struct BEAMABLECORE_API FBeamValidatorTree
+struct BEAMABLECORE_API FBeamValidationResult
 {
 	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString PropertyName;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString ErrorCode;
+
+	/** 0 = Error, 1 = Warning. Reserved; today the subsystem treats anything with errors as a failure. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 Severity = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString SchemaPath;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<FString> Errors;
+
+	FBeamValidationResult() = default;
+
+	explicit FBeamValidationResult(const FString& InPropertyName)
+		: PropertyName(InPropertyName) {}
+
+	void AddError(const FString& Error, const FString& InErrorCode = TEXT(""))
+	{
+		Errors.Add(Error);
+		if (!InErrorCode.IsEmpty()) ErrorCode = InErrorCode;
+	}
+
+	bool IsValid() const { return Errors.Num() == 0; }
+};
+
+/**
+ * Aggregated pass/fail bucket populated by an event's Validate() override.
+ * UBeamAnalyticsSubsystem builds one of these per envelope at flush time
+ * to decide Valid vs Invalid routing.
+ */
+USTRUCT(BlueprintType)
+struct BEAMABLECORE_API FBeamValidationContext
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<FBeamValidationResult> FailResults;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<FBeamValidationResult> PassResults;
+
+	void RecordResult(const FBeamValidationResult& Result)
+	{
+		if (Result.IsValid()) PassResults.Add(Result);
+		else                  FailResults.Add(Result);
+	}
+
+	bool IsValid()     const { return FailResults.Num() == 0; }
+	bool HasFailures() const { return FailResults.Num() > 0;  }
 };
 
 /**
@@ -51,7 +110,15 @@ struct BEAMABLECORE_API FBeamAnalyticsEvent : public FBeamJsonSerializableUStruc
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Analytics")
 	FString Version = TEXT("1.0.0");
 
-	virtual FBeamValidatorTree GetValidatorTree() const { return FBeamValidatorTree{}; }
+	/**
+	 * Run schema validation on this event. Default implementation is a no-op
+	 * (everything passes). Generated subtypes override this to call into the
+	 * UBeamValidators static helpers and feed per-property results into OutContext.
+	 *
+	 * Invoked by UBeamAnalyticsSubsystem at flush time after deserializing the
+	 * envelope's "p" payload back into a typed instance of the event.
+	 */
+	virtual void Validate(FBeamValidationContext& OutContext) const {}
 
 	virtual FString GetOpCode()    const { return TEXT("g.core"); }
 	virtual FString GetCategory()  const { return TEXT(""); }
@@ -68,6 +135,22 @@ struct BEAMABLECORE_API FBeamAnalyticsEvent : public FBeamJsonSerializableUStruc
 		auto Writer = TJsonStringWriter<TCondensedJsonPrintPolicy<TCHAR>>::Create(&Out);
 		this->BeamSerialize(Writer);
 		Writer->Close();
+	}
+
+	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
+	{
+		Serializer->WriteValue(TEXT("Version"), Version);
+	}
+
+	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
+	{
+		Serializer->WriteValue(TEXT("Version"), Version);
+	}
+
+	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
+	{
+		if (Bag->HasField(TEXT("Version")))
+			Version = Bag->GetStringField(TEXT("Version"));
 	}
 };
 
