@@ -28,8 +28,8 @@ struct FTakeHitEvent : public FBeamAnalyticsEvent
 	{
 		FBeamValidationResult LifeAmountResult(TEXT("LifeAmount"));
 		LifeAmountResult.SchemaPath = TEXT("properties.life_amount");
-		UBeamValidators::ValidateMinimum(LifeAmount, 0, LifeAmountResult);
-		UBeamValidators::ValidateMaximum(LifeAmount, 3, LifeAmountResult);
+		BeamValidators::ValidateMinimum(LifeAmount, 0, LifeAmountResult);
+		BeamValidators::ValidateMaximum(LifeAmount, 3, LifeAmountResult);
 		OutContext.RecordResult(LifeAmountResult);
 	}
 

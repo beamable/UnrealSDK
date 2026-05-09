@@ -23,7 +23,7 @@ enum class EBeamAnalyticsLogVerbosity : uint8
 
 /**
  * Per-property validation result. Populated by generated event Validate()
- * overrides via UBeamValidators helpers, then handed to FBeamValidationContext.
+ * overrides via BeamValidators helpers, then handed to FBeamValidationContext.
  */
 USTRUCT(BlueprintType)
 struct BEAMABLECORE_API FBeamValidationResult
@@ -113,7 +113,7 @@ struct BEAMABLECORE_API FBeamAnalyticsEvent : public FBeamJsonSerializableUStruc
 	/**
 	 * Run schema validation on this event. Default implementation is a no-op
 	 * (everything passes). Generated subtypes override this to call into the
-	 * UBeamValidators static helpers and feed per-property results into OutContext.
+	 * BeamValidators namespace helpers and feed per-property results into OutContext.
 	 *
 	 * Invoked by UBeamAnalyticsSubsystem at flush time after deserializing the
 	 * envelope's "p" payload back into a typed instance of the event.

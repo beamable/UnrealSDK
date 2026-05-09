@@ -5,7 +5,7 @@
 
 // ── Numeric (integer) ────────────────────────────────────────────────────────
 
-void UBeamValidators::ValidateMinimum(int32 Value, int32 Minimum, FBeamValidationResult& Result)
+void BeamValidators::ValidateMinimum(int32 Value, int32 Minimum, FBeamValidationResult& Result)
 {
 	if (Value < Minimum)
 	{
@@ -15,7 +15,7 @@ void UBeamValidators::ValidateMinimum(int32 Value, int32 Minimum, FBeamValidatio
 	}
 }
 
-void UBeamValidators::ValidateMaximum(int32 Value, int32 Maximum, FBeamValidationResult& Result)
+void BeamValidators::ValidateMaximum(int32 Value, int32 Maximum, FBeamValidationResult& Result)
 {
 	if (Value > Maximum)
 	{
@@ -25,7 +25,7 @@ void UBeamValidators::ValidateMaximum(int32 Value, int32 Maximum, FBeamValidatio
 	}
 }
 
-void UBeamValidators::ValidateExclusiveMinimum(int32 Value, int32 ExclusiveMinimum, FBeamValidationResult& Result)
+void BeamValidators::ValidateExclusiveMinimum(int32 Value, int32 ExclusiveMinimum, FBeamValidationResult& Result)
 {
 	if (Value <= ExclusiveMinimum)
 	{
@@ -35,7 +35,7 @@ void UBeamValidators::ValidateExclusiveMinimum(int32 Value, int32 ExclusiveMinim
 	}
 }
 
-void UBeamValidators::ValidateExclusiveMaximum(int32 Value, int32 ExclusiveMaximum, FBeamValidationResult& Result)
+void BeamValidators::ValidateExclusiveMaximum(int32 Value, int32 ExclusiveMaximum, FBeamValidationResult& Result)
 {
 	if (Value >= ExclusiveMaximum)
 	{
@@ -45,7 +45,7 @@ void UBeamValidators::ValidateExclusiveMaximum(int32 Value, int32 ExclusiveMaxim
 	}
 }
 
-void UBeamValidators::ValidateMultipleOf(int32 Value, int32 MultipleOf, FBeamValidationResult& Result)
+void BeamValidators::ValidateMultipleOf(int32 Value, int32 MultipleOf, FBeamValidationResult& Result)
 {
 	if (MultipleOf != 0 && Value % MultipleOf != 0)
 	{
@@ -57,7 +57,7 @@ void UBeamValidators::ValidateMultipleOf(int32 Value, int32 MultipleOf, FBeamVal
 
 // ── Numeric (float) ──────────────────────────────────────────────────────────
 
-void UBeamValidators::ValidateMinimum(float Value, float Minimum, FBeamValidationResult& Result)
+void BeamValidators::ValidateMinimum(float Value, float Minimum, FBeamValidationResult& Result)
 {
 	if (Value < Minimum)
 	{
@@ -67,7 +67,7 @@ void UBeamValidators::ValidateMinimum(float Value, float Minimum, FBeamValidatio
 	}
 }
 
-void UBeamValidators::ValidateMaximum(float Value, float Maximum, FBeamValidationResult& Result)
+void BeamValidators::ValidateMaximum(float Value, float Maximum, FBeamValidationResult& Result)
 {
 	if (Value > Maximum)
 	{
@@ -77,7 +77,7 @@ void UBeamValidators::ValidateMaximum(float Value, float Maximum, FBeamValidatio
 	}
 }
 
-void UBeamValidators::ValidateExclusiveMinimum(float Value, float ExclusiveMinimum, FBeamValidationResult& Result)
+void BeamValidators::ValidateExclusiveMinimum(float Value, float ExclusiveMinimum, FBeamValidationResult& Result)
 {
 	if (Value <= ExclusiveMinimum)
 	{
@@ -87,7 +87,7 @@ void UBeamValidators::ValidateExclusiveMinimum(float Value, float ExclusiveMinim
 	}
 }
 
-void UBeamValidators::ValidateExclusiveMaximum(float Value, float ExclusiveMaximum, FBeamValidationResult& Result)
+void BeamValidators::ValidateExclusiveMaximum(float Value, float ExclusiveMaximum, FBeamValidationResult& Result)
 {
 	if (Value >= ExclusiveMaximum)
 	{
@@ -97,7 +97,7 @@ void UBeamValidators::ValidateExclusiveMaximum(float Value, float ExclusiveMaxim
 	}
 }
 
-void UBeamValidators::ValidateMultipleOf(float Value, float MultipleOf, FBeamValidationResult& Result)
+void BeamValidators::ValidateMultipleOf(float Value, float MultipleOf, FBeamValidationResult& Result)
 {
 	if (MultipleOf != 0.0f)
 	{
@@ -113,7 +113,7 @@ void UBeamValidators::ValidateMultipleOf(float Value, float MultipleOf, FBeamVal
 
 // ── String ───────────────────────────────────────────────────────────────────
 
-void UBeamValidators::ValidateMinLength(const FString& Value, int32 MinLength, FBeamValidationResult& Result)
+void BeamValidators::ValidateMinLength(const FString& Value, int32 MinLength, FBeamValidationResult& Result)
 {
 	if (Value.Len() < MinLength)
 	{
@@ -123,7 +123,7 @@ void UBeamValidators::ValidateMinLength(const FString& Value, int32 MinLength, F
 	}
 }
 
-void UBeamValidators::ValidateMaxLength(const FString& Value, int32 MaxLength, FBeamValidationResult& Result)
+void BeamValidators::ValidateMaxLength(const FString& Value, int32 MaxLength, FBeamValidationResult& Result)
 {
 	if (Value.Len() > MaxLength)
 	{
@@ -133,7 +133,7 @@ void UBeamValidators::ValidateMaxLength(const FString& Value, int32 MaxLength, F
 	}
 }
 
-void UBeamValidators::ValidatePattern(const FString& Value, const FString& Pattern, FBeamValidationResult& Result)
+void BeamValidators::ValidatePattern(const FString& Value, const FString& Pattern, FBeamValidationResult& Result)
 {
 	const FRegexPattern RegexPattern(Pattern);
 	FRegexMatcher Matcher(RegexPattern, Value);
@@ -145,7 +145,7 @@ void UBeamValidators::ValidatePattern(const FString& Value, const FString& Patte
 	}
 }
 
-void UBeamValidators::ValidateRequired(const FString& Value, FBeamValidationResult& Result)
+void BeamValidators::ValidateRequired(const FString& Value, FBeamValidationResult& Result)
 {
 	if (Value.IsEmpty())
 	{
