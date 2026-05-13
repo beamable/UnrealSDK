@@ -40,7 +40,8 @@ public class BEAMPROJ_BeamFarm : ModuleRules
 				"Engine",
 				"Slate",
 				"SlateCore", "AIModule", "NavigationSystem",
-				"BeamableCore", "BeamableCoreRuntime"
+				"BeamableCore", "BeamableCoreRuntime",
+				"UMG"
 				// ... add private dependencies that you statically link with here ...
 			}
 		);
