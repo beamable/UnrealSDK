@@ -3,12 +3,29 @@
 #include "Player/BeamFarmPlayerController.h"
 #include "Player/BeamFarmCharacter.h"
 #include "Interaction/BeamFarmInteractable.h"
+#include "Environment/BeamFarmEnvBase.h"
+#include "UI/BeamFarmHUDWidget.h"
+#include "Blueprint/UserWidget.h"
 
 ABeamFarmPlayerController::ABeamFarmPlayerController()
 {
 	bEnableClickEvents = true;
 	bEnableTouchEvents = true;
 	PrimaryActorTick.bCanEverTick = true;
+}
+
+void ABeamFarmPlayerController::BeginPlay()
+{
+	Super::BeginPlay();
+
+	if (HUDWidgetClass && IsLocalController())
+	{
+		HUDWidget = CreateWidget<UBeamFarmHUDWidget>(this, HUDWidgetClass);
+		if (HUDWidget)
+		{
+			HUDWidget->AddToViewport();
+		}
+	}
 }
 
 void ABeamFarmPlayerController::SetupInputComponent()
@@ -49,6 +66,8 @@ void ABeamFarmPlayerController::ProcessHitResult(const FHitResult& HitResult)
 
 	if (HitActor && HitActor->Implements<UBeamFarmInteractable>())
 	{
+		// Always attempt to move to the interactable object
+		// Distance and line of sight will be checked when trying to interact
 		TScriptInterface<IBeamFarmInteractable> Interactable;
 		Interactable.SetObject(HitActor);
 		Interactable.SetInterface(Cast<IBeamFarmInteractable>(HitActor));
@@ -104,16 +123,34 @@ void ABeamFarmPlayerController::CheckProximityAndInteract()
 	const float Radius = IBeamFarmInteractable::Execute_GetInteractionRadius(InteractableObj);
 
 	const float Distance = FVector::Dist2D(MyPawn->GetActorLocation(), InteractionPoint);
+
+	// Check if within interaction radius
 	if (Distance <= Radius)
 	{
-		if (ABeamFarmCharacter* BeamFarmCharacter = GetBeamFarmCharacter())
-		{
-			BeamFarmCharacter->StopMovementToTarget();
-		}
+		AActor* InteractableActor = Cast<AActor>(InteractableObj);
 
-		IBeamFarmInteractable::Execute_Interact(InteractableObj, MyPawn);
-		OnInteractionExecuted(Cast<AActor>(InteractableObj));
-		ClearPendingInteraction();
+		// Check if we can actually interact (distance and line of sight)
+		if (CanInteractWith(InteractableActor, InteractionPoint))
+		{
+			if (ABeamFarmCharacter* BeamFarmCharacter = GetBeamFarmCharacter())
+			{
+				BeamFarmCharacter->StopMovementToTarget();
+			}
+
+			IBeamFarmInteractable::Execute_Interact(InteractableObj, MyPawn);
+			OnInteractionExecuted(Cast<AActor>(InteractableObj));
+
+			if (ABeamFarmEnvBase* Building = Cast<ABeamFarmEnvBase>(InteractableObj))
+			{
+				if (HUDWidget && Building->BuildingType != EBeamFarmBuildingType::None)
+				{
+					HUDWidget->OpenForBuilding(Building->BuildingType);
+				}
+			}
+
+			ClearPendingInteraction();
+		}
+		// If line of sight is blocked, keep trying (player will keep moving closer)
 	}
 }
 
@@ -125,4 +162,41 @@ void ABeamFarmPlayerController::ClearPendingInteraction()
 ABeamFarmCharacter* ABeamFarmPlayerController::GetBeamFarmCharacter() const
 {
 	return Cast<ABeamFarmCharacter>(GetPawn());
+}
+
+bool ABeamFarmPlayerController::CanInteractWith(AActor* InteractableActor, const FVector& InteractionPoint) const
+{
+	APawn* MyPawn = GetPawn();
+	if (!MyPawn || !InteractableActor)
+	{
+		return false;
+	}
+
+	// Check line of sight if required
+	if (bRequireLineOfSight)
+	{
+		FHitResult HitResult;
+		FCollisionQueryParams QueryParams;
+		QueryParams.AddIgnoredActor(MyPawn);
+		QueryParams.AddIgnoredActor(this);
+
+		const FVector PlayerLocation = MyPawn->GetActorLocation();
+
+		// Trace from player to the interaction point
+		const bool bHit = GetWorld()->LineTraceSingleByChannel(
+			HitResult,
+			PlayerLocation,
+			InteractionPoint,
+			ECC_Visibility,
+			QueryParams
+		);
+
+		// If we hit something, check if it's the target actor or we missed entirely
+		if (bHit && HitResult.GetActor() != InteractableActor)
+		{
+			return false;
+		}
+	}
+
+	return true;
 }

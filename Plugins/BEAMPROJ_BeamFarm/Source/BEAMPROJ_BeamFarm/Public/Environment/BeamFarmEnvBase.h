@@ -5,10 +5,14 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Interaction/BeamFarmInteractable.h"
+#include "Farming/FarmTypes.h"
 #include "BeamFarmEnvBase.generated.h"
 
 class UCapsuleComponent;
 class UPaperSpriteComponent;
+class ABeamFarmEnvBase;
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnBuildingInteractedDelegate, ABeamFarmEnvBase*, Building, APawn*, InstigatorPawn);
 
 /**
  * Base actor for all collidable and interactable environment objects in BeamFarm.
@@ -37,6 +41,22 @@ public:
 	// The character will navigate here instead of the blocked building surface.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "BeamFarm|Components")
 	TObjectPtr<USceneComponent> EntryPoint;
+
+	// The radius for interactions with this building. PlayerController uses this to determine when the character has reached the building.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BeamFarm|Components")
+	float Radius = 100;
+
+	// Set this per-building Blueprint to identify which UI panel to open on interact.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BeamFarm|Building")
+	EBeamFarmBuildingType BuildingType = EBeamFarmBuildingType::None;
+
+	// Fired when the player interacts with this building. PlayerController listens to open the HUD.
+	UPROPERTY(BlueprintAssignable, Category = "BeamFarm|Building")
+	FOnBuildingInteractedDelegate OnBuildingInteracted;
+
+	// Override in Blueprint for per-building effects (door open animation, sound, etc.).
+	UFUNCTION(BlueprintImplementableEvent, Category = "BeamFarm|Building")
+	void OnInteract(APawn* InstigatorPawn);
 
 	// IBeamFarmInteractable
 	virtual FVector GetInteractionPoint_Implementation() const override;

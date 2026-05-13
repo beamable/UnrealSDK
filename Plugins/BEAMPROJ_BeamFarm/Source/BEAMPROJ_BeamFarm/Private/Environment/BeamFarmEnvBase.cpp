@@ -28,10 +28,11 @@ FVector ABeamFarmEnvBase::GetInteractionPoint_Implementation() const
 
 float ABeamFarmEnvBase::GetInteractionRadius_Implementation() const
 {
-	return 100.f;
+	return Radius;
 }
 
 void ABeamFarmEnvBase::Interact_Implementation(APawn* InstigatorPawn)
 {
-	// Default no-op — override in Blueprint subclasses to open a menu, play animation, etc.
+	OnBuildingInteracted.Broadcast(this, InstigatorPawn);
+	OnInteract(InstigatorPawn);
 }

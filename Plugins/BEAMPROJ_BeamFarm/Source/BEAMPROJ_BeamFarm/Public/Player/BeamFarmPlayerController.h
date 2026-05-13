@@ -8,6 +8,8 @@
 #include "BeamFarmPlayerController.generated.h"
 
 class ABeamFarmCharacter;
+class ABeamFarmEnvBase;
+class UBeamFarmHUDWidget;
 
 /**
  * Player controller for the BeamFarm demo.
@@ -32,6 +34,7 @@ class BEAMPROJ_BEAMFARM_API ABeamFarmPlayerController : public APlayerController
 public:
 	ABeamFarmPlayerController();
 
+	virtual void BeginPlay() override;
 	virtual void SetupInputComponent() override;
 	virtual void Tick(float DeltaSeconds) override;
 
@@ -39,6 +42,20 @@ public:
 	// Override per-interactable to tune per-object.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BeamFarm|Interaction")
 	float DefaultInteractionRadius = 150.f;
+
+
+	// Whether to require line of sight to interactable objects.
+	// If true, the player can only interact with objects they can see (no obstacles blocking).
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BeamFarm|Interaction")
+	bool bRequireLineOfSight = true;
+
+	// Assign a Blueprint subclass of UBeamFarmHUDWidget in the GameMode defaults.
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "BeamFarm|UI")
+	TSubclassOf<UBeamFarmHUDWidget> HUDWidgetClass;
+
+	// The live HUD instance, created on BeginPlay and added to the viewport.
+	UPROPERTY(BlueprintReadOnly, Category = "BeamFarm|UI")
+	TObjectPtr<UBeamFarmHUDWidget> HUDWidget;
 
 	// Override in Blueprint: the character is now moving toward TargetActor.
 	UFUNCTION(BlueprintImplementableEvent, Category = "BeamFarm|Interaction")
@@ -65,6 +82,9 @@ private:
 	void RequestInteractionWith(TScriptInterface<IBeamFarmInteractable> Interactable);
 	void CheckProximityAndInteract();
 	void ClearPendingInteraction();
+
+	// Helper to check if an interactable is within range and has line of sight
+	bool CanInteractWith(AActor* InteractableActor, const FVector& InteractionPoint) const;
 
 	ABeamFarmCharacter* GetBeamFarmCharacter() const;
 };

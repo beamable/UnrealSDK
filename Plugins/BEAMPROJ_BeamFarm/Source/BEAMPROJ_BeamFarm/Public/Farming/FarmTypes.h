@@ -73,3 +73,44 @@ struct BEAMPROJ_BEAMFARM_API FFarmCropData : public FTableRowBase
 };
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnFarmSlotStateChangedDelegate, class AFarmSlotActor*, Slot, EFarmSlotState, NewState);
+
+UENUM(BlueprintType)
+enum class EBeamFarmBuildingType : uint8
+{
+	None        UMETA(DisplayName = "None"),
+	Farm        UMETA(DisplayName = "Farm"),
+	MutationLab UMETA(DisplayName = "Mutation Lab"),
+	Shop        UMETA(DisplayName = "Shop"),
+	Upgrades    UMETA(DisplayName = "Upgrades"),
+};
+
+UENUM(BlueprintType)
+enum class EBeamFarmInventoryTab : uint8
+{
+	Crops     UMETA(DisplayName = "Crops"),
+	Materials UMETA(DisplayName = "Materials"),
+};
+
+USTRUCT(BlueprintType)
+struct BEAMPROJ_BEAMFARM_API FBeamFarmMutationInput
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BeamFarm|Mutation")
+	FString ItemContentId;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BeamFarm|Mutation")
+	int32 Quantity = 1;
+};
+
+USTRUCT(BlueprintType)
+struct BEAMPROJ_BEAMFARM_API FBeamFarmMutationOutput
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BeamFarm|Mutation")
+	FString ItemContentId;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BeamFarm|Mutation")
+	int32 Quantity = 0;
+};
