@@ -10,12 +10,7 @@
 #include "BeamFarmInventoryItem.generated.h"
 
 
-UENUM(BlueprintType)
-enum EBeamFarmInventoryItemType
-{
-	RawPlant UMETA(DisplayName = "Raw Plant"),
-	MutatedPlant UMETA(DisplayName = "Mutated Plant"),
-};
+
 
 /**
  * 
@@ -52,7 +47,7 @@ struct BEAMPROJ_BEAMFARM_API FBeamFarmInventoryItem
 
 	// Type of the inventory item, used to determine how to display it in the UI and what interactions are available.
 	UPROPERTY(BlueprintReadWrite, Category = "BeamFarm|Inventory")
-	TEnumAsByte<EBeamFarmInventoryItemType> ItemType;
+	TEnumAsByte<EBeamFarmItemType> ItemType;
 
 	// A list of properties for this item
 	UPROPERTY(BlueprintReadWrite, Category = "BeamFarm|Inventory")

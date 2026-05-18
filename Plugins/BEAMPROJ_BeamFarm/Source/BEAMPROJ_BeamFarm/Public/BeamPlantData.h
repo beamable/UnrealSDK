@@ -10,6 +10,13 @@
 #include "UObject/SoftObjectPath.h"
 #include "BeamPlantData.generated.h"
 
+UENUM(BlueprintType)
+enum EBeamFarmItemType
+{
+	RawPlant UMETA(DisplayName = "Raw Plant"),
+	MutatedPlant UMETA(DisplayName = "Mutated Plant"),
+};
+
 UENUM(BlueprintType, Blueprintable)
 enum EBeamFarmPropertyType
 {
@@ -17,6 +24,7 @@ enum EBeamFarmPropertyType
 	Mutagenic UMETA(DisplayName = "Mutagenic"),
 	Radioactive UMETA(DisplayName = "Radioactive"),
 };
+
 
 /**
  * FBeamPlantData is a shared data structure containing all plant/crop properties
@@ -32,14 +40,14 @@ struct BEAMPROJ_BEAMFARM_API FBeamPlantData : public FBeamJsonSerializableUStruc
 {
 	GENERATED_BODY()
 
+	// Unique identifier for the plant type (e.g., "Wheat", "Corn")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BeamFarm|Plant")
+	FString Id;
+	
 	// Display name shown in UI (e.g., "Wheat", "Corn")
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BeamFarm|Plant")
 	FText DisplayName;
-
-	// Icon for inventory/UI
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BeamFarm|Plant")
-	TSoftObjectPtr<UTexture2D> Icon;
-
+	
 	// Time in seconds for the crop to grow from planting to harvest
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BeamFarm|Plant", meta = (ClampMin = "1.0"))
 	float GrowTimeSeconds = 30.f;
@@ -51,20 +59,7 @@ struct BEAMPROJ_BEAMFARM_API FBeamPlantData : public FBeamJsonSerializableUStruc
 	// Sprite shown on the farm slot when the crop is ready to harvest
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BeamFarm|Plant")
 	TSoftObjectPtr<UPaperSprite> ReadyToHarvestSprite;
-
-	// Beamable content ID of the seed item consumed from inventory when planting
-	// Example: "items.wheat_seed"
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BeamFarm|Plant")
-	FString SeedItemContentId;
-
-	// Beamable content ID of the item added to inventory on harvest
-	// Example: "items.wheat"
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BeamFarm|Plant")
-	FString HarvestItemContentId;
-
-	// Number of items to add to inventory when harvested
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BeamFarm|Plant", meta = (ClampMin = "1"))
-	int32 HarvestYield = 1;
+	
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
 	{
@@ -85,12 +80,6 @@ struct BEAMPROJ_BEAMFARM_API FBeamPlantData : public FBeamJsonSerializableUStruc
 			Serializer->WriteValue("DisplayName", ToSerialize);
 		}
 
-		// Serialize TSoftObjectPtr<UTexture2D> Icon
-		{
-			const auto SoftObjPath = Icon.ToSoftObjectPath().ToString();
-			Serializer->WriteValue("Icon", SoftObjPath);
-		}
-
 		// Serialize float GrowTimeSeconds
 		Serializer->WriteValue("GrowTimeSeconds", GrowTimeSeconds);
 
@@ -105,15 +94,7 @@ struct BEAMPROJ_BEAMFARM_API FBeamPlantData : public FBeamJsonSerializableUStruc
 			const auto SoftObjPath = ReadyToHarvestSprite.ToSoftObjectPath().ToString();
 			Serializer->WriteValue("ReadyToHarvestSprite", SoftObjPath);
 		}
-
-		// Serialize FString SeedItemContentId
-		Serializer->WriteValue("SeedItemContentId", SeedItemContentId);
-
-		// Serialize FString HarvestItemContentId
-		Serializer->WriteValue("HarvestItemContentId", HarvestItemContentId);
-
-		// Serialize int32 HarvestYield
-		Serializer->WriteValue("HarvestYield", HarvestYield);
+		
 	}
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
@@ -138,13 +119,6 @@ struct BEAMPROJ_BEAMFARM_API FBeamPlantData : public FBeamJsonSerializableUStruc
 	        }
 	    }
 
-	    // Deserialize TSoftObjectPtr<UTexture2D> Icon
-	    {
-	        FString SoftObjPath;
-	        Bag->TryGetStringField(TEXT("Icon"), SoftObjPath);
-	        Icon = TSoftObjectPtr<UTexture2D>(FSoftObjectPath(SoftObjPath));
-	    }
-
 	    // Deserialize float GrowTimeSeconds
 	    {
 	        double TempValue = 0.0;
@@ -165,15 +139,7 @@ struct BEAMPROJ_BEAMFARM_API FBeamPlantData : public FBeamJsonSerializableUStruc
 	    	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("ReadyToHarvestSprite"), Bag, SoftObjPath);
 	        ReadyToHarvestSprite = TSoftObjectPtr<UPaperSprite>(FSoftObjectPath(SoftObjPath));
 	    }
-
-	    // Deserialize FString SeedItemContentId
-		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("SeedItemContentId"), Bag, SeedItemContentId);
-	      
-	    // Deserialize FString HarvestItemContentId
-		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("HarvestItemContentId"), Bag, HarvestItemContentId);
-	    
-	    // Deserialize int32 HarvestYield
-		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("HarvestYield"), Bag, HarvestYield);
 	}
 
 };
+

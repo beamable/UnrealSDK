@@ -56,7 +56,7 @@ public:
 	void ClearSelectedCrop();
 
 	UFUNCTION(BlueprintPure, Category = "BeamFarm|Farming")
-	bool HasSelectedCrop() const;
+	bool HasSelectedCrop();
 
 	// Main entry point from slot click. Dispatches based on slot and farming state.
 	UFUNCTION(BlueprintCallable, Category = "BeamFarm|Farming")
@@ -68,7 +68,7 @@ public:
 
 	// Looks up a single plant by SeedItemContentId. Returns false if not found.
 	UFUNCTION(BlueprintCallable, Category = "BeamFarm|Farming")
-	bool FindPlantBySeedId(const FString& SeedItemContentId, FBeamPlantData& OutPlantData);
+	bool FindPlantBySeedId(const FString& plantContentId, FBeamPlantData& OutPlantData);
 
 	// Implement in Blueprint: remove one seed (SeedItemContentId) from Beamable inventory.
 	UFUNCTION(BlueprintImplementableEvent, Category = "BeamFarm|Farming")

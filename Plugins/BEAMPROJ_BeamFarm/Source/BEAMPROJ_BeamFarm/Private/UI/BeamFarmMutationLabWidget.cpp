@@ -4,26 +4,26 @@
 
 void UBeamFarmMutationLabWidget::AddToQueue(const FBeamPlantData& Item, int32 Quantity)
 {
-	if (Item.SeedItemContentId.IsEmpty() || Quantity <= 0)
-	{
-		return;
-	}
-
-	for (FBeamFarmMutationInput& Existing : MutationQueue)
-	{
-		if (Existing.ItemContentId == Item.SeedItemContentId)
-		{
-			Existing.Quantity += Quantity;
-			OnQueueChanged(MutationQueue);
-			return;
-		}
-	}
-
-	FBeamFarmMutationInput NewEntry;
-	NewEntry.ItemContentId = Item.SeedItemContentId;
-	NewEntry.Quantity = Quantity;
-	MutationQueue.Add(NewEntry);
-	OnQueueChanged(MutationQueue);
+	// if (Item.ItemContentId.IsEmpty() || Quantity <= 0)
+	// {
+	// 	return;
+	// }
+	//
+	// for (FBeamFarmMutationInput& Existing : MutationQueue)
+	// {
+	// 	if (Existing.ItemContentId == Item.ItemContentId)
+	// 	{
+	// 		Existing.Quantity += Quantity;
+	// 		OnQueueChanged(MutationQueue);
+	// 		return;
+	// 	}
+	// }
+	//
+	// FBeamFarmMutationInput NewEntry;
+	// NewEntry.ItemContentId = Item.ItemContentId;
+	// NewEntry.Quantity = Quantity;
+	// MutationQueue.Add(NewEntry);
+	// OnQueueChanged(MutationQueue);
 }
 
 void UBeamFarmMutationLabWidget::RemoveFromQueue(const FString& ItemContentId)

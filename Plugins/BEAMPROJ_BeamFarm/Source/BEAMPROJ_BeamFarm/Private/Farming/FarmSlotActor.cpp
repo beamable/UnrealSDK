@@ -42,7 +42,7 @@ void AFarmSlotActor::BeginPlay()
 
 void AFarmSlotActor::PlantCrop(const FBeamPlantData& PlantData)
 {
-	if (SlotState != EFarmSlotState::Empty || PlantData.SeedItemContentId.IsEmpty())
+	if (SlotState != EFarmSlotState::Empty)
 	{
 		return;
 	}
@@ -83,11 +83,6 @@ float AFarmSlotActor::GetGrowProgress() const
 		return 1.f;
 	}
 
-	if (PlantedCrop.SeedItemContentId.IsEmpty())
-	{
-		return 0.f;
-	}
-
 	const float Elapsed = GetWorld()->GetTimeSeconds() - PlantedTimestamp;
 	return FMath::Clamp(Elapsed / FMath::Max(PlantedCrop.GrowTimeSeconds, 1.f), 0.f, 1.f);
 }
@@ -102,10 +97,10 @@ void AFarmSlotActor::UpdateSprite(EFarmSlotState NewState)
 		TargetSprite = EmptySprite;
 		break;
 	case EFarmSlotState::Growing:
-		TargetSprite = !PlantedCrop.SeedItemContentId.IsEmpty() ? PlantedCrop.GrowingSprite.LoadSynchronous() : nullptr;
+		TargetSprite = !PlantedCrop.GrowingSprite.IsNull() ? PlantedCrop.GrowingSprite.LoadSynchronous() : nullptr;
 		break;
 	case EFarmSlotState::ReadyToHarvest:
-		TargetSprite = !PlantedCrop.SeedItemContentId.IsEmpty() ? PlantedCrop.ReadyToHarvestSprite.LoadSynchronous() : nullptr;
+		TargetSprite = !PlantedCrop.ReadyToHarvestSprite.IsNull() ? PlantedCrop.ReadyToHarvestSprite.LoadSynchronous() : nullptr;
 		break;
 	}
 
