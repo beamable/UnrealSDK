@@ -3,10 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "BeamPlantData.h"
 #include "PaperSprite.h"
 #include "BeamBackend/SemanticTypes/BeamContentId.h"
 #include "UObject/Object.h"
 #include "BeamFarmInventoryItem.generated.h"
+
 
 UENUM(BlueprintType)
 enum EBeamFarmInventoryItemType
@@ -51,4 +53,8 @@ struct BEAMPROJ_BEAMFARM_API FBeamFarmInventoryItem
 	// Type of the inventory item, used to determine how to display it in the UI and what interactions are available.
 	UPROPERTY(BlueprintReadWrite, Category = "BeamFarm|Inventory")
 	TEnumAsByte<EBeamFarmInventoryItemType> ItemType;
+
+	// A list of properties for this item
+	UPROPERTY(BlueprintReadWrite, Category = "BeamFarm|Inventory")
+	TMap<TEnumAsByte<EBeamFarmPropertyType>, int> Properties;
 };

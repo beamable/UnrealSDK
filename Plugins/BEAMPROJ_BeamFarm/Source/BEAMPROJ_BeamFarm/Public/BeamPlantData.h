@@ -10,6 +10,14 @@
 #include "UObject/SoftObjectPath.h"
 #include "BeamPlantData.generated.h"
 
+UENUM(BlueprintType, Blueprintable)
+enum EBeamFarmPropertyType
+{
+	Corrosive UMETA(DisplayName = "Corrosive"),
+	Mutagenic UMETA(DisplayName = "Mutagenic"),
+	Radioactive UMETA(DisplayName = "Radioactive"),
+};
+
 /**
  * FBeamPlantData is a shared data structure containing all plant/crop properties
  * used by both BeamPlantContent and BeamPlantRawMaterial content types.
