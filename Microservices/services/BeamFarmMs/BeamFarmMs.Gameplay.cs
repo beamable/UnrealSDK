@@ -1,0 +1,463 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Beamable.Common.Api.Inventory;
+using Beamable.Common.Api.Stats;
+using Beamable.Server;
+
+namespace Beamable.BeamFarmMs
+{
+    // ══════════════════════════════════════════════════════════════════════════
+    // DATA MODELS
+    // ══════════════════════════════════════════════════════════════════════════
+
+    #region Slot Data Models
+
+    [Serializable]
+    public class SlotData
+    {
+        public long plantedAt;
+        public string seedId;
+        public string harvestId;
+        public int growSecs;
+    }
+
+    [Serializable]
+    public class SeedDataProperty
+    {
+        public string DisplayName { get; set; }
+        public string GrowingSprite { get; set; }
+        public float GrowTimeSeconds { get; set; }
+        public string HarvestItemContentId { get; set; }
+        public string SeedSprite { get; set; }
+    }
+
+    #endregion
+
+    #region Plant Request/Response
+
+    [Serializable]
+    public class PlantResult
+    {
+        public bool success;
+
+        /// <summary>
+        /// Server-authoritative Unix timestamp (UTC seconds) at which planting was recorded.
+        /// Store this on the Unreal side if you want to display a client-side grow timer.
+        /// The authoritative check is done server-side in CollectHarvest.
+        /// </summary>
+        public long plantedAtUtcSeconds;
+
+        public string message;
+    }
+
+    #endregion
+
+    #region Collect Request/Response
+
+    [Serializable]
+    public class CollectResult
+    {
+        public bool success;
+
+        /// <summary>Content ID of the harvest item that was granted to the player's inventory (itemplant.*).</summary>
+        public string harvestedItemContentId;
+
+        /// <summary>Human-readable result message, useful for debug logging in Blueprint.</summary>
+        public string message;
+    }
+
+    #endregion
+
+    #region Mutation Request/Response
+
+    [Serializable]
+    public class MutationInput
+    {
+        /// <summary>Beamable content ID of the raw material currency (plant.raw.material.*).</summary>
+        public string itemContentId;
+        /// <summary>How many units of this material to consume.</summary>
+        public int quantity;
+    }
+
+    [Serializable]
+    public class MutationOutput
+    {
+        /// <summary>Beamable content ID of the produced crop item (itemplant.*).</summary>
+        public string itemContentId;
+        /// <summary>How many crop items were produced.</summary>
+        public int quantity;
+    }
+
+    [Serializable]
+    public class MutationResult
+    {
+        public bool success;
+        public List<MutationOutput> outputs;
+        public string message;
+    }
+
+    #endregion
+
+    // ══════════════════════════════════════════════════════════════════════════
+    // MICROSERVICE IMPLEMENTATION
+    // ══════════════════════════════════════════════════════════════════════════
+
+    public partial class BeamFarmMs
+    {
+        // ──────────────────────────────────────────────────────────────────────
+        // CONSTANTS & HELPERS
+        // ──────────────────────────────────────────────────────────────────────
+
+        /// <summary>Conversion ratio: units of raw material required to produce 1 crop item.</summary>
+        private const int MaterialsPerCrop = 5;
+
+        /// <summary>Stat key for storing slot data as JSON.</summary>
+        private static string SlotDataKey(string slotId) => $"farm_{slotId}_data";
+
+        // ──────────────────────────────────────────────────────────────────────
+        // PLANTING
+        // ──────────────────────────────────────────────────────────────────────
+
+        /// <summary>
+        /// Called when the player plants a seed on a farm slot.
+        ///
+        /// Validates that the caller owns at least one unit of the seed currency and deducts it.
+        /// Records the planting time and slot metadata as private game stats so that
+        /// <see cref="CollectHarvest"/> can perform authoritative timing validation.
+        ///
+        /// ═══ Unreal integration ═══════════════════════════════════════════
+        ///
+        ///   1. Override UFarmingComponent::OnSeedConsumed in your Blueprint subclass.
+        ///   2. Inside the event, call the auto-generated BeamFarmMsPlantSeed node.
+        ///   3. Pass the following arguments:
+        ///        seedContentId        → FarmingComponent.SelectedCropContentId
+        ///        slotId               → the Slot actor's AFarmSlotActor::SlotId property
+        ///   4. On success, store PlantResult.plantedAtUtcSeconds locally if you want
+        ///      to display a client-side countdown timer.
+        ///
+        /// NOTE: Run `dotnet beam generate` after modifying this file to regenerate
+        /// the Blueprint-callable BeamFarmMsPlantSeed node.
+        /// ═════════════════════════════════════════════════════════════════════
+        /// </summary>
+        [ClientCallable]
+        public async Task<PlantResult> PlantSeed(string seedContentId, string slotId)
+        {
+            // ── Input validation ──────────────────────────────────────────────
+            if (string.IsNullOrWhiteSpace(seedContentId))
+                return PlantFail("seedContentId must not be empty.");
+
+            if (string.IsNullOrWhiteSpace(slotId))
+                return PlantFail("slotId must not be empty.");
+
+            // ── Seed ownership check ──────────────────────────────────────────
+            var inventory = await Services.Inventory.GetCurrent();
+            
+            var seedCurrency = inventory.currencies
+                .FirstOrDefault(c => c.Key == seedContentId);
+            
+            if (seedCurrency.Value < 1)
+                return PlantFail($"Player does not own any '{seedContentId}'.");
+
+            // ── Extract SeedData from currency properties ─────────────────────
+            if (!inventory.currencyProperties.TryGetValue(seedCurrency.Key, out var currencyProperties))
+                return PlantFail($"No properties found for seed '{seedContentId}'.");
+
+            var seedDataProperty = currencyProperties.FirstOrDefault(p => p.name == "SeedData");
+            if (seedDataProperty == null)
+                return PlantFail($"No SeedData property found for seed '{seedContentId}'.");
+
+            SeedDataProperty seedData;
+            try
+            {
+                seedData = Newtonsoft.Json.JsonConvert.DeserializeObject<SeedDataProperty>(seedDataProperty.value);
+                if (seedData == null)
+                    return PlantFail($"Failed to parse SeedData for seed '{seedContentId}'.");
+            }
+            catch (Exception ex)
+            {
+                return PlantFail($"Invalid SeedData format: {ex.Message}");
+            }
+
+            if (string.IsNullOrEmpty(seedData.HarvestItemContentId))
+                return PlantFail($"SeedData missing HarvestItemContentId for seed '{seedContentId}'.");
+
+            if (seedData.GrowTimeSeconds <= 0f)
+                return PlantFail($"SeedData has invalid GrowTimeSeconds ({seedData.GrowTimeSeconds}) for seed '{seedContentId}'.");
+
+            // ── Reject if slot already has an active planting ─────────────────
+            string existingPlantJson = await GetSlotStat(SlotDataKey(slotId));
+            if (!string.IsNullOrEmpty(existingPlantJson))
+            {
+                try
+                {
+                    var existingData = Newtonsoft.Json.JsonConvert.DeserializeObject<SlotData>(existingPlantJson);
+                    if (existingData?.plantedAt > 0)
+                        return PlantFail($"Slot '{slotId}' already has an active planting. Collect it first.");
+                }
+                catch
+                {
+                    // Corrupted data, allow overwriting
+                }
+            }
+
+            // ── Consume the seed from inventory ───────────────────────────────
+            var updateBuilder = new InventoryUpdateBuilder();
+            updateBuilder.CurrencyChange(seedContentId, -1);
+            await Services.Inventory.Update(updateBuilder);
+
+            // ── Record planting state as a single JSON stat ───────────────────
+            long plantedAt = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+            int growSecs = Math.Max(1, (int)Math.Ceiling(seedData.GrowTimeSeconds));
+            
+            var slotData = new SlotData
+            {
+                plantedAt = plantedAt,
+                seedId = seedContentId,
+                harvestId = seedData.HarvestItemContentId,
+                growSecs = growSecs
+            };
+
+            string slotDataJson = Newtonsoft.Json.JsonConvert.SerializeObject(slotData);
+            await SetSlotStat(SlotDataKey(slotId), slotDataJson);
+
+            return new PlantResult
+            {
+                success = true,
+                plantedAtUtcSeconds = plantedAt,
+                message = $"Planted '{seedContentId}' in slot '{slotId}'. Ready in {growSecs}s."
+            };
+        }
+
+        // ──────────────────────────────────────────────────────────────────────
+        // COLLECTING / HARVESTING
+        // ──────────────────────────────────────────────────────────────────────
+
+        /// <summary>
+        /// Called when the player harvests a fully-grown crop from a farm slot.
+        ///
+        /// Reads the planting record written by <see cref="PlantSeed"/> and validates:
+        ///   1. A planting record exists for the given slot.
+        ///   2. The grow time has fully elapsed (server clock — cannot be spoofed by the client).
+        ///
+        /// On success:
+        ///   • One harvest item (itemplant.*) is added to the player's Beamable inventory.
+        ///   • The planting stats for the slot are cleared, making the slot available to plant again.
+        ///
+        /// ═══ Unreal integration ═══════════════════════════════════════════
+        ///
+        ///   1. Override UFarmingComponent::OnItemsHarvested in your Blueprint subclass.
+        ///   2. Inside the event, call the auto-generated BeamFarmMsCollectHarvest node.
+        ///   3. Pass the following arguments:
+        ///        slotId → the Slot actor's AFarmSlotActor::SlotId property
+        ///   4. On success, use CollectResult.harvestedItemContentId to update
+        ///      any local inventory display (the Beamable SDK will also push an
+        ///      inventory update event automatically).
+        ///   5. On failure (e.g. crop not ready yet), show appropriate feedback to the player.
+        ///
+        /// NOTE: Run `dotnet beam generate` after modifying this file to regenerate
+        /// the Blueprint-callable BeamFarmMsCollectHarvest node.
+        /// ═════════════════════════════════════════════════════════════════════
+        /// </summary>
+        [ClientCallable]
+        public async Task<CollectResult> CollectHarvest(string slotId)
+        {
+            // ── Input validation ──────────────────────────────────────────────
+            if (string.IsNullOrWhiteSpace(slotId))
+                return CollectFail("slotId must not be empty.");
+
+            // ── Load planting data ────────────────────────────────────────────
+            string slotDataJson = await GetSlotStat(SlotDataKey(slotId));
+
+            if (string.IsNullOrEmpty(slotDataJson))
+                return CollectFail($"No active planting found for slot '{slotId}'. Call PlantSeed first.");
+
+            // ── Parse and validate the planting record ────────────────────────
+            SlotData slotData;
+            try
+            {
+                slotData = Newtonsoft.Json.JsonConvert.DeserializeObject<SlotData>(slotDataJson);
+                if (slotData == null || slotData.plantedAt <= 0)
+                    return CollectFail($"No active planting found for slot '{slotId}'. Call PlantSeed first.");
+            }
+            catch
+            {
+                return CollectFail("Corrupted planting data — please contact support.");
+            }
+
+            if (slotData.growSecs <= 0)
+                return CollectFail("Corrupted grow time record — please contact support.");
+
+            if (string.IsNullOrEmpty(slotData.harvestId))
+                return CollectFail("No harvest item configured for this slot — please contact support.");
+
+            // ── Timing check (server-authoritative) ───────────────────────────
+            long readyAt = slotData.plantedAt + slotData.growSecs;
+            long nowUtc  = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+
+            if (nowUtc < readyAt)
+            {
+                long remaining = readyAt - nowUtc;
+                return CollectFail($"Crop in slot '{slotId}' is not ready yet. {remaining}s remaining.");
+            }
+
+            // ── Grant harvest item to inventory ───────────────────────────────
+            var updateBuilder = new InventoryUpdateBuilder();
+            updateBuilder.AddItem(slotData.harvestId, new Dictionary<string, string>());
+            await Services.Inventory.Update(updateBuilder);
+
+            // ── Clear planting data ───────────────────────────────────────────
+            await SetSlotStat(SlotDataKey(slotId), string.Empty);
+
+            return new CollectResult
+            {
+                success = true,
+                harvestedItemContentId = slotData.harvestId,
+                message = $"Harvested '{slotData.harvestId}' from slot '{slotId}'."
+            };
+        }
+
+        // ──────────────────────────────────────────────────────────────────────
+        // MUTATION LAB
+        // ──────────────────────────────────────────────────────────────────────
+
+        /// <summary>
+        /// Consumes the provided raw materials from the calling player's inventory and
+        /// produces mutated crop items according to the MaterialsPerCrop ratio.
+        ///
+        /// Raw materials are Beamable currencies (plant.raw.material.*).
+        /// Produced crops are Beamable items (itemplant.*).
+        ///
+        /// Content ID mapping convention:
+        ///   plant.raw.material.green_spore  →  itemplant.green_spore
+        ///
+        /// The Unreal client calls this via the auto-generated BeamFarmMsMutate Blueprint node
+        /// (regenerated with `dotnet beam generate` after adding this file).
+        /// </summary>
+        [ClientCallable]
+        public async Task<MutationResult> Mutate(List<MutationInput> inputs)
+        {
+            if (inputs == null || inputs.Count == 0)
+            {
+                return MutateFail("No inputs provided.");
+            }
+
+            // Validate all inputs before touching inventory.
+            foreach (var input in inputs)
+            {
+                if (string.IsNullOrEmpty(input.itemContentId) || input.quantity <= 0)
+                {
+                    return MutateFail($"Invalid input: contentId='{input.itemContentId}' quantity={input.quantity}");
+                }
+
+                if (input.quantity < MaterialsPerCrop)
+                {
+                    return MutateFail($"Need at least {MaterialsPerCrop} units of '{input.itemContentId}' to mutate (provided {input.quantity}).");
+                }
+            }
+
+            // Verify the player actually has the required currency amounts.
+            var inventoryView = await Services.Inventory.GetCurrent();
+            foreach (var input in inputs)
+            {
+                var currency = inventoryView.currencies
+                    .FirstOrDefault(c => c.Key == input.itemContentId);
+                long owned = currency.Value;
+                if (owned < input.quantity)
+                {
+                    return MutateFail($"Insufficient '{input.itemContentId}': need {input.quantity}, have {owned}.");
+                }
+            }
+
+            // Build the inventory update: deduct materials, grant crops.
+            var updateBuilder = new InventoryUpdateBuilder();
+            var outputs = new List<MutationOutput>();
+
+            foreach (var input in inputs)
+            {
+                // Deduct materials (negative currency delta).
+                updateBuilder.CurrencyChange(input.itemContentId, -input.quantity);
+
+                // Determine output content ID and quantity.
+                string outputId = DeriveCropContentId(input.itemContentId);
+                int outputQty = Math.Max(1, input.quantity / MaterialsPerCrop);
+
+                // Grant output crop items.
+                for (int i = 0; i < outputQty; i++)
+                {
+                    updateBuilder.AddItem(outputId, new Dictionary<string, string>());
+                }
+
+                outputs.Add(new MutationOutput { itemContentId = outputId, quantity = outputQty });
+            }
+
+            await Services.Inventory.Update(updateBuilder);
+
+            return new MutationResult
+            {
+                success = true,
+                outputs = outputs,
+                message = $"Mutation complete! Produced {outputs.Sum(o => o.quantity)} item(s)."
+            };
+        }
+
+        /// <summary>
+        /// Derives the crop content ID from a raw material content ID.
+        /// Convention: "plant.raw.material.green_spore" → "itemplant.green_spore"
+        /// Override this logic to customise the mapping for your content structure.
+        /// </summary>
+        private static string DeriveCropContentId(string materialContentId)
+        {
+            const string prefix = "plant.raw.material.";
+            if (materialContentId.StartsWith(prefix))
+            {
+                return "itemplant." + materialContentId.Substring(prefix.Length);
+            }
+            // Fallback: append to base itemplant namespace.
+            return "itemplant." + materialContentId;
+        }
+
+        // ──────────────────────────────────────────────────────────────────────
+        // STATS HELPERS
+        // ──────────────────────────────────────────────────────────────────────
+
+        /// <summary>
+        /// Reads a single private game stat for the current caller.
+        ///
+        /// NOTE: If SetStat / GetStat do not compile, your SDK may use a different interface.
+        /// Common alternatives:
+        ///   A) await Services.Stats.GetStats(StatsDomainType.Game, StatsAccessType.Private, Context.UserId)
+        ///      → returns Dictionary‹string, string›; extract with TryGetValue.
+        ///   B) await Services.Stats.SearchOne("game", "private", "player", Context.UserId.ToString())
+        ///      → same dictionary shape.
+        /// </summary>
+        private async Task<string> GetSlotStat(string key)
+        {
+            var stats = await Services.Stats.GetStats(StatsDomainType.Game, StatsAccessType.Private, Context.UserId);
+            return stats != null && stats.TryGetValue(key, out var v) ? v : string.Empty;
+        }
+
+        /// <summary>
+        /// Writes a single private game stat for the current caller.
+        /// See GetSlotStat for alternative patterns if this does not compile.
+        /// </summary>
+        private async Task SetSlotStat(string key, string value)
+        {
+            await Services.Stats.SetStat(StatsDomainType.Game, StatsAccessType.Private, Context.UserId, key, value);
+        }
+
+        // ──────────────────────────────────────────────────────────────────────
+        // ERROR HELPERS
+        // ──────────────────────────────────────────────────────────────────────
+
+        private static PlantResult PlantFail(string message) =>
+            new PlantResult { success = false, plantedAtUtcSeconds = 0L, message = message };
+
+        private static CollectResult CollectFail(string message) =>
+            new CollectResult { success = false, harvestedItemContentId = string.Empty, message = message };
+
+        private static MutationResult MutateFail(string message) =>
+            new MutationResult { success = false, outputs = new List<MutationOutput>(), message = message };
+    }
+}

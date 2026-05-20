@@ -17,6 +17,9 @@ UFarmingComponent::UFarmingComponent()
 void UFarmingComponent::SetSelectedCrop(const FBeamSeedData& SeedData)
 {
 	SelectedCrop = SeedData;
+	// Fallback: derive content ID from the seed data's ContentId field.
+	// SetSelectedCropBySeedId overrides this with the authoritative ID from the content system.
+	SelectedCropContentId = SeedData.ContentId.ToString();
 	SetFarmingState(EFarmingInteractionState::Planting);
 }
 
@@ -42,6 +45,7 @@ bool UFarmingComponent::SetSelectedCropBySeedId(const FString& SeedItemContentId
 			if (ContentSubsystem->TryGetContentOfType<UBeamSeedsContent>(SeedId, SeedContent) && SeedContent)
 			{
 				SetSelectedCrop(SeedContent->SeedData);
+				SelectedCropContentId = SeedId.AsString; // authoritative override
 				return true;
 			}
 		}
@@ -52,6 +56,7 @@ bool UFarmingComponent::SetSelectedCropBySeedId(const FString& SeedItemContentId
 void UFarmingComponent::ClearSelectedCrop()
 {
 	SelectedCrop = FBeamSeedData();
+	SelectedCropContentId = TEXT("");
 	SetFarmingState(EFarmingInteractionState::Idle);
 }
 
@@ -74,10 +79,14 @@ void UFarmingComponent::InteractWithSlot(AFarmSlotActor* Slot)
 			return;
 		}
 
-		// const FString ItemId = Slot->PlantedSeed.HarvestItemContentId;
-		// const int32 Yield = 1;
+		// Capture harvest info before Harvest() clears the slot state.
+		const FString HarvestItemId = Slot->PlantedSeed.HarvestItemContentId;
+
 		Slot->Harvest();
-		// OnItemsHarvested(Slot, ItemId, Yield);
+
+		// Override in Blueprint: call BeamFarmMsCollectHarvest with Slot->SlotId,
+		// then update any local inventory display using CollectResult.harvestedItemContentId.
+		OnItemsHarvested(Slot, HarvestItemId, 1);
 		return;
 	}
 
@@ -96,7 +105,13 @@ void UFarmingComponent::InteractWithSlot(AFarmSlotActor* Slot)
 	FBeamPlantData HarvestData;
 	FindPlantBySeedId(SelectedCrop.HarvestItemContentId, HarvestData);
 	Slot->PlantCrop(SelectedCrop, HarvestData);
-	// OnSeedConsumed(SelectedCrop.ContentId.ToString(), 1);
+
+	// Override in Blueprint: call BeamFarmMsPlantSeed with:
+	//   seedContentId        = SelectedCropContentId
+	//   slotId               = Slot->SlotId
+	//   harvestItemContentId = SelectedCrop.HarvestItemContentId
+	//   growTimeSeconds      = SelectedCrop.GrowTimeSeconds
+	OnSeedConsumed(SelectedCropContentId, 1);
 }
 
 TArray<FBeamPlantData> UFarmingComponent::GetAllPlants()

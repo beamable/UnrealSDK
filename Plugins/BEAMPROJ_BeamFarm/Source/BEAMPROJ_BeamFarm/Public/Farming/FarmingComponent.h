@@ -42,6 +42,12 @@ public:
 	UPROPERTY(BlueprintReadOnly, Category = "BeamFarm|Farming")
 	FBeamSeedData SelectedCrop;
 
+	// Authoritative Beamable content ID string for the selected seed.
+	// Set by SetSelectedCropBySeedId (from content system) or falls back to SelectedCrop.ContentId.ToString().
+	// Use this as PlantRequest.seedContentId in the BeamFarmMsPlantSeed microservice call.
+	UPROPERTY(BlueprintReadOnly, Category = "BeamFarm|Farming")
+	FString SelectedCropContentId;
+
 	// Call this from your inventory widget when the player selects a seed item.
 	UFUNCTION(BlueprintCallable, Category = "BeamFarm|Farming")
 	void SetSelectedCrop(const FBeamSeedData& SeedData);
@@ -71,11 +77,23 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "BeamFarm|Farming")
 	bool FindPlantBySeedId(const FString& plantContentId, FBeamPlantData& OutPlantData);
 
-	// Implement in Blueprint: remove one seed (SeedItemContentId) from Beamable inventory.
+	// Fired after a seed is consumed from the slot. Override in Blueprint to:
+	//   1. Call the auto-generated BeamFarmMsPlantSeed node with:
+	//        seedContentId        = SeedItemContentId  (== SelectedCropContentId)
+	//        slotId               = the slot actor's SlotId property
+	//        harvestItemContentId = SelectedCrop.HarvestItemContentId
+	//        growTimeSeconds      = SelectedCrop.GrowTimeSeconds
+	//   2. Optionally deduct the seed from any local UI inventory cache.
+	// The Slot actor reference is not passed here because it was already planted by the time
+	// this fires — use the slot's SlotId from your Blueprint context instead.
 	UFUNCTION(BlueprintImplementableEvent, Category = "BeamFarm|Farming")
 	void OnSeedConsumed(const FString& SeedItemContentId, int32 Quantity);
 
-	// Implement in Blueprint: add harvested items (HarvestItemContentId) to Beamable inventory.
+	// Fired after the slot is reset following a harvest. Override in Blueprint to:
+	//   1. Call the auto-generated BeamFarmMsCollectHarvest node with:
+	//        slotId = Slot->SlotId
+	//   2. On success, use CollectResult.harvestedItemContentId to update any local UI.
+	//      (Beamable SDK also pushes an inventory-changed event automatically.)
 	UFUNCTION(BlueprintImplementableEvent, Category = "BeamFarm|Farming")
 	void OnItemsHarvested(AFarmSlotActor* Slot, const FString& ItemContentId, int32 Quantity);
 

@@ -50,6 +50,12 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BeamFarm|Slot|Sprites")
 	TObjectPtr<UPaperSprite> EmptySprite;
 
+	// Stable identifier for this slot.
+	// Set a unique value per slot in the Level Editor (e.g. "slot_1", "slot_farm_a").
+	// This is passed as PlantRequest.slotId and CollectRequest.slotId to the microservice.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BeamFarm|Slot")
+	FString SlotId;
+
 	// How close (cm) the character must be before the farming interaction triggers.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BeamFarm|Slot")
 	float InteractionRadius = 150.f;
