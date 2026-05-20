@@ -7,6 +7,8 @@
 #include "BeamPlantData.h"
 #include "Farming/FarmSlotActor.h"
 #include "Engine/World.h"
+#include "AutoGen/SubSystems/BeamFarmMs/BeamFarmMsPlantSeedRequest.h"
+#include "AutoGen/SubSystems/BeamFarmMs/BeamFarmMsCollectHarvestRequest.h"
 
 UFarmingComponent::UFarmingComponent()
 {
@@ -72,6 +74,11 @@ void UFarmingComponent::InteractWithSlot(AFarmSlotActor* Slot)
 		return;
 	}
 
+	if (!BeamFarmMsApi)
+	{
+		BeamFarmMsApi = GEngine->GetEngineSubsystem<UBeamBeamFarmMsApi>();
+	}
+
 	if (Slot->SlotState == EFarmSlotState::ReadyToHarvest)
 	{
 		if (Slot->PlantedSeed.GrowingSprite.IsNull())
@@ -79,14 +86,46 @@ void UFarmingComponent::InteractWithSlot(AFarmSlotActor* Slot)
 			return;
 		}
 
-		// Capture harvest info before Harvest() clears the slot state.
+		// Capture before Harvest() clears the slot state.
+		const FString SlotId = Slot->SlotId;
 		const FString HarvestItemId = Slot->PlantedSeed.HarvestItemContentId;
+		TWeakObjectPtr<AFarmSlotActor> WeakSlot(Slot);
 
 		Slot->Harvest();
 
-		// Override in Blueprint: call BeamFarmMsCollectHarvest with Slot->SlotId,
-		// then update any local inventory display using CollectResult.harvestedItemContentId.
-		OnItemsHarvested(Slot, HarvestItemId, 1);
+		if (BeamFarmMsApi)
+		{
+			auto* Request = UBeamFarmMsCollectHarvestRequest::Make(SlotId, this, TMap<FString, FString>{});
+			FBeamRequestContext RequestContext;
+			TWeakObjectPtr<UFarmingComponent> WeakThis(this);
+
+			BeamFarmMsApi->CPP_CollectHarvest(
+				FUserSlot{UserSlotName},
+				Request,
+				FOnBeamFarmMsCollectHarvestFullResponse::CreateLambda(
+					[WeakThis, WeakSlot, SlotId, HarvestItemId](FBeamFarmMsCollectHarvestFullResponse Response)
+					{
+						if (!WeakThis.IsValid()) return;
+						if (Response.State == RS_Success && Response.SuccessData && Response.SuccessData->bSuccess)
+						{
+							WeakThis->OnItemsHarvested(WeakSlot.Get(), Response.SuccessData->HarvestedItemContentId, 1);
+						}
+						else
+						{
+							const FString ErrorMsg = (Response.State == RS_Error) ? Response.ErrorData.error : HarvestItemId;
+							WeakThis->OnCollectFailed(SlotId, ErrorMsg);
+						}
+					}),
+				RequestContext,
+				FBeamOperationHandle(),
+				this
+			);
+		}
+		else
+		{
+			// No API available — fire directly so Blueprint still works without the microservice.
+			OnItemsHarvested(WeakSlot.Get(), HarvestItemId, 1);
+		}
 		return;
 	}
 
@@ -102,23 +141,52 @@ void UFarmingComponent::InteractWithSlot(AFarmSlotActor* Slot)
 		return;
 	}
 
+	const FString SeedContentId = SelectedCropContentId;
+	const FString SlotId = Slot->SlotId;
+
 	FBeamPlantData HarvestData;
 	FindPlantBySeedId(SelectedCrop.HarvestItemContentId, HarvestData);
 	Slot->PlantCrop(SelectedCrop, HarvestData);
 
-	// Override in Blueprint: call BeamFarmMsPlantSeed with:
-	//   seedContentId        = SelectedCropContentId
-	//   slotId               = Slot->SlotId
-	//   harvestItemContentId = SelectedCrop.HarvestItemContentId
-	//   growTimeSeconds      = SelectedCrop.GrowTimeSeconds
-	OnSeedConsumed(SelectedCropContentId, 1);
+	if (BeamFarmMsApi)
+	{
+		auto* Request = UBeamFarmMsPlantSeedRequest::Make(SeedContentId, SlotId, this, TMap<FString, FString>{});
+		FBeamRequestContext RequestContext;
+		TWeakObjectPtr<UFarmingComponent> WeakThis(this);
+
+		BeamFarmMsApi->CPP_PlantSeed(
+			FUserSlot{UserSlotName},
+			Request,
+			FOnBeamFarmMsPlantSeedFullResponse::CreateLambda(
+				[WeakThis, SeedContentId, SlotId](FBeamFarmMsPlantSeedFullResponse Response)
+				{
+					if (!WeakThis.IsValid()) return;
+					if (Response.State == RS_Success && Response.SuccessData && Response.SuccessData->bSuccess)
+					{
+						WeakThis->OnSeedConsumed(SeedContentId, 1);
+					}
+					else
+					{
+						const FString ErrorMsg = (Response.State == RS_Error) ? Response.ErrorData.error : TEXT("PlantSeed failed");
+						WeakThis->OnPlantFailed(SlotId, ErrorMsg);
+					}
+				}),
+			RequestContext,
+			FBeamOperationHandle(),
+			this
+		);
+	}
+	else
+	{
+		// No API available — fire directly so Blueprint still works without the microservice.
+		OnSeedConsumed(SeedContentId, 1);
+	}
 }
 
 TArray<FBeamPlantData> UFarmingComponent::GetAllPlants()
 {
 	TArray<FBeamPlantData> Result;
 
-	// Get or cache the content subsystem
 	if (!ContentSubsystem)
 	{
 		ContentSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UBeamContentSubsystem>();
@@ -129,11 +197,9 @@ TArray<FBeamPlantData> UFarmingComponent::GetAllPlants()
 		}
 	}
 
-	// Get all plant content IDs
 	TArray<FBeamContentId> PlantIds;
 	ContentSubsystem->GetIdsOfContentType(UBeamPlantContent::StaticClass(), PlantIds, true);
 
-	// Convert to plant data
 	for (const FBeamContentId& PlantId : PlantIds)
 	{
 		UBeamPlantContent* PlantContent = nullptr;
@@ -148,7 +214,6 @@ TArray<FBeamPlantData> UFarmingComponent::GetAllPlants()
 
 bool UFarmingComponent::FindPlantBySeedId(const FString& plantContentId, FBeamPlantData& OutPlantData)
 {
-	// Get or cache the content subsystem
 	if (!ContentSubsystem)
 	{
 		ContentSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UBeamContentSubsystem>();

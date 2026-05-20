@@ -7,6 +7,7 @@
 #include "Farming/FarmTypes.h"
 #include "BeamPlantData.h"
 #include "BeamSeedData.h"
+#include "AutoGen/SubSystems/BeamBeamFarmMsApi.h"
 #include "FarmingComponent.generated.h"
 
 class AFarmSlotActor;
@@ -77,23 +78,14 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "BeamFarm|Farming")
 	bool FindPlantBySeedId(const FString& plantContentId, FBeamPlantData& OutPlantData);
 
-	// Fired after a seed is consumed from the slot. Override in Blueprint to:
-	//   1. Call the auto-generated BeamFarmMsPlantSeed node with:
-	//        seedContentId        = SeedItemContentId  (== SelectedCropContentId)
-	//        slotId               = the slot actor's SlotId property
-	//        harvestItemContentId = SelectedCrop.HarvestItemContentId
-	//        growTimeSeconds      = SelectedCrop.GrowTimeSeconds
-	//   2. Optionally deduct the seed from any local UI inventory cache.
-	// The Slot actor reference is not passed here because it was already planted by the time
-	// this fires — use the slot's SlotId from your Blueprint context instead.
+	// Fired after PlantSeed succeeds on the server. Override in Blueprint to deduct the seed
+	// from your local UI inventory cache. The slot is already growing at this point.
 	UFUNCTION(BlueprintImplementableEvent, Category = "BeamFarm|Farming")
 	void OnSeedConsumed(const FString& SeedItemContentId, int32 Quantity);
 
-	// Fired after the slot is reset following a harvest. Override in Blueprint to:
-	//   1. Call the auto-generated BeamFarmMsCollectHarvest node with:
-	//        slotId = Slot->SlotId
-	//   2. On success, use CollectResult.harvestedItemContentId to update any local UI.
-	//      (Beamable SDK also pushes an inventory-changed event automatically.)
+	// Fired after CollectHarvest succeeds on the server. ItemContentId comes from the server
+	// response (CollectResult.HarvestedItemContentId). Override to update local inventory UI.
+	// Slot may be null if the actor was destroyed before the response arrived.
 	UFUNCTION(BlueprintImplementableEvent, Category = "BeamFarm|Farming")
 	void OnItemsHarvested(AFarmSlotActor* Slot, const FString& ItemContentId, int32 Quantity);
 
@@ -105,10 +97,24 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, Category = "BeamFarm|Farming")
 	void OnNoCropSelected();
 
+	// Fired when the PlantSeed microservice call fails. Override to show error feedback.
+	UFUNCTION(BlueprintImplementableEvent, Category = "BeamFarm|Farming")
+	void OnPlantFailed(const FString& SlotId, const FString& ErrorMessage);
+
+	// Fired when the CollectHarvest microservice call fails. Override to show error feedback.
+	UFUNCTION(BlueprintImplementableEvent, Category = "BeamFarm|Farming")
+	void OnCollectFailed(const FString& SlotId, const FString& ErrorMessage);
+
+	// The user slot used for all microservice calls. Defaults to "Player0".
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BeamFarm|Farming")
+	FString UserSlotName = TEXT("Player0");
+
 private:
 	void SetFarmingState(EFarmingInteractionState NewState);
 
-	// Cached reference to the content subsystem
 	UPROPERTY()
 	TObjectPtr<UBeamContentSubsystem> ContentSubsystem;
+
+	UPROPERTY()
+	TObjectPtr<UBeamBeamFarmMsApi> BeamFarmMsApi;
 };
