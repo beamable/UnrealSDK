@@ -18,7 +18,7 @@ class BEAMPROJ_BEAMFARM_API UBeamSeedsContent : public UBeamCurrencyContent
 
 public:
 	UFUNCTION()
-	void GetContentType_UBeamSeedsContent(FString& Result) { Result = TEXT("plant.raw.material"); }
+	void GetContentType_UBeamSeedsContent(FString& Result) { Result = TEXT("plant_raw_material"); }
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BeamFarm|Seed")
 	FBeamSeedData SeedData;
