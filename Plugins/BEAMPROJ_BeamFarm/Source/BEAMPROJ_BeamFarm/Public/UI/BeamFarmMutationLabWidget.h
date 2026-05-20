@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "Farming/FarmTypes.h"
-#include "BeamPlantData.h"
+#include "BeamSeedData.h"
 #include "BeamFarmMutationLabWidget.generated.h"
 
 /**
@@ -36,9 +36,9 @@ public:
 	UPROPERTY(BlueprintReadOnly, Category = "BeamFarm|MutationLab")
 	bool bIsMutating = false;
 
-	// Adds or increments a material in the queue.
+	// Adds or increments a seed material in the queue.
 	UFUNCTION(BlueprintCallable, Category = "BeamFarm|MutationLab")
-	void AddToQueue(const FBeamPlantData& Item, int32 Quantity);
+	void AddToQueue(const FBeamSeedData& Item, int32 Quantity);
 
 	// Removes a material from the queue by its content ID.
 	UFUNCTION(BlueprintCallable, Category = "BeamFarm|MutationLab")

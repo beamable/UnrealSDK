@@ -6,6 +6,7 @@
 #include "Components/ActorComponent.h"
 #include "Farming/FarmTypes.h"
 #include "BeamPlantData.h"
+#include "BeamSeedData.h"
 #include "FarmingComponent.generated.h"
 
 class AFarmSlotActor;
@@ -37,13 +38,13 @@ public:
 	UPROPERTY(BlueprintReadOnly, Category = "BeamFarm|Farming")
 	EFarmingInteractionState FarmingState;
 
-	// The crop currently selected from inventory. Valid only during Planting state.
+	// The seed currently selected from inventory. Valid only during Planting state.
 	UPROPERTY(BlueprintReadOnly, Category = "BeamFarm|Farming")
-	FBeamPlantData SelectedCrop;
+	FBeamSeedData SelectedCrop;
 
 	// Call this from your inventory widget when the player selects a seed item.
 	UFUNCTION(BlueprintCallable, Category = "BeamFarm|Farming")
-	void SetSelectedCrop(const FBeamPlantData& PlantContent);
+	void SetSelectedCrop(const FBeamSeedData& SeedData);
 
 	// Convenience: look up a plant in the content system by its SeedItemContentId, then select it.
 	// Returns false if no matching plant content is found.

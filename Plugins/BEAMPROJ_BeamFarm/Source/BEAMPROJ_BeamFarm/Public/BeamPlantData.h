@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -13,7 +13,7 @@
 UENUM(BlueprintType)
 enum EBeamFarmItemType
 {
-	RawPlant UMETA(DisplayName = "Raw Plant"),
+	Seed UMETA(DisplayName = "Seed"),
 	MutatedPlant UMETA(DisplayName = "Mutated Plant"),
 };
 
@@ -27,13 +27,9 @@ enum EBeamFarmPropertyType
 
 
 /**
- * FBeamPlantData is a shared data structure containing all plant/crop properties
- * used by both BeamPlantContent and BeamPlantRawMaterial content types.
- * 
- * This struct encapsulates all the farming gameplay data needed for:
- * - Growing crops over time
- * - Visual representation during growth stages
- * - Seed consumption and harvest yield
+ * FBeamPlantData represents a harvested crop item from UBeamPlantContent.
+ * It holds the harvest-ready visual and display info for the farm slot and inventory.
+ * Grow time and growing visual live on FBeamSeedData instead.
  */
 USTRUCT(BlueprintType)
 struct BEAMPROJ_BEAMFARM_API FBeamPlantData : public FBeamJsonSerializableUStruct
@@ -45,27 +41,17 @@ struct BEAMPROJ_BEAMFARM_API FBeamPlantData : public FBeamJsonSerializableUStruc
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BeamFarm|Plant")
 	FText Id;
-	
+
 	// Display name shown in UI (e.g., "Wheat", "Corn")
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BeamFarm|Plant")
 	FText DisplayName;
-	
-	// Time in seconds for the crop to grow from planting to harvest
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BeamFarm|Plant", meta = (ClampMin = "1.0"))
-	float GrowTimeSeconds = 30.f;
-
-	// Sprite shown on the farm slot while the crop is growing
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BeamFarm|Plant")
-	TSoftObjectPtr<UPaperSprite> GrowingSprite;
 
 	// Sprite shown on the farm slot when the crop is ready to harvest
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BeamFarm|Plant")
 	TSoftObjectPtr<UPaperSprite> ReadyToHarvestSprite;
-	
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
 	{
-		// Serialize FText DisplayName
 		{
 			FString ToSerialize;
 			if (DisplayName.IsFromStringTable())
@@ -82,66 +68,36 @@ struct BEAMPROJ_BEAMFARM_API FBeamPlantData : public FBeamJsonSerializableUStruc
 			Serializer->WriteValue("DisplayName", ToSerialize);
 		}
 
-		// Serialize float GrowTimeSeconds
-		Serializer->WriteValue("GrowTimeSeconds", GrowTimeSeconds);
-
-		// Serialize TSoftObjectPtr<UPaperSprite> GrowingSprite
-		{
-			const auto SoftObjPath = GrowingSprite.ToSoftObjectPath().ToString();
-			Serializer->WriteValue("GrowingSprite", SoftObjPath);
-		}
-
-		// Serialize TSoftObjectPtr<UPaperSprite> ReadyToHarvestSprite
 		{
 			const auto SoftObjPath = ReadyToHarvestSprite.ToSoftObjectPath().ToString();
 			Serializer->WriteValue("ReadyToHarvestSprite", SoftObjPath);
 		}
-		
 	}
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-	    // Deserialize FText DisplayName
-	    {
-	        FString SerializedVal;
-	    	
-	    	UBeamJsonUtils::DeserializeRawPrimitive<FString>(TEXT("DisplayName"), Bag, SerializedVal);
+		{
+			FString SerializedVal;
+			UBeamJsonUtils::DeserializeRawPrimitive<FString>(TEXT("DisplayName"), Bag, SerializedVal);
+			if (SerializedVal.StartsWith(TEXT("BEAM_ST₢")))
+			{
+				FString TableIdStr, KeyStr;
+				SerializedVal.Split(TEXT("₢"), &TableIdStr, &KeyStr);
+				TableIdStr.RemoveFromStart(TEXT("BEAM_ST₢"));
+				KeyStr.Split(TEXT("₢"), &TableIdStr, &KeyStr);
+				DisplayName = FText::FromStringTable(*TableIdStr, KeyStr);
+			}
+			else
+			{
+				DisplayName = FText::FromString(SerializedVal);
+			}
+		}
 
-	        if (SerializedVal.StartsWith(TEXT("BEAM_ST₢")))
-	        {
-	            FString TableIdStr, KeyStr;
-	            SerializedVal.Split(TEXT("₢"), &TableIdStr, &KeyStr);
-	            TableIdStr.RemoveFromStart(TEXT("BEAM_ST₢"));
-	            KeyStr.Split(TEXT("₢"), &TableIdStr, &KeyStr);
-	            DisplayName = FText::FromStringTable(*TableIdStr, KeyStr);
-	        }
-	        else
-	        {
-	            DisplayName = FText::FromString(SerializedVal);
-	        }
-	    }
-
-	    // Deserialize float GrowTimeSeconds
-	    {
-	        double TempValue = 0.0;
-	    	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("GrowTimeSeconds"), Bag, TempValue);
-	        GrowTimeSeconds = static_cast<float>(TempValue);
-	    }
-
-	    // Deserialize TSoftObjectPtr<UPaperSprite> GrowingSprite
-	    {
-	        FString SoftObjPath;
-	    	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("GrowingSprite"), Bag, SoftObjPath);
-	        GrowingSprite = TSoftObjectPtr<UPaperSprite>(FSoftObjectPath(SoftObjPath));
-	    }
-
-	    // Deserialize TSoftObjectPtr<UPaperSprite> ReadyToHarvestSprite
-	    {
-	        FString SoftObjPath;
-	    	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("ReadyToHarvestSprite"), Bag, SoftObjPath);
-	        ReadyToHarvestSprite = TSoftObjectPtr<UPaperSprite>(FSoftObjectPath(SoftObjPath));
-	    }
+		{
+			FString SoftObjPath;
+			UBeamJsonUtils::DeserializeRawPrimitive(TEXT("ReadyToHarvestSprite"), Bag, SoftObjPath);
+			ReadyToHarvestSprite = TSoftObjectPtr<UPaperSprite>(FSoftObjectPath(SoftObjPath));
+		}
 	}
 
 };
-

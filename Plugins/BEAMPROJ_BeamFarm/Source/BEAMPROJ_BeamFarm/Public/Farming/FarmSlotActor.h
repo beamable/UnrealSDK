@@ -7,6 +7,7 @@
 #include "Farming/FarmTypes.h"
 #include "Interaction/BeamFarmInteractable.h"
 #include "BeamPlantData.h"
+#include "BeamSeedData.h"
 #include "FarmSlotActor.generated.h"
 
 class UBoxComponent;
@@ -18,7 +19,8 @@ class UBeamPlantContent;
  * A single plantable slot in a farm plot.
  *
  * Assign EmptySprite in the Blueprint Details panel.
- * GrowingSprite and ReadyToHarvestSprite come from UBeamPlantContent.
+ * GrowingSprite comes from the planted FBeamSeedData.
+ * ReadyToHarvestSprite comes from the resolved FBeamPlantData (HarvestPlantData).
  * CropSpriteComp swaps between them automatically as the slot state changes.
  *
  * Override OnStateChanged in Blueprint for additional logic (sounds, particles).
@@ -45,7 +47,6 @@ public:
 	TObjectPtr<UPaperSpriteComponent> CropSpriteComp;
 
 	// Shown when no crop is planted. Leave null to hide the component when empty.
-	// Growing and ReadyToHarvest sprites come from UBeamPlantContent on the planted crop.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BeamFarm|Slot|Sprites")
 	TObjectPtr<UPaperSprite> EmptySprite;
 
@@ -56,16 +57,23 @@ public:
 	UPROPERTY(BlueprintReadOnly, Category = "BeamFarm|Slot")
 	EFarmSlotState SlotState;
 
+	// The seed that was planted — provides GrowingSprite and GrowTimeSeconds.
 	UPROPERTY(BlueprintReadOnly, Category = "BeamFarm|Slot")
-	FBeamPlantData PlantedCrop;
+	FBeamSeedData PlantedSeed;
+
+	// The resolved harvest plant data — provides ReadyToHarvestSprite.
+	UPROPERTY(BlueprintReadOnly, Category = "BeamFarm|Slot")
+	FBeamPlantData HarvestPlantData;
 
 	// Fired whenever SlotState changes.
 	UPROPERTY(BlueprintAssignable, Category = "BeamFarm|Slot")
 	FOnFarmSlotStateChangedDelegate OnSlotStateChanged;
 
-	// Plants a crop and starts the grow timer. No-op if slot is not Empty.
+	// Plants a seed and starts the grow timer. No-op if slot is not Empty.
+	// SeedData drives the grow time and growing visual.
+	// PlantData provides the ready-to-harvest visual (looked up by FarmingComponent).
 	UFUNCTION(BlueprintCallable, Category = "BeamFarm|Slot")
-	void PlantCrop(const FBeamPlantData& PlantData);
+	void PlantCrop(const FBeamSeedData& SeedData, const FBeamPlantData& PlantData);
 
 	// Resets the slot to Empty. Only valid when SlotState == ReadyToHarvest.
 	// Does NOT add items to inventory — UFarmingComponent::OnItemsHarvested handles that.
@@ -82,7 +90,7 @@ public:
 	void OnStateChanged(EFarmSlotState NewState);
 
 	// Override in Blueprint for collect animation/feedback.
-	// Fires before the slot resets — PlantedCrop is still valid here.
+	// Fires before the slot resets — PlantedSeed and HarvestPlantData are still valid here.
 	UFUNCTION(BlueprintImplementableEvent, Category = "BeamFarm|Slot")
 	void OnHarvestFeedback();
 

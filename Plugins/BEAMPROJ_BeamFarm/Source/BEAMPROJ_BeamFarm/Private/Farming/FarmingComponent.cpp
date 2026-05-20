@@ -3,7 +3,7 @@
 #include "Farming/FarmingComponent.h"
 #include "Subsystems/Content/BeamContentSubsystem.h"
 #include "Contents/BeamPlantContent.h"
-#include "Contents/BeamPlantRawMaterial.h"
+#include "Contents/BeamSeedsContent.h"
 #include "BeamPlantData.h"
 #include "Farming/FarmSlotActor.h"
 #include "Engine/World.h"
@@ -14,26 +14,44 @@ UFarmingComponent::UFarmingComponent()
 	FarmingState = EFarmingInteractionState::Idle;
 }
 
-void UFarmingComponent::SetSelectedCrop(const FBeamPlantData& PlantData)
+void UFarmingComponent::SetSelectedCrop(const FBeamSeedData& SeedData)
 {
-	SelectedCrop = PlantData;
+	SelectedCrop = SeedData;
 	SetFarmingState(EFarmingInteractionState::Planting);
 }
 
 bool UFarmingComponent::SetSelectedCropBySeedId(const FString& SeedItemContentId)
 {
-	FBeamPlantData Found;
-	if (!FindPlantBySeedId(SeedItemContentId, Found))
+	if (!ContentSubsystem)
 	{
-		return false;
+		ContentSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UBeamContentSubsystem>();
+		if (!ContentSubsystem)
+		{
+			return false;
+		}
 	}
-	SetSelectedCrop(Found);
-	return true;
+
+	TArray<FBeamContentId> SeedIds;
+	ContentSubsystem->GetIdsOfContentType(UBeamSeedsContent::StaticClass(), SeedIds, true);
+
+	for (const FBeamContentId& SeedId : SeedIds)
+	{
+		if (SeedId.AsString == SeedItemContentId)
+		{
+			UBeamSeedsContent* SeedContent = nullptr;
+			if (ContentSubsystem->TryGetContentOfType<UBeamSeedsContent>(SeedId, SeedContent) && SeedContent)
+			{
+				SetSelectedCrop(SeedContent->SeedData);
+				return true;
+			}
+		}
+	}
+	return false;
 }
 
 void UFarmingComponent::ClearSelectedCrop()
 {
-	SelectedCrop = FBeamPlantData();
+	SelectedCrop = FBeamSeedData();
 	SetFarmingState(EFarmingInteractionState::Idle);
 }
 
@@ -51,13 +69,13 @@ void UFarmingComponent::InteractWithSlot(AFarmSlotActor* Slot)
 
 	if (Slot->SlotState == EFarmSlotState::ReadyToHarvest)
 	{
-		if (Slot->PlantedCrop.GrowingSprite.IsNull())
+		if (Slot->PlantedSeed.GrowingSprite.IsNull())
 		{
 			return;
 		}
 
-		// const FString ItemId = Slot->PlantedCrop.HarvestItemContentId;
-		// const int32 Yield = Slot->PlantedCrop.HarvestYield;
+		// const FString ItemId = Slot->PlantedSeed.HarvestItemContentId;
+		// const int32 Yield = 1;
 		Slot->Harvest();
 		// OnItemsHarvested(Slot, ItemId, Yield);
 		return;
@@ -75,8 +93,10 @@ void UFarmingComponent::InteractWithSlot(AFarmSlotActor* Slot)
 		return;
 	}
 
-	Slot->PlantCrop(SelectedCrop);
-	// OnSeedConsumed(SelectedCrop.ItemContentId, 1);
+	FBeamPlantData HarvestData;
+	FindPlantBySeedId(SelectedCrop.HarvestItemContentId, HarvestData);
+	Slot->PlantCrop(SelectedCrop, HarvestData);
+	// OnSeedConsumed(SelectedCrop.ContentId.ToString(), 1);
 }
 
 TArray<FBeamPlantData> UFarmingComponent::GetAllPlants()
@@ -108,19 +128,6 @@ TArray<FBeamPlantData> UFarmingComponent::GetAllPlants()
 		}
 	}
 
-	// Also get raw material plants
-	TArray<FBeamContentId> PlantRawIds;
-	ContentSubsystem->GetIdsOfContentType(UBeamPlantRawMaterial::StaticClass(), PlantRawIds, true);
-
-	for (const FBeamContentId& PlantId : PlantRawIds)
-	{
-		UBeamPlantRawMaterial* PlantContent = nullptr;
-		if (ContentSubsystem->TryGetContentOfType<UBeamPlantRawMaterial>(PlantId, PlantContent) && PlantContent)
-		{
-			Result.Add(PlantContent->PlantData);
-		}
-	}
-
 	return Result;
 }
 
@@ -137,15 +144,9 @@ bool UFarmingComponent::FindPlantBySeedId(const FString& plantContentId, FBeamPl
 		}
 	}
 
-	// Get all plant content IDs
 	TArray<FBeamContentId> PlantIds;
 	ContentSubsystem->GetIdsOfContentType(UBeamPlantContent::StaticClass(), PlantIds, true);
-	
-	// Get all plant content IDs
-	TArray<FBeamContentId> PlantRawIds;
-	ContentSubsystem->GetIdsOfContentType(UBeamPlantRawMaterial::StaticClass(), PlantRawIds, true);
 
-	// Search for matching SeedItemContentId in UBeamPlantContent
 	for (const FBeamContentId& PlantId : PlantIds)
 	{
 		UBeamPlantContent* PlantContent = nullptr;
@@ -158,22 +159,6 @@ bool UFarmingComponent::FindPlantBySeedId(const FString& plantContentId, FBeamPl
 			}
 		}
 	}
-	
-	// Search for matching SeedItemContentId in UBeamPlantRawMaterial
-	for (const FBeamContentId& PlantId : PlantRawIds)
-	{
-		UBeamPlantRawMaterial* PlantContent = nullptr;
-		if (PlantId.AsString == plantContentId)
-		{
-			if (ContentSubsystem->TryGetContentOfType<UBeamPlantRawMaterial>(PlantId, PlantContent) && PlantContent)
-			{
-	
-				OutPlantData = PlantContent->PlantData;
-				return true;
-			}
-		}
-	}
-
 
 	return false;
 }

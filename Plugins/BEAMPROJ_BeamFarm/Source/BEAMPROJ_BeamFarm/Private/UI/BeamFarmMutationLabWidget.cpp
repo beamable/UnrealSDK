@@ -2,7 +2,7 @@
 
 #include "UI/BeamFarmMutationLabWidget.h"
 
-void UBeamFarmMutationLabWidget::AddToQueue(const FBeamPlantData& Item, int32 Quantity)
+void UBeamFarmMutationLabWidget::AddToQueue(const FBeamSeedData& Item, int32 Quantity)
 {
 	// if (Item.ItemContentId.IsEmpty() || Quantity <= 0)
 	// {

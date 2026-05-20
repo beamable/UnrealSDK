@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "Farming/FarmTypes.h"
 #include "BeamPlantData.h"
+#include "BeamSeedData.h"
 #include "BeamFarmInventoryWidget.generated.h"
 
 class UFarmingComponent;
@@ -41,13 +42,26 @@ public:
 	UPROPERTY(BlueprintReadOnly, Category = "BeamFarm|Inventory")
 	bool bHasSelection = false;
 
+	UPROPERTY(BlueprintReadOnly, Category = "BeamFarm|Inventory")
+	FBeamSeedData SelectedSeedItem;
+
+	UPROPERTY(BlueprintReadOnly, Category = "BeamFarm|Inventory")
+	int32 SelectedSeedItemQuantity = 0;
+
+	UPROPERTY(BlueprintReadOnly, Category = "BeamFarm|Inventory")
+	bool bHasSeedSelection = false;
+
 	// Switch between Crops and Materials tabs.
 	UFUNCTION(BlueprintCallable, Category = "BeamFarm|Inventory")
 	void SwitchToTab(EBeamFarmInventoryTab Tab);
 
-	// Called from Blueprint item slot widgets when the player taps/clicks an item.
+	// Called from Blueprint item slot widgets when the player taps/clicks a crop item.
 	UFUNCTION(BlueprintCallable, Category = "BeamFarm|Inventory")
 	void SelectItem(const FBeamPlantData& Item, int32 Quantity);
+
+	// Called from Blueprint item slot widgets when the player taps/clicks a seed item.
+	UFUNCTION(BlueprintCallable, Category = "BeamFarm|Inventory")
+	void SelectSeedItem(const FBeamSeedData& Item, int32 Quantity);
 
 	// Clears the current selection and hides the detail panel.
 	UFUNCTION(BlueprintCallable, Category = "BeamFarm|Inventory")
@@ -66,7 +80,7 @@ public:
 	// Called by Blueprint when Beamable inventory data is available/updated.
 	// Push the full item lists here to let the C++ state stay consistent.
 	UFUNCTION(BlueprintCallable, Category = "BeamFarm|Inventory")
-	void PopulateInventory(const TArray<FBeamPlantData>& CropItems, const TArray<FBeamPlantData>& MaterialItems);
+	void PopulateInventory(const TArray<FBeamPlantData>& CropItems, const TArray<FBeamSeedData>& MaterialItems);
 
 	// Override in Blueprint: rebuild the item grid for the new tab.
 	UFUNCTION(BlueprintImplementableEvent, Category = "BeamFarm|Inventory")
@@ -80,19 +94,23 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, Category = "BeamFarm|Inventory")
 	void OnSelectionCleared();
 
-	// Override in Blueprint: add Item to the Mutation Lab queue (call MutationLabWidget->AddToQueue).
+	// Override in Blueprint: add seed Item to the Mutation Lab queue (call MutationLabWidget->AddToQueue).
 	UFUNCTION(BlueprintImplementableEvent, Category = "BeamFarm|Inventory")
-	void OnSendToLabRequested(const FBeamPlantData& Item, int32 Quantity);
+	void OnSendToLabRequested(const FBeamSeedData& Item, int32 Quantity);
 
 	// Override in Blueprint: call UFarmingComponent::SetSelectedCrop and close the inventory panel.
 	UFUNCTION(BlueprintImplementableEvent, Category = "BeamFarm|Inventory")
-	void OnPlantingSelectionRequested(const FBeamPlantData& Item);
+	void OnPlantingSelectionRequested(const FBeamSeedData& Item);
+
+	// Override in Blueprint: populate the seed item detail panel.
+	UFUNCTION(BlueprintImplementableEvent, Category = "BeamFarm|Inventory")
+	void OnSeedItemSelectionChanged(const FBeamSeedData& Item, int32 Quantity);
 
 	// Override in Blueprint: rebuild item grids with the fresh data.
 	UFUNCTION(BlueprintImplementableEvent, Category = "BeamFarm|Inventory")
-	void OnInventoryPopulated(const TArray<FBeamPlantData>& CropItems, const TArray<FBeamPlantData>& MaterialItems);
+	void OnInventoryPopulated(const TArray<FBeamPlantData>& CropItems, const TArray<FBeamSeedData>& MaterialItems);
 
 private:
 	TArray<FBeamPlantData> CachedCropItems;
-	TArray<FBeamPlantData> CachedMaterialItems;
+	TArray<FBeamSeedData> CachedMaterialItems;
 };

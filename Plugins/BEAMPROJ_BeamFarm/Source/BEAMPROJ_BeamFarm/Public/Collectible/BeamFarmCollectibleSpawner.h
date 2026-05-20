@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "BeamPlantData.h"
+#include "BeamSeedData.h"
 #include "BeamFarmCollectibleSpawner.generated.h"
 
 class ABeamFarmCollectibleActor;
@@ -35,9 +35,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BeamFarm|Spawner")
 	TSubclassOf<ABeamFarmCollectibleActor> CollectibleClass;
 
-	// The raw material this spawner produces. Assigned to ItemData.SeedItemContentId on each spawn.
+	// The seed this spawner produces. Assigned to ItemData on each spawn.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BeamFarm|Spawner")
-	FBeamPlantData MaterialData;
+	FBeamSeedData MaterialData;
 
 	// World-space transforms where collectibles may appear.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BeamFarm|Spawner")
@@ -74,7 +74,7 @@ public:
 
 	// Override in Blueprint: call the Beamable inventory subsystem to add MaterialData to the player's account.
 	UFUNCTION(BlueprintImplementableEvent, Category = "BeamFarm|Spawner")
-	void OnCollectibleCollected(ABeamFarmCollectibleActor* Collectible, APawn* Collector, const FBeamPlantData& Material, int32 Quantity);
+	void OnCollectibleCollected(ABeamFarmCollectibleActor* Collectible, APawn* Collector, const FBeamSeedData& Material, int32 Quantity);
 
 private:
 	FTimerHandle SpawnTimerHandle;

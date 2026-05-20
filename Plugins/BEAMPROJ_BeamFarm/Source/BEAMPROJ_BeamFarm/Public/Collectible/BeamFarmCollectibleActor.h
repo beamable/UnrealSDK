@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Interaction/BeamFarmInteractable.h"
-#include "BeamPlantData.h"
+#include "BeamSeedData.h"
 #include "BeamFarmCollectibleActor.generated.h"
 
 class UCapsuleComponent;
@@ -38,10 +38,10 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "BeamFarm|Collectible|Components")
 	TObjectPtr<UPaperSpriteComponent> SpriteComp;
 
-	// The raw material this collectible awards when picked up.
-	// Set SeedItemContentId to the plant.raw.material content ID of the material.
+	// The seed this collectible awards when picked up.
+	// Set the ContentId to the plant.raw.material content ID of the seed.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BeamFarm|Collectible")
-	FBeamPlantData ItemData;
+	FBeamSeedData ItemData;
 
 	// How many units of ItemData the player receives on pick-up.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BeamFarm|Collectible", meta = (ClampMin = "1"))

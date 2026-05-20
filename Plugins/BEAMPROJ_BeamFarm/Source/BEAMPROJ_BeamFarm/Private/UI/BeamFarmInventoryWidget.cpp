@@ -21,33 +21,44 @@ void UBeamFarmInventoryWidget::SelectItem(const FBeamPlantData& Item, int32 Quan
 	OnItemSelectionChanged(Item, Quantity);
 }
 
+void UBeamFarmInventoryWidget::SelectSeedItem(const FBeamSeedData& Item, int32 Quantity)
+{
+	SelectedSeedItem = Item;
+	SelectedSeedItemQuantity = Quantity;
+	bHasSeedSelection = true;
+	OnSeedItemSelectionChanged(Item, Quantity);
+}
+
 void UBeamFarmInventoryWidget::ClearSelection()
 {
 	SelectedItem = FBeamPlantData();
 	SelectedItemQuantity = 0;
 	bHasSelection = false;
+	SelectedSeedItem = FBeamSeedData();
+	SelectedSeedItemQuantity = 0;
+	bHasSeedSelection = false;
 	OnSelectionCleared();
 }
 
 void UBeamFarmInventoryWidget::RequestSendToLab(int32 QuantityToSend)
 {
-	if (!bHasSelection || QuantityToSend <= 0 || QuantityToSend > SelectedItemQuantity)
+	if (!bHasSeedSelection || QuantityToSend <= 0 || QuantityToSend > SelectedSeedItemQuantity)
 	{
 		return;
 	}
-	OnSendToLabRequested(SelectedItem, QuantityToSend);
+	OnSendToLabRequested(SelectedSeedItem, QuantityToSend);
 }
 
 void UBeamFarmInventoryWidget::RequestSelectForPlanting()
 {
-	if (!bHasSelection)
+	if (!bHasSeedSelection)
 	{
 		return;
 	}
-	OnPlantingSelectionRequested(SelectedItem);
+	OnPlantingSelectionRequested(SelectedSeedItem);
 }
 
-void UBeamFarmInventoryWidget::PopulateInventory(const TArray<FBeamPlantData>& CropItems, const TArray<FBeamPlantData>& MaterialItems)
+void UBeamFarmInventoryWidget::PopulateInventory(const TArray<FBeamPlantData>& CropItems, const TArray<FBeamSeedData>& MaterialItems)
 {
 	CachedCropItems = CropItems;
 	CachedMaterialItems = MaterialItems;
