@@ -1,7 +1,7 @@
 // Copyright Beamable, Inc. All Rights Reserved.
 
 #include "Farming/FarmSlotActor.h"
-#include "Farming/FarmingComponent.h"
+#include "Subsystem/BeamFarmSubsystem.h"
 #include "Components/BoxComponent.h"
 #include "PaperSpriteComponent.h"
 #include "PaperSprite.h"
@@ -34,9 +34,28 @@ void AFarmSlotActor::BeginPlay()
 	Super::BeginPlay();
 
 	OnClicked.AddDynamic(this, &AFarmSlotActor::HandleActorClicked);
-
-	// Apply the empty sprite (or hide) on spawn
 	UpdateSprite(EFarmSlotState::Empty);
+
+	UBeamFarmSubsystem* Sub = GetWorld()->GetGameInstance()->GetSubsystem<UBeamFarmSubsystem>();
+	if (Sub)
+	{
+		Sub->OnSlotShouldPlant.AddDynamic(this, &AFarmSlotActor::HandleSlotShouldPlant);
+		Sub->OnSlotShouldHarvest.AddDynamic(this, &AFarmSlotActor::HandleSlotShouldHarvest);
+		Sub->OnSlotShouldCancelPlant.AddDynamic(this, &AFarmSlotActor::HandleSlotShouldCancelPlant);
+	}
+}
+
+void AFarmSlotActor::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	UBeamFarmSubsystem* Sub = GetWorld()->GetGameInstance()->GetSubsystem<UBeamFarmSubsystem>();
+	if (Sub)
+	{
+		Sub->OnSlotShouldPlant.RemoveDynamic(this, &AFarmSlotActor::HandleSlotShouldPlant);
+		Sub->OnSlotShouldHarvest.RemoveDynamic(this, &AFarmSlotActor::HandleSlotShouldHarvest);
+		Sub->OnSlotShouldCancelPlant.RemoveDynamic(this, &AFarmSlotActor::HandleSlotShouldCancelPlant);
+	}
+
+	Super::EndPlay(EndPlayReason);
 }
 
 void AFarmSlotActor::PlantCrop(const FBeamSeedData& SeedData, const FBeamPlantData& PlantData)
@@ -161,9 +180,39 @@ void AFarmSlotActor::Interact_Implementation(APawn* InstigatorPawn)
 		return;
 	}
 
-	UFarmingComponent* FarmComp = InstigatorPawn->FindComponentByClass<UFarmingComponent>();
-	if (FarmComp)
+	UBeamFarmSubsystem* Sub = GetWorld()->GetGameInstance()->GetSubsystem<UBeamFarmSubsystem>();
+	if (!Sub)
 	{
-		FarmComp->InteractWithSlot(this);
+		return;
+	}
+
+	FBeamFarmInteractionRequest Request;
+	Request.SlotId = SlotId;
+	Request.SlotState = SlotState;
+	Request.PlantedSeed = PlantedSeed;
+	Sub->HandleSlotInteraction(Request);
+}
+
+void AFarmSlotActor::HandleSlotShouldPlant(const FString& InSlotId, const FBeamSeedData& SeedData, const FBeamPlantData& PlantData)
+{
+	if (InSlotId == SlotId)
+	{
+		PlantCrop(SeedData, PlantData);
+	}
+}
+
+void AFarmSlotActor::HandleSlotShouldHarvest(const FString& InSlotId)
+{
+	if (InSlotId == SlotId)
+	{
+		Harvest();
+	}
+}
+
+void AFarmSlotActor::HandleSlotShouldCancelPlant(const FString& InSlotId)
+{
+	if (InSlotId == SlotId)
+	{
+		CancelPlant();
 	}
 }

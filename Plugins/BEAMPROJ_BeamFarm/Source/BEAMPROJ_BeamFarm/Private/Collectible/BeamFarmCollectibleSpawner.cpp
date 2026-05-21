@@ -1,11 +1,36 @@
 // Copyright Beamable, Inc. All Rights Reserved.
 
 #include "Collectible/BeamFarmCollectibleSpawner.h"
-#include "Collectible/BeamFarmCollectibleActor.h"
-#include "Engine/World.h"
-#include "TimerManager.h"
-#include "AutoGen/SubSystems/BeamFarmMs/BeamFarmMsRegisterGroundItemRequest.h"
-#include "AutoGen/SubSystems/BeamFarmMs/BeamFarmMsCollectGroundItemRequest.h"
+#include "DrawDebugHelpers.h"
+#if WITH_EDITOR
+#include "Components/LineBatchComponent.h"
+#endif
+
+// ─── Editor box helper ────────────────────────────────────────────────────────
+
+#if WITH_EDITOR
+static void BatchDrawBox(ULineBatchComponent* Batch, FVector Center, FVector HalfExtent, FLinearColor Color, float Thickness = 2.f)
+{
+	const float X = HalfExtent.X, Y = HalfExtent.Y, Z = HalfExtent.Z;
+	const FVector C[8] = {
+		Center + FVector(-X, -Y, -Z), Center + FVector( X, -Y, -Z),
+		Center + FVector( X,  Y, -Z), Center + FVector(-X,  Y, -Z),
+		Center + FVector(-X, -Y,  Z), Center + FVector( X, -Y,  Z),
+		Center + FVector( X,  Y,  Z), Center + FVector(-X,  Y,  Z),
+	};
+	constexpr int32 Edges[12][2] = {
+		{0,1},{1,2},{2,3},{3,0},
+		{4,5},{5,6},{6,7},{7,4},
+		{0,4},{1,5},{2,6},{3,7},
+	};
+	for (const auto& E : Edges)
+	{
+		Batch->DrawLine(C[E[0]], C[E[1]], Color, 0, Thickness, -1.f);
+	}
+}
+#endif
+
+// ─── Constructor & lifecycle ──────────────────────────────────────────────────
 
 UFarmCollectibleSpawner::UFarmCollectibleSpawner()
 {
@@ -15,189 +40,237 @@ UFarmCollectibleSpawner::UFarmCollectibleSpawner()
 void UFarmCollectibleSpawner::BeginPlay()
 {
 	Super::BeginPlay();
-	StartSpawning();
-}
 
-void UFarmCollectibleSpawner::EndPlay(const EEndPlayReason::Type EndPlayReason)
-{
-	StopSpawning();
-	Super::EndPlay(EndPlayReason);
-}
+	if (SpawnerId.IsEmpty())
+	{
+		SpawnerId = FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphens);
+	}
 
-void UFarmCollectibleSpawner::StartSpawning()
-{
-	if (SpawnTransforms.IsEmpty() || !CollectibleClass)
+	UBeamFarmSubsystem* Sub = GetWorld()->GetGameInstance()->GetSubsystem<UBeamFarmSubsystem>();
+	if (!Sub)
 	{
 		return;
 	}
 
-	GetWorld()->GetTimerManager().SetTimer(
-		SpawnTimerHandle,
-		this,
-		&UFarmCollectibleSpawner::OnSpawnTimer,
-		SpawnIntervalSeconds,
-		true,
-		0.f  // fire immediately on start
-	);
+	Sub->RegisterSpawner(BuildConfig());
+
+	Sub->OnSpawnerCollectibleSpawned.AddDynamic(this, &UFarmCollectibleSpawner::HandleSubsystemCollectibleSpawned);
+	Sub->OnSpawnerCollectibleCollected.AddDynamic(this, &UFarmCollectibleSpawner::HandleSubsystemCollectibleCollected);
+
+	if (SpawnMode == EBeamFarmSpawnMode::WeightedZones && bDrawDebugZonesOnBeginPlay)
+	{
+		DrawDebugZones();
+	}
+}
+
+void UFarmCollectibleSpawner::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	UBeamFarmSubsystem* Sub = GetWorld()->GetGameInstance()->GetSubsystem<UBeamFarmSubsystem>();
+	if (Sub)
+	{
+		Sub->UnregisterSpawner(SpawnerId);
+		Sub->OnSpawnerCollectibleSpawned.RemoveDynamic(this, &UFarmCollectibleSpawner::HandleSubsystemCollectibleSpawned);
+		Sub->OnSpawnerCollectibleCollected.RemoveDynamic(this, &UFarmCollectibleSpawner::HandleSubsystemCollectibleCollected);
+	}
+
+	Super::EndPlay(EndPlayReason);
+}
+
+void UFarmCollectibleSpawner::OnRegister()
+{
+	Super::OnRegister();
+
+#if WITH_EDITOR
+	UWorld* World = GetWorld();
+	if (World && World->WorldType == EWorldType::Editor)
+	{
+		RebuildEditorVisualization();
+	}
+#endif
+}
+
+void UFarmCollectibleSpawner::OnUnregister()
+{
+#if WITH_EDITOR
+	if (IsValid(EditorLineBatch))
+	{
+		EditorLineBatch->DestroyComponent();
+		EditorLineBatch = nullptr;
+	}
+#endif
+	Super::OnUnregister();
+}
+
+#if WITH_EDITOR
+void UFarmCollectibleSpawner::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
+{
+	Super::PostEditChangeProperty(PropertyChangedEvent);
+
+	UWorld* World = GetWorld();
+	if (World && World->WorldType == EWorldType::Editor)
+	{
+		RebuildEditorVisualization();
+	}
+}
+
+void UFarmCollectibleSpawner::RebuildEditorVisualization()
+{
+	AActor* Owner = GetOwner();
+	if (!Owner)
+	{
+		return;
+	}
+
+	if (!IsValid(EditorLineBatch))
+	{
+		EditorLineBatch = NewObject<ULineBatchComponent>(Owner, NAME_None, RF_Transient);
+		EditorLineBatch->SetupAttachment(Owner->GetRootComponent());
+		EditorLineBatch->SetHiddenInGame(true);
+		EditorLineBatch->bIsEditorOnly = true;
+		EditorLineBatch->RegisterComponentWithWorld(GetWorld());
+	}
+	else
+	{
+		EditorLineBatch->Flush();
+	}
+
+	const float DrawZ = SpawnZ + 10.f;
+	const float BoxH  = 8.f;
+
+	if (SpawnZones.IsEmpty())
+	{
+		BatchDrawBox(EditorLineBatch,
+			FVector(BaseAreaCenter.X, BaseAreaCenter.Y, DrawZ),
+			FVector(BaseAreaHalfExtents.X, BaseAreaHalfExtents.Y, BoxH),
+			FLinearColor(0.2f, 0.4f, 1.f));
+	}
+
+	for (const FBeamFarmSpawnZone& Zone : SpawnZones)
+	{
+		const float T = FMath::Clamp(Zone.Weight / 5.f, 0.f, 1.f);
+		BatchDrawBox(EditorLineBatch,
+			FVector(Zone.Center.X, Zone.Center.Y, DrawZ),
+			FVector(Zone.HalfExtents.X, Zone.HalfExtents.Y, BoxH),
+			FLinearColor(0.f, 0.35f + 0.65f * T, 0.f));
+	}
+
+	for (const FBeamFarmExclusionZone& Zone : ExclusionZones)
+	{
+		BatchDrawBox(EditorLineBatch,
+			FVector(Zone.Center.X, Zone.Center.Y, DrawZ),
+			FVector(Zone.HalfExtents.X, Zone.HalfExtents.Y, BoxH),
+			FLinearColor::Red);
+	}
+}
+#endif
+
+// ─── Subsystem pass-through helpers ──────────────────────────────────────────
+
+void UFarmCollectibleSpawner::StartSpawning()
+{
+	UBeamFarmSubsystem* Sub = GetWorld()->GetGameInstance()->GetSubsystem<UBeamFarmSubsystem>();
+	if (Sub)
+	{
+		Sub->StartSpawner(SpawnerId);
+	}
 }
 
 void UFarmCollectibleSpawner::StopSpawning()
 {
-	if (GetWorld())
+	UBeamFarmSubsystem* Sub = GetWorld()->GetGameInstance()->GetSubsystem<UBeamFarmSubsystem>();
+	if (Sub)
 	{
-		GetWorld()->GetTimerManager().ClearTimer(SpawnTimerHandle);
+		Sub->StopSpawner(SpawnerId);
 	}
 }
 
 void UFarmCollectibleSpawner::SpawnCollectibleNow()
 {
-	if (!CollectibleClass || SpawnTransforms.IsEmpty())
+	UBeamFarmSubsystem* Sub = GetWorld()->GetGameInstance()->GetSubsystem<UBeamFarmSubsystem>();
+	if (Sub)
 	{
-		return;
-	}
-
-	// Find a spawn slot that isn't occupied by a live collectible.
-	const int32 SlotCount = SpawnTransforms.Num();
-	for (int32 Attempt = 0; Attempt < SlotCount; ++Attempt)
-	{
-		const int32 Index = (NextSpawnIndex + Attempt) % SlotCount;
-		const FTransform& SpawnT = SpawnTransforms[Index];
-
-		// Check if any active collectible is already at this slot (within 10 cm).
-		bool bSlotOccupied = false;
-		for (const ABeamFarmCollectibleActor* Existing : ActiveCollectibles)
-		{
-			if (IsValid(Existing) && FVector::Dist2D(Existing->GetActorLocation(), SpawnT.GetLocation()) < 10.f)
-			{
-				bSlotOccupied = true;
-				break;
-			}
-		}
-
-		if (bSlotOccupied)
-		{
-			continue;
-		}
-
-		FActorSpawnParameters Params;
-		Params.Owner = GetOwner();
-		Params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-
-		ABeamFarmCollectibleActor* Spawned = GetWorld()->SpawnActor<ABeamFarmCollectibleActor>(CollectibleClass, SpawnT, Params);
-		if (Spawned)
-		{
-			Spawned->ItemData = MaterialData;
-			Spawned->Quantity = QuantityPerCollectible;
-
-			const FString GroundItemId = FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphens);
-			Spawned->GroundItemId = GroundItemId;
-
-			Spawned->OnPickedUp.AddDynamic(this, &UFarmCollectibleSpawner::HandlePickedUp);
-			ActiveCollectibles.Add(Spawned);
-			NextSpawnIndex = (Index + 1) % SlotCount;
-
-			if (!BeamFarmMsApi)
-			{
-				BeamFarmMsApi = GEngine->GetEngineSubsystem<UBeamBeamFarmMsApi>();
-			}
-
-			if (BeamFarmMsApi)
-			{
-				auto* RegRequest = UBeamFarmMsRegisterGroundItemRequest::Make(
-					GroundItemId,
-					SeedMaterialContentId,
-					QuantityPerCollectible,
-					TEXT("RawMaterial"),
-					this,
-					{}
-				);
-				FBeamRequestContext RegContext;
-				TWeakObjectPtr<ABeamFarmCollectibleActor> WeakSpawned(Spawned);
-
-				BeamFarmMsApi->CPP_RegisterGroundItem(
-					FUserSlot{UserSlotName},
-					RegRequest,
-					FOnBeamFarmMsRegisterGroundItemFullResponse::CreateLambda(
-						[GroundItemId](FBeamFarmMsRegisterGroundItemFullResponse Response)
-						{
-							if (Response.State != RS_Success || !Response.SuccessData || !Response.SuccessData->bSuccess)
-							{
-								UE_LOG(LogTemp, Warning, TEXT("RegisterGroundItem failed for '%s': %s"),
-									*GroundItemId,
-									Response.State == RS_Error ? *Response.ErrorData.error : TEXT("unknown error"));
-							}
-						}),
-					RegContext,
-					FBeamOperationHandle(),
-					this
-				);
-			}
-
-			OnCollectibleSpawned(Spawned, SpawnT);
-		}
-		return;
+		Sub->SpawnCollectibleForSpawner(SpawnerId);
 	}
 }
 
-void UFarmCollectibleSpawner::OnSpawnTimer()
-{
-	// Remove any stale (destroyed) entries first.
-	ActiveCollectibles.RemoveAll([](const TObjectPtr<ABeamFarmCollectibleActor>& C) { return !IsValid(C); });
+// ─── Debug drawing ────────────────────────────────────────────────────────────
 
-	if (ActiveCollectibles.Num() >= MaxActiveCollectibles)
+void UFarmCollectibleSpawner::DrawDebugZones()
+{
+	UWorld* World = GetWorld();
+	if (!World)
 	{
 		return;
 	}
 
-	SpawnCollectibleNow();
+	const float DrawZ       = SpawnZ + 20.f;
+	const float BoxThick    = 3.f;
+	const float HalfHeight  = 10.f;
+
+	if (SpawnZones.IsEmpty())
+	{
+		const FVector Center(BaseAreaCenter.X, BaseAreaCenter.Y, DrawZ);
+		const FVector Extent(BaseAreaHalfExtents.X, BaseAreaHalfExtents.Y, HalfHeight);
+		DrawDebugBox(World, Center, Extent, FColor::Blue, false, DebugDrawDuration, 0, BoxThick);
+		DrawDebugString(World, Center + FVector(0, 0, HalfHeight + 5.f), TEXT("BASE AREA"), nullptr, FColor::Cyan, DebugDrawDuration);
+	}
+
+	for (const FBeamFarmSpawnZone& Zone : SpawnZones)
+	{
+		const FVector Center(Zone.Center.X, Zone.Center.Y, DrawZ);
+		const FVector Extent(Zone.HalfExtents.X, Zone.HalfExtents.Y, HalfHeight);
+		const uint8 G = (uint8)FMath::Clamp(FMath::RoundToInt(Zone.Weight * 60.f + 80.f), 80, 255);
+		DrawDebugBox(World, Center, Extent, FColor(0, G, 0), false, DebugDrawDuration, 0, BoxThick);
+		DrawDebugString(World, Center + FVector(0, 0, HalfHeight + 5.f),
+			FString::Printf(TEXT("W: %.1f"), Zone.Weight), nullptr, FColor::Green, DebugDrawDuration);
+	}
+
+	for (const FBeamFarmExclusionZone& Zone : ExclusionZones)
+	{
+		const FVector Center(Zone.Center.X, Zone.Center.Y, DrawZ);
+		const FVector Extent(Zone.HalfExtents.X, Zone.HalfExtents.Y, HalfHeight);
+		DrawDebugBox(World, Center, Extent, FColor::Red, false, DebugDrawDuration, 0, BoxThick);
+		DrawDebugString(World, Center + FVector(0, 0, HalfHeight + 5.f), TEXT("EXCL"), nullptr, FColor::Red, DebugDrawDuration);
+	}
 }
 
-void UFarmCollectibleSpawner::HandlePickedUp(ABeamFarmCollectibleActor* Collectible, APawn* Collector)
+// ─── Internal ─────────────────────────────────────────────────────────────────
+
+FBeamFarmSpawnConfig UFarmCollectibleSpawner::BuildConfig() const
 {
-	ActiveCollectibles.Remove(Collectible);
+	FBeamFarmSpawnConfig Config;
+	Config.SpawnerId           = SpawnerId;
+	Config.SpawnMode           = SpawnMode;
+	Config.CollectibleClass    = CollectibleClass;
+	Config.QuantityPerCollectible = QuantityPerCollectible;
+	Config.SpawnIntervalSeconds   = SpawnIntervalSeconds;
+	Config.MaxActiveCollectibles  = MaxActiveCollectibles;
+	Config.MaterialData           = MaterialData;
+	Config.SeedMaterialContentId  = SeedMaterialContentId;
+	Config.SpawnTransforms        = SpawnTransforms;
+	Config.PlantContentIds        = PlantContentIds;
+	Config.SpawnZones             = SpawnZones;
+	Config.ExclusionZones         = ExclusionZones;
+	Config.BaseAreaCenter         = BaseAreaCenter;
+	Config.BaseAreaHalfExtents    = BaseAreaHalfExtents;
+	Config.SpawnZ                 = SpawnZ;
+	Config.MinSpawnSeparation     = MinSpawnSeparation;
+	Config.MaxSpawnAttempts       = MaxSpawnAttempts;
+	return Config;
+}
 
-	const FString GroundItemId = Collectible->GroundItemId;
-	TWeakObjectPtr<APawn> WeakCollector(Collector);
-
-	if (!BeamFarmMsApi)
+void UFarmCollectibleSpawner::HandleSubsystemCollectibleSpawned(const FString& InSpawnerId, ABeamFarmCollectibleActor* Collectible, const FTransform& SpawnTransform)
+{
+	if (InSpawnerId == SpawnerId)
 	{
-		BeamFarmMsApi = GEngine->GetEngineSubsystem<UBeamBeamFarmMsApi>();
+		OnCollectibleSpawned(Collectible, SpawnTransform);
 	}
+}
 
-	if (BeamFarmMsApi && !GroundItemId.IsEmpty())
+void UFarmCollectibleSpawner::HandleSubsystemCollectibleCollected(const FString& InSpawnerId, APawn* Collector, const FBeamFarmCollectibleInfo& Info)
+{
+	if (InSpawnerId == SpawnerId)
 	{
-		auto* ColRequest = UBeamFarmMsCollectGroundItemRequest::Make(GroundItemId, this, {});
-		FBeamRequestContext ColContext;
-		TWeakObjectPtr<UFarmCollectibleSpawner> WeakThis(this);
-		const FBeamSeedData CapturedMaterial = MaterialData;
-		const int32 CapturedQty = QuantityPerCollectible;
-
-		BeamFarmMsApi->CPP_CollectGroundItem(
-			FUserSlot{UserSlotName},
-			ColRequest,
-			FOnBeamFarmMsCollectGroundItemFullResponse::CreateLambda(
-				[WeakThis, WeakCollector, CapturedMaterial, CapturedQty, GroundItemId](FBeamFarmMsCollectGroundItemFullResponse Response)
-				{
-					if (!WeakThis.IsValid()) return;
-					if (Response.State == RS_Success && Response.SuccessData && Response.SuccessData->bSuccess)
-					{
-						WeakThis->OnCollectibleCollected(nullptr, WeakCollector.Get(), CapturedMaterial, CapturedQty);
-					}
-					else
-					{
-						UE_LOG(LogTemp, Warning, TEXT("CollectGroundItem failed for '%s': %s — granting locally"),
-							*GroundItemId,
-							Response.State == RS_Error ? *Response.ErrorData.error : TEXT("unknown error"));
-						WeakThis->OnCollectibleCollected(nullptr, WeakCollector.Get(), CapturedMaterial, CapturedQty);
-					}
-				}),
-			ColContext,
-			FBeamOperationHandle(),
-			this
-		);
-	}
-	else
-	{
-		OnCollectibleCollected(Collectible, Collector, MaterialData, QuantityPerCollectible);
+		OnCollectibleCollected(Collector, Info);
 	}
 }

@@ -9,8 +9,6 @@
 #include "BeamSeedData.h"
 #include "BeamFarmInventoryWidget.generated.h"
 
-class UFarmingComponent;
-
 /**
  * Inventory panel widget for the BeamFarm demo.
  *
@@ -21,7 +19,7 @@ class UFarmingComponent;
  *   - Override OnTabSwitched to swap the visible item grid.
  *   - Override OnItemSelectionChanged to populate the item detail panel.
  *   - Override OnSendToLabRequested to forward the item to UBeamFarmMutationLabWidget.
- *   - Override OnPlantingSelectionRequested to call UFarmingComponent::SetSelectedCrop.
+ *   - Override OnPlantingSelectionRequested to call UBeamFarmSubsystem::SetSelectedCrop.
  *   - Call PopulateInventory() from the Beamable inventory delegate when item counts change.
  */
 UCLASS(Abstract, Blueprintable, BlueprintType)
@@ -73,7 +71,7 @@ public:
 	void RequestSendToLab(int32 QuantityToSend);
 
 	// Triggers planting selection for the currently selected crop.
-	// Blueprint should forward this to UFarmingComponent::SetSelectedCrop.
+	// Blueprint should forward this to UBeamFarmSubsystem::SetSelectedCrop.
 	UFUNCTION(BlueprintCallable, Category = "BeamFarm|Inventory")
 	void RequestSelectForPlanting();
 
@@ -98,7 +96,7 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, Category = "BeamFarm|Inventory")
 	void OnSendToLabRequested(const FBeamSeedData& Item, int32 Quantity);
 
-	// Override in Blueprint: call UFarmingComponent::SetSelectedCrop and close the inventory panel.
+	// Override in Blueprint: call UBeamFarmSubsystem::SetSelectedCrop and close the inventory panel.
 	UFUNCTION(BlueprintImplementableEvent, Category = "BeamFarm|Inventory")
 	void OnPlantingSelectionRequested(const FBeamSeedData& Item);
 

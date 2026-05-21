@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Interaction/BeamFarmInteractable.h"
-#include "BeamSeedData.h"
+#include "Farming/FarmTypes.h"
 #include "BeamFarmCollectibleActor.generated.h"
 
 class UCapsuleComponent;
@@ -18,11 +18,10 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnCollectiblePickedUp, ABeamFarmCo
  *
  * Spawned by UFarmCollectibleSpawner at designer-placed world locations.
  * When the player interacts with it, OnPickedUp fires, then the actor destroys itself.
- * The spawner listens to OnPickedUp and calls UFarmingComponent::OnItemsHarvested
- * (or equivalent) to add the material to the player's Beamable inventory.
+ * The spawner listens to OnPickedUp and calls CollectGroundItem via UBeamFarmSubsystem.
  *
  * Override OnCollected in Blueprint for pick-up particle/sound effects.
- * Assign ItemData.Icon to CropSpriteComp in the Blueprint subclass.
+ * Call SetItemInfo() after spawning — it stores item data and applies the correct sprite.
  */
 UCLASS(Blueprintable, BlueprintType)
 class BEAMPROJ_BEAMFARM_API ABeamFarmCollectibleActor : public AActor, public IBeamFarmInteractable
@@ -38,19 +37,19 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "BeamFarm|Collectible|Components")
 	TObjectPtr<UPaperSpriteComponent> SpriteComp;
 
-	// The seed this collectible awards when picked up.
-	// Set the ContentId to the plant.raw.material content ID of the seed.
+	// Unified item info set by the spawner at spawn time.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BeamFarm|Collectible")
-	FBeamSeedData ItemData;
+	FBeamFarmCollectibleInfo ItemInfo;
 
-	// How many units of ItemData the player receives on pick-up.
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BeamFarm|Collectible", meta = (ClampMin = "1"))
-	int32 Quantity = 1;
-
-	// Unique ID assigned by UFarmCollectibleSpawner at spawn time and sent to the microservice
+	// Unique ID assigned by the spawner at spawn time and sent to the microservice
 	// via RegisterGroundItem. CollectGroundItem reads it back when the player picks up the item.
 	UPROPERTY(BlueprintReadOnly, Category = "BeamFarm|Collectible")
 	FString GroundItemId;
+
+	// Set by UBeamFarmSubsystem at spawn time so HandleCollectiblePickedUp can route
+	// the pick-up event back to the correct spawner's delegate.
+	UPROPERTY(BlueprintReadOnly, Category = "BeamFarm|Collectible")
+	FString SpawnerId;
 
 	// Distance (cm) the character must be within before the pick-up triggers.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BeamFarm|Collectible")
@@ -60,6 +59,10 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "BeamFarm|Collectible")
 	FOnCollectiblePickedUp OnPickedUp;
 
+	// Stores ItemInfo and applies the appropriate sprite based on ItemInfo.ItemType.
+	UFUNCTION(BlueprintCallable, Category = "BeamFarm|Collectible")
+	void SetItemInfo(const FBeamFarmCollectibleInfo& Info);
+
 	// Override in Blueprint for collect VFX/SFX. Actor is destroyed after this returns.
 	UFUNCTION(BlueprintImplementableEvent, Category = "BeamFarm|Collectible")
 	void OnCollected(APawn* Collector);
@@ -68,4 +71,10 @@ public:
 	virtual FVector GetInteractionPoint_Implementation() const override;
 	virtual float GetInteractionRadius_Implementation() const override;
 	virtual void Interact_Implementation(APawn* InstigatorPawn) override;
+
+protected:
+	virtual void BeginPlay() override;
+
+private:
+	void ApplySprite();
 };

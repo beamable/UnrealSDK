@@ -24,6 +24,43 @@ ABeamFarmCollectibleActor::ABeamFarmCollectibleActor()
 	SpriteComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
+void ABeamFarmCollectibleActor::BeginPlay()
+{
+	Super::BeginPlay();
+	// Apply sprite for actors placed directly in the level with ItemInfo set in the Details panel.
+	ApplySprite();
+}
+
+void ABeamFarmCollectibleActor::SetItemInfo(const FBeamFarmCollectibleInfo& Info)
+{
+	ItemInfo = Info;
+	ApplySprite();
+}
+
+void ABeamFarmCollectibleActor::ApplySprite()
+{
+	UPaperSprite* Sprite = nullptr;
+
+	if (ItemInfo.ItemType == TEXT("PlantItem"))
+	{
+		if (!ItemInfo.PlantData.ReadyToHarvestSprite.IsNull())
+		{
+			Sprite = ItemInfo.PlantData.ReadyToHarvestSprite.LoadSynchronous();
+		}
+	}
+	else
+	{
+		// RawMaterial and any unrecognised type fall through to seed sprite.
+		if (!ItemInfo.SeedData.SeedSprite.IsNull())
+		{
+			Sprite = ItemInfo.SeedData.SeedSprite.LoadSynchronous();
+		}
+	}
+
+	SpriteComp->SetSprite(Sprite);
+	SpriteComp->SetVisibility(Sprite != nullptr);
+}
+
 FVector ABeamFarmCollectibleActor::GetInteractionPoint_Implementation() const
 {
 	return GetActorLocation();

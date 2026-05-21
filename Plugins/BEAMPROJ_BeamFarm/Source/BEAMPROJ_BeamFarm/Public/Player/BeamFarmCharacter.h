@@ -22,7 +22,6 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnBeamFarmMovementComplete);
  * Broadcasts OnMovementComplete when the destination is reached.
  *
  * Assign this class (or a Blueprint subclass) as the default pawn in your GameMode.
- * Attach UFarmingComponent to interact with farm slots.
  */
 UCLASS(Blueprintable, BlueprintType)
 class BEAMPROJ_BEAMFARM_API ABeamFarmCharacter : public ACharacter

@@ -27,7 +27,7 @@ class UBeamPlantContent;
  * Override OnHarvestFeedback for a pop/collect animation before the slot resets.
  *
  * Implements IBeamFarmInteractable — ABeamFarmPlayerController moves the character
- * within InteractionRadius before calling UFarmingComponent::InteractWithSlot().
+ * within InteractionRadius before calling UBeamFarmSubsystem::HandleSlotInteraction().
  * Clicking the slot still fires OnSlotClicked() immediately for visual feedback.
  */
 UCLASS(Blueprintable, BlueprintType)
@@ -76,13 +76,12 @@ public:
 	FOnFarmSlotStateChangedDelegate OnSlotStateChanged;
 
 	// Plants a seed and starts the grow timer. No-op if slot is not Empty.
-	// SeedData drives the grow time and growing visual.
-	// PlantData provides the ready-to-harvest visual (looked up by FarmingComponent).
+	// SeedData drives the grow time and growing visual; PlantData provides the ready-to-harvest visual.
 	UFUNCTION(BlueprintCallable, Category = "BeamFarm|Slot")
 	void PlantCrop(const FBeamSeedData& SeedData, const FBeamPlantData& PlantData);
 
 	// Resets the slot to Empty. Only valid when SlotState == ReadyToHarvest.
-	// Does NOT add items to inventory — UFarmingComponent::OnItemsHarvested handles that.
+	// Does NOT add items to inventory — UBeamFarmSubsystem::OnItemsHarvested broadcasts that.
 	UFUNCTION(BlueprintCallable, Category = "BeamFarm|Slot")
 	void Harvest();
 
@@ -116,6 +115,7 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 private:
 	FTimerHandle GrowTimerHandle;
@@ -129,4 +129,14 @@ private:
 
 	UFUNCTION()
 	void HandleActorClicked(AActor* TouchedActor, FKey ButtonPressed);
+
+	// Handlers for UBeamFarmSubsystem slot delegates — filtered by SlotId.
+	UFUNCTION()
+	void HandleSlotShouldPlant(const FString& InSlotId, const FBeamSeedData& SeedData, const FBeamPlantData& PlantData);
+
+	UFUNCTION()
+	void HandleSlotShouldHarvest(const FString& InSlotId);
+
+	UFUNCTION()
+	void HandleSlotShouldCancelPlant(const FString& InSlotId);
 };
