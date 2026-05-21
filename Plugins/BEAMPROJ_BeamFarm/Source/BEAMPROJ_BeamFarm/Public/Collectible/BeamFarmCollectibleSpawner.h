@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "BeamSeedData.h"
+#include "AutoGen/SubSystems/BeamBeamFarmMsApi.h"
 #include "BeamFarmCollectibleSpawner.generated.h"
 
 class ABeamFarmCollectibleActor;
@@ -39,6 +40,11 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BeamFarm|Spawner")
 	FBeamSeedData MaterialData;
 
+	// Beamable content ID of the raw material currency this spawner grants
+	// (e.g. "plant.raw.material.wheat"). Used by RegisterGroundItem on the server.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BeamFarm|Spawner")
+	FString SeedMaterialContentId;
+
 	// World-space transforms where collectibles may appear.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BeamFarm|Spawner")
 	TArray<FTransform> SpawnTransforms;
@@ -50,6 +56,11 @@ public:
 	// Maximum number of collectibles alive simultaneously from this spawner.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BeamFarm|Spawner", meta = (ClampMin = "1"))
 	int32 MaxActiveCollectibles = 5;
+
+	// Beamable user slot used for RegisterGroundItem / CollectGroundItem calls.
+	// Must match the UserSlotName on UFarmingComponent.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BeamFarm|Spawner")
+	FString UserSlotName = TEXT("Player0");
 
 	// Units of MaterialData granted per collectible.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BeamFarm|Spawner", meta = (ClampMin = "1"))
@@ -82,6 +93,9 @@ private:
 
 	UPROPERTY()
 	TArray<TObjectPtr<ABeamFarmCollectibleActor>> ActiveCollectibles;
+
+	UPROPERTY()
+	TObjectPtr<UBeamBeamFarmMsApi> BeamFarmMsApi;
 
 	UFUNCTION()
 	void OnSpawnTimer();

@@ -22,9 +22,6 @@ struct BEAMPROJ_BEAMFARM_API FBeamSeedData : public FBeamJsonSerializableUStruct
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BeamFarm|Seed")
-	FText ContentId;
-
 	// Display name shown in UI (e.g., "Wheat Seed", "Corn Seed")
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BeamFarm|Seed")
 	FText DisplayName;
@@ -117,5 +114,4 @@ struct BEAMPROJ_BEAMFARM_API FBeamSeedData : public FBeamJsonSerializableUStruct
 
 		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("HarvestItemContentId"), Bag, HarvestItemContentId);
 	}
-
 };

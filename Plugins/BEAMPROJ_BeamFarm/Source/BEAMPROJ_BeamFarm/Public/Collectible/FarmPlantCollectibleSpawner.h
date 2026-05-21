@@ -6,6 +6,7 @@
 #include "Components/ActorComponent.h"
 #include "BeamPlantData.h"
 #include "BeamBackend/SemanticTypes/BeamContentId.h"
+#include "AutoGen/SubSystems/BeamBeamFarmMsApi.h"
 #include "FarmPlantCollectibleSpawner.generated.h"
 
 class ABeamFarmPlantCollectibleActor;
@@ -103,6 +104,11 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BeamFarm|Spawner", meta = (ClampMin = "1"))
 	int32 MaxActiveCollectibles = 5;
 
+	// Beamable user slot used for RegisterGroundItem / CollectGroundItem calls.
+	// Must match the UserSlotName on UFarmingComponent.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BeamFarm|Spawner")
+	FString UserSlotName = TEXT("Player0");
+
 	// ── Spawn zones ────────────────────────────────────────────────────────
 
 	// Weighted rectangles where spawn candidates are drawn. If empty, BaseArea is used.
@@ -194,6 +200,9 @@ private:
 	UPROPERTY()
 	TObjectPtr<UBeamContentSubsystem> ContentSubsystem;
 
+	UPROPERTY()
+	TObjectPtr<UBeamBeamFarmMsApi> BeamFarmMsApi;
+
 	// Picks a random spawn point respecting zones, exclusions, and separation.
 	// Returns false if no valid point is found within MaxSpawnAttempts tries.
 	bool TryPickSpawnPoint(FVector& OutLocation);
@@ -203,7 +212,7 @@ private:
 
 	// Picks a random entry from PlantContentIds and resolves it via the content system.
 	// Tries every entry (starting at a random index) before returning false.
-	bool TryGetRandomPlantData(FBeamPlantData& OutData);
+	bool TryGetRandomPlantData(FBeamPlantData& OutData, FString& OutContentId);
 
 	UFUNCTION()
 	void OnSpawnTimer();

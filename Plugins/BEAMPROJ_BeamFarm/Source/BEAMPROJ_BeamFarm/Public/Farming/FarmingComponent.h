@@ -44,7 +44,7 @@ public:
 	FBeamSeedData SelectedCrop;
 
 	// Authoritative Beamable content ID string for the selected seed.
-	// Set by SetSelectedCropBySeedId (from content system) or falls back to SelectedCrop.ContentId.ToString().
+	// Set by SetSelectedCropBySeedId (from the content system).
 	// Use this as PlantRequest.seedContentId in the BeamFarmMsPlantSeed microservice call.
 	UPROPERTY(BlueprintReadOnly, Category = "BeamFarm|Farming")
 	FString SelectedCropContentId;

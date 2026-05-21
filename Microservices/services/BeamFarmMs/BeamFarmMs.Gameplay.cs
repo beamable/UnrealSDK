@@ -28,6 +28,14 @@ namespace Beamable.BeamFarmMs
         Radioactive
     }
 
+    public enum GroundItemType
+    {
+        /// <summary>Raw material currency (plant.raw.material.*) — granted via CurrencyChange.</summary>
+        RawMaterial,
+        /// <summary>Harvested plant item (itemplant.*) — granted via AddItem.</summary>
+        PlantItem
+    }
+
     // ══════════════════════════════════════════════════════════════════════════
     // DATA MODELS
     // ══════════════════════════════════════════════════════════════════════════
@@ -150,6 +158,40 @@ namespace Beamable.BeamFarmMs
 
     #endregion
 
+    #region Ground Collectible Models
+
+    [Serializable]
+    public class GroundItemData
+    {
+        public string contentId;
+        public int quantity;
+        public string itemType; // "RawMaterial" | "PlantItem"
+        public long spawnedAt;
+    }
+
+    [Serializable]
+    public class RegisterGroundItemResult
+    {
+        public bool success;
+        public string message;
+    }
+
+    [Serializable]
+    public class CollectGroundItemResult
+    {
+        public bool success;
+
+        /// <summary>Content ID that was granted to inventory.</summary>
+        public string grantedContentId;
+
+        /// <summary>How many units were granted.</summary>
+        public int grantedQuantity;
+
+        public string message;
+    }
+
+    #endregion
+
     // ══════════════════════════════════════════════════════════════════════════
     // MICROSERVICE IMPLEMENTATION
     // ══════════════════════════════════════════════════════════════════════════
@@ -165,6 +207,9 @@ namespace Beamable.BeamFarmMs
 
         /// <summary>Stat key for storing slot data as JSON.</summary>
         private static string SlotDataKey(string slotId) => $"farm_{slotId}_data";
+
+        /// <summary>Stat key for storing a registered ground item record as JSON.</summary>
+        private static string GroundItemKey(string groundItemId) => $"ground_item_{groundItemId}";
 
         // ──────────────────────────────────────────────────────────────────────
         // PLANTING
@@ -482,6 +527,153 @@ namespace Beamable.BeamFarmMs
         }
 
         // ──────────────────────────────────────────────────────────────────────
+        // GROUND COLLECTIBLES
+        // ──────────────────────────────────────────────────────────────────────
+
+        /// <summary>
+        /// Registers a collectible item when it appears in the world so the server can
+        /// later validate that the player collected a legitimate item and prevent duplication.
+        ///
+        /// Call this from the Blueprint implementations of:
+        ///   • UFarmCollectibleSpawner::OnCollectibleSpawned    (itemType = "RawMaterial")
+        ///   • UFarmPlantCollectibleSpawner::OnPlantCollectibleSpawned (itemType = "PlantItem")
+        ///
+        /// ═══ Unreal integration ═══════════════════════════════════════════
+        ///
+        ///   1. On spawn, generate a unique ID via the Blueprint MakeGuid node.
+        ///      Store it in a BlueprintReadWrite property on the collectible actor.
+        ///   2. Call BeamFarmMsRegisterGroundItem with:
+        ///        groundItemId  → the generated GUID string
+        ///        contentId     → MaterialData.ContentId  (seeds)  or  Plant.ContentId  (plants)
+        ///        quantity      → QuantityPerCollectible from the spawner component
+        ///        itemType      → "RawMaterial" for seeds | "PlantItem" for plants
+        ///   3. On failure, optionally destroy the collectible actor to keep the world in sync.
+        ///
+        /// NOTE: Run `dotnet beam generate` after modifying this file to regenerate
+        /// the Blueprint-callable BeamFarmMsRegisterGroundItem node.
+        /// ═════════════════════════════════════════════════════════════════════
+        /// </summary>
+        [ClientCallable]
+        public async Task<RegisterGroundItemResult> RegisterGroundItem(
+            string groundItemId, string contentId, int quantity, string itemType)
+        {
+            // ── Input validation ──────────────────────────────────────────────
+            if (string.IsNullOrWhiteSpace(groundItemId))
+                return RegGroundFail("groundItemId must not be empty.");
+
+            if (string.IsNullOrWhiteSpace(contentId))
+                return RegGroundFail("contentId must not be empty.");
+
+            if (quantity <= 0)
+                return RegGroundFail($"quantity must be positive (got {quantity}).");
+
+            if (itemType != nameof(GroundItemType.RawMaterial) && itemType != nameof(GroundItemType.PlantItem))
+                return RegGroundFail($"itemType must be '{nameof(GroundItemType.RawMaterial)}' or '{nameof(GroundItemType.PlantItem)}' (got '{itemType}').");
+
+            // ── Reject duplicate registrations ────────────────────────────────
+            var groundItemKey = GroundItemKey(groundItemId);
+            string existing = await GetSlotStat(groundItemKey);
+            if (!string.IsNullOrEmpty(existing))
+                return RegGroundFail($"Ground item '{groundItemId}' is already registered.");
+
+            // ── Persist the ground item record ────────────────────────────────
+            var data = new GroundItemData
+            {
+                contentId = contentId,
+                quantity  = quantity,
+                itemType  = itemType,
+                spawnedAt = DateTimeOffset.UtcNow.ToUnixTimeSeconds()
+            };
+
+            await SetSlotStat(groundItemKey,
+                Newtonsoft.Json.JsonConvert.SerializeObject(data));
+
+            return new RegisterGroundItemResult
+            {
+                success = true,
+                message = $"Registered ground item '{groundItemId}' ({contentId} x{quantity}, type={itemType})."
+            };
+        }
+
+        /// <summary>
+        /// Validates and fulfils a ground item collection, granting the item to the
+        /// player's Beamable inventory. Clears the registration record before granting
+        /// to prevent double-collection.
+        ///
+        /// Call this from the Blueprint implementations of:
+        ///   • UFarmCollectibleSpawner::OnCollectibleCollected
+        ///   • UFarmPlantCollectibleSpawner::OnPlantCollectibleCollected
+        ///
+        /// ═══ Unreal integration ═══════════════════════════════════════════
+        ///
+        ///   1. In OnCollectibleCollected / OnPlantCollectibleCollected, read the
+        ///      groundItemId from the collectible actor's BlueprintReadWrite property.
+        ///   2. Call BeamFarmMsCollectGroundItem with that groundItemId.
+        ///   3. On success, use CollectGroundItemResult.grantedContentId and
+        ///      grantedQuantity to update local UI. The Beamable SDK will also push
+        ///      an inventory update event automatically.
+        ///   4. On failure, log the message for debugging. Do NOT re-grant inventory
+        ///      client-side on failure.
+        ///
+        /// NOTE: Run `dotnet beam generate` after modifying this file to regenerate
+        /// the Blueprint-callable BeamFarmMsCollectGroundItem node.
+        /// ═════════════════════════════════════════════════════════════════════
+        /// </summary>
+        [ClientCallable]
+        public async Task<CollectGroundItemResult> CollectGroundItem(string groundItemId)
+        {
+            // ── Input validation ──────────────────────────────────────────────
+            if (string.IsNullOrWhiteSpace(groundItemId))
+                return CollectGroundFail("groundItemId must not be empty.");
+
+            // ── Load registration record ──────────────────────────────────────
+            string statKey = GroundItemKey(groundItemId);
+            string json    = await GetSlotStat(statKey);
+
+            if (string.IsNullOrEmpty(json))
+                return CollectGroundFail($"No registered ground item found for '{groundItemId}'. Was it already collected?");
+
+            // ── Parse record ──────────────────────────────────────────────────
+            GroundItemData data;
+            try
+            {
+                data = Newtonsoft.Json.JsonConvert.DeserializeObject<GroundItemData>(json);
+                if (data == null || string.IsNullOrEmpty(data.contentId))
+                    return CollectGroundFail("Corrupted ground item data — please contact support.");
+            }
+            catch
+            {
+                return CollectGroundFail("Corrupted ground item data — please contact support.");
+            }
+
+            // ── Clear first to prevent double-collection ──────────────────────
+            await SetSlotStat(statKey, string.Empty);
+
+            // ── Grant to inventory ────────────────────────────────────────────
+            var updateBuilder = new InventoryUpdateBuilder();
+
+            if (data.itemType == nameof(GroundItemType.RawMaterial))
+            {
+                updateBuilder.CurrencyChange(data.contentId, data.quantity);
+            }
+            else
+            {
+                for (int i = 0; i < data.quantity; i++)
+                    updateBuilder.AddItem(data.contentId, new Dictionary<string, string>());
+            }
+
+            await Services.Inventory.Update(updateBuilder);
+
+            return new CollectGroundItemResult
+            {
+                success          = true,
+                grantedContentId = data.contentId,
+                grantedQuantity  = data.quantity,
+                message          = $"Collected '{data.contentId}' x{data.quantity} from ground item '{groundItemId}'."
+            };
+        }
+
+        // ──────────────────────────────────────────────────────────────────────
         // STATS HELPERS
         // ──────────────────────────────────────────────────────────────────────
 
@@ -522,5 +714,11 @@ namespace Beamable.BeamFarmMs
 
         private static MutationResult MutateFail(string message) =>
             new MutationResult { success = false, outputs = new List<MutationOutput>(), message = message };
+
+        private static RegisterGroundItemResult RegGroundFail(string message) =>
+            new RegisterGroundItemResult { success = false, message = message };
+
+        private static CollectGroundItemResult CollectGroundFail(string message) =>
+            new CollectGroundItemResult { success = false, grantedContentId = string.Empty, grantedQuantity = 0, message = message };
     }
 }

@@ -19,9 +19,7 @@ UFarmingComponent::UFarmingComponent()
 void UFarmingComponent::SetSelectedCrop(const FBeamSeedData& SeedData)
 {
 	SelectedCrop = SeedData;
-	// Fallback: derive content ID from the seed data's ContentId field.
-	// SetSelectedCropBySeedId overrides this with the authoritative ID from the content system.
-	SelectedCropContentId = SeedData.ContentId.ToString();
+	SelectedCropContentId = TEXT("");
 	SetFarmingState(EFarmingInteractionState::Planting);
 }
 

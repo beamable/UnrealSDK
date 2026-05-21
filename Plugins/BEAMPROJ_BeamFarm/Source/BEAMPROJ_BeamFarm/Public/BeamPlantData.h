@@ -35,13 +35,7 @@ USTRUCT(BlueprintType)
 struct BEAMPROJ_BEAMFARM_API FBeamPlantData : public FBeamJsonSerializableUStruct
 {
 	GENERATED_BODY()
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BeamFarm|Plant")
-	FText ContentId;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BeamFarm|Plant")
-	FText Id;
-
+	
 	// Display name shown in UI (e.g., "Wheat", "Corn")
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BeamFarm|Plant")
 	FText DisplayName;

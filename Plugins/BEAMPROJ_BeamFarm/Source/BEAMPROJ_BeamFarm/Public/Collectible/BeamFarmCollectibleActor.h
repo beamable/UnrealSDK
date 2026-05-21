@@ -47,6 +47,11 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BeamFarm|Collectible", meta = (ClampMin = "1"))
 	int32 Quantity = 1;
 
+	// Unique ID assigned by UFarmCollectibleSpawner at spawn time and sent to the microservice
+	// via RegisterGroundItem. CollectGroundItem reads it back when the player picks up the item.
+	UPROPERTY(BlueprintReadOnly, Category = "BeamFarm|Collectible")
+	FString GroundItemId;
+
 	// Distance (cm) the character must be within before the pick-up triggers.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BeamFarm|Collectible")
 	float InteractionRadius = 100.f;
