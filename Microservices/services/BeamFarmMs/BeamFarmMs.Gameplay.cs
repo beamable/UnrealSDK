@@ -397,19 +397,7 @@ namespace Beamable.BeamFarmMs
             // ── Grant harvest item to inventory ───────────────────────────────
             var updateBuilder = new InventoryUpdateBuilder();
             
-            Dictionary<string, string> plantProperties = new Dictionary<string, string>();
-            
-            foreach (var property in Enum.GetNames(typeof(BeamFarmPlantPropertyType)))
-            {
-                // create a chance for the plant to have each property, e.g. 20% chance for each
-                bool hasProperty = new Random().NextDouble() < 0.2;
-                if (hasProperty)
-                {
-                    // add a value between 1 and 10 for this property
-                    int value = new Random().Next(1, 11);
-                    plantProperties[property] = value.ToString();
-                }
-            }
+            Dictionary<string, string> plantProperties = GeneratePlantProperties();
             
             updateBuilder.AddItem(slotData.harvestId, plantProperties);
             
@@ -659,7 +647,7 @@ namespace Beamable.BeamFarmMs
             else
             {
                 for (int i = 0; i < data.quantity; i++)
-                    updateBuilder.AddItem(data.contentId, new Dictionary<string, string>());
+                    updateBuilder.AddItem(data.contentId, GeneratePlantProperties());
             }
 
             await Services.Inventory.Update(updateBuilder);
@@ -700,6 +688,34 @@ namespace Beamable.BeamFarmMs
         private async Task SetSlotStat(string key, string value)
         {
             await Services.Stats.SetStat(StatsDomainType.Game, StatsAccessType.Private, Context.UserId, key, value);
+        }
+
+        // ──────────────────────────────────────────────────────────────────────
+        // PROPERTY GENERATION HELPERS
+        // ──────────────────────────────────────────────────────────────────────
+
+        /// <summary>
+        /// Generates random properties for a harvested plant.
+        /// Each property has a 20% chance to be assigned with a value between 1 and 10.
+        /// </summary>
+        private static Dictionary<string, string> GeneratePlantProperties()
+        {
+            var plantProperties = new Dictionary<string, string>();
+            var random = new Random();
+            
+            foreach (var property in Enum.GetNames(typeof(BeamFarmPlantPropertyType)))
+            {
+                // create a chance for the plant to have each property, e.g. 20% chance for each
+                bool hasProperty = random.NextDouble() < 0.2;
+                if (hasProperty)
+                {
+                    // add a value between 1 and 10 for this property
+                    int value = random.Next(1, 11);
+                    plantProperties[property] = value.ToString();
+                }
+            }
+            
+            return plantProperties;
         }
 
         // ──────────────────────────────────────────────────────────────────────
