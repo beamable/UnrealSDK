@@ -86,6 +86,11 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "BeamFarm|Slot")
 	void Harvest();
 
+	// Cancels an in-progress plant and reverts to Empty. Called when the server rejects PlantSeed.
+	// Only valid when SlotState == Growing.
+	UFUNCTION(BlueprintCallable, Category = "BeamFarm|Slot")
+	void CancelPlant();
+
 	// Returns grow progress in [0, 1]. Returns 1 if ReadyToHarvest, 0 if Empty.
 	UFUNCTION(BlueprintPure, Category = "BeamFarm|Slot")
 	float GetGrowProgress() const;

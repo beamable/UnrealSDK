@@ -73,6 +73,21 @@ void AFarmSlotActor::Harvest()
 	SetSlotState(EFarmSlotState::Empty);
 }
 
+void AFarmSlotActor::CancelPlant()
+{
+	if (SlotState != EFarmSlotState::Growing)
+	{
+		return;
+	}
+
+	GetWorldTimerManager().ClearTimer(GrowTimerHandle);
+	PlantedSeed = FBeamSeedData();
+	HarvestPlantData = FBeamPlantData();
+	PlantedTimestamp = 0.f;
+
+	SetSlotState(EFarmSlotState::Empty);
+}
+
 float AFarmSlotActor::GetGrowProgress() const
 {
 	if (SlotState == EFarmSlotState::Empty)

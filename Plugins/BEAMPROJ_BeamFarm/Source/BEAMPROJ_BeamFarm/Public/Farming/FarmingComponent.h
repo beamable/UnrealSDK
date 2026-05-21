@@ -98,8 +98,14 @@ public:
 	void OnNoCropSelected();
 
 	// Fired when the PlantSeed microservice call fails. Override to show error feedback.
+	// The slot visual is already reverted to Empty before this fires.
 	UFUNCTION(BlueprintImplementableEvent, Category = "BeamFarm|Farming")
 	void OnPlantFailed(const FString& SlotId, const FString& ErrorMessage);
+
+	// Fired when the player tries to plant but has no seeds of the selected type.
+	// Override to show a "not enough seeds" UI message.
+	UFUNCTION(BlueprintImplementableEvent, Category = "BeamFarm|Farming")
+	void OnInsufficientSeeds(const FString& SeedContentId);
 
 	// Fired when the CollectHarvest microservice call fails. Override to show error feedback.
 	UFUNCTION(BlueprintImplementableEvent, Category = "BeamFarm|Farming")

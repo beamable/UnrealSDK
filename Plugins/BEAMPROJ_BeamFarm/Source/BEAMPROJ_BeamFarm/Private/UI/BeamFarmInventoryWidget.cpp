@@ -51,7 +51,7 @@ void UBeamFarmInventoryWidget::RequestSendToLab(int32 QuantityToSend)
 
 void UBeamFarmInventoryWidget::RequestSelectForPlanting()
 {
-	if (!bHasSeedSelection)
+	if (!bHasSeedSelection || SelectedSeedItemQuantity <= 0)
 	{
 		return;
 	}

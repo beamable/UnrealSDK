@@ -153,12 +153,13 @@ void UFarmingComponent::InteractWithSlot(AFarmSlotActor* Slot)
 		auto* Request = UBeamFarmMsPlantSeedRequest::Make(SeedContentId, SlotId, this, TMap<FString, FString>{});
 		FBeamRequestContext RequestContext;
 		TWeakObjectPtr<UFarmingComponent> WeakThis(this);
+		TWeakObjectPtr<AFarmSlotActor> WeakSlot(Slot);
 
 		BeamFarmMsApi->CPP_PlantSeed(
 			FUserSlot{UserSlotName},
 			Request,
 			FOnBeamFarmMsPlantSeedFullResponse::CreateLambda(
-				[WeakThis, SeedContentId, SlotId](FBeamFarmMsPlantSeedFullResponse Response)
+				[WeakThis, WeakSlot, SeedContentId, SlotId](FBeamFarmMsPlantSeedFullResponse Response)
 				{
 					if (!WeakThis.IsValid()) return;
 					if (Response.State == RS_Success && Response.SuccessData && Response.SuccessData->bSuccess)
@@ -167,6 +168,10 @@ void UFarmingComponent::InteractWithSlot(AFarmSlotActor* Slot)
 					}
 					else
 					{
+						if (WeakSlot.IsValid())
+						{
+							WeakSlot->CancelPlant();
+						}
 						const FString ErrorMsg = (Response.State == RS_Error) ? Response.ErrorData.error : TEXT("PlantSeed failed");
 						WeakThis->OnPlantFailed(SlotId, ErrorMsg);
 					}

@@ -41,7 +41,8 @@ public class BEAMPROJ_BeamFarm : ModuleRules
 				"Slate",
 				"SlateCore", "AIModule", "NavigationSystem",
 				"BeamableCore", "BeamableCoreRuntime",
-				"UMG"
+				"UMG",
+				"BeamableUnrealMicroserviceClients"
 				// ... add private dependencies that you statically link with here ...
 			}
 		);
