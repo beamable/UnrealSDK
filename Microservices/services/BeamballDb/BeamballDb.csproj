@@ -8,7 +8,7 @@
             -->
     <BeamballDbDockerDataVolume>beamable_storage_BeamballDb_data</BeamballDbDockerDataVolume>
     <BeamballDbDockerFilesVolume>beamable_storage_BeamballDb_files</BeamballDbDockerFilesVolume>
-    <BeamEnabled>true</BeamEnabled>
+    <BeamEnabled>false</BeamEnabled>
   </PropertyGroup>
   <PropertyGroup Label="Dotnet Settings">
     <TargetFramework>net8.0</TargetFramework>

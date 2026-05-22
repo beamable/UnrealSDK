@@ -49,6 +49,17 @@ SourceArt/**/*.tga
 # Binary Files
 Binaries/*
 Plugins/**/Binaries/*
+!Plugins/BEAMPROJ_Beamball/Binaries/Mac/
+Plugins/BEAMPROJ_Beamball/Binaries/Mac/*
+!Plugins/BEAMPROJ_Beamball/Binaries/Mac/discord_game_sdk.dylib
+!Plugins/BEAMPROJ_Beamball/Binaries/Mac/discord_game_sdk.bundle
+!Plugins/BEAMPROJ_Beamball/Binaries/Mac/discord_game_sdk.so
+!Plugins/BEAMPROJ_Beamball/Binaries/Win64/
+Plugins/BEAMPROJ_Beamball/Binaries/Win64/*
+!Plugins/BEAMPROJ_Beamball/Binaries/Win64/discord_game_sdk.dll
+!Plugins/BEAMPROJ_Beamball/Binaries/Win64/discord_game_sdk.dll.lib
+!Plugins/BEAMPROJ_Beamball/Binaries/Win64/discord_game_sdk.bundle
+
 
 # Builds
 Build/*
@@ -96,7 +107,7 @@ Docs/.obsidian/**/*
 # doesn't fail for the directory not existing).
 !BeamableSource/DONT_MIND_ME.nupkg
 BeamProjOverride.txt
-Binaries/
+/Binaries/
 Build/
 Intermediate/
 Saved/
