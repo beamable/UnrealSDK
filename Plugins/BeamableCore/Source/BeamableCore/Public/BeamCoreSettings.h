@@ -10,7 +10,7 @@
 #include "BeamBackend/BeamRetryConfig.h"
 #include "BeamBackend/ResponseCache/BeamCacheConfig.h"
 #include "Content/BeamContentCacheSerializer.h"
-#include "Analytics/BeamAnalyticsEvent.h"
+#include "Analytics/BeamAnalyticsEventConfig.h"
 #include "BeamCoreSettings.generated.h"
 
 class UBeamContentCacheSerializer;
