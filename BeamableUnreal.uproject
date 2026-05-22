@@ -49,24 +49,16 @@
       "Enabled":false
     },
     {
-      "Name":"DiscordSDK",
-      "Enabled":false
-    },
-    {
       "Name":"BEAMPROJ_LiveOpsDemo",
       "Enabled":false
     },
     {
-      "Name":"BEAMPROJ_DiscordDemo",
-      "Enabled":false
-    },
-    {
       "Name":"BEAMPROJ_Beamball",
-      "Enabled":false
+      "Enabled":true
     },
     {
       "Name":"BEAMPROJ_BeamFarm",
-      "Enabled":true
+      "Enabled":false
     },
     {
       "Name":"OpenImageDenoise",

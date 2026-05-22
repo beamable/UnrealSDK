@@ -1293,9 +1293,15 @@ public:
 	// Notification Utilities
 public:
 	/**
-	 * Utility that can be used to subscribe to custom Notifications in an easier way than with UBeamNotifications::TrySubscribeForMessage.
-	 * @tparam THandler Type of the Notification Handler. Its signature should be "void (TMessage)".
-	 * @tparam TMessage Type of the message. A subtype of either IBeamJsonSerializableUObject (UMyType*) or FBeamJsonSerializableUStruct (FMyType). 
+	 * C++ entry point for subscribing to custom Beamable notifications routed by Context Key.
+	 * Blueprint authors should reach for the "Subscribe to Custom Notification" node (UK2BeamNode_SubscribeCustomNotification)
+	 * which is the ergonomic equivalent of this template — pick a message USTRUCT/UClass on the picker, wire OnReceived.
+	 *
+	 * @tparam THandler Type of the Notification Handler. Accepts any callable invocable as "void(TMessage)":
+	 *                  - Single-cast UE delegates (dispatched via ExecuteIfBound; ensures fire if the delegate isn't bound).
+	 *                  - Multicast UE delegates / dynamic multicast delegates (dispatched via Broadcast).
+	 *                  - Lambdas, function pointers, and other callables (dispatched via Invoke).
+	 * @tparam TMessage Type of the message. A subtype of either IBeamJsonSerializableUObject (UMyType*) or FBeamJsonSerializableUStruct (FMyType).
 	 * @param UserSlot The user that will be listening for this notification.
 	 * @param Key The Notification "context" key.
 	 * @param Handler An instance of THandler.
@@ -1304,14 +1310,26 @@ public:
 	template <typename THandler, typename TMessage>
 	FDelegateHandle SubscribeToCustomNotification(const FUserSlot& UserSlot, FString Key, THandler Handler)
 	{
+		UE_LOG(LogBeamNotifications, Verbose, TEXT("SubscribeToCustomNotification requested. SLOT=%s, CONTEXT=%s"), *UserSlot.Name, *Key);
+
 		FDelegateHandle Handle;
 		FBeamWebSocketHandle DefaultHandle;
 		if (GetDefaultNotificationChannel(UserSlot, DefaultHandle))
 		{
 			if (NotificationSystem->TrySubscribeForMessage<THandler, TMessage>(UserSlot, DefaultHandle.Id, Key, Handler, Handle, this))
 			{
+				UE_LOG(LogBeamNotifications, Verbose, TEXT("SubscribeToCustomNotification succeeded. SLOT=%s, SOCKET=%s, CONTEXT=%s"),
+				       *UserSlot.Name, *DefaultHandle.Id.ToString(), *Key);
 				return Handle;
 			}
+
+			UE_LOG(LogBeamNotifications, Warning, TEXT("SubscribeToCustomNotification: TrySubscribeForMessage failed. SLOT=%s, SOCKET=%s, CONTEXT=%s"),
+			       *UserSlot.Name, *DefaultHandle.Id.ToString(), *Key);
+		}
+		else
+		{
+			UE_LOG(LogBeamNotifications, Warning, TEXT("SubscribeToCustomNotification: no default notification channel for slot — is the user signed in? SLOT=%s, CONTEXT=%s"),
+			       *UserSlot.Name, *Key);
 		}
 
 		return {};
@@ -1326,11 +1344,45 @@ public:
 	 */
 	bool UnsubscribeToCustomNotification(const FUserSlot& UserSlot, FString Key, FDelegateHandle Handle)
 	{
+		UE_LOG(LogBeamNotifications, Verbose, TEXT("UnsubscribeToCustomNotification requested. SLOT=%s, CONTEXT=%s"), *UserSlot.Name, *Key);
+
 		FBeamWebSocketHandle DefaultHandle;
 		if (GetDefaultNotificationChannel(UserSlot, DefaultHandle))
-			return NotificationSystem->TryUnsubscribeFromMessage(UserSlot, DefaultNotificationChannel, Key, Handle, this);
+		{
+			const bool bRemoved = NotificationSystem->TryUnsubscribeFromMessage(UserSlot, DefaultNotificationChannel, Key, Handle, this);
+			UE_LOG(LogBeamNotifications, Verbose, TEXT("UnsubscribeToCustomNotification result. SLOT=%s, SOCKET=%s, CONTEXT=%s, REMOVED=%s"),
+			       *UserSlot.Name, *DefaultNotificationChannel.ToString(), *Key, bRemoved ? TEXT("true") : TEXT("false"));
+			return bRemoved;
+		}
+
+		UE_LOG(LogBeamNotifications, Warning, TEXT("UnsubscribeToCustomNotification: no default notification channel for slot. SLOT=%s, CONTEXT=%s"), *UserSlot.Name, *Key);
 		return false;
 	}
+
+	// ----------------------------------------------------------------------------------------------------------------
+	// Blueprint fast-path (powers UK2BeamNode_SubscribeCustomNotification / UK2BeamNode_UnsubscribeCustomNotification).
+	// Direct C++ callers should prefer the templated SubscribeToCustomNotification above — these reflection-driven
+	// variants exist to give Blueprint the same one-call ergonomics. NOT marked BlueprintCallable: only the K2Nodes
+	// know how to wire the wildcard-typed payload pin, so we hide the entry points from the BP palette.
+	// ----------------------------------------------------------------------------------------------------------------
+
+	/** BP fast-path subscribe for notifications carrying a USTRUCT payload. */
+	UFUNCTION(BlueprintInternalUseOnly, Category="Beam|Notifications", meta=(BlueprintInternalUseOnly="true"))
+	FBeamDelegateHandle SubscribeToCustomNotification_DynamicStruct(const FUserSlot& UserSlot, FString Key,
+	                                                                UScriptStruct* MessageType,
+	                                                                const FOnBeamCustomNotificationStructDynamic& Handler,
+	                                                                UObject* ContextObject);
+
+	/** BP fast-path subscribe for notifications carrying a UObject payload. */
+	UFUNCTION(BlueprintInternalUseOnly, Category="Beam|Notifications", meta=(BlueprintInternalUseOnly="true"))
+	FBeamDelegateHandle SubscribeToCustomNotification_DynamicObject(const FUserSlot& UserSlot, FString Key,
+	                                                                UClass* MessageClass,
+	                                                                const FOnBeamCustomNotificationObjectDynamic& Handler,
+	                                                                UObject* ContextObject);
+
+	/** BP fast-path unsubscribe. Drives UK2BeamNode_UnsubscribeCustomNotification; takes the FBeamDelegateHandle returned by Subscribe. */
+	UFUNCTION(BlueprintInternalUseOnly, Category="Beam|Notifications", meta=(BlueprintInternalUseOnly="true"))
+	bool UnsubscribeToCustomNotification_BP(const FUserSlot& UserSlot, FString Key, FBeamDelegateHandle Handle);
 
 private:
 	static TArray<TSharedRef<FJsonObject>> BuildEventParams(const TArray<TScriptInterface<IBeamJsonSerializableUObject>>& EventParams);

@@ -34,7 +34,6 @@ public class BeamableUnrealServerTarget : TargetRules
 		BeamableUnrealTarget.ConfigureIfBeamball(this, samplePluginName);
 		BeamableUnrealTarget.ConfigureIfBeamFarm(this, samplePluginName);
 		BeamableUnrealTarget.ConfigureIfLiveOpsDemo(this, samplePluginName);
-		BeamableUnrealTarget.ConfigureIfDiscordDemo(this, samplePluginName);
 
 	}
 }

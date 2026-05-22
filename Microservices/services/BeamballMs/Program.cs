@@ -22,7 +22,8 @@ namespace Beamable.BeamballMs
 				await Task.WhenAll(new[]
 				{
 					BeamballMs.InitializeSteam(scope),
-					BeamballMs.InitializeEos(scope)
+					BeamballMs.InitializeEos(scope),
+					BeamballMs.InitializeDiscord(scope)
 				});
 			});
 			

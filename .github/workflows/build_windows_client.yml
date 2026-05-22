@@ -75,13 +75,6 @@ jobs:
               - '**.ps1'
               - 'Source/**'
               - '*.uproject'
-            BEAMPROJ_DiscordDemo:            
-              - 'Plugins/BEAMPROJ_DiscordDemo/**'
-              - 'Plugins/BeamableCore/**'
-              - '**.sh'
-              - '**.ps1'
-              - 'Source/**'
-              - '*.uproject'
             BEAMPROJ_HathoraDemo:            
               - 'Plugins/BEAMPROJ_HathoraDemo/**'
               - 'Plugins/BeamableCore/**'

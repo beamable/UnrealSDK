@@ -306,3 +306,174 @@ void UBeamNotifications::Reconnect(FBeamWebSocketHandle Value)
 		}
 	}
 }
+
+bool UBeamNotifications::TrySubscribeForMessage_DynamicStruct(
+	const FUserSlot& Slot, const FName& SocketName, const FString& ContextKey,
+	UScriptStruct* MessageStruct, const FOnBeamCustomNotificationStructDynamic& Handler,
+	FDelegateHandle& OutHandle, UObject* ContextObject)
+{
+	if (!MessageStruct)
+	{
+		UE_LOG(LogBeamNotifications, Warning, TEXT("TrySubscribeForMessage_DynamicStruct: MessageStruct is null. SLOT=%s, CONTEXT=%s"),
+		       *Slot.Name, *ContextKey);
+		return false;
+	}
+	if (!MessageStruct->IsChildOf(FBeamJsonSerializableUStruct::StaticStruct()))
+	{
+		UE_LOG(LogBeamNotifications, Warning, TEXT("TrySubscribeForMessage_DynamicStruct: %s does not derive from FBeamJsonSerializableUStruct. SLOT=%s, CONTEXT=%s"),
+		       *MessageStruct->GetName(), *Slot.Name, *ContextKey);
+		return false;
+	}
+
+	const FString NamespacedSlot = UBeamUserSlots::GetNamespacedSlotId(Slot, ContextObject);
+	if (!OpenSockets.Contains(NamespacedSlot) || !OpenSockets.FindChecked(NamespacedSlot).Contains(SocketName))
+	{
+		UE_LOG(LogBeamNotifications, Warning, TEXT("TrySubscribeForMessage_DynamicStruct: socket not open. SLOT=%s, SOCKET=%s, CONTEXT=%s"),
+		       *Slot.Name, *SocketName.ToString(), *ContextKey);
+		return false;
+	}
+
+	UE_LOG(LogBeamNotifications, Verbose, TEXT("Subscribing dynamic-struct notification handler. SLOT=%s, SOCKET=%s, CONTEXT=%s, MSG_TYPE=%s"),
+	       *Slot.Name, *SocketName.ToString(), *ContextKey, *MessageStruct->GetName());
+
+	const FOnNotificationEvent EventHandler = FOnNotificationEvent::CreateLambda(
+		[Slot, SocketName, ContextKey, MessageStruct, Handler](FNotificationEvent Evt) mutable
+		{
+			ensureAlways(Evt.EventType == BEAM_Message);
+			ensureAlways(Evt.MessageData.Context.Equals(ContextKey));
+
+			UE_LOG(LogBeamNotifications, Verbose, TEXT("Notification received (dynamic-struct). SLOT=%s, SOCKET=%s, CONTEXT=%s, MSG_TYPE=%s, PAYLOAD=%s"),
+			       *Slot.Name, *SocketName.ToString(), *ContextKey, *MessageStruct->GetName(), *Evt.MessageData.MessageFull);
+
+			const int32 Size = MessageStruct->GetStructureSize();
+			const int32 Align = MessageStruct->GetMinAlignment();
+			void* Buffer = FMemory_Alloca_Aligned(Size, Align);
+			MessageStruct->InitializeStruct(Buffer);
+
+			// Single-inheritance USTRUCT layout guarantees the FBeamJsonSerializableUStruct subobject sits at offset 0.
+			FBeamJsonSerializableUStruct* AsBase = reinterpret_cast<FBeamJsonSerializableUStruct*>(Buffer);
+			AsBase->OuterOwner = GetTransientPackage();
+			AsBase->BeamDeserialize(Evt.MessageData.MessageFull);
+
+			FBeamCustomNotificationStructPayload Payload;
+			Payload.Type = MessageStruct;
+			Payload.Data = Buffer;
+			const bool bDidRun = Handler.ExecuteIfBound(Payload, ContextKey);
+			ensureAlwaysMsgf(bDidRun, TEXT("BP dynamic-struct notification handler was not bound. SLOT=%s, SOCKET=%s, CONTEXT=%s"),
+			                 *Slot.Name, *SocketName.ToString(), *ContextKey);
+			UE_LOG(LogBeamNotifications, Verbose, TEXT("Dispatched dynamic-struct via ExecuteIfBound. SLOT=%s, CONTEXT=%s, BOUND=%s"),
+			       *Slot.Name, *ContextKey, bDidRun ? TEXT("true") : TEXT("false"));
+
+			MessageStruct->DestroyStruct(Buffer);
+		});
+
+	OutHandle = EventHandler.GetHandle();
+	MessageEventHandlers.Add(FBeamWebSocketHandle(NamespacedSlot, SocketName, this),
+	                         FNotificationMessageEventHandler{ContextKey, EventHandler});
+	return true;
+}
+
+bool UBeamNotifications::TrySubscribeForMessage_DynamicObject(
+	const FUserSlot& Slot, const FName& SocketName, const FString& ContextKey,
+	UClass* MessageClass, const FOnBeamCustomNotificationObjectDynamic& Handler,
+	FDelegateHandle& OutHandle, UObject* ContextObject)
+{
+	if (!MessageClass)
+	{
+		UE_LOG(LogBeamNotifications, Warning, TEXT("TrySubscribeForMessage_DynamicObject: MessageClass is null. SLOT=%s, CONTEXT=%s"),
+		       *Slot.Name, *ContextKey);
+		return false;
+	}
+	if (!MessageClass->ImplementsInterface(UBeamJsonSerializableUObject::StaticClass()))
+	{
+		UE_LOG(LogBeamNotifications, Warning, TEXT("TrySubscribeForMessage_DynamicObject: %s does not implement IBeamJsonSerializableUObject. SLOT=%s, CONTEXT=%s"),
+		       *MessageClass->GetName(), *Slot.Name, *ContextKey);
+		return false;
+	}
+
+	const FString NamespacedSlot = UBeamUserSlots::GetNamespacedSlotId(Slot, ContextObject);
+	if (!OpenSockets.Contains(NamespacedSlot) || !OpenSockets.FindChecked(NamespacedSlot).Contains(SocketName))
+	{
+		UE_LOG(LogBeamNotifications, Warning, TEXT("TrySubscribeForMessage_DynamicObject: socket not open. SLOT=%s, SOCKET=%s, CONTEXT=%s"),
+		       *Slot.Name, *SocketName.ToString(), *ContextKey);
+		return false;
+	}
+
+	UE_LOG(LogBeamNotifications, Verbose, TEXT("Subscribing dynamic-object notification handler. SLOT=%s, SOCKET=%s, CONTEXT=%s, MSG_CLASS=%s"),
+	       *Slot.Name, *SocketName.ToString(), *ContextKey, *MessageClass->GetName());
+
+	const FOnNotificationEvent EventHandler = FOnNotificationEvent::CreateLambda(
+		[Slot, SocketName, ContextKey, MessageClass, Handler](FNotificationEvent Evt) mutable
+		{
+			ensureAlways(Evt.EventType == BEAM_Message);
+			ensureAlways(Evt.MessageData.Context.Equals(ContextKey));
+
+			UE_LOG(LogBeamNotifications, Verbose, TEXT("Notification received (dynamic-object). SLOT=%s, SOCKET=%s, CONTEXT=%s, MSG_CLASS=%s, PAYLOAD=%s"),
+			       *Slot.Name, *SocketName.ToString(), *ContextKey, *MessageClass->GetName(), *Evt.MessageData.MessageFull);
+
+			UObject* MsgObject = NewObject<UObject>(GetTransientPackage(), MessageClass);
+			IBeamJsonSerializableUObject* AsInterface = Cast<IBeamJsonSerializableUObject>(MsgObject);
+			if (!AsInterface)
+			{
+				UE_LOG(LogBeamNotifications, Error, TEXT("Dynamic-object dispatch: %s reports it implements IBeamJsonSerializableUObject but Cast<> failed. SLOT=%s, CONTEXT=%s"),
+				       *MessageClass->GetName(), *Slot.Name, *ContextKey);
+				return;
+			}
+			AsInterface->OuterOwner = GetTransientPackage();
+			AsInterface->BeamDeserialize(Evt.MessageData.MessageFull);
+
+			const bool bDidRun = Handler.ExecuteIfBound(MsgObject, ContextKey);
+			ensureAlwaysMsgf(bDidRun, TEXT("BP dynamic-object notification handler was not bound. SLOT=%s, SOCKET=%s, CONTEXT=%s"),
+			                 *Slot.Name, *SocketName.ToString(), *ContextKey);
+			UE_LOG(LogBeamNotifications, Verbose, TEXT("Dispatched dynamic-object via ExecuteIfBound. SLOT=%s, CONTEXT=%s, BOUND=%s"),
+			       *Slot.Name, *ContextKey, bDidRun ? TEXT("true") : TEXT("false"));
+		});
+
+	OutHandle = EventHandler.GetHandle();
+	MessageEventHandlers.Add(FBeamWebSocketHandle(NamespacedSlot, SocketName, this),
+	                         FNotificationMessageEventHandler{ContextKey, EventHandler});
+	return true;
+}
+
+void UBeamNotifications::K2_CopyNotificationStructPayload(const FBeamCustomNotificationStructPayload& Payload, int32& OutMessage)
+{
+	// Stub — never called directly. The CustomThunk below is what actually runs from BP-generated code.
+	checkNoEntry();
+}
+
+DEFINE_FUNCTION(UBeamNotifications::execK2_CopyNotificationStructPayload)
+{
+	P_GET_STRUCT_REF(FBeamCustomNotificationStructPayload, Payload);
+
+	// Pull the wildcard struct reference off the BP VM stack.
+	Stack.MostRecentPropertyAddress = nullptr;
+	Stack.MostRecentProperty = nullptr;
+	Stack.StepCompiledIn<FStructProperty>(nullptr);
+	void* DestAddr = Stack.MostRecentPropertyAddress;
+	const FStructProperty* DestProp = CastField<FStructProperty>(Stack.MostRecentProperty);
+
+	P_FINISH;
+
+	if (!DestProp || !DestAddr)
+	{
+		UE_LOG(LogBeamNotifications, Warning, TEXT("K2_CopyNotificationStructPayload: wildcard pin is not a struct or unbound."));
+		return;
+	}
+	if (Payload.Type == nullptr || Payload.Data == nullptr)
+	{
+		UE_LOG(LogBeamNotifications, Warning, TEXT("K2_CopyNotificationStructPayload: payload is empty (Type or Data null)."));
+		DestProp->Struct->ClearScriptStruct(DestAddr);
+		return;
+	}
+	if (DestProp->Struct != Payload.Type)
+	{
+		UE_LOG(LogBeamNotifications, Warning, TEXT("K2_CopyNotificationStructPayload: pin type %s does not match payload type %s — clearing pin."),
+		       *DestProp->Struct->GetName(), *Payload.Type->GetName());
+		DestProp->Struct->ClearScriptStruct(DestAddr);
+		return;
+	}
+
+	P_NATIVE_BEGIN;
+	Payload.Type->CopyScriptStruct(DestAddr, Payload.Data);
+	P_NATIVE_END;
+}
