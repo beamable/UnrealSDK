@@ -6,6 +6,8 @@
 #include "Engine/DataTable.h"
 #include "BeamSeedData.h"
 #include "BeamPlantData.h"
+#include "Serialization/BeamJsonSerializable.h"
+#include "Serialization/BeamJsonUtils.h"
 #include "FarmTypes.generated.h"
 
 class UPaperSprite;
@@ -120,6 +122,7 @@ enum class EBeamFarmBuildingType : uint8
 	MutationLab UMETA(DisplayName = "Mutation Lab"),
 	Shop        UMETA(DisplayName = "Shop"),
 	Upgrades    UMETA(DisplayName = "Upgrades"),
+	Delivery    UMETA(DisplayName = "Delivery"),
 };
 
 UENUM(BlueprintType)
@@ -194,6 +197,83 @@ struct BEAMPROJ_BEAMFARM_API FBeamFarmCollectibleInfo
 	// "RawMaterial" or "PlantItem"
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BeamFarm|Collectible")
 	FString ItemType;
+};
+
+// ─── Delivery system ───────────────────────────────────────────────────────────────────────────
+
+// How a delivery requirement compares an item property value against a threshold.
+// Values use BEAM_ prefix so EnumToSerializationName produces "GreaterThan"/"LowerThan".
+UENUM(BlueprintType)
+enum class EBeamDeliveryComparison : uint8
+{
+	BEAM_GreaterThan UMETA(DisplayName = "Greater Than"),
+	BEAM_LowerThan   UMETA(DisplayName = "Lower Than"),
+};
+
+// A single property rule an item must satisfy to fulfil a delivery order.
+// Maps to DeliveryRequirement in BeamFarmMs.Delivery.cs.
+USTRUCT(BlueprintType)
+struct BEAMPROJ_BEAMFARM_API FBeamDeliveryRequirement : public FBeamJsonSerializableUStruct
+{
+	GENERATED_BODY()
+
+	// Property name to inspect — must match EBeamFarmPropertyType names
+	// (e.g. "Corrosive", "Mutagenic", "Radioactive").
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BeamFarm|Delivery")
+	FString PropertyName;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BeamFarm|Delivery")
+	EBeamDeliveryComparison Comparison = EBeamDeliveryComparison::BEAM_GreaterThan;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BeamFarm|Delivery")
+	int32 Value = 0;
+
+	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
+	{
+		Serializer->WriteValue(TEXT("PropertyName"), PropertyName);
+		const FString CompStr = UBeamJsonUtils::EnumToSerializationName<EBeamDeliveryComparison>(Comparison);
+		Serializer->WriteValue(TEXT("Comparison"), CompStr);
+		Serializer->WriteValue(TEXT("Value"), Value);
+	}
+
+	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
+	{
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("PropertyName"), Bag, PropertyName);
+		FString CompStr;
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("Comparison"), Bag, CompStr);
+		Comparison = UBeamJsonUtils::SerializationNameToEnum<EBeamDeliveryComparison>(CompStr);
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("Value"), Bag, Value);
+	}
+};
+
+// Full description of an active delivery order, populated from server response.
+// Passed through OnDeliveryOrdersReceived and displayed by UBeamFarmDeliveryWidget.
+USTRUCT(BlueprintType)
+struct BEAMPROJ_BEAMFARM_API FBeamDeliveryOrderInfo
+{
+	GENERATED_BODY()
+
+	// Content ID of the delivery_order.* content that generated this slot.
+	UPROPERTY(BlueprintReadWrite, Category = "BeamFarm|Delivery")
+	FString OrderId;
+
+	UPROPERTY(BlueprintReadWrite, Category = "BeamFarm|Delivery")
+	FString DisplayName;
+
+	// Content ID of the plant item type that must be delivered (itemplant.*).
+	UPROPERTY(BlueprintReadWrite, Category = "BeamFarm|Delivery")
+	FString RequiredItemContentId;
+
+	// Property rules the delivered item instance must satisfy.
+	UPROPERTY(BlueprintReadWrite, Category = "BeamFarm|Delivery")
+	TArray<FBeamDeliveryRequirement> Requirements;
+
+	// Beamable currency content ID rewarded on delivery (e.g. "currency.crystals").
+	UPROPERTY(BlueprintReadWrite, Category = "BeamFarm|Delivery")
+	FString RewardCurrencyId;
+
+	UPROPERTY(BlueprintReadWrite, Category = "BeamFarm|Delivery")
+	int32 RewardAmount = 0;
 };
 
 // ─── Slot interaction request ──────────────────────────────────────────────────────────────────

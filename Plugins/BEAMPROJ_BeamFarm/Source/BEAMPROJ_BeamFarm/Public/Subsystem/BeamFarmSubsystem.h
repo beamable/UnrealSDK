@@ -23,6 +23,23 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnBeamFarmMutationCompleted,
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnBeamFarmMutationFailed, const FString&, Error);
 
+// ─── Delivery delegates ───────────────────────────────────────────────────────
+
+// Fired when GetDeliveryOrders completes — carries the full list of active orders.
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnBeamFarmDeliveryOrdersReceived,
+	const TArray<FBeamDeliveryOrderInfo>&, Orders);
+
+// Fired when DeliverOrder completes successfully.
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnBeamFarmDeliveryCompleted,
+	const FString&, OrderId,
+	const FString&, RewardCurrencyId,
+	int32, RewardAmount);
+
+// Fired when DeliverOrder or GetDeliveryOrders fails.
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnBeamFarmDeliveryFailed,
+	const FString&, OrderId,
+	const FString&, ErrorMessage);
+
 // ─── Slot interaction delegates (AFarmSlotActor subscribes to these) ──────────
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnBeamFarmSlotShouldPlant,
@@ -261,6 +278,33 @@ public:
 
 	UPROPERTY(BlueprintAssignable, Category = "BeamFarm")
 	FOnBeamFarmMutationFailed OnMutationFailed;
+
+	// ─── Delivery ───────────────────────────────────────────────────────────
+
+	// Fetches the player's active delivery orders from the server, auto-filling up
+	// to MaxActiveOrders if needed. Broadcasts OnDeliveryOrdersReceived on completion.
+	UFUNCTION(BlueprintCallable, Category = "BeamFarm|Delivery")
+	void GetDeliveryOrders();
+
+	// Explicitly asks the server to fill the player's delivery order slots up to
+	// MaxActiveOrders. Useful on first login or after consuming orders rapidly.
+	UFUNCTION(BlueprintCallable, Category = "BeamFarm|Delivery")
+	void FillDeliveryOrders();
+
+	// Attempts to fulfil the given order using the specified inventory item instance.
+	// ItemInstanceId is the Beamable item instance ID (int64) obtained from the
+	// player's inventory. Broadcasts OnDeliveryCompleted or OnDeliveryFailed.
+	UFUNCTION(BlueprintCallable, Category = "BeamFarm|Delivery")
+	void DeliverOrder(const FString& OrderId, int64 ItemInstanceId);
+
+	UPROPERTY(BlueprintAssignable, Category = "BeamFarm|Delivery")
+	FOnBeamFarmDeliveryOrdersReceived OnDeliveryOrdersReceived;
+
+	UPROPERTY(BlueprintAssignable, Category = "BeamFarm|Delivery")
+	FOnBeamFarmDeliveryCompleted OnDeliveryCompleted;
+
+	UPROPERTY(BlueprintAssignable, Category = "BeamFarm|Delivery")
+	FOnBeamFarmDeliveryFailed OnDeliveryFailed;
 
 private:
 	UPROPERTY()

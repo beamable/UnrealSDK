@@ -10,9 +10,14 @@
 #include "AutoGen/SubSystems/BeamFarmMs/BeamFarmMsRegisterGroundItemRequest.h"
 #include "AutoGen/SubSystems/BeamFarmMs/BeamFarmMsCollectGroundItemRequest.h"
 #include "AutoGen/SubSystems/BeamFarmMs/BeamFarmMsMutateRequest.h"
+#include "AutoGen/SubSystems/BeamFarmMs/BeamFarmMsGetDeliveryOrdersRequest.h"
+#include "AutoGen/SubSystems/BeamFarmMs/BeamFarmMsFillDeliveryOrdersRequest.h"
+#include "AutoGen/SubSystems/BeamFarmMs/BeamFarmMsDeliverOrderRequest.h"
 #include "AutoGen/MutationInput.h"
 #include "AutoGen/MutationResult.h"
 #include "AutoGen/MutationOutput.h"
+#include "AutoGen/DeliveryOrderInfo.h"
+#include "AutoGen/DeliveryRequirement.h"
 #include "Engine/Engine.h"
 
 UBeamBeamFarmMsApi* UBeamFarmSubsystem::GetApi()
@@ -703,6 +708,146 @@ void UBeamFarmSubsystem::HandleCollectiblePickedUp(ABeamFarmCollectibleActor* Co
 	{
 		OnSpawnerCollectibleCollected.Broadcast(SpawnerId, Collector, Info);
 	}
+}
+
+// ─── Delivery ────────────────────────────────────────────────────────────────
+
+void UBeamFarmSubsystem::GetDeliveryOrders()
+{
+	UBeamBeamFarmMsApi* Api = GetApi();
+	if (!Api)
+	{
+		OnDeliveryOrdersReceived.Broadcast(TArray<FBeamDeliveryOrderInfo>{});
+		return;
+	}
+
+	auto* Request = UBeamFarmMsGetDeliveryOrdersRequest::Make(this, {});
+	FBeamRequestContext RequestContext;
+	TWeakObjectPtr<UBeamFarmSubsystem> WeakThis(this);
+
+	Api->CPP_GetDeliveryOrders(
+		FUserSlot{UserSlotName},
+		Request,
+		FOnBeamFarmMsGetDeliveryOrdersFullResponse::CreateLambda(
+			[WeakThis](FBeamFarmMsGetDeliveryOrdersFullResponse Response)
+			{
+				if (!WeakThis.IsValid()) return;
+
+				if (Response.State == RS_Success && Response.SuccessData && Response.SuccessData->bSuccess)
+				{
+					TArray<FBeamDeliveryOrderInfo> Orders;
+					for (const UDeliveryOrderInfo* Info : Response.SuccessData->Orders)
+					{
+						if (!Info) continue;
+
+						FBeamDeliveryOrderInfo Order;
+						Order.OrderId                = Info->OrderId;
+						Order.DisplayName            = Info->DisplayName;
+						Order.RequiredItemContentId  = Info->RequiredItemContentId;
+						Order.RewardCurrencyId       = Info->RewardCurrencyId;
+						Order.RewardAmount           = Info->RewardAmount;
+
+						for (const UDeliveryRequirement* Req : Info->Requirements)
+						{
+							if (!Req) continue;
+							FBeamDeliveryRequirement Requirement;
+							Requirement.PropertyName = Req->PropertyName;
+							Requirement.Comparison   = Req->Comparison == TEXT("GreaterThan")
+								? EBeamDeliveryComparison::BEAM_GreaterThan
+								: EBeamDeliveryComparison::BEAM_LowerThan;
+							Requirement.Value        = Req->Value;
+							Order.Requirements.Add(Requirement);
+						}
+
+						Orders.Add(Order);
+					}
+					WeakThis->OnDeliveryOrdersReceived.Broadcast(Orders);
+				}
+				else
+				{
+					const FString Err = (Response.State == RS_Error) ? Response.ErrorData.error : TEXT("GetDeliveryOrders failed");
+					UE_LOG(LogTemp, Warning, TEXT("UBeamFarmSubsystem::GetDeliveryOrders failed: %s"), *Err);
+					WeakThis->OnDeliveryOrdersReceived.Broadcast(TArray<FBeamDeliveryOrderInfo>{});
+				}
+			}),
+		RequestContext,
+		FBeamOperationHandle(),
+		this
+	);
+}
+
+void UBeamFarmSubsystem::FillDeliveryOrders()
+{
+	UBeamBeamFarmMsApi* Api = GetApi();
+	if (!Api)
+	{
+		return;
+	}
+
+	auto* Request = UBeamFarmMsFillDeliveryOrdersRequest::Make(this, {});
+	FBeamRequestContext RequestContext;
+
+	Api->CPP_FillDeliveryOrders(
+		FUserSlot{UserSlotName},
+		Request,
+		FOnBeamFarmMsFillDeliveryOrdersFullResponse::CreateLambda(
+			[](FBeamFarmMsFillDeliveryOrdersFullResponse Response)
+			{
+				if (Response.State == RS_Success && Response.SuccessData)
+				{
+					UE_LOG(LogTemp, Log, TEXT("FillDeliveryOrders: added %d order(s), total %d."),
+						Response.SuccessData->OrdersAdded, Response.SuccessData->TotalOrders);
+				}
+				else
+				{
+					const FString Err = (Response.State == RS_Error) ? Response.ErrorData.error : TEXT("FillDeliveryOrders failed");
+					UE_LOG(LogTemp, Warning, TEXT("UBeamFarmSubsystem::FillDeliveryOrders failed: %s"), *Err);
+				}
+			}),
+		RequestContext,
+		FBeamOperationHandle(),
+		this
+	);
+}
+
+void UBeamFarmSubsystem::DeliverOrder(const FString& OrderId, int64 ItemInstanceId)
+{
+	UBeamBeamFarmMsApi* Api = GetApi();
+	if (!Api)
+	{
+		OnDeliveryFailed.Broadcast(OrderId, TEXT("BeamFarmMsApi not available"));
+		return;
+	}
+
+	auto* Request = UBeamFarmMsDeliverOrderRequest::Make(OrderId, ItemInstanceId, this, {});
+	FBeamRequestContext RequestContext;
+	TWeakObjectPtr<UBeamFarmSubsystem> WeakThis(this);
+
+	Api->CPP_DeliverOrder(
+		FUserSlot{UserSlotName},
+		Request,
+		FOnBeamFarmMsDeliverOrderFullResponse::CreateLambda(
+			[WeakThis, OrderId](FBeamFarmMsDeliverOrderFullResponse Response)
+			{
+				if (!WeakThis.IsValid()) return;
+
+				if (Response.State == RS_Success && Response.SuccessData && Response.SuccessData->bSuccess)
+				{
+					WeakThis->OnDeliveryCompleted.Broadcast(
+						Response.SuccessData->OrderId,
+						Response.SuccessData->RewardCurrencyId,
+						Response.SuccessData->RewardAmount);
+				}
+				else
+				{
+					const FString Err = (Response.State == RS_Error) ? Response.ErrorData.error : TEXT("DeliverOrder failed");
+					WeakThis->OnDeliveryFailed.Broadcast(OrderId, Err);
+				}
+			}),
+		RequestContext,
+		FBeamOperationHandle(),
+		this
+	);
 }
 
 bool UBeamFarmSubsystem::TryPickSpawnPointForSpawner(const FString& SpawnerId, FVector& OutLocation)
