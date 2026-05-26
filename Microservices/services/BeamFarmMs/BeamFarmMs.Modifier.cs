@@ -8,6 +8,7 @@ using Beamable.Common.Content;
 using Beamable.Common.Inventory;
 using Beamable.Content;
 using Beamable.Server;
+using UnityEngine.Serialization;
 
 namespace Beamable.BeamFarmMs
 {
@@ -55,11 +56,20 @@ namespace Beamable.BeamFarmMs
     [ContentType("plant_modifier")]
     public class ModifierItemContent : CurrencyContent
     {
+        /// <summary>Soft object path to the PaperSprite shown in inventory and mutation lab UI.</summary>
+        [JsonPropertyName("ItemIcon")]
+        public string ItemIcon;
+
+        /// <summary>Human-readable name shown in inventory and mutation lab (e.g. "Corrosive Boost").</summary>
         [JsonPropertyName("DisplayName")]
-        public string displayName;
+        public string DisplayName;
+
+        /// <summary>Flavour/tooltip text shown when inspecting this modifier in the mutation lab UI.</summary>
+        [JsonPropertyName("Description")]
+        public string Description;
 
         [JsonPropertyName("PropertyModifiers")]
-        public List<ModifierPropertyDelta> propertyModifiers;
+        public List<ModifierPropertyDelta> PropertyModifiers;
     }
 
     // ══════════════════════════════════════════════════════════════════════════
@@ -188,9 +198,9 @@ namespace Beamable.BeamFarmMs
             foreach (var modId in modifierContentIds)
             {
                 var modContent = modifierContents[modId];
-                if (modContent.propertyModifiers == null) continue;
+                if (modContent.PropertyModifiers == null) continue;
 
-                foreach (var delta in modContent.propertyModifiers)
+                foreach (var delta in modContent.PropertyModifiers)
                 {
                     if (string.IsNullOrWhiteSpace(delta.PropertyName)) continue;
 
