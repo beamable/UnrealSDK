@@ -1,11 +1,11 @@
 
-#include "BeamableUnrealMicroserviceClients/Public/AutoGen/MutationResultLibrary.h"
+#include "BeamableUnrealMicroserviceClients/Public/AutoGen/MutateWithModifiersResultLibrary.h"
 
 #include "CoreMinimal.h"
 #include "BeamCoreSettings.h"
 
 
-FString UMutationResultLibrary::MutationResultToJsonString(const UMutationResult* Serializable, const bool Pretty)
+FString UMutateWithModifiersResultLibrary::MutateWithModifiersResultToJsonString(const UMutateWithModifiersResult* Serializable, const bool Pretty)
 {
 	FString Result = FString{};
 	if(Pretty)
@@ -23,23 +23,23 @@ FString UMutationResultLibrary::MutationResultToJsonString(const UMutationResult
 	return Result;
 }	
 
-UMutationResult* UMutationResultLibrary::Make(bool bSuccess, FString Message, TArray<UMutationOutput*> Outputs, UObject* Outer)
+UMutateWithModifiersResult* UMutateWithModifiersResultLibrary::Make(bool bSuccess, FString Message, TMap<FString, FString> NewProperties, UObject* Outer)
 {
-	auto Serializable = NewObject<UMutationResult>(Outer);
+	auto Serializable = NewObject<UMutateWithModifiersResult>(Outer);
 	Serializable->bSuccess = bSuccess;
 	Serializable->Message = Message;
-	Serializable->Outputs = Outputs;
+	Serializable->NewProperties = NewProperties;
 	
 	return Serializable;
 }
 
-void UMutationResultLibrary::Break(const UMutationResult* Serializable, bool& bSuccess, FString& Message, TArray<UMutationOutput*>& Outputs)
+void UMutateWithModifiersResultLibrary::Break(const UMutateWithModifiersResult* Serializable, bool& bSuccess, FString& Message, TMap<FString, FString>& NewProperties)
 {
 	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
 	{
 		bSuccess = Serializable->bSuccess;
 		Message = Serializable->Message;
-		Outputs = Serializable->Outputs;
+		NewProperties = Serializable->NewProperties;
 	}
 		
 }

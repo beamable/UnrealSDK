@@ -4,15 +4,15 @@
 #include "CoreMinimal.h"
 #include "BeamFlow/ApiRequest/K2BeamNode_ApiRequest.h"
 
-#include "K2BeamNode_ApiRequest_BeamFarmMsMutate.generated.h"
+#include "K2BeamNode_ApiRequest_BeamFarmMsMutateWithModifiers.generated.h"
 
-#define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_BeamFarmMsMutate"
+#define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_BeamFarmMsMutateWithModifiers"
 
 /**
-* This is the code-gen'ed declaration for the Beam Flow's Endpoint: Post /Mutate  of the BeamFarmMs Service. 
+* This is the code-gen'ed declaration for the Beam Flow's Endpoint: Post /MutateWithModifiers  of the BeamFarmMs Service. 
 */
 UCLASS(meta=(BeamFlow))
-class BEAMABLEUNREALMICROSERVICECLIENTSBP_API UK2BeamNode_ApiRequest_BeamFarmMsMutate : public UK2BeamNode_ApiRequest
+class BEAMABLEUNREALMICROSERVICECLIENTSBP_API UK2BeamNode_ApiRequest_BeamFarmMsMutateWithModifiers : public UK2BeamNode_ApiRequest
 {
 	GENERATED_BODY()
 

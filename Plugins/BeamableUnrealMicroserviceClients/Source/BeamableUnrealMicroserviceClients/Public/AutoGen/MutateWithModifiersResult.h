@@ -4,12 +4,11 @@
 #include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
 #include "Serialization/BeamJsonUtils.h"
-#include "BeamableUnrealMicroserviceClients/Public/AutoGen/MutationOutput.h"
 
-#include "MutationResult.generated.h"
+#include "MutateWithModifiersResult.generated.h"
 
 UCLASS(BlueprintType, Category="Beam", DefaultToInstanced, EditInlineNew)
-class BEAMABLEUNREALMICROSERVICECLIENTS_API UMutationResult : public UObject, public IBeamJsonSerializableUObject, public IBeamBaseResponseBodyInterface
+class BEAMABLEUNREALMICROSERVICECLIENTS_API UMutateWithModifiersResult : public UObject, public IBeamJsonSerializableUObject, public IBeamBaseResponseBodyInterface
 {
 	GENERATED_BODY()
 
@@ -18,8 +17,8 @@ public:
 	bool bSuccess = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Message", Category="Beam")
 	FString Message = {};
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Outputs", Category="Beam")
-	TArray<UMutationOutput*> Outputs = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="New Properties", Category="Beam")
+	TMap<FString, FString> NewProperties = {};
 
 	virtual void DeserializeRequestResponse(UObject* RequestData, FString ResponseContent) override;
 

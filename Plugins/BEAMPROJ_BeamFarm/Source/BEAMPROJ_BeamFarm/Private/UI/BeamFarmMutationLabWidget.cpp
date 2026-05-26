@@ -10,8 +10,8 @@ void UBeamFarmMutationLabWidget::NativeConstruct()
 	UBeamFarmSubsystem* Sub = GetGameInstance()->GetSubsystem<UBeamFarmSubsystem>();
 	if (Sub)
 	{
-		Sub->OnMutationCompleted.AddDynamic(this, &UBeamFarmMutationLabWidget::HandleMutationCompleted);
-		Sub->OnMutationFailed.AddDynamic(this, &UBeamFarmMutationLabWidget::HandleMutationFailed);
+		// Sub->OnMutationCompleted.AddDynamic(this, &UBeamFarmMutationLabWidget::HandleMutationCompleted);
+		// Sub->OnMutationFailed.AddDynamic(this, &UBeamFarmMutationLabWidget::HandleMutationFailed);
 	}
 }
 
@@ -20,8 +20,8 @@ void UBeamFarmMutationLabWidget::NativeDestruct()
 	UBeamFarmSubsystem* Sub = GetGameInstance()->GetSubsystem<UBeamFarmSubsystem>();
 	if (Sub)
 	{
-		Sub->OnMutationCompleted.RemoveDynamic(this, &UBeamFarmMutationLabWidget::HandleMutationCompleted);
-		Sub->OnMutationFailed.RemoveDynamic(this, &UBeamFarmMutationLabWidget::HandleMutationFailed);
+		// Sub->OnMutationCompleted.RemoveDynamic(this, &UBeamFarmMutationLabWidget::HandleMutationCompleted);
+		// Sub->OnMutationFailed.RemoveDynamic(this, &UBeamFarmMutationLabWidget::HandleMutationFailed);
 	}
 
 	Super::NativeDestruct();
@@ -85,7 +85,7 @@ void UBeamFarmMutationLabWidget::StartMutation()
 	UBeamFarmSubsystem* Sub = GetGameInstance()->GetSubsystem<UBeamFarmSubsystem>();
 	if (Sub)
 	{
-		Sub->Mutate(MutationQueue);
+		// Sub->Mutate(MutationQueue);
 	}
 	else
 	{

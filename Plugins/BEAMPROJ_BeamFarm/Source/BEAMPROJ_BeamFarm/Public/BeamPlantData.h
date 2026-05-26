@@ -15,6 +15,7 @@ enum EBeamFarmItemType
 {
 	Seed UMETA(DisplayName = "Seed"),
 	MutatedPlant UMETA(DisplayName = "Mutated Plant"),
+	Modifier UMETA(DisplayName = "Modifier"),
 };
 
 UENUM(BlueprintType, Blueprintable)
@@ -35,7 +36,7 @@ USTRUCT(BlueprintType)
 struct BEAMPROJ_BEAMFARM_API FBeamPlantData : public FBeamJsonSerializableUStruct
 {
 	GENERATED_BODY()
-	
+
 	// Display name shown in UI (e.g., "Wheat", "Corn")
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BeamFarm|Plant")
 	FText DisplayName;
@@ -93,5 +94,4 @@ struct BEAMPROJ_BEAMFARM_API FBeamPlantData : public FBeamJsonSerializableUStruc
 			ReadyToHarvestSprite = TSoftObjectPtr<UPaperSprite>(FSoftObjectPath(SoftObjPath));
 		}
 	}
-
 };

@@ -9,13 +9,11 @@
 #include "AutoGen/SubSystems/BeamFarmMs/BeamFarmMsCollectHarvestRequest.h"
 #include "AutoGen/SubSystems/BeamFarmMs/BeamFarmMsRegisterGroundItemRequest.h"
 #include "AutoGen/SubSystems/BeamFarmMs/BeamFarmMsCollectGroundItemRequest.h"
-#include "AutoGen/SubSystems/BeamFarmMs/BeamFarmMsMutateRequest.h"
+#include "AutoGen/SubSystems/BeamFarmMs/BeamFarmMsMutateWithModifiersRequest.h"
 #include "AutoGen/SubSystems/BeamFarmMs/BeamFarmMsGetDeliveryOrdersRequest.h"
 #include "AutoGen/SubSystems/BeamFarmMs/BeamFarmMsFillDeliveryOrdersRequest.h"
 #include "AutoGen/SubSystems/BeamFarmMs/BeamFarmMsDeliverOrderRequest.h"
-#include "AutoGen/MutationInput.h"
-#include "AutoGen/MutationResult.h"
-#include "AutoGen/MutationOutput.h"
+#include "AutoGen/MutateWithModifiersResult.h"
 #include "AutoGen/DeliveryOrderInfo.h"
 #include "AutoGen/DeliveryRequirement.h"
 #include "Engine/Engine.h"
@@ -186,7 +184,7 @@ void UBeamFarmSubsystem::CollectGroundItem(const FString& GroundItemId, const FO
 	);
 }
 
-void UBeamFarmSubsystem::Mutate(const TArray<FBeamFarmMutationInput>& Inputs)
+void UBeamFarmSubsystem::MutateWithModifiers(const FString& PlantItemContentId, int64 PlantItemInstanceId, const TArray<FString>& ModifierContentIds)
 {
 	UBeamBeamFarmMsApi* Api = GetApi();
 	if (!Api)
@@ -195,43 +193,27 @@ void UBeamFarmSubsystem::Mutate(const TArray<FBeamFarmMutationInput>& Inputs)
 		return;
 	}
 
-	TArray<UMutationInput*> ApiInputs;
-	ApiInputs.Reserve(Inputs.Num());
-	for (const FBeamFarmMutationInput& In : Inputs)
-	{
-		UMutationInput* ApiIn = NewObject<UMutationInput>(this);
-		ApiIn->ItemContentId = In.ItemContentId;
-		ApiIn->Quantity = In.Quantity;
-		ApiInputs.Add(ApiIn);
-	}
-
-	auto* Request = UBeamFarmMsMutateRequest::Make(ApiInputs, this, {});
+	auto* Request = UBeamFarmMsMutateWithModifiersRequest::Make(PlantItemContentId, PlantItemInstanceId, ModifierContentIds, this, {});
 	FBeamRequestContext RequestContext;
 	TWeakObjectPtr<UBeamFarmSubsystem> WeakThis(this);
 
-	Api->CPP_Mutate(
+	Api->CPP_MutateWithModifiers(
 		FUserSlot{UserSlotName},
 		Request,
-		FOnBeamFarmMsMutateFullResponse::CreateLambda(
-			[WeakThis](FBeamFarmMsMutateFullResponse Response)
+		FOnBeamFarmMsMutateWithModifiersFullResponse::CreateLambda(
+			[WeakThis](FBeamFarmMsMutateWithModifiersFullResponse Response)
 			{
 				if (!WeakThis.IsValid()) return;
 				if (Response.State == RS_Success && Response.SuccessData && Response.SuccessData->bSuccess)
 				{
-					TArray<FBeamFarmMutationOutput> Outputs;
-					for (const UMutationOutput* Out : Response.SuccessData->Outputs)
-					{
-						if (!Out) continue;
-						FBeamFarmMutationOutput OutData;
-						OutData.ItemContentId = Out->ItemContentId;
-						OutData.Quantity = Out->Quantity;
-						Outputs.Add(OutData);
-					}
-					WeakThis->OnMutationCompleted.Broadcast(Outputs, Response.SuccessData->Message);
+					FBeamFarmMutationResult Result;
+					Result.NewProperties = Response.SuccessData->NewProperties;
+					Result.Message       = Response.SuccessData->Message;
+					WeakThis->OnMutationCompleted.Broadcast(Result);
 				}
 				else
 				{
-					const FString Err = (Response.State == RS_Error) ? Response.ErrorData.error : TEXT("Mutate failed");
+					const FString Err = (Response.State == RS_Error) ? Response.ErrorData.error : TEXT("MutateWithModifiers failed");
 					WeakThis->OnMutationFailed.Broadcast(Err);
 				}
 			}),

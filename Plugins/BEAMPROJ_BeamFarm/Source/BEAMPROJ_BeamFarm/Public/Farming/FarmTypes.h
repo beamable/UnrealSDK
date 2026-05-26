@@ -17,8 +17,8 @@ class UPaperSprite;
 UENUM(BlueprintType)
 enum class EBeamFarmSpawnMode : uint8
 {
-	FixedTransforms  UMETA(DisplayName = "Fixed Transforms"),
-	WeightedZones    UMETA(DisplayName = "Weighted Zones"),
+	FixedTransforms UMETA(DisplayName = "Fixed Transforms"),
+	WeightedZones UMETA(DisplayName = "Weighted Zones"),
 };
 
 USTRUCT(BlueprintType)
@@ -117,18 +117,17 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnFarmSlotStateChangedDelegate, cl
 UENUM(BlueprintType)
 enum class EBeamFarmBuildingType : uint8
 {
-	None        UMETA(DisplayName = "None"),
-	Farm        UMETA(DisplayName = "Farm"),
+	None UMETA(DisplayName = "None"),
+	Farm UMETA(DisplayName = "Farm"),
 	MutationLab UMETA(DisplayName = "Mutation Lab"),
-	Shop        UMETA(DisplayName = "Shop"),
-	Upgrades    UMETA(DisplayName = "Upgrades"),
-	Delivery    UMETA(DisplayName = "Delivery"),
+	Research UMETA(DisplayName = "Research"),
+	Delivery UMETA(DisplayName = "Delivery"),
 };
 
 UENUM(BlueprintType)
 enum class EBeamFarmInventoryTab : uint8
 {
-	Crops     UMETA(DisplayName = "Crops"),
+	Crops UMETA(DisplayName = "Crops"),
 	Materials UMETA(DisplayName = "Materials"),
 };
 
@@ -154,6 +153,19 @@ struct BEAMPROJ_BEAMFARM_API FBeamFarmMutationOutput
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BeamFarm|Mutation")
 	int32 Quantity = 0;
+};
+
+USTRUCT(BlueprintType)
+struct BEAMPROJ_BEAMFARM_API FBeamFarmMutationResult
+{
+	GENERATED_BODY()
+
+	// Final properties of the plant item after all modifiers were applied.
+	UPROPERTY(BlueprintReadWrite, Category = "BeamFarm|Mutation")
+	TMap<FString, FString> NewProperties;
+
+	UPROPERTY(BlueprintReadWrite, Category = "BeamFarm|Mutation")
+	FString Message;
 };
 
 USTRUCT(BlueprintType)
@@ -207,7 +219,7 @@ UENUM(BlueprintType)
 enum class EBeamDeliveryComparison : uint8
 {
 	BEAM_GreaterThan UMETA(DisplayName = "Greater Than"),
-	BEAM_LowerThan   UMETA(DisplayName = "Lower Than"),
+	BEAM_LowerThan UMETA(DisplayName = "Lower Than"),
 };
 
 // A single property rule an item must satisfy to fulfil a delivery order.

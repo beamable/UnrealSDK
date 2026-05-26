@@ -18,8 +18,8 @@ DECLARE_DELEGATE_TwoParams(FOnBeamFarmCallResult, bool /*bSuccess*/, const FStri
 
 // ─── Mutation delegates ───────────────────────────────────────────────────────
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnBeamFarmMutationCompleted,
-	const TArray<FBeamFarmMutationOutput>&, Outputs, const FString&, Message);
+// Fired when MutateWithModifiers completes — carries the updated item properties.
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnBeamFarmMutationCompleted, const FBeamFarmMutationResult&, Result);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnBeamFarmMutationFailed, const FString&, Error);
 
@@ -27,27 +27,28 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnBeamFarmMutationFailed, const FSt
 
 // Fired when GetDeliveryOrders completes — carries the full list of active orders.
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnBeamFarmDeliveryOrdersReceived,
-	const TArray<FBeamDeliveryOrderInfo>&, Orders);
+                                            const TArray<FBeamDeliveryOrderInfo>&, Orders);
 
 // Fired when DeliverOrder completes successfully.
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnBeamFarmDeliveryCompleted,
-	const FString&, OrderId,
-	const FString&, RewardCurrencyId,
-	int32, RewardAmount);
+                                               const FString&, OrderId,
+                                               const FString&, RewardCurrencyId,
+                                               int32, RewardAmount);
 
 // Fired when DeliverOrder or GetDeliveryOrders fails.
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnBeamFarmDeliveryFailed,
-	const FString&, OrderId,
-	const FString&, ErrorMessage);
+                                             const FString&, OrderId,
+                                             const FString&, ErrorMessage);
 
 // ─── Slot interaction delegates (AFarmSlotActor subscribes to these) ──────────
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnBeamFarmSlotShouldPlant,
-	const FString&, SlotId,
-	const FBeamSeedData&, SeedData,
-	const FBeamPlantData&, PlantData);
+                                               const FString&, SlotId,
+                                               const FBeamSeedData&, SeedData,
+                                               const FBeamPlantData&, PlantData);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnBeamFarmSlotShouldHarvest, const FString&, SlotId);
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnBeamFarmSlotShouldCancelPlant, const FString&, SlotId);
 
 // ─── Farming state delegate ───────────────────────────────────────────────────
@@ -57,22 +58,26 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnBeamFarmFarmingStateChanged, EFar
 // ─── Farming result delegates ─────────────────────────────────────────────────
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnBeamFarmSeedConsumed, const FString&, SeedContentId, int32, Quantity);
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnBeamFarmItemsHarvested, const FString&, SlotId, const FString&, ItemContentId, int32, Quantity);
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnBeamFarmPlantFailed, const FString&, SlotId, const FString&, ErrorMessage);
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnBeamFarmCollectFailed, const FString&, SlotId, const FString&, ErrorMessage);
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnBeamFarmNoCropSelected);
 
 // ─── Collectible spawner delegates (UFarmCollectibleSpawner subscribes, filtered by SpawnerId) ──
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnBeamFarmSpawnerCollectibleSpawned,
-	const FString&, SpawnerId,
-	ABeamFarmCollectibleActor*, Collectible,
-	const FTransform&, SpawnTransform);
+                                               const FString&, SpawnerId,
+                                               ABeamFarmCollectibleActor*, Collectible,
+                                               const FTransform&, SpawnTransform);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnBeamFarmSpawnerCollectibleCollected,
-	const FString&, SpawnerId,
-	APawn*, Collector,
-	const FBeamFarmCollectibleInfo&, Info);
+                                               const FString&, SpawnerId,
+                                               APawn*, Collector,
+                                               const FBeamFarmCollectibleInfo&, Info);
 
 // ─── Spawn configuration ──────────────────────────────────────────────────────
 // Passed from UFarmCollectibleSpawner::BeginPlay to UBeamFarmSubsystem::RegisterSpawner.
@@ -166,8 +171,11 @@ public:
 	void RegisterGroundItem(const FBeamFarmGroundItemParams& Params, const FOnBeamFarmCallResult& OnResult);
 	void CollectGroundItem(const FString& GroundItemId, const FOnBeamFarmCallResult& OnResult);
 
+	// Applies modifier items to an existing plant item, changing its properties according to
+	// the content-defined deltas. Each entry in ModifierContentIds consumes one unit of that
+	// modifier currency. Broadcasts OnMutationCompleted or OnMutationFailed when done.
 	UFUNCTION(BlueprintCallable, Category = "BeamFarm")
-	void Mutate(const TArray<FBeamFarmMutationInput>& Inputs);
+	void MutateWithModifiers(const FString& PlantItemContentId, int64 PlantItemInstanceId, const TArray<FString>& ModifierContentIds);
 
 	// ─── Farming selection state ────────────────────────────────────────────────
 
