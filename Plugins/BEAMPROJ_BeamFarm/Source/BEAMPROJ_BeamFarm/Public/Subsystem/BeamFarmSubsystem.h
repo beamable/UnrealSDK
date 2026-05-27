@@ -40,6 +40,34 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnBeamFarmDeliveryFailed,
                                              const FString&, OrderId,
                                              const FString&, ErrorMessage);
 
+// ─── Research delegates ───────────────────────────────────────────────────────
+
+// Fired when StartResearch succeeds.
+// ItemInstanceId is the OLD instance ID — the item has been replaced server-side with a new ID.
+// Refresh inventory and look for items with property key "research_started_at" to find in-research items.
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnBeamFarmResearchStarted,
+                                               int64, ItemInstanceId,
+                                               int64, StartedAtUtcSeconds,
+                                               int32, PointsSpent);
+
+// Fired when StartResearch fails.
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnBeamFarmResearchStartFailed,
+                                             int64, ItemInstanceId,
+                                             const FString&, ErrorMessage);
+
+// Fired when CollectResearch succeeds — carries what was granted.
+// OutputType is the ResearchOutputType name: "PlantModifier", "Item", or "Currency".
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnBeamFarmResearchCollected,
+                                              int64, ItemInstanceId,
+                                              const FString&, OutputContentId,
+                                              int32, OutputQuantity,
+                                              const FString&, OutputType);
+
+// Fired when CollectResearch fails (e.g. research not yet complete).
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnBeamFarmResearchCollectFailed,
+                                             int64, ItemInstanceId,
+                                             const FString&, ErrorMessage);
+
 // ─── Slot interaction delegates (AFarmSlotActor subscribes to these) ──────────
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnBeamFarmSlotShouldPlant,
@@ -313,6 +341,51 @@ public:
 
 	UPROPERTY(BlueprintAssignable, Category = "BeamFarm|Delivery")
 	FOnBeamFarmDeliveryFailed OnDeliveryFailed;
+
+	// ─── Research ───────────────────────────────────────────────────────────
+
+	// Begins researching the specified item. Deducts research points and writes
+	// research state as item properties (new instance ID assigned). Broadcasts
+	// OnResearchStarted or OnResearchStartFailed. Refresh inventory after success.
+	UFUNCTION(BlueprintCallable, Category = "BeamFarm|Research")
+	void StartResearch(int64 ItemInstanceId, const FString& ItemContentId, const FString& ProjectContentId);
+
+	// Collects completed research for the specified item instance, granting the output reward.
+	// Broadcasts OnResearchCollected or OnResearchCollectFailed.
+	UFUNCTION(BlueprintCallable, Category = "BeamFarm|Research")
+	void CollectResearch(int64 ItemInstanceId, const FString& ItemContentId);
+
+	// Property key constants — use these to filter inventory items that are currently in research.
+	// An item is in research when it has the "research_started_at" property set.
+	UFUNCTION(BlueprintPure, Category = "BeamFarm|Research")
+	static FString GetResearchProjectIdKey() { return TEXT("research_project_id"); }
+
+	UFUNCTION(BlueprintPure, Category = "BeamFarm|Research")
+	static FString GetResearchStartedAtKey() { return TEXT("research_started_at"); }
+
+	UFUNCTION(BlueprintPure, Category = "BeamFarm|Research")
+	static FString GetResearchDurationKey() { return TEXT("research_duration_secs"); }
+
+	UFUNCTION(BlueprintPure, Category = "BeamFarm|Research")
+	static FString GetResearchOutputContentIdKey() { return TEXT("research_output_content_id"); }
+
+	UFUNCTION(BlueprintPure, Category = "BeamFarm|Research")
+	static FString GetResearchOutputQuantityKey() { return TEXT("research_output_quantity"); }
+
+	UFUNCTION(BlueprintPure, Category = "BeamFarm|Research")
+	static FString GetResearchOutputTypeKey() { return TEXT("research_output_type"); }
+
+	UPROPERTY(BlueprintAssignable, Category = "BeamFarm|Research")
+	FOnBeamFarmResearchStarted OnResearchStarted;
+
+	UPROPERTY(BlueprintAssignable, Category = "BeamFarm|Research")
+	FOnBeamFarmResearchStartFailed OnResearchStartFailed;
+
+	UPROPERTY(BlueprintAssignable, Category = "BeamFarm|Research")
+	FOnBeamFarmResearchCollected OnResearchCollected;
+
+	UPROPERTY(BlueprintAssignable, Category = "BeamFarm|Research")
+	FOnBeamFarmResearchCollectFailed OnResearchCollectFailed;
 
 private:
 	UPROPERTY()

@@ -519,7 +519,7 @@ namespace Beamable.BeamFarmMs
             else
             {
                 for (int i = 0; i < data.quantity; i++)
-                    updateBuilder.AddItem(data.contentId, GeneratePlantProperties());
+                    updateBuilder.AddItem(data.contentId, new Dictionary<string, string>());
             }
 
             await Services.Inventory.Update(updateBuilder);

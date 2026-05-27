@@ -288,6 +288,21 @@ struct BEAMPROJ_BEAMFARM_API FBeamDeliveryOrderInfo
 	int32 RewardAmount = 0;
 };
 
+// ─── Research system ───────────────────────────────────────────────────────────────────────────
+
+// What kind of reward is granted when research completes.
+// Must match ResearchOutputType enum names in BeamFarmMs.Research.cs.
+UENUM(BlueprintType)
+enum class EBeamResearchOutputType : uint8
+{
+	// A plant_modifier.* currency (spendable in the Mutation Lab).
+	PlantModifier UMETA(DisplayName = "Plant Modifier"),
+	// Any inventory item (itemplant.*, etc.).
+	Item          UMETA(DisplayName = "Item"),
+	// Any Beamable currency (plant_raw_material.*, etc.).
+	Currency      UMETA(DisplayName = "Currency"),
+};
+
 // ─── Slot interaction request ──────────────────────────────────────────────────────────────────
 // Passed to UBeamFarmSubsystem::HandleSlotInteraction. Carries only slot-side data;
 // the subsystem reads its own selection state (SelectedCrop, SelectedCropContentId).

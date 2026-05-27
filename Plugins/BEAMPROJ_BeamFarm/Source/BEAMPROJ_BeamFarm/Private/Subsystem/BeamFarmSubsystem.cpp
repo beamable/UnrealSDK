@@ -13,6 +13,8 @@
 #include "AutoGen/SubSystems/BeamFarmMs/BeamFarmMsGetDeliveryOrdersRequest.h"
 #include "AutoGen/SubSystems/BeamFarmMs/BeamFarmMsFillDeliveryOrdersRequest.h"
 #include "AutoGen/SubSystems/BeamFarmMs/BeamFarmMsDeliverOrderRequest.h"
+#include "AutoGen/SubSystems/BeamFarmMs/BeamFarmMsStartResearchRequest.h"
+#include "AutoGen/SubSystems/BeamFarmMs/BeamFarmMsCollectResearchRequest.h"
 #include "AutoGen/MutateWithModifiersResult.h"
 #include "AutoGen/DeliveryOrderInfo.h"
 #include "AutoGen/DeliveryRequirement.h"
@@ -824,6 +826,87 @@ void UBeamFarmSubsystem::DeliverOrder(const FString& OrderId, int64 ItemInstance
 				{
 					const FString Err = (Response.State == RS_Error) ? Response.ErrorData.error : TEXT("DeliverOrder failed");
 					WeakThis->OnDeliveryFailed.Broadcast(OrderId, Err);
+				}
+			}),
+		RequestContext,
+		FBeamOperationHandle(),
+		this
+	);
+}
+
+// ─── Research ────────────────────────────────────────────────────────────────
+
+void UBeamFarmSubsystem::StartResearch(int64 ItemInstanceId, const FString& ItemContentId, const FString& ProjectContentId)
+{
+	UBeamBeamFarmMsApi* Api = GetApi();
+	if (!Api)
+	{
+		OnResearchStartFailed.Broadcast(ItemInstanceId, TEXT("BeamFarmMsApi not available"));
+		return;
+	}
+
+	auto* Request = UBeamFarmMsStartResearchRequest::Make(ItemInstanceId, ItemContentId, ProjectContentId, this, {});
+	FBeamRequestContext RequestContext;
+	TWeakObjectPtr<UBeamFarmSubsystem> WeakThis(this);
+
+	Api->CPP_StartResearch(
+		FUserSlot{UserSlotName},
+		Request,
+		FOnBeamFarmMsStartResearchFullResponse::CreateLambda(
+			[WeakThis, ItemInstanceId](FBeamFarmMsStartResearchFullResponse Response)
+			{
+				if (!WeakThis.IsValid()) return;
+				if (Response.State == RS_Success && Response.SuccessData && Response.SuccessData->bSuccess)
+				{
+					WeakThis->OnResearchStarted.Broadcast(
+						ItemInstanceId,
+						Response.SuccessData->StartedAtUtcSeconds,
+						Response.SuccessData->PointsSpent);
+				}
+				else
+				{
+					const FString Err = (Response.State == RS_Error) ? Response.ErrorData.error : TEXT("StartResearch failed");
+					WeakThis->OnResearchStartFailed.Broadcast(ItemInstanceId, Err);
+				}
+			}),
+		RequestContext,
+		FBeamOperationHandle(),
+		this
+	);
+}
+
+void UBeamFarmSubsystem::CollectResearch(int64 ItemInstanceId, const FString& ItemContentId)
+{
+	UBeamBeamFarmMsApi* Api = GetApi();
+	if (!Api)
+	{
+		OnResearchCollectFailed.Broadcast(ItemInstanceId, TEXT("BeamFarmMsApi not available"));
+		return;
+	}
+
+	auto* Request = UBeamFarmMsCollectResearchRequest::Make(ItemInstanceId, ItemContentId, this, {});
+	FBeamRequestContext RequestContext;
+	TWeakObjectPtr<UBeamFarmSubsystem> WeakThis(this);
+
+	Api->CPP_CollectResearch(
+		FUserSlot{UserSlotName},
+		Request,
+		FOnBeamFarmMsCollectResearchFullResponse::CreateLambda(
+			[WeakThis, ItemInstanceId](FBeamFarmMsCollectResearchFullResponse Response)
+			{
+				if (!WeakThis.IsValid()) return;
+				if (Response.State == RS_Success && Response.SuccessData && Response.SuccessData->bSuccess)
+				{
+					WeakThis->OnResearchCollected.Broadcast(
+						ItemInstanceId,
+						Response.SuccessData->OutputContentId,
+						Response.SuccessData->OutputQuantity,
+						Response.SuccessData->OutputType);
+				}
+				else
+				{
+					const FString Err = (Response.State == RS_Error) ? Response.ErrorData.error : TEXT("CollectResearch failed");
+					WeakThis->OnResearchCollectFailed.Broadcast(ItemInstanceId, Err);
 				}
 			}),
 		RequestContext,
