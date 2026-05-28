@@ -5,8 +5,8 @@ using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Beamable.Common.Api.Inventory;
 using Beamable.Common.Content;
+using Beamable.Common.Inventory;
 using Beamable.Server;
-using UnityEngine.Serialization;
 
 namespace Beamable.BeamFarmMs
 {
@@ -18,7 +18,7 @@ namespace Beamable.BeamFarmMs
     /// What kind of reward is granted when research completes.
     /// Must match EBeamResearchOutputType in FarmTypes.h.
     /// </summary>
-    public enum ResearchOutputType
+    public enum EResearchOutputType
     {
         /// <summary>A plant_modifier.* currency spendable in the Mutation Lab.</summary>
         PlantModifier,
@@ -47,6 +47,23 @@ namespace Beamable.BeamFarmMs
     }
 
     // ══════════════════════════════════════════════════════════════════════════
+    // PLANT DATA (nested struct inside itemplant content)
+    // ══════════════════════════════════════════════════════════════════════════
+
+    /// <summary>
+    /// Mirrors FBeamPlantData in BeamPlantData.h.
+    /// Must be declared so Beamable can deserialize the nested PlantData object;
+    /// the microservice itself only needs the research fields, but omitting this
+    /// class causes the content parse to fail for the whole object.
+    /// </summary>
+    [Serializable]
+    public class PlantData
+    {
+        public string DisplayName          = string.Empty;
+        public string ReadyToHarvestSprite = string.Empty;
+    }
+
+    // ══════════════════════════════════════════════════════════════════════════
     // PLANT CONTENT TYPE (research fields only)
     // ══════════════════════════════════════════════════════════════════════════
 
@@ -59,33 +76,29 @@ namespace Beamable.BeamFarmMs
     /// </summary>
     [Serializable]
     [ContentType("itemplant")]
-    public class PlantItemContent : ContentObject
+    public class PlantItemContent : ItemContent
     {
+        public PlantData PlantData = new PlantData();
+
         /// <summary>Whether this plant type can be submitted for research.</summary>
-        [FormerlySerializedAs("bCanBeResearched")]
-        public bool CanBeResearched = false;
+        // public bool bCanBeResearched = false;
 
         /// <summary>How many research_points the player must spend to start research.</summary>
-        [FormerlySerializedAs("ResearchPointsCost")]
         public int ResearchPointsCost = 10;
 
         /// <summary>How long (seconds) the research takes. Server-authoritative.</summary>
-        [FormerlySerializedAs("ResearchDurationSeconds")]
         public float ResearchDurationSeconds = 60f;
 
         /// <summary>
         /// What kind of reward is granted when research completes.
         /// Serialized as the enum name: "PlantModifier", "Item", or "Currency".
         /// </summary>
-        [FormerlySerializedAs("ResearchOutputType")]
-        public string ResearchOutputTypeStr = nameof(ResearchOutputType.PlantModifier);
+        public EResearchOutputType ResearchOutputType = EResearchOutputType.PlantModifier;
 
         /// <summary>Content ID of the reward (plant_modifier.*, itemplant.*, plant_raw_material.*, etc.).</summary>
-        [FormerlySerializedAs("ResearchOutputContentId")]
         public string ResearchOutputContentId;
 
         /// <summary>How many units of ResearchOutputContentId are granted on completion.</summary>
-        [FormerlySerializedAs("ResearchOutputQuantity")]
         public int ResearchOutputQuantity = 1;
     }
 
@@ -222,8 +235,8 @@ namespace Beamable.BeamFarmMs
             if (plant == null)
                 return ResearchStartFail($"Plant content '{itemContentId}' not found. Was it unpublished?");
 
-            if (!plant.CanBeResearched)
-                return ResearchStartFail($"Plant '{itemContentId}' is not marked as researchable.");
+            // if (!plant.bCanBeResearched)
+            //     return ResearchStartFail($"Plant '{itemContentId}' is not marked as researchable.");
 
             if (string.IsNullOrWhiteSpace(plant.ResearchOutputContentId))
                 return ResearchStartFail($"Plant '{itemContentId}' has no ResearchOutputContentId configured.");
@@ -250,9 +263,10 @@ namespace Beamable.BeamFarmMs
             // ── Build new item properties (preserve existing + add research state) ──
             long   startedAt   = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
             int    durationSec = Math.Max(1, (int)Math.Ceiling(plant.ResearchDurationSeconds));
-            string outputType  = string.IsNullOrWhiteSpace(plant.ResearchOutputTypeStr)
-                                    ? nameof(ResearchOutputType.PlantModifier)
-                                    : plant.ResearchOutputTypeStr;
+            string outputType = "";
+                // string.IsNullOrWhiteSpace(plant.ResearchOutputType)
+                //                     ? nameof(EResearchOutputType.PlantModifier)
+                //                     : plant.ResearchOutputType;
 
             var newProps = itemInstance.properties != null
                 ? new Dictionary<string, string>(itemInstance.properties)
@@ -347,7 +361,7 @@ namespace Beamable.BeamFarmMs
 
             int outputQuantity = int.TryParse(outputQtyStr, out var qty) ? Math.Max(1, qty) : 1;
             if (string.IsNullOrWhiteSpace(outputType))
-                outputType = nameof(ResearchOutputType.PlantModifier);
+                outputType = nameof(EResearchOutputType.PlantModifier);
 
             // ── Timing check (server-authoritative) ───────────────────────────
             long readyAt = startedAt + durationSecs;
@@ -364,7 +378,7 @@ namespace Beamable.BeamFarmMs
             var updateBuilder = new InventoryUpdateBuilder();
             updateBuilder.DeleteItem(itemContentId, itemInstanceId);
 
-            if (outputType == nameof(ResearchOutputType.Item))
+            if (outputType == nameof(EResearchOutputType.Item))
             {
                 for (int i = 0; i < outputQuantity; i++)
                     updateBuilder.AddItem(outputContentId, new Dictionary<string, string>());
