@@ -16,59 +16,7 @@ class UBeamContentSubsystem;
 
 DECLARE_DELEGATE_TwoParams(FOnBeamFarmCallResult, bool /*bSuccess*/, const FString& /*PayloadOrError*/);
 
-// ─── Mutation delegates ───────────────────────────────────────────────────────
-
-// Fired when MutateWithModifiers completes — carries the updated item properties.
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnBeamFarmMutationCompleted, const FBeamFarmMutationResult&, Result);
-
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnBeamFarmMutationFailed, const FString&, Error);
-
-// ─── Delivery delegates ───────────────────────────────────────────────────────
-
-// Fired when GetDeliveryOrders completes — carries the full list of active orders.
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnBeamFarmDeliveryOrdersReceived,
-                                            const TArray<FBeamDeliveryOrderInfo>&, Orders);
-
-// Fired when DeliverOrder completes successfully.
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnBeamFarmDeliveryCompleted,
-                                               const FString&, OrderId,
-                                               const FString&, RewardCurrencyId,
-                                               int32, RewardAmount);
-
-// Fired when DeliverOrder or GetDeliveryOrders fails.
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnBeamFarmDeliveryFailed,
-                                             const FString&, OrderId,
-                                             const FString&, ErrorMessage);
-
-// ─── Research delegates ───────────────────────────────────────────────────────
-
-// Fired when StartResearch succeeds.
-// ItemInstanceId is the OLD instance ID — the item has been replaced server-side with a new ID.
-// Refresh inventory and look for items with property key "research_started_at" to find in-research items.
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnBeamFarmResearchStarted,
-                                               int64, ItemInstanceId,
-                                               int64, StartedAtUtcSeconds,
-                                               int32, PointsSpent);
-
-// Fired when StartResearch fails.
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnBeamFarmResearchStartFailed,
-                                             int64, ItemInstanceId,
-                                             const FString&, ErrorMessage);
-
-// Fired when CollectResearch succeeds — carries what was granted.
-// OutputType is the ResearchOutputType name: "PlantModifier", "Item", or "Currency".
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnBeamFarmResearchCollected,
-                                              int64, ItemInstanceId,
-                                              const FString&, OutputContentId,
-                                              int32, OutputQuantity,
-                                              const FString&, OutputType);
-
-// Fired when CollectResearch fails (e.g. research not yet complete).
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnBeamFarmResearchCollectFailed,
-                                             int64, ItemInstanceId,
-                                             const FString&, ErrorMessage);
-
-// ─── Slot interaction delegates (AFarmSlotActor subscribes to these) ──────────
+// ─── Slot interaction delegates (AFarmSlotActor subscribes) ──────────────────
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnBeamFarmSlotShouldPlant,
                                                const FString&, SlotId,
@@ -79,23 +27,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnBeamFarmSlotShouldHarvest, const 
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnBeamFarmSlotShouldCancelPlant, const FString&, SlotId);
 
-// ─── Farming state delegate ───────────────────────────────────────────────────
-
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnBeamFarmFarmingStateChanged, EFarmingInteractionState, NewState);
-
-// ─── Farming result delegates ─────────────────────────────────────────────────
-
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnBeamFarmSeedConsumed, const FString&, SeedContentId, int32, Quantity);
-
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnBeamFarmItemsHarvested, const FString&, SlotId, const FString&, ItemContentId, int32, Quantity);
-
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnBeamFarmPlantFailed, const FString&, SlotId, const FString&, ErrorMessage);
-
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnBeamFarmCollectFailed, const FString&, SlotId, const FString&, ErrorMessage);
-
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnBeamFarmNoCropSelected);
-
-// ─── Collectible spawner delegates (UFarmCollectibleSpawner subscribes, filtered by SpawnerId) ──
+// ─── Collectible spawner delegates (UFarmCollectibleSpawner subscribes) ───────
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnBeamFarmSpawnerCollectibleSpawned,
                                                const FString&, SpawnerId,
@@ -201,7 +133,7 @@ public:
 
 	// Applies modifier items to an existing plant item, changing its properties according to
 	// the content-defined deltas. Each entry in ModifierContentIds consumes one unit of that
-	// modifier currency. Broadcasts OnMutationCompleted or OnMutationFailed when done.
+	// modifier currency.
 	UFUNCTION(BlueprintCallable, Category = "BeamFarm")
 	void MutateWithModifiers(const FString& PlantItemContentId, int64 PlantItemInstanceId, const TArray<FString>& ModifierContentIds);
 
@@ -227,6 +159,15 @@ public:
 
 	UFUNCTION(BlueprintPure, Category = "BeamFarm|Farming")
 	bool HasSelectedCrop() const;
+
+	UPROPERTY(BlueprintAssignable, Category = "BeamFarm|Slot")
+	FOnBeamFarmSlotShouldPlant OnSlotShouldPlant;
+
+	UPROPERTY(BlueprintAssignable, Category = "BeamFarm|Slot")
+	FOnBeamFarmSlotShouldHarvest OnSlotShouldHarvest;
+
+	UPROPERTY(BlueprintAssignable, Category = "BeamFarm|Slot")
+	FOnBeamFarmSlotShouldCancelPlant OnSlotShouldCancelPlant;
 
 	// ─── Farming interaction ────────────────────────────────────────────────
 
@@ -268,57 +209,16 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "BeamFarm|Spawner")
 	void SpawnCollectibleForSpawner(const FString& SpawnerId);
 
-	// ─── Slot interaction delegates ─────────────────────────────────────────
-
-	UPROPERTY(BlueprintAssignable, Category = "BeamFarm|Farming")
-	FOnBeamFarmSlotShouldPlant OnSlotShouldPlant;
-
-	UPROPERTY(BlueprintAssignable, Category = "BeamFarm|Farming")
-	FOnBeamFarmSlotShouldHarvest OnSlotShouldHarvest;
-
-	UPROPERTY(BlueprintAssignable, Category = "BeamFarm|Farming")
-	FOnBeamFarmSlotShouldCancelPlant OnSlotShouldCancelPlant;
-
-	// ─── Farming result delegates ───────────────────────────────────────────
-
-	UPROPERTY(BlueprintAssignable, Category = "BeamFarm|Farming")
-	FOnBeamFarmSeedConsumed OnSeedConsumed;
-
-	UPROPERTY(BlueprintAssignable, Category = "BeamFarm|Farming")
-	FOnBeamFarmItemsHarvested OnItemsHarvested;
-
-	UPROPERTY(BlueprintAssignable, Category = "BeamFarm|Farming")
-	FOnBeamFarmPlantFailed OnPlantFailed;
-
-	UPROPERTY(BlueprintAssignable, Category = "BeamFarm|Farming")
-	FOnBeamFarmCollectFailed OnCollectFailed;
-
-	UPROPERTY(BlueprintAssignable, Category = "BeamFarm|Farming")
-	FOnBeamFarmNoCropSelected OnNoCropSelected;
-
-	UPROPERTY(BlueprintAssignable, Category = "BeamFarm|Farming")
-	FOnBeamFarmFarmingStateChanged OnFarmingStateChanged;
-
-	// ─── Collectible spawner delegates ──────────────────────────────────────
-
 	UPROPERTY(BlueprintAssignable, Category = "BeamFarm|Spawner")
 	FOnBeamFarmSpawnerCollectibleSpawned OnSpawnerCollectibleSpawned;
 
 	UPROPERTY(BlueprintAssignable, Category = "BeamFarm|Spawner")
 	FOnBeamFarmSpawnerCollectibleCollected OnSpawnerCollectibleCollected;
-
-	// ─── Mutation delegates ─────────────────────────────────────────────────
-
-	UPROPERTY(BlueprintAssignable, Category = "BeamFarm")
-	FOnBeamFarmMutationCompleted OnMutationCompleted;
-
-	UPROPERTY(BlueprintAssignable, Category = "BeamFarm")
-	FOnBeamFarmMutationFailed OnMutationFailed;
-
+	
 	// ─── Delivery ───────────────────────────────────────────────────────────
 
 	// Fetches the player's active delivery orders from the server, auto-filling up
-	// to MaxActiveOrders if needed. Broadcasts OnDeliveryOrdersReceived on completion.
+	// to MaxActiveOrders if needed.
 	UFUNCTION(BlueprintCallable, Category = "BeamFarm|Delivery")
 	void GetDeliveryOrders();
 
@@ -329,30 +229,20 @@ public:
 
 	// Attempts to fulfil the given order using the specified inventory item instance.
 	// ItemInstanceId is the Beamable item instance ID (int64) obtained from the
-	// player's inventory. Broadcasts OnDeliveryCompleted or OnDeliveryFailed.
+	// player's inventory.
 	UFUNCTION(BlueprintCallable, Category = "BeamFarm|Delivery")
 	void DeliverOrder(const FString& OrderId, int64 ItemInstanceId);
-
-	UPROPERTY(BlueprintAssignable, Category = "BeamFarm|Delivery")
-	FOnBeamFarmDeliveryOrdersReceived OnDeliveryOrdersReceived;
-
-	UPROPERTY(BlueprintAssignable, Category = "BeamFarm|Delivery")
-	FOnBeamFarmDeliveryCompleted OnDeliveryCompleted;
-
-	UPROPERTY(BlueprintAssignable, Category = "BeamFarm|Delivery")
-	FOnBeamFarmDeliveryFailed OnDeliveryFailed;
 
 	// ─── Research ───────────────────────────────────────────────────────────
 
 	// Begins researching the specified item. Research parameters (cost, duration, output)
 	// are read from the plant's itemplant content — no separate project needed.
 	// Deducts research points and writes state as item properties (new instance ID assigned).
-	// Broadcasts OnResearchStarted or OnResearchStartFailed. Refresh inventory after success.
+	// Refresh inventory after success.
 	UFUNCTION(BlueprintCallable, Category = "BeamFarm|Research")
 	void StartResearch(int64 ItemInstanceId, const FString& ItemContentId);
 
 	// Collects completed research for the specified item instance, granting the output reward.
-	// Broadcasts OnResearchCollected or OnResearchCollectFailed.
 	UFUNCTION(BlueprintCallable, Category = "BeamFarm|Research")
 	void CollectResearch(int64 ItemInstanceId, const FString& ItemContentId);
 
@@ -372,18 +262,6 @@ public:
 
 	UFUNCTION(BlueprintPure, Category = "BeamFarm|Research")
 	static FString GetResearchOutputTypeKey() { return TEXT("research_output_type"); }
-
-	UPROPERTY(BlueprintAssignable, Category = "BeamFarm|Research")
-	FOnBeamFarmResearchStarted OnResearchStarted;
-
-	UPROPERTY(BlueprintAssignable, Category = "BeamFarm|Research")
-	FOnBeamFarmResearchStartFailed OnResearchStartFailed;
-
-	UPROPERTY(BlueprintAssignable, Category = "BeamFarm|Research")
-	FOnBeamFarmResearchCollected OnResearchCollected;
-
-	UPROPERTY(BlueprintAssignable, Category = "BeamFarm|Research")
-	FOnBeamFarmResearchCollectFailed OnResearchCollectFailed;
 
 private:
 	UPROPERTY()

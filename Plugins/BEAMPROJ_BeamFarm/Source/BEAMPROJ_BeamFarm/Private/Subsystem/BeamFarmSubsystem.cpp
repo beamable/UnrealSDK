@@ -15,9 +15,6 @@
 #include "AutoGen/SubSystems/BeamFarmMs/BeamFarmMsDeliverOrderRequest.h"
 #include "AutoGen/SubSystems/BeamFarmMs/BeamFarmMsStartResearchRequest.h"
 #include "AutoGen/SubSystems/BeamFarmMs/BeamFarmMsCollectResearchRequest.h"
-#include "AutoGen/MutateWithModifiersResult.h"
-#include "AutoGen/DeliveryOrderInfo.h"
-#include "AutoGen/DeliveryRequirement.h"
 #include "Engine/Engine.h"
 
 UBeamBeamFarmMsApi* UBeamFarmSubsystem::GetApi()
@@ -191,33 +188,18 @@ void UBeamFarmSubsystem::MutateWithModifiers(const FString& PlantItemContentId, 
 	UBeamBeamFarmMsApi* Api = GetApi();
 	if (!Api)
 	{
-		OnMutationFailed.Broadcast(TEXT("BeamFarmMsApi not available"));
 		return;
 	}
 
 	auto* Request = UBeamFarmMsMutateWithModifiersRequest::Make(PlantItemContentId, PlantItemInstanceId, ModifierContentIds, this, {});
 	FBeamRequestContext RequestContext;
-	TWeakObjectPtr<UBeamFarmSubsystem> WeakThis(this);
 
 	Api->CPP_MutateWithModifiers(
 		FUserSlot{UserSlotName},
 		Request,
 		FOnBeamFarmMsMutateWithModifiersFullResponse::CreateLambda(
-			[WeakThis](FBeamFarmMsMutateWithModifiersFullResponse Response)
+			[](FBeamFarmMsMutateWithModifiersFullResponse Response)
 			{
-				if (!WeakThis.IsValid()) return;
-				if (Response.State == RS_Success && Response.SuccessData && Response.SuccessData->bSuccess)
-				{
-					FBeamFarmMutationResult Result;
-					Result.NewProperties = Response.SuccessData->NewProperties;
-					Result.Message       = Response.SuccessData->Message;
-					WeakThis->OnMutationCompleted.Broadcast(Result);
-				}
-				else
-				{
-					const FString Err = (Response.State == RS_Error) ? Response.ErrorData.error : TEXT("MutateWithModifiers failed");
-					WeakThis->OnMutationFailed.Broadcast(Err);
-				}
 			}),
 		RequestContext,
 		FBeamOperationHandle(),
@@ -311,7 +293,6 @@ bool UBeamFarmSubsystem::HasSelectedCrop() const
 void UBeamFarmSubsystem::SetFarmingState(EFarmingInteractionState NewState)
 {
 	FarmingState = NewState;
-	OnFarmingStateChanged.Broadcast(NewState);
 }
 
 void UBeamFarmSubsystem::HandleSlotInteraction(const FBeamFarmInteractionRequest& Request)
@@ -324,23 +305,11 @@ void UBeamFarmSubsystem::HandleSlotInteraction(const FBeamFarmInteractionRequest
 		}
 
 		const FString SlotId = Request.SlotId;
-		TWeakObjectPtr<UBeamFarmSubsystem> WeakThis(this);
 
 		OnSlotShouldHarvest.Broadcast(SlotId);
 
 		CollectHarvest(SlotId, FOnBeamFarmCallResult::CreateLambda(
-			[WeakThis, SlotId](bool bSuccess, const FString& PayloadOrError)
-			{
-				if (!WeakThis.IsValid()) return;
-				if (bSuccess)
-				{
-					WeakThis->OnItemsHarvested.Broadcast(SlotId, PayloadOrError, 1);
-				}
-				else
-				{
-					WeakThis->OnCollectFailed.Broadcast(SlotId, PayloadOrError);
-				}
-			}));
+			[](bool, const FString&) {}));
 		return;
 	}
 
@@ -352,7 +321,6 @@ void UBeamFarmSubsystem::HandleSlotInteraction(const FBeamFarmInteractionRequest
 	// Empty slot — use the subsystem's own selection state.
 	if (!HasSelectedCrop())
 	{
-		OnNoCropSelected.Broadcast();
 		return;
 	}
 
@@ -367,17 +335,11 @@ void UBeamFarmSubsystem::HandleSlotInteraction(const FBeamFarmInteractionRequest
 	TWeakObjectPtr<UBeamFarmSubsystem> WeakThis(this);
 
 	PlantSeed(SeedContentId, SlotId, FOnBeamFarmCallResult::CreateLambda(
-		[WeakThis, SeedContentId, SlotId](bool bSuccess, const FString& PayloadOrError)
+		[WeakThis, SlotId](bool bSuccess, const FString&)
 		{
-			if (!WeakThis.IsValid()) return;
-			if (bSuccess)
-			{
-				WeakThis->OnSeedConsumed.Broadcast(SeedContentId, 1);
-			}
-			else
+			if (WeakThis.IsValid() && !bSuccess)
 			{
 				WeakThis->OnSlotShouldCancelPlant.Broadcast(SlotId);
-				WeakThis->OnPlantFailed.Broadcast(SlotId, PayloadOrError);
 			}
 		}));
 }
@@ -684,8 +646,10 @@ void UBeamFarmSubsystem::HandleCollectiblePickedUp(ABeamFarmCollectibleActor* Co
 		CollectGroundItem(GroundItemId, FOnBeamFarmCallResult::CreateLambda(
 			[WeakThis, SpawnerId, WeakCollector, Info](bool, const FString&)
 			{
-				if (!WeakThis.IsValid()) return;
-				WeakThis->OnSpawnerCollectibleCollected.Broadcast(SpawnerId, WeakCollector.Get(), Info);
+				if (WeakThis.IsValid())
+				{
+					WeakThis->OnSpawnerCollectibleCollected.Broadcast(SpawnerId, WeakCollector.Get(), Info);
+				}
 			}));
 	}
 	else
@@ -701,57 +665,22 @@ void UBeamFarmSubsystem::GetDeliveryOrders()
 	UBeamBeamFarmMsApi* Api = GetApi();
 	if (!Api)
 	{
-		OnDeliveryOrdersReceived.Broadcast(TArray<FBeamDeliveryOrderInfo>{});
 		return;
 	}
 
 	auto* Request = UBeamFarmMsGetDeliveryOrdersRequest::Make(this, {});
 	FBeamRequestContext RequestContext;
-	TWeakObjectPtr<UBeamFarmSubsystem> WeakThis(this);
 
 	Api->CPP_GetDeliveryOrders(
 		FUserSlot{UserSlotName},
 		Request,
 		FOnBeamFarmMsGetDeliveryOrdersFullResponse::CreateLambda(
-			[WeakThis](FBeamFarmMsGetDeliveryOrdersFullResponse Response)
+			[](FBeamFarmMsGetDeliveryOrdersFullResponse Response)
 			{
-				if (!WeakThis.IsValid()) return;
-
-				if (Response.State == RS_Success && Response.SuccessData && Response.SuccessData->bSuccess)
-				{
-					TArray<FBeamDeliveryOrderInfo> Orders;
-					for (const UDeliveryOrderInfo* Info : Response.SuccessData->Orders)
-					{
-						if (!Info) continue;
-
-						FBeamDeliveryOrderInfo Order;
-						Order.OrderId                = Info->OrderId;
-						Order.DisplayName            = Info->DisplayName;
-						Order.RequiredItemContentId  = Info->RequiredItemContentId;
-						Order.RewardCurrencyId       = Info->RewardCurrencyId;
-						Order.RewardAmount           = Info->RewardAmount;
-
-						for (const UDeliveryRequirement* Req : Info->Requirements)
-						{
-							if (!Req) continue;
-							FBeamDeliveryRequirement Requirement;
-							Requirement.PropertyName = Req->PropertyName;
-							Requirement.Comparison   = Req->Comparison == TEXT("GreaterThan")
-								? EBeamDeliveryComparison::BEAM_GreaterThan
-								: EBeamDeliveryComparison::BEAM_LowerThan;
-							Requirement.Value        = Req->Value;
-							Order.Requirements.Add(Requirement);
-						}
-
-						Orders.Add(Order);
-					}
-					WeakThis->OnDeliveryOrdersReceived.Broadcast(Orders);
-				}
-				else
+				if (Response.State != RS_Success || !Response.SuccessData || !Response.SuccessData->bSuccess)
 				{
 					const FString Err = (Response.State == RS_Error) ? Response.ErrorData.error : TEXT("GetDeliveryOrders failed");
 					UE_LOG(LogTemp, Warning, TEXT("UBeamFarmSubsystem::GetDeliveryOrders failed: %s"), *Err);
-					WeakThis->OnDeliveryOrdersReceived.Broadcast(TArray<FBeamDeliveryOrderInfo>{});
 				}
 			}),
 		RequestContext,
@@ -799,33 +728,22 @@ void UBeamFarmSubsystem::DeliverOrder(const FString& OrderId, int64 ItemInstance
 	UBeamBeamFarmMsApi* Api = GetApi();
 	if (!Api)
 	{
-		OnDeliveryFailed.Broadcast(OrderId, TEXT("BeamFarmMsApi not available"));
 		return;
 	}
 
 	auto* Request = UBeamFarmMsDeliverOrderRequest::Make(OrderId, ItemInstanceId, this, {});
 	FBeamRequestContext RequestContext;
-	TWeakObjectPtr<UBeamFarmSubsystem> WeakThis(this);
 
 	Api->CPP_DeliverOrder(
 		FUserSlot{UserSlotName},
 		Request,
 		FOnBeamFarmMsDeliverOrderFullResponse::CreateLambda(
-			[WeakThis, OrderId](FBeamFarmMsDeliverOrderFullResponse Response)
+			[OrderId](FBeamFarmMsDeliverOrderFullResponse Response)
 			{
-				if (!WeakThis.IsValid()) return;
-
-				if (Response.State == RS_Success && Response.SuccessData && Response.SuccessData->bSuccess)
-				{
-					WeakThis->OnDeliveryCompleted.Broadcast(
-						Response.SuccessData->OrderId,
-						Response.SuccessData->RewardCurrencyId,
-						Response.SuccessData->RewardAmount);
-				}
-				else
+				if (Response.State != RS_Success || !Response.SuccessData || !Response.SuccessData->bSuccess)
 				{
 					const FString Err = (Response.State == RS_Error) ? Response.ErrorData.error : TEXT("DeliverOrder failed");
-					WeakThis->OnDeliveryFailed.Broadcast(OrderId, Err);
+					UE_LOG(LogTemp, Warning, TEXT("UBeamFarmSubsystem::DeliverOrder failed for '%s': %s"), *OrderId, *Err);
 				}
 			}),
 		RequestContext,
@@ -841,32 +759,22 @@ void UBeamFarmSubsystem::StartResearch(int64 ItemInstanceId, const FString& Item
 	UBeamBeamFarmMsApi* Api = GetApi();
 	if (!Api)
 	{
-		OnResearchStartFailed.Broadcast(ItemInstanceId, TEXT("BeamFarmMsApi not available"));
 		return;
 	}
 
 	auto* Request = UBeamFarmMsStartResearchRequest::Make(ItemInstanceId, ItemContentId, this, {});
 	FBeamRequestContext RequestContext;
-	TWeakObjectPtr<UBeamFarmSubsystem> WeakThis(this);
 
 	Api->CPP_StartResearch(
 		FUserSlot{UserSlotName},
 		Request,
 		FOnBeamFarmMsStartResearchFullResponse::CreateLambda(
-			[WeakThis, ItemInstanceId](FBeamFarmMsStartResearchFullResponse Response)
+			[ItemInstanceId](FBeamFarmMsStartResearchFullResponse Response)
 			{
-				if (!WeakThis.IsValid()) return;
-				if (Response.State == RS_Success && Response.SuccessData && Response.SuccessData->bSuccess)
-				{
-					WeakThis->OnResearchStarted.Broadcast(
-						ItemInstanceId,
-						Response.SuccessData->StartedAtUtcSeconds,
-						Response.SuccessData->PointsSpent);
-				}
-				else
+				if (Response.State != RS_Success || !Response.SuccessData || !Response.SuccessData->bSuccess)
 				{
 					const FString Err = (Response.State == RS_Error) ? Response.ErrorData.error : TEXT("StartResearch failed");
-					WeakThis->OnResearchStartFailed.Broadcast(ItemInstanceId, Err);
+					UE_LOG(LogTemp, Warning, TEXT("UBeamFarmSubsystem::StartResearch failed for instance %lld: %s"), ItemInstanceId, *Err);
 				}
 			}),
 		RequestContext,
@@ -880,33 +788,22 @@ void UBeamFarmSubsystem::CollectResearch(int64 ItemInstanceId, const FString& It
 	UBeamBeamFarmMsApi* Api = GetApi();
 	if (!Api)
 	{
-		OnResearchCollectFailed.Broadcast(ItemInstanceId, TEXT("BeamFarmMsApi not available"));
 		return;
 	}
 
 	auto* Request = UBeamFarmMsCollectResearchRequest::Make(ItemInstanceId, ItemContentId, this, {});
 	FBeamRequestContext RequestContext;
-	TWeakObjectPtr<UBeamFarmSubsystem> WeakThis(this);
 
 	Api->CPP_CollectResearch(
 		FUserSlot{UserSlotName},
 		Request,
 		FOnBeamFarmMsCollectResearchFullResponse::CreateLambda(
-			[WeakThis, ItemInstanceId](FBeamFarmMsCollectResearchFullResponse Response)
+			[ItemInstanceId](FBeamFarmMsCollectResearchFullResponse Response)
 			{
-				if (!WeakThis.IsValid()) return;
-				if (Response.State == RS_Success && Response.SuccessData && Response.SuccessData->bSuccess)
-				{
-					WeakThis->OnResearchCollected.Broadcast(
-						ItemInstanceId,
-						Response.SuccessData->OutputContentId,
-						Response.SuccessData->OutputQuantity,
-						Response.SuccessData->OutputType);
-				}
-				else
+				if (Response.State != RS_Success || !Response.SuccessData || !Response.SuccessData->bSuccess)
 				{
 					const FString Err = (Response.State == RS_Error) ? Response.ErrorData.error : TEXT("CollectResearch failed");
-					WeakThis->OnResearchCollectFailed.Broadcast(ItemInstanceId, Err);
+					UE_LOG(LogTemp, Warning, TEXT("UBeamFarmSubsystem::CollectResearch failed for instance %lld: %s"), ItemInstanceId, *Err);
 				}
 			}),
 		RequestContext,
