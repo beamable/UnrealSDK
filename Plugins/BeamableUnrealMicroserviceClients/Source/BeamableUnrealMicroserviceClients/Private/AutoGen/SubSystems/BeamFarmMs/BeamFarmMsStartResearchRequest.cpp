@@ -27,7 +27,7 @@ void UBeamFarmMsStartResearchRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UBeamFarmMsStartResearchRequest* UBeamFarmMsStartResearchRequest::Make(int64 _ItemInstanceId, FString _ItemContentId, FString _ProjectContentId, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
+UBeamFarmMsStartResearchRequest* UBeamFarmMsStartResearchRequest::Make(int64 _ItemInstanceId, FString _ItemContentId, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UBeamFarmMsStartResearchRequest* Req = NewObject<UBeamFarmMsStartResearchRequest>(RequestOwner);
 	Req->CustomHeaders = TMap{CustomHeaders};
@@ -39,7 +39,6 @@ UBeamFarmMsStartResearchRequest* UBeamFarmMsStartResearchRequest::Make(int64 _It
 	Req->Body = NewObject<UStartResearchRequestArgs>(Req);
 	Req->Body->ItemInstanceId = _ItemInstanceId;
 	Req->Body->ItemContentId = _ItemContentId;
-	Req->Body->ProjectContentId = _ProjectContentId;
 	
 
 	return Req;

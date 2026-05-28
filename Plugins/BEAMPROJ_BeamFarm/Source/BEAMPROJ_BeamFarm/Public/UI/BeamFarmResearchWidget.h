@@ -12,20 +12,21 @@ class UBeamFarmSubsystem;
  * Research Lab panel widget for the BeamFarm demo.
  *
  * Research is item-instance-based: the player picks an item from their inventory
- * and a research project, then calls ConfirmResearch(). The server deducts research
- * points and stores research state as properties on the item (changing its instance ID).
- * After the timer elapses the player calls CollectResearch() to receive the output reward.
+ * (one whose UBeamPlantContent has bCanBeResearched = true) and calls ConfirmResearch().
+ * The server reads research parameters directly from the plant's content entry — no
+ * separate project selection is needed.
  *
- * To identify in-research items in the player's inventory check for the property key
- * returned by UBeamFarmSubsystem::GetResearchStartedAtKey(). Items with that property
- * are in research and should not appear in other inventory UIs.
+ * After StartResearch succeeds the item gets a new instance ID (Beamable delete+re-add).
+ * Refresh inventory and look for items with property key "research_started_at" to display
+ * in-progress research. Items with that property should be hidden from other inventory UIs.
  *
  * Workflow:
- *   1. Show inventory items that do NOT have the research_started_at property.
- *   2. Player picks a project (SelectProject) and an item (SelectItemForResearch).
- *   3. Call ConfirmResearch(). On success: OnResearchStarted fires — refresh inventory.
- *   4. Show in-research items (those with research_started_at property) with a countdown.
- *   5. When timer elapses, player taps Collect: call CollectResearch(instanceId, contentId).
+ *   1. Show inventory items where UBeamPlantContent.bCanBeResearched == true
+ *      AND the item does NOT already have the "research_started_at" property.
+ *   2. Player picks an item → SelectItemForResearch() → ConfirmResearch().
+ *   3. On success: OnResearchStarted fires — refresh inventory.
+ *   4. Show in-research items (those with research_started_at) with a countdown.
+ *   5. When complete, player taps Collect → CollectResearch(instanceId, contentId).
  *   6. On success: OnResearchCollected fires — refresh inventory and show reward.
  */
 UCLASS(Abstract, Blueprintable, BlueprintType)
@@ -34,13 +35,6 @@ class BEAMPROJ_BEAMFARM_API UBeamFarmResearchWidget : public UUserWidget
 	GENERATED_BODY()
 
 public:
-	// Content ID of the research_project.* template the player selected.
-	UPROPERTY(BlueprintReadOnly, Category = "BeamFarm|Research")
-	FString SelectedProjectContentId;
-
-	UPROPERTY(BlueprintReadOnly, Category = "BeamFarm|Research")
-	bool bHasSelectedProject = false;
-
 	// Beamable item instance ID (int64) of the item the player wants to research.
 	UPROPERTY(BlueprintReadOnly, Category = "BeamFarm|Research")
 	int64 SelectedItemInstanceId = 0;
@@ -58,14 +52,6 @@ public:
 
 	// ─── Actions ───────────────────────────────────────────────────────────
 
-	// Records the research project template the player selected.
-	UFUNCTION(BlueprintCallable, Category = "BeamFarm|Research")
-	void SelectProject(const FString& ProjectContentId);
-
-	// Clears the selected project.
-	UFUNCTION(BlueprintCallable, Category = "BeamFarm|Research")
-	void ClearSelectedProject();
-
 	// Records which inventory item the player wants to submit for research.
 	UFUNCTION(BlueprintCallable, Category = "BeamFarm|Research")
 	void SelectItemForResearch(int64 ItemInstanceId, const FString& ItemContentId);
@@ -74,7 +60,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "BeamFarm|Research")
 	void ClearSelectedItem();
 
-	// Submits the research: requires bHasSelectedProject, bHasSelectedItem, and !bIsStartingResearch.
+	// Submits the research: requires bHasSelectedItem and !bIsStartingResearch.
 	// Outcome arrives via OnResearchStarted / OnResearchStartFailed.
 	UFUNCTION(BlueprintCallable, Category = "BeamFarm|Research")
 	void ConfirmResearch();

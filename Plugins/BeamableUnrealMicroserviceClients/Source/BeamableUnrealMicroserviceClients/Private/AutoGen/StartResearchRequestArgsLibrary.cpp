@@ -23,23 +23,21 @@ FString UStartResearchRequestArgsLibrary::StartResearchRequestArgsToJsonString(c
 	return Result;
 }	
 
-UStartResearchRequestArgs* UStartResearchRequestArgsLibrary::Make(int64 ItemInstanceId, FString ItemContentId, FString ProjectContentId, UObject* Outer)
+UStartResearchRequestArgs* UStartResearchRequestArgsLibrary::Make(int64 ItemInstanceId, FString ItemContentId, UObject* Outer)
 {
 	auto Serializable = NewObject<UStartResearchRequestArgs>(Outer);
 	Serializable->ItemInstanceId = ItemInstanceId;
 	Serializable->ItemContentId = ItemContentId;
-	Serializable->ProjectContentId = ProjectContentId;
 	
 	return Serializable;
 }
 
-void UStartResearchRequestArgsLibrary::Break(const UStartResearchRequestArgs* Serializable, int64& ItemInstanceId, FString& ItemContentId, FString& ProjectContentId)
+void UStartResearchRequestArgsLibrary::Break(const UStartResearchRequestArgs* Serializable, int64& ItemInstanceId, FString& ItemContentId)
 {
 	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
 	{
 		ItemInstanceId = Serializable->ItemInstanceId;
 		ItemContentId = Serializable->ItemContentId;
-		ProjectContentId = Serializable->ProjectContentId;
 	}
 		
 }

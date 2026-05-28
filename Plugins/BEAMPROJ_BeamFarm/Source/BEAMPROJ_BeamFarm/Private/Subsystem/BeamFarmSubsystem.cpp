@@ -836,7 +836,7 @@ void UBeamFarmSubsystem::DeliverOrder(const FString& OrderId, int64 ItemInstance
 
 // ─── Research ────────────────────────────────────────────────────────────────
 
-void UBeamFarmSubsystem::StartResearch(int64 ItemInstanceId, const FString& ItemContentId, const FString& ProjectContentId)
+void UBeamFarmSubsystem::StartResearch(int64 ItemInstanceId, const FString& ItemContentId)
 {
 	UBeamBeamFarmMsApi* Api = GetApi();
 	if (!Api)
@@ -845,7 +845,7 @@ void UBeamFarmSubsystem::StartResearch(int64 ItemInstanceId, const FString& Item
 		return;
 	}
 
-	auto* Request = UBeamFarmMsStartResearchRequest::Make(ItemInstanceId, ItemContentId, ProjectContentId, this, {});
+	auto* Request = UBeamFarmMsStartResearchRequest::Make(ItemInstanceId, ItemContentId, this, {});
 	FBeamRequestContext RequestContext;
 	TWeakObjectPtr<UBeamFarmSubsystem> WeakThis(this);
 

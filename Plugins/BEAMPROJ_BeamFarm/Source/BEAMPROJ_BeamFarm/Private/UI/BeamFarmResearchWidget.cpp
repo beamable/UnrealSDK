@@ -31,18 +31,6 @@ void UBeamFarmResearchWidget::NativeDestruct()
 	Super::NativeDestruct();
 }
 
-void UBeamFarmResearchWidget::SelectProject(const FString& ProjectContentId)
-{
-	SelectedProjectContentId = ProjectContentId;
-	bHasSelectedProject      = true;
-}
-
-void UBeamFarmResearchWidget::ClearSelectedProject()
-{
-	SelectedProjectContentId = TEXT("");
-	bHasSelectedProject      = false;
-}
-
 void UBeamFarmResearchWidget::SelectItemForResearch(int64 ItemInstanceId, const FString& ItemContentId)
 {
 	SelectedItemInstanceId = ItemInstanceId;
@@ -59,7 +47,7 @@ void UBeamFarmResearchWidget::ClearSelectedItem()
 
 void UBeamFarmResearchWidget::ConfirmResearch()
 {
-	if (!bHasSelectedProject || !bHasSelectedItem || bIsStartingResearch)
+	if (!bHasSelectedItem || bIsStartingResearch)
 	{
 		return;
 	}
@@ -71,7 +59,7 @@ void UBeamFarmResearchWidget::ConfirmResearch()
 	}
 
 	bIsStartingResearch = true;
-	Sub->StartResearch(SelectedItemInstanceId, SelectedItemContentId, SelectedProjectContentId);
+	Sub->StartResearch(SelectedItemInstanceId, SelectedItemContentId);
 }
 
 void UBeamFarmResearchWidget::CollectResearch(int64 ItemInstanceId, const FString& ItemContentId)
@@ -86,7 +74,6 @@ void UBeamFarmResearchWidget::CollectResearch(int64 ItemInstanceId, const FStrin
 void UBeamFarmResearchWidget::HandleResearchStarted(int64 ItemInstanceId, int64 StartedAtUtcSeconds, int32 PointsSpent)
 {
 	bIsStartingResearch = false;
-	ClearSelectedProject();
 	ClearSelectedItem();
 	OnResearchStarted(ItemInstanceId, StartedAtUtcSeconds, PointsSpent);
 }

@@ -17,8 +17,6 @@ public:
 	int64 ItemInstanceId = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Item Content Id", Category="Beam")
 	FString ItemContentId = {};
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Project Content Id", Category="Beam")
-	FString ProjectContentId = {};
 
 	
 

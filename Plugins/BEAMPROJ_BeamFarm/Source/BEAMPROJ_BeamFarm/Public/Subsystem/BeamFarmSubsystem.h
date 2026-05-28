@@ -344,11 +344,12 @@ public:
 
 	// ─── Research ───────────────────────────────────────────────────────────
 
-	// Begins researching the specified item. Deducts research points and writes
-	// research state as item properties (new instance ID assigned). Broadcasts
-	// OnResearchStarted or OnResearchStartFailed. Refresh inventory after success.
+	// Begins researching the specified item. Research parameters (cost, duration, output)
+	// are read from the plant's itemplant content — no separate project needed.
+	// Deducts research points and writes state as item properties (new instance ID assigned).
+	// Broadcasts OnResearchStarted or OnResearchStartFailed. Refresh inventory after success.
 	UFUNCTION(BlueprintCallable, Category = "BeamFarm|Research")
-	void StartResearch(int64 ItemInstanceId, const FString& ItemContentId, const FString& ProjectContentId);
+	void StartResearch(int64 ItemInstanceId, const FString& ItemContentId);
 
 	// Collects completed research for the specified item instance, granting the output reward.
 	// Broadcasts OnResearchCollected or OnResearchCollectFailed.
@@ -357,9 +358,6 @@ public:
 
 	// Property key constants — use these to filter inventory items that are currently in research.
 	// An item is in research when it has the "research_started_at" property set.
-	UFUNCTION(BlueprintPure, Category = "BeamFarm|Research")
-	static FString GetResearchProjectIdKey() { return TEXT("research_project_id"); }
-
 	UFUNCTION(BlueprintPure, Category = "BeamFarm|Research")
 	static FString GetResearchStartedAtKey() { return TEXT("research_started_at"); }
 
