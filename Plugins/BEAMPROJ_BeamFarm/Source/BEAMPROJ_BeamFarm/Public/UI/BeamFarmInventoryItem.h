@@ -63,6 +63,10 @@ struct BEAMPROJ_BEAMFARM_API FBeamFarmInventoryItem
 	UPROPERTY(BlueprintReadWrite, Category = "BeamFarm|Research")
 	int64 ResearchStartedAtUtc = 0;
 
+	// Research points cost of the active research job. 0 if not in research.
+	UPROPERTY(BlueprintReadWrite, Category = "BeamFarm|Research")
+	int32 ResearchPointsCost = 0;
+
 	// Total duration of the research job in seconds. 0 if not in research.
 	UPROPERTY(BlueprintReadWrite, Category = "BeamFarm|Research")
 	int32 ResearchDurationSeconds = 0;
