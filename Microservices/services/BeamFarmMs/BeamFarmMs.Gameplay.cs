@@ -1422,8 +1422,7 @@ namespace Beamable.BeamFarmMs
 
             // ── Apply inventory update atomically ─────────────────────────────
             var updateBuilder = new InventoryUpdateBuilder();
-            updateBuilder.DeleteItem(itemContentId, itemInstanceId);
-            updateBuilder.AddItem(itemContentId, newProps);
+            updateBuilder.UpdateItem(itemContentId, itemInstanceId, newProps);
 
             if (cost > 0)
                 updateBuilder.CurrencyChange(ResearchPointsCurrencyId, -cost);
