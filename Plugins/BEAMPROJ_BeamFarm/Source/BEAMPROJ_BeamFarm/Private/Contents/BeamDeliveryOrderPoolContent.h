@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Content/BeamContentObject.h"
+#include "BeamBackend/SemanticTypes/BeamContentId.h"
 
 #include "BeamDeliveryOrderPoolContent.generated.h"
 
@@ -24,5 +25,5 @@ public:
 	int32 MaxActiveOrders = 3;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BeamFarm|Delivery")
-	TArray<FString> OrderPool;
+	TArray<FBeamContentId> OrderPool;
 };

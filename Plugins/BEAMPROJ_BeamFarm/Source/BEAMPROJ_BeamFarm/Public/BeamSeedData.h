@@ -40,7 +40,7 @@ struct BEAMPROJ_BEAMFARM_API FBeamSeedData : public FBeamJsonSerializableUStruct
 
 	// Content ID of the UBeamPlantContent item the player receives when harvesting
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BeamFarm|Seed")
-	FString HarvestItemContentId;
+	FBeamContentId HarvestItemContentId;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
 	{
@@ -72,7 +72,7 @@ struct BEAMPROJ_BEAMFARM_API FBeamSeedData : public FBeamJsonSerializableUStruct
 			Serializer->WriteValue("GrowingSprite", SoftObjPath);
 		}
 
-		Serializer->WriteValue("HarvestItemContentId", HarvestItemContentId);
+		Serializer->WriteValue("HarvestItemContentId", HarvestItemContentId.AsString);
 	}
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
@@ -111,7 +111,8 @@ struct BEAMPROJ_BEAMFARM_API FBeamSeedData : public FBeamJsonSerializableUStruct
 			UBeamJsonUtils::DeserializeRawPrimitive(TEXT("GrowingSprite"), Bag, SoftObjPath);
 			GrowingSprite = TSoftObjectPtr<UPaperSprite>(FSoftObjectPath(SoftObjPath));
 		}
-
-		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("HarvestItemContentId"), Bag, HarvestItemContentId);
+		FString HarvestItemContentIdStr;
+		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("HarvestItemContentId"), Bag, HarvestItemContentIdStr);
+		HarvestItemContentId = FBeamContentId(HarvestItemContentIdStr);
 	}
 };

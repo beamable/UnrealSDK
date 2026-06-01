@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Content/BeamContentObject.h"
+#include "BeamBackend/SemanticTypes/BeamContentId.h"
 #include "Farming/FarmTypes.h"
 
 #include "BeamDeliveryOrderContent.generated.h"
@@ -25,13 +26,13 @@ public:
 	FString DisplayName;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BeamFarm|Delivery")
-	FString RequiredItemContentId;
+	FBeamContentId RequiredItemContentId;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BeamFarm|Delivery")
 	TArray<FBeamDeliveryRequirement> Requirements;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BeamFarm|Delivery")
-	FString RewardCurrencyId;
+	FBeamContentId RewardCurrencyId;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BeamFarm|Delivery")
 	int32 RewardAmount = 0;

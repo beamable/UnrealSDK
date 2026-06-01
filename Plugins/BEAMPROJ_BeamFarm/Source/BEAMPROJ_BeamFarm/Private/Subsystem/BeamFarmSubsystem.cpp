@@ -328,7 +328,7 @@ void UBeamFarmSubsystem::HandleSlotInteraction(const FBeamFarmInteractionRequest
 	const FString SlotId = Request.SlotId;
 
 	FBeamPlantData HarvestData;
-	FindPlantBySeedId(SelectedCrop.HarvestItemContentId, HarvestData);
+	FindPlantBySeedId(SelectedCrop.HarvestItemContentId.AsString, HarvestData);
 
 	OnSlotShouldPlant.Broadcast(SlotId, SelectedCrop, HarvestData);
 

@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Content/BeamContentTypes/BeamItemContent.h"
+#include "BeamBackend/SemanticTypes/BeamContentId.h"
 #include "BeamPlantData.h"
 #include "Farming/FarmTypes.h"
 
@@ -50,7 +51,7 @@ public:
 
 	// Content ID of the reward (plant_modifier.*, itemplant.*, plant_raw_material.*, etc.).
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BeamFarm|Research", meta = (EditCondition = "bCanBeResearched"))
-	FString ResearchOutputContentId;
+	FBeamContentId ResearchOutputContentId;
 
 	// How many units of ResearchOutputContentId are granted on completion.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BeamFarm|Research", meta = (ClampMin = "1", EditCondition = "bCanBeResearched"))
