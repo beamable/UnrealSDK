@@ -322,6 +322,30 @@ namespace Beamable.BeamFarmMs
     }
 
     // ══════════════════════════════════════════════════════════════════════════
+    // DATA MODELS — PLAYER LEVEL
+    // ══════════════════════════════════════════════════════════════════════════
+
+    [Serializable]
+    public class GetPlayerLevelResult
+    {
+        public bool   success;
+
+        /// <summary>Current player level (0-based; level 0 = just started).</summary>
+        public int    level;
+
+        /// <summary>Total XP accumulated across all actions.</summary>
+        public int    totalXp;
+
+        /// <summary>XP needed to complete the current level (reach the next one).</summary>
+        public int    xpForCurrentLevel;
+
+        /// <summary>XP earned within the current level towards xpForCurrentLevel.</summary>
+        public int    xpIntoCurrentLevel;
+
+        public string message;
+    }
+
+    // ══════════════════════════════════════════════════════════════════════════
     // DATA MODELS — RESEARCH
     // ══════════════════════════════════════════════════════════════════════════
 
@@ -529,6 +553,43 @@ namespace Beamable.BeamFarmMs
 
         /// <summary>How many units of ResearchOutputContentId are granted on completion.</summary>
         public int ResearchOutputQuantity = 1;
+
+        /// <summary>Minimum player level required to start research on this plant. 0 = no restriction.</summary>
+        public int ResearchRequiredLevel = 0;
+    }
+
+    /// <summary>
+    /// Singleton configuration for the player level progression system.
+    /// Content type ID: "farm_level_config"
+    ///
+    /// Publish one entry with content ID "farm_level_config.default".
+    ///
+    /// XpThresholds[i] = total XP required to reach level (i+1).
+    /// Example: [100, 300, 600, 1000] means:
+    ///   Level 0 → 1: 100 total XP
+    ///   Level 1 → 2: 300 total XP
+    ///   Level 2 → 3: 600 total XP
+    ///   Level 3 → 4: 1000 total XP
+    ///   Level 4+: stays at max level once XpThresholds is exhausted.
+    /// </summary>
+    [Serializable]
+    [ContentType("farm_level_config")]
+    public class FarmLevelConfig : ContentObject
+    {
+        /// <summary>Total XP boundaries per level. See class summary for format.</summary>
+        public int[] XpThresholds = { 100, 300, 600, 1000, 1500, 2200, 3000, 4000, 5500, 7500 };
+
+        /// <summary>XP granted when a harvest is collected.</summary>
+        public int XpPerHarvest = 10;
+
+        /// <summary>XP granted when a ground collectible is picked up.</summary>
+        public int XpPerGroundCollect = 5;
+
+        /// <summary>XP granted when a delivery order is fulfilled.</summary>
+        public int XpPerDelivery = 25;
+
+        /// <summary>XP granted when research is collected.</summary>
+        public int XpPerResearch = 50;
     }
 
     // ══════════════════════════════════════════════════════════════════════════
@@ -564,6 +625,15 @@ namespace Beamable.BeamFarmMs
         /// Create a matching "currency.research_points" entry in the Beamable content browser.
         /// </summary>
         private const string ResearchPointsCurrencyId = "currency.research_points";
+
+        /// <summary>Stat key that stores the player's total accumulated farm XP.</summary>
+        private const string PlayerXpStatKey = "farm_player_xp";
+
+        /// <summary>
+        /// Content ID of the singleton FarmLevelConfig.
+        /// Publish one entry in the Beamable content browser with this exact ID.
+        /// </summary>
+        private const string LevelConfigContentId = "farm_level_config.default";
 
         // ══════════════════════════════════════════════════════════════════════
         // PLANTING
@@ -759,6 +829,11 @@ namespace Beamable.BeamFarmMs
 
             // ── Clear planting data ───────────────────────────────────────────
             await SetSlotStat(SlotDataKey(slotId), string.Empty);
+
+            // ── Grant XP ──────────────────────────────────────────────────────
+            FarmLevelConfig lvlCfg = null;
+            try { lvlCfg = await Services.Content.GetContent<FarmLevelConfig>(new ContentRef(typeof(FarmLevelConfig), LevelConfigContentId)); } catch { }
+            await GrantFarmXp(lvlCfg?.XpPerHarvest ?? 10);
 
             return new CollectResult
             {
@@ -984,6 +1059,11 @@ namespace Beamable.BeamFarmMs
             }
 
             await Services.Inventory.Update(updateBuilder);
+
+            // ── Grant XP ──────────────────────────────────────────────────────
+            FarmLevelConfig lvlCfgGround = null;
+            try { lvlCfgGround = await Services.Content.GetContent<FarmLevelConfig>(new ContentRef(typeof(FarmLevelConfig), LevelConfigContentId)); } catch { }
+            await GrantFarmXp(lvlCfgGround?.XpPerGroundCollect ?? 5);
 
             return new CollectGroundItemResult
             {
@@ -1327,6 +1407,11 @@ namespace Beamable.BeamFarmMs
             // Refill asynchronously so the player's slate stays at MaxActiveOrders.
             await FillDeliveryOrdersInternal();
 
+            // ── Grant XP ──────────────────────────────────────────────────────
+            FarmLevelConfig lvlCfgDel = null;
+            try { lvlCfgDel = await Services.Content.GetContent<FarmLevelConfig>(new ContentRef(typeof(FarmLevelConfig), LevelConfigContentId)); } catch { }
+            await GrantFarmXp(lvlCfgDel?.XpPerDelivery ?? 25);
+
             return new DeliverOrderResult
             {
                 success          = true,
@@ -1589,6 +1674,24 @@ namespace Beamable.BeamFarmMs
 
             int cost = Math.Max(0, plant.ResearchPointsCost);
 
+            // ── Validate player level requirement ─────────────────────────────
+            if (plant.ResearchRequiredLevel > 0)
+            {
+                string xpStr = await GetSlotStat(PlayerXpStatKey);
+                int totalXp  = int.TryParse(xpStr, out var xp) ? xp : 0;
+
+                FarmLevelConfig lvlCfg = null;
+                try { lvlCfg = await Services.Content.GetContent<FarmLevelConfig>(new ContentRef(typeof(FarmLevelConfig), LevelConfigContentId)); } catch { }
+
+                int[] thresholds = lvlCfg?.XpThresholds ?? new[] { 100, 300, 600, 1000, 1500, 2200, 3000, 4000, 5500, 7500 };
+                var (playerLevel, _, _) = ComputeLevel(totalXp, thresholds);
+
+                if (playerLevel < plant.ResearchRequiredLevel)
+                    return ResearchStartFail(
+                        $"Research on '{itemContentId}' requires level {plant.ResearchRequiredLevel}. " +
+                        $"You are level {playerLevel}.");
+            }
+
             // ── Validate research_points balance ──────────────────────────────
             if (cost > 0)
             {
@@ -1723,6 +1826,11 @@ namespace Beamable.BeamFarmMs
 
             await Services.Inventory.Update(updateBuilder);
 
+            // ── Grant XP ──────────────────────────────────────────────────────
+            FarmLevelConfig lvlCfgRes = null;
+            try { lvlCfgRes = await Services.Content.GetContent<FarmLevelConfig>(new ContentRef(typeof(FarmLevelConfig), LevelConfigContentId)); } catch { }
+            await GrantFarmXp(lvlCfgRes?.XpPerResearch ?? 50);
+
             return new CollectResearchResult
             {
                 success         = true,
@@ -1732,6 +1840,80 @@ namespace Beamable.BeamFarmMs
                 message         = $"Research collected for item {itemInstanceId}. " +
                                   $"Granted {outputQuantity}× '{outputContentId}'.",
             };
+        }
+
+        // ══════════════════════════════════════════════════════════════════════
+        // PLAYER LEVEL
+        // ══════════════════════════════════════════════════════════════════════
+
+        /// <summary>
+        /// Returns the player's current level data, computed from their total XP against the
+        /// thresholds defined in "farm_level_config.default".
+        /// </summary>
+        [ClientCallable]
+        public async Task<GetPlayerLevelResult> GetPlayerLevel()
+        {
+            string xpStr = await GetSlotStat(PlayerXpStatKey);
+            int totalXp  = int.TryParse(xpStr, out var x) ? x : 0;
+
+            FarmLevelConfig config = null;
+            try
+            {
+                config = await Services.Content.GetContent<FarmLevelConfig>(
+                    new ContentRef(typeof(FarmLevelConfig), LevelConfigContentId));
+            }
+            catch { }
+
+            int[] thresholds = config?.XpThresholds ?? new[] { 100, 300, 600, 1000, 1500, 2200, 3000, 4000, 5500, 7500 };
+            var (level, xpIntoLevel, xpForLevel) = ComputeLevel(totalXp, thresholds);
+
+            return new GetPlayerLevelResult
+            {
+                success            = true,
+                level              = level,
+                totalXp            = totalXp,
+                xpForCurrentLevel  = xpForLevel,
+                xpIntoCurrentLevel = xpIntoLevel,
+                message            = $"Level {level} ({xpIntoLevel}/{xpForLevel} XP).",
+            };
+        }
+
+        /// <summary>Adds amount to the player's total XP stat. Fire-and-forget; errors are swallowed.</summary>
+        private async Task GrantFarmXp(int amount)
+        {
+            if (amount <= 0) return;
+            try
+            {
+                string xpStr = await GetSlotStat(PlayerXpStatKey);
+                int current  = int.TryParse(xpStr, out var x) ? x : 0;
+                await SetSlotStat(PlayerXpStatKey, (current + amount).ToString());
+            }
+            catch { }
+        }
+
+        /// <summary>
+        /// Given total XP and a threshold array, returns (level, xpIntoCurrentLevel, xpNeededForCurrentLevel).
+        /// Level is 0-based. Once totalXp exceeds the last threshold, the player stays at max level.
+        /// </summary>
+        private static (int level, int xpIntoLevel, int xpForLevel) ComputeLevel(int totalXp, int[] thresholds)
+        {
+            if (thresholds == null || thresholds.Length == 0)
+                return (0, totalXp, int.MaxValue);
+
+            int level = 0;
+            for (int i = 0; i < thresholds.Length; i++)
+            {
+                if (totalXp >= thresholds[i]) level = i + 1;
+                else break;
+            }
+
+            // Max level reached
+            if (level >= thresholds.Length)
+                return (level, 0, 0);
+
+            int prevThreshold = level > 0 ? thresholds[level - 1] : 0;
+            int nextThreshold = thresholds[level];
+            return (level, totalXp - prevThreshold, nextThreshold - prevThreshold);
         }
 
         // ══════════════════════════════════════════════════════════════════════
@@ -1840,6 +2022,17 @@ namespace Beamable.BeamFarmMs
                 outputQuantity  = 0,
                 outputType      = string.Empty,
                 message         = message,
+            };
+
+        private static GetPlayerLevelResult GetPlayerLevelFail(string message) =>
+            new GetPlayerLevelResult
+            {
+                success            = false,
+                level              = 0,
+                totalXp            = 0,
+                xpForCurrentLevel  = 0,
+                xpIntoCurrentLevel = 0,
+                message            = message,
             };
     }
 }

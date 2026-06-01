@@ -12,8 +12,10 @@
 #include "AutoGen/SubSystems/BeamBeamFarmMsApi.h"
 #include "AutoGen/SubSystems/BeamFarmMs/BeamFarmMsGetGroundItemsRequest.h"
 #include "AutoGen/SubSystems/BeamFarmMs/BeamFarmMsGetSlotStatesRequest.h"
+#include "AutoGen/SubSystems/BeamFarmMs/BeamFarmMsGetPlayerLevelRequest.h"
 #include "AutoGen/GroundItemEntry.h"
 #include "AutoGen/SlotStateEntry.h"
+#include "AutoGen/GetPlayerLevelResult.h"
 #include "Runtime/BeamRuntime.h"
 #include "BeamFarmSubsystem.generated.h"
 
@@ -32,6 +34,44 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnBeamFarmSlotShouldPlant,
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnBeamFarmSlotShouldHarvest, const FString&, SlotId);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnBeamFarmSlotShouldCancelPlant, const FString&, SlotId);
+
+// ─── Player level data ────────────────────────────────────────────────────────
+
+USTRUCT(BlueprintType)
+struct BEAMPROJ_BEAMFARM_API FBeamFarmPlayerLevelData
+{
+	GENERATED_BODY()
+
+	// Current player level (0-based).
+	UPROPERTY(BlueprintReadOnly, Category = "BeamFarm|Level")
+	int32 Level = 0;
+
+	// Total XP accumulated.
+	UPROPERTY(BlueprintReadOnly, Category = "BeamFarm|Level")
+	int32 TotalXp = 0;
+
+	// XP needed to complete the current level (i.e. reach the next one).
+	UPROPERTY(BlueprintReadOnly, Category = "BeamFarm|Level")
+	int32 XpForCurrentLevel = 0;
+
+	// XP earned so far within the current level.
+	UPROPERTY(BlueprintReadOnly, Category = "BeamFarm|Level")
+	int32 XpIntoCurrentLevel = 0;
+
+	// Progress through the current level in [0, 1]. Returns 1 at max level.
+	
+	float GetProgress()
+	{
+		if (XpForCurrentLevel <= 0) return 1.f;
+		return FMath::Clamp((float)XpIntoCurrentLevel / (float)XpForCurrentLevel, 0.f, 1.f);
+	}
+};
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnBeamFarmPlayerLevelUp,
+                                             int32, OldLevel,
+                                             int32, NewLevel);
+
+DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnPlayerLevelRefreshed, bool, bSuccess, int32, OldLevel, int32, NewLevel);
 
 // ─── Collectible spawner delegates (UFarmCollectibleSpawner subscribes) ───────
 
@@ -299,6 +339,22 @@ public:
 
 	UFUNCTION(BlueprintPure, Category = "BeamFarm|Research")
 	static FString GetResearchOutputTypeKey() { return TEXT("research_output_type"); }
+
+	// ─── Player level ───────────────────────────────────────────────────────
+
+	// Last fetched level data. Valid after the first successful GetPlayerLevel call.
+	UPROPERTY(BlueprintReadOnly, Category = "BeamFarm|Level")
+	FBeamFarmPlayerLevelData CachedPlayerLevel;
+
+	// Fetches the player's level and XP from the backend and updates CachedPlayerLevel.
+	// Broadcasts OnPlayerLevelUp if the new level is higher than the cached one.
+	// Also broadcasts OnPlayerLevelRefreshed after every successful fetch.
+	UFUNCTION(BlueprintCallable, Category = "BeamFarm|Level")
+	void RefreshPlayerLevel(const FOnPlayerLevelRefreshed& OnComplete);
+
+	// Broadcast after every successful RefreshPlayerLevel call.
+	UPROPERTY(BlueprintAssignable, Category = "BeamFarm|Level")
+	FOnBeamFarmPlayerLevelUp OnPlayerLevelUp;
 
 private:
 	UPROPERTY()

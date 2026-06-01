@@ -5,7 +5,9 @@
 #include "Subsystems/Content/BeamContentSubsystem.h"
 #include "Runtime/BeamRuntime.h"
 #include "AutoGen/SubSystems/BeamFarmMs/BeamFarmMsGetSlotStatesRequest.h"
+#include "AutoGen/SubSystems/BeamFarmMs/BeamFarmMsGetPlayerLevelRequest.h"
 #include "AutoGen/GetSlotStatesResult.h"
+#include "AutoGen/GetPlayerLevelResult.h"
 #include "AutoGen/SlotStateEntry.h"
 #include "Misc/DateTime.h"
 #include "Contents/BeamPlantContent.h"
@@ -57,6 +59,9 @@ void UBeamFarmSubsystem::HandleUserReady(const FUserSlot& Slot)
 	}
 
 	bUserReady = true;
+
+	// Populate the cached level so UI can display it immediately after login.
+	RefreshPlayerLevel(FOnPlayerLevelRefreshed());
 
 }
 
@@ -1147,6 +1152,64 @@ bool UBeamFarmSubsystem::TryPickSpawnPointForSpawner(const FString& SpawnerId, F
 	}
 
 	return false;
+}
+
+// ─── Player level ────────────────────────────────────────────────────────────
+
+void UBeamFarmSubsystem::RefreshPlayerLevel(const FOnPlayerLevelRefreshed& OnComplete)
+{
+	UBeamBeamFarmMsApi* Api = GetApi();
+	if (!Api)
+	{
+		OnComplete.ExecuteIfBound(false, 0, 0);
+		return;
+	}
+
+	auto* Request = UBeamFarmMsGetPlayerLevelRequest::Make(this, {});
+	FBeamRequestContext RequestContext;
+
+	TWeakObjectPtr<UBeamFarmSubsystem> WeakThis(this);
+
+	Api->CPP_GetPlayerLevel(
+		FUserSlot{UserSlotName},
+		Request,
+		FOnBeamFarmMsGetPlayerLevelFullResponse::CreateLambda(
+			[WeakThis, OnComplete](FBeamFarmMsGetPlayerLevelFullResponse Response)
+			{
+				if (!WeakThis.IsValid())
+				{
+					OnComplete.ExecuteIfBound(false, 0, 0);
+					return;
+				}
+
+				if (Response.State != RS_Success || !Response.SuccessData || !Response.SuccessData->bSuccess)
+				{
+					UE_LOG(LogTemp, Warning, TEXT("UBeamFarmSubsystem::RefreshPlayerLevel failed: %s"),
+						Response.State == RS_Error ? *Response.ErrorData.error : TEXT("unknown error"));
+					OnComplete.ExecuteIfBound(false, 0, 0);
+					return;
+				}
+
+				UGetPlayerLevelResult* Data = Response.SuccessData;
+				const int32 OldLevel = WeakThis->CachedPlayerLevel.Level;
+
+				WeakThis->CachedPlayerLevel.Level              = Data->Level;
+				WeakThis->CachedPlayerLevel.TotalXp            = Data->TotalXp;
+				WeakThis->CachedPlayerLevel.XpForCurrentLevel  = Data->XpForCurrentLevel;
+				WeakThis->CachedPlayerLevel.XpIntoCurrentLevel = Data->XpIntoCurrentLevel;
+
+				if (Data->Level > OldLevel)
+				{
+					WeakThis->OnPlayerLevelUp.Broadcast(OldLevel, Data->Level);
+				}
+
+				// Call the local callback
+				OnComplete.ExecuteIfBound(true, OldLevel, Data->Level);
+			}),
+		RequestContext,
+		FBeamOperationHandle(),
+		this
+	);
 }
 
 // ─── Slot actor registry ──────────────────────────────────────────────────────

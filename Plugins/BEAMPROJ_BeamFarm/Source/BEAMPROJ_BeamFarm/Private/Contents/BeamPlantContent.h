@@ -56,4 +56,8 @@ public:
 	// How many units of ResearchOutputContentId are granted on completion.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BeamFarm|Research", meta = (ClampMin = "1", EditCondition = "bCanBeResearched"))
 	int32 ResearchOutputQuantity = 1;
+
+	// Minimum player level required to start research on this plant. 0 = no restriction.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BeamFarm|Research", meta = (ClampMin = "0", EditCondition = "bCanBeResearched"))
+	int32 ResearchRequiredLevel = 0;
 };
