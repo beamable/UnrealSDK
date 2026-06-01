@@ -185,6 +185,12 @@ struct BEAMPROJ_BEAMFARM_API FBeamFarmGroundItemParams
 	// "RawMaterial" or "PlantItem"
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BeamFarm|GroundItem")
 	FString ItemType;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BeamFarm|GroundItem")
+	FVector Position = FVector::ZeroVector;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BeamFarm|GroundItem")
+	FString SpawnerId;
 };
 
 USTRUCT(BlueprintType)

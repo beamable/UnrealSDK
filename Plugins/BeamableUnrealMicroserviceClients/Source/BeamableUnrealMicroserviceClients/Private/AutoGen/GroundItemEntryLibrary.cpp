@@ -1,11 +1,11 @@
 
-#include "BeamableUnrealMicroserviceClients/Public/AutoGen/RegisterGroundItemRequestArgsLibrary.h"
+#include "BeamableUnrealMicroserviceClients/Public/AutoGen/GroundItemEntryLibrary.h"
 
 #include "CoreMinimal.h"
 #include "BeamCoreSettings.h"
 
 
-FString URegisterGroundItemRequestArgsLibrary::RegisterGroundItemRequestArgsToJsonString(const URegisterGroundItemRequestArgs* Serializable, const bool Pretty)
+FString UGroundItemEntryLibrary::GroundItemEntryToJsonString(const UGroundItemEntry* Serializable, const bool Pretty)
 {
 	FString Result = FString{};
 	if(Pretty)
@@ -23,9 +23,9 @@ FString URegisterGroundItemRequestArgsLibrary::RegisterGroundItemRequestArgsToJs
 	return Result;
 }	
 
-URegisterGroundItemRequestArgs* URegisterGroundItemRequestArgsLibrary::Make(FString GroundItemId, FString ContentId, int32 Quantity, FString ItemType, float PosX, float PosY, float PosZ, FString SpawnerId, UObject* Outer)
+UGroundItemEntry* UGroundItemEntryLibrary::Make(FString GroundItemId, FString ContentId, int32 Quantity, FString ItemType, float PosX, float PosY, float PosZ, UObject* Outer)
 {
-	auto Serializable = NewObject<URegisterGroundItemRequestArgs>(Outer);
+	auto Serializable = NewObject<UGroundItemEntry>(Outer);
 	Serializable->GroundItemId = GroundItemId;
 	Serializable->ContentId = ContentId;
 	Serializable->Quantity = Quantity;
@@ -33,12 +33,11 @@ URegisterGroundItemRequestArgs* URegisterGroundItemRequestArgsLibrary::Make(FStr
 	Serializable->PosX = PosX;
 	Serializable->PosY = PosY;
 	Serializable->PosZ = PosZ;
-	Serializable->SpawnerId = SpawnerId;
 	
 	return Serializable;
 }
 
-void URegisterGroundItemRequestArgsLibrary::Break(const URegisterGroundItemRequestArgs* Serializable, FString& GroundItemId, FString& ContentId, int32& Quantity, FString& ItemType, float& PosX, float& PosY, float& PosZ, FString& SpawnerId)
+void UGroundItemEntryLibrary::Break(const UGroundItemEntry* Serializable, FString& GroundItemId, FString& ContentId, int32& Quantity, FString& ItemType, float& PosX, float& PosY, float& PosZ)
 {
 	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
 	{
@@ -49,7 +48,6 @@ void URegisterGroundItemRequestArgsLibrary::Break(const URegisterGroundItemReque
 		PosX = Serializable->PosX;
 		PosY = Serializable->PosY;
 		PosZ = Serializable->PosZ;
-		SpawnerId = Serializable->SpawnerId;
 	}
 		
 }

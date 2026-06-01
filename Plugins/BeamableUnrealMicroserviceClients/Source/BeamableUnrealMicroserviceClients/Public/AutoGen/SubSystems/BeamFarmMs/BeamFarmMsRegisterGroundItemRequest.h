@@ -37,7 +37,7 @@ public:
 	virtual void BuildBody(FString& BodyString) const override;
 
 	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|BeamFarmMs|Utils|Make/Break", DisplayName="Make BeamFarmMsRegisterGroundItem",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="RequestOwner", AutoCreateRefTerm="CustomHeaders"))
-	static UBeamFarmMsRegisterGroundItemRequest* Make(FString _GroundItemId, FString _ContentId, int32 _Quantity, FString _ItemType, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
+	static UBeamFarmMsRegisterGroundItemRequest* Make(FString _GroundItemId, FString _ContentId, int32 _Quantity, FString _ItemType, float _PosX, float _PosY, float _PosZ, FString _SpawnerId, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

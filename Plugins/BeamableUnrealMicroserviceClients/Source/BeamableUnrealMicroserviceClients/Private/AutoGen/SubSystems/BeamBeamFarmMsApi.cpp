@@ -144,6 +144,68 @@ void UBeamBeamFarmMsApi::CPP_CollectHarvestImpl(const FBeamRealmHandle& TargetRe
 }
 
 		
+void UBeamBeamFarmMsApi::BP_GetSlotStatesImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken,
+                                UBeamFarmMsGetSlotStatesRequest* RequestData, const FOnBeamFarmMsGetSlotStatesSuccess& OnSuccess, const FOnBeamFarmMsGetSlotStatesError& OnError, const FOnBeamFarmMsGetSlotStatesComplete& OnComplete, 
+								int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
+{
+	// AUTO-GENERATED...	
+	const auto Request = Backend->CreateMicroserviceAuthenticatedRequest(OutRequestId, TargetRealm, RetryConfig, AuthToken, RequestData, Prefix);
+
+	// If we are making this request as part of an operation, we add it to it.
+	if(OpHandle.OperationId >= 0)
+		RequestTracker->AddRequestToOperation(OpHandle, OutRequestId);
+
+	// If cached...
+	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
+	{
+		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
+		Backend->RunAuthenticatedBlueprintRequestProcessor<UBeamFarmMsGetSlotStatesRequest, UGetSlotStatesResult, FOnBeamFarmMsGetSlotStatesSuccess, FOnBeamFarmMsGetSlotStatesError, FOnBeamFarmMsGetSlotStatesComplete>
+			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);		
+	}
+	// If not cached...
+	else
+	{
+		// Binds the handler to the static response handler (pre-generated)
+		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UBeamFarmMsGetSlotStatesRequest, UGetSlotStatesResult, FOnBeamFarmMsGetSlotStatesSuccess, FOnBeamFarmMsGetSlotStatesError, FOnBeamFarmMsGetSlotStatesComplete>
+			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete, CallingContext);
+		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
+	    
+		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
+		Backend->SendPreparedRequest(OutRequestId, CallingContext);	
+	}
+}
+
+void UBeamBeamFarmMsApi::CPP_GetSlotStatesImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, 
+                              UBeamFarmMsGetSlotStatesRequest* RequestData, const FOnBeamFarmMsGetSlotStatesFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
+{
+	// AUTO-GENERATED...
+	const auto Request = Backend->CreateMicroserviceAuthenticatedRequest(OutRequestId, TargetRealm, RetryConfig, AuthToken, RequestData, Prefix);
+	
+	// If we are making this request as part of an operation, we add it to it.
+	if(OpHandle.OperationId >= 0)
+		RequestTracker->AddRequestToOperation(OpHandle, OutRequestId);
+
+	// If cached...
+	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
+	{
+		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
+		Backend->RunAuthenticatedCodeRequestProcessor<UBeamFarmMsGetSlotStatesRequest, UGetSlotStatesResult>
+			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, TargetRealm, AuthToken, RequestData, Handler);		
+	}
+	// If not cached...
+	else
+	{
+		// Binds the handler to the static response handler (pre-generated)	
+		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UBeamFarmMsGetSlotStatesRequest, UGetSlotStatesResult>
+			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler, CallingContext);
+		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
+
+		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
+		Backend->SendPreparedRequest(OutRequestId, CallingContext);	
+	}
+}
+
+		
 void UBeamBeamFarmMsApi::BP_RegisterGroundItemImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken,
                                 UBeamFarmMsRegisterGroundItemRequest* RequestData, const FOnBeamFarmMsRegisterGroundItemSuccess& OnSuccess, const FOnBeamFarmMsRegisterGroundItemError& OnError, const FOnBeamFarmMsRegisterGroundItemComplete& OnComplete, 
 								int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
@@ -259,6 +321,68 @@ void UBeamBeamFarmMsApi::CPP_CollectGroundItemImpl(const FBeamRealmHandle& Targe
 	{
 		// Binds the handler to the static response handler (pre-generated)	
 		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UBeamFarmMsCollectGroundItemRequest, UCollectGroundItemResult>
+			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler, CallingContext);
+		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
+
+		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
+		Backend->SendPreparedRequest(OutRequestId, CallingContext);	
+	}
+}
+
+		
+void UBeamBeamFarmMsApi::BP_GetGroundItemsImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken,
+                                UBeamFarmMsGetGroundItemsRequest* RequestData, const FOnBeamFarmMsGetGroundItemsSuccess& OnSuccess, const FOnBeamFarmMsGetGroundItemsError& OnError, const FOnBeamFarmMsGetGroundItemsComplete& OnComplete, 
+								int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
+{
+	// AUTO-GENERATED...	
+	const auto Request = Backend->CreateMicroserviceAuthenticatedRequest(OutRequestId, TargetRealm, RetryConfig, AuthToken, RequestData, Prefix);
+
+	// If we are making this request as part of an operation, we add it to it.
+	if(OpHandle.OperationId >= 0)
+		RequestTracker->AddRequestToOperation(OpHandle, OutRequestId);
+
+	// If cached...
+	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
+	{
+		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
+		Backend->RunAuthenticatedBlueprintRequestProcessor<UBeamFarmMsGetGroundItemsRequest, UGetGroundItemsResult, FOnBeamFarmMsGetGroundItemsSuccess, FOnBeamFarmMsGetGroundItemsError, FOnBeamFarmMsGetGroundItemsComplete>
+			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);		
+	}
+	// If not cached...
+	else
+	{
+		// Binds the handler to the static response handler (pre-generated)
+		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UBeamFarmMsGetGroundItemsRequest, UGetGroundItemsResult, FOnBeamFarmMsGetGroundItemsSuccess, FOnBeamFarmMsGetGroundItemsError, FOnBeamFarmMsGetGroundItemsComplete>
+			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete, CallingContext);
+		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
+	    
+		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
+		Backend->SendPreparedRequest(OutRequestId, CallingContext);	
+	}
+}
+
+void UBeamBeamFarmMsApi::CPP_GetGroundItemsImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, 
+                              UBeamFarmMsGetGroundItemsRequest* RequestData, const FOnBeamFarmMsGetGroundItemsFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
+{
+	// AUTO-GENERATED...
+	const auto Request = Backend->CreateMicroserviceAuthenticatedRequest(OutRequestId, TargetRealm, RetryConfig, AuthToken, RequestData, Prefix);
+	
+	// If we are making this request as part of an operation, we add it to it.
+	if(OpHandle.OperationId >= 0)
+		RequestTracker->AddRequestToOperation(OpHandle, OutRequestId);
+
+	// If cached...
+	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
+	{
+		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
+		Backend->RunAuthenticatedCodeRequestProcessor<UBeamFarmMsGetGroundItemsRequest, UGetGroundItemsResult>
+			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, TargetRealm, AuthToken, RequestData, Handler);		
+	}
+	// If not cached...
+	else
+	{
+		// Binds the handler to the static response handler (pre-generated)	
+		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UBeamFarmMsGetGroundItemsRequest, UGetGroundItemsResult>
 			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
@@ -674,6 +798,21 @@ void UBeamBeamFarmMsApi::CPP_CollectHarvest(const FUserSlot& UserSlot, UBeamFarm
 }
 
 		
+void UBeamBeamFarmMsApi::CPP_GetSlotStates(const FUserSlot& UserSlot, UBeamFarmMsGetSlotStatesRequest* Request, const FOnBeamFarmMsGetSlotStatesFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
+{
+	// AUTO-GENERATED...
+	FBeamRealmUser AuthenticatedUser;
+	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser, CallingContext);
+
+	FBeamRetryConfig RetryConfig;
+	Backend->GetRetryConfigForUserSlotAndRequestType(UBeamFarmMsGetSlotStatesRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
+
+    int64 OutRequestId;
+	CPP_GetSlotStatesImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, AuthenticatedUser.AuthToken, Request, Handler, OutRequestId, OpHandle, CallingContext);
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, UserSlot, AS_None};
+}
+
+		
 void UBeamBeamFarmMsApi::CPP_RegisterGroundItem(const FUserSlot& UserSlot, UBeamFarmMsRegisterGroundItemRequest* Request, const FOnBeamFarmMsRegisterGroundItemFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
 	// AUTO-GENERATED...
@@ -700,6 +839,21 @@ void UBeamBeamFarmMsApi::CPP_CollectGroundItem(const FUserSlot& UserSlot, UBeamF
 
     int64 OutRequestId;
 	CPP_CollectGroundItemImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, AuthenticatedUser.AuthToken, Request, Handler, OutRequestId, OpHandle, CallingContext);
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, UserSlot, AS_None};
+}
+
+		
+void UBeamBeamFarmMsApi::CPP_GetGroundItems(const FUserSlot& UserSlot, UBeamFarmMsGetGroundItemsRequest* Request, const FOnBeamFarmMsGetGroundItemsFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
+{
+	// AUTO-GENERATED...
+	FBeamRealmUser AuthenticatedUser;
+	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser, CallingContext);
+
+	FBeamRetryConfig RetryConfig;
+	Backend->GetRetryConfigForUserSlotAndRequestType(UBeamFarmMsGetGroundItemsRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
+
+    int64 OutRequestId;
+	CPP_GetGroundItemsImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, AuthenticatedUser.AuthToken, Request, Handler, OutRequestId, OpHandle, CallingContext);
 	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, UserSlot, AS_None};
 }
 
@@ -828,6 +982,21 @@ void UBeamBeamFarmMsApi::CollectHarvest(FUserSlot UserSlot, UBeamFarmMsCollectHa
 }
 
 		
+void UBeamBeamFarmMsApi::GetSlotStates(FUserSlot UserSlot, UBeamFarmMsGetSlotStatesRequest* Request, const FOnBeamFarmMsGetSlotStatesSuccess& OnSuccess, const FOnBeamFarmMsGetSlotStatesError& OnError, const FOnBeamFarmMsGetSlotStatesComplete& OnComplete,  FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext)
+{
+	// AUTO-GENERATED...
+	FBeamRealmUser AuthenticatedUser;
+	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser, CallingContext);
+
+	FBeamRetryConfig RetryConfig;
+	Backend->GetRetryConfigForUserSlotAndRequestType(UBeamFarmMsGetSlotStatesRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
+
+	int64 OutRequestId;
+	BP_GetSlotStatesImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, AuthenticatedUser.AuthToken, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, UserSlot, AS_None};
+}
+
+		
 void UBeamBeamFarmMsApi::RegisterGroundItem(FUserSlot UserSlot, UBeamFarmMsRegisterGroundItemRequest* Request, const FOnBeamFarmMsRegisterGroundItemSuccess& OnSuccess, const FOnBeamFarmMsRegisterGroundItemError& OnError, const FOnBeamFarmMsRegisterGroundItemComplete& OnComplete,  FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext)
 {
 	// AUTO-GENERATED...
@@ -854,6 +1023,21 @@ void UBeamBeamFarmMsApi::CollectGroundItem(FUserSlot UserSlot, UBeamFarmMsCollec
 
 	int64 OutRequestId;
 	BP_CollectGroundItemImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, AuthenticatedUser.AuthToken, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, UserSlot, AS_None};
+}
+
+		
+void UBeamBeamFarmMsApi::GetGroundItems(FUserSlot UserSlot, UBeamFarmMsGetGroundItemsRequest* Request, const FOnBeamFarmMsGetGroundItemsSuccess& OnSuccess, const FOnBeamFarmMsGetGroundItemsError& OnError, const FOnBeamFarmMsGetGroundItemsComplete& OnComplete,  FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext)
+{
+	// AUTO-GENERATED...
+	FBeamRealmUser AuthenticatedUser;
+	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser, CallingContext);
+
+	FBeamRetryConfig RetryConfig;
+	Backend->GetRetryConfigForUserSlotAndRequestType(UBeamFarmMsGetGroundItemsRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
+
+	int64 OutRequestId;
+	BP_GetGroundItemsImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, AuthenticatedUser.AuthToken, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
 	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, UserSlot, AS_None};
 }
 

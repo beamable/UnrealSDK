@@ -27,7 +27,7 @@ void UBeamFarmMsRegisterGroundItemRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UBeamFarmMsRegisterGroundItemRequest* UBeamFarmMsRegisterGroundItemRequest::Make(FString _GroundItemId, FString _ContentId, int32 _Quantity, FString _ItemType, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
+UBeamFarmMsRegisterGroundItemRequest* UBeamFarmMsRegisterGroundItemRequest::Make(FString _GroundItemId, FString _ContentId, int32 _Quantity, FString _ItemType, float _PosX, float _PosY, float _PosZ, FString _SpawnerId, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UBeamFarmMsRegisterGroundItemRequest* Req = NewObject<UBeamFarmMsRegisterGroundItemRequest>(RequestOwner);
 	Req->CustomHeaders = TMap{CustomHeaders};
@@ -41,6 +41,10 @@ UBeamFarmMsRegisterGroundItemRequest* UBeamFarmMsRegisterGroundItemRequest::Make
 	Req->Body->ContentId = _ContentId;
 	Req->Body->Quantity = _Quantity;
 	Req->Body->ItemType = _ItemType;
+	Req->Body->PosX = _PosX;
+	Req->Body->PosY = _PosY;
+	Req->Body->PosZ = _PosZ;
+	Req->Body->SpawnerId = _SpawnerId;
 	
 
 	return Req;

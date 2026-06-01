@@ -5,7 +5,6 @@
 #include "Components/BoxComponent.h"
 #include "PaperSpriteComponent.h"
 #include "PaperSprite.h"
-#include "TimerManager.h"
 #include "Engine/World.h"
 
 AFarmSlotActor::AFarmSlotActor()
@@ -42,6 +41,7 @@ void AFarmSlotActor::BeginPlay()
 		Sub->OnSlotShouldPlant.AddDynamic(this, &AFarmSlotActor::HandleSlotShouldPlant);
 		Sub->OnSlotShouldHarvest.AddDynamic(this, &AFarmSlotActor::HandleSlotShouldHarvest);
 		Sub->OnSlotShouldCancelPlant.AddDynamic(this, &AFarmSlotActor::HandleSlotShouldCancelPlant);
+		Sub->RegisterSlotActor(SlotId, this);
 	}
 }
 
@@ -53,6 +53,12 @@ void AFarmSlotActor::EndPlay(const EEndPlayReason::Type EndPlayReason)
 		Sub->OnSlotShouldPlant.RemoveDynamic(this, &AFarmSlotActor::HandleSlotShouldPlant);
 		Sub->OnSlotShouldHarvest.RemoveDynamic(this, &AFarmSlotActor::HandleSlotShouldHarvest);
 		Sub->OnSlotShouldCancelPlant.RemoveDynamic(this, &AFarmSlotActor::HandleSlotShouldCancelPlant);
+		Sub->UnregisterSlotActor(SlotId);
+
+		if (SlotState == EFarmSlotState::Growing)
+		{
+			Sub->NotifySlotCleared(SlotId);
+		}
 	}
 
 	Super::EndPlay(EndPlayReason);
@@ -71,9 +77,11 @@ void AFarmSlotActor::PlantCrop(const FBeamSeedData& SeedData, const FBeamPlantDa
 
 	SetSlotState(EFarmSlotState::Growing);
 
-	FTimerDelegate TimerDelegate;
-	TimerDelegate.BindUObject(this, &AFarmSlotActor::OnGrowTimerComplete);
-	GetWorldTimerManager().SetTimer(GrowTimerHandle, TimerDelegate, SeedData.GrowTimeSeconds, false);
+	UBeamFarmSubsystem* Sub = GetWorld()->GetGameInstance()->GetSubsystem<UBeamFarmSubsystem>();
+	if (Sub)
+	{
+		Sub->NotifySlotPlanted(SlotId, this, SeedData.GrowTimeSeconds);
+	}
 }
 
 void AFarmSlotActor::Harvest()
@@ -99,12 +107,17 @@ void AFarmSlotActor::CancelPlant()
 		return;
 	}
 
-	GetWorldTimerManager().ClearTimer(GrowTimerHandle);
 	PlantedSeed = FBeamSeedData();
 	HarvestPlantData = FBeamPlantData();
 	PlantedTimestamp = 0.f;
 
 	SetSlotState(EFarmSlotState::Empty);
+
+	UBeamFarmSubsystem* Sub = GetWorld()->GetGameInstance()->GetSubsystem<UBeamFarmSubsystem>();
+	if (Sub)
+	{
+		Sub->NotifySlotCleared(SlotId);
+	}
 }
 
 float AFarmSlotActor::GetGrowProgress() const
@@ -151,9 +164,43 @@ void AFarmSlotActor::SetSlotState(EFarmSlotState NewState)
 	OnSlotStateChanged.Broadcast(this, NewState);
 }
 
-void AFarmSlotActor::OnGrowTimerComplete()
+void AFarmSlotActor::MarkReadyToHarvest()
 {
+	if (SlotState != EFarmSlotState::Growing)
+	{
+		return;
+	}
 	SetSlotState(EFarmSlotState::ReadyToHarvest);
+}
+
+void AFarmSlotActor::RestorePlanting(const FBeamSeedData& SeedData, const FBeamPlantData& PlantData, float RemainingGrowSeconds)
+{
+	if (SlotState != EFarmSlotState::Empty)
+	{
+		return;
+	}
+
+	PlantedSeed = SeedData;
+	HarvestPlantData = PlantData;
+
+	// Backdate PlantedTimestamp so GetGrowProgress() reflects the already-elapsed time correctly.
+	const float AlreadyElapsed = FMath::Max(0.f, SeedData.GrowTimeSeconds - RemainingGrowSeconds);
+	PlantedTimestamp = GetWorld()->GetTimeSeconds() - AlreadyElapsed;
+
+	if (RemainingGrowSeconds <= 0.f)
+	{
+		SetSlotState(EFarmSlotState::ReadyToHarvest);
+	}
+	else
+	{
+		SetSlotState(EFarmSlotState::Growing);
+
+		UBeamFarmSubsystem* Sub = GetWorld()->GetGameInstance()->GetSubsystem<UBeamFarmSubsystem>();
+		if (Sub)
+		{
+			Sub->NotifySlotPlanted(SlotId, this, RemainingGrowSeconds);
+		}
+	}
 }
 
 void AFarmSlotActor::HandleActorClicked(AActor* TouchedActor, FKey ButtonPressed)

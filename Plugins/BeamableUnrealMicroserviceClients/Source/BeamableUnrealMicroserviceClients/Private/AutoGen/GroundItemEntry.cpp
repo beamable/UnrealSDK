@@ -1,11 +1,11 @@
 
-#include "BeamableUnrealMicroserviceClients/Public/AutoGen/RegisterGroundItemRequestArgs.h"
+#include "BeamableUnrealMicroserviceClients/Public/AutoGen/GroundItemEntry.h"
 
 #include "Misc/DefaultValueHelper.h"
 
 
 
-void URegisterGroundItemRequestArgs::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UGroundItemEntry::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeRawPrimitive(TEXT("groundItemId"), GroundItemId, Serializer);
 	UBeamJsonUtils::SerializeRawPrimitive(TEXT("contentId"), ContentId, Serializer);
@@ -14,10 +14,9 @@ void URegisterGroundItemRequestArgs::BeamSerializeProperties(TUnrealJsonSerializ
 	UBeamJsonUtils::SerializeRawPrimitive(TEXT("posX"), PosX, Serializer);
 	UBeamJsonUtils::SerializeRawPrimitive(TEXT("posY"), PosY, Serializer);
 	UBeamJsonUtils::SerializeRawPrimitive(TEXT("posZ"), PosZ, Serializer);
-	UBeamJsonUtils::SerializeRawPrimitive(TEXT("spawnerId"), SpawnerId, Serializer);
 }
 
-void URegisterGroundItemRequestArgs::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
+void UGroundItemEntry::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeRawPrimitive(TEXT("groundItemId"), GroundItemId, Serializer);
 	UBeamJsonUtils::SerializeRawPrimitive(TEXT("contentId"), ContentId, Serializer);
@@ -25,11 +24,10 @@ void URegisterGroundItemRequestArgs::BeamSerializeProperties(TUnrealPrettyJsonSe
 	UBeamJsonUtils::SerializeRawPrimitive(TEXT("itemType"), ItemType, Serializer);
 	UBeamJsonUtils::SerializeRawPrimitive(TEXT("posX"), PosX, Serializer);
 	UBeamJsonUtils::SerializeRawPrimitive(TEXT("posY"), PosY, Serializer);
-	UBeamJsonUtils::SerializeRawPrimitive(TEXT("posZ"), PosZ, Serializer);
-	UBeamJsonUtils::SerializeRawPrimitive(TEXT("spawnerId"), SpawnerId, Serializer);		
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("posZ"), PosZ, Serializer);		
 }
 
-void URegisterGroundItemRequestArgs::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UGroundItemEntry::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("groundItemId"), Bag, GroundItemId);
 	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("contentId"), Bag, ContentId);
@@ -38,7 +36,6 @@ void URegisterGroundItemRequestArgs::BeamDeserializeProperties(const TSharedPtr<
 	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("posX"), Bag, PosX);
 	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("posY"), Bag, PosY);
 	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("posZ"), Bag, PosZ);
-	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("spawnerId"), Bag, SpawnerId);
 }
 
 

@@ -10,9 +10,15 @@
 #include "BeamBackend/SemanticTypes/BeamContentId.h"
 #include "Collectible/BeamFarmCollectibleActor.h"
 #include "AutoGen/SubSystems/BeamBeamFarmMsApi.h"
+#include "AutoGen/SubSystems/BeamFarmMs/BeamFarmMsGetGroundItemsRequest.h"
+#include "AutoGen/SubSystems/BeamFarmMs/BeamFarmMsGetSlotStatesRequest.h"
+#include "AutoGen/GroundItemEntry.h"
+#include "AutoGen/SlotStateEntry.h"
+#include "Runtime/BeamRuntime.h"
 #include "BeamFarmSubsystem.generated.h"
 
 class UBeamContentSubsystem;
+class AFarmSlotActor;
 
 DECLARE_DELEGATE_TwoParams(FOnBeamFarmCallResult, bool /*bSuccess*/, const FString& /*PayloadOrError*/);
 
@@ -114,12 +120,25 @@ struct FBeamFarmSpawnerRuntime
 	TArray<TWeakObjectPtr<ABeamFarmCollectibleActor>> ActiveCollectibles;
 };
 
+// ─── Internal per-slot grow state ────────────────────────────────────────────
+// Tracks growing slots so UBeamFarmSubsystem can centrally poll grow completion.
+
+struct FBeamFarmSlotGrowState
+{
+	TWeakObjectPtr<AFarmSlotActor> SlotActor;
+	float PlantedWorldSeconds = 0.f;
+	float GrowDurationSeconds = 0.f;
+};
+
 UCLASS()
 class BEAMPROJ_BEAMFARM_API UBeamFarmSubsystem : public UGameInstanceSubsystem
 {
 	GENERATED_BODY()
 
 public:
+	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
+	virtual void Deinitialize() override;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BeamFarm")
 	FString UserSlotName = TEXT("Player0");
 
@@ -131,11 +150,29 @@ public:
 	void RegisterGroundItem(const FBeamFarmGroundItemParams& Params, const FOnBeamFarmCallResult& OnResult);
 	void CollectGroundItem(const FString& GroundItemId, const FOnBeamFarmCallResult& OnResult);
 
+	// Fetches active ground items for a spawner from the backend, then spawns actors at their
+	// saved positions. Called automatically by StartSpawner before the spawn timer begins.
+	void GetGroundItems(const FString& SpawnerId, TFunction<void(bool, TArray<UGroundItemEntry*>)> OnComplete);
+
 	// Applies modifier items to an existing plant item, changing its properties according to
 	// the content-defined deltas. Each entry in ModifierContentIds consumes one unit of that
 	// modifier currency.
 	UFUNCTION(BlueprintCallable, Category = "BeamFarm")
 	void MutateWithModifiers(const FString& PlantItemContentId, int64 PlantItemInstanceId, const TArray<FString>& ModifierContentIds);
+
+	// ─── Slot grow tracking ─────────────────────────────────────────────────
+	// Called by AFarmSlotActor so the subsystem tick can centrally check grow
+	// completion and call MarkReadyToHarvest() when the duration has elapsed.
+
+	void NotifySlotPlanted(const FString& SlotId, AFarmSlotActor* SlotActor, float GrowDurationSeconds);
+	void NotifySlotCleared(const FString& SlotId);
+
+	// ─── Slot actor registry ─────────────────────────────────────────────────
+	// AFarmSlotActor registers itself in BeginPlay so the subsystem can restore
+	// slot states from the backend after the Beamable user signs in.
+
+	void RegisterSlotActor(const FString& SlotId, AFarmSlotActor* Actor);
+	void UnregisterSlotActor(const FString& SlotId);
 
 	// ─── Farming selection state ────────────────────────────────────────────────
 
@@ -280,14 +317,39 @@ private:
 	// Timer handle per spawner. Cleared on UnregisterSpawner / StopSpawner.
 	TMap<FString, FTimerHandle> SpawnTimers;
 
+	// Growing slot registry — polled every second by GrowCheckTimerHandle.
+	TMap<FString, FBeamFarmSlotGrowState> GrowingSlots;
+	FTimerHandle GrowCheckTimerHandle;
+
+	// True once the Beamable user has signed in and the API is usable.
+	bool bUserReady = false;
+
+	// Spawner IDs that arrived before the user was ready; flushed in HandleUserReady.
+	TArray<FString> PendingStartSpawnerIds;
+
+	// Slot actors that registered themselves in BeginPlay, keyed by SlotId.
+	TMap<FString, TWeakObjectPtr<AFarmSlotActor>> SlotActors;
+
+	FDelegateHandle UserReadyHandle;
+
 	UBeamBeamFarmMsApi* GetApi();
 	UBeamContentSubsystem* GetContentSub();
 
 	void SetFarmingState(EFarmingInteractionState NewState);
 
+	// Fired by UBeamRuntime when the user has finished signing in.
+	void HandleUserReady(const FUserSlot& Slot);
+
 	void OnSpawnTimer(FString SpawnerId);
+	void StartSpawnTimer(const FString& SpawnerId);
+	void RestoreGroundItemsForSpawner(const FString& SpawnerId, const TArray<UGroundItemEntry*>& SavedItems);
+	void CheckGrowingSlots();
 
 	bool TryPickSpawnPointForSpawner(const FString& SpawnerId, FVector& OutLocation);
+
+	// Fetches slot states from the backend and restores slot actor visuals + grow timers.
+	void GetSlotStates(const TArray<FString>& SlotIds, TFunction<void(bool, TArray<USlotStateEntry*>)> OnComplete);
+	void RestoreSlotStates();
 
 	UFUNCTION()
 	void HandleCollectiblePickedUp(ABeamFarmCollectibleActor* Collectible, APawn* Collector);

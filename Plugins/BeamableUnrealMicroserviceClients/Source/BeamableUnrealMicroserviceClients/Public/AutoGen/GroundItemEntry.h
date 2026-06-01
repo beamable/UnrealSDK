@@ -5,10 +5,10 @@
 #include "Serialization/BeamJsonSerializable.h"
 #include "Serialization/BeamJsonUtils.h"
 
-#include "RegisterGroundItemRequestArgs.generated.h"
+#include "GroundItemEntry.generated.h"
 
 UCLASS(BlueprintType, Category="Beam", DefaultToInstanced, EditInlineNew)
-class BEAMABLEUNREALMICROSERVICECLIENTS_API URegisterGroundItemRequestArgs : public UObject, public IBeamJsonSerializableUObject
+class BEAMABLEUNREALMICROSERVICECLIENTS_API UGroundItemEntry : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
@@ -27,8 +27,6 @@ public:
 	float PosY = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Pos Z", Category="Beam")
 	float PosZ = {};
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Spawner Id", Category="Beam")
-	FString SpawnerId = {};
 
 	
 

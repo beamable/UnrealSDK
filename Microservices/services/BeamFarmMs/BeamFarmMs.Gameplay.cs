@@ -91,11 +91,29 @@ namespace Beamable.BeamFarmMs
     [Serializable]
     public class SeedDataProperty
     {
-        public string DisplayName { get; set; }
-        public string GrowingSprite { get; set; }
-        public float GrowTimeSeconds { get; set; }
-        public string HarvestItemContentId { get; set; }
-        public string SeedSprite { get; set; }
+        public string DisplayName;
+        public string GrowingSprite;
+        public float GrowTimeSeconds;
+        public string HarvestItemContentId;
+        public string SeedSprite;
+    }
+
+    [Serializable]
+    public class SlotStateEntry
+    {
+        public string slotId;
+        public string seedId;
+        public string harvestId;
+        public long   plantedAt;
+        public int    growSecs;
+    }
+
+    [Serializable]
+    public class GetSlotStatesResult
+    {
+        public bool   success;
+        public List<SlotStateEntry> slots;
+        public string message;
     }
 
     [Serializable]
@@ -136,6 +154,37 @@ namespace Beamable.BeamFarmMs
         public int quantity;
         public string itemType; // "RawMaterial" | "PlantItem"
         public long spawnedAt;
+        public float posX;
+        public float posY;
+        public float posZ;
+        public string spawnerId;
+    }
+
+    [Serializable]
+    public class GroundItemIndexEntry
+    {
+        public string groundItemId;
+        public string spawnerId;
+    }
+
+    [Serializable]
+    public class GroundItemEntry
+    {
+        public string groundItemId;
+        public string contentId;
+        public int quantity;
+        public string itemType;
+        public float posX;
+        public float posY;
+        public float posZ;
+    }
+
+    [Serializable]
+    public class GetGroundItemsResult
+    {
+        public bool success;
+        public List<GroundItemEntry> items;
+        public string message;
     }
 
     [Serializable]
@@ -720,6 +769,54 @@ namespace Beamable.BeamFarmMs
         }
 
         // ══════════════════════════════════════════════════════════════════════
+        // SLOT STATE QUERY
+        // ══════════════════════════════════════════════════════════════════════
+
+        /// <summary>
+        /// Returns the active planting state for each supplied slotId that currently has a crop growing.
+        /// Called on session restore to let the Unreal client reconstruct Growing/ReadyToHarvest slot visuals.
+        /// Slots with no active planting are silently omitted from the result.
+        /// </summary>
+        [ClientCallable]
+        public async Task<GetSlotStatesResult> GetSlotStates(List<string> slotIds)
+        {
+            if (slotIds == null || slotIds.Count == 0)
+                return new GetSlotStatesResult { success = true, slots = new List<SlotStateEntry>(), message = "No slot IDs provided." };
+
+            var results = new List<SlotStateEntry>();
+            foreach (var slotId in slotIds)
+            {
+                if (string.IsNullOrWhiteSpace(slotId)) continue;
+
+                string json = await GetSlotStat(SlotDataKey(slotId));
+                if (string.IsNullOrEmpty(json)) continue;
+
+                try
+                {
+                    var data = Newtonsoft.Json.JsonConvert.DeserializeObject<SlotData>(json);
+                    if (data == null || data.plantedAt <= 0) continue;
+
+                    results.Add(new SlotStateEntry
+                    {
+                        slotId    = slotId,
+                        seedId    = data.seedId,
+                        harvestId = data.harvestId,
+                        plantedAt = data.plantedAt,
+                        growSecs  = data.growSecs,
+                    });
+                }
+                catch { }
+            }
+
+            return new GetSlotStatesResult
+            {
+                success = true,
+                slots   = results,
+                message = $"Found {results.Count} active slot(s).",
+            };
+        }
+
+        // ══════════════════════════════════════════════════════════════════════
         // GROUND COLLECTIBLES
         // ══════════════════════════════════════════════════════════════════════
 
@@ -748,7 +845,8 @@ namespace Beamable.BeamFarmMs
         /// </summary>
         [ClientCallable]
         public async Task<RegisterGroundItemResult> RegisterGroundItem(
-            string groundItemId, string contentId, int quantity, string itemType)
+            string groundItemId, string contentId, int quantity, string itemType,
+            float posX, float posY, float posZ, string spawnerId)
         {
             // ── Input validation ──────────────────────────────────────────────
             if (string.IsNullOrWhiteSpace(groundItemId))
@@ -775,11 +873,26 @@ namespace Beamable.BeamFarmMs
                 contentId = contentId,
                 quantity  = quantity,
                 itemType  = itemType,
-                spawnedAt = DateTimeOffset.UtcNow.ToUnixTimeSeconds()
+                spawnedAt = DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
+                posX      = posX,
+                posY      = posY,
+                posZ      = posZ,
+                spawnerId = spawnerId ?? string.Empty,
             };
 
             await SetSlotStat(groundItemKey,
                 Newtonsoft.Json.JsonConvert.SerializeObject(data));
+
+            // ── Maintain global index of active ground item IDs ───────────────
+            const string indexKey = "ground_item_ids";
+            string indexJson = await GetSlotStat(indexKey);
+            var index = string.IsNullOrEmpty(indexJson)
+                ? new List<GroundItemIndexEntry>()
+                : Newtonsoft.Json.JsonConvert.DeserializeObject<List<GroundItemIndexEntry>>(indexJson)
+                  ?? new List<GroundItemIndexEntry>();
+
+            index.Add(new GroundItemIndexEntry { groundItemId = groundItemId, spawnerId = spawnerId ?? string.Empty });
+            await SetSlotStat(indexKey, Newtonsoft.Json.JsonConvert.SerializeObject(index));
 
             return new RegisterGroundItemResult
             {
@@ -842,6 +955,21 @@ namespace Beamable.BeamFarmMs
             // ── Clear first to prevent double-collection ──────────────────────
             await SetSlotStat(statKey, string.Empty);
 
+            // ── Remove from global index ──────────────────────────────────────
+            const string indexKey = "ground_item_ids";
+            string indexJson = await GetSlotStat(indexKey);
+            if (!string.IsNullOrEmpty(indexJson))
+            {
+                try
+                {
+                    var index = Newtonsoft.Json.JsonConvert.DeserializeObject<List<GroundItemIndexEntry>>(indexJson)
+                                ?? new List<GroundItemIndexEntry>();
+                    index.RemoveAll(e => e.groundItemId == groundItemId);
+                    await SetSlotStat(indexKey, Newtonsoft.Json.JsonConvert.SerializeObject(index));
+                }
+                catch { }
+            }
+
             // ── Grant to inventory ────────────────────────────────────────────
             var updateBuilder = new InventoryUpdateBuilder();
 
@@ -863,6 +991,73 @@ namespace Beamable.BeamFarmMs
                 grantedContentId = data.contentId,
                 grantedQuantity  = data.quantity,
                 message          = $"Collected '{data.contentId}' x{data.quantity} from ground item '{groundItemId}'."
+            };
+        }
+
+        /// <summary>
+        /// Returns all ground items that were previously registered for a given spawner
+        /// and have not yet been collected. Called on spawner startup to restore items
+        /// that existed when the player last left the session.
+        ///
+        /// ═══ Unreal integration ═══════════════════════════════════════════
+        ///   Called automatically by UBeamFarmSubsystem::StartSpawner. You do not
+        ///   need to call this manually.
+        /// ═════════════════════════════════════════════════════════════════════
+        /// </summary>
+        [ClientCallable]
+        public async Task<GetGroundItemsResult> GetGroundItems(string spawnerId)
+        {
+            const string indexKey = "ground_item_ids";
+            string indexJson = await GetSlotStat(indexKey);
+
+            if (string.IsNullOrEmpty(indexJson))
+                return new GetGroundItemsResult { success = true, items = new List<GroundItemEntry>(), message = "No active ground items." };
+
+            List<GroundItemIndexEntry> index;
+            try
+            {
+                index = Newtonsoft.Json.JsonConvert.DeserializeObject<List<GroundItemIndexEntry>>(indexJson)
+                        ?? new List<GroundItemIndexEntry>();
+            }
+            catch
+            {
+                return new GetGroundItemsResult { success = true, items = new List<GroundItemEntry>(), message = "Corrupted index — treating as empty." };
+            }
+
+            var matching = string.IsNullOrWhiteSpace(spawnerId)
+                ? index
+                : index.Where(e => e.spawnerId == spawnerId).ToList();
+
+            var results = new List<GroundItemEntry>();
+            foreach (var entry in matching)
+            {
+                string json = await GetSlotStat(GroundItemKey(entry.groundItemId));
+                if (string.IsNullOrEmpty(json)) continue;
+
+                try
+                {
+                    var data = Newtonsoft.Json.JsonConvert.DeserializeObject<GroundItemData>(json);
+                    if (data == null) continue;
+
+                    results.Add(new GroundItemEntry
+                    {
+                        groundItemId = entry.groundItemId,
+                        contentId    = data.contentId,
+                        quantity     = data.quantity,
+                        itemType     = data.itemType,
+                        posX         = data.posX,
+                        posY         = data.posY,
+                        posZ         = data.posZ,
+                    });
+                }
+                catch { }
+            }
+
+            return new GetGroundItemsResult
+            {
+                success = true,
+                items   = results,
+                message = $"Found {results.Count} active ground item(s) for spawner '{spawnerId}'."
             };
         }
 
@@ -1595,6 +1790,12 @@ namespace Beamable.BeamFarmMs
 
         private static CollectGroundItemResult CollectGroundFail(string message) =>
             new CollectGroundItemResult { success = false, grantedContentId = string.Empty, grantedQuantity = 0, message = message };
+
+        private static GetSlotStatesResult GetSlotStatesFail(string message) =>
+            new GetSlotStatesResult { success = false, slots = new List<SlotStateEntry>(), message = message };
+
+        private static GetGroundItemsResult GetGroundItemsFail(string message) =>
+            new GetGroundItemsResult { success = false, items = new List<GroundItemEntry>(), message = message };
 
         private static DeliverOrderResult DeliverFail(string orderId, string message) =>
             new DeliverOrderResult

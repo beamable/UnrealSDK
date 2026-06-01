@@ -108,6 +108,16 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, Category = "BeamFarm|Slot")
 	void OnSlotClicked();
 
+	// Called by UBeamFarmSubsystem when the grow duration has elapsed.
+	UFUNCTION(BlueprintCallable, Category = "BeamFarm|Slot")
+	void MarkReadyToHarvest();
+
+	// Restores a saved planting state without making a backend call.
+	// RemainingGrowSeconds is the time left until harvest (0 = already ready).
+	// Called by UBeamFarmSubsystem::RestoreSlotStates after login.
+	UFUNCTION(BlueprintCallable, Category = "BeamFarm|Slot")
+	void RestorePlanting(const FBeamSeedData& SeedData, const FBeamPlantData& PlantData, float RemainingGrowSeconds);
+
 	// IBeamFarmInteractable
 	virtual FVector GetInteractionPoint_Implementation() const override;
 	virtual float GetInteractionRadius_Implementation() const override;
@@ -118,14 +128,10 @@ protected:
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 private:
-	FTimerHandle GrowTimerHandle;
 	float PlantedTimestamp = 0.f;
 
 	void UpdateSprite(EFarmSlotState NewState);
 	void SetSlotState(EFarmSlotState NewState);
-
-	UFUNCTION()
-	void OnGrowTimerComplete();
 
 	UFUNCTION()
 	void HandleActorClicked(AActor* TouchedActor, FKey ButtonPressed);

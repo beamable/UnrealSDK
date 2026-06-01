@@ -1,7 +1,13 @@
 // Copyright Beamable, Inc. All Rights Reserved.
 
 #include "Subsystem/BeamFarmSubsystem.h"
+#include "Farming/FarmSlotActor.h"
 #include "Subsystems/Content/BeamContentSubsystem.h"
+#include "Runtime/BeamRuntime.h"
+#include "AutoGen/SubSystems/BeamFarmMs/BeamFarmMsGetSlotStatesRequest.h"
+#include "AutoGen/GetSlotStatesResult.h"
+#include "AutoGen/SlotStateEntry.h"
+#include "Misc/DateTime.h"
 #include "Contents/BeamPlantContent.h"
 #include "Contents/BeamSeedsContent.h"
 #include "BeamSeedData.h"
@@ -15,7 +21,44 @@
 #include "AutoGen/SubSystems/BeamFarmMs/BeamFarmMsDeliverOrderRequest.h"
 #include "AutoGen/SubSystems/BeamFarmMs/BeamFarmMsStartResearchRequest.h"
 #include "AutoGen/SubSystems/BeamFarmMs/BeamFarmMsCollectResearchRequest.h"
+#include "AutoGen/SubSystems/BeamFarmMs/BeamFarmMsGetGroundItemsRequest.h"
+#include "AutoGen/GetGroundItemsResult.h"
+#include "AutoGen/GroundItemEntry.h"
 #include "Engine/Engine.h"
+
+void UBeamFarmSubsystem::Initialize(FSubsystemCollectionBase& Collection)
+{
+	Super::Initialize(Collection);
+
+	UBeamRuntime* Runtime = GetGameInstance()->GetSubsystem<UBeamRuntime>();
+	if (Runtime)
+	{
+		UserReadyHandle = Runtime->CPP_RegisterOnUserReady(
+			FUserStateChangedHandlerCode::CreateUObject(this, &UBeamFarmSubsystem::HandleUserReady));
+	}
+}
+
+void UBeamFarmSubsystem::Deinitialize()
+{
+	UBeamRuntime* Runtime = GetGameInstance()->GetSubsystem<UBeamRuntime>();
+	if (Runtime && UserReadyHandle.IsValid())
+	{
+		Runtime->CPP_UnregisterOnUserReady(UserReadyHandle);
+	}
+
+	Super::Deinitialize();
+}
+
+void UBeamFarmSubsystem::HandleUserReady(const FUserSlot& Slot)
+{
+	if (Slot.Name != UserSlotName)
+	{
+		return;
+	}
+
+	bUserReady = true;
+
+}
 
 UBeamBeamFarmMsApi* UBeamFarmSubsystem::GetApi()
 {
@@ -117,6 +160,10 @@ void UBeamFarmSubsystem::RegisterGroundItem(const FBeamFarmGroundItemParams& Par
 		Params.ContentId,
 		Params.Quantity,
 		Params.ItemType,
+		Params.Position.X,
+		Params.Position.Y,
+		Params.Position.Z,
+		Params.SpawnerId,
 		this,
 		{}
 	);
@@ -412,7 +459,37 @@ void UBeamFarmSubsystem::RegisterSpawner(const FBeamFarmSpawnConfig& Config)
 	SpawnerConfigs.Add(Config.SpawnerId, Config);
 	SpawnerRuntimes.Add(Config.SpawnerId, FBeamFarmSpawnerRuntime{});
 
-	StartSpawner(Config.SpawnerId);
+	if (bUserReady)
+	{
+		TWeakObjectPtr<UBeamFarmSubsystem> WeakThis(this);
+
+		// Flush spawners that registered before the user was authenticated.
+		for (const FString& PendingId : PendingStartSpawnerIds)
+		{
+			GetGroundItems(PendingId, [WeakThis, PendingId](bool, TArray<UGroundItemEntry*> SavedItems)
+			{
+				if (!WeakThis.IsValid()) return;
+				WeakThis->RestoreGroundItemsForSpawner(PendingId, SavedItems);
+				WeakThis->StartSpawnTimer(PendingId);
+			});
+		}
+		PendingStartSpawnerIds.Empty();
+
+		// Restore slot states and ground items for the newly registered spawner.
+		RestoreSlotStates();
+
+		const FString NewSpawnerId = Config.SpawnerId;
+		GetGroundItems(NewSpawnerId, [WeakThis, NewSpawnerId](bool, TArray<UGroundItemEntry*> SavedItems)
+		{
+			if (!WeakThis.IsValid()) return;
+			WeakThis->RestoreGroundItemsForSpawner(NewSpawnerId, SavedItems);
+			WeakThis->StartSpawnTimer(NewSpawnerId);
+		});
+	}
+	else
+	{
+		PendingStartSpawnerIds.Add(Config.SpawnerId);
+	}
 }
 
 void UBeamFarmSubsystem::UnregisterSpawner(const FString& SpawnerId)
@@ -452,6 +529,17 @@ void UBeamFarmSubsystem::StartSpawner(const FString& SpawnerId)
 		return;
 	}
 
+	StartSpawnTimer(SpawnerId);
+}
+
+void UBeamFarmSubsystem::StartSpawnTimer(const FString& SpawnerId)
+{
+	const FBeamFarmSpawnConfig* Config = SpawnerConfigs.Find(SpawnerId);
+	if (!Config)
+	{
+		return;
+	}
+
 	UWorld* World = GetGameInstance()->GetWorld();
 	if (!World)
 	{
@@ -463,7 +551,7 @@ void UBeamFarmSubsystem::StartSpawner(const FString& SpawnerId)
 	TimerDel.BindLambda([this, CapturedId]() { OnSpawnTimer(CapturedId); });
 
 	FTimerHandle& Timer = SpawnTimers.FindOrAdd(SpawnerId);
-	World->GetTimerManager().SetTimer(Timer, TimerDel, Config->SpawnIntervalSeconds, true, 0.f);
+	World->GetTimerManager().SetTimer(Timer, TimerDel, Config->SpawnIntervalSeconds, true, Config->SpawnIntervalSeconds);
 }
 
 void UBeamFarmSubsystem::StopSpawner(const FString& SpawnerId)
@@ -605,6 +693,8 @@ void UBeamFarmSubsystem::SpawnCollectibleForSpawner(const FString& SpawnerId)
 	RegParams.ContentId    = Info.ContentId;
 	RegParams.Quantity     = Config->QuantityPerCollectible;
 	RegParams.ItemType     = Info.ItemType;
+	RegParams.Position     = SpawnT.GetLocation();
+	RegParams.SpawnerId    = SpawnerId;
 
 	RegisterGroundItem(RegParams, FOnBeamFarmCallResult::CreateLambda(
 		[GroundItemId](bool bSuccess, const FString& Err)
@@ -812,6 +902,175 @@ void UBeamFarmSubsystem::CollectResearch(int64 ItemInstanceId, const FString& It
 	);
 }
 
+void UBeamFarmSubsystem::GetGroundItems(const FString& SpawnerId, TFunction<void(bool, TArray<UGroundItemEntry*>)> OnComplete)
+{
+	UBeamBeamFarmMsApi* Api = GetApi();
+	if (!Api)
+	{
+		OnComplete(false, {});
+		return;
+	}
+
+	auto* Request = UBeamFarmMsGetGroundItemsRequest::Make(SpawnerId, this, {});
+	FBeamRequestContext RequestContext;
+
+	Api->CPP_GetGroundItems(
+		FUserSlot{UserSlotName},
+		Request,
+		FOnBeamFarmMsGetGroundItemsFullResponse::CreateLambda(
+			[OnComplete, SpawnerId](FBeamFarmMsGetGroundItemsFullResponse Response)
+			{
+				if (Response.State == RS_Success && Response.SuccessData && Response.SuccessData->bSuccess)
+				{
+					OnComplete(true, Response.SuccessData->Items);
+				}
+				else
+				{
+					UE_LOG(LogTemp, Warning, TEXT("GetGroundItems failed for spawner '%s'"), *SpawnerId);
+					OnComplete(false, {});
+				}
+			}),
+		RequestContext,
+		FBeamOperationHandle(),
+		this
+	);
+}
+
+void UBeamFarmSubsystem::RestoreGroundItemsForSpawner(const FString& SpawnerId, const TArray<UGroundItemEntry*>& SavedItems)
+{
+	if (SavedItems.IsEmpty())
+	{
+		return;
+	}
+
+	const FBeamFarmSpawnConfig* Config = SpawnerConfigs.Find(SpawnerId);
+	FBeamFarmSpawnerRuntime* Runtime = SpawnerRuntimes.Find(SpawnerId);
+	if (!Config || !Runtime || !Config->CollectibleClass)
+	{
+		return;
+	}
+
+	UWorld* World = GetGameInstance()->GetWorld();
+	if (!World)
+	{
+		return;
+	}
+
+	for (UGroundItemEntry* Entry : SavedItems)
+	{
+		if (!Entry)
+		{
+			continue;
+		}
+
+		const FVector SpawnPos(Entry->PosX, Entry->PosY, Entry->PosZ);
+		const FTransform SpawnT(FRotator::ZeroRotator, SpawnPos);
+
+		FActorSpawnParameters Params;
+		Params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
+		ABeamFarmCollectibleActor* Spawned = World->SpawnActor<ABeamFarmCollectibleActor>(Config->CollectibleClass, SpawnT, Params);
+		if (!Spawned)
+		{
+			continue;
+		}
+
+		FBeamFarmCollectibleInfo Info;
+		Info.ContentId = Entry->ContentId;
+		Info.Quantity  = Entry->Quantity;
+		Info.ItemType  = Entry->ItemType;
+
+		if (Entry->ItemType == TEXT("RawMaterial"))
+		{
+			FindSeedData(Entry->ContentId, Info.SeedData);
+		}
+		else
+		{
+			FindPlantBySeedId(Entry->ContentId, Info.PlantData);
+		}
+
+		Spawned->GroundItemId = Entry->GroundItemId;
+		Spawned->SpawnerId    = SpawnerId;
+		Spawned->SetItemInfo(Info);
+
+		Spawned->OnPickedUp.AddDynamic(this, &UBeamFarmSubsystem::HandleCollectiblePickedUp);
+		Runtime->ActiveCollectibles.Add(Spawned);
+
+		OnSpawnerCollectibleSpawned.Broadcast(SpawnerId, Spawned, SpawnT);
+	}
+}
+
+// ─── Slot grow tracking ───────────────────────────────────────────────────────
+
+void UBeamFarmSubsystem::NotifySlotPlanted(const FString& SlotId, AFarmSlotActor* SlotActor, float GrowDurationSeconds)
+{
+	UWorld* World = GetGameInstance()->GetWorld();
+	if (!World)
+	{
+		return;
+	}
+
+	FBeamFarmSlotGrowState& State = GrowingSlots.FindOrAdd(SlotId);
+	State.SlotActor = SlotActor;
+	State.PlantedWorldSeconds = World->GetTimeSeconds();
+	State.GrowDurationSeconds = GrowDurationSeconds;
+
+	if (!World->GetTimerManager().IsTimerActive(GrowCheckTimerHandle))
+	{
+		FTimerDelegate Del;
+		Del.BindUObject(this, &UBeamFarmSubsystem::CheckGrowingSlots);
+		World->GetTimerManager().SetTimer(GrowCheckTimerHandle, Del, 1.f, true);
+	}
+}
+
+void UBeamFarmSubsystem::NotifySlotCleared(const FString& SlotId)
+{
+	GrowingSlots.Remove(SlotId);
+
+	if (GrowingSlots.IsEmpty())
+	{
+		UWorld* World = GetGameInstance()->GetWorld();
+		if (World)
+		{
+			World->GetTimerManager().ClearTimer(GrowCheckTimerHandle);
+		}
+	}
+}
+
+void UBeamFarmSubsystem::CheckGrowingSlots()
+{
+	UWorld* World = GetGameInstance()->GetWorld();
+	if (!World)
+	{
+		return;
+	}
+
+	const float Now = World->GetTimeSeconds();
+	TArray<FString> ReadySlots;
+
+	for (const auto& Pair : GrowingSlots)
+	{
+		if ((Now - Pair.Value.PlantedWorldSeconds) >= Pair.Value.GrowDurationSeconds)
+		{
+			ReadySlots.Add(Pair.Key);
+		}
+	}
+
+	for (const FString& SlotId : ReadySlots)
+	{
+		FBeamFarmSlotGrowState State;
+		if (GrowingSlots.RemoveAndCopyValue(SlotId, State) && State.SlotActor.IsValid())
+		{
+			State.SlotActor->MarkReadyToHarvest();
+		}
+	}
+
+	if (GrowingSlots.IsEmpty())
+	{
+		World->GetTimerManager().ClearTimer(GrowCheckTimerHandle);
+	}
+}
+
 bool UBeamFarmSubsystem::TryPickSpawnPointForSpawner(const FString& SpawnerId, FVector& OutLocation)
 {
 	const FBeamFarmSpawnConfig* Config = SpawnerConfigs.Find(SpawnerId);
@@ -888,4 +1147,110 @@ bool UBeamFarmSubsystem::TryPickSpawnPointForSpawner(const FString& SpawnerId, F
 	}
 
 	return false;
+}
+
+// ─── Slot actor registry ──────────────────────────────────────────────────────
+
+void UBeamFarmSubsystem::RegisterSlotActor(const FString& SlotId, AFarmSlotActor* Actor)
+{
+	if (!SlotId.IsEmpty() && Actor)
+	{
+		SlotActors.Add(SlotId, Actor);
+	}
+}
+
+void UBeamFarmSubsystem::UnregisterSlotActor(const FString& SlotId)
+{
+	SlotActors.Remove(SlotId);
+}
+
+// ─── Slot state restoration ───────────────────────────────────────────────────
+
+void UBeamFarmSubsystem::GetSlotStates(const TArray<FString>& SlotIds, TFunction<void(bool, TArray<USlotStateEntry*>)> OnComplete)
+{
+	UBeamBeamFarmMsApi* Api = GetApi();
+	if (!Api)
+	{
+		OnComplete(false, {});
+		return;
+	}
+
+	auto* Request = UBeamFarmMsGetSlotStatesRequest::Make(SlotIds, this, {});
+	FBeamRequestContext RequestContext;
+
+	Api->CPP_GetSlotStates(
+		FUserSlot{UserSlotName},
+		Request,
+		FOnBeamFarmMsGetSlotStatesFullResponse::CreateLambda(
+			[OnComplete](FBeamFarmMsGetSlotStatesFullResponse Response)
+			{
+				if (Response.State == RS_Success && Response.SuccessData && Response.SuccessData->bSuccess)
+				{
+					OnComplete(true, Response.SuccessData->Slots);
+				}
+				else
+				{
+					UE_LOG(LogTemp, Warning, TEXT("GetSlotStates failed: %s"),
+						Response.State == RS_Error ? *Response.ErrorData.error : TEXT("unknown error"));
+					OnComplete(false, {});
+				}
+			}),
+		RequestContext,
+		FBeamOperationHandle(),
+		this
+	);
+}
+
+void UBeamFarmSubsystem::RestoreSlotStates()
+{
+	TArray<FString> SlotIds;
+	SlotActors.GetKeys(SlotIds);
+
+	if (SlotIds.IsEmpty())
+	{
+		return;
+	}
+
+	TWeakObjectPtr<UBeamFarmSubsystem> WeakThis(this);
+
+	GetSlotStates(SlotIds, [WeakThis](bool bSuccess, TArray<USlotStateEntry*> Entries)
+	{
+		if (!WeakThis.IsValid() || !bSuccess)
+		{
+			return;
+		}
+
+		UBeamFarmSubsystem* Self = WeakThis.Get();
+		const int64 NowUtc = FDateTime::UtcNow().ToUnixTimestamp();
+
+		for (USlotStateEntry* Entry : Entries)
+		{
+			if (!Entry)
+			{
+				continue;
+			}
+
+			TWeakObjectPtr<AFarmSlotActor>* WeakActor = Self->SlotActors.Find(Entry->SlotId);
+			if (!WeakActor || !WeakActor->IsValid())
+			{
+				continue;
+			}
+
+			AFarmSlotActor* Actor = WeakActor->Get();
+
+			FBeamSeedData SeedData;
+			if (!Self->FindSeedData(Entry->SeedId, SeedData))
+			{
+				continue;
+			}
+
+			FBeamPlantData PlantData;
+			Self->FindPlantBySeedId(Entry->HarvestId, PlantData);
+
+			const int64 ElapsedSecs = NowUtc - Entry->PlantedAt;
+			const float RemainingSeconds = FMath::Max(0.f, (float)Entry->GrowSecs - (float)ElapsedSecs);
+
+			Actor->RestorePlanting(SeedData, PlantData, RemainingSeconds);
+		}
+	});
 }

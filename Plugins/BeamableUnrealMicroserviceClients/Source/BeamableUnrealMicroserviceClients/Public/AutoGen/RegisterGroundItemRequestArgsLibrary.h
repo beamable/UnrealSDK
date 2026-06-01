@@ -17,8 +17,8 @@ public:
 	static FString RegisterGroundItemRequestArgsToJsonString(const URegisterGroundItemRequestArgs* Serializable, const bool Pretty);
 
 	UFUNCTION(BlueprintPure, Category="Beam|BeamFarmMs|Utils|Make/Break", DisplayName="Make RegisterGroundItemRequestArgs", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
-	static URegisterGroundItemRequestArgs* Make(FString GroundItemId, FString ContentId, int32 Quantity, FString ItemType, UObject* Outer);
+	static URegisterGroundItemRequestArgs* Make(FString GroundItemId, FString ContentId, int32 Quantity, FString ItemType, float PosX, float PosY, float PosZ, FString SpawnerId, UObject* Outer);
 
 	UFUNCTION(BlueprintPure, Category="Beam|BeamFarmMs|Utils|Make/Break", DisplayName="Break RegisterGroundItemRequestArgs", meta=(NativeBreakFunc))
-	static void Break(const URegisterGroundItemRequestArgs* Serializable, FString& GroundItemId, FString& ContentId, int32& Quantity, FString& ItemType);
+	static void Break(const URegisterGroundItemRequestArgs* Serializable, FString& GroundItemId, FString& ContentId, int32& Quantity, FString& ItemType, float& PosX, float& PosY, float& PosZ, FString& SpawnerId);
 };

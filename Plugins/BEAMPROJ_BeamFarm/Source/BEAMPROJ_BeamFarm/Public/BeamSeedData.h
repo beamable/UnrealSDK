@@ -71,8 +71,7 @@ struct BEAMPROJ_BEAMFARM_API FBeamSeedData : public FBeamJsonSerializableUStruct
 			const auto SoftObjPath = GrowingSprite.ToSoftObjectPath().ToString();
 			Serializer->WriteValue("GrowingSprite", SoftObjPath);
 		}
-
-		Serializer->WriteValue("HarvestItemContentId", HarvestItemContentId.AsString);
+		UBeamJsonUtils::SerializeSemanticType<FString>(TEXT("HarvestItemContentId"), &HarvestItemContentId, Serializer);
 	}
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
@@ -111,8 +110,7 @@ struct BEAMPROJ_BEAMFARM_API FBeamSeedData : public FBeamJsonSerializableUStruct
 			UBeamJsonUtils::DeserializeRawPrimitive(TEXT("GrowingSprite"), Bag, SoftObjPath);
 			GrowingSprite = TSoftObjectPtr<UPaperSprite>(FSoftObjectPath(SoftObjPath));
 		}
-		FString HarvestItemContentIdStr;
-		UBeamJsonUtils::DeserializeRawPrimitive(TEXT("HarvestItemContentId"), Bag, HarvestItemContentIdStr);
-		HarvestItemContentId = FBeamContentId(HarvestItemContentIdStr);
+		
+		UBeamJsonUtils::DeserializeSemanticType<FString>(TEXT("HarvestItemContentId"), Bag, HarvestItemContentId, OuterOwner);
 	}
 };
