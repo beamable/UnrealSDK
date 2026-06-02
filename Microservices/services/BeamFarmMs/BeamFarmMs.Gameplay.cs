@@ -635,6 +635,12 @@ namespace Beamable.BeamFarmMs
         /// </summary>
         private const string LevelConfigContentId = "farm_level_config.default";
 
+        // Fallback XP values matching FarmLevelConfig defaults — avoids loading content on every action.
+        private const int DefaultXpPerHarvest       = 10;
+        private const int DefaultXpPerGroundCollect  = 5;
+        private const int DefaultXpPerDelivery       = 25;
+        private const int DefaultXpPerResearch       = 50;
+
         // ══════════════════════════════════════════════════════════════════════
         // PLANTING
         // ══════════════════════════════════════════════════════════════════════
@@ -783,8 +789,12 @@ namespace Beamable.BeamFarmMs
             if (string.IsNullOrWhiteSpace(slotId))
                 return CollectFail("slotId must not be empty.");
 
+            // ── Load all stats once (covers slot data + XP in a single network call) ──
+            var allStats = await GetAllStats();
+            int currentXp = int.TryParse(GetSlotStatFrom(allStats, PlayerXpStatKey), out var xp) ? xp : 0;
+
             // ── Load planting data ────────────────────────────────────────────
-            string slotDataJson = await GetSlotStat(SlotDataKey(slotId));
+            string slotDataJson = GetSlotStatFrom(allStats, SlotDataKey(slotId));
 
             if (string.IsNullOrEmpty(slotDataJson))
                 return CollectFail($"No active planting found for slot '{slotId}'. Call PlantSeed first.");
@@ -830,10 +840,8 @@ namespace Beamable.BeamFarmMs
             // ── Clear planting data ───────────────────────────────────────────
             await SetSlotStat(SlotDataKey(slotId), string.Empty);
 
-            // ── Grant XP ──────────────────────────────────────────────────────
-            FarmLevelConfig lvlCfg = null;
-            try { lvlCfg = await Services.Content.GetContent<FarmLevelConfig>(new ContentRef(typeof(FarmLevelConfig), LevelConfigContentId)); } catch { }
-            await GrantFarmXp(lvlCfg?.XpPerHarvest ?? 10);
+            // ── Grant XP (uses pre-read XP value — no extra stat fetch needed) ──
+            await GrantFarmXpWith(DefaultXpPerHarvest, currentXp);
 
             return new CollectResult
             {
@@ -858,12 +866,14 @@ namespace Beamable.BeamFarmMs
             if (slotIds == null || slotIds.Count == 0)
                 return new GetSlotStatesResult { success = true, slots = new List<SlotStateEntry>(), message = "No slot IDs provided." };
 
+            // One stats fetch covers all slot lookups — avoids N separate network calls.
+            var allStats = await GetAllStats();
             var results = new List<SlotStateEntry>();
             foreach (var slotId in slotIds)
             {
                 if (string.IsNullOrWhiteSpace(slotId)) continue;
 
-                string json = await GetSlotStat(SlotDataKey(slotId));
+                string json = GetSlotStatFrom(allStats, SlotDataKey(slotId));
                 if (string.IsNullOrEmpty(json)) continue;
 
                 try
@@ -936,9 +946,12 @@ namespace Beamable.BeamFarmMs
             if (itemType != nameof(GroundItemType.RawMaterial) && itemType != nameof(GroundItemType.PlantItem))
                 return RegGroundFail($"itemType must be '{nameof(GroundItemType.RawMaterial)}' or '{nameof(GroundItemType.PlantItem)}' (got '{itemType}').");
 
+            // ── Load all stats once (covers duplicate check + index read) ────────
+            var allStats = await GetAllStats();
+
             // ── Reject duplicate registrations ────────────────────────────────
             var groundItemKey = GroundItemKey(groundItemId);
-            string existing = await GetSlotStat(groundItemKey);
+            string existing = GetSlotStatFrom(allStats, groundItemKey);
             if (!string.IsNullOrEmpty(existing))
                 return RegGroundFail($"Ground item '{groundItemId}' is already registered.");
 
@@ -960,7 +973,7 @@ namespace Beamable.BeamFarmMs
 
             // ── Maintain global index of active ground item IDs ───────────────
             const string indexKey = "ground_item_ids";
-            string indexJson = await GetSlotStat(indexKey);
+            string indexJson = GetSlotStatFrom(allStats, indexKey);
             var index = string.IsNullOrEmpty(indexJson)
                 ? new List<GroundItemIndexEntry>()
                 : Newtonsoft.Json.JsonConvert.DeserializeObject<List<GroundItemIndexEntry>>(indexJson)
@@ -1007,9 +1020,13 @@ namespace Beamable.BeamFarmMs
             if (string.IsNullOrWhiteSpace(groundItemId))
                 return CollectGroundFail("groundItemId must not be empty.");
 
+            // ── Load all stats once (covers item record + index + XP in one call) ──
+            var allStats = await GetAllStats();
+            int currentXp = int.TryParse(GetSlotStatFrom(allStats, PlayerXpStatKey), out var xp) ? xp : 0;
+
             // ── Load registration record ──────────────────────────────────────
             string statKey = GroundItemKey(groundItemId);
-            string json    = await GetSlotStat(statKey);
+            string json    = GetSlotStatFrom(allStats, statKey);
 
             if (string.IsNullOrEmpty(json))
                 return CollectGroundFail($"No registered ground item found for '{groundItemId}'. Was it already collected?");
@@ -1032,7 +1049,7 @@ namespace Beamable.BeamFarmMs
 
             // ── Remove from global index ──────────────────────────────────────
             const string indexKey = "ground_item_ids";
-            string indexJson = await GetSlotStat(indexKey);
+            string indexJson = GetSlotStatFrom(allStats, indexKey);
             if (!string.IsNullOrEmpty(indexJson))
             {
                 try
@@ -1060,10 +1077,8 @@ namespace Beamable.BeamFarmMs
 
             await Services.Inventory.Update(updateBuilder);
 
-            // ── Grant XP ──────────────────────────────────────────────────────
-            FarmLevelConfig lvlCfgGround = null;
-            try { lvlCfgGround = await Services.Content.GetContent<FarmLevelConfig>(new ContentRef(typeof(FarmLevelConfig), LevelConfigContentId)); } catch { }
-            await GrantFarmXp(lvlCfgGround?.XpPerGroundCollect ?? 5);
+            // ── Grant XP (uses pre-read XP value — no extra stat fetch needed) ──
+            await GrantFarmXpWith(DefaultXpPerGroundCollect, currentXp);
 
             return new CollectGroundItemResult
             {
@@ -1087,8 +1102,11 @@ namespace Beamable.BeamFarmMs
         [ClientCallable]
         public async Task<GetGroundItemsResult> GetGroundItems(string spawnerId)
         {
+            // One stats fetch covers the index + all per-item lookups — avoids N+1 network calls.
+            var allStats = await GetAllStats();
+
             const string indexKey = "ground_item_ids";
-            string indexJson = await GetSlotStat(indexKey);
+            string indexJson = GetSlotStatFrom(allStats, indexKey);
 
             if (string.IsNullOrEmpty(indexJson))
                 return new GetGroundItemsResult { success = true, items = new List<GroundItemEntry>(), message = "No active ground items." };
@@ -1111,7 +1129,7 @@ namespace Beamable.BeamFarmMs
             var results = new List<GroundItemEntry>();
             foreach (var entry in matching)
             {
-                string json = await GetSlotStat(GroundItemKey(entry.groundItemId));
+                string json = GetSlotStatFrom(allStats, GroundItemKey(entry.groundItemId));
                 if (string.IsNullOrEmpty(json)) continue;
 
                 try
@@ -1321,8 +1339,19 @@ namespace Beamable.BeamFarmMs
             if (string.IsNullOrWhiteSpace(orderId))
                 return DeliverFail(orderId, "orderId must not be empty.");
 
+            // ── Load all stats once (covers active orders + XP in one network call) ──
+            var allStats = await GetAllStats();
+            int currentXp = int.TryParse(GetSlotStatFrom(allStats, PlayerXpStatKey), out var xp) ? xp : 0;
+
             // ── Verify order is active for this player ────────────────────────
-            List<ActiveDeliveryOrder> activeOrders = await LoadActiveOrders();
+            List<ActiveDeliveryOrder> activeOrders;
+            {
+                string ordersJson = GetSlotStatFrom(allStats, DeliveryActiveOrdersStatKey);
+                activeOrders = string.IsNullOrEmpty(ordersJson)
+                    ? new List<ActiveDeliveryOrder>()
+                    : Newtonsoft.Json.JsonConvert.DeserializeObject<List<ActiveDeliveryOrder>>(ordersJson)
+                      ?? new List<ActiveDeliveryOrder>();
+            }
             if (!activeOrders.Any(o => o.orderId == orderId))
                 return DeliverFail(orderId, $"Order '{orderId}' is not in your active delivery orders.");
 
@@ -1407,10 +1436,8 @@ namespace Beamable.BeamFarmMs
             // Refill asynchronously so the player's slate stays at MaxActiveOrders.
             await FillDeliveryOrdersInternal();
 
-            // ── Grant XP ──────────────────────────────────────────────────────
-            FarmLevelConfig lvlCfgDel = null;
-            try { lvlCfgDel = await Services.Content.GetContent<FarmLevelConfig>(new ContentRef(typeof(FarmLevelConfig), LevelConfigContentId)); } catch { }
-            await GrantFarmXp(lvlCfgDel?.XpPerDelivery ?? 25);
+            // ── Grant XP (uses pre-read XP value — no extra stat fetch needed) ──
+            await GrantFarmXpWith(DefaultXpPerDelivery, currentXp);
 
             return new DeliverOrderResult
             {
@@ -1758,6 +1785,10 @@ namespace Beamable.BeamFarmMs
             if (string.IsNullOrWhiteSpace(itemContentId))
                 return ResearchCollectFail("itemContentId must not be empty.");
 
+            // ── Pre-fetch XP stat alongside inventory (covers XP write later, no extra round trip) ──
+            var allStatsRes = await GetAllStats();
+            int currentXpRes = int.TryParse(GetSlotStatFrom(allStatsRes, PlayerXpStatKey), out var xpRes) ? xpRes : 0;
+
             // ── Find the item instance ────────────────────────────────────────
             var inventory = await Services.Inventory.GetCurrent("items");
 
@@ -1826,10 +1857,8 @@ namespace Beamable.BeamFarmMs
 
             await Services.Inventory.Update(updateBuilder);
 
-            // ── Grant XP ──────────────────────────────────────────────────────
-            FarmLevelConfig lvlCfgRes = null;
-            try { lvlCfgRes = await Services.Content.GetContent<FarmLevelConfig>(new ContentRef(typeof(FarmLevelConfig), LevelConfigContentId)); } catch { }
-            await GrantFarmXp(lvlCfgRes?.XpPerResearch ?? 50);
+            // ── Grant XP (uses pre-read XP value — no extra stat fetch needed) ──
+            await GrantFarmXpWith(DefaultXpPerResearch, currentXpRes);
 
             return new CollectResearchResult
             {
@@ -1920,6 +1949,17 @@ namespace Beamable.BeamFarmMs
         // STATS HELPERS
         // ══════════════════════════════════════════════════════════════════════
 
+        /// <summary>Fetches all game stats for the current user in one network call.</summary>
+        private async Task<Dictionary<string, string>> GetAllStats()
+        {
+            var stats = await Services.Stats.GetStats(StatsDomainType.Game, StatsAccessType.Private, Context.UserId);
+            return stats ?? new Dictionary<string, string>();
+        }
+
+        /// <summary>Reads a single key from a pre-fetched stats dictionary (no network call).</summary>
+        private static string GetSlotStatFrom(Dictionary<string, string> stats, string key)
+            => stats.TryGetValue(key, out var v) ? v : string.Empty;
+
         private async Task<string> GetSlotStat(string key)
         {
             var stats = await Services.Stats.GetStats(StatsDomainType.Game, StatsAccessType.Private, Context.UserId);
@@ -1929,6 +1969,17 @@ namespace Beamable.BeamFarmMs
         private async Task SetSlotStat(string key, string value)
         {
             await Services.Stats.SetStat(StatsDomainType.Game, StatsAccessType.Private, Context.UserId, key, value);
+        }
+
+        /// <summary>
+        /// Writes the updated XP value using a known current XP — skips the stat read that GrantFarmXp would otherwise do.
+        /// Use this when the caller already has the current XP from a GetAllStats() call.
+        /// </summary>
+        private async Task GrantFarmXpWith(int amount, int currentXp)
+        {
+            if (amount <= 0) return;
+            try { await SetSlotStat(PlayerXpStatKey, (currentXp + amount).ToString()); }
+            catch { }
         }
 
         // ══════════════════════════════════════════════════════════════════════
