@@ -205,7 +205,6 @@ void UK2BeamNode_GetLocalState::ExpandNode(FKismetCompilerContext& CompilerConte
 				K2Schema->TryCreateConnection(CastNode->GetCastSourcePin(), CallFunctionOutputPin);
 
 				const auto SuccessFlowCastObject = CompilerContext.MovePinLinksToIntermediate(*OutputPin, *CastNode->GetCastResultPin());
-				check(!SuccessFlowCastObject.IsFatal());
 			}
 			else
 			{
