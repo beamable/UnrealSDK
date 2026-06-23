@@ -888,25 +888,35 @@ void UBeamContentSubsystem::DownloadContentObjects(const FBeamContentManifestId 
 							UBeamContentObject* ContentObject;
 							UBeamContentObject::NewFromTypeId(ContentTypeStringToContentClass, ContentTypeId, ContentObject);
 
-							// We should never reach here without a ContentObject instance.
-							ensureAlwaysMsgf(ContentObject, TEXT("ContentObject was not created successfully. ManifestId=%s, ContentId=%s"), *ManifestId.AsString, *Id.AsString);
-							UE_LOG(LogBeamContent, Verbose, TEXT("Downloaded content and preparing to parse its Json. CONTENT_ID=%s, JSON=%s, SUPPORT_LEVEL=%s"),
-							       *Id.AsString, *ResponseJson, *StaticEnum<EBeamContentObjectSupportLevel>()->GetValueAsString(ContentObject->SupportLevel))
+							// NewFromTypeId returns null when no concrete (non-abstract) UBeamContentObject
+							// subclass is registered for this content type id — e.g. a content type whose
+							// class isn't loaded/cooked in this build. Skip + log it (naming the type id)
+							// instead of crashing on abstract-class instantiation / a null deref.
+							if (ContentObject)
+							{
+								UE_LOG(LogBeamContent, Verbose, TEXT("Downloaded content and preparing to parse its Json. CONTENT_ID=%s, JSON=%s, SUPPORT_LEVEL=%s"),
+								       *Id.AsString, *ResponseJson, *StaticEnum<EBeamContentObjectSupportLevel>()->GetValueAsString(ContentObject->SupportLevel))
 
-							// Deserialize the content object into the instance
-							ContentObject->FromBasicJson(ResponseJson);
-							ContentObject->Tags = Tags;
+								// Deserialize the content object into the instance
+								ContentObject->FromBasicJson(ResponseJson);
+								ContentObject->Tags = Tags;
 
 
-							// Cache the content object data in memory and update the hashes so that subsequent calls can figure out whether or not we need to redownload.
-							const auto LiveContentCache = LiveContent.FindChecked(ManifestId);
-							const auto PropertyHash = ContentObject->CreatePropertiesHash();
-							LiveContentCache->Cache.Add(Id, ContentObject);
-							LiveContentCache->Hashes.Add(Id, ContentObject->Version);
+								// Cache the content object data in memory and update the hashes so that subsequent calls can figure out whether or not we need to redownload.
+								const auto LiveContentCache = LiveContent.FindChecked(ManifestId);
+								const auto PropertyHash = ContentObject->CreatePropertiesHash();
+								LiveContentCache->Cache.Add(Id, ContentObject);
+								LiveContentCache->Hashes.Add(Id, ContentObject->Version);
 
-							UE_LOG(LogBeamContent, Verbose, TEXT("Downloaded and parsed content. CONTENT_ID=%s, HASH=%s, CONTENT_MANIFEST_ID=%s"), *Id.AsString,
-							       *LiveContentCache->Hashes.FindChecked(Id),
-							       *ManifestId.AsString)
+								UE_LOG(LogBeamContent, Verbose, TEXT("Downloaded and parsed content. CONTENT_ID=%s, HASH=%s, CONTENT_MANIFEST_ID=%s"), *Id.AsString,
+								       *LiveContentCache->Hashes.FindChecked(Id),
+								       *ManifestId.AsString)
+							}
+							else
+							{
+								UE_LOG(LogBeamContent, Error, TEXT("No concrete UBeamContentObject class registered for content type id '%s' — skipping. The class is likely not loaded/cooked in this build. MANIFEST_ID=%s, CONTENT_ID=%s"),
+								       *ContentTypeId, *ManifestId.AsString, *Id.AsString)
+							}
 
 							Runtime->RequestTrackerSystem->TriggerOperationEventWithData(Op, OET_SUCCESS, GetOperationEventID_Download_Individual_Content(), ContentEntry.ContentId.AsString, ContentDownloadData,
 							                                                             Resp.Context.RequestId);
