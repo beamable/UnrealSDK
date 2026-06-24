@@ -3,7 +3,7 @@
   "Version": 1,
   "VersionName": "1.0",
   "FriendlyName": "BeamNotifTest",
-  "Description": "Standalone test harness for the BeamableNotifications native library (iOS/Android): permissions, local + remote push, deep links, callbacks, and the BeamFarmMs push microservice. Self-contained — does not depend on the BeamFarm game.",
+  "Description": "Standalone test harness for the BeamPlatformNotifications native library (iOS/Android): permissions, local + remote push, deep links, callbacks, and the BeamFarmMs push microservice. Self-contained — does not depend on the BeamFarm game.",
   "Category": "Other",
   "CreatedBy": "Beamable",
   "CanContainContent": true,
@@ -14,16 +14,11 @@
       "Name": "BeamNotifTest",
       "Type": "Runtime",
       "LoadingPhase": "Default"
-    },
-    {
-      "Name": "BeamNotifTestEditor",
-      "Type": "Editor",
-      "LoadingPhase": "PostEngineInit"
     }
   ],
   "Plugins": [
     { "Name": "BeamableCore", "Enabled": true },
     { "Name": "BeamableUnrealMicroserviceClients", "Enabled": true },
-    { "Name": "BeamableNotifications", "Enabled": true }
+    { "Name": "BeamPlatformNotifications", "Enabled": true }
   ]
 }

@@ -5,7 +5,7 @@ The webhook that fires on push delivery **while the app is killed** is sent by a
 (`YourApp.app/PlugIns/…​.appex`). iOS launches it on every remote push carrying
 `mutable-content:1` (which `BeamFarmMs.Apns.cs` already sends), even with no game code running.
 
-UE/UPL can't create an iOS app-extension **target**, so `../../add-nse.sh` builds a small
+UE/UPL can't create an iOS app-extension **target**, so `Scripts/add-nse.sh` builds a small
 NSE and grafts it into the packaged build + re-signs.
 
 ## This NSE is self-contained — NO App Group needed
@@ -26,25 +26,28 @@ setup required.
 
 ## Prereqs
 
-- Xcode + your usual automatic signing (team `A6C4565DLF`).
+- Xcode + automatic signing (team read from `[/Script/MacTargetPlatform.XcodeProjectSettings] CodeSigningTeam`).
 - `sudo gem install xcodeproj` (used to generate the NSE Xcode project).
-- The webhook endpoint comes from `[BeamableNotifications] AnalyticsEndpoint` in
-  `DefaultEngine.ini` (defaults to the RN sample's Slack webhook); override with `--endpoint`.
+- The webhook endpoint comes from `[BeamPlatformNotifications] AnalyticsEndpoint` in `DefaultEngine.ini`
+  (set during install); if blank the NSE installs but doesn't POST until you set one.
 
 ## Per build
 
-```
-# Package Project (recommended): produces an .ipa, then graft + re-sign the NSE in:
-./add-nse.sh --ipa "/path/to/BeamableUnrealIOS.ipa"
-# install the resulting .ipa to the device (Xcode ▸ Devices, Apple Configurator, or devicectl)
+Use the **"iOS + NSE → Device"** toolbar button (the `BeamPlatformNotificationsEditor` module). It
+packages iOS, grafts + signs the NSE, and installs to the device you pick — streaming to the
+Output Log (`LogBeamNotif`).
 
-# Launch On: the .app is built/signed/installed in one shot, so re-deploy after grafting:
-./add-nse.sh --app "Binaries/IOS/BeamableUnrealIOS.app"
-xcrun devicectl device install app --device <UDID> "Binaries/IOS/BeamableUnrealIOS.app"
+The bundled scripts can also be run by hand (they take the project context as args):
+
+```
+Plugins/BeamPlatformNotifications/Scripts/package-ios-deploy.sh \
+   --project-dir <UnrealProjectDir> --device <UDID>
+# or just the NSE step on an existing artifact:
+Plugins/BeamPlatformNotifications/Scripts/add-nse.sh --app <path>.app --project-dir <UnrealProjectDir>
 ```
 
-> Launch On installs the *un-extended* app immediately, so you must re-install the grafted
-> `.app`. Package Project is the cleaner flow for the NSE.
+> Team + analytics endpoint are derived from the target project's `DefaultEngine.ini` (override with
+> `--team` / `--endpoint`). Nothing project-specific is baked into the plugin.
 
 ## Verify
 

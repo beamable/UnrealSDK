@@ -1,13 +1,13 @@
-// iOS-only: bridge custom URL-scheme deep links (CFBundleURLSchemes, e.g. beamfarm://…)
+// iOS-only: bridge custom URL-scheme deep links (CFBundleURLSchemes, e.g. beamnotify://…)
 // into the subsystem's OnDeepLink event. Notification-tap deep links do NOT come through
 // here — they arrive via the Swift core's onNotificationTapped callback. This only covers
 // links opened from outside a notification (Safari, Notes, another app, `xcrun simctl openurl`).
 
-#include "BeamableNotificationsNative.h"
+#include "BeamPlatformNotificationsNative.h"
 
 #if PLATFORM_IOS
 
-#include "BeamableNotificationsSubsystem.h"
+#include "BeamPlatformNotificationsSubsystem.h"
 #include "Async/Async.h"
 #include "IOS/IOSAppDelegate.h"
 
@@ -40,9 +40,9 @@ namespace BeamNotif
                 }
                 AsyncTask(ENamedThreads::GameThread, [Link]()
                 {
-                    if (UBeamableNotificationsSubsystem::Active)
+                    if (UBeamPlatformNotificationsSubsystem::Active)
                     {
-                        UBeamableNotificationsSubsystem::Active->HandleDeepLink(Link);
+                        UBeamPlatformNotificationsSubsystem::Active->HandleDeepLink(Link);
                     }
                 });
             });

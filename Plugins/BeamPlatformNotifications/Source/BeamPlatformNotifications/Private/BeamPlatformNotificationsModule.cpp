@@ -1,3 +1,3 @@
-#include "BeamableNotificationsModule.h"
+#include "BeamPlatformNotificationsModule.h"
 
-IMPLEMENT_MODULE(FBeamableNotificationsModule, BeamableNotifications)
+IMPLEMENT_MODULE(FBeamPlatformNotificationsModule, BeamPlatformNotifications)

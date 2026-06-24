@@ -17,7 +17,7 @@ struct FBeamNotifDevice
 /// On click it lists connected devices, lets you pick one in-editor, then runs
 /// package-ios-deploy.sh as a CHILD PROCESS, streaming its output to the Output Log
 /// (LogBeamNotif). While running, the button turns into a "Cancel" button.
-class FBeamNotifTestEditorModule : public IModuleInterface
+class FBeamPlatformNotificationsEditorModule : public IModuleInterface
 {
 public:
     virtual void StartupModule() override;

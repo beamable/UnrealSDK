@@ -2,10 +2,10 @@
 
 #include "CoreMinimal.h"
 
-/// Platform-specific native entry points used by UBeamableNotificationsSubsystem.
+/// Platform-specific native entry points used by UBeamPlatformNotificationsSubsystem.
 /// Implementations live in:
-///   * IOS/BeamableNotificationsIOS.cpp     (iOS URL-scheme deep links)
-///   * Android/BeamableNotificationsAndroid.cpp (JNI to the Kotlin core)
+///   * IOS/BeamPlatformNotificationsIOS.cpp     (iOS URL-scheme deep links)
+///   * Android/BeamPlatformNotificationsAndroid.cpp (JNI to the Kotlin core)
 /// On editor / desktop these are not referenced (the subsystem guards every call site
 /// with PLATFORM_IOS / PLATFORM_ANDROID), so no stub bodies are needed off-device.
 namespace BeamNotif

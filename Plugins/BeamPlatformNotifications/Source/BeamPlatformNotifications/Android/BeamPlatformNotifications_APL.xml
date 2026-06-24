@@ -6,19 +6,19 @@
     * imports the AAR (so its manifest entries — PushFirebaseService, NotificationActionReceiver,
       default-channel meta-data — and transitive deps merge in) via a local maven repo that
       setup-unreal.sh stages under ThirdParty/Android/repository.
-    * adds POST_NOTIFICATIONS and a VIEW intent-filter on GameActivity for `beamfarm://` deep links.
+    * adds POST_NOTIFICATIONS and a VIEW intent-filter on GameActivity for `beamnotify://` deep links.
     * forwards GameActivity.onNewIntent -> UnrealDeepLink.handleNewIntent for warm-start deep links.
     * optionally applies the google-services plugin for FCM remote push (gated on bUseFcm).
 
   FCM is OFF by default so the app builds without google-services.json. To enable remote push,
-  set [BeamableNotifications] bUseFcm=True in DefaultEngine.ini and add Build/Android/google-services.json.
+  set [BeamPlatformNotifications] bUseFcm=True in DefaultEngine.ini and add Build/Android/google-services.json.
 -->
 <root xmlns:android="http://schemas.android.com/apk/res/android">
 
   <init>
-    <log text="BeamableNotifications: applying Android UPL"/>
-    <setBoolFromProperty result="bUseFcm" ini="Engine" section="BeamableNotifications" property="bUseFcm" default="false"/>
-    <setStringFromProperty result="DeepLinkScheme" ini="Engine" section="BeamableNotifications" property="DeepLinkScheme" default="beamfarm"/>
+    <log text="BeamPlatformNotifications: applying Android UPL"/>
+    <setBoolFromProperty result="bUseFcm" ini="Engine" section="BeamPlatformNotifications" property="bUseFcm" default="false"/>
+    <setStringFromProperty result="DeepLinkScheme" ini="Engine" section="BeamPlatformNotifications" property="DeepLinkScheme" default="beamnotify"/>
     <dumpvars/>
   </init>
 
@@ -105,8 +105,8 @@ import com.beamable.deeplink.unreal.UnrealDeepLink;
   <!-- Forward warm-start VIEW intents to the deep-link core. -->
   <gameActivityOnNewIntentAdditions>
     <insert>
-    // BeamableNotifications: forward deep-link VIEW intents
-    try { UnrealDeepLink.handleNewIntent(intent); } catch (Throwable t) { Log.debug("[BeamableNotifications] onNewIntent: " + t); }
+    // BeamPlatformNotifications: forward deep-link VIEW intents
+    try { UnrealDeepLink.handleNewIntent(intent); } catch (Throwable t) { Log.debug("[BeamPlatformNotifications] onNewIntent: " + t); }
     </insert>
   </gameActivityOnNewIntentAdditions>
 

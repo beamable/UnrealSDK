@@ -6,13 +6,13 @@
 //
 //   OUTBOUND (Kotlin -> C++): the `Java_com_beamable_..._native*` exports implement the
 //            `external fun native*` declarations in UnrealPushBridge / UnrealDeepLinkBridge.
-//            Each marshals onto the game thread and forwards to UBeamableNotificationsSubsystem.
+//            Each marshals onto the game thread and forwards to UBeamPlatformNotificationsSubsystem.
 
-#include "BeamableNotificationsNative.h"
+#include "BeamPlatformNotificationsNative.h"
 
 #if PLATFORM_ANDROID
 
-#include "BeamableNotificationsSubsystem.h"
+#include "BeamPlatformNotificationsSubsystem.h"
 #include "Async/Async.h"
 #include "Android/AndroidApplication.h"
 #include "Android/AndroidJava.h"
@@ -56,13 +56,13 @@ namespace
     }
 
     // Marshal to the game thread and invoke a subsystem handler taking a single FString.
-    void DispatchString(const FString& Value, void (UBeamableNotificationsSubsystem::*Handler)(const FString&))
+    void DispatchString(const FString& Value, void (UBeamPlatformNotificationsSubsystem::*Handler)(const FString&))
     {
         AsyncTask(ENamedThreads::GameThread, [Value, Handler]()
         {
-            if (UBeamableNotificationsSubsystem::Active)
+            if (UBeamPlatformNotificationsSubsystem::Active)
             {
-                (UBeamableNotificationsSubsystem::Active->*Handler)(Value);
+                (UBeamPlatformNotificationsSubsystem::Active->*Handler)(Value);
             }
         });
     }
@@ -202,25 +202,25 @@ extern "C"
     JNIEXPORT void JNICALL Java_com_beamable_push_unreal_UnrealPushBridge_nativeOnToken(
         JNIEnv* Env, jobject /*thiz*/, jstring Token)
     {
-        DispatchString(JStringToFString(Env, Token), &UBeamableNotificationsSubsystem::HandleTokenReceivedToken);
+        DispatchString(JStringToFString(Env, Token), &UBeamPlatformNotificationsSubsystem::HandleTokenReceivedToken);
     }
 
     JNIEXPORT void JNICALL Java_com_beamable_push_unreal_UnrealPushBridge_nativeOnTokenError(
         JNIEnv* Env, jobject /*thiz*/, jstring Error)
     {
-        DispatchString(JStringToFString(Env, Error), &UBeamableNotificationsSubsystem::HandleTokenErrorMessage);
+        DispatchString(JStringToFString(Env, Error), &UBeamPlatformNotificationsSubsystem::HandleTokenErrorMessage);
     }
 
     JNIEXPORT void JNICALL Java_com_beamable_push_unreal_UnrealPushBridge_nativeOnMessageForeground(
         JNIEnv* Env, jobject /*thiz*/, jstring Json)
     {
-        DispatchString(JStringToFString(Env, Json), &UBeamableNotificationsSubsystem::HandleReceived);
+        DispatchString(JStringToFString(Env, Json), &UBeamPlatformNotificationsSubsystem::HandleReceived);
     }
 
     JNIEXPORT void JNICALL Java_com_beamable_push_unreal_UnrealPushBridge_nativeOnNotificationOpened(
         JNIEnv* Env, jobject /*thiz*/, jstring Json)
     {
-        DispatchString(JStringToFString(Env, Json), &UBeamableNotificationsSubsystem::HandleTapped);
+        DispatchString(JStringToFString(Env, Json), &UBeamPlatformNotificationsSubsystem::HandleTapped);
     }
 
     JNIEXPORT void JNICALL Java_com_beamable_push_unreal_UnrealPushBridge_nativeOnPermissionResult(
@@ -229,9 +229,9 @@ extern "C"
         const bool bGranted = (bool)Granted;
         AsyncTask(ENamedThreads::GameThread, [bGranted]()
         {
-            if (UBeamableNotificationsSubsystem::Active)
+            if (UBeamPlatformNotificationsSubsystem::Active)
             {
-                UBeamableNotificationsSubsystem::Active->HandlePermissionGranted(bGranted);
+                UBeamPlatformNotificationsSubsystem::Active->HandlePermissionGranted(bGranted);
             }
         });
     }
@@ -249,9 +249,9 @@ extern "C"
         const FString MessageStr = JStringToFString(Env, Message);
         AsyncTask(ENamedThreads::GameThread, [StageStr, MessageStr]()
         {
-            if (UBeamableNotificationsSubsystem::Active)
+            if (UBeamPlatformNotificationsSubsystem::Active)
             {
-                UBeamableNotificationsSubsystem::Active->HandleError(StageStr, MessageStr);
+                UBeamPlatformNotificationsSubsystem::Active->HandleError(StageStr, MessageStr);
             }
         });
     }
@@ -259,7 +259,7 @@ extern "C"
     JNIEXPORT void JNICALL Java_com_beamable_deeplink_unreal_UnrealDeepLinkBridge_nativeOnDeepLink(
         JNIEnv* Env, jobject /*thiz*/, jstring Url, jboolean /*IsColdStart*/)
     {
-        DispatchString(JStringToFString(Env, Url), &UBeamableNotificationsSubsystem::HandleDeepLink);
+        DispatchString(JStringToFString(Env, Url), &UBeamPlatformNotificationsSubsystem::HandleDeepLink);
     }
 }
 

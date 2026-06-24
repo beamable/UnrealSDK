@@ -17,7 +17,7 @@ public class BeamNotifTest : ModuleRules
             "Slate", "SlateCore", "UMG",
             "BeamableCoreRuntime",
             "BeamableUnrealMicroserviceClients",
-            "BeamableNotifications"
+            "BeamPlatformNotifications"
         });
     }
 }

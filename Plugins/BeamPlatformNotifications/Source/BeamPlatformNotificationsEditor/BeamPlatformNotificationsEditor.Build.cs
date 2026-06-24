@@ -1,8 +1,8 @@
 using UnrealBuildTool;
 
-public class BeamNotifTestEditor : ModuleRules
+public class BeamPlatformNotificationsEditor : ModuleRules
 {
-    public BeamNotifTestEditor(ReadOnlyTargetRules Target) : base(Target)
+    public BeamPlatformNotificationsEditor(ReadOnlyTargetRules Target) : base(Target)
     {
         PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
 

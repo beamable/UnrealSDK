@@ -2,7 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "BeamableNotificationsSubsystem.h"
+#include "BeamPlatformNotificationsSubsystem.h"
 #include "BeamNotifTestWidget.generated.h"
 
 class UScrollBox;
@@ -57,7 +57,7 @@ protected:
     UFUNCTION() void HandleConnectionChanged(bool bConnected);
 
 private:
-    UBeamableNotificationsSubsystem* Notif() const;
+    UBeamPlatformNotificationsSubsystem* Notif() const;
     UBeamNotifTestSubsystem* Test() const;
 
     void BuildUI();

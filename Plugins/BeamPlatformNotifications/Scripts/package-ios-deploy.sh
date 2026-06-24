@@ -1,34 +1,49 @@
 #!/usr/bin/env bash
 #
-# package-ios-deploy.sh — one-shot iOS pipeline for the notification test:
-#   1. Package the iOS client (UAT BuildCookRun → .ipa)
-#   2. Graft + sign the closed-app Notification Service Extension (add-nse.sh)
-#   3. Pick a connected device and install the .ipa to it
+# package-ios-deploy.sh — one-shot iOS pipeline (lives inside the BeamPlatformNotifications plugin):
+#   1. Package the iOS client (UAT BuildCookRun)
+#   2. Graft + sign the closed-app Notification Service Extension (add-nse.sh, sibling)
+#   3. Install the .app to a device (pre-selected via --device, or interactive prompt)
 #
-# Invoked by the "iOS + NSE → Device" button added to the Unreal editor toolbar
-# (BeamNotifTestEditor module), or run directly. Runs interactively so you can pick the device.
+# Project-agnostic: the project context is passed in (the script lives in the plugin, not the
+# project). The editor toolbar button passes everything; you can also run it by hand.
+#
+# Usage:
+#   ./package-ios-deploy.sh --project-dir <dir> [--uproject <x.uproject>] [--target <name>]
+#                           [--device <UDID>] [--config Development] [--ue-root <dir>]
 #
 set -uo pipefail
 
-PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-UPROJECT="$PROJECT_DIR/BeamableUnreal.uproject"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_DIR=""
+UPROJECT=""
+TARGET=""
 UE_ROOT="${UE_ROOT:-/Users/Shared/Epic Games/UE_5.6}"
 CONFIG="${CONFIG:-Development}"
-TARGET="${TARGET:-BeamableUnreal}"
-DEVICE=""   # --device <UDID>: pre-selected by the editor button; skips the interactive prompt
+DEVICE=""   # --device <UDID>: pre-selected (skips the interactive prompt)
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
+    --project-dir) PROJECT_DIR="$2"; shift 2 ;;
+    --uproject) UPROJECT="$2"; shift 2 ;;
+    --target) TARGET="$2"; shift 2 ;;
     --device) DEVICE="$2"; shift 2 ;;
     --config) CONFIG="$2"; shift 2 ;;
+    --ue-root) UE_ROOT="$2"; shift 2 ;;
     *) echo "Unknown arg: $1" >&2; exit 1 ;;
   esac
 done
-ARCHIVE="$PROJECT_DIR/Binaries/IOS/Archive"
 
 log()  { printf '\033[0;36m[ios]\033[0m %s\n' "$*"; }
 warn() { printf '\033[0;33m[warn]\033[0m %s\n' "$*"; }
 die()  { printf '\033[0;31m[err]\033[0m %s\n' "$*" >&2; [[ -t 0 ]] && read -r -p "Press return to close..." _; exit 1; }
+
+# Resolve project context (fall back to sensible defaults if only --project-dir was given).
+[[ -n "$PROJECT_DIR" ]] || die "Missing --project-dir (the Unreal project root)."
+PROJECT_DIR="$(cd "$PROJECT_DIR" && pwd)" || die "Bad --project-dir."
+[[ -n "$UPROJECT" ]] || UPROJECT="$(find "$PROJECT_DIR" -maxdepth 1 -name '*.uproject' | head -1)"
+[[ -n "$TARGET" ]]   || TARGET="$(basename "${UPROJECT%.uproject}")"
+ARCHIVE="$PROJECT_DIR/Binaries/IOS/Archive"
 
 [[ -f "$UPROJECT" ]] || die "uproject not found at $UPROJECT"
 [[ -d "$UE_ROOT/Engine" ]] || die "Unreal Engine not found at '$UE_ROOT' (set UE_ROOT env var)."
@@ -52,7 +67,7 @@ log "Packaged: $APP"
 
 # ── 3. Embed + sign the Notification Service Extension into the .app ────────
 log "Embedding the Notification Service Extension..."
-"$PROJECT_DIR/add-nse.sh" --app "$APP" || die "add-nse.sh failed."
+"$SCRIPT_DIR/add-nse.sh" --app "$APP" --project-dir "$PROJECT_DIR" || die "add-nse.sh failed."
 
 # ── 4. Resolve the target device ────────────────────────────────────────────
 command -v xcrun >/dev/null || die "xcrun not found (install Xcode)."

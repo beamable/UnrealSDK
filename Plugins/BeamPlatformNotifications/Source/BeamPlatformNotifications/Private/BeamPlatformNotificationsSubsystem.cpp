@@ -1,11 +1,11 @@
-#include "BeamableNotificationsSubsystem.h"
+#include "BeamPlatformNotificationsSubsystem.h"
 #include "Async/Async.h"
 #include "Dom/JsonObject.h"
 #include "Serialization/JsonReader.h"
 #include "Serialization/JsonSerializer.h"
-#include "BeamableNotificationsNative.h"
+#include "BeamPlatformNotificationsNative.h"
 
-UBeamableNotificationsSubsystem* UBeamableNotificationsSubsystem::Active = nullptr;
+UBeamPlatformNotificationsSubsystem* UBeamPlatformNotificationsSubsystem::Active = nullptr;
 
 // ---------------------------------------------------------------------------
 // iOS: C ABI imported from the Swift core (see BeamableNotifications.h). On non-iOS
@@ -45,27 +45,27 @@ extern "C" {
 // touching UObjects / broadcasting Blueprint delegates.
 namespace
 {
-    void Bounce(const char* json, void (UBeamableNotificationsSubsystem::*handler)(const FString&))
+    void Bounce(const char* json, void (UBeamPlatformNotificationsSubsystem::*handler)(const FString&))
     {
         FString Payload = json ? UTF8_TO_TCHAR(json) : TEXT("");
         AsyncTask(ENamedThreads::GameThread, [Payload, handler]()
         {
-            if (UBeamableNotificationsSubsystem::Active)
+            if (UBeamPlatformNotificationsSubsystem::Active)
             {
-                (UBeamableNotificationsSubsystem::Active->*handler)(Payload);
+                (UBeamPlatformNotificationsSubsystem::Active->*handler)(Payload);
             }
         });
     }
 }
 
-static void CB_Permission(const char* j) { Bounce(j, &UBeamableNotificationsSubsystem::HandlePermission); }
-static void CB_TokenRecv(const char* j)  { Bounce(j, &UBeamableNotificationsSubsystem::HandleTokenReceived); }
-static void CB_TokenErr(const char* j)   { Bounce(j, &UBeamableNotificationsSubsystem::HandleTokenError); }
-static void CB_Presented(const char* j)  { Bounce(j, &UBeamableNotificationsSubsystem::HandlePresented); }
-static void CB_Received(const char* j)   { Bounce(j, &UBeamableNotificationsSubsystem::HandleReceived); }
-static void CB_Tapped(const char* j)     { Bounce(j, &UBeamableNotificationsSubsystem::HandleTapped); }
-static void CB_Pending(const char* j)    { Bounce(j, &UBeamableNotificationsSubsystem::HandlePending); }
-static void CB_Receipts(const char* j)   { Bounce(j, &UBeamableNotificationsSubsystem::HandleReceipts); }
+static void CB_Permission(const char* j) { Bounce(j, &UBeamPlatformNotificationsSubsystem::HandlePermission); }
+static void CB_TokenRecv(const char* j)  { Bounce(j, &UBeamPlatformNotificationsSubsystem::HandleTokenReceived); }
+static void CB_TokenErr(const char* j)   { Bounce(j, &UBeamPlatformNotificationsSubsystem::HandleTokenError); }
+static void CB_Presented(const char* j)  { Bounce(j, &UBeamPlatformNotificationsSubsystem::HandlePresented); }
+static void CB_Received(const char* j)   { Bounce(j, &UBeamPlatformNotificationsSubsystem::HandleReceived); }
+static void CB_Tapped(const char* j)     { Bounce(j, &UBeamPlatformNotificationsSubsystem::HandleTapped); }
+static void CB_Pending(const char* j)    { Bounce(j, &UBeamPlatformNotificationsSubsystem::HandlePending); }
+static void CB_Receipts(const char* j)   { Bounce(j, &UBeamPlatformNotificationsSubsystem::HandleReceipts); }
 #endif // PLATFORM_IOS
 
 // Small helper so iOS call sites stay tidy.
@@ -77,7 +77,7 @@ static void CB_Receipts(const char* j)   { Bounce(j, &UBeamableNotificationsSubs
   #define BMN_CSTR(fstr) ((const char*)nullptr)
 #endif
 
-void UBeamableNotificationsSubsystem::Initialize(FSubsystemCollectionBase& Collection)
+void UBeamPlatformNotificationsSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
     Super::Initialize(Collection);
     Active = this;
@@ -115,13 +115,13 @@ void UBeamableNotificationsSubsystem::Initialize(FSubsystemCollectionBase& Colle
     }
 }
 
-void UBeamableNotificationsSubsystem::Deinitialize()
+void UBeamPlatformNotificationsSubsystem::Deinitialize()
 {
     if (Active == this) Active = nullptr;
     Super::Deinitialize();
 }
 
-bool UBeamableNotificationsSubsystem::IsNativeSupported() const
+bool UBeamPlatformNotificationsSubsystem::IsNativeSupported() const
 {
 #if PLATFORM_IOS || PLATFORM_ANDROID
     return true;
@@ -132,7 +132,7 @@ bool UBeamableNotificationsSubsystem::IsNativeSupported() const
 
 // MARK: API
 
-void UBeamableNotificationsSubsystem::RequestPermission(bool bAlert, bool bBadge, bool bSound)
+void UBeamPlatformNotificationsSubsystem::RequestPermission(bool bAlert, bool bBadge, bool bSound)
 {
 #if PLATFORM_IOS
     const FString Json = FString::Printf(
@@ -146,7 +146,7 @@ void UBeamableNotificationsSubsystem::RequestPermission(bool bAlert, bool bBadge
 #endif
 }
 
-void UBeamableNotificationsSubsystem::GetPermissionStatus()
+void UBeamPlatformNotificationsSubsystem::GetPermissionStatus()
 {
 #if PLATFORM_IOS
     bmn_getPermissionStatus();
@@ -156,7 +156,7 @@ void UBeamableNotificationsSubsystem::GetPermissionStatus()
 #endif
 }
 
-void UBeamableNotificationsSubsystem::ScheduleLocalNotification(const FString& Id, const FString& Title,
+void UBeamPlatformNotificationsSubsystem::ScheduleLocalNotification(const FString& Id, const FString& Title,
     const FString& Body, float DelaySeconds, const FString& DeepLink, const FString& CategoryId)
 {
 #if PLATFORM_IOS
@@ -207,7 +207,7 @@ void UBeamableNotificationsSubsystem::ScheduleLocalNotification(const FString& I
 #endif
 }
 
-void UBeamableNotificationsSubsystem::ScheduleLocalJson(const FString& RequestJson)
+void UBeamPlatformNotificationsSubsystem::ScheduleLocalJson(const FString& RequestJson)
 {
 #if PLATFORM_IOS
     bmn_scheduleLocal(BMN_CSTR(RequestJson));
@@ -216,7 +216,7 @@ void UBeamableNotificationsSubsystem::ScheduleLocalJson(const FString& RequestJs
 #endif
 }
 
-void UBeamableNotificationsSubsystem::CancelLocal(const FString& Id)
+void UBeamPlatformNotificationsSubsystem::CancelLocal(const FString& Id)
 {
 #if PLATFORM_IOS
     bmn_cancelLocal(BMN_CSTR(Id));
@@ -225,7 +225,7 @@ void UBeamableNotificationsSubsystem::CancelLocal(const FString& Id)
 #endif
 }
 
-void UBeamableNotificationsSubsystem::CancelAllLocal()
+void UBeamPlatformNotificationsSubsystem::CancelAllLocal()
 {
 #if PLATFORM_IOS
     bmn_cancelAllLocal();
@@ -234,7 +234,7 @@ void UBeamableNotificationsSubsystem::CancelAllLocal()
 #endif
 }
 
-void UBeamableNotificationsSubsystem::GetPending()
+void UBeamPlatformNotificationsSubsystem::GetPending()
 {
 #if PLATFORM_IOS
     bmn_getPending();
@@ -244,7 +244,7 @@ void UBeamableNotificationsSubsystem::GetPending()
 #endif
 }
 
-void UBeamableNotificationsSubsystem::RegisterForRemote()
+void UBeamPlatformNotificationsSubsystem::RegisterForRemote()
 {
 #if PLATFORM_IOS
     bmn_registerForRemote();
@@ -253,7 +253,7 @@ void UBeamableNotificationsSubsystem::RegisterForRemote()
 #endif
 }
 
-void UBeamableNotificationsSubsystem::UnregisterForRemote()
+void UBeamPlatformNotificationsSubsystem::UnregisterForRemote()
 {
 #if PLATFORM_IOS
     bmn_unregisterForRemote();
@@ -261,10 +261,10 @@ void UBeamableNotificationsSubsystem::UnregisterForRemote()
     // Android FCM has no explicit unregister; deleting the token is handled server-side.
 }
 
-void UBeamableNotificationsSubsystem::RegisterTemplateJson(const FString& TemplateJson) { BMN_CALL(bmn_registerTemplate(BMN_CSTR(TemplateJson))); }
-void UBeamableNotificationsSubsystem::RegisterCategoryJson(const FString& CategoryJson) { BMN_CALL(bmn_registerCategory(BMN_CSTR(CategoryJson))); }
-void UBeamableNotificationsSubsystem::ConfigureAnalyticsJson(const FString& ConfigJson) { BMN_CALL(bmn_configureAnalytics(BMN_CSTR(ConfigJson))); }
-void UBeamableNotificationsSubsystem::GetDeliveryReceipts()
+void UBeamPlatformNotificationsSubsystem::RegisterTemplateJson(const FString& TemplateJson) { BMN_CALL(bmn_registerTemplate(BMN_CSTR(TemplateJson))); }
+void UBeamPlatformNotificationsSubsystem::RegisterCategoryJson(const FString& CategoryJson) { BMN_CALL(bmn_registerCategory(BMN_CSTR(CategoryJson))); }
+void UBeamPlatformNotificationsSubsystem::ConfigureAnalyticsJson(const FString& ConfigJson) { BMN_CALL(bmn_configureAnalytics(BMN_CSTR(ConfigJson))); }
+void UBeamPlatformNotificationsSubsystem::GetDeliveryReceipts()
 {
 #if PLATFORM_IOS
     bmn_getDeliveryReceipts();
@@ -273,10 +273,10 @@ void UBeamableNotificationsSubsystem::GetDeliveryReceipts()
 #endif
 }
 
-void UBeamableNotificationsSubsystem::SetBadge(int32 Count) { BMN_CALL(bmn_setBadge((int)Count)); }
-void UBeamableNotificationsSubsystem::ClearDelivered() { BMN_CALL(bmn_clearDelivered()); }
+void UBeamPlatformNotificationsSubsystem::SetBadge(int32 Count) { BMN_CALL(bmn_setBadge((int)Count)); }
+void UBeamPlatformNotificationsSubsystem::ClearDelivered() { BMN_CALL(bmn_clearDelivered()); }
 
-bool UBeamableNotificationsSubsystem::GetLaunchNotification(FBMNNotificationData& OutNotification)
+bool UBeamPlatformNotificationsSubsystem::GetLaunchNotification(FBMNNotificationData& OutNotification)
 {
 #if PLATFORM_IOS
     const char* ptr = bmn_getLaunchNotification();
@@ -298,7 +298,7 @@ bool UBeamableNotificationsSubsystem::GetLaunchNotification(FBMNNotificationData
 
 // MARK: Inbound handlers (game thread)
 
-void UBeamableNotificationsSubsystem::HandlePermission(const FString& Json)
+void UBeamPlatformNotificationsSubsystem::HandlePermission(const FString& Json)
 {
     TSharedPtr<FJsonObject> Obj;
     TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(Json);
@@ -312,12 +312,12 @@ void UBeamableNotificationsSubsystem::HandlePermission(const FString& Json)
     }
 }
 
-void UBeamableNotificationsSubsystem::HandlePermissionGranted(bool bGranted)
+void UBeamPlatformNotificationsSubsystem::HandlePermissionGranted(bool bGranted)
 {
     OnPermissionResult.Broadcast(bGranted, bGranted ? TEXT("authorized") : TEXT("denied"));
 }
 
-void UBeamableNotificationsSubsystem::HandleTokenReceived(const FString& Json)
+void UBeamPlatformNotificationsSubsystem::HandleTokenReceived(const FString& Json)
 {
     TSharedPtr<FJsonObject> Obj;
     TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(Json);
@@ -327,12 +327,12 @@ void UBeamableNotificationsSubsystem::HandleTokenReceived(const FString& Json)
     }
 }
 
-void UBeamableNotificationsSubsystem::HandleTokenReceivedToken(const FString& Token)
+void UBeamPlatformNotificationsSubsystem::HandleTokenReceivedToken(const FString& Token)
 {
     OnTokenReceived.Broadcast(Token);
 }
 
-void UBeamableNotificationsSubsystem::HandleTokenError(const FString& Json)
+void UBeamPlatformNotificationsSubsystem::HandleTokenError(const FString& Json)
 {
     TSharedPtr<FJsonObject> Obj;
     TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(Json);
@@ -342,15 +342,15 @@ void UBeamableNotificationsSubsystem::HandleTokenError(const FString& Json)
     }
 }
 
-void UBeamableNotificationsSubsystem::HandleTokenErrorMessage(const FString& Error)
+void UBeamPlatformNotificationsSubsystem::HandleTokenErrorMessage(const FString& Error)
 {
     OnTokenError.Broadcast(Error);
 }
 
-void UBeamableNotificationsSubsystem::HandlePresented(const FString& Json) { OnNotificationPresented.Broadcast(ParseNotification(Json)); }
-void UBeamableNotificationsSubsystem::HandleReceived(const FString& Json)  { OnNotificationReceived.Broadcast(ParseNotification(Json)); }
+void UBeamPlatformNotificationsSubsystem::HandlePresented(const FString& Json) { OnNotificationPresented.Broadcast(ParseNotification(Json)); }
+void UBeamPlatformNotificationsSubsystem::HandleReceived(const FString& Json)  { OnNotificationReceived.Broadcast(ParseNotification(Json)); }
 
-void UBeamableNotificationsSubsystem::HandleTapped(const FString& Json)
+void UBeamPlatformNotificationsSubsystem::HandleTapped(const FString& Json)
 {
     const FBMNNotificationData Data = ParseNotification(Json);
     OnNotificationTapped.Broadcast(Data);
@@ -362,10 +362,10 @@ void UBeamableNotificationsSubsystem::HandleTapped(const FString& Json)
     }
 }
 
-void UBeamableNotificationsSubsystem::HandlePending(const FString& Json)   { OnPendingNotifications.Broadcast(Json); }
-void UBeamableNotificationsSubsystem::HandleReceipts(const FString& Json)  { OnDeliveryReceipts.Broadcast(Json); }
+void UBeamPlatformNotificationsSubsystem::HandlePending(const FString& Json)   { OnPendingNotifications.Broadcast(Json); }
+void UBeamPlatformNotificationsSubsystem::HandleReceipts(const FString& Json)  { OnDeliveryReceipts.Broadcast(Json); }
 
-void UBeamableNotificationsSubsystem::HandleDeepLink(const FString& Url)
+void UBeamPlatformNotificationsSubsystem::HandleDeepLink(const FString& Url)
 {
     if (Url.IsEmpty())
     {
@@ -376,7 +376,7 @@ void UBeamableNotificationsSubsystem::HandleDeepLink(const FString& Url)
     OnDeepLink.Broadcast(Url);
 }
 
-bool UBeamableNotificationsSubsystem::ConsumePendingDeepLink(FString& OutUrl)
+bool UBeamPlatformNotificationsSubsystem::ConsumePendingDeepLink(FString& OutUrl)
 {
     if (PendingDeepLink.IsEmpty())
     {
@@ -387,7 +387,7 @@ bool UBeamableNotificationsSubsystem::ConsumePendingDeepLink(FString& OutUrl)
     return true;
 }
 
-void UBeamableNotificationsSubsystem::ConfigureAnalytics(const FString& Endpoint, bool bEnabled)
+void UBeamPlatformNotificationsSubsystem::ConfigureAnalytics(const FString& Endpoint, bool bEnabled)
 {
     TSharedRef<FJsonObject> Root = MakeShared<FJsonObject>();
     Root->SetBoolField(TEXT("enabled"), bEnabled);
@@ -400,12 +400,12 @@ void UBeamableNotificationsSubsystem::ConfigureAnalytics(const FString& Endpoint
     ConfigureAnalyticsJson(Out);
 }
 
-void UBeamableNotificationsSubsystem::HandleError(const FString& Stage, const FString& Message)
+void UBeamPlatformNotificationsSubsystem::HandleError(const FString& Stage, const FString& Message)
 {
-    UE_LOG(LogTemp, Warning, TEXT("[BeamableNotifications] error (%s): %s"), *Stage, *Message);
+    UE_LOG(LogTemp, Warning, TEXT("[BeamPlatformNotifications] error (%s): %s"), *Stage, *Message);
 }
 
-FBMNNotificationData UBeamableNotificationsSubsystem::ParseNotification(const FString& Json)
+FBMNNotificationData UBeamPlatformNotificationsSubsystem::ParseNotification(const FString& Json)
 {
     FBMNNotificationData Data;
     Data.RawJson = Json;

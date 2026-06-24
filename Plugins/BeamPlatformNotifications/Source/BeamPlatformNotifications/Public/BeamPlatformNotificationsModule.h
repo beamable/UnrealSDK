@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 #include "Modules/ModuleManager.h"
 
-class FBeamableNotificationsModule : public IModuleInterface
+class FBeamPlatformNotificationsModule : public IModuleInterface
 {
 public:
     virtual void StartupModule() override {}

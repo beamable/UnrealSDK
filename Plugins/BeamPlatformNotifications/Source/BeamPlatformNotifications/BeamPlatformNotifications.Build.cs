@@ -1,9 +1,9 @@
 using System.IO;
 using UnrealBuildTool;
 
-public class BeamableNotifications : ModuleRules
+public class BeamPlatformNotifications : ModuleRules
 {
-    public BeamableNotifications(ReadOnlyTargetRules Target) : base(Target)
+    public BeamPlatformNotifications(ReadOnlyTargetRules Target) : base(Target)
     {
         PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
@@ -30,7 +30,7 @@ public class BeamableNotifications : ModuleRules
             // UPL injects entitlements (push, App Group), background modes, the URL scheme,
             // and stages the Notification Service Extension into the generated Xcode project.
             AdditionalPropertiesForReceipt.Add("IOSPlugin",
-                Path.Combine(ModuleDirectory, "IOS", "BeamableNotifications_UPL.xml"));
+                Path.Combine(ModuleDirectory, "IOS", "BeamPlatformNotifications_UPL.xml"));
 
             PublicFrameworks.AddRange(new string[] { "UserNotifications" });
         }
@@ -40,7 +40,7 @@ public class BeamableNotifications : ModuleRules
             // gradle/Firebase deps + manifest entries + onNewIntent hook are injected by the APL.
             // JNI helpers (AndroidJavaEnv / FJavaHelper) live in Core, already a public dep.
             AdditionalPropertiesForReceipt.Add("AndroidPlugin",
-                Path.Combine(ModuleDirectory, "Android", "BeamableNotifications_APL.xml"));
+                Path.Combine(ModuleDirectory, "Android", "BeamPlatformNotifications_APL.xml"));
         }
     }
 }

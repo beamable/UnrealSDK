@@ -14,18 +14,17 @@
 # Works for "Launch On" (a .app on disk) and "Package Project" (an .ipa).
 #
 # Usage:
-#   ./add-nse.sh --app /path/BeamableUnrealIOS.app            # Launch On
-#   ./add-nse.sh --ipa /path/BeamableUnrealIOS.ipa            # Package Project
-#   (defaults to Binaries/IOS/BeamableUnrealIOS.app)
-# Options:
-#   --team <ID>        signing team (default A6C4565DLF)
-#   --endpoint <url>   webhook endpoint (default: [BeamableNotifications]AnalyticsEndpoint in
-#                      DefaultEngine.ini, else the RN sample's Slack webhook)
+#   ./add-nse.sh --app <path>.app --project-dir <UnrealProjectDir>   # Launch On
+#   ./add-nse.sh --ipa <path>.ipa --project-dir <UnrealProjectDir>   # Package Project
+# Options (all derived from the target project's DefaultEngine.ini when omitted):
+#   --project-dir <dir>  Unreal project root (used to read team + endpoint from config)
+#   --team <ID>          signing team (default: [/Script/MacTargetPlatform.XcodeProjectSettings] CodeSigningTeam)
+#   --endpoint <url>     analytics webhook (default: [BeamPlatformNotifications] AnalyticsEndpoint)
 #
 set -euo pipefail
 
-PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-TEAM="A6C4565DLF"
+PROJECT_DIR=""
+TEAM=""
 ENDPOINT=""
 APP=""
 IPA=""
@@ -36,20 +35,25 @@ while [[ $# -gt 0 ]]; do
     --ipa) IPA="$2"; shift 2 ;;
     --team) TEAM="$2"; shift 2 ;;
     --endpoint) ENDPOINT="$2"; shift 2 ;;
+    --project-dir) PROJECT_DIR="$2"; shift 2 ;;
     *) echo "Unknown arg: $1" >&2; exit 1 ;;
   esac
 done
-[[ -z "$APP" && -z "$IPA" ]] && APP="$PROJECT_DIR/Binaries/IOS/BeamableUnrealIOS.app"
 
 log()  { printf '\033[0;36m[nse]\033[0m %s\n' "$*"; }
 warn() { printf '\033[0;33m[warn]\033[0m %s\n' "$*"; }
 die()  { printf '\033[0;31m[err]\033[0m %s\n' "$*" >&2; exit 1; }
 
-# Resolve the webhook endpoint from config if not supplied.
-if [[ -z "$ENDPOINT" ]]; then
-  ENDPOINT="$(grep -E '^\s*AnalyticsEndpoint=' "$PROJECT_DIR/Config/DefaultEngine.ini" 2>/dev/null | head -1 | sed 's/^[^=]*=//')"
-fi
-[[ -z "$ENDPOINT" ]] && ENDPOINT="https://hooks.slack.com/triggers/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"
+[[ -n "$APP" || -n "$IPA" ]] || die "Pass --app <path.app> or --ipa <path.ipa>."
+
+INI="$PROJECT_DIR/Config/DefaultEngine.ini"
+ini_val() { grep -E "^\s*$1=" "$INI" 2>/dev/null | head -1 | sed 's/^[^=]*=//' | tr -d '\r'; }
+
+# Derive project-specific values from the target project's config (flags override).
+[[ -z "$ENDPOINT" && -f "$INI" ]] && ENDPOINT="$(ini_val AnalyticsEndpoint)"
+[[ -z "$TEAM"     && -f "$INI" ]] && TEAM="$(ini_val CodeSigningTeam)"
+[[ -n "$ENDPOINT" ]] || warn "No AnalyticsEndpoint configured ([BeamPlatformNotifications]) — the NSE will be installed but won't POST until one is set."
+[[ -n "$TEAM" ]] || warn "No signing team resolved (CodeSigningTeam) — pass --team <ID> if the appex build fails to sign."
 
 command -v xcodebuild >/dev/null || die "xcodebuild not found (install Xcode)."
 ( command -v gem >/dev/null && gem list -i xcodeproj >/dev/null 2>&1 ) || \

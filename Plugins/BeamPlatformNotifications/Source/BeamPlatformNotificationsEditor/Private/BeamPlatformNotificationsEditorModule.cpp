@@ -1,4 +1,4 @@
-#include "BeamNotifTestEditorModule.h"
+#include "BeamPlatformNotificationsEditorModule.h"
 
 #include "ToolMenus.h"
 #include "Framework/Commands/UIAction.h"
@@ -11,6 +11,18 @@
 #include "Misc/Attribute.h"
 #include "Async/Async.h"
 #include "Styling/AppStyle.h"
+#include "Interfaces/IPluginManager.h"
+
+// Absolute path to this plugin's bundled Scripts/ directory (where add-nse.sh +
+// package-ios-deploy.sh live). The plugin is self-contained, so the scripts travel with it.
+static FString BMN_ScriptsDir()
+{
+    const TSharedPtr<IPlugin> Plugin = IPluginManager::Get().FindPlugin(TEXT("BeamPlatformNotifications"));
+    const FString Base = Plugin.IsValid()
+        ? Plugin->GetBaseDir()
+        : (FPaths::ProjectPluginsDir() / TEXT("BeamPlatformNotifications"));
+    return FPaths::ConvertRelativePathToFull(Base / TEXT("Scripts"));
+}
 
 #include "Dom/JsonObject.h"
 #include "Dom/JsonValue.h"
@@ -25,17 +37,17 @@
 #include "Widgets/Input/SButton.h"
 #include "Widgets/Input/SComboBox.h"
 
-#define LOCTEXT_NAMESPACE "BeamNotifTestEditor"
+#define LOCTEXT_NAMESPACE "BeamPlatformNotificationsEditor"
 
 DEFINE_LOG_CATEGORY_STATIC(LogBeamNotif, Log, All);
 
-void FBeamNotifTestEditorModule::StartupModule()
+void FBeamPlatformNotificationsEditorModule::StartupModule()
 {
     UToolMenus::RegisterStartupCallback(
-        FSimpleMulticastDelegate::FDelegate::CreateRaw(this, &FBeamNotifTestEditorModule::RegisterMenus));
+        FSimpleMulticastDelegate::FDelegate::CreateRaw(this, &FBeamPlatformNotificationsEditorModule::RegisterMenus));
 }
 
-void FBeamNotifTestEditorModule::ShutdownModule()
+void FBeamPlatformNotificationsEditorModule::ShutdownModule()
 {
     if (DeployProcess.IsValid())
     {
@@ -47,7 +59,7 @@ void FBeamNotifTestEditorModule::ShutdownModule()
     UToolMenus::UnregisterOwner(this);
 }
 
-void FBeamNotifTestEditorModule::RegisterMenus()
+void FBeamPlatformNotificationsEditorModule::RegisterMenus()
 {
     FToolMenuOwnerScoped OwnerScoped(this);
 
@@ -58,7 +70,7 @@ void FBeamNotifTestEditorModule::RegisterMenus()
         // while a run is active — Slate re-evaluates these each frame.
         FToolMenuEntry Entry = FToolMenuEntry::InitToolBarButton(
             "PackageIOSWithNSE",
-            FUIAction(FExecuteAction::CreateRaw(this, &FBeamNotifTestEditorModule::OnToolbarButtonClicked)),
+            FUIAction(FExecuteAction::CreateRaw(this, &FBeamPlatformNotificationsEditorModule::OnToolbarButtonClicked)),
             MakeAttributeLambda([this]() { return GetButtonLabel(); }),
             MakeAttributeLambda([this]() { return GetButtonTooltip(); }),
             MakeAttributeLambda([this]() { return GetButtonIcon(); }));
@@ -66,26 +78,26 @@ void FBeamNotifTestEditorModule::RegisterMenus()
     }
 }
 
-FText FBeamNotifTestEditorModule::GetButtonLabel() const
+FText FBeamPlatformNotificationsEditorModule::GetButtonLabel() const
 {
     return bDeployRunning ? LOCTEXT("CancelLabel", "Cancel iOS Deploy")
                           : LOCTEXT("PackageIOSLabel", "iOS + NSE -> Device");
 }
 
-FText FBeamNotifTestEditorModule::GetButtonTooltip() const
+FText FBeamPlatformNotificationsEditorModule::GetButtonTooltip() const
 {
     return bDeployRunning
         ? LOCTEXT("CancelTip", "A package/deploy is running. Click to cancel it. Output is in the Output Log (LogBeamNotif).")
         : LOCTEXT("PackageIOSTip", "Pick a connected device, then package iOS, embed the Notification Service Extension, and install. Output streams to the Output Log (LogBeamNotif).");
 }
 
-FSlateIcon FBeamNotifTestEditorModule::GetButtonIcon() const
+FSlateIcon FBeamPlatformNotificationsEditorModule::GetButtonIcon() const
 {
     return FSlateIcon(FAppStyle::GetAppStyleSetName(),
         bDeployRunning ? "GenericStop" : "MainFrame.PackageProject");
 }
 
-void FBeamNotifTestEditorModule::OnToolbarButtonClicked()
+void FBeamPlatformNotificationsEditorModule::OnToolbarButtonClicked()
 {
     if (bDeployRunning)
     {
@@ -97,7 +109,7 @@ void FBeamNotifTestEditorModule::OnToolbarButtonClicked()
     }
 }
 
-void FBeamNotifTestEditorModule::CancelPipeline()
+void FBeamPlatformNotificationsEditorModule::CancelPipeline()
 {
     if (DeployProcess.IsValid())
     {
@@ -106,18 +118,18 @@ void FBeamNotifTestEditorModule::CancelPipeline()
     }
 }
 
-void FBeamNotifTestEditorModule::MakeScriptsExecutable()
+void FBeamPlatformNotificationsEditorModule::MakeScriptsExecutable()
 {
 #if PLATFORM_MAC
-    const FString ProjDir = FPaths::ConvertRelativePathToFull(FPaths::ProjectDir());
+    const FString Scripts = BMN_ScriptsDir();
     const FString Args = FString::Printf(TEXT("+x \"%s\" \"%s\""),
-        *(ProjDir / TEXT("package-ios-deploy.sh")), *(ProjDir / TEXT("add-nse.sh")));
+        *(Scripts / TEXT("package-ios-deploy.sh")), *(Scripts / TEXT("add-nse.sh")));
     int32 Rc = 0; FString Out, Err;
     FPlatformProcess::ExecProcess(TEXT("/bin/chmod"), *Args, &Rc, &Out, &Err);
 #endif
 }
 
-bool FBeamNotifTestEditorModule::QueryDevices(TArray<TSharedPtr<FBeamNotifDevice>>& OutDevices)
+bool FBeamPlatformNotificationsEditorModule::QueryDevices(TArray<TSharedPtr<FBeamNotifDevice>>& OutDevices)
 {
 #if PLATFORM_MAC
     const FString TmpJson = FPaths::ConvertRelativePathToFull(FPaths::ProjectSavedDir() / TEXT("bmn_devices.json"));
@@ -193,7 +205,7 @@ bool FBeamNotifTestEditorModule::QueryDevices(TArray<TSharedPtr<FBeamNotifDevice
 #endif
 }
 
-bool FBeamNotifTestEditorModule::ShowDevicePicker(const TArray<TSharedPtr<FBeamNotifDevice>>& Devices, FString& OutUdid)
+bool FBeamPlatformNotificationsEditorModule::ShowDevicePicker(const TArray<TSharedPtr<FBeamNotifDevice>>& Devices, FString& OutUdid)
 {
     TSharedPtr<FBeamNotifDevice> Selected = Devices.Num() > 0 ? Devices[0] : nullptr;
     bool bConfirmed = false;
@@ -260,13 +272,18 @@ bool FBeamNotifTestEditorModule::ShowDevicePicker(const TArray<TSharedPtr<FBeamN
     return false;
 }
 
-void FBeamNotifTestEditorModule::LaunchPipeline(const FString& Udid)
+void FBeamPlatformNotificationsEditorModule::LaunchPipeline(const FString& Udid)
 {
 #if PLATFORM_MAC
-    const FString ProjDir = FPaths::ConvertRelativePathToFull(FPaths::ProjectDir());
-    const FString Script   = ProjDir / TEXT("package-ios-deploy.sh");
-    // Invoke bash on the script so the executable bit isn't required.
-    const FString Params = FString::Printf(TEXT("\"%s\" --device \"%s\""), *Script, *Udid);
+    const FString ProjDir  = FPaths::ConvertRelativePathToFull(FPaths::ProjectDir());
+    const FString UProject = FPaths::ConvertRelativePathToFull(FPaths::GetProjectFilePath());
+    const FString Target   = FPaths::GetBaseFilename(UProject); // UE convention: game target == project name
+    const FString Script   = BMN_ScriptsDir() / TEXT("package-ios-deploy.sh");
+    // Invoke bash on the script so the executable bit isn't required. The plugin-bundled script
+    // gets all project context as args (it lives outside the project, so it can't assume paths).
+    const FString Params = FString::Printf(
+        TEXT("\"%s\" --project-dir \"%s\" --uproject \"%s\" --target \"%s\" --device \"%s\""),
+        *Script, *ProjDir, *UProject, *Target, *Udid);
 
     UE_LOG(LogBeamNotif, Display, TEXT("=== iOS package + NSE + deploy -> device %s ==="), *Udid);
     UE_LOG(LogBeamNotif, Display, TEXT("Running: /bin/bash %s"), *Params);
@@ -325,12 +342,12 @@ void FBeamNotifTestEditorModule::LaunchPipeline(const FString& Udid)
 #endif
 }
 
-void FBeamNotifTestEditorModule::StartPipelineFlow()
+void FBeamPlatformNotificationsEditorModule::StartPipelineFlow()
 {
 #if PLATFORM_MAC
     MakeScriptsExecutable();
 
-    const FString Script = FPaths::ConvertRelativePathToFull(FPaths::ProjectDir() / TEXT("package-ios-deploy.sh"));
+    const FString Script = BMN_ScriptsDir() / TEXT("package-ios-deploy.sh");
     if (!FPaths::FileExists(Script))
     {
         FMessageDialog::Open(EAppMsgType::Ok,
@@ -364,4 +381,4 @@ void FBeamNotifTestEditorModule::StartPipelineFlow()
 
 #undef LOCTEXT_NAMESPACE
 
-IMPLEMENT_MODULE(FBeamNotifTestEditorModule, BeamNotifTestEditor)
+IMPLEMENT_MODULE(FBeamPlatformNotificationsEditorModule, BeamPlatformNotificationsEditor)

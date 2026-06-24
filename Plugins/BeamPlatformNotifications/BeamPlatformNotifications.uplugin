@@ -2,7 +2,7 @@
   "FileVersion": 3,
   "Version": 1,
   "VersionName": "1.0.0",
-  "FriendlyName": "Beamable Notifications",
+  "FriendlyName": "Beam Platform Notifications",
   "Description": "Cross-engine notifications SDK: local + remote push, deep links, templates, action buttons, rich media, closed-app analytics. iOS (Swift core via C ABI) + Android (Kotlin core via JNI).",
   "Category": "Mobile",
   "CreatedBy": "Beamable",
@@ -11,10 +11,15 @@
   "Installed": false,
   "Modules": [
     {
-      "Name": "BeamableNotifications",
+      "Name": "BeamPlatformNotifications",
       "Type": "Runtime",
       "LoadingPhase": "Default",
       "PlatformAllowList": [ "IOS", "Android", "Mac", "Win64", "Linux" ]
+    },
+    {
+      "Name": "BeamPlatformNotificationsEditor",
+      "Type": "Editor",
+      "LoadingPhase": "PostEngineInit"
     }
   ]
 }

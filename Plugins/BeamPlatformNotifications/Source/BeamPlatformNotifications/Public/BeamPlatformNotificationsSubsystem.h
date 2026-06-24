@@ -2,7 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Subsystems/GameInstanceSubsystem.h"
-#include "BeamableNotificationsSubsystem.generated.h"
+#include "BeamPlatformNotificationsSubsystem.generated.h"
 
 /// Normalized notification payload delivered to Blueprints. `RawJson` carries the full
 /// payload (including arbitrary userInfo) for advanced use; common fields are lifted out.
@@ -32,10 +32,10 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FBMNOnNotification, const FBMNNotifi
 /// Platform routing:
 ///   * iOS     — calls the Swift core's C ABI (`bmn_*`); callbacks arrive via C trampolines.
 ///   * Android — calls the Kotlin core via JNI (`UnrealPush`/`UnrealDeepLink`); callbacks
-///               arrive via the `Java_..._native*` exports in BeamableNotificationsAndroid.cpp.
+///               arrive via the `Java_..._native*` exports in BeamPlatformNotificationsAndroid.cpp.
 ///   * Editor / desktop — no-ops, so the module still compiles and the UI can be wired.
 UCLASS()
-class BEAMABLENOTIFICATIONS_API UBeamableNotificationsSubsystem : public UGameInstanceSubsystem
+class BEAMPLATFORMNOTIFICATIONS_API UBeamPlatformNotificationsSubsystem : public UGameInstanceSubsystem
 {
     GENERATED_BODY()
 
@@ -54,7 +54,7 @@ public:
     UPROPERTY(BlueprintAssignable, Category = "Notifications") FBMNOnString OnDeliveryReceipts;
 
     /// Fired for URL-scheme deep links that did NOT come through a notification tap
-    /// (e.g. `beamfarm://details/123` opened from the browser, an `adb` VIEW intent, or
+    /// (e.g. `beamnotify://details/123` opened from the browser, an `adb` VIEW intent, or
     /// an Android cold/warm-start launch). Notification-tap deep links arrive on
     /// `OnNotificationTapped` (see `FBMNNotificationData::DeepLink`).
     UPROPERTY(BlueprintAssignable, Category = "Notifications") FBMNOnString OnDeepLink;
@@ -116,7 +116,7 @@ public:
     bool IsNativeSupported() const;
 
     /// The active instance, used by the C-callback / JNI trampolines. Set in Initialize.
-    static UBeamableNotificationsSubsystem* Active;
+    static UBeamPlatformNotificationsSubsystem* Active;
 
     // Internal: invoked (on the game thread) by the native callback trampolines.
     void HandlePermission(const FString& Json);

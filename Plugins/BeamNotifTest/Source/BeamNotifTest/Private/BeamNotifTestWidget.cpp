@@ -15,9 +15,9 @@ UBeamNotifTestWidget::UBeamNotifTestWidget(const FObjectInitializer& ObjectIniti
 {
 }
 
-UBeamableNotificationsSubsystem* UBeamNotifTestWidget::Notif() const
+UBeamPlatformNotificationsSubsystem* UBeamNotifTestWidget::Notif() const
 {
-    return GetGameInstance() ? GetGameInstance()->GetSubsystem<UBeamableNotificationsSubsystem>() : nullptr;
+    return GetGameInstance() ? GetGameInstance()->GetSubsystem<UBeamPlatformNotificationsSubsystem>() : nullptr;
 }
 
 UBeamNotifTestSubsystem* UBeamNotifTestWidget::Test() const
@@ -39,7 +39,7 @@ void UBeamNotifTestWidget::NativeConstruct()
 {
     Super::NativeConstruct();
 
-    if (UBeamableNotificationsSubsystem* N = Notif())
+    if (UBeamPlatformNotificationsSubsystem* N = Notif())
     {
         N->OnPermissionResult.AddDynamic(this, &UBeamNotifTestWidget::HandlePermissionResult);
         N->OnTokenReceived.AddDynamic(this, &UBeamNotifTestWidget::HandleTokenReceived);
@@ -55,7 +55,7 @@ void UBeamNotifTestWidget::NativeConstruct()
         // Enable closed-app delivery analytics (POSTs each delivery to this endpoint from the
         // Notification Service Extension). Endpoint is configurable in DefaultEngine.ini.
         FString AnalyticsEndpoint;
-        GConfig->GetString(TEXT("BeamableNotifications"), TEXT("AnalyticsEndpoint"), AnalyticsEndpoint, GEngineIni);
+        GConfig->GetString(TEXT("BeamPlatformNotifications"), TEXT("AnalyticsEndpoint"), AnalyticsEndpoint, GEngineIni);
         if (!AnalyticsEndpoint.IsEmpty())
         {
             N->ConfigureAnalytics(AnalyticsEndpoint, true);
@@ -91,7 +91,7 @@ void UBeamNotifTestWidget::NativeConstruct()
 
 void UBeamNotifTestWidget::NativeDestruct()
 {
-    if (UBeamableNotificationsSubsystem* N = Notif())
+    if (UBeamPlatformNotificationsSubsystem* N = Notif())
     {
         N->OnPermissionResult.RemoveAll(this);
         N->OnTokenReceived.RemoveAll(this);
@@ -210,12 +210,12 @@ void UBeamNotifTestWidget::OnConnectClicked()
 
 void UBeamNotifTestWidget::OnRequestPermissionClicked()
 {
-    if (UBeamableNotificationsSubsystem* N = Notif()) N->RequestPermission(true, true, true);
+    if (UBeamPlatformNotificationsSubsystem* N = Notif()) N->RequestPermission(true, true, true);
 }
 
 void UBeamNotifTestWidget::OnFireNowClicked()
 {
-    if (UBeamableNotificationsSubsystem* N = Notif())
+    if (UBeamPlatformNotificationsSubsystem* N = Notif())
     {
         N->ScheduleLocalNotification(TEXT("777"), TEXT("Details #777"), TEXT("Fired immediately from Unreal"), 0.f);
         AppendLog(TEXT("Scheduled immediate notification #777"));
@@ -224,7 +224,7 @@ void UBeamNotifTestWidget::OnFireNowClicked()
 
 void UBeamNotifTestWidget::OnFireDelayedClicked()
 {
-    if (UBeamableNotificationsSubsystem* N = Notif())
+    if (UBeamPlatformNotificationsSubsystem* N = Notif())
     {
         N->ScheduleLocalNotification(TEXT("888"), TEXT("Details #888"), TEXT("Background & tap me"), 10.f);
         AppendLog(TEXT("Scheduled notification #888 in 10s"));
@@ -233,7 +233,7 @@ void UBeamNotifTestWidget::OnFireDelayedClicked()
 
 void UBeamNotifTestWidget::OnRegisterRemoteClicked()
 {
-    if (UBeamableNotificationsSubsystem* N = Notif())
+    if (UBeamPlatformNotificationsSubsystem* N = Notif())
     {
         N->RegisterForRemote();
         AppendLog(TEXT("Requested remote registration (APNs/FCM)…"));
@@ -258,7 +258,7 @@ void UBeamNotifTestWidget::OnListDevicesClicked()
 
 void UBeamNotifTestWidget::OnFireDeepLinkNotifClicked()
 {
-    if (UBeamableNotificationsSubsystem* N = Notif())
+    if (UBeamPlatformNotificationsSubsystem* N = Notif())
     {
         N->ScheduleLocalNotification(TEXT("123"), TEXT("Deep link"), TEXT("Tap to open Details #123"),
             0.f, TEXT("beamfarm://details/123"));
@@ -273,7 +273,7 @@ void UBeamNotifTestWidget::OnNavigateDetailsClicked()
 
 void UBeamNotifTestWidget::OnCancelAllClicked()
 {
-    if (UBeamableNotificationsSubsystem* N = Notif())
+    if (UBeamPlatformNotificationsSubsystem* N = Notif())
     {
         N->CancelAllLocal();
         AppendLog(TEXT("Cancelled all local notifications"));
