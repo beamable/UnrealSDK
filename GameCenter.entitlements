@@ -9,5 +9,21 @@
    <array>
      <string>Default</string>
    </array>
+   <!-- Remote push (APNs). "development" matches a dev provisioning profile + sandbox APNs.
+        Use "production" for App Store / TestFlight (distribution) builds.
+        Required because PremadeIOSEntitlements points here, which bypasses UE's auto-generated
+        aps-environment entitlement (so bEnableRemoteNotificationsSupport alone has no effect). -->
+   <key>aps-environment</key>
+   <string>development</string>
+   <!-- App Group for closed-app delivery analytics (shared between the app and the Notification
+        Service Extension). UNCOMMENT once your App ID / provisioning profile has App Groups enabled
+        for this id (otherwise code-signing fails). The NSE target must use the SAME group, and it
+        must match [/Script/BeamableNotifications.Settings] AppGroup in DefaultEngine.ini.
+
+   <key>com.apple.security.application-groups</key>
+   <array>
+     <string>group.com.beamable.notifications</string>
+   </array>
+   -->
 </dict>
 </plist>
