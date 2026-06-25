@@ -39,10 +39,12 @@ die()  { printf '\033[0;31m[err]\033[0m %s\n' "$*" >&2; exit 1; }
 [[ -d "$SOURCE" ]] || die "Source not found: $SOURCE"
 
 # --- source layout ----------------------------------------------------------
-MASTER="$SOURCE/iOS/BeamableNotifications/unreal"          # master plugin (sources + Scripts + docs)
-IOS_ZIP="$SOURCE/iOS/BeamableNotifications/build/BeamableNotifications.embeddedframework.zip"
+# The master plugin already ships its native binaries under ThirdParty/ (staged by the repo's
+# dev-native.sh): ThirdParty/BeamableNotifications.embeddedframework.zip (iOS dynamic framework)
+# and ThirdParty/Android/beamable-notifications-release.aar (consumed flat by the APL's
+# <AARImports> via a Gradle flatDir repo). So we copy the whole plugin, ThirdParty included.
+MASTER="$SOURCE/EnginePlugins/Unreal"                      # master plugin (sources + Scripts + ThirdParty + docs)
 NSE_SRC="$SOURCE/iOS/BeamableNotifications/extension"
-AAR_SRC="$SOURCE/Android/BeamableNotifications/reactnative/android/libs/beamable-notifications-release.aar"
 
 [[ -f "$MASTER/BeamPlatformNotifications.uplugin" ]] || die "Master plugin not found at $MASTER (expected BeamPlatformNotifications.uplugin). Update the native-library source first."
 
@@ -50,34 +52,21 @@ AAR_SRC="$SOURCE/Android/BeamableNotifications/reactnative/android/libs/beamable
 STAGE="$(mktemp -d)/BeamPlatformNotifications"
 mkdir -p "$STAGE"
 log "Generating self-contained plugin from $MASTER ..."
-# Plugin sources (skip build artifacts; ThirdParty is staged fresh below).
-( cd "$MASTER" && find . \( -path './Intermediate' -o -path './Binaries' -o -path './ThirdParty' \) -prune -o -type f -print0 \
+# Plugin sources + committed ThirdParty binaries (skip only the build outputs).
+( cd "$MASTER" && find . \( -path './Intermediate' -o -path './Binaries' \) -prune -o -type f -print0 \
     | while IFS= read -r -d '' f; do mkdir -p "$STAGE/$(dirname "$f")"; cp "$f" "$STAGE/$f"; done )
 
-# iOS dynamic framework
-if [[ -f "$IOS_ZIP" ]]; then
-  mkdir -p "$STAGE/ThirdParty"
-  cp -f "$IOS_ZIP" "$STAGE/ThirdParty/BeamableNotifications.embeddedframework.zip"
-else
-  warn "iOS framework not found ($IOS_ZIP) — iOS link will fail until it's built/staged."
-fi
+[[ -f "$STAGE/ThirdParty/BeamableNotifications.embeddedframework.zip" ]] \
+  || warn "iOS framework missing (ThirdParty/BeamableNotifications.embeddedframework.zip) — run dev-native.sh on macOS to stage it; iOS link will fail until then."
+[[ -f "$STAGE/ThirdParty/Android/beamable-notifications-release.aar" ]] \
+  || warn "Android .aar missing (ThirdParty/Android/beamable-notifications-release.aar) — run dev-native.sh to stage it; Android build will fail until then."
 
-# Notification Service Extension sources
+# Notification Service Extension sources (optional full-featured NSE; the editor button's
+# add-nse.sh builds a self-contained one and does not require these).
 if [[ -d "$NSE_SRC" ]]; then
   rm -rf "$STAGE/Extension"; mkdir -p "$STAGE/Extension"; cp -R "$NSE_SRC"/. "$STAGE/Extension/"
 else
   warn "NSE sources not found ($NSE_SRC)."
-fi
-
-# Android .aar → local maven repo (consumed by the APL's <AARImports>)
-# Stage the .aar flat — the APL consumes it via a Gradle flatDir repo
-# (`implementation(name:'beamable-notifications-release', ext:'aar')`) with transitive deps
-# declared explicitly. Flat avoids the maven/pom transitive resolution that Gradle couldn't find.
-if [[ -f "$AAR_SRC" ]]; then
-  mkdir -p "$STAGE/ThirdParty/Android"
-  cp -f "$AAR_SRC" "$STAGE/ThirdParty/Android/beamable-notifications-release.aar"
-else
-  warn "Android .aar not found ($AAR_SRC) — Android build will fail until it's staged."
 fi
 
 find "$STAGE/Scripts" -name '*.sh' -exec chmod +x {} \; 2>/dev/null || true

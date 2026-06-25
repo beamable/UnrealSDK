@@ -1,58 +1,59 @@
 (function(jsxRuntime, react, client, sdk) {
   "use strict";
   function e(e2) {
-    window[e2.beamId] = { mount: (t2, n) => e2.onMount(t2, n), unmount: (t2) => e2.onUnmount(t2) };
+    let t2 = { mount: (t3, n) => e2.onMount(t3, n), unmount: (t3) => e2.onUnmount(t3), ...e2.getBadge ? { getBadge: e2.getBadge } : {} };
+    window[e2.beamId] = t2;
   }
-  const t$1 = { registerExtension: e };
-  function t(e2) {
+  const t = { registerExtension: e };
+  function l(e2) {
     let t2 = ((typeof globalThis < `u` ? globalThis.__beamPortal?.react : void 0) ?? {})[e2];
     if (!t2) throw Error(`Beam React component "${e2}" is not provided by the host portal. Extensions must run inside the Beamable portal — see https://help.beamable.com/ for the extension setup guide.`);
     return t2;
   }
-  function r(n) {
-    return react.createElement(t(`BeamSpinner`), n);
+  function d(e2) {
+    return react.createElement(l(`BeamSpinner`), e2);
   }
-  r.displayName = `BeamSpinner`;
-  function a(n) {
-    return react.createElement(t(`BeamButton`), n);
+  d.displayName = `BeamSpinner`;
+  function p(e2) {
+    return react.createElement(l(`BeamButton`), e2);
   }
-  a.displayName = `BeamButton`;
-  function c(n) {
-    return react.createElement(t(`BeamBadge`), n);
+  p.displayName = `BeamButton`;
+  function g(e2) {
+    return react.createElement(l(`BeamBadge`), e2);
   }
-  c.displayName = `BeamBadge`;
-  function p(n) {
-    return react.createElement(t(`BeamCard`), n);
+  g.displayName = `BeamBadge`;
+  function b(e2) {
+    return react.createElement(l(`BeamCard`), e2);
   }
-  p.displayName = `BeamCard`;
-  function O(n) {
-    return react.createElement(t(`BeamTag`), n);
+  b.displayName = `BeamCard`;
+  function F(e2) {
+    return react.createElement(l(`BeamTag`), e2);
   }
-  O.displayName = `BeamTag`;
-  function G(n) {
-    return react.createElement(t(`BeamPage`), n);
+  F.displayName = `BeamTag`;
+  function Q(e2) {
+    return react.createElement(l(`BeamPage`), e2);
   }
-  G.displayName = `BeamPage`;
-  function q(n) {
-    return react.createElement(t(`BeamPageHeader`), n);
+  Q.displayName = `BeamPage`;
+  function ne(e2) {
+    return react.createElement(l(`BeamPageHeader`), e2);
   }
-  q.displayName = `BeamPageHeader`;
-  function te(n) {
-    return react.createElement(t(`BeamInput`), n);
+  ne.displayName = `BeamPageHeader`;
+  function me(e2) {
+    return react.createElement(l(`BeamInput`), e2);
   }
-  te.displayName = `BeamInput`;
-  function le(n) {
-    return react.createElement(t(`BeamTextarea`), n);
+  me.displayName = `BeamInput`;
+  function xe(e2) {
+    return react.createElement(l(`BeamTextarea`), e2);
   }
-  le.displayName = `BeamTextarea`;
-  function ue(e2) {
+  xe.displayName = `BeamTextarea`;
+  function Se(e2) {
     return null;
   }
-  ue.displayName = `BeamColumn`;
-  function pe(n) {
-    return react.createElement(t(`BeamTable`), n);
+  Se.displayName = `BeamColumn`;
+  function Te(e2) {
+    return react.createElement(l(`BeamTable`), e2);
   }
-  pe.displayName = `BeamTable`;
+  Te.displayName = `BeamTable`;
   class BeamFarmMsClient extends sdk.BeamMicroServiceClient {
     federationIds = {
       google: "google",
@@ -219,8 +220,8 @@
     const [sendError, setSendError] = react.useState(null);
     react.useEffect(() => {
       let cancelled = false;
-      context.beam.then((b) => {
-        if (!cancelled) setBeam(b);
+      context.beam.then((b2) => {
+        if (!cancelled) setBeam(b2);
       });
       return () => {
         cancelled = true;
@@ -274,13 +275,13 @@
         setSending(false);
       }
     }
-    return /* @__PURE__ */ jsxRuntime.jsxs(G, { children: [
-      /* @__PURE__ */ jsxRuntime.jsx(q, { children: "Push Notifications" }),
-      /* @__PURE__ */ jsxRuntime.jsxs(p, { style: { marginBottom: 20 }, children: [
+    return /* @__PURE__ */ jsxRuntime.jsxs(Q, { children: [
+      /* @__PURE__ */ jsxRuntime.jsx(ne, { children: "Push Notifications" }),
+      /* @__PURE__ */ jsxRuntime.jsxs(b, { style: { marginBottom: 20 }, children: [
         /* @__PURE__ */ jsxRuntime.jsx("h3", { slot: "header", children: "Send a notification" }),
         /* @__PURE__ */ jsxRuntime.jsxs("div", { style: { display: "flex", flexDirection: "column", gap: 12, padding: 18 }, children: [
           /* @__PURE__ */ jsxRuntime.jsx(
-            te,
+            me,
             {
               label: "Player ID",
               placeholder: "Select a player below, or paste an ID",
@@ -288,10 +289,10 @@
               onValueChange: setPlayerId
             }
           ),
-          /* @__PURE__ */ jsxRuntime.jsx(te, { label: "Title", placeholder: "Notification title", value: title, onValueChange: setTitle }),
-          /* @__PURE__ */ jsxRuntime.jsx(le, { label: "Body", placeholder: "Notification body", rows: 3, value: body, onValueChange: setBody }),
+          /* @__PURE__ */ jsxRuntime.jsx(me, { label: "Title", placeholder: "Notification title", value: title, onValueChange: setTitle }),
+          /* @__PURE__ */ jsxRuntime.jsx(xe, { label: "Body", placeholder: "Notification body", rows: 3, value: body, onValueChange: setBody }),
           /* @__PURE__ */ jsxRuntime.jsx(
-            te,
+            me,
             {
               label: "Deep link (optional)",
               placeholder: "e.g. myapp://inbox/42",
@@ -301,7 +302,7 @@
           ),
           /* @__PURE__ */ jsxRuntime.jsxs("div", { children: [
             /* @__PURE__ */ jsxRuntime.jsx(
-              a,
+              p,
               {
                 variant: "brand",
                 onClick: sendPush,
@@ -313,7 +314,7 @@
             sendError && /* @__PURE__ */ jsxRuntime.jsx("span", { style: { marginLeft: 12, color: "var(--beam-color-danger-600, #c0392b)" }, children: sendError })
           ] }),
           sendResult && /* @__PURE__ */ jsxRuntime.jsxs("div", { style: { marginTop: 4 }, children: [
-            /* @__PURE__ */ jsxRuntime.jsx(c, { variant: sendResult.success ? "success" : "danger", children: sendResult.success ? "Sent" : "Failed" }),
+            /* @__PURE__ */ jsxRuntime.jsx(g, { variant: sendResult.success ? "success" : "danger", children: sendResult.success ? "Sent" : "Failed" }),
             /* @__PURE__ */ jsxRuntime.jsxs("span", { style: { marginLeft: 10 }, children: [
               sendResult.succeeded,
               "/",
@@ -338,20 +339,20 @@
           ] })
         ] })
       ] }),
-      /* @__PURE__ */ jsxRuntime.jsxs(p, { children: [
+      /* @__PURE__ */ jsxRuntime.jsxs(b, { children: [
         /* @__PURE__ */ jsxRuntime.jsxs("h3", { slot: "header", children: [
           "Registered players",
           " ",
-          rosterLoading && /* @__PURE__ */ jsxRuntime.jsx(r, { style: { marginLeft: 8 } })
+          rosterLoading && /* @__PURE__ */ jsxRuntime.jsx(d, { style: { marginLeft: 8 } })
         ] }),
         /* @__PURE__ */ jsxRuntime.jsxs("div", { style: { padding: 18 }, children: [
           /* @__PURE__ */ jsxRuntime.jsxs("div", { style: { marginBottom: 12 }, children: [
-            /* @__PURE__ */ jsxRuntime.jsx(a, { onClick: loadRoster, disabled: !beam || rosterLoading, children: "Refresh" }),
+            /* @__PURE__ */ jsxRuntime.jsx(p, { onClick: loadRoster, disabled: !beam || rosterLoading, children: "Refresh" }),
             rosterError && /* @__PURE__ */ jsxRuntime.jsx("span", { style: { marginLeft: 12, color: "var(--beam-color-danger-600, #c0392b)" }, children: rosterError }),
             rosterNote && /* @__PURE__ */ jsxRuntime.jsx("span", { style: { marginLeft: 12, fontStyle: "italic" }, children: rosterNote })
           ] }),
           /* @__PURE__ */ jsxRuntime.jsxs(
-            pe,
+            Te,
             {
               data: players,
               rowKey: (row) => String(row.playerId),
@@ -360,7 +361,7 @@
               loadingMessage: "Loading roster…",
               children: [
                 /* @__PURE__ */ jsxRuntime.jsx(
-                  ue,
+                  Se,
                   {
                     field: "playerId",
                     header: "Player ID",
@@ -368,16 +369,16 @@
                     format: (value) => String(value)
                   }
                 ),
-                /* @__PURE__ */ jsxRuntime.jsx(ue, { field: "deviceCount", header: "Devices", sortable: true, align: "center" }),
+                /* @__PURE__ */ jsxRuntime.jsx(Se, { field: "deviceCount", header: "Devices", sortable: true, align: "center" }),
                 /* @__PURE__ */ jsxRuntime.jsx(
-                  ue,
+                  Se,
                   {
                     header: "Platforms",
-                    children: (row) => /* @__PURE__ */ jsxRuntime.jsx("span", { style: { display: "inline-flex", gap: 6 }, children: row.platforms.map((p2) => /* @__PURE__ */ jsxRuntime.jsx(O, { children: p2 }, p2)) })
+                    children: (row) => /* @__PURE__ */ jsxRuntime.jsx("span", { style: { display: "inline-flex", gap: 6 }, children: row.platforms.map((p2) => /* @__PURE__ */ jsxRuntime.jsx(F, { children: p2 }, p2)) })
                   }
                 ),
                 /* @__PURE__ */ jsxRuntime.jsx(
-                  ue,
+                  Se,
                   {
                     field: "lastUpdated",
                     header: "Last updated",
@@ -386,11 +387,11 @@
                   }
                 ),
                 /* @__PURE__ */ jsxRuntime.jsx(
-                  ue,
+                  Se,
                   {
                     header: "",
                     align: "right",
-                    children: (row) => /* @__PURE__ */ jsxRuntime.jsx(a, { size: "small", onClick: () => setPlayerId(String(row.playerId)), children: "Select" })
+                    children: (row) => /* @__PURE__ */ jsxRuntime.jsx(p, { size: "small", onClick: () => setPlayerId(String(row.playerId)), children: "Select" })
                   }
                 )
               ]
@@ -400,7 +401,7 @@
       ] })
     ] });
   }
-  t$1.registerExtension({
+  t.registerExtension({
     beamId: "PushNotifications",
     onMount: (container, context) => {
       const root = client.createRoot(container);
@@ -413,4 +414,4 @@
       instance.unmount();
     }
   });
-})(window["@beamable/react-jsx-runtime-19"], window["@beamable/react-19"], window["@beamable/react-dom-client-19"], window["@beamable/sdk-1.1.1"]);
+})(window["@beamable/react-jsx-runtime-19"], window["@beamable/react-19"], window["@beamable/react-dom-client-19"], window["@beamable/sdk-1.2.1"]);
