@@ -51,7 +51,7 @@
 
   <!-- Stage the NSE sources into the built project so they can be added to an extension target. -->
   <iosPostProcessProject>
-    <copyDir src="$S(PluginDir)/Extension"
+    <copyDir src="$S(PluginDir)/../../../Extension"
              dst="$S(BuildDir)/BeamableNotificationServiceExtension"/>
     <log text="BeamPlatformNotifications: staged NSE sources to BeamableNotificationServiceExtension/"/>
   </iosPostProcessProject>

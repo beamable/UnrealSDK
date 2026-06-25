@@ -70,25 +70,12 @@ else
 fi
 
 # Android .aar → local maven repo (consumed by the APL's <AARImports>)
+# Stage the .aar flat — the APL consumes it via a Gradle flatDir repo
+# (`implementation(name:'beamable-notifications-release', ext:'aar')`) with transitive deps
+# declared explicitly. Flat avoids the maven/pom transitive resolution that Gradle couldn't find.
 if [[ -f "$AAR_SRC" ]]; then
-  REPO="$STAGE/ThirdParty/Android/repository/com/beamable/beamable-notifications/1.0.0"
-  mkdir -p "$REPO"
-  cp -f "$AAR_SRC" "$REPO/beamable-notifications-1.0.0.aar"
-  cat > "$REPO/beamable-notifications-1.0.0.pom" <<'POM'
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0">
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>com.beamable</groupId>
-  <artifactId>beamable-notifications</artifactId>
-  <version>1.0.0</version>
-  <packaging>aar</packaging>
-  <dependencies>
-    <dependency><groupId>androidx.core</groupId><artifactId>core-ktx</artifactId><version>1.12.0</version><scope>compile</scope></dependency>
-    <dependency><groupId>org.jetbrains.kotlin</groupId><artifactId>kotlin-stdlib</artifactId><version>1.9.22</version><scope>compile</scope></dependency>
-    <dependency><groupId>com.google.firebase</groupId><artifactId>firebase-messaging</artifactId><version>24.1.0</version><scope>compile</scope></dependency>
-  </dependencies>
-</project>
-POM
+  mkdir -p "$STAGE/ThirdParty/Android"
+  cp -f "$AAR_SRC" "$STAGE/ThirdParty/Android/beamable-notifications-release.aar"
 else
   warn "Android .aar not found ($AAR_SRC) — Android build will fail until it's staged."
 fi

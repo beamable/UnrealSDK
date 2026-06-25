@@ -8,15 +8,7 @@
     "microserviceDependencies": [
       "BeamFarmMs"
     ],
-    "mount": {
-      "page": "push-notifications",
-      "selector": "#extension-page",
-      "navGroup": "Messaging",
-      "navLabel": "Push Notifications",
-      "navIcon": null,
-      "navGroupOrder": null,
-      "navLabelOrder": null,
-      "args": {}
-    }
+    "serviceGroups": null,
+    "mounts": null
   }
 }
