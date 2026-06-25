@@ -85,11 +85,34 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Notifications") void RegisterForRemote();
     UFUNCTION(BlueprintCallable, Category = "Notifications") void UnregisterForRemote();
 
-    // Templates / categories / analytics (features 4, 7, 8) — iOS only; Android no-ops.
+    // Templates / categories (features 4, 7, 8) — iOS only; Android no-ops.
     UFUNCTION(BlueprintCallable, Category = "Notifications") void RegisterTemplateJson(const FString& TemplateJson);
     UFUNCTION(BlueprintCallable, Category = "Notifications") void RegisterCategoryJson(const FString& CategoryJson);
-    UFUNCTION(BlueprintCallable, Category = "Notifications") void ConfigureAnalyticsJson(const FString& ConfigJson);
     UFUNCTION(BlueprintCallable, Category = "Notifications") void GetDeliveryReceipts();
+
+    // Beamable funnel analytics (auth + offer tracking) — works on iOS and Android.
+
+    /// Persist the player's bearer token + realm routing so the native code can authenticate
+    /// the funnel POSTs (Clicked/Converted) even when the engine VM is asleep. Call on
+    /// login/refresh. `AuthJson` is the canonical AuthConfig:
+    /// {"accessToken":"","refreshToken":"","accessTokenExpiresAt":<epoch-ms>,"cid":"","pid":"","host":"https://..."}.
+    UFUNCTION(BlueprintCallable, Category = "Notifications")
+    void ConfigureAuth(const FString& AuthJson);
+
+    /// Clear the persisted auth credentials. Call on logout.
+    UFUNCTION(BlueprintCallable, Category = "Notifications")
+    void ClearAuth();
+
+    /// Emit a "Clicked" funnel event for an offer the player acted on, attributed back to the
+    /// originating campaign. `RequestJson` is the canonical OfferTrackRequest:
+    /// {"campaignId":"","nodeId":"","gamerTag":"","accountId":"","cidPid":"","deeplink":"","offer":{...}}.
+    UFUNCTION(BlueprintCallable, Category = "Notifications")
+    void TrackOfferClicked(const FString& RequestJson);
+
+    /// Emit a "Converted" funnel event for an offer conversion. Same OfferTrackRequest shape as
+    /// TrackOfferClicked.
+    UFUNCTION(BlueprintCallable, Category = "Notifications")
+    void TrackOfferConverted(const FString& RequestJson);
 
     // Badge — iOS only; Android no-ops.
     UFUNCTION(BlueprintCallable, Category = "Notifications") void SetBadge(int32 Count);
@@ -104,11 +127,6 @@ public:
     /// UI should call this on construct in addition to binding OnDeepLink, so no link is missed.
     UFUNCTION(BlueprintCallable, Category = "Notifications")
     bool ConsumePendingDeepLink(FString& OutUrl);
-
-    /// Convenience: enable closed-app delivery analytics, POSTing each delivery to Endpoint.
-    /// (iOS: written to the App Group so the Notification Service Extension can read it.)
-    UFUNCTION(BlueprintCallable, Category = "Notifications")
-    void ConfigureAnalytics(const FString& Endpoint, bool bEnabled = true);
 
     /// True on platforms with a real native backend (iOS / Android). Useful so the UI can
     /// show "native calls are no-ops in the editor".

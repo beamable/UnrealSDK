@@ -142,11 +142,11 @@
       ]
     },
     {
-      "Name": "BeamPlatformNotifications",
+      "Name": "BeamNotifTest",
       "Enabled": true
     },
     {
-      "Name": "BeamNotifTest",
+      "Name": "BeamPlatformNotifications",
       "Enabled": true
     }
   ]

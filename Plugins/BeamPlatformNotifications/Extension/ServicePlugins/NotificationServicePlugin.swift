@@ -15,3 +15,16 @@ public protocol NotificationServicePlugin {
     func process(_ content: UNMutableNotificationContent,
                  completion: @escaping (UNMutableNotificationContent) -> Void)
 }
+
+/// Opt-in capability for a service plugin that kicks an in-flight network task during
+/// `process` but must NOT block the plugin chain on it (so later plugins, e.g. rich-media
+/// download, run with the full NSE budget). After the chain completes, `NotificationService`
+/// gives every such plugin a bounded window to finish its in-flight work before the OS
+/// suspends the extension. See `AnalyticsServicePlugin` and FIX 2.
+public protocol FunnelDeferringPlugin {
+    /// Wait for any in-flight work to resolve OR until `deadline`, then call `completion`
+    /// exactly once. Must return promptly (`completion()` synchronously) when nothing is in
+    /// flight. On the deadline path the plugin is responsible for persisting anything that
+    /// must survive for replay.
+    func awaitPendingFunnel(deadline: DispatchTime, completion: @escaping () -> Void)
+}

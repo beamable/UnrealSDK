@@ -10,6 +10,8 @@ void URegisteredPlayer::BeamSerializeProperties(TUnrealJsonSerializer& Serialize
 	UBeamJsonUtils::SerializeRawPrimitive(TEXT("playerId"), PlayerId, Serializer);
 	UBeamJsonUtils::SerializeRawPrimitive(TEXT("deviceCount"), DeviceCount, Serializer);
 	UBeamJsonUtils::SerializeRawPrimitive(TEXT("lastUpdated"), LastUpdated, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("gamePlatform"), GamePlatform, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("gameDevice"), GameDevice, Serializer);
 	UBeamJsonUtils::SerializeArray<FString>(TEXT("platforms"), Platforms, Serializer);
 }
 
@@ -18,6 +20,8 @@ void URegisteredPlayer::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Ser
 	UBeamJsonUtils::SerializeRawPrimitive(TEXT("playerId"), PlayerId, Serializer);
 	UBeamJsonUtils::SerializeRawPrimitive(TEXT("deviceCount"), DeviceCount, Serializer);
 	UBeamJsonUtils::SerializeRawPrimitive(TEXT("lastUpdated"), LastUpdated, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("gamePlatform"), GamePlatform, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("gameDevice"), GameDevice, Serializer);
 	UBeamJsonUtils::SerializeArray<FString>(TEXT("platforms"), Platforms, Serializer);		
 }
 
@@ -26,6 +30,8 @@ void URegisteredPlayer::BeamDeserializeProperties(const TSharedPtr<FJsonObject>&
 	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("playerId"), Bag, PlayerId);
 	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("deviceCount"), Bag, DeviceCount);
 	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("lastUpdated"), Bag, LastUpdated);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("gamePlatform"), Bag, GamePlatform);
+	UBeamJsonUtils::DeserializeRawPrimitive(TEXT("gameDevice"), Bag, GameDevice);
 	UBeamJsonUtils::DeserializeArray<FString>(TEXT("platforms"), Bag, Platforms, OuterOwner);
 }
 

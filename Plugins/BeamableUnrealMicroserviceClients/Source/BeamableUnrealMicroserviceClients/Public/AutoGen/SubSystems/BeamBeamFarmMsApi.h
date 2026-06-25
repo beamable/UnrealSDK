@@ -7,7 +7,7 @@
 #include "BeamBackend/ResponseCache/BeamResponseCache.h"
 #include "RequestTracker/BeamRequestTracker.h"
 
-#include "BeamableUnrealMicroserviceClients/Public/AutoGen/SubSystems/BeamFarmMs/BeamFarmMsSendPushToPlayerRequest.h"
+#include "BeamableUnrealMicroserviceClients/Public/AutoGen/SubSystems/BeamFarmMs/BeamFarmMsSendCampaignPushToPlayerRequest.h"
 #include "BeamableUnrealMicroserviceClients/Public/AutoGen/SubSystems/BeamFarmMs/BeamFarmMsListRegisteredPlayersRequest.h"
 #include "BeamableUnrealMicroserviceClients/Public/AutoGen/SubSystems/BeamFarmMs/BeamFarmMsCheckFcmConfigRequest.h"
 #include "BeamableUnrealMicroserviceClients/Public/AutoGen/SubSystems/BeamFarmMs/BeamFarmMsPlantSeedRequest.h"
@@ -26,7 +26,7 @@
 #include "BeamableUnrealMicroserviceClients/Public/AutoGen/SubSystems/BeamFarmMs/BeamFarmMsRegisterDeviceTokenRequest.h"
 #include "BeamableUnrealMicroserviceClients/Public/AutoGen/SubSystems/BeamFarmMs/BeamFarmMsUnregisterDeviceTokenRequest.h"
 #include "BeamableUnrealMicroserviceClients/Public/AutoGen/SubSystems/BeamFarmMs/BeamFarmMsListMyDevicesRequest.h"
-#include "BeamableUnrealMicroserviceClients/Public/AutoGen/SubSystems/BeamFarmMs/BeamFarmMsSendPushToSelfRequest.h"
+#include "BeamableUnrealMicroserviceClients/Public/AutoGen/SubSystems/BeamFarmMs/BeamFarmMsSendCampaignPushToSelfRequest.h"
 #include "BeamBackend/BeamMicroserviceClientSubsystem.h"
 
 #include "BeamBeamFarmMsApi.generated.h"
@@ -83,14 +83,14 @@ private:
 	/**
 	 * @brief Private implementation that all overloaded BP UFunctions call.	  
 	 */
-	void BP_SendPushToPlayerImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, UBeamFarmMsSendPushToPlayerRequest* RequestData,
-	                                const FOnBeamFarmMsSendPushToPlayerSuccess& OnSuccess, const FOnBeamFarmMsSendPushToPlayerError& OnError, const FOnBeamFarmMsSendPushToPlayerComplete& OnComplete,
+	void BP_SendCampaignPushToPlayerImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, UBeamFarmMsSendCampaignPushToPlayerRequest* RequestData,
+	                                const FOnBeamFarmMsSendCampaignPushToPlayerSuccess& OnSuccess, const FOnBeamFarmMsSendCampaignPushToPlayerError& OnError, const FOnBeamFarmMsSendCampaignPushToPlayerComplete& OnComplete,
 	                                int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 	/**
 	 * @brief Overload version for binding lambdas when in C++ land. Prefer the BP version whenever possible, this is here mostly for quick experimentation purposes.	 
 	 */
-	void CPP_SendPushToPlayerImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, UBeamFarmMsSendPushToPlayerRequest* RequestData,
-	                                 const FOnBeamFarmMsSendPushToPlayerFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
+	void CPP_SendCampaignPushToPlayerImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, UBeamFarmMsSendCampaignPushToPlayerRequest* RequestData,
+	                                 const FOnBeamFarmMsSendCampaignPushToPlayerFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 
 		
 	/**
@@ -315,14 +315,14 @@ private:
 	/**
 	 * @brief Private implementation for requests that require authentication that all overloaded BP UFunctions call.	  
 	 */
-	void BP_SendPushToSelfImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, UBeamFarmMsSendPushToSelfRequest* RequestData,
-	                  const FOnBeamFarmMsSendPushToSelfSuccess& OnSuccess, const FOnBeamFarmMsSendPushToSelfError& OnError, const FOnBeamFarmMsSendPushToSelfComplete& OnComplete, 
+	void BP_SendCampaignPushToSelfImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, UBeamFarmMsSendCampaignPushToSelfRequest* RequestData,
+	                  const FOnBeamFarmMsSendCampaignPushToSelfSuccess& OnSuccess, const FOnBeamFarmMsSendCampaignPushToSelfError& OnError, const FOnBeamFarmMsSendCampaignPushToSelfComplete& OnComplete, 
 					  int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 	/**
 	 * @brief Overload version for binding lambdas when in C++ land. Prefer the BP version whenever possible, this is here mostly for quick experimentation purposes.	 
 	 */
-	void CPP_SendPushToSelfImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, UBeamFarmMsSendPushToSelfRequest* RequestData,
-	                   const FOnBeamFarmMsSendPushToSelfFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
+	void CPP_SendCampaignPushToSelfImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, UBeamFarmMsSendCampaignPushToSelfRequest* RequestData,
+	                   const FOnBeamFarmMsSendCampaignPushToSelfFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 
 public:
 	
@@ -332,7 +332,7 @@ public:
 
 	
 	/**
-	 * @brief Makes a request to the Post /SendPushToPlayer endpoint of the BeamFarmMs Service.
+	 * @brief Makes a request to the Post /SendCampaignPushToPlayer endpoint of the BeamFarmMs Service.
 	 *
 	 * PREFER THE UFUNCTION OVERLOAD AS OPPOSED TO THIS. THIS MAINLY EXISTS TO ALLOW LAMBDA BINDING THE HANDLER.
 	 * (Dynamic delegates do not allow for that so... we autogen this one to make experimenting in CPP a bit faster and for whenever you need to capture variables).
@@ -343,7 +343,7 @@ public:
 	 * @param OpHandle When made as part of an Operation, you can pass this in and it'll register the request with the operation automatically.
 	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches. 
 	 */
-	void CPP_SendPushToPlayer(UBeamFarmMsSendPushToPlayerRequest* Request, const FOnBeamFarmMsSendPushToPlayerFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
+	void CPP_SendCampaignPushToPlayer(UBeamFarmMsSendCampaignPushToPlayerRequest* Request, const FOnBeamFarmMsSendCampaignPushToPlayerFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 
 		
 	/**
@@ -634,7 +634,7 @@ public:
 
 		
 	/**
-	 * @brief Makes an authenticated request to the Post /SendPushToSelf endpoint of the BeamFarmMs Service.
+	 * @brief Makes an authenticated request to the Post /SendCampaignPushToSelf endpoint of the BeamFarmMs Service.
 	 *
 	 * PREFER THE UFUNCTION OVERLOAD AS OPPOSED TO THIS. THIS MAINLY EXISTS TO ALLOW LAMBDA BINDING THE HANDLER.
 	 * (Dynamic delegates do not allow for that so... we autogen this one to make experimenting in CPP a bit faster).
@@ -646,12 +646,12 @@ public:
 	 * @param OpHandle When made as part of an Operation, you can pass this in and it'll register the request with the operation automatically.
 	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches. 
 	 */
-	void CPP_SendPushToSelf(const FUserSlot& UserSlot, UBeamFarmMsSendPushToSelfRequest* Request, const FOnBeamFarmMsSendPushToSelfFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
+	void CPP_SendCampaignPushToSelf(const FUserSlot& UserSlot, UBeamFarmMsSendCampaignPushToSelfRequest* Request, const FOnBeamFarmMsSendCampaignPushToSelfFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 
 
 	
 	/**
-	 * @brief Makes a request to the Post /SendPushToPlayer endpoint of the BeamFarmMs Service.
+	 * @brief Makes a request to the Post /SendCampaignPushToPlayer endpoint of the BeamFarmMs Service.
 	 *
 	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
 	 * @param OnSuccess What to do if the requests receives a successful response.
@@ -661,7 +661,7 @@ public:
 	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches. 
 	 */
 	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|BeamFarmMs|Utils|Make/Break", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="OpHandle,CallingContext", AutoCreateRefTerm="OnSuccess,OnError,OnComplete,OpHandle", BeamFlowFunction))
-	void SendPushToPlayer(UBeamFarmMsSendPushToPlayerRequest* Request, const FOnBeamFarmMsSendPushToPlayerSuccess& OnSuccess, const FOnBeamFarmMsSendPushToPlayerError& OnError, const FOnBeamFarmMsSendPushToPlayerComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr);
+	void SendCampaignPushToPlayer(UBeamFarmMsSendCampaignPushToPlayerRequest* Request, const FOnBeamFarmMsSendCampaignPushToPlayerSuccess& OnSuccess, const FOnBeamFarmMsSendCampaignPushToPlayerError& OnError, const FOnBeamFarmMsSendCampaignPushToPlayerComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr);
 
 		
 	/**
@@ -934,7 +934,7 @@ public:
 
 		
 	/**
-	 * @brief Makes an authenticated request to the Post /SendPushToSelf endpoint of the BeamFarmMs Service.
+	 * @brief Makes an authenticated request to the Post /SendCampaignPushToSelf endpoint of the BeamFarmMs Service.
 	 *
 	 * @param UserSlot The authenticated UserSlot with the user making the request. 
 	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
@@ -945,6 +945,6 @@ public:
 	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches.
 	 */
 	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|BeamFarmMs|Utils|Make/Break", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="OpHandle,CallingContext",AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete,OpHandle", BeamFlowFunction))
-	void SendPushToSelf(FUserSlot UserSlot, UBeamFarmMsSendPushToSelfRequest* Request, const FOnBeamFarmMsSendPushToSelfSuccess& OnSuccess, const FOnBeamFarmMsSendPushToSelfError& OnError, const FOnBeamFarmMsSendPushToSelfComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr);
+	void SendCampaignPushToSelf(FUserSlot UserSlot, UBeamFarmMsSendCampaignPushToSelfRequest* Request, const FOnBeamFarmMsSendCampaignPushToSelfSuccess& OnSuccess, const FOnBeamFarmMsSendCampaignPushToSelfError& OnError, const FOnBeamFarmMsSendCampaignPushToSelfComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr);
 
 };

@@ -58,7 +58,6 @@ void UBeamNotifTestWidget::NativeConstruct()
         GConfig->GetString(TEXT("BeamPlatformNotifications"), TEXT("AnalyticsEndpoint"), AnalyticsEndpoint, GEngineIni);
         if (!AnalyticsEndpoint.IsEmpty())
         {
-            N->ConfigureAnalytics(AnalyticsEndpoint, true);
             AppendLog(TEXT("Configured delivery analytics endpoint"));
         }
 

@@ -23,7 +23,10 @@ extern "C" {
     void bmn_getPending();
     void bmn_registerForRemote();
     void bmn_unregisterForRemote();
-    void bmn_configureAnalytics(const char* configJson);
+    void bmn_configureAuth(const char* configJson);
+    void bmn_clearAuth();
+    void bmn_trackOfferClicked(const char* requestJson);
+    void bmn_trackOfferConverted(const char* requestJson);
     void bmn_getDeliveryReceipts();
     void bmn_registerTemplate(const char* templateJson);
     void bmn_registerCategory(const char* categoryJson);
@@ -109,9 +112,12 @@ void UBeamPlatformNotificationsSubsystem::Initialize(FSubsystemCollectionBase& C
     // Capture a deep link from the notification/intent that launched the app (closed-app tap),
     // so it survives until the UI is up and can be drained via ConsumePendingDeepLink.
     FBMNNotificationData Launch;
-    if (GetLaunchNotification(Launch) && !Launch.DeepLink.IsEmpty())
+    if (GetLaunchNotification(Launch))
     {
-        PendingDeepLink = Launch.DeepLink;
+        if (!Launch.DeepLink.IsEmpty())
+        {
+            PendingDeepLink = Launch.DeepLink;
+        }
     }
 }
 
@@ -263,7 +269,46 @@ void UBeamPlatformNotificationsSubsystem::UnregisterForRemote()
 
 void UBeamPlatformNotificationsSubsystem::RegisterTemplateJson(const FString& TemplateJson) { BMN_CALL(bmn_registerTemplate(BMN_CSTR(TemplateJson))); }
 void UBeamPlatformNotificationsSubsystem::RegisterCategoryJson(const FString& CategoryJson) { BMN_CALL(bmn_registerCategory(BMN_CSTR(CategoryJson))); }
-void UBeamPlatformNotificationsSubsystem::ConfigureAnalyticsJson(const FString& ConfigJson) { BMN_CALL(bmn_configureAnalytics(BMN_CSTR(ConfigJson))); }
+
+// Beamable funnel analytics (auth + offer tracking) — dispatched per platform (iOS C ABI /
+// Android JNI). The single `RequestJson` follows the canonical OfferTrackRequest shape, which
+// the Android bridge splits into its (intentData, offer) pair (see UnrealPush.trackOffer*).
+void UBeamPlatformNotificationsSubsystem::ConfigureAuth(const FString& AuthJson)
+{
+#if PLATFORM_IOS
+    bmn_configureAuth(BMN_CSTR(AuthJson));
+#elif PLATFORM_ANDROID
+    BeamNotif::Android_ConfigureAuth(AuthJson);
+#endif
+}
+
+void UBeamPlatformNotificationsSubsystem::ClearAuth()
+{
+#if PLATFORM_IOS
+    bmn_clearAuth();
+#elif PLATFORM_ANDROID
+    BeamNotif::Android_ClearAuth();
+#endif
+}
+
+void UBeamPlatformNotificationsSubsystem::TrackOfferClicked(const FString& RequestJson)
+{
+#if PLATFORM_IOS
+    bmn_trackOfferClicked(BMN_CSTR(RequestJson));
+#elif PLATFORM_ANDROID
+    BeamNotif::Android_TrackOfferClicked(RequestJson);
+#endif
+}
+
+void UBeamPlatformNotificationsSubsystem::TrackOfferConverted(const FString& RequestJson)
+{
+#if PLATFORM_IOS
+    bmn_trackOfferConverted(BMN_CSTR(RequestJson));
+#elif PLATFORM_ANDROID
+    BeamNotif::Android_TrackOfferConverted(RequestJson);
+#endif
+}
+
 void UBeamPlatformNotificationsSubsystem::GetDeliveryReceipts()
 {
 #if PLATFORM_IOS
@@ -347,7 +392,12 @@ void UBeamPlatformNotificationsSubsystem::HandleTokenErrorMessage(const FString&
     OnTokenError.Broadcast(Error);
 }
 
-void UBeamPlatformNotificationsSubsystem::HandlePresented(const FString& Json) { OnNotificationPresented.Broadcast(ParseNotification(Json)); }
+void UBeamPlatformNotificationsSubsystem::HandlePresented(const FString& Json)
+{
+    const FBMNNotificationData Data = ParseNotification(Json);
+    OnNotificationPresented.Broadcast(Data);
+}
+
 void UBeamPlatformNotificationsSubsystem::HandleReceived(const FString& Json)  { OnNotificationReceived.Broadcast(ParseNotification(Json)); }
 
 void UBeamPlatformNotificationsSubsystem::HandleTapped(const FString& Json)
@@ -385,19 +435,6 @@ bool UBeamPlatformNotificationsSubsystem::ConsumePendingDeepLink(FString& OutUrl
     OutUrl = PendingDeepLink;
     PendingDeepLink.Reset();
     return true;
-}
-
-void UBeamPlatformNotificationsSubsystem::ConfigureAnalytics(const FString& Endpoint, bool bEnabled)
-{
-    TSharedRef<FJsonObject> Root = MakeShared<FJsonObject>();
-    Root->SetBoolField(TEXT("enabled"), bEnabled);
-    Root->SetStringField(TEXT("endpoint"), Endpoint);
-    Root->SetObjectField(TEXT("commonParams"), MakeShared<FJsonObject>());
-
-    FString Out;
-    TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&Out);
-    FJsonSerializer::Serialize(Root, Writer);
-    ConfigureAnalyticsJson(Out);
 }
 
 void UBeamPlatformNotificationsSubsystem::HandleError(const FString& Stage, const FString& Message)

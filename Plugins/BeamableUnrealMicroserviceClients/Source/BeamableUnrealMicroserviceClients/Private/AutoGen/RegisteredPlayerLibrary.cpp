@@ -23,24 +23,28 @@ FString URegisteredPlayerLibrary::RegisteredPlayerToJsonString(const URegistered
 	return Result;
 }	
 
-URegisteredPlayer* URegisteredPlayerLibrary::Make(int64 PlayerId, int32 DeviceCount, int64 LastUpdated, TArray<FString> Platforms, UObject* Outer)
+URegisteredPlayer* URegisteredPlayerLibrary::Make(int64 PlayerId, int32 DeviceCount, int64 LastUpdated, FString GamePlatform, FString GameDevice, TArray<FString> Platforms, UObject* Outer)
 {
 	auto Serializable = NewObject<URegisteredPlayer>(Outer);
 	Serializable->PlayerId = PlayerId;
 	Serializable->DeviceCount = DeviceCount;
 	Serializable->LastUpdated = LastUpdated;
+	Serializable->GamePlatform = GamePlatform;
+	Serializable->GameDevice = GameDevice;
 	Serializable->Platforms = Platforms;
 	
 	return Serializable;
 }
 
-void URegisteredPlayerLibrary::Break(const URegisteredPlayer* Serializable, int64& PlayerId, int32& DeviceCount, int64& LastUpdated, TArray<FString>& Platforms)
+void URegisteredPlayerLibrary::Break(const URegisteredPlayer* Serializable, int64& PlayerId, int32& DeviceCount, int64& LastUpdated, FString& GamePlatform, FString& GameDevice, TArray<FString>& Platforms)
 {
 	if(GetDefault<UBeamCoreSettings>()->BreakGuard(Serializable))
 	{
 		PlayerId = Serializable->PlayerId;
 		DeviceCount = Serializable->DeviceCount;
 		LastUpdated = Serializable->LastUpdated;
+		GamePlatform = Serializable->GamePlatform;
+		GameDevice = Serializable->GameDevice;
 		Platforms = Serializable->Platforms;
 	}
 		

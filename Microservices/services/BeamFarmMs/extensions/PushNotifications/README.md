@@ -1,15 +1,19 @@
 # PushNotifications (Portal extension)
 
 An admin Portal page for the **BeamFarmMs** microservice's push endpoints. It lists every
-player who has registered a push device and lets you send a remote push to any one of them.
+player who has registered a push device and lets you bulk-send a remote campaign push to any
+selection of them.
 
 ## What it does
 
 - **Registered players table** — calls `[ServerCallable] ListRegisteredPlayers` and shows
-  each player's ID, device count, platforms (`apns`/`fcm`), and last-updated time. **Select**
-  copies a player ID into the send form.
-- **Send a notification** — calls `[ServerCallable] SendPushToPlayer(playerId, title, body, deepLink)`
-  and reports how many devices were delivered to.
+  each player's ID, device count, push platforms (`apns`/`fcm`), game platform/device, and
+  last-updated time. Tick rows (or **Select all**) to choose recipients.
+- **Send a notification** — bulk-sends via `[ServerCallable] SendCampaignPushToPlayer(playerId, PushCampaignRequest)`
+  for each selected player and reports how many devices were delivered to. The request carries
+  the optional §3.3 Notification Intent Data (campaign coordinates, repeatable offers, and a
+  campaignData key→value map); when `campaignId` + `nodeId` are both set the microservice also
+  emits a funnel **"Sent"** analytics event.
 
 ## How the roster is discovered
 

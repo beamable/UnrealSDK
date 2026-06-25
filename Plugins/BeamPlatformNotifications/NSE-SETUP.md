@@ -57,3 +57,28 @@ kill the app** and trigger a push — the webhook endpoint should receive a
 
 > Untested in this repo's CI — signed iOS packaging needs your device + account, so expect a
 > round or two of iteration (the script prints `xcodebuild.log` on failure).
+
+## Android counterpart — closed-app delivery handler
+
+Android has no NSE; the equivalent closed-app reporting is a tiny native handler,
+`com.beamable.unreal.BeamUnrealPushReceivedHandler`
+(`Source/BeamPlatformNotifications/Android/java/…`). The APL compiles it into the app and
+registers it via `<meta-data android:name="com.beamable.push.notification_received_handler">`, so
+the Beamable Kotlin core invokes it **on push receipt even when the app is fully killed** (no Unreal
+runtime running). It reads the **same** `[BeamPlatformNotifications] AnalyticsEndpoint` (injected
+into the manifest as `com.beamable.analytics.endpoint`) and POSTs the same
+`{"message":"📬 … delivered (app closed)"}` body. No extra setup — it ships and registers
+automatically; if the endpoint is blank it stays dormant.
+
+> FCM constraint: the killed-app handler fires for **local** notifications and for **data-only**,
+> high-priority FCM messages. A message that carries a `notification` block is shown by the OS and
+> only reaches the app on tap, so use data-only messages to exercise the closed-app path. (Remote
+> push also requires `bUseFcm=True` + a staged `google-services.json`.)
+
+## App-side delivery reporting (both platforms)
+
+Local notifications never reach the closed-app handlers, so when `AnalyticsEndpoint` is set the
+subsystem also POSTs from the running app on **foreground-present**, **tap**, and **cold-start**
+(same one-`message`-field body). This is on automatically; opt out with
+`[BeamPlatformNotifications] bAppSideAnalytics=False`. Each POST result is surfaced on the
+`OnDeliveryReported(bSuccess, StatusCode, Label)` Blueprint event.

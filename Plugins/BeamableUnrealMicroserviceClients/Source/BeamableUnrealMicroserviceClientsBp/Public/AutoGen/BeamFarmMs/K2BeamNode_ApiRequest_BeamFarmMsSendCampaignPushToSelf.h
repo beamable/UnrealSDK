@@ -4,15 +4,15 @@
 #include "CoreMinimal.h"
 #include "BeamFlow/ApiRequest/K2BeamNode_ApiRequest.h"
 
-#include "K2BeamNode_ApiRequest_BeamFarmMsSendPushToPlayer.generated.h"
+#include "K2BeamNode_ApiRequest_BeamFarmMsSendCampaignPushToSelf.generated.h"
 
-#define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_BeamFarmMsSendPushToPlayer"
+#define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_BeamFarmMsSendCampaignPushToSelf"
 
 /**
-* This is the code-gen'ed declaration for the Beam Flow's Endpoint: Post /SendPushToPlayer  of the BeamFarmMs Service. 
+* This is the code-gen'ed declaration for the Beam Flow's Endpoint: Post /SendCampaignPushToSelf  of the BeamFarmMs Service. 
 */
 UCLASS(meta=(BeamFlow))
-class BEAMABLEUNREALMICROSERVICECLIENTSBP_API UK2BeamNode_ApiRequest_BeamFarmMsSendPushToPlayer : public UK2BeamNode_ApiRequest
+class BEAMABLEUNREALMICROSERVICECLIENTSBP_API UK2BeamNode_ApiRequest_BeamFarmMsSendCampaignPushToSelf : public UK2BeamNode_ApiRequest
 {
 	GENERATED_BODY()
 

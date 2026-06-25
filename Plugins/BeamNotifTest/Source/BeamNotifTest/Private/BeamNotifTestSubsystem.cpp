@@ -14,9 +14,10 @@
 // These endpoints only exist once the BeamFarmMs Unreal client is regenerated (the C#
 // service already exposes them as [ClientCallable]). __has_include keeps this file
 // compiling before regeneration and auto-enables the buttons afterwards.
-#if __has_include("AutoGen/SubSystems/BeamFarmMs/BeamFarmMsSendPushToSelfRequest.h")
+#if __has_include("AutoGen/SubSystems/BeamFarmMs/BeamFarmMsSendCampaignPushToSelfRequest.h")
   #define BEAMNOTIF_HAS_SEND 1
-  #include "AutoGen/SubSystems/BeamFarmMs/BeamFarmMsSendPushToSelfRequest.h"
+  #include "AutoGen/SubSystems/BeamFarmMs/BeamFarmMsSendCampaignPushToSelfRequest.h"
+  #include "AutoGen/PushCampaignRequestBody.h"
   #include "AutoGen/SendResult.h"
 #else
   #define BEAMNOTIF_HAS_SEND 0
@@ -216,13 +217,22 @@ void UBeamNotifTestSubsystem::SendPushToSelf(const FString& Title, const FString
     UBeamBeamFarmMsApi* Api = GetApi();
     if (!Api) { Log(TEXT("BeamFarmMsApi not available")); return; }
 
-    UBeamFarmMsSendPushToSelfRequest* Request =
-        UBeamFarmMsSendPushToSelfRequest::Make(Title, Body, DeepLink, this, TMap<FString, FString>{});
+    // Build the §3.3 campaign request body. Title/Body/DeepLink make a plain push; the campaign
+    // coordinates (CampaignId/NodeId/Offers/…) are left empty here, so the microservice treats
+    // this as an untracked push (no funnel "Sent" event). Set CampaignId + NodeId to send a
+    // tracked campaign push.
+    UPushCampaignRequestBody* CampaignBody = NewObject<UPushCampaignRequestBody>(this);
+    CampaignBody->Title = Title;
+    CampaignBody->Body = Body;
+    CampaignBody->DeepLink = DeepLink;
+
+    UBeamFarmMsSendCampaignPushToSelfRequest* Request =
+        UBeamFarmMsSendCampaignPushToSelfRequest::Make(CampaignBody, this, TMap<FString, FString>{});
     FBeamRequestContext Ctx;
 
-    Api->CPP_SendPushToSelf(
+    Api->CPP_SendCampaignPushToSelf(
         FUserSlot{UserSlotName}, Request,
-        FOnBeamFarmMsSendPushToSelfFullResponse::CreateWeakLambda(this, [this](FBeamFarmMsSendPushToSelfFullResponse Response)
+        FOnBeamFarmMsSendCampaignPushToSelfFullResponse::CreateWeakLambda(this, [this](FBeamFarmMsSendCampaignPushToSelfFullResponse Response)
         {
             if (Response.State == RS_Success && Response.SuccessData)
             {

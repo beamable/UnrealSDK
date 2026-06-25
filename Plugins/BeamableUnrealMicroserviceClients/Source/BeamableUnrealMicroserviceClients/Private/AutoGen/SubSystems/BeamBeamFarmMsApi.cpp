@@ -18,8 +18,8 @@ void UBeamBeamFarmMsApi::Deinitialize()
 }
 
 
-void UBeamBeamFarmMsApi::BP_SendPushToPlayerImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, UBeamFarmMsSendPushToPlayerRequest* RequestData,
-                                                  const FOnBeamFarmMsSendPushToPlayerSuccess& OnSuccess, const FOnBeamFarmMsSendPushToPlayerError& OnError, const FOnBeamFarmMsSendPushToPlayerComplete& OnComplete,
+void UBeamBeamFarmMsApi::BP_SendCampaignPushToPlayerImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, UBeamFarmMsSendCampaignPushToPlayerRequest* RequestData,
+                                                  const FOnBeamFarmMsSendCampaignPushToPlayerSuccess& OnSuccess, const FOnBeamFarmMsSendCampaignPushToPlayerError& OnError, const FOnBeamFarmMsSendCampaignPushToPlayerComplete& OnComplete,
                                                   int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
 	// AUTO-GENERATED...	
@@ -33,22 +33,22 @@ void UBeamBeamFarmMsApi::BP_SendPushToPlayerImpl(const FBeamRealmHandle& TargetR
 	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
 	{
 		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
-		Backend->RunBlueprintRequestProcessor<UBeamFarmMsSendPushToPlayerRequest, UAdminSendResult, FOnBeamFarmMsSendPushToPlayerSuccess, FOnBeamFarmMsSendPushToPlayerError, FOnBeamFarmMsSendPushToPlayerComplete>
+		Backend->RunBlueprintRequestProcessor<UBeamFarmMsSendCampaignPushToPlayerRequest, UAdminSendResult, FOnBeamFarmMsSendCampaignPushToPlayerSuccess, FOnBeamFarmMsSendCampaignPushToPlayerError, FOnBeamFarmMsSendCampaignPushToPlayerComplete>
 			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, RequestData, OnSuccess, OnError, OnComplete);		
 	}
 	// If not cached...
 	else
 	{			
 		// Binds the handler to the static response handler (pre-generated)
-		const auto BeamRequestProcessor = Backend->MakeBlueprintRequestProcessor<UBeamFarmMsSendPushToPlayerRequest, UAdminSendResult, FOnBeamFarmMsSendPushToPlayerSuccess, FOnBeamFarmMsSendPushToPlayerError, FOnBeamFarmMsSendPushToPlayerComplete>
+		const auto BeamRequestProcessor = Backend->MakeBlueprintRequestProcessor<UBeamFarmMsSendCampaignPushToPlayerRequest, UAdminSendResult, FOnBeamFarmMsSendCampaignPushToPlayerSuccess, FOnBeamFarmMsSendCampaignPushToPlayerError, FOnBeamFarmMsSendCampaignPushToPlayerComplete>
 			(OutRequestId, RequestData, OnSuccess, OnError, OnComplete, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 		Backend->SendPreparedRequest(OutRequestId, CallingContext);		
 	}	
 }
 
-void UBeamBeamFarmMsApi::CPP_SendPushToPlayerImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig,
-                                               UBeamFarmMsSendPushToPlayerRequest* RequestData, const FOnBeamFarmMsSendPushToPlayerFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
+void UBeamBeamFarmMsApi::CPP_SendCampaignPushToPlayerImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig,
+                                               UBeamFarmMsSendCampaignPushToPlayerRequest* RequestData, const FOnBeamFarmMsSendCampaignPushToPlayerFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
 	// AUTO-GENERATED...	
 	const auto Request = Backend->CreateMicroserviceRequest(OutRequestId, TargetRealm, RetryConfig, RequestData, Prefix);
@@ -61,14 +61,14 @@ void UBeamBeamFarmMsApi::CPP_SendPushToPlayerImpl(const FBeamRealmHandle& Target
 	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
 	{
 		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
-		Backend->RunCodeRequestProcessor<UBeamFarmMsSendPushToPlayerRequest, UAdminSendResult>
+		Backend->RunCodeRequestProcessor<UBeamFarmMsSendCampaignPushToPlayerRequest, UAdminSendResult>
 			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, RequestData, Handler);			
 	}
 	// If not cached...
 	else
 	{
 		// Binds the handler to the static response handler (pre-generated)	
-		auto ResponseProcessor = Backend->MakeCodeRequestProcessor<UBeamFarmMsSendPushToPlayerRequest, UAdminSendResult>
+		auto ResponseProcessor = Backend->MakeCodeRequestProcessor<UBeamFarmMsSendCampaignPushToPlayerRequest, UAdminSendResult>
 			(OutRequestId, RequestData, Handler, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
@@ -1191,8 +1191,8 @@ void UBeamBeamFarmMsApi::CPP_ListMyDevicesImpl(const FBeamRealmHandle& TargetRea
 }
 
 		
-void UBeamBeamFarmMsApi::BP_SendPushToSelfImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken,
-                                UBeamFarmMsSendPushToSelfRequest* RequestData, const FOnBeamFarmMsSendPushToSelfSuccess& OnSuccess, const FOnBeamFarmMsSendPushToSelfError& OnError, const FOnBeamFarmMsSendPushToSelfComplete& OnComplete, 
+void UBeamBeamFarmMsApi::BP_SendCampaignPushToSelfImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken,
+                                UBeamFarmMsSendCampaignPushToSelfRequest* RequestData, const FOnBeamFarmMsSendCampaignPushToSelfSuccess& OnSuccess, const FOnBeamFarmMsSendCampaignPushToSelfError& OnError, const FOnBeamFarmMsSendCampaignPushToSelfComplete& OnComplete, 
 								int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
 	// AUTO-GENERATED...	
@@ -1206,14 +1206,14 @@ void UBeamBeamFarmMsApi::BP_SendPushToSelfImpl(const FBeamRealmHandle& TargetRea
 	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
 	{
 		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
-		Backend->RunAuthenticatedBlueprintRequestProcessor<UBeamFarmMsSendPushToSelfRequest, USendResult, FOnBeamFarmMsSendPushToSelfSuccess, FOnBeamFarmMsSendPushToSelfError, FOnBeamFarmMsSendPushToSelfComplete>
+		Backend->RunAuthenticatedBlueprintRequestProcessor<UBeamFarmMsSendCampaignPushToSelfRequest, USendResult, FOnBeamFarmMsSendCampaignPushToSelfSuccess, FOnBeamFarmMsSendCampaignPushToSelfError, FOnBeamFarmMsSendCampaignPushToSelfComplete>
 			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);		
 	}
 	// If not cached...
 	else
 	{
 		// Binds the handler to the static response handler (pre-generated)
-		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UBeamFarmMsSendPushToSelfRequest, USendResult, FOnBeamFarmMsSendPushToSelfSuccess, FOnBeamFarmMsSendPushToSelfError, FOnBeamFarmMsSendPushToSelfComplete>
+		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UBeamFarmMsSendCampaignPushToSelfRequest, USendResult, FOnBeamFarmMsSendCampaignPushToSelfSuccess, FOnBeamFarmMsSendCampaignPushToSelfError, FOnBeamFarmMsSendCampaignPushToSelfComplete>
 			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 	    
@@ -1222,8 +1222,8 @@ void UBeamBeamFarmMsApi::BP_SendPushToSelfImpl(const FBeamRealmHandle& TargetRea
 	}
 }
 
-void UBeamBeamFarmMsApi::CPP_SendPushToSelfImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, 
-                              UBeamFarmMsSendPushToSelfRequest* RequestData, const FOnBeamFarmMsSendPushToSelfFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
+void UBeamBeamFarmMsApi::CPP_SendCampaignPushToSelfImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, 
+                              UBeamFarmMsSendCampaignPushToSelfRequest* RequestData, const FOnBeamFarmMsSendCampaignPushToSelfFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
 	// AUTO-GENERATED...
 	const auto Request = Backend->CreateMicroserviceAuthenticatedRequest(OutRequestId, TargetRealm, RetryConfig, AuthToken, RequestData, Prefix);
@@ -1236,14 +1236,14 @@ void UBeamBeamFarmMsApi::CPP_SendPushToSelfImpl(const FBeamRealmHandle& TargetRe
 	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
 	{
 		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
-		Backend->RunAuthenticatedCodeRequestProcessor<UBeamFarmMsSendPushToSelfRequest, USendResult>
+		Backend->RunAuthenticatedCodeRequestProcessor<UBeamFarmMsSendCampaignPushToSelfRequest, USendResult>
 			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, TargetRealm, AuthToken, RequestData, Handler);		
 	}
 	// If not cached...
 	else
 	{
 		// Binds the handler to the static response handler (pre-generated)	
-		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UBeamFarmMsSendPushToSelfRequest, USendResult>
+		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UBeamFarmMsSendCampaignPushToSelfRequest, USendResult>
 			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler, CallingContext);
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
@@ -1255,13 +1255,13 @@ void UBeamBeamFarmMsApi::CPP_SendPushToSelfImpl(const FBeamRealmHandle& TargetRe
 
 
 
-void UBeamBeamFarmMsApi::CPP_SendPushToPlayer(UBeamFarmMsSendPushToPlayerRequest* Request, const FOnBeamFarmMsSendPushToPlayerFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
+void UBeamBeamFarmMsApi::CPP_SendCampaignPushToPlayer(UBeamFarmMsSendCampaignPushToPlayerRequest* Request, const FOnBeamFarmMsSendCampaignPushToPlayerFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
 	FBeamRetryConfig RetryConfig;
-	Backend->GetRetryConfigForRequestType(UBeamFarmMsSendPushToPlayerRequest::StaticClass()->GetName(), RetryConfig);
+	Backend->GetRetryConfigForRequestType(UBeamFarmMsSendCampaignPushToPlayerRequest::StaticClass()->GetName(), RetryConfig);
 	
     int64 OutRequestId;
-	CPP_SendPushToPlayerImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Request, Handler, OutRequestId, OpHandle, CallingContext);
+	CPP_SendCampaignPushToPlayerImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Request, Handler, OutRequestId, OpHandle, CallingContext);
 	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), AS_None};
 }
 
@@ -1529,31 +1529,31 @@ void UBeamBeamFarmMsApi::CPP_ListMyDevices(const FUserSlot& UserSlot, UBeamFarmM
 }
 
 		
-void UBeamBeamFarmMsApi::CPP_SendPushToSelf(const FUserSlot& UserSlot, UBeamFarmMsSendPushToSelfRequest* Request, const FOnBeamFarmMsSendPushToSelfFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
+void UBeamBeamFarmMsApi::CPP_SendCampaignPushToSelf(const FUserSlot& UserSlot, UBeamFarmMsSendCampaignPushToSelfRequest* Request, const FOnBeamFarmMsSendCampaignPushToSelfFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
 	// AUTO-GENERATED...
 	FBeamRealmUser AuthenticatedUser;
 	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser, CallingContext);
 
 	FBeamRetryConfig RetryConfig;
-	Backend->GetRetryConfigForUserSlotAndRequestType(UBeamFarmMsSendPushToSelfRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
+	Backend->GetRetryConfigForUserSlotAndRequestType(UBeamFarmMsSendCampaignPushToSelfRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
 
     int64 OutRequestId;
-	CPP_SendPushToSelfImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, AuthenticatedUser.AuthToken, Request, Handler, OutRequestId, OpHandle, CallingContext);
+	CPP_SendCampaignPushToSelfImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, AuthenticatedUser.AuthToken, Request, Handler, OutRequestId, OpHandle, CallingContext);
 	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, UserSlot, AS_None};
 }
 
 
 
 
-void UBeamBeamFarmMsApi::SendPushToPlayer(UBeamFarmMsSendPushToPlayerRequest* Request, const FOnBeamFarmMsSendPushToPlayerSuccess& OnSuccess, const FOnBeamFarmMsSendPushToPlayerError& OnError, const FOnBeamFarmMsSendPushToPlayerComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext)
+void UBeamBeamFarmMsApi::SendCampaignPushToPlayer(UBeamFarmMsSendCampaignPushToPlayerRequest* Request, const FOnBeamFarmMsSendCampaignPushToPlayerSuccess& OnSuccess, const FOnBeamFarmMsSendCampaignPushToPlayerError& OnError, const FOnBeamFarmMsSendCampaignPushToPlayerComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext)
 {
 	// AUTO-GENERATED...	
 	FBeamRetryConfig RetryConfig;
-	Backend->GetRetryConfigForRequestType(UBeamFarmMsSendPushToPlayerRequest::StaticClass()->GetName(), RetryConfig);	
+	Backend->GetRetryConfigForRequestType(UBeamFarmMsSendCampaignPushToPlayerRequest::StaticClass()->GetName(), RetryConfig);	
 	
 	int64 OutRequestId = 0;
-	BP_SendPushToPlayerImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);
+	BP_SendCampaignPushToPlayerImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);
 	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), AS_None};
 }
 
@@ -1823,17 +1823,17 @@ void UBeamBeamFarmMsApi::ListMyDevices(FUserSlot UserSlot, UBeamFarmMsListMyDevi
 }
 
 		
-void UBeamBeamFarmMsApi::SendPushToSelf(FUserSlot UserSlot, UBeamFarmMsSendPushToSelfRequest* Request, const FOnBeamFarmMsSendPushToSelfSuccess& OnSuccess, const FOnBeamFarmMsSendPushToSelfError& OnError, const FOnBeamFarmMsSendPushToSelfComplete& OnComplete,  FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext)
+void UBeamBeamFarmMsApi::SendCampaignPushToSelf(FUserSlot UserSlot, UBeamFarmMsSendCampaignPushToSelfRequest* Request, const FOnBeamFarmMsSendCampaignPushToSelfSuccess& OnSuccess, const FOnBeamFarmMsSendCampaignPushToSelfError& OnError, const FOnBeamFarmMsSendCampaignPushToSelfComplete& OnComplete,  FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext)
 {
 	// AUTO-GENERATED...
 	FBeamRealmUser AuthenticatedUser;
 	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser, CallingContext);
 
 	FBeamRetryConfig RetryConfig;
-	Backend->GetRetryConfigForUserSlotAndRequestType(UBeamFarmMsSendPushToSelfRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
+	Backend->GetRetryConfigForUserSlotAndRequestType(UBeamFarmMsSendCampaignPushToSelfRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
 
 	int64 OutRequestId;
-	BP_SendPushToSelfImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, AuthenticatedUser.AuthToken, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
+	BP_SendCampaignPushToSelfImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, AuthenticatedUser.AuthToken, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
 	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, UserSlot, AS_None};
 }
 

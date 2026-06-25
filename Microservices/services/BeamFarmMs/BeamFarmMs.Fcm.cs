@@ -209,7 +209,11 @@ namespace Beamable.BeamFarmMs
 			var data = new Dictionary<string, object>();
 			if (!string.IsNullOrWhiteSpace(message.title)) data["title"] = message.title;
 			if (!string.IsNullOrWhiteSpace(message.body)) data["body"] = message.body;
-			if (!string.IsNullOrWhiteSpace(message.deepLink)) data["deeplink"] = message.deepLink;
+
+			// §3.3 Notification Intent Data as a flat string→string map: scalars as plain strings,
+			// offers/campaignData as JSON-encoded strings. Includes the canonical "deeplink" key
+			// (FCM data values must be strings — WriteIntentData only emits strings).
+			message.WriteIntentData(data);
 
 			var msg = new Dictionary<string, object>
 			{

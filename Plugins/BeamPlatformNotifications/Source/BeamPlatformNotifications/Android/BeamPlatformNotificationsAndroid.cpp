@@ -169,6 +169,48 @@ namespace BeamNotif
         return Result;
     }
 
+    // --- Beamable funnel analytics (auth + offer tracking) ---
+    // Each takes a single JSON String; UnrealPush splits the OfferTrackRequest into the
+    // (intentData, offer) pair PushManager expects.
+    namespace
+    {
+        void CallStaticVoidWithString(const char* Method, const FString& Arg)
+        {
+            JNIEnv* Env = AndroidJavaEnv::GetJavaEnv();
+            if (!Env) return;
+            jclass Class = FindClass(Env, kPushClass);
+            if (!Class) return;
+            jmethodID MethodId = Env->GetStaticMethodID(Class, Method, "(Ljava/lang/String;)V");
+            if (MethodId)
+            {
+                jstring JArg = Env->NewStringUTF(TCHAR_TO_UTF8(*Arg));
+                Env->CallStaticVoidMethod(Class, MethodId, JArg);
+                Env->DeleteLocalRef(JArg);
+            }
+            Env->DeleteGlobalRef(Class);
+        }
+    }
+
+    void Android_ConfigureAuth(const FString& AuthJson)
+    {
+        CallStaticVoidWithString("configureAuth", AuthJson);
+    }
+
+    void Android_ClearAuth()
+    {
+        CallStaticVoid(kPushClass, "clearAuth", "()V");
+    }
+
+    void Android_TrackOfferClicked(const FString& RequestJson)
+    {
+        CallStaticVoidWithString("trackOfferClicked", RequestJson);
+    }
+
+    void Android_TrackOfferConverted(const FString& RequestJson)
+    {
+        CallStaticVoidWithString("trackOfferConverted", RequestJson);
+    }
+
     void Android_DeepLinkInitialize()
     {
         CallStaticVoid(kDeepLinkClass, "initialize", "()V");

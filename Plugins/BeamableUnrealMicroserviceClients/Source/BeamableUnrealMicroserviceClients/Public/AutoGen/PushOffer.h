@@ -5,20 +5,20 @@
 #include "Serialization/BeamJsonSerializable.h"
 #include "Serialization/BeamJsonUtils.h"
 
-#include "SendPushToSelfRequestArgs.generated.h"
+#include "PushOffer.generated.h"
 
 UCLASS(BlueprintType, Category="Beam", DefaultToInstanced, EditInlineNew)
-class BEAMABLEUNREALMICROSERVICECLIENTS_API USendPushToSelfRequestArgs : public UObject, public IBeamJsonSerializableUObject
+class BEAMABLEUNREALMICROSERVICECLIENTS_API UPushOffer : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Title", Category="Beam")
-	FString Title = {};
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Body", Category="Beam")
-	FString Body = {};
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Deep Link", Category="Beam")
-	FString DeepLink = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Item Id", Category="Beam")
+	FString ItemId = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Value", Category="Beam")
+	FString Value = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Custom Data", Category="Beam")
+	FString CustomData = {};
 
 	
 

@@ -19,6 +19,10 @@ public:
 	int32 DeviceCount = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Last Updated", Category="Beam")
 	int64 LastUpdated = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Game Platform", Category="Beam")
+	FString GamePlatform = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Game Device", Category="Beam")
+	FString GameDevice = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Platforms", Category="Beam")
 	TArray<FString> Platforms = {};
 

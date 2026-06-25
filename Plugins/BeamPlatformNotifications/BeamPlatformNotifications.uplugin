@@ -3,7 +3,7 @@
   "Version": 1,
   "VersionName": "1.0.0",
   "FriendlyName": "Beam Platform Notifications",
-  "Description": "Cross-engine notifications SDK: local + remote push, deep links, templates, action buttons, rich media, closed-app analytics. iOS (Swift core via C ABI) + Android (Kotlin core via JNI).",
+  "Description": "Cross-engine notifications SDK: local + remote push, deep links, templates, action buttons, rich media, and Beamable funnel analytics (configureAuth + native funnel POSTs for offer Clicked/Converted tracking). iOS (Swift core via C ABI) + Android (Kotlin core via JNI).",
   "Category": "Mobile",
   "CreatedBy": "Beamable",
   "CanContainContent": false,

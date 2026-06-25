@@ -189,7 +189,7 @@ $(log "Setup complete. Remaining manual / one-time steps:")
   1. Regenerate the BeamFarmMs Unreal client so Send/List push nodes exist:
        - Open the project in the Unreal Editor and run the Beamable CLI client generation,
          or run your usual 'beam' codegen for the BeamFarmMs microservice.
-       - SendPushToSelf / ListMyDevices buttons auto-enable once the generated request
+       - SendCampaignPushToSelf / ListMyDevices buttons auto-enable once the generated request
          headers appear (the test subsystem guards them with __has_include).
   2. Create the test level in-editor (one-time):
        - New Level 'L_NotificationTest' under Plugins/BeamNotifTest/Content/Levels.

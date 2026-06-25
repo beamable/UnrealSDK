@@ -1,21 +1,8 @@
-import { StrictMode } from 'react'
-import { createRoot, type Root } from 'react-dom/client'
-import { Portal, type ExtensionContext } from '@beamable/portal-toolkit'
+import { registerReactExtension } from '@beamable/portal-toolkit/react'
+import { name as beamId } from '../package.json'
 import './app.css'
 import App from './App'
 
-Portal.registerExtension({
-  beamId: 'PushNotifications',
-  onMount: (container, context: ExtensionContext) => {
-    const root: Root = createRoot(container)
-    root.render(
-      <StrictMode>
-        <App context={context} />
-      </StrictMode>,
-    )
-    return root
-  },
-  onUnmount: (instance) => {
-    (instance as Root).unmount()
-  },
-})
+// `registerReactExtension` sets up createRoot, wraps the App in <StrictMode>,
+// and registers mount/unmount with the host. `beamId` must equal package.json#name.
+registerReactExtension({ beamId, App })

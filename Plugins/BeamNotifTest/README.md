@@ -51,10 +51,12 @@ the Output Log** (`LogBeamNotif`); the button flips to **Cancel** while running.
 
 ## Enabling Send / List push (microservice)
 
-The `BeamFarmMs` C# service already exposes `ListMyDevices` and `SendPushToSelf` as
+The `BeamFarmMs` C# service exposes `ListMyDevices` and `SendCampaignPushToSelf` as
 `[ClientCallable]`, but the Unreal client must be regenerated to get the C++ nodes. After
 regenerating (Beamable CLI / editor codegen for `BeamFarmMs`), the generated request headers
 appear and `UBeamNotifTestSubsystem` auto-enables those calls (guarded with `__has_include`).
+The subsystem's own `SendPushToSelf(Title, Body, DeepLink)` wrapper builds an (untracked)
+`UPushCampaignRequestBody` and calls `SendCampaignPushToSelf` under the hood.
 
 ## On-device notes
 

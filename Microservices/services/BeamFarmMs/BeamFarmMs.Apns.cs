@@ -189,6 +189,13 @@ namespace Beamable.BeamFarmMs
 			};
 
 			var root = new Dictionary<string, object> { ["aps"] = aps };
+
+			// §3.3 Notification Intent Data goes in userInfo (the top-level keys alongside "aps"),
+			// stringified to match Android's FCM data map exactly. This writes the canonical
+			// "deeplink" key (the app already reads it tolerantly: deepLink/deeplink/deep_link).
+			message.WriteIntentData(root);
+
+			// Back-compat: keep the legacy "deepLink" key the original payload emitted.
 			if (!string.IsNullOrWhiteSpace(message.deepLink))
 				root["deepLink"] = message.deepLink; // the app reads this on tap to route
 
