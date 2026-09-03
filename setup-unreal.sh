@@ -28,7 +28,7 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-PLUGIN_DIR="$PROJECT_DIR/Plugins/BeamableNotifications"
+PLUGIN_DIR="$PROJECT_DIR/Plugins/BeamPlatformNotifications"
 IOS_BUILD="$NATIVE_LIB/iOS/BeamableNotifications/build"
 IOS_EXTENSION="$NATIVE_LIB/iOS/BeamableNotifications/extension"
 ANDROID_DIR="$NATIVE_LIB/Android/BeamableNotifications"
@@ -127,7 +127,7 @@ with open(path) as f:
     data = json.load(f)
 plugins = data.setdefault("Plugins", [])
 names = {p.get("Name") for p in plugins}
-for name in ("BeamableNotifications", "BeamNotifTest"):
+for name in ("BeamPlatformNotifications", "BeamNotifTest"):
     if name not in names:
         plugins.append({"Name": name, "Enabled": True})
     else:

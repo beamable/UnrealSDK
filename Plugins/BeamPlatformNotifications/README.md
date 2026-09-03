@@ -25,8 +25,8 @@ project (or run it in place) and point `--source` at your `nativeLibraries` chec
 ```
 Generates a self-contained copy (sources + the native binaries committed under `ThirdParty/` +
 bundled `Scripts/`), installs it into the project, enables it, and **prompts** for the
-project-specific values (App Group, deep-link scheme, analytics endpoint, FCM on/off) — writing them
-to `DefaultEngine.ini`. Use `--generate-only <dir>` to just emit the plugin folder for sharing.
+project-specific values (App Group, deep-link scheme, FCM on/off) — writing them to
+`DefaultEngine.ini`. Use `--generate-only <dir>` to just emit the plugin folder for sharing.
 Nothing project-specific is baked into the plugin; everything is read from config at runtime/build
 time.
 
@@ -51,9 +51,11 @@ Closed-app receipt funnel events are emitted natively: the **iOS** Notification 
 ## Settings (written to the project's `DefaultEngine.ini`)
 - `[/Script/BeamPlatformNotifications.Settings] AppGroup` — iOS App Group id (UPL/Info.plist).
 - `[BeamPlatformNotifications] DeepLinkScheme` — custom URL scheme (iOS `CFBundleURLSchemes` + Android VIEW intent).
-- `[BeamPlatformNotifications] AnalyticsEndpoint` — delivery webhook (iOS NSE + Android closed-app handler + app-side reporting).
-- `[BeamPlatformNotifications] bAppSideAnalytics` — opt out of app-side (foreground/tap/cold-start) reporting (default `True`).
 - `[BeamPlatformNotifications] bUseFcm` — enable Android FCM remote push.
+
+Funnel analytics needs no `DefaultEngine.ini` endpoint: the native layer authenticates with the
+player bearer token supplied at runtime via `ConfigureAuth` and POSTs Beamable `CoreEvent`s
+directly (see **Funnel analytics** above).
 
 ## Bundled scripts (`Scripts/`)
 - `package-ios-deploy.sh` — package iOS → `add-nse.sh` → install to a device (driven by the button).

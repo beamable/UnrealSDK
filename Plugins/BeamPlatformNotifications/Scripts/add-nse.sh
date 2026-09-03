@@ -4,6 +4,14 @@
 # iOS build so a delivery webhook fires even when the app is KILLED (closed-app analytics,
 # matching the React Native sample).
 #
+# TODO (funnel migration): the inline NSE generated below is the LEGACY demo path. Beamable's
+# closed-app analytics is now a funnel: the staged full-featured NSE (`extension/` sources) reads
+# the player auth from the App Group (set via ConfigureAuth) and POSTs Beamable CoreEvents to
+# `/report/custom_batch` — there is no webhook endpoint. This minimal webhook NSE is kept only
+# because it signs under the wildcard provisioning profile with no Apple-portal setup; it should be
+# replaced by grafting the funnel NSE once App Group provisioning is wired up. The endpoint plumbing
+# below is left intact so this demo NSE keeps working until then. See NSE-SETUP.md.
+#
 # This NSE is intentionally minimal and SELF-CONTAINED:
 #   * no `import BeamableNotifications` (no core framework to link), and
 #   * NO App Group — the webhook endpoint is baked into the extension's own Info.plist.
