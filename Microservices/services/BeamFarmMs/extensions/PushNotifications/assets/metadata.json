@@ -1,0 +1,27 @@
+{
+  "Name": "PushNotifications",
+  "ToolkitVersion": "0.2.0",
+  "Properties": {
+    "version": "1.0.0",
+    "portalExtension": true,
+    "portalExtensionLib": false,
+    "microserviceDependencies": [
+      "BeamFarmMs"
+    ],
+    "serviceGroups": null,
+    "mounts": [
+      {
+        "page": "push-notifications",
+        "selector": "#extension-page",
+        "navGroup": "Messaging",
+        "navLabel": "Push Notifications",
+        "navIcon": null,
+        "navDescription": null,
+        "navColor": null,
+        "navGroupOrder": null,
+        "navLabelOrder": null,
+        "args": {}
+      }
+    ]
+  }
+}

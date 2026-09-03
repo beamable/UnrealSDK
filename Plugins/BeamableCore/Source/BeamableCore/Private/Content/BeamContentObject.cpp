@@ -2073,10 +2073,17 @@ void UBeamContentObject::ParseMapProperty(const FString& PropName, const TShared
 // STATIC UTILITIES
 void UBeamContentObject::NewFromTypeId(const TMap<FString, UClass*>& ContentTypeToContentClass, const FString& ContentTypeId, UBeamContentObject*& OutObject)
 {
+	OutObject = nullptr;
+
 	UClass* ObjectClass;
 	TEnumAsByte<EBeamContentObjectSupportLevel> SupportLevel;
 	GetClassForTypeId(ContentTypeToContentClass, ContentTypeId, ObjectClass, SupportLevel);
-	if (ObjectClass)
+
+	// GetClassForTypeId falls back to the abstract UBeamContentObject base (SupportLevel = NoSupport)
+	// when no concrete class is registered for the type id (e.g. a content type whose class isn't
+	// loaded/cooked in this build). Instantiating an abstract class asserts in NewObject, so guard
+	// against it: leave OutObject null and let the caller skip this content instead of crashing.
+	if (ObjectClass && !ObjectClass->HasAnyClassFlags(CLASS_Abstract))
 	{
 		OutObject = NewObject<UBeamContentObject>(GetTransientPackage(), ObjectClass, NAME_None, EObjectFlags::RF_Public | EObjectFlags::RF_Standalone);
 		OutObject->SupportLevel = SupportLevel;

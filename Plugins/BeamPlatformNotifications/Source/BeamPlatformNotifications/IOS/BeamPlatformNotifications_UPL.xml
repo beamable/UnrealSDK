@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Unreal Plugin Language (UPL) for BeamPlatformNotifications iOS.
+
+  Automates (project-agnostic — values come from DefaultEngine.ini):
+    * remote-notification background mode in Info.plist
+    * registers the custom URL scheme (CFBundleURLTypes) for deep links — scheme from
+      [BeamPlatformNotifications] DeepLinkScheme
+    * publishes the App Group id (BMNAppGroup) — from [/Script/BeamPlatformNotifications.Settings] AppGroup
+    * stages the Notification Service Extension sources next to the project
+
+  Manual one-time Xcode/portal steps (see NSE-SETUP.md): Push Notifications capability /
+  aps-environment, and (only if you use the App Group variant) the App Group capability.
+-->
+<root xmlns:android="http://schemas.android.com/apk/res/android">
+
+  <init>
+    <log text="BeamPlatformNotifications: applying iOS UPL"/>
+    <setStringFromProperty result="AppGroup" ini="Engine" section="/Script/BeamPlatformNotifications.Settings" property="AppGroup" default="group.com.beamable.notifications"/>
+    <setStringFromProperty result="DeepLinkScheme" ini="Engine" section="BeamPlatformNotifications" property="DeepLinkScheme" default="beamnotify"/>
+  </init>
+
+  <iosPListUpdates>
+    <!-- Remote-notification background mode -->
+    <addElements tag="dict" once="true">
+      <key>UIBackgroundModes</key>
+      <array>
+        <string>remote-notification</string>
+      </array>
+    </addElements>
+    <!-- App Group id consumed by the SDK's SharedConfig (app + NSE) -->
+    <addElements tag="dict" once="true">
+      <key>BMNAppGroup</key>
+      <string>$S(AppGroup)</string>
+    </addElements>
+    <!-- Custom URL scheme for deep links (<scheme>://details/123). -->
+    <addElements tag="dict" once="true">
+      <key>CFBundleURLTypes</key>
+      <array>
+        <dict>
+          <key>CFBundleURLName</key>
+          <string>$S(DeepLinkScheme).deeplink</string>
+          <key>CFBundleURLSchemes</key>
+          <array>
+            <string>$S(DeepLinkScheme)</string>
+          </array>
+        </dict>
+      </array>
+    </addElements>
+  </iosPListUpdates>
+
+  <!-- Stage the NSE sources into the built project so they can be added to an extension target. -->
+  <iosPostProcessProject>
+    <copyDir src="$S(PluginDir)/../../../Extension"
+             dst="$S(BuildDir)/BeamableNotificationServiceExtension"/>
+    <log text="BeamPlatformNotifications: staged NSE sources to BeamableNotificationServiceExtension/"/>
+  </iosPostProcessProject>
+
+</root>

@@ -1,0 +1,3 @@
+#include "BeamPlatformNotificationsModule.h"
+
+IMPLEMENT_MODULE(FBeamPlatformNotificationsModule, BeamPlatformNotifications)

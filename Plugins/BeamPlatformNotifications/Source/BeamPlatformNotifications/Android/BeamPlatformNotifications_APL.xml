@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  BeamableNotifications Android plugin additions (UPL).
+
+  Wires the Beamable Kotlin core (beamable-notifications-release.aar) into the packaged app:
+    * imports the AAR (so its manifest entries — PushFirebaseService, NotificationActionReceiver,
+      default-channel meta-data — merge in) via a Gradle flatDir repo over
+      ThirdParty/Android/beamable-notifications-release.aar, with transitive deps declared explicitly.
+    * adds POST_NOTIFICATIONS and a VIEW intent-filter on GameActivity for `beamnotify://` deep links.
+    * forwards GameActivity.onNewIntent -> UnrealDeepLink.handleNewIntent for warm-start deep links.
+    * optionally applies the google-services plugin for FCM remote push (gated on bUseFcm).
+
+  FCM is OFF by default so the app builds without google-services.json. To enable remote push,
+  set [BeamPlatformNotifications] bUseFcm=True in DefaultEngine.ini and add Build/Android/google-services.json.
+-->
+<root xmlns:android="http://schemas.android.com/apk/res/android">
+
+  <init>
+    <log text="BeamPlatformNotifications: applying Android UPL"/>
+    <setBoolFromProperty result="bUseFcm" ini="Engine" section="BeamPlatformNotifications" property="bUseFcm" default="false"/>
+    <setStringFromProperty result="DeepLinkScheme" ini="Engine" section="BeamPlatformNotifications" property="DeepLinkScheme" default="beamnotify"/>
+    <dumpvars/>
+  </init>
+
+  <!-- buildscript classpath for the google-services gradle plugin (FCM only). Inserted into the
+       existing buildscript block (matches the engine Firebase plugin); a separate buildscript{}
+       block via baseBuildGradleAdditions would mis-order and fail. -->
+  <buildscriptGradleAdditions>
+    <if condition="bUseFcm">
+      <true>
+        <insert>
+dependencies { classpath 'com.google.gms:google-services:4.4.2' }
+        </insert>
+      </true>
+    </if>
+  </buildscriptGradleAdditions>
+
+  <!-- Copy google-services.json from <Project>/Build/Android into the generated gradle app module
+       so the google-services plugin finds it. $S(BuildDir) = <Project>/Intermediate/Android/<arch>,
+       so ../../../Build/Android reaches the project's Build/Android. -->
+  <gradleCopies>
+    <if condition="bUseFcm">
+      <true>
+        <copyFile src="$S(BuildDir)/../../../Build/Android/google-services.json"
+                  dst="$S(BuildDir)/gradle/app/google-services.json" force="true"/>
+      </true>
+    </if>
+  </gradleCopies>
+
+  <!-- Bundle the prebuilt .aar via a flatDir repo (no maven/pom transitive resolution), and
+       declare its transitive deps explicitly. firebase-messaging is ALWAYS included (even with
+       FCM off) so the AAR's FirebaseMessagingService references resolve at dex time. -->
+  <buildGradleAdditions>
+    <!-- $S(...) is only expanded in <insertValue> (not raw <insert>), so the absolute flatDir
+         path must go through insertValue — otherwise Groovy treats $S as a string interpolation. -->
+    <insertValue value="repositories { flatDir { dirs '$S(PluginDir)/../../../ThirdParty/Android' } }"/>
+    <insertNewline/>
+    <insert>
+dependencies {
+  implementation 'androidx.core:core-ktx:1.12.0'
+  implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.9.22'
+  implementation platform('com.google.firebase:firebase-bom:33.7.0')
+  implementation 'com.google.firebase:firebase-messaging'
+  implementation(name: 'beamable-notifications-release', ext: 'aar')
+}
+    </insert>
+    <if condition="bUseFcm">
+      <true>
+        <insert>
+// Process google-services.json (must be staged at Build/Android/google-services.json).
+apply plugin: 'com.google.gms.google-services'
+        </insert>
+      </true>
+    </if>
+  </buildGradleAdditions>
+
+  <proguardAdditions>
+    <insert>
+-keep class com.beamable.push.** { *; }
+-keep class com.beamable.deeplink.** { *; }
+-dontwarn com.google.firebase.**
+    </insert>
+  </proguardAdditions>
+
+  <androidManifestUpdates>
+    <addPermission android:name="android.permission.POST_NOTIFICATIONS"/>
+
+    <!-- Add a VIEW intent-filter for custom-scheme deep links to the main activity. -->
+    <loopElements tag="activity">
+      <setStringFromAttribute result="activityName" tag="$" name="android:name"/>
+      <setBoolIsEqual result="bIsGameActivity" arg1="$S(activityName)" arg2="com.epicgames.unreal.GameActivity"/>
+      <if condition="bIsGameActivity">
+        <true>
+          <addElements tag="activity" once="true">
+            <intent-filter>
+              <action android:name="android.intent.action.VIEW"/>
+              <category android:name="android.intent.category.DEFAULT"/>
+              <category android:name="android.intent.category.BROWSABLE"/>
+              <data android:scheme="$S(DeepLinkScheme)"/>
+            </intent-filter>
+          </addElements>
+        </true>
+      </if>
+    </loopElements>
+  </androidManifestUpdates>
+
+  <gameActivityImportAdditions>
+    <insert>
+import com.beamable.deeplink.unreal.UnrealDeepLink;
+    </insert>
+  </gameActivityImportAdditions>
+
+  <!-- Forward warm-start VIEW intents to the deep-link core. -->
+  <gameActivityOnNewIntentAdditions>
+    <insert>
+    // BeamPlatformNotifications: forward deep-link VIEW intents
+    try { UnrealDeepLink.handleNewIntent(newIntent); } catch (Throwable t) { Log.debug("[BeamPlatformNotifications] onNewIntent: " + t); }
+    </insert>
+  </gameActivityOnNewIntentAdditions>
+
+</root>

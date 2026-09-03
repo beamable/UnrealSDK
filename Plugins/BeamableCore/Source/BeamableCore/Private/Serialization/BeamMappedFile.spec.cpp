@@ -66,12 +66,12 @@ void FBeamMappedFileSpec::Define()
 			TestTrue ("Open succeeds",       Open(File, Path, 4096, kTestMagic, kTestVersion, sizeof(FTestExtraHeader), bWasReset));
 			TestTrue ("Was reset (new file)", bWasReset);
 			TestTrue ("IsOpen",               IsOpen(File));
-			TestEqual("Size matches",         Size(File), (int64)4096);
+			TestEqual("Size matches",         BeamMappedFile::Size(File), (int64)4096);
 			TestTrue ("File on disk",         FPlatformFileManager::Get().GetPlatformFile().FileExists(*Path));
 
 			Close(File);
 			TestFalse("Closed not open", IsOpen(File));
-			TestEqual("Closed size==0",  Size(File), (int64)0);
+			TestEqual("Closed size==0",  BeamMappedFile::Size(File), (int64)0);
 
 			DeleteIfExists(Path);
 		});
